@@ -15,6 +15,9 @@ function add_admin_form_admission_content(){
             $list_students = new TT_all_student_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__).'templates/list-student-documents.php');
+        }else if($_GET['section_tab'] == 'student_details'){
+            $documents = get_documents($_GET['student_id']);
+            include(plugin_dir_path(__FILE__).'templates/student-details.php');
         }
 
     }else{
@@ -62,7 +65,7 @@ class TT_new_student_List_Table extends WP_List_Table{
 
                 return $grade;
             case 'view_details':
-                return "<a href='#' class='button button-primary'>".__('View Details','form-plugin')."</a>";
+                return "<a href='".admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id='.$item['id'])."' class='button button-primary'>".__('View Details','form-plugin')."</a>";
 			default:
 				return print_r($item,true);
         }

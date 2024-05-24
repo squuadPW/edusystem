@@ -21,7 +21,7 @@
                     <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number" data-title="<?= __('Document','form-plugin'); ?>">
                             <input type="hidden" name="<?= 'file_student_'.$student->id.'_id[]'; ?>" value="<?= $document->document_id; ?>">
-                            <?= 
+                            <?php
                                 $name = match ($document->document_id) {
                                     'certified_notes_high_school' => __('CERTIFIED NOTES HIGH SCHOOL','form-plugin'),
                                     'high_school_diploma' => __('HIGH SCHOOL DIPLOMA','form-plugin'),
@@ -30,9 +30,15 @@
                                     'photo_student_card' => __('PHOTO OF STUDENT CARD','form-plugin'),
                                     'proof_of_grades' => __('PROOF OF GRADE','form-plugin'),
                                     'proof_of_study' => __('PROOF OF STUDY','form-plugin'),
-                                    'vaccunation_card' => __('Vaccunation_card','form-plugin'),
+                                    'vaccunation_card' => __('VACCUNATION CARD','form-plugin'),
                                 }
                             ?>
+
+                            <?php if($document->document_id == 'id_student'): ?>
+                                <?= $name."<span class='required' style='font-size:24px;'>*</span>"; ?>
+                            <?php else: ?>
+                                <?= $name; ?>
+                            <?php endif; ?>
                         </td>
                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date" data-title="<?= __('Status','form-plugin'); ?>">
                             <input type="hidden" name="<?= 'status_file_'.$document->document_id.'_student_id_'.$student->id; ?>" value="<?= $document->status; ?>">
