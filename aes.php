@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: aes
+Plugin Name: AES
 Plugin URI: https://americanelite.dreamhosters.com/wp-admin/plugins.php
 Description: Plugin for test
 Version:01
