@@ -3,30 +3,28 @@
 require plugin_dir_path( __FILE__ ) . 'roles.php';
 require plugin_dir_path( __FILE__ ) . 'admission.php';
 require plugin_dir_path( __FILE__ ) . 'payments.php';
+require plugin_dir_path( __FILE__ ) . 'departments.php';
 require plugin_dir_path( __FILE__ ) . 'bitrix/sdk/crest.php';
-
-include(plugin_dir_path(__FILE__).'templates/register-departments.php');
-include(plugin_dir_path(__FILE__).'templates/list-departments.php');
 
 function add_custom_admin_page() {
   
-    add_menu_page(
-        'All departments',
-        'Departments',
-        'manage_options',
-        'list-departments',
-        'list_departments_admin_page_callback', 
-        'dashicons-admin-network',
-        10 
+    add_menu_page( 
+      __('Departments','restaurant-system-app'),
+      __('Departments','restaurant-system-app'),
+      'read', 
+      'list_admin_form_department_content',
+      'list_admin_form_department_content', 
+      'dashicons-admin-network',
+      10
     );
   
     add_submenu_page(
-      'list-departments',
+      'list_admin_form_department_content',
       'Add new department',
       'Add new department',
       'manage_options',
-      'register-department',
-      'register_departments_admin_page_callback' 
+      'register_admin_form_department_content',
+      'register_admin_form_department_content' 
     );
 
     add_menu_page( 
