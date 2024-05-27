@@ -65,7 +65,8 @@ function create_tables() {
         program_id TEXT NOT NULL,
         partner_id INT(11) NOT NULL, 
         status_id INT(11) NOT NULL,
-        created DATETIME NOT NULL,
+        updated_at DATETIME NULL,
+        created_at DATETIME NOT NULL,
         PRIMARY KEY (id))$charset_collate;"
     );
   }

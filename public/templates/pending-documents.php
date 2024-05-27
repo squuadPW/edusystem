@@ -6,8 +6,8 @@
            <?php foreach($students as $student): ?>
                 <?php $documents = get_documents($student->id); ?>
                 <?php foreach($documents as $document): ?>
-                    <?php if($document->status == 0 || $document->status == 3 || $document->status == 4): ?>
-                    <?php if($document->status == 0): ?>
+                    <?php if($document->status == 0 || $document->status == 1 || $document->status == 3 || $document->status == 4): ?>
+                    <?php if($document->status == 0 || $document->status == 1): ?>
                         <div class="woocommerce-info" role="alert" style="margin-bottom:10px;">
                     <?php elseif($document->status == 3): ?>
                         <div class="woocommerce-error" role="alert" style="margin-bottom:10px;">

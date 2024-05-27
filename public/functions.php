@@ -4,13 +4,13 @@ require plugin_dir_path( __FILE__ ) . 'student.php';
 require plugin_dir_path( __FILE__ ) . 'document.php';
 
 function form_plugin_scripts(){
-    wp_enqueue_style('admin-flatpickr',plugins_url('form-plugin').'/public/assets/css/flatpickr.min.css');
-    wp_enqueue_style('style-public',plugins_url('form-plugin').'/public/assets/css/style.css');
+    wp_enqueue_style('admin-flatpickr',plugins_url('aes').'/public/assets/css/flatpickr.min.css');
+    wp_enqueue_style('style-public',plugins_url('aes').'/public/assets/css/style.css');
     wp_enqueue_script('tailwind','https://cdn.tailwindcss.com');
-    wp_enqueue_script('admin-flatpickr',plugins_url('form-plugin').'/public/assets/js/flatpickr.js');
-    wp_enqueue_script('masker-js',plugins_url('form-plugin').'/public/assets/js/vanilla-masker.min.js');
-    wp_enqueue_script('checkout',plugins_url('form-plugin').'/public/assets/js/checkout.js');
-    wp_enqueue_script('form-register',plugins_url('form-plugin').'/public/assets/js/form-register.js');
+    wp_enqueue_script('admin-flatpickr',plugins_url('aes').'/public/assets/js/flatpickr.js');
+    wp_enqueue_script('masker-js',plugins_url('aes').'/public/assets/js/vanilla-masker.min.js');
+    wp_enqueue_script('checkout',plugins_url('aes').'/public/assets/js/checkout.js');
+    wp_enqueue_script('form-register',plugins_url('aes').'/public/assets/js/form-register.js');
 
 }
 

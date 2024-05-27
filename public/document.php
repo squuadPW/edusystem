@@ -43,7 +43,7 @@ function save_document(){
 
                       
 
-                        if($status == 0 || $document->status == 3 || $document->status == 4){
+                        if($status == 0 || $status == 3 || $status == 4){
 
                             if(!empty($file_temp['tmp_name'])){
                                 
@@ -87,11 +87,25 @@ function view_pending_documents(){
     global $current_user;
 
     $student_status = get_user_meta($current_user->ID,'status_register',true);
+    $students = get_student($current_user->ID);
+    $solvency_administrative = true;
 
     if($student_status == 1 || $student_status == '1'){
 
-        $students = get_student(get_current_user_id());
-        include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+        foreach($students as $student){
+            $documents = get_documents($student->id);
+
+            foreach($documents as $document){
+
+                if($document->status != 5){
+                    $solvency_administrative = false;
+                }
+            }
+        }
+    
+        if(!$solvency_administrative){
+            include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+        }
     }
 
 }
