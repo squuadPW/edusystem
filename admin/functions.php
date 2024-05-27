@@ -23,8 +23,8 @@ function add_custom_admin_page() {
       'Add new department',
       'Add new department',
       'manage_options',
-      'register_admin_form_department_content',
-      'register_admin_form_department_content' 
+      'add_admin_form_department_content',
+      'add_admin_form_department_content' 
     );
 
     add_menu_page( 

@@ -120,7 +120,7 @@ class TT_all_departments_List_Table extends WP_List_Table{
 
 }
 
-function register_admin_form_department_content(){
+function add_admin_form_department_content(){
     $list_students = new TT_register_department_List_Table;
     $list_students->prepare_items();
     include(plugin_dir_path(__FILE__).'templates/register-departments.php');
