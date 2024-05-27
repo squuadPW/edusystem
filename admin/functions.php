@@ -6,6 +6,12 @@ require plugin_dir_path( __FILE__ ) . 'payments.php';
 require plugin_dir_path( __FILE__ ) . 'departments.php';
 require plugin_dir_path( __FILE__ ) . 'bitrix/sdk/crest.php';
 
+function admin_form_plugin_scripts(){
+  wp_enqueue_style('style-admin',plugins_url('form-plugin').'/admin/assets/css/style.css');
+}
+
+add_action( 'wp_enqueue_scripts', 'admin_form_plugin_scripts');
+
 function add_custom_admin_page() {
   
     add_menu_page( 
