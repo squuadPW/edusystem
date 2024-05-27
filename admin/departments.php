@@ -1,8 +1,8 @@
 <?php
 
 function list_admin_form_department_content(){
-    $list_students = new TT_all_departments_List_Table;
-    $list_students->prepare_items();
+    $list_departments = new TT_all_departments_List_Table;
+    $list_departments->prepare_items();
     include(plugin_dir_path(__FILE__).'templates/list-departments.php');
 }
 
@@ -12,8 +12,8 @@ class TT_all_departments_List_Table extends WP_List_Table{
         global $status, $page,$categories;
          
         parent::__construct( array(
-            'singular'  => 'student',    
-            'plural'    => 'students',
+            'singular'  => 'department',    
+            'plural'    => 'departments',
             'ajax'      => true
         ) );
         
@@ -24,25 +24,12 @@ class TT_all_departments_List_Table extends WP_List_Table{
         global $current_user;
 
         switch($column_name){
-            case 'full_name':
-                return $item['name'].' '.$item['last_name'];
-            case 'program':
-                $program = match($item['program_id']){
-                    'aes' => __('AES (Dual Diploma)','form-plugin'),
-                    'psp' => __('PSP (Carrera Universitaria)','form-plugin'),
-                    'aes_psp' => __('AES (Dual Diploma)','form-plugin').','.__('AES (Dual Diploma)','form-plugin'),
-                };
-
-                return $program;
-            case 'grade':   
-                $grade = match($item['grade_id']){
-                    '1' => __('9no (antepenúltimo)','form-plugin'),
-                    '2' => __('10mo (penúltimo)','form-plugin'),
-                    '3' => __('11vo (último)','form-plugin'),
-                    '4' => __('Bachiller (graduado)','form-plugin')
-                };
-
-                return $grade;
+            case 'name':
+                return $item['name'];
+            case 'description':
+                return $item['description'];
+            case 'created_at':   
+                return $item['created_at'];
             case 'view_details':
                 return "<a href='#' class='button button-primary'>".__('View Details','form-plugin')."</a>";
 			default:
@@ -65,21 +52,21 @@ class TT_all_departments_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
-            'Name'     => __('Full name','form-plugin'),
-            'Description'     => __('Program','form-plugin'),
-            'Created at' => __('Grade','form-plugin'),
+            'name'     => __('Name','form-plugin'),
+            'description'     => __('Description','form-plugin'),
+            'created_at' => __('Created at','form-plugin'),
             'view_details' => __('Actions','form-plugin'),
         );
 
         return $columns;
     }
 
-    function get_students(){
+    function get_departments(){
 
         global $wpdb;
-        $table_students = $wpdb->prefix.'students';
+        $table_departments = $wpdb->prefix.'departments';
 
-        $data = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY name ASC","ARRAY_A");
+        $data = $wpdb->get_results("SELECT * FROM {$table_departments} ORDER BY created_at ASC","ARRAY_A");
         return $data;
     }   
 
@@ -104,7 +91,7 @@ class TT_all_departments_List_Table extends WP_List_Table{
 
 	function prepare_items(){
 
-		$data_categories = $this->get_students();
+		$data_categories = $this->get_departments();
 
 		$per_page = 10;
 
@@ -136,7 +123,7 @@ class TT_all_departments_List_Table extends WP_List_Table{
 function register_admin_form_department_content(){
     $list_students = new TT_register_department_List_Table;
     $list_students->prepare_items();
-    include(plugin_dir_path(__FILE__).'templates/list-departments.php');
+    include(plugin_dir_path(__FILE__).'templates/register-departments.php');
 }
 
 class TT_register_department_List_Table extends WP_List_Table{
