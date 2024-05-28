@@ -4,6 +4,7 @@ require plugin_dir_path( __FILE__ ) . 'student.php';
 require plugin_dir_path( __FILE__ ) . 'document.php';
 
 function form_plugin_scripts(){
+    wp_enqueue_style('dashicons');
     wp_enqueue_style('admin-flatpickr',plugins_url('aes').'/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('style-public',plugins_url('aes').'/public/assets/css/style.css');
     wp_enqueue_script('tailwind','https://cdn.tailwindcss.com');
@@ -267,7 +268,7 @@ function remove_my_account_links( $menu_links ){
         }
 
         $menu_links = array_slice( $menu_links, 0,2 , true )
-        + array( 'student' => __('Student','form-plugin') )
+        + array( 'student' => __('Students','form-plugin') )
         + array_slice( $menu_links, 2, NULL, true );
     }
 
@@ -276,6 +277,7 @@ function remove_my_account_links( $menu_links ){
 
 add_action('init', function() {
 	add_rewrite_endpoint('student-documents', EP_ROOT | EP_PAGES);
+    add_rewrite_endpoint('student-details', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('student', EP_ROOT | EP_PAGES);
 });
 
@@ -355,18 +357,101 @@ function status_changed_payment($order_id, $old_status, $new_status){
 add_action('woocommerce_order_status_changed', 'status_changed_payment', 10, 3);
 
 function save_account_details( $user_id ) {
-    if(isset( $_POST['billing_city'])){
+    if(isset( $_POST['billing_city']) && !empty($_POST['billing_city'])){
         update_user_meta( $user_id,'billing_city',sanitize_text_field($_POST['billing_city']));
     }
 
-    if(isset( $_POST['billing_country'])){
+    if(isset( $_POST['billing_country']) && !empty($_POST['billing_country'])){
         update_user_meta( $user_id,'billing_country',sanitize_text_field( $_POST['billing_country']));
     }
 
-    if(isset( $_POST['number_phone'])){
+    if(isset( $_POST['number_phone']) && !empty($_POST['number_phone'])){
         update_user_meta( $user_id,'billing_phone',sanitize_text_field( $_POST['number_phone']));
+    }
+
+    if(isset( $_POST['gender']) && !empty($_POST['gender'])){
+        update_user_meta( $user_id,'gender',sanitize_text_field( $_POST['gender']));
+    }
+
+    if(isset( $_POST['id_document']) && !empty($_POST['id_document'])){
+        update_user_meta( $user_id,'id_document',sanitize_text_field( $_POST['id_document']));
+    }
+
+    if(isset( $_POST['birth_date']) && !empty($_POST['birth_date'])){
+        update_user_meta( $user_id,'birth_date',sanitize_text_field( $_POST['birth_date']));
+    }
+
+    if(isset( $_POST['document_type']) && !empty($_POST['document_type'])){
+        update_user_meta( $user_id,'document_type',sanitize_text_field( $_POST['document_type']));
+    }
+
+    if(isset( $_POST['billing_postcode']) && !empty($_POST['billing_postcode'])){
+        update_user_meta( $user_id,'billing_postcode',sanitize_text_field( $_POST['billing_postcode']));
+    }
+
+    if(isset( $_POST['occupation']) && !empty($_POST['occupation'])){
+        update_user_meta( $user_id,'occupation',sanitize_text_field( $_POST['occupation']));
     }
 }
 add_action( 'woocommerce_save_account_details', 'save_account_details' );
 
+function validated_account_details_required_fields( $required_fields ){    
+    $required_fields['billing_city'] = __('Billing city','aes');
+    $required_fields['billing_country'] = __('Billing country','aes');
+    $required_fields['number_phone'] = __('Number phone','aes');
+    $required_fields['gender'] = __('Gender','aes');
+    $required_fields['birth_date'] = __('Birth Date','aes');
+    $required_fields['id_document'] = __('ID Document','aes');
+    $required_fields['document_type'] = __('Type document','aes');
+    $required_fields['billing_postcode'] = __('Post Code','aes');
+    $required_fields['occupation'] = __('Occupation','aes');
+    return $required_fields;
+}
+add_filter('woocommerce_save_account_details_required_fields', 'validated_account_details_required_fields');
 
+
+function save_student_details(){
+
+    if(isset($_POST['action']) && !empty($_POST['action'])){
+
+
+        if($_POST['action'] == 'save_student_details'){
+
+            global $wpdb;
+            $table_students = $wpdb->prefix.'students';
+           
+            $student_id = $_POST['student_id'];
+            $document_type = $_POST['document_type'];
+            $id_document = $_POST['id_document'];
+            $first_name = $_POST['account_first_name'];
+            $last_name = $_POST['account_last_name'];
+            $email = $_POST['account_email'];
+            $phone = $_POST['number_phone'];
+            $gender = $_POST['gender'];
+            $country = $_POST['country'];
+            $city = $_POST['city'];
+            $postal_code = $_POST['postal_code'];
+
+            $wpdb->update($table_students,[
+                'type_document' => $document_type,
+                'id_document' => $id_document,
+                'name' => $first_name,
+                'last_name' => $last_name,
+                'email' => $email,
+                'phone' => $phone,
+                'gender' => $gender,
+                'country' => $country,
+                'city' => $city,
+                'postal_code' => $postal_code,
+            ],[
+                'id' => $student_id
+            ]);
+
+            wp_redirect(wc_get_account_endpoint_url('student-details').'/?student='.$student_id);
+            exit;
+        }
+    }
+}
+
+
+add_action('wp_loaded','save_student_details');

@@ -106,14 +106,14 @@ class TT_new_student_List_Table extends WP_List_Table{
 
         if(isset($_POST['s']) && !empty($_POST['s'])){
 
-            $search = $_GET['s'];
+            $search = $_POST['s'];
 
             $data = $wpdb->get_results("SELECT a.* 
             FROM {$table_students} as a 
             JOIN {$table_student_documents} b on b.student_id = a.id 
             WHERE status_id=1 AND b.status != 0 AND 
             (a.name  LIKE '{$search}' OR a.last_name LIKE '{$search}%' OR email LIKE '{$search}%')
-            GROUP BY a.student_id
+            GROUP BY a.id
             ","ARRAY_A");
 
         }else{
@@ -466,8 +466,6 @@ class TT_all_student_List_Table extends WP_List_Table{
 
         if(isset($_POST['s']) && !empty($_POST['s'])){
 
-            
-
             $search = $_POST['s'];
             $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email LIKE '{$search}%') ORDER BY name ASC","ARRAY_A");
         }else{
@@ -641,3 +639,106 @@ function update_payment(){
 
 add_action( 'wp_ajax_nopriv_update_payment', 'update_payment');
 add_action( 'wp_ajax_update_payment', 'update_payment');
+
+function get_data_student(){
+
+    if(isset($_POST['student_id']) && !empty($_POST['student_id'])){
+
+        $student = get_student_detail($_POST['student_id']);
+        $partner = get_userdata($student->partner_id);
+        $documents = get_documents($student->id);
+        $data = [];
+        $data_documents = [];
+
+        $program = match($student->program_id){
+            'aes' => __('AES (Dual Diploma)','form-plugin'),
+            'psp' => __('PSP (Carrera Universitaria)','form-plugin'),
+            'aes_psp' => __('AES (Dual Diploma)','form-plugin').','.__('AES (Dual Diploma)','form-plugin'),
+        };
+
+        $grade = match($student->grade_id){
+            '1' => __('9no (antepenúltimo)','form-plugin'),
+            '2' => __('10mo (penúltimo)','form-plugin'),
+            '3' => __('11vo (último)','form-plugin'),
+            '4' => __('Bachiller (graduado)','form-plugin')
+        };
+
+        foreach($documents as $document){
+
+            $name = match ($document->document_id) {
+                'certified_notes_high_school' => __('CERTIFIED NOTES HIGH SCHOOL','form-plugin'),
+                'high_school_diploma' => __('HIGH SCHOOL DIPLOMA','form-plugin'),
+                'id_parents' => __('ID OR CI OF THE PARENTS','form-plugin'),
+                'id_student' => __('ID STUDENTS','form-plugin'),
+                'photo_student_card' => __('PHOTO OF STUDENT CARD','form-plugin'),
+                'proof_of_grades' => __('PROOF OF GRADE','form-plugin'),
+                'proof_of_study' => __('PROOF OF STUDY','form-plugin'),
+                'vaccunation_card' => __('VACCUNATION CARD','form-plugin'),
+            };
+
+            $status = match ($document->status){
+                '0' => __('No sent','form-plugin'),
+                '1' => __('Sent','form-plugin'),
+                '2' => __('Processing','form-plugin'),
+                '3' => __('Declined','form-plugin'),
+                '4' => __('Expired','form-plugin'),
+                '5' => __('Approved','form-plugin'),
+            };
+
+            if(!empty($document->attachment_id)){
+                $url = wp_get_attachment_url($document->attachment_id);
+            }else{
+                $url = "";
+            }
+
+            array_push($data_documents,[
+                'name' => $name,
+                'status' => $status,
+                'url' => $url
+            ]);
+        }
+
+        $type_document_parent = match(get_user_meta($partner->ID,'document_type',true)){
+            'passport' => __('Passport','aes'),
+            'identification_document' => __('Identification Document','aes'),
+            'ssn' => __('SSN'),
+            default => '',
+        };
+
+        array_push($data,[
+            'id_document' => $student->id_document,
+            'type_document' => $student->type_document,
+            'first_name' => $student->name,
+            'last_name' => $student->last_name,
+            'email' => $student->email,
+            'phone' => $student->phone,
+            'birth_date' => $student->birth_date,
+            'country' => $student->country,
+            'city' => $student->city,
+            'postal_code' => $student->postal_code,
+            'program' => $program,
+            'grade' => $grade,
+            'gender' => $student->gender,
+            'type_document_parent' => $type_document_parent,
+            'id_document_parent' => get_user_meta($partner->ID,'id_document',true),
+            'first_name_parent' => $partner->first_name,
+            'last_name_parent' => $partner->last_name,
+            'email_parent' => $partner->user_email,
+            'country_parent' => get_user_meta($partner->ID,'billing_country',true),
+            'city_parent' => get_user_meta($partner->ID,'billing_city',true),
+            'post_code_parent' => get_user_meta($partner->ID,'billing_postcode',true),
+            'phone_parent' => get_user_meta($partner->ID,'billing_phone',true),
+            'birth_date_parent' => get_user_meta($partner->ID,'birth_date',true),
+            'gender_parent' => get_user_meta($partner->ID,'gender',true),
+            'occupation_parent' => get_user_meta($partner->ID,'occupation',true),
+            'documents' => $data_documents
+        ]);
+
+        echo json_encode(['status' => 'success', 'data' => $data]);
+    }
+
+    die();
+}
+
+add_action( 'wp_ajax_nopriv_get_student_details', 'get_data_student');
+add_action( 'wp_ajax_get_student_details', 'get_data_student');

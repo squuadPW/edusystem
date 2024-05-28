@@ -4,7 +4,9 @@
     <div style="diplay:flex;width:100%;">
         <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
-
+    <div style="display:flex;width:100%;justify-content:end;">
+        <button data-id="<?= $student->id; ?>" id="button-export-xlsx" class="button button-primary"><?= __('Export Excel','aes'); ?></button>
+    </div>
     <div id="dashboard-widgets" class="metabox-holder">
         <div id="postbox-container-1" style="width:100% !important;">
             <div id="normal-sortables">
@@ -14,16 +16,16 @@
                             <tbody>
                                 <tr>
                                     <th scope="row" style="font-weight:400;">
-                                        <label for="input_id"><?= __('Program','aes'); ?></label><br>
-                                        <select style="width:100%">
+                                        <label for="input_id"><b><?= __('Program','aes'); ?></b></label><br>
+                                        <select style="min-width:100%">
                                             <option value="aes" <?= ($student->program_id == 'aes') ? 'selected' : ''; ?>><?= __('AES (Dual Diploma)','aes'); ?></option>
                                             <option value="psp" <?= ($student->program_id == 'psp') ? 'selected' : ''; ?>><?= __('PSP (Carrera Universitaria)','aes'); ?></option>
                                             <option value="aes_psp" <?= ($student->program_id == 'aes_psp') ? 'selected' : ''; ?>><?= __('Ambos','aes'); ?></option>
                                         </select>
                                     </th>
                                     <td>
-                                        <label for="input_id"><?= __('Grade','aes'); ?></label><br>
-                                        <select style="width:100%" value="<?= $student->grade_id; ?>">
+                                        <label for="input_id"><b><?= __('Grade','aes'); ?></b></label><br>
+                                        <select style="min-width:100%" value="<?= $student->grade_id; ?>">
                                             <option value="1" <?= ($student->grade_id == 1) ? 'selected' : ''; ?>>9no (antepenúltimo)</option>
                                             <option value="2" <?= ($student->grade_id == 2) ? 'selected' : ''; ?>>10mo (penúltimo)</option>
                                             <option value="3" <?= ($student->grade_id == 3) ? 'selected' : ''; ?>>11vo (último)</option>
@@ -38,6 +40,21 @@
                             <tbody>
                                 <tr>
                                     <th scope="row" style="font-weight:400;">
+                                        <label for="input_id"><b><?= __('Document Type','aes'); ?></b></label><br>
+                                        <select style="min-width:100%;">
+                                            <option value=""></option>
+                                            <option value="identification_document" <?= ($student->type_document == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document','aes'); ?></option>
+                                            <option value="passport" <?= ($student->type_document == 'passport') ? 'selected' : ''; ?>><?= __('Passport','aes'); ?></option>
+                                            <option value="ssn" <?= ($student->type_document == 'ssn') ? 'selected' : ''; ?>><?= __('SNN','aes'); ?></option>
+                                        </select>
+                                    </th>
+                                    <td>
+                                        <label for="input_id"><b><?= __('ID Document','aes'); ?></b></label><br>
+                                        <input type="text" style="width:100%" value="<?= $student->id_document; ?>" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" style="font-weight:400;">
                                         <label for="input_id"><b><?= __('First name','aes'); ?></b></label><br>
                                         <input type="text" style="width:100%" value="<?= $student->name ?>" required>
                                     </th>
@@ -47,36 +64,44 @@
                                     </td>
                                     <td>
                                         <label for="input_id"><b><?= __('Birth date','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%" value="<?= $student->birth_date; ?>" required>
+                                        <input type="text" class="birth_date" style="width:100%" value="<?= $student->birth_date; ?>" required>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row" style="font-weight:400;">
                                         <label for="input_id"><b><?= __('Gender','aes'); ?></b></label><br>
-                                        <select style="width:100%;">
-                                            <option><?= __('Female','aes'); ?></option>
-                                            <option><?= __('Male','aes'); ?></option>
+                                        <select style="min-width:100%;">
+                                            <option value="female" <?= ($student->gender == 'female') ? 'selected' : ''; ?>><?= __('Female','aes'); ?></option>
+                                            <option value="male" <?= ($student->gender == 'male') ? 'selected' : ''; ?>><?= __('Male','aes'); ?></option>
                                         </select>
                                     </th>
                                     <td>
                                         <label for="input_id"><b><?= __('Country','aes'); ?></b></label><br>
-                                        <select style="width:100%;min-width:100%;">
+                                        <select style="min-width:100%;min-width:100%;">
                                             <option value=""></option>
-                                           <?php foreach($countries as $key => $country): ?>
-                                                <option value="<?= $key ?>"><?= $country; ?></option>
-                                            <?php endforeach; ?>
+                                            <?php foreach($countries as $key => $country): ?>
+                                                <?php if($student->country == $key): ?>
+                                                    <option value='<?= $key ?>' selected><?= $country ?></option>
+                                                <?php else: ?>
+                                                    <option value='<?= $key ?>'><?= $country ?></option>
+                                                <?php endif; ?>
+			                                <?php endforeach; ?>
                                         </select>
                                     </td>
                                     <td>
                                         <label for="input_id"><b><?= __('City','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%;"> 
+                                        <input type="text" value="<?= $student->city; ?>" style="width:100%;"> 
                                     </th>
                                 </tr>
                                 <tr>
                                     <th scope="row" style="font-weight:400;">
+                                        <label for="input_id"><b><?= __('Postal Code','aes'); ?></b></label><br>
+                                        <input type="text" name="text" value="<?= $student->postal_code; ?>" style="width:100%;">
+                                    </th>
+                                    <td>
                                         <label for="input_id"><b><?= __('Email','aes'); ?></b></label><br>
                                         <input type="text" name="email" value="<?= $student->email; ?>" id="email" style="width:100%;">
-                                    </th>
+                                    </td>
                                     <td>
                                         <label for="input_id"><b><?= __('Phone','aes'); ?></b></label><br>
                                         <input type="text" name="email" id="email" style="width:100%;" value="<?= $student->phone; ?>">
@@ -88,6 +113,21 @@
                             <tbody>
                                 <tr>
                                     <th scope="row" style="font-weight:400;">
+                                        <label for="input_id"><b><?= __('Document Type','aes'); ?></b></label><br>
+                                        <select style="min-width:100%;">
+                                            <option value=""></option>
+                                            <option value="identification_document" <?= (get_user_meta($partner->ID,'document_type',true) == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document','aes'); ?></option>
+                                            <option value="passport" <?= (get_user_meta($partner->ID,'document_type',true) == 'passport') ? 'selected' : ''; ?>><?= __('Passport','aes'); ?></option>
+                                            <option value="ssn" <?= (get_user_meta($partner->ID,'document_type',true) == 'ssn') ? 'selected' : ''; ?>><?= __('SNN','aes'); ?></option>
+                                        </select>
+                                    </th>
+                                    <td>
+                                        <label for="input_id"><b><?= __('ID Document','aes'); ?></b></label><br>
+                                        <input type="text" style="width:100%" value="<?= get_user_meta($partner->ID,'id_document',true); ?>" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" style="font-weight:400;">
                                         <label for="input_id"><b><?= __('First name','aes'); ?></b></label><br>
                                         <input type="text" style="width:100%" value="<?= $partner->first_name; ?>" required>
                                     </th>
@@ -97,15 +137,16 @@
                                     </td>
                                     <td>
                                         <label for="input_id"><b><?= __('Birth date','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%" value="" required>
+                                        <input type="text" style="width:100%" class="birth_date" value="<?= get_user_meta($partner->ID,'birth_date',true); ?>" required>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row" style="font-weight:400;">
                                         <label for="input_id"><b><?= __('Gender','aes'); ?></b></label><br>
-                                        <select style="width:100%;">
-                                            <option><?= __('Female','aes'); ?></option>
-                                            <option><?= __('Male','aes'); ?></option>
+                                        <select style="min-width:100%;">
+                                            <option value=""></option>
+                                            <option value="female" <?= (get_user_meta($partner->ID,'gender',true) == 'female') ? 'selected' : '' ?>><?= __('Female','aes'); ?></option>
+                                            <option value="male" <?= (get_user_meta($partner->ID,'gender',true) == 'male') ? 'selected' : '' ?>><?= __('Male','aes'); ?></option>
                                         </select>
                                     </th>
                                     <td>
@@ -123,14 +164,25 @@
                                     </th>
                                 </tr>
                                 <tr>
-                                    <th scope="row" style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('Email','aes'); ?></b></label><br>
-                                        <input type="text" name="email" value="<?= get_user_meta($partner->ID,'billing_email',true) ?>" id="email" style="width:100%;">
+                                    <th style="font-weight:400;">
+                                        <label for="input_id"><b><?= __('Postal Code','aes'); ?></b></label><br>
+                                        <input type="text" name="text" value="<?= get_user_meta($partner->ID,'billing_postcode',true) ?>" style="width:100%;">
                                     </th>
+                                    <td style="font-weight:400;">
+                                        <label for="input_id"><b><?= __('Email','aes'); ?></b></label><br>
+                                        <input type="text" name="email" value="<?= get_user_meta($partner->ID,'billing_email',true) ?>" style="width:100%;">
+                                    </td>
                                     <td>
                                         <label for="input_id"><b><?= __('Phone','aes'); ?></b></label><br>
-                                        <input type="text" name="email" value="<?= get_user_meta($partner->ID,'billing_phone',true) ?>"  id="email" style="width:100%;" value="">
+                                        <input type="text" name="email" value="<?= get_user_meta($partner->ID,'billing_phone',true) ?>" style="width:100%;" value="">
                                     </td>
+                                </tr>
+                                <tr>
+                                    <th style="font-weight:400;">
+                                        <label for="input_id"><b><?= __('Occupation','aes'); ?></b></label><br>
+                                        <input type="text" name="text" value="<?= get_user_meta($partner->ID,'occupation',true) ?>" style="width:100%;">
+                                    </th>
+                                </tr>
                             </tbody>
                         <table>
                             <!--

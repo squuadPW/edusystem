@@ -55,11 +55,17 @@ function create_tables() {
 
     dbDelta( "CREATE TABLE " . $table_students . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
+        type_document TEXT NULL,
+        id_document TEXT NULL,
         name TEXT NOT NULL,
         last_name TEXT NOT NULL,
         birth_date DATE NOT NULL,
         phone TEXT NOT NULL,
         email TEXT NOT NULL,
+        gender TEXT NULL,
+        country TEXT NULL,
+        city TEXT NULL,
+        post_code TEXT NULL,
         grade_id INT(11) NOT NULL,
         name_institute TEXT NOT NULL,
         program_id TEXT NOT NULL,

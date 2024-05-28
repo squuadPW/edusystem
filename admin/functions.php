@@ -9,19 +9,27 @@ include(plugin_dir_path(__FILE__).'templates/register-departments.php');
 include(plugin_dir_path(__FILE__).'templates/list-departments.php');
 
 function aes_scripts_admin(){
-  wp_enqueue_style('style-admin',plugins_url('aes').'/admin/assets/css/style.css');
-  wp_enqueue_script('student-documents',plugins_url('aes').'/admin/assets/js/document.js',array('jquery'),'1.0.0',true);
-  wp_enqueue_script('student-payment',plugins_url('aes').'/admin/assets/js/payment.js',array('jquery'),'1.0.0',true);
+    wp_enqueue_style('flatpickr',plugins_url('aes').'/public/assets/css/flatpickr.min.css');
+    wp_enqueue_style('style-admin',plugins_url('aes').'/admin/assets/css/style.css');
+    wp_enqueue_script('xlsx-js',plugins_url('aes').'/admin/assets/js/xlsx.full.min.js',array('jquery'),'1.0.0',true);
+    wp_enqueue_script('admin-flatpickr',plugins_url('aes').'/public/assets/js/flatpickr.js',array('jquery'),'1.0.0',true);
+    wp_enqueue_script('student-documents',plugins_url('aes').'/admin/assets/js/document.js',array('jquery'),'1.0.0',true);
+    wp_enqueue_script('student-payment',plugins_url('aes').'/admin/assets/js/payment.js',array('jquery'),'1.0.0',true);
 
-  wp_localize_script('student-documents','update_status_documents',[
-      'url' => admin_url( 'admin-ajax.php' ),
-      'action' => 'update_status_documents' 
-  ]);
+    wp_localize_script('student-documents','update_status_documents',[
+        'url' => admin_url( 'admin-ajax.php' ),
+        'action' => 'update_status_documents' 
+    ]);
 
-  wp_localize_script('student-payment','update_payment',[
-    'url' => admin_url( 'admin-ajax.php' ),
-    'action' => 'update_payment' 
-]);
+    wp_localize_script('student-documents','get_student_details',[
+        'url' => admin_url( 'admin-ajax.php' ),
+        'action' => 'update_status_documents' 
+    ]);
+
+    wp_localize_script('student-documents','get_student_details',[
+        'url' => admin_url( 'admin-ajax.php' ),
+        'action' => 'get_student_details' 
+    ]);
 }
 
 add_action( 'admin_enqueue_scripts', 'aes_scripts_admin',3 );

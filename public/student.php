@@ -6,6 +6,12 @@ add_action('woocommerce_account_student_endpoint', function(){
     include(plugin_dir_path(__FILE__).'templates/student.php');
 });
 
+add_action('woocommerce_account_student-details_endpoint', function(){
+
+    $student = get_student_detail($_GET['student']);
+    include(plugin_dir_path(__FILE__).'templates/student-details.php');
+});
+
 function get_student($partner_id){
 
     global $wpdb;
@@ -30,7 +36,7 @@ function insert_student($customer_id){
         'phone' => $_COOKIE['billing_phone'],
         'email' => $_COOKIE['billing_email'],
         'status_id' => 0,
-        'created' => date('Y-m-d H:i:s'),
+        'created_at' => date('Y-m-d H:i:s'),
     ]);
 
     $student_id = $wpdb->insert_id;

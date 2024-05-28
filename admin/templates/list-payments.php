@@ -15,7 +15,7 @@
 		<form action="" id="post-filter" method="post">
 			<p class="search-box">
 				<label class="screen-reader-text" for="search-box-id-search-input">Search:</label>
-				<input type="search" id="search-box-id-search-input" name="search-order" value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
+				<input type="search" id="search-box-id-search-input" name="search-order" value="<?= (!empty($_POST['search-order'])) ? $_POST['search-order'] : ''; ?>">
 				<input type="submit" id="search-submit" class="button" value="Search">
 			</p>
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />

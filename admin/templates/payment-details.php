@@ -34,16 +34,36 @@
                                     <th scope="row"><label for="input_id"><?= __('Payment Method','aes').':'; ?></label></th>
                                     <td><?= $order->get_payment_method_title(); ?></td>
                                 </tr>
-                                <?php if($order->get_meta('transaction_id')){ ?>
+                                <?php if($order->get_meta('_stripe_intent_id')){ ?>
                                     <tr>
                                         <th scope="row"><label for="input_id"><?= __('Transaction ID','aes').':'; ?></label></th>
-                                        <td><?= $order->get_meta('transaction_id'); ?></td>
+                                        <td><?= $order->get_meta('_stripe_intent_id'); ?></td>
                                     </tr>
                                 <?php } ?>
                             </tbody>
                         </table>
+                        <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="manage-column column-primary column-title"><?= __('Program','aes') ?></th>
+                                    <th scope="col" class="manage-column column-price"><?= __('Total','aes') ?></th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-documents">
+                                <?php foreach($order->get_items() as $item){ ?>
+                                    <tr>
+                                        <td class="column-primary">
+                                            <?= $item->get_name(); ?>
+                                        </td>
+                                        <td data-colname="<?= __('Total','aes'); ?>">
+                                            <?= get_woocommerce_currency_symbol().$item->get_total(); ?>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tobdy>
+                        </table>
                         <?php if($order->get_status() != 'completed'){ ?>
-                            <div style="display:flex;flex-direction:row;width:100%;justify-content:end;">
+                            <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
                                 <?php if(wp_is_mobile()){ ?>
                                     <button data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-primary"><?= __('Approved Payment','aes'); ?></button>
                                 <?php }else{ ?>

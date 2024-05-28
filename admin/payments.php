@@ -88,6 +88,11 @@ class TT_payment_pending_List_Table extends WP_List_Table{
     function get_payment_pendings(){
         $orders_array = [];
         $args = [];
+
+        if(isset($_POST['search-order']) && !empty($_POST['search-order'])){
+            $args['s'] = $_POST['search-order'];
+        }
+
         $args['limit'] = -1;
         $args['status'] = array('wc-pending','wc-cancelled','wc-processing','wc-on-hold');
         $orders = wc_get_orders($args);
@@ -222,6 +227,11 @@ class TT_all_payments_List_Table extends WP_List_Table{
     function get_payment_pendings(){
         $orders_array = [];
         $args = [];
+
+        if(isset($_POST['search-order']) && !empty($_POST['search-order'])){
+            $args['s'] = $_POST['search-order'];
+        }
+
         $args['limit'] = -1;
         $args['status'] = array('wc-pending','wc-completed','wc-cancelled','wc-processing','wc-on-hold');
         $orders = wc_get_orders($args);
