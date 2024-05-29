@@ -191,7 +191,7 @@ function get_documents($student_id){
 
 function get_name_grade($grade_id){
 
-    $grade = match($row->grade_id){
+    $grade = match($grade_id){
         '1' => __('9no (antepenúltimo)','aes'),
         '2' => __('10mo (penúltimo)','aes'),
         '3' => __('11vo (último)','aes'),
@@ -204,7 +204,7 @@ function get_name_grade($grade_id){
 
 function get_name_program($program_id){
 
-    $program = match($row->program_id){
+    $program = match($program_id){
         'aes' => __('AES (Dual Diploma)','aes'),
         'psp' => __('PSP (Carrera Universitaria)','aes'),
         'aes_psp' => __('AES (Dual Diploma)','aes').','.__('AES (Dual Diploma)','aes'),
@@ -212,4 +212,16 @@ function get_name_program($program_id){
     };
 
     return $program;
+}
+
+function get_gender($gender_id){
+
+    $gender = match($gender_id){
+        'male' => __('Male','aes'),
+        'female' => __('Female','aes'),
+        default => "",
+    };
+
+    return $gender;
+
 }

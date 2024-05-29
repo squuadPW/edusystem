@@ -16,16 +16,16 @@ function save_institute(){
             global $wpdb;
             $table_institutes =  $wpdb->prefix.'institutes';
 
-            $name = $_POST['name'];
+            $name = strtolower($_POST['name']);
             $phone = $_POST['phone'];
             $email = $_POST['email'];
             $country = $_POST['country'];
             $state = $_POST['state'];
-            $city = $_POST['city'];
+            $city = strtolower($_POST['city']);
             $address = $_POST['address'];
             $level = $_POST['level'];
-            $rector_name = $_POST['rector_name'];
-            $rector_lastname = $_POST['rector_lastname'];
+            $rector_name = strtolower($_POST['rector_name']);
+            $rector_lastname = strtolower($_POST['rector_lastname']);
             $rector_phone = $_POST['rector_phone'];
             $reference = $_POST['reference'];
 
@@ -54,3 +54,12 @@ function save_institute(){
 }
 
 add_action('wp_loaded','save_institute');
+
+function get_list_institutes_active(){
+
+    global $wpdb;
+    $table_institutes =  $wpdb->prefix.'institutes';
+
+    $list_institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status=1");
+    return $list_institutes;
+}

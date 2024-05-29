@@ -97,6 +97,7 @@ function create_tables() {
         phone_rector TEXT NOT NULL,
         reference TEXT NOT NULL,
         status INT(11) NOT NULL,
+        
         updated_at DATETIME NULL,
         created_at DATETIME NOT NULL,
         PRIMARY KEY (id))$charset_collate;"

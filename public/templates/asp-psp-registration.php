@@ -70,7 +70,12 @@
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name_institute">Nombre del Colegio o Institución con Convenio</label>
-            <input class="formdata" type="text" name="name_institute" required>
+            <select name="name_institute" id="name_institute">
+                <option value=""><?= __('Select a institute','aes'); ?></option>
+                <?php foreach($institutes as $institute): ?>
+                    <option value="<?= $institute->name ?>"><?= $institute->name; ?></option>
+                <?php endforeach; ?>
+            </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="terms" class="checkboxes">

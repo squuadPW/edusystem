@@ -658,12 +658,12 @@ function get_data_student(){
                 'url' => $url
             ]);
         }
-
+        $type_document = get_name_type_document($student->type_document);
         $type_document_parent = get_name_type_document(get_user_meta($partner->ID,'document_type',true));
        
         array_push($data,[
             'id_document' => $student->id_document,
-            'type_document' => $student->type_document,
+            'type_document' => $type_document,
             'first_name' => $student->name,
             'last_name' => $student->last_name,
             'email' => $student->email,

@@ -2,19 +2,70 @@
 
 function add_admin_institutes_content(){
 
-    if(isset($_POST['section_tab']) && !empty($_POST['section_tab'])){
+    if(isset($_GET['action']) && !empty($_GET['action'])){
 
-        if($_POST['section_tab'] == 'all_institutes'){
+        if($_GET['action'] == 'change_status_institute'){
+
+            global $wpdb;
+            $table_institutes =  $wpdb->prefix.'institutes';
+
+            $institute_id = $_POST['change_status_institute_id'];
+            $status_id = $_POST['change_status_id'];
+
+            $wpdb->update($table_institutes,[
+                'status' => $status_id,
+                'updated_at' => date('Y-m-d H:i:s')
+            ],['id' => $institute_id]);
+
+            wp_redirect(admin_url('admin.php?page=add_admin_institutes_content'));
+            exit;
+        }
+    }
+
+    if(isset($_GET['section_tab']) && !empty($_GET['section_tab'])){
+
+        if($_GET['section_tab'] == 'all_institutes'){
             $list_institutes = new TT_institutes_List_Table;
             $list_institutes->prepare_items();
             include(plugin_dir_path(__FILE__).'templates/list-institutes.php');
         }
+
+        if($_GET['section_tab'] == 'institute_details'){
+            $institute_id =$_GET['institute_id'];
+            $institute = get_institute_details($institute_id);
+            include(plugin_dir_path(__FILE__).'templates/institute-details.php');
+        }   
 
     }else{
         $list_institutes = new TT_institutes_review_List_Table;
         $list_institutes->prepare_items();
         include(plugin_dir_path(__FILE__).'templates/list-institutes.php');
     }
+}
+
+function get_name_status_institute($status_id){
+    $status = match($status_id){
+        '0' => __('Pending','aes'),
+        '1' => __('Approved','aes'),
+        '2' => __('Declined','aes'),
+        default => '',
+    };
+
+    return $status;
+}
+
+function get_name_country($country_id){
+
+    $countries = get_countries();
+    $name = "";
+
+    foreach($countries as $key => $country){
+        if($key == $country_id){
+            $name = $country;
+        }
+    }
+
+    return $name;
 }
 
 function get_name_reference($reference_id){
@@ -29,6 +80,26 @@ function get_name_reference($reference_id){
     };
 
     return $reference;
+}
+
+function get_institute_details($institute_id){
+
+    global $wpdb;
+    $table_institutes =  $wpdb->prefix.'institutes';
+
+    $institute = $wpdb->get_row("SELECT * FROM {$table_institutes} WHERE id={$institute_id}");
+    return $institute;
+}
+
+function get_name_level($level_id){
+
+    $level = match($level_id){
+        '1' => __('Primaria','aes'),
+        '2' => __('Secundaria','aes'),
+        default => "",
+    };
+
+    return $level;
 }
 
 class TT_institutes_review_List_Table extends WP_List_Table{
@@ -50,14 +121,17 @@ class TT_institutes_review_List_Table extends WP_List_Table{
 
         switch($column_name){
             case 'name':
+                return ucwords($item[$column_name]);
             case 'phone':
             case 'email':
-            case 'country':
                 return $item[$column_name];
+            case 'country':
+                $name = get_name_country($item[$column_name]);
+                return $name;
             case 'name_rector':
-                return $item['name_rector'].' '.$item['lastname_rector'];
+                return ucwords($item['name_rector']).' '.ucwords($item['lastname_rector']);
             case 'view_details':
-                return "<a href='".admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id='.$item['id'])."' class='button button-primary'>".__('View Details','form-plugin')."</a>";
+                return "<a href='".admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id='.$item['id'])."' class='button button-primary'>".__('View Details','form-plugin')."</a>";
 			default:
 				return print_r($item,true);
         }
@@ -92,7 +166,24 @@ class TT_institutes_review_List_Table extends WP_List_Table{
         global $wpdb;
         $table_institutes =  $wpdb->prefix.'institutes';
 
-        $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status = 0","ARRAY_A");
+        if(isset($_POST['s']) && !empty($_POST['s'])){
+
+            $search = $_POST['s'];
+
+            $institutes = $wpdb->get_results("SELECT * 
+                FROM {$table_institutes} WHERE 
+                status = 0  AND 
+                ( name LIKE '{$search}%' || 
+                email LIKE '{$search}%' || 
+                name_rector LIKE '{$search}%' || 
+                lastname_rector LIKE '{$search}%')"
+                
+                ,"ARRAY_A");
+
+        }else{
+            $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status = 0","ARRAY_A");
+        }
+
         return $institutes;
     }   
 
@@ -160,10 +251,21 @@ class TT_institutes_List_Table extends WP_List_Table{
         global $current_user;
 
         switch($column_name){
-            case 'Name':
-                return '#'.$item[$column_name];
+            case 'name':
+                return ucwords($item[$column_name]);
+            case 'phone':
+            case 'email':
+                return $item[$column_name];
+            case 'country':
+                $name = get_name_country($item[$column_name]);
+                return $name;
+            case 'name_rector':
+                return ucwords($item['name_rector']).' '.ucwords($item['lastname_rector']);
+            case 'status':
+                $status = get_name_status_institute($item[$column_name]);
+                return $status;
             case 'view_details':
-                return "<a href='".admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id='.$item['payment_id'])."' class='button button-primary'>".__('View Details','form-plugin')."</a>";
+                return "<a href='".admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id='.$item['id'])."' class='button button-primary'>".__('View Details','form-plugin')."</a>";
 			default:
 				return print_r($item,true);
         }
@@ -171,8 +273,7 @@ class TT_institutes_List_Table extends WP_List_Table{
 
 	function column_name($item){
 
-        return sprintf('%1$s<a href="javascript:void(0)">%2$s</a>',
-            '<span data-id="'.$item['id'].'" class="dashicons dashicons-menu handle" style="cursor:all-scroll;"></span>',
+        return sprintf('%1$s',
             ucwords($item['name']),
         );
     }
@@ -185,6 +286,11 @@ class TT_institutes_List_Table extends WP_List_Table{
 
         $columns = array(
             'name'         => __('Name','aes'),
+            'phone'         => __('Phone','aes'),
+            'email'         => __('Email','aes'),
+            'country'         => __('Country','aes'),
+            'name_rector'   => __('Name Rector','aes'),
+            'status'        => __('Status','aes'),
             'view_details' => __('Actions','aes'),
         );
 
@@ -194,9 +300,27 @@ class TT_institutes_List_Table extends WP_List_Table{
     function get_list_institutes(){
 
         global $wpdb;
-        $table_institutes =  $wpdb->prefix.'institute';
+        $table_institutes =  $wpdb->prefix.'institutes';
 
-        $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes}","ARRAY_A");
+        if(isset($_POST['s']) && !empty($_POST['s'])){
+
+            $search = $_POST['s'];
+
+            $institutes = $wpdb->get_results("SELECT * 
+                FROM {$table_institutes}
+                WHERE status=1
+                AND 
+                ( name LIKE '{$search}%' ||
+                   email LIKE '{$search}%' || 
+                   name_rector LIKE '{$search}%' || 
+                   lastname_rector LIKE '{$search}%'
+                )",'ARRAY_A');
+
+        }else{
+            $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status=1" ,"ARRAY_A");
+        }
+
+       
 
         return $institutes;
     }   

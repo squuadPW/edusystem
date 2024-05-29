@@ -23,7 +23,7 @@
             <label for="country">País</label>
             <select name="country">
             <?php foreach($countries as $key => $country){ ?>
-                <option country="<?= $key ?>"><?php echo $country;?></option> 
+                <option value="<?= $key ?>"><?= $country;?></option> 
             <?php } ?>
             </select>
         </div>

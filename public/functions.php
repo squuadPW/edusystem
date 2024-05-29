@@ -27,6 +27,7 @@ add_action('init','removed_hooks');
 
 function form_asp_psp(){
     $countries = get_countries();
+    $institutes = get_list_institutes_active();
     include(plugin_dir_path(__FILE__).'templates/asp-psp-registration.php');
 }
 
@@ -59,8 +60,6 @@ function removed_custom_checkout_fields($fields){
         
     return $fields;
 }
-
-add_filter( 'woocommerce_checkout_fields', 'custom_override_value_checkout_fields');
 
 function change_default_checkout_country($country){
     if(isset($_COOKIE['billing_country']) && !empty($_COOKIE['billing_country'])){
@@ -107,6 +106,39 @@ function woocommerce_checkout_order_created_action($order){
 }
 
 add_action( 'woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action' );
+
+add_filter( 'woocommerce_checkout_fields', 'custom_override_value_checkout_fields');
+
+function custom_override_value_checkout_fields($fields){
+
+    if(isset($_COOKIE['agent_name']) && !empty($_COOKIE['agent_name'])){
+        $fields['billing']['billing_first_name']['default'] = $_COOKIE['agent_name'];
+    }
+
+    if(isset($_COOKIE['agent_last_name']) && !empty($_COOKIE['agent_last_name'])){
+        $fields['billing']['billing_last_name']['default'] = $_COOKIE['agent_last_name'];
+    }
+
+    if(isset($_COOKIE['billing_city']) && !empty($_COOKIE['billing_city'])){
+        $fields['billing']['billing_city']['default'] = $_COOKIE['billing_city'];
+    }
+
+    if(isset($_COOKIE['billing_country']) && !empty($_COOKIE['billing_country'])){
+        $fields['billing']['billing_country']['default'] = $_COOKIE['billing_country'];
+    }
+
+    if(isset($_COOKIE['number_partner']) && !empty($_COOKIE['number_partner'])){
+        $fields['billing']['billing_phone']['default'] = $_COOKIE['number_partner'];
+    }
+
+    if(isset($_COOKIE['email_partner']) && !empty($_COOKIE['email_partner'])){
+        $fields['billing']['billing_email']['default'] = $_COOKIE['email_partner'];
+    }
+  
+    return $fields;
+}
+
+
 
 function display_in_order_detail($order){
 
@@ -345,6 +377,7 @@ function save_student_details(){
                 'id' => $student_id
             ]);
 
+            wc_add_notice(__( 'information changed successfully.', 'aes' ), 'success' );
             wp_redirect(wc_get_account_endpoint_url('student-details').'/?student='.$student_id);
             exit;
         }

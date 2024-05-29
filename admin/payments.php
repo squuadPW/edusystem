@@ -2,6 +2,21 @@
 
 function add_admin_form_payments_content(){
 
+    if(isset($_GET['action']) && !empty($_GET['action'])){
+
+        if($_GET['action'] == 'change_status_payment'){
+
+            $order_id = $_POST['order_id'];
+
+            $order = wc_get_order($order_id);
+            $order->update_status('completed');
+            $order->save();
+
+            wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
+            exit;
+        }
+    }
+
     if(isset($_GET['section_tab']) && !empty($_GET['section_tab'])){
 
 
@@ -89,8 +104,8 @@ class TT_payment_pending_List_Table extends WP_List_Table{
         $orders_array = [];
         $args = [];
 
-        if(isset($_POST['search-order']) && !empty($_POST['search-order'])){
-            $args['s'] = $_POST['search-order'];
+        if(isset($_POST['s']) && !empty($_POST['s'])){
+            $args['s'] = $_POST['s'];
         }
 
         $args['limit'] = -1;
@@ -101,7 +116,7 @@ class TT_payment_pending_List_Table extends WP_List_Table{
             foreach($orders as $order){
                 array_push($orders_array,[
                     'payment_id' => $order->get_id(),
-                    'date' => $order->get_date_paid()->format('F j, Y g:i a'),
+                    'date' => $order->get_date_created()->format('F j, Y g:i a'),
                     'partner_name' =>  $order->get_billing_first_name().' '.$order->get_billing_last_name(),
                     'total' => get_woocommerce_currency_symbol().$order->get_total(),
                     'status' => $order->get_status(),
@@ -224,12 +239,12 @@ class TT_all_payments_List_Table extends WP_List_Table{
         return $columns;
     }
 
-    function get_payment_pendings(){
+    function get_payment(){
         $orders_array = [];
         $args = [];
 
-        if(isset($_POST['search-order']) && !empty($_POST['search-order'])){
-            $args['s'] = $_POST['search-order'];
+        if(isset($_POST['s']) && !empty($_POST['s'])){
+            $args['s'] = $_POST['s'];
         }
 
         $args['limit'] = -1;
@@ -273,7 +288,7 @@ class TT_all_payments_List_Table extends WP_List_Table{
 
 	function prepare_items(){
 
-		$data_payments = $this->get_payment_pendings();
+		$data_payments = $this->get_payment();
 
 		$per_page = 10;
 

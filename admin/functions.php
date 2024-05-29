@@ -4,6 +4,7 @@ require plugin_dir_path( __FILE__ ) . 'roles.php';
 require plugin_dir_path( __FILE__ ) . 'admission.php';
 require plugin_dir_path( __FILE__ ) . 'payments.php';
 require plugin_dir_path( __FILE__ ) . 'institute.php';
+require plugin_dir_path( __FILE__ ) . 'partners.php';
 require plugin_dir_path( __FILE__ ) . 'bitrix/sdk/crest.php';
 
 include(plugin_dir_path(__FILE__).'templates/register-departments.php');
@@ -16,6 +17,7 @@ function aes_scripts_admin(){
     wp_enqueue_script('admin-flatpickr',plugins_url('aes').'/public/assets/js/flatpickr.js',array('jquery'),'1.0.0',true);
     wp_enqueue_script('student-documents',plugins_url('aes').'/admin/assets/js/document.js',array('jquery'),'1.0.0',true);
     wp_enqueue_script('student-payment',plugins_url('aes').'/admin/assets/js/payment.js',array('jquery'),'1.0.0',true);
+    wp_enqueue_script('institute',plugins_url('aes').'/admin/assets/js/institute.js',array('jquery'),'1.0.0',true);
 
     wp_localize_script('student-documents','update_status_documents',[
         'url' => admin_url( 'admin-ajax.php' ),
@@ -83,6 +85,16 @@ function add_custom_admin_page() {
         'add_admin_institutes_content',
         'add_admin_institutes_content', 
         ' dashicons-bank', 
+        7
+    );
+
+    add_menu_page( 
+        __('Partners','aes'),
+        __('Partners','aes'),
+        'read', 
+        'add_admin_partners_content',
+        'add_admin_partners_content', 
+        'dashicons-thumbs-up', 
         7
     );
   

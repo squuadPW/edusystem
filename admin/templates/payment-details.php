@@ -20,7 +20,7 @@
                                 </tr>
                                 <tr>
                                     <th scope="row"><label for="input_id"><?= __('Date','aes').':'; ?></label></th>
-                                    <td><?= $order->get_date_paid()->format('F j, Y g:i a') ?></td>
+                                    <td><?= $order->get_date_created()->format('F j, Y g:i a') ?></td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><label for="input_id"><?= __('Partner Name','aes').':'; ?></label></th>
@@ -56,7 +56,7 @@
                                             <?= $item->get_name(); ?>
                                         </td>
                                         <td data-colname="<?= __('Total','aes'); ?>">
-                                            <?= get_woocommerce_currency_symbol().$item->get_total(); ?>
+                                            <?= get_woocommerce_currency_symbol().number_format($item->get_total(),2,'.',','); ?>
                                         </td>
                                     </tr>
                                 <?php } ?>
@@ -65,9 +65,9 @@
                         <?php if($order->get_status() != 'completed'){ ?>
                             <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
                                 <?php if(wp_is_mobile()){ ?>
-                                    <button data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-primary"><?= __('Approved Payment','aes'); ?></button>
+                                    <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve Payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-primary"><?= __('Approved Payment','aes'); ?></button>
                                 <?php }else{ ?>
-                                    <button data-id="<?= $order->get_id(); ?>" id="approved_payment" class="button button-primary"><?= __('Approved Payment','aes'); ?></button>
+                                    <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve Payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" class="button button-primary"><?= __('Approved Payment','aes'); ?></button>
                                 <?php } ?>
                             </div>
                         <?php } ?>
@@ -77,3 +77,6 @@
         </div>
     </div>
 </div>
+<?php 
+    include(plugin_dir_path(__FILE__).'modal-status-payment.php');
+?>
