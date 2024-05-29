@@ -56,3 +56,4 @@ function add_custom_admin_page() {
   }
   
 add_action('admin_menu', 'add_custom_admin_page');
+add_action('admin_init', 'save_departments');
