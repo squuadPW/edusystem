@@ -21,24 +21,10 @@
                         <?= wp_date('F j, Y',strtotime($row->birth_date)); ?>
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status" data-title="<?= __('Grade','form-plugin'); ?>">
-                       <?= 
-                            $grade = match($row->grade_id){
-                                '1' => __('9no (antepenúltimo)','form-plugin'),
-                                '2' => __('10mo (penúltimo)','form-plugin'),
-                                '3' => __('11vo (último)','form-plugin'),
-                                '4' => __('Bachiller (graduado)','form-plugin')
-                            }
-                       ?>
+                       <?= $grade = get_name_grade($row->grade_id); ?>
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('Program','form-plugin') ?>">
-                        <?= 
-                            $program = match($row->program_id){
-                                'aes' => __('AES (Dual Diploma)','form-plugin'),
-                                'psp' => __('PSP (Carrera Universitaria)','form-plugin'),
-                                'aes_psp' => __('AES (Dual Diploma)','form-plugin').','.__('AES (Dual Diploma)','form-plugin'),
-                            }
-                        
-                        ?>
+                        <?= $program = get_name_program($row->program_id); ?>
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('Institute','form-plugin'); ?>">
                         <?= $row->name_institute; ?>

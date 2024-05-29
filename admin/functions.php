@@ -3,6 +3,7 @@
 require plugin_dir_path( __FILE__ ) . 'roles.php';
 require plugin_dir_path( __FILE__ ) . 'admission.php';
 require plugin_dir_path( __FILE__ ) . 'payments.php';
+require plugin_dir_path( __FILE__ ) . 'institute.php';
 require plugin_dir_path( __FILE__ ) . 'bitrix/sdk/crest.php';
 
 include(plugin_dir_path(__FILE__).'templates/register-departments.php');
@@ -37,8 +38,8 @@ add_action( 'admin_enqueue_scripts', 'aes_scripts_admin',3 );
 function add_custom_admin_page() {
   
     add_menu_page(
-        'All departments',
-        'Departments',
+        __('All departments','aes'),
+        __('Departments','aes'),
         'manage_options',
         'list-departments',
         'list_departments_admin_page_callback', 
@@ -48,16 +49,16 @@ function add_custom_admin_page() {
   
     add_submenu_page(
       'list-departments',
-      'Add new department',
-      'Add new department',
+      __('Add new department','aes'),
+      __('Add new department','aes'),
       'manage_options',
       'register-department',
       'register_departments_admin_page_callback' 
     );
 
     add_menu_page( 
-        __('Admission','restaurant-system-app'),
-        __('Admission','restaurant-system-app'),
+        __('Admission','aes'),
+        __('Admission','aes'),
         'read', 
         'add_admin_form_admission_content',
         'add_admin_form_admission_content', 
@@ -66,15 +67,34 @@ function add_custom_admin_page() {
     );
 
     add_menu_page( 
-        __('Payments','restaurant-system-app'),
-        __('Payments','restaurant-system-app'),
+        __('Payments','aes'),
+        __('Payments','aes'),
         'read', 
         'add_admin_form_payments_content',
         'add_admin_form_payments_content', 
         'dashicons-money-alt', 
         7
     );
+
+    add_menu_page( 
+        __('Institutes','aes'),
+        __('Institutes','aes'),
+        'read', 
+        'add_admin_institutes_content',
+        'add_admin_institutes_content', 
+        ' dashicons-bank', 
+        7
+    );
   
 }
   
 add_action('admin_menu', 'add_custom_admin_page');
+
+function list_departments_admin_page_callback() {
+    echo do_shortcode( '[list_departments]' );
+  }
+  
+  function register_departments_admin_page_callback() {
+    echo do_shortcode( '[form_departaments]' );
+  }
+  

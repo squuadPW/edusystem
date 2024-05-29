@@ -134,7 +134,7 @@ class TT_payment_pending_List_Table extends WP_List_Table{
 
 	function prepare_items(){
 
-		$data_categories = $this->get_payment_pendings();
+		$data_payments = $this->get_payment_pendings();
 
 		$per_page = 10;
 
@@ -145,7 +145,7 @@ class TT_payment_pending_List_Table extends WP_List_Table{
 
         $this->_column_headers = array($columns, $hidden, $sortable);
 		$this->process_bulk_action();
-        $data = $data_categories;
+        $data = $data_payments;
 
 		function usort_reorder($a,$b){
             $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
@@ -273,7 +273,7 @@ class TT_all_payments_List_Table extends WP_List_Table{
 
 	function prepare_items(){
 
-		$data_categories = $this->get_payment_pendings();
+		$data_payments = $this->get_payment_pendings();
 
 		$per_page = 10;
 
@@ -284,7 +284,7 @@ class TT_all_payments_List_Table extends WP_List_Table{
 
         $this->_column_headers = array($columns, $hidden, $sortable);
 		$this->process_bulk_action();
-        $data = $data_categories;
+        $data = $data_payments;
 
 		function usort_reorder($a,$b){
             $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';

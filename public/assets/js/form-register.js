@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded',function(){
 
+    $elements_number_phone = document.querySelectorAll('.number_phone');
+
     if(document.getElementById('birth_date')){
 
         flatpickr(document.getElementById('birth_date'), {
@@ -7,10 +9,9 @@ document.addEventListener('DOMContentLoaded',function(){
         }); 
     }
 
-    if(document.getElementById('number_phone')){
-        VMasker(document.getElementById('number_phone')).maskPattern("(999)999-9999");
-    }
-    if(document.getElementById('number_partner')){
-        VMasker(document.getElementById('number_partner')).maskPattern("(999)999-9999");
+    if($elements_number_phone){
+        $elements_number_phone.forEach(number_phone => {
+            VMasker(number_phone).maskPattern("(999)999-9999");
+        });
     }
 });

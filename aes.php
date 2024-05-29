@@ -18,6 +18,8 @@ if(!class_exists('WP_List_Table')){
 require plugin_dir_path(__FILE__).'public/functions.php';
 require plugin_dir_path(__FILE__).'admin/functions.php';
 require_once(ABSPATH. 'wp-admin/includes/upgrade.php');
+
+
 function create_tables() {
   global $wpdb;
   $charset_collate = $wpdb->get_charset_collate();
@@ -25,7 +27,7 @@ function create_tables() {
   $table_student_payments = $wpdb->prefix.'student_payments';
   $table_students = $wpdb->prefix.'students';
   $table_student_documents = $wpdb->prefix.'student_documents';
-  $table_documents = $wpdb->prefix.'documents';
+  $table_institutes =  $wpdb->prefix.'institutes';
 
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_departments}'") != $table_departments){
 
@@ -37,20 +39,7 @@ function create_tables() {
         PRIMARY KEY (id))$charset_collate;"
     );
   }
-  /*
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_payments}'") != $table_student_payments){
-
-    dbDelta( "CREATE TABLE " . $table_student_payments . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        student_id INT(11) NOT NULL,
-        order_id INT(11) NOT NULL,
-        period_id TEXT NOT NULL,
-        created TIMESTAMP NOT NULL,
-        PRIMARY KEY (id))$charset_collate;"
-    );
-  }
-  */
-
+ 
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_students}'") != $table_students){
 
     dbDelta( "CREATE TABLE " . $table_students . " (
@@ -90,27 +79,30 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_documents}'") != $table_documents){
+  
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_institutes}'") != $table_institutes){
 
-    dbDelta( "CREATE TABLE " . $table_documents . " (
+    dbDelta( "CREATE TABLE " . $table_institutes . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
-        document_id INT(11) NULL,
         name TEXT NOT NULL,
-        attachment_id TEXT NULL,
+        phone TEXT NOT NULL,
+        email TEXT NOT NULL,
+        country TEXT NOT NULL,
+        state TEXT NOT NULL,
+        city TEXT NOT NULL,
+        address TEXT NOT NULL,
+        level_id INT(11) NOT NULL,
+        name_rector TEXT NOT NULL,
+        lastname_rector TEXT NOT NULL,
+        phone_rector TEXT NOT NULL,
+        reference TEXT NOT NULL,
+        status INT(11) NOT NULL,
+        updated_at DATETIME NULL,
+        created_at DATETIME NOT NULL,
         PRIMARY KEY (id))$charset_collate;"
     );
   }
-
 }
 
 register_activation_hook(__FILE__, 'create_tables');
-
-function list_departments_admin_page_callback() {
-  echo do_shortcode( '[list_departments]' );
-}
-
-function register_departments_admin_page_callback() {
-  echo do_shortcode( '[form_departaments]' );
-}
-
 

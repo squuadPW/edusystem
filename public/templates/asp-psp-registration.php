@@ -13,7 +13,7 @@
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="phone">Número de contacto del estudiante</label>
-            <input class="formdata" type="tel" id="number_phone" name="number_phone" required>
+            <input class="formdata number_phone" type="tel" id="number_phone" name="number_phone" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="email">Correo electrónico del estudiante</label>
@@ -29,7 +29,7 @@
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="phone">Numero de contacto del del Padre, Madre o Acudiente</label>
-            <input class="formdata" type="tel" id="number_partner" name="number_partner" required>
+            <input class="formdata number_phone" type="tel" id="number_partner" name="number_partner" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="email">Correo electrónico del del Padre, Madre o Acudiente</label>

@@ -412,21 +412,10 @@ class TT_all_student_List_Table extends WP_List_Table{
             case 'full_name':
                 return $item['name'].' '.$item['last_name'];
             case 'program':
-                $program = match($item['program_id']){
-                    'aes' => __('AES (Dual Diploma)','form-plugin'),
-                    'psp' => __('PSP (Carrera Universitaria)','form-plugin'),
-                    'aes_psp' => __('AES (Dual Diploma)','form-plugin').','.__('AES (Dual Diploma)','form-plugin'),
-                };
-
+                $program = get_name_program($item['program_id']);
                 return $program;
             case 'grade':   
-                $grade = match($item['grade_id']){
-                    '1' => __('9no (antepenúltimo)','form-plugin'),
-                    '2' => __('10mo (penúltimo)','form-plugin'),
-                    '3' => __('11vo (último)','form-plugin'),
-                    '4' => __('Bachiller (graduado)','form-plugin')
-                };
-
+                $grade = get_name_grade($item['grade_id']);
                 return $grade;
             case 'view_details':
                 return "<a href='".admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id='.$item['id'])."' class='button button-primary'>".__('View Details','form-plugin')."</a>";
@@ -649,41 +638,13 @@ function get_data_student(){
         $documents = get_documents($student->id);
         $data = [];
         $data_documents = [];
-
-        $program = match($student->program_id){
-            'aes' => __('AES (Dual Diploma)','form-plugin'),
-            'psp' => __('PSP (Carrera Universitaria)','form-plugin'),
-            'aes_psp' => __('AES (Dual Diploma)','form-plugin').','.__('AES (Dual Diploma)','form-plugin'),
-        };
-
-        $grade = match($student->grade_id){
-            '1' => __('9no (antepenúltimo)','form-plugin'),
-            '2' => __('10mo (penúltimo)','form-plugin'),
-            '3' => __('11vo (último)','form-plugin'),
-            '4' => __('Bachiller (graduado)','form-plugin')
-        };
+        $program = get_name_program($student->program_id);
+        $grade = get_name_grade($student->grade_id);
 
         foreach($documents as $document){
-
-            $name = match ($document->document_id) {
-                'certified_notes_high_school' => __('CERTIFIED NOTES HIGH SCHOOL','form-plugin'),
-                'high_school_diploma' => __('HIGH SCHOOL DIPLOMA','form-plugin'),
-                'id_parents' => __('ID OR CI OF THE PARENTS','form-plugin'),
-                'id_student' => __('ID STUDENTS','form-plugin'),
-                'photo_student_card' => __('PHOTO OF STUDENT CARD','form-plugin'),
-                'proof_of_grades' => __('PROOF OF GRADE','form-plugin'),
-                'proof_of_study' => __('PROOF OF STUDY','form-plugin'),
-                'vaccunation_card' => __('VACCUNATION CARD','form-plugin'),
-            };
-
-            $status = match ($document->status){
-                '0' => __('No sent','form-plugin'),
-                '1' => __('Sent','form-plugin'),
-                '2' => __('Processing','form-plugin'),
-                '3' => __('Declined','form-plugin'),
-                '4' => __('Expired','form-plugin'),
-                '5' => __('Approved','form-plugin'),
-            };
+    
+            $name = get_name_document($document->document_id);
+            $status = get_status_document($document->status);
 
             if(!empty($document->attachment_id)){
                 $url = wp_get_attachment_url($document->attachment_id);
@@ -698,13 +659,8 @@ function get_data_student(){
             ]);
         }
 
-        $type_document_parent = match(get_user_meta($partner->ID,'document_type',true)){
-            'passport' => __('Passport','aes'),
-            'identification_document' => __('Identification Document','aes'),
-            'ssn' => __('SSN'),
-            default => '',
-        };
-
+        $type_document_parent = get_name_type_document(get_user_meta($partner->ID,'document_type',true));
+       
         array_push($data,[
             'id_document' => $student->id_document,
             'type_document' => $student->type_document,
