@@ -1,16 +1,19 @@
 <?php
 
 require plugin_dir_path( __FILE__ ) . 'student.php';
+require plugin_dir_path( __FILE__ ) . 'institute.php';
 require plugin_dir_path( __FILE__ ) . 'document.php';
+require plugin_dir_path( __FILE__ ) . 'partner.php';
 
 function form_plugin_scripts(){
-    wp_enqueue_style('admin-flatpickr',plugins_url('form-plugin').'/public/assets/css/flatpickr.min.css');
-    wp_enqueue_style('style-public',plugins_url('form-plugin').'/public/assets/css/style.css');
+    wp_enqueue_style('dashicons');
+    wp_enqueue_style('admin-flatpickr',plugins_url('aes').'/public/assets/css/flatpickr.min.css');
+    wp_enqueue_style('style-public',plugins_url('aes').'/public/assets/css/style.css');
     wp_enqueue_script('tailwind','https://cdn.tailwindcss.com');
-    wp_enqueue_script('admin-flatpickr',plugins_url('form-plugin').'/public/assets/js/flatpickr.js');
-    wp_enqueue_script('masker-js',plugins_url('form-plugin').'/public/assets/js/vanilla-masker.min.js');
-    wp_enqueue_script('checkout',plugins_url('form-plugin').'/public/assets/js/checkout.js');
-    wp_enqueue_script('form-register',plugins_url('form-plugin').'/public/assets/js/form-register.js');
+    wp_enqueue_script('admin-flatpickr',plugins_url('aes').'/public/assets/js/flatpickr.js');
+    wp_enqueue_script('masker-js',plugins_url('aes').'/public/assets/js/vanilla-masker.min.js');
+    wp_enqueue_script('checkout',plugins_url('aes').'/public/assets/js/checkout.js');
+    wp_enqueue_script('form-register',plugins_url('aes').'/public/assets/js/form-register.js');
 
 }
 
@@ -23,84 +26,13 @@ function removed_hooks(){
 
 add_action('init','removed_hooks');
 
-function save_student(){
-
-    if(
-        isset($_GET['action']) && !empty($_GET['action'])
-    ){
-        if($_GET['action'] == 'save_student'){
-
-            global $woocommerce;
-
-            $name = $_POST['name_student'];
-            $last_name = $_POST['lastname_student'];
-            $number_phone = $_POST['number_phone'];
-            $number_partner = $_POST['number_partner']; 
-            $email_student = $_POST['email_student'];
-            $email_partner = $_POST['email_partner'];
-            $country = $_POST['country'];
-            $city = $_POST['city'];
-            $birth_date = $_POST['birth_date'];
-            $agent_name = $_POST['agent_name'];
-            $agent_last_name = $_POST['agent_last_name'];
-            $program = $_POST['program'];
-            $grade = $_POST['grade'];
-            $name_institute = $_POST['name_institute'];
-
-            /* set cookie */
-            setcookie('name_student',ucwords($name),time() + 3600);
-            setcookie('last_name_student',ucwords($last_name),time() + 3600);
-            setcookie('billing_city',$city,time() + 3600);
-            setcookie('billing_country',$country,time() + 3600);
-            setcookie('billing_phone',$number_phone,time() + 3600);
-            setcookie('billing_email',$email_student,time() + 3600);
-            setcookie('initial_grade',$grade,time() + 3600);
-            setcookie('name_institute',$name_institute,time() + 3600);
-            setcookie('birth_date',$birth_date,time() + 3600);
-            setcookie('grade',$grade,time() + 3600);
-            setcookie('name_institute',$name_institute,time() + 3600);
-            setcookie('program_id',$program,time() + 3600);
-            setcookie('agent_name',$agent_name,time() + 3600);
-            setcookie('agent_last_name',$agent_last_name,time() + 3600);
-            setcookie('email_partner',$email_partner,time() + 3600);
-            setcookie('number_partner',$number_partner,time() + 3600);
-
-            //clear cart
-            $woocommerce->cart->empty_cart(); 
-
-            //add program to cart
-            if($program == 'aes'){
-                $woocommerce->cart->add_to_cart(103,1);
-            }else if($program == 'psp'){
-                $woocommerce->cart->add_to_cart(102,1);
-            }else if($program == 'aes_psp'){
-                $woocommerce->cart->add_to_cart(103,1);
-                $woocommerce->cart->add_to_cart(102,1);
-            }
-
-            wp_redirect(wc_get_checkout_url());
-            exit;
-        };
-
-    }
-}
-
-add_action('wp_loaded','save_student');
-
 function form_asp_psp(){
-
     $countries = get_countries();
+    $institutes = get_list_institutes_active();
     include(plugin_dir_path(__FILE__).'templates/asp-psp-registration.php');
 }
 
 add_shortcode('form_asp_psp','form_asp_psp');
-
-function form_register_agreement(){
-    include(plugin_dir_path(__FILE__).'templates/register-agreement.php');
-}
-
-add_shortcode('form_register_agreement', 'form_register_agreement');
-
 
 function get_countries(){
     $wc_countries = new WC_Countries();
@@ -130,39 +62,6 @@ function removed_custom_checkout_fields($fields){
     return $fields;
 }
 
-add_filter( 'woocommerce_checkout_fields', 'custom_override_value_checkout_fields');
-
-function custom_override_value_checkout_fields($fields){
-
-    if(isset($_COOKIE['agent_name']) && !empty($_COOKIE['agent_name'])){
-        $fields['billing']['billing_first_name']['default'] = $_COOKIE['agent_name'];
-    }
-
-    if(isset($_COOKIE['agent_last_name']) && !empty($_COOKIE['agent_last_name'])){
-        $fields['billing']['billing_last_name']['default'] = $_COOKIE['agent_last_name'];
-    }
-
-    if(isset($_COOKIE['billing_city']) && !empty($_COOKIE['billing_city'])){
-        $fields['billing']['billing_city']['default'] = $_COOKIE['billing_city'];
-    }
-
-    if(isset($_COOKIE['billing_country']) && !empty($_COOKIE['billing_country'])){
-        $fields['billing']['billing_country']['default'] = $_COOKIE['billing_country'];
-    }
-
-    if(isset($_COOKIE['number_partner']) && !empty($_COOKIE['number_partner'])){
-        $fields['billing']['billing_phone']['default'] = $_COOKIE['number_partner'];
-    }
-
-    if(isset($_COOKIE['email_partner']) && !empty($_COOKIE['email_partner'])){
-        $fields['billing']['billing_email']['default'] = $_COOKIE['email_partner'];
-    }
-  
-    return $fields;
-}
-
-add_filter( 'default_checkout_billing_country', 'change_default_checkout_country', 10, 1 );
-
 function change_default_checkout_country($country){
     if(isset($_COOKIE['billing_country']) && !empty($_COOKIE['billing_country'])){
        return $_COOKIE['billing_country'];
@@ -171,7 +70,10 @@ function change_default_checkout_country($country){
 
 function woocommerce_checkout_order_created_action($order){
     $customer_id = $order->get_customer_id();
-    update_user_meta($customer_id,'status_register',0);
+
+    if(!get_user_meta($customer_id,'status_register',true)){
+        update_user_meta($customer_id,'status_register',0);
+    }
 
     if(
         isset($_COOKIE['name_student']) && !empty($_COOKIE['name_student']) &&
@@ -208,6 +110,39 @@ function woocommerce_checkout_order_created_action($order){
 }
 
 add_action( 'woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action' );
+
+add_filter( 'woocommerce_checkout_fields', 'custom_override_value_checkout_fields');
+
+function custom_override_value_checkout_fields($fields){
+
+    if(isset($_COOKIE['agent_name']) && !empty($_COOKIE['agent_name'])){
+        $fields['billing']['billing_first_name']['default'] = $_COOKIE['agent_name'];
+    }
+
+    if(isset($_COOKIE['agent_last_name']) && !empty($_COOKIE['agent_last_name'])){
+        $fields['billing']['billing_last_name']['default'] = $_COOKIE['agent_last_name'];
+    }
+
+    if(isset($_COOKIE['billing_city']) && !empty($_COOKIE['billing_city'])){
+        $fields['billing']['billing_city']['default'] = $_COOKIE['billing_city'];
+    }
+
+    if(isset($_COOKIE['billing_country']) && !empty($_COOKIE['billing_country'])){
+        $fields['billing']['billing_country']['default'] = $_COOKIE['billing_country'];
+    }
+
+    if(isset($_COOKIE['number_partner']) && !empty($_COOKIE['number_partner'])){
+        $fields['billing']['billing_phone']['default'] = $_COOKIE['number_partner'];
+    }
+
+    if(isset($_COOKIE['email_partner']) && !empty($_COOKIE['email_partner'])){
+        $fields['billing']['billing_email']['default'] = $_COOKIE['email_partner'];
+    }
+  
+    return $fields;
+}
+
+
 
 function display_in_order_detail($order){
 
@@ -267,7 +202,7 @@ function remove_my_account_links( $menu_links ){
         }
 
         $menu_links = array_slice( $menu_links, 0,2 , true )
-        + array( 'student' => __('Student','form-plugin') )
+        + array( 'student' => __('Students','form-plugin') )
         + array_slice( $menu_links, 2, NULL, true );
     }
 
@@ -276,6 +211,7 @@ function remove_my_account_links( $menu_links ){
 
 add_action('init', function() {
 	add_rewrite_endpoint('student-documents', EP_ROOT | EP_PAGES);
+    add_rewrite_endpoint('student-details', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('student', EP_ROOT | EP_PAGES);
 });
 
@@ -355,18 +291,102 @@ function status_changed_payment($order_id, $old_status, $new_status){
 add_action('woocommerce_order_status_changed', 'status_changed_payment', 10, 3);
 
 function save_account_details( $user_id ) {
-    if(isset( $_POST['billing_city'])){
+    if(isset( $_POST['billing_city']) && !empty($_POST['billing_city'])){
         update_user_meta( $user_id,'billing_city',sanitize_text_field($_POST['billing_city']));
     }
 
-    if(isset( $_POST['billing_country'])){
+    if(isset( $_POST['billing_country']) && !empty($_POST['billing_country'])){
         update_user_meta( $user_id,'billing_country',sanitize_text_field( $_POST['billing_country']));
     }
 
-    if(isset( $_POST['number_phone'])){
+    if(isset( $_POST['number_phone']) && !empty($_POST['number_phone'])){
         update_user_meta( $user_id,'billing_phone',sanitize_text_field( $_POST['number_phone']));
+    }
+
+    if(isset( $_POST['gender']) && !empty($_POST['gender'])){
+        update_user_meta( $user_id,'gender',sanitize_text_field( $_POST['gender']));
+    }
+
+    if(isset( $_POST['id_document']) && !empty($_POST['id_document'])){
+        update_user_meta( $user_id,'id_document',sanitize_text_field( $_POST['id_document']));
+    }
+
+    if(isset( $_POST['birth_date']) && !empty($_POST['birth_date'])){
+        update_user_meta( $user_id,'birth_date',sanitize_text_field( $_POST['birth_date']));
+    }
+
+    if(isset( $_POST['document_type']) && !empty($_POST['document_type'])){
+        update_user_meta( $user_id,'document_type',sanitize_text_field( $_POST['document_type']));
+    }
+
+    if(isset( $_POST['billing_postcode']) && !empty($_POST['billing_postcode'])){
+        update_user_meta( $user_id,'billing_postcode',sanitize_text_field( $_POST['billing_postcode']));
+    }
+
+    if(isset( $_POST['occupation']) && !empty($_POST['occupation'])){
+        update_user_meta( $user_id,'occupation',sanitize_text_field( $_POST['occupation']));
     }
 }
 add_action( 'woocommerce_save_account_details', 'save_account_details' );
 
+function validated_account_details_required_fields( $required_fields ){    
+    $required_fields['billing_city'] = __('Billing city','aes');
+    $required_fields['billing_country'] = __('Billing country','aes');
+    $required_fields['number_phone'] = __('Number phone','aes');
+    $required_fields['gender'] = __('Gender','aes');
+    $required_fields['birth_date'] = __('Birth Date','aes');
+    $required_fields['id_document'] = __('ID Document','aes');
+    $required_fields['document_type'] = __('Type document','aes');
+    $required_fields['billing_postcode'] = __('Post Code','aes');
+    $required_fields['occupation'] = __('Occupation','aes');
+    return $required_fields;
+}
+add_filter('woocommerce_save_account_details_required_fields', 'validated_account_details_required_fields');
 
+
+function save_student_details(){
+
+    if(isset($_POST['action']) && !empty($_POST['action'])){
+
+
+        if($_POST['action'] == 'save_student_details'){
+
+            global $wpdb;
+            $table_students = $wpdb->prefix.'students';
+           
+            $student_id = $_POST['student_id'];
+            $document_type = $_POST['document_type'];
+            $id_document = $_POST['id_document'];
+            $first_name = $_POST['account_first_name'];
+            $last_name = $_POST['account_last_name'];
+            $email = $_POST['account_email'];
+            $phone = $_POST['number_phone'];
+            $gender = $_POST['gender'];
+            $country = $_POST['country'];
+            $city = $_POST['city'];
+            $postal_code = $_POST['postal_code'];
+
+            $wpdb->update($table_students,[
+                'type_document' => $document_type,
+                'id_document' => $id_document,
+                'name' => $first_name,
+                'last_name' => $last_name,
+                'email' => $email,
+                'phone' => $phone,
+                'gender' => $gender,
+                'country' => $country,
+                'city' => $city,
+                'postal_code' => $postal_code,
+            ],[
+                'id' => $student_id
+            ]);
+
+            wc_add_notice(__( 'information changed successfully.', 'aes' ), 'success' );
+            wp_redirect(wc_get_account_endpoint_url('student-details').'/?student='.$student_id);
+            exit;
+        }
+    }
+}
+
+
+add_action('wp_loaded','save_student_details');

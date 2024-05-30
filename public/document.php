@@ -43,7 +43,7 @@ function save_document(){
 
                       
 
-                        if($status == 0 || $document->status == 3 || $document->status == 4){
+                        if($status == 0 || $status == 3 || $status == 4){
 
                             if(!empty($file_temp['tmp_name'])){
                                 
@@ -87,13 +87,71 @@ function view_pending_documents(){
     global $current_user;
 
     $student_status = get_user_meta($current_user->ID,'status_register',true);
+    $students = get_student($current_user->ID);
+    $solvency_administrative = true;
 
     if($student_status == 1 || $student_status == '1'){
 
-        $students = get_student(get_current_user_id());
-        include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+        foreach($students as $student){
+            $documents = get_documents($student->id);
+
+            foreach($documents as $document){
+
+                if($document->status != 5){
+                    $solvency_administrative = false;
+                }
+            }
+        }
+    
+        if(!$solvency_administrative){
+            include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+        }
     }
 
 }
 
 add_action('woocommerce_account_dashboard','view_pending_documents');
+
+function get_name_document($document_id){
+
+    $name = match ($document_id) {
+        'certified_notes_high_school' => __('CERTIFIED NOTES HIGH SCHOOL','form-plugin'),
+        'high_school_diploma' => __('HIGH SCHOOL DIPLOMA','form-plugin'),
+        'id_parents' => __('ID OR CI OF THE PARENTS','form-plugin'),
+        'id_student' => __('ID STUDENTS','form-plugin'),
+        'photo_student_card' => __('PHOTO OF STUDENT CARD','form-plugin'),
+        'proof_of_grades' => __('PROOF OF GRADE','form-plugin'),
+        'proof_of_study' => __('PROOF OF STUDY','form-plugin'),
+        'vaccunation_card' => __('Vaccunation_card','form-plugin'),
+        default => '',
+    };
+
+    return $name;
+}
+
+function get_status_document($status_id){
+
+    $status = match ($status_id){
+        '0' => __('No sent','form-plugin'),
+        '1' => __('Sent','form-plugin'),
+        '2' => __('Processing','form-plugin'),
+        '3' => __('Declined','form-plugin'),
+        '4' => __('Expired','form-plugin'),
+        '5' => __('Approved','form-plugin'),
+        default => '',
+    };
+
+    return $status;
+}
+
+function get_name_type_document($type_document){
+
+    $type_document_parent = match($type_document){
+        'passport' => __('Passport','aes'),
+        'identification_document' => __('Identification Document','aes'),
+        'ssn' => __('SSN'),
+        default => '',
+    };
+
+    return $type_document_parent;
+}
