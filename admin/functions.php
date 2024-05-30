@@ -3,30 +3,34 @@
 require plugin_dir_path( __FILE__ ) . 'roles.php';
 require plugin_dir_path( __FILE__ ) . 'admission.php';
 require plugin_dir_path( __FILE__ ) . 'payments.php';
+require plugin_dir_path( __FILE__ ) . 'departments.php';
 require plugin_dir_path( __FILE__ ) . 'bitrix/sdk/crest.php';
 
-include(plugin_dir_path(__FILE__).'templates/register-departments.php');
-include(plugin_dir_path(__FILE__).'templates/list-departments.php');
+function admin_form_plugin_scripts(){
+  wp_enqueue_style('style-admin',plugins_url('form-plugin').'/admin/assets/css/style.css');
+}
+
+add_action( 'wp_enqueue_scripts', 'admin_form_plugin_scripts');
 
 function add_custom_admin_page() {
   
-    add_menu_page(
-        'All departments',
-        'Departments',
-        'manage_options',
-        'list-departments',
-        'list_departments_admin_page_callback', 
-        'dashicons-admin-network',
-        10 
+    add_menu_page( 
+      __('Departments','restaurant-system-app'),
+      __('Departments','restaurant-system-app'),
+      'read', 
+      'list_admin_form_department_content',
+      'list_admin_form_department_content', 
+      'dashicons-admin-network',
+      10
     );
   
     add_submenu_page(
-      'list-departments',
+      'list_admin_form_department_content',
       'Add new department',
       'Add new department',
       'manage_options',
-      'register-department',
-      'register_departments_admin_page_callback' 
+      'add_admin_form_department_content',
+      'add_admin_form_department_content' 
     );
 
     add_menu_page( 
@@ -52,3 +56,4 @@ function add_custom_admin_page() {
   }
   
 add_action('admin_menu', 'add_custom_admin_page');
+add_action('admin_init', 'save_departments');

@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: aes
+Plugin Name: AES
 Plugin URI: https://americanelite.dreamhosters.com/wp-admin/plugins.php
 Description: Plugin for test
 Version:01
@@ -97,13 +97,3 @@ function create_tables() {
 }
 
 register_activation_hook(__FILE__, 'create_tables');
-
-function list_departments_admin_page_callback() {
-  echo do_shortcode( '[list_departments]' );
-}
-
-function register_departments_admin_page_callback() {
-  echo do_shortcode( '[form_departaments]' );
-}
-
-
