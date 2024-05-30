@@ -105,6 +105,7 @@ function create_tables() {
     );
   }
 
+
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances}'") != $table_alliances){
 
       dbDelta( "CREATE TABLE " . $table_alliances . " (
