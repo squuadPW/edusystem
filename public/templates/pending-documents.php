@@ -6,8 +6,8 @@
            <?php foreach($students as $student): ?>
                 <?php $documents = get_documents($student->id); ?>
                 <?php foreach($documents as $document): ?>
-                    <?php if($document->status == 0 || $document->status == 3 || $document->status == 4): ?>
-                    <?php if($document->status == 0): ?>
+                    <?php if($document->status == 0 || $document->status == 1 || $document->status == 3 || $document->status == 4): ?>
+                    <?php if($document->status == 0 || $document->status == 1): ?>
                         <div class="woocommerce-info" role="alert" style="margin-bottom:10px;">
                     <?php elseif($document->status == 3): ?>
                         <div class="woocommerce-error" role="alert" style="margin-bottom:10px;">
@@ -16,20 +16,7 @@
                     <?php endif; ?>
                             <div style="display:flex;width:100%;flex-direction:row;">
                                 <span style="width:70%">
-
-                                    <?php     
-                                        $name = match ($document->document_id) {
-                                            'certified_notes_high_school' => __('CERTIFIED NOTES HIGH SCHOOL','form-plugin'),
-                                            'high_school_diploma' => __('HIGH SCHOOL DIPLOMA','form-plugin'),
-                                            'id_parents' => __('ID OR CI OF THE PARENTS','form-plugin'),
-                                            'id_student' => __('ID STUDENTS','form-plugin'),
-                                            'photo_student_card' => __('PHOTO OF STUDENT CARD','form-plugin'),
-                                            'proof_of_grades' => __('PROOF OF GRADE','form-plugin'),
-                                            'proof_of_study' => __('PROOF OF STUDY','form-plugin'),
-                                            'vaccunation_card' => __('Vaccunation_card','form-plugin'),
-                                        }
-                                    ?>
-
+                                    <?php $name = get_name_document($document->document_id); ?>
                                     <?= $student->name.' '.$student->last_name.' - '.$name; ?>
                                 </span>
                                 <span style="width:30%;text-align:end;">
