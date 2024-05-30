@@ -3,6 +3,7 @@
 require plugin_dir_path( __FILE__ ) . 'student.php';
 require plugin_dir_path( __FILE__ ) . 'institute.php';
 require plugin_dir_path( __FILE__ ) . 'document.php';
+require plugin_dir_path( __FILE__ ) . 'partner.php';
 
 function form_plugin_scripts(){
     wp_enqueue_style('dashicons');
@@ -69,7 +70,10 @@ function change_default_checkout_country($country){
 
 function woocommerce_checkout_order_created_action($order){
     $customer_id = $order->get_customer_id();
-    update_user_meta($customer_id,'status_register',0);
+
+    if(!get_user_meta($customer_id,'status_register',true)){
+        update_user_meta($customer_id,'status_register',0);
+    }
 
     if(
         isset($_COOKIE['name_student']) && !empty($_COOKIE['name_student']) &&

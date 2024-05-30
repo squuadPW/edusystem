@@ -28,6 +28,7 @@ function create_tables() {
   $table_students = $wpdb->prefix.'students';
   $table_student_documents = $wpdb->prefix.'student_documents';
   $table_institutes =  $wpdb->prefix.'institutes';
+  $table_alliances =  $wpdb->prefix.'alliances';
 
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_departments}'") != $table_departments){
 
@@ -97,11 +98,32 @@ function create_tables() {
         phone_rector TEXT NOT NULL,
         reference TEXT NOT NULL,
         status INT(11) NOT NULL,
-        
+        alliance_id INT(11) NULL,
         updated_at DATETIME NULL,
         created_at DATETIME NOT NULL,
         PRIMARY KEY (id))$charset_collate;"
     );
+  }
+
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances}'") != $table_alliances){
+
+      dbDelta( "CREATE TABLE " . $table_alliances . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        name TEXT NOT NULL,
+        last_name TEXT NOT NULL,
+        name_legal TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        email TEXT NOT NULL,
+        country TEXT NOT NULL,
+        state TEXT NOT NULL,
+        city TEXT NOT NULL,
+        address TEXT NOT NULL,
+        type INT(11) NULL,
+        status INT(11) NOT NULL,
+        updated_at DATETIME NULL,
+        created_at DATETIME NOT NULL,
+        PRIMARY KEY (id))$charset_collate;"
+      );
   }
 }
 
