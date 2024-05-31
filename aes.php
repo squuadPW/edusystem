@@ -2,9 +2,8 @@
 /*
 Plugin Name: AES
 Plugin URI: https://americanelite.dreamhosters.com/wp-admin/plugins.php
-Description: Plugin for test
-Version:01
-Author:Jose Mora
+Description: AES plugin.
+Author: AES
 Author URI:https://americanelite.dreamhosters.com/wp-admin/plugins.php
 License:      GPL2
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
