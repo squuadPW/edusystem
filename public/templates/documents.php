@@ -1,4 +1,4 @@
-<h2 style="font-size:24px;text-align:center;"><?= __('Documents','form-plugin'); ?></h2>
+<h2 style="font-size:24px;text-align:center;"><?= __('Documents','aes'); ?></h2>
 
 <?php if(!empty($students)): ?>
 
@@ -11,31 +11,31 @@
             </caption>
             <thead>
                 <tr>
-                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-document"><span class="nobr"><?= __('Document','form-plugin'); ?></span></th>
-                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-status"><span class="nobr"><?= __('Status','form-plugin'); ?></span></th>
-                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-action"><span class="nobr"><?= __('action','form-plugin'); ?></span></th>
+                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-document"><span class="nobr"><?= __('Document','aes'); ?></span></th>
+                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-status"><span class="nobr"><?= __('Status','aes'); ?></span></th>
+                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-action"><span class="nobr"><?= __('action','aes'); ?></span></th>
             </thead>
              <tbody>
                 <?php $documents = get_documents($student->id); ?>
                 <?php foreach($documents as $document): ?>
                     <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
-                        <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number" data-title="<?= __('Document','form-plugin'); ?>">
-                            <input type="hidden" name="<?= 'file_student_'.$student->id.'_id[]'; ?>" value="<?= $document->document_id; ?>">
+                        <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number" data-title="<?= __('Document','aes'); ?>">
+                            <input type="hidden" name="<?= 'file_student_'.$student->id.'_id[]'; ?>" value="<?= $document->id; ?>">
                             <?php $name = get_name_document($document->document_id); ?>
 
-                            <?php if($document->document_id == 'id_student'): ?>
-                                <?= $name."<span class='required' style='font-size:24px;'>*</span>"; ?>
-                            <?php else: ?>
-                                <?= $name; ?>
+                            <?php if($document->is_required): ?>
+                                <?php $name = $name."<span class='required' style='font-size:24px;'>*</span>"; ?>
                             <?php endif; ?>
+
+                            <?= $name; ?>
                         </td>
-                        <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date" data-title="<?= __('Status','form-plugin'); ?>">
-                            <input type="hidden" name="<?= 'status_file_'.$document->document_id.'_student_id_'.$student->id; ?>" value="<?= $document->status; ?>">
-                            <?=  $status = get_status_document($status); ?>
+                        <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date" data-title="<?= __('Status','aes'); ?>">
+                            <input type="hidden" name="<?= 'status_file_'.$document->id.'_student_id_'.$student->id; ?>" value="<?= $document->status; ?>">
+                            <?=  $status = get_status_document($document->status); ?>
                         </td>
-                        <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number" data-title="<?= __('Action','form-plugin'); ?>">
+                        <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number" data-title="<?= __('Action','aes'); ?>">
                             <?php if($document->status == 0 || $document->status == 3 || $document->status == 4){ ?>
-                                <input type="file" name="<?= 'document_'.$document->document_id.'_student_id_'.$student->id; ?>">
+                                <input type="file" name="<?= 'document_'.$document->id.'_student_id_'.$student->id; ?>">
                             <?php }else{ ?>
                                 <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" type="button" class="button">View Document</a>
                             <?php } ?>
@@ -45,8 +45,8 @@
             </tbody>
         </table>
     <?php endforeach; ?>
-    <div style="display:block;text-align:end;">
-        <button class="button" type="submit"><?= __('Send Documents','form-plugin'); ?></button>
+    <div style="display:block;text-align:center;">
+        <button class="submit" type="submit"><?= __('Send Documents','aes'); ?></button>
     </div>
 </form>
 <?php endif; ?>

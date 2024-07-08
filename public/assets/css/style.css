@@ -1,3 +1,14 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+body {
+  font-family: "Poppins", sans-serif !important;
+  color: #495057;
+}
+
+.iti.iti--allow-dropdown.iti--show-flags {
+  width: 100%;
+}
+
 a:focus {
   outline-color: transparent !important;
 }
@@ -9,35 +20,55 @@ button:focus {
   outline-color: transparent !important;
 }
 
-select {
+input[type=text], input[type=email], input[type=tel], input[type=date] {
   width: 100%;
-  padding: 16px 20px !important;
-  border: none;
-  border-radius: 4px;
-  background-color: #f4f4f4;
+  border-radius: 8px;
+  border: solid 1px;
+  box-shadow: none !important;
 }
 
+select {
+  width: 100%;
+  padding: 12px 16px !important;
+  border: none;
+  border-radius: 8px;
+  background-color: #fff !important;
+  outline-color: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1254901961) !important;
+}
+select:focus-visible {
+  border: 1px solid rgba(0, 0, 0, 0.1254901961) !important;
+  outline-color: rgba(0, 0, 0, 0.125) !important;
+}
+select:-ms-expand {
+  right: 16px !important;
+}
+
+input {
+  border-radius: 8px;
+}
 input:focus {
   outline-color: transparent !important;
 }
 
 .formdata {
   width: 100%;
-  padding: 16px 20px;
+  padding: 12px 16px !important;
   border: none;
-  border-radius: 4px;
-  background-color: #f4f4f4;
+  border-radius: 20px;
+  background-color: #fff !important;
   outline-color: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1254901961) !important;
 }
 
 .formdata:focus {
   background-color: #ffffff !important;
-  border: 1px solid #00AEEF !important;
   outline-color: #ffffff !important;
 }
 
 label {
-  color: #989898 !important;
+  font-size: 16px;
+  line-height: 30px;
 }
 
 label,
@@ -56,10 +87,9 @@ input {
   font-weight: 600 !important;
   text-align: center;
   color: black;
-  border-bottom: 1px solid #f2f2f2;
   margin-bottom: 20px !important;
   margin-top: 20px !important;
-  font: 24px/33px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 28px;
   width: 60%;
   margin: auto;
 }
@@ -70,17 +100,23 @@ input {
 }
 
 .checkboxes {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .submit {
-  width: 100%;
-  padding: 14px;
+  width: 50%;
+  padding: 10px 20px !important;
   text-align: center;
-  background-color: #00AEEF !important;
+  background-color: #091c5c !important;
   border-radius: 4px;
   color: white;
   font-size: 18px;
+  margin: auto;
+  border-radius: 20px;
+}
+.submit:hover {
+  color: white !important;
+  opacity: 0.75;
 }
 
 .bottom {
@@ -90,7 +126,10 @@ input {
 }
 
 .subtitle {
-  font: 20px/36px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  margin: 0 auto;
 }
 
 .checkboxes {
@@ -130,9 +169,19 @@ input {
 .select2-container--default .select2-selection--single {
   height: 43.75px !important;
   padding-top: 5px !important;
-  background-color: #f4f4f4 !important;
-  border: none !important;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.125);
+  background-color: white !important;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.125) !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(0, 0, 0, 0.1254901961) !important;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+  padding-left: 12px !important;
+  padding-top: 4px !important;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected], .select2-container--default .select2-results__option--highlighted[data-selected] {
+  background-color: #091c5c !important;
 }
 
 .select2-selection__arrow {
@@ -209,4 +258,198 @@ input {
 
 .content-dashboard {
   margin-top: 10px;
+}
+
+#billing_phone_hidden {
+  display: none;
+}
+
+.input-no-style {
+  background: none !important;
+  box-shadow: none !important;
+}
+
+.button-primary {
+  width: 100%;
+  padding: 5px 20px !important;
+  text-align: center;
+  background-color: #091c5c !important;
+  border-radius: 20px;
+  color: white !important;
+  font-size: 18px;
+}
+.button-primary:hover {
+  opacity: 0.75;
+}
+
+.iti--separate-dial-code .iti__selected-flag {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+#number_phone, #number_partner, #rector_phone, #number_phone_account, #billing_phone {
+  padding-left: 85px !important;
+}
+
+.text-align-center {
+  text-align: center;
+}
+
+.flatpickr-day.selected {
+  background: #091c5c !important;
+  border-color: #091c5c !important;
+}
+
+.hentry .entry-content a {
+  text-decoration: none !important;
+}
+
+.woocommerce-error, .woocommerce-success, .woocommerce-notices, .woocommerce-info, .woocommerce-message {
+  border-radius: 20px !important;
+  border-left: none !important;
+}
+
+.show-password-input {
+  padding: 0.818em !important;
+}
+
+.color-link {
+  color: #091c5c !important;
+}
+
+#terms:checked {
+  background-color: #091c5c !important;
+  color: #091c5c !important;
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul {
+  border-top: none !important;
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li {
+  border-bottom: none !important;
+}
+
+.woocommerce-MyAccount-navigation ul li a {
+  font-weight: 600;
+}
+.woocommerce-MyAccount-navigation ul li a:before {
+  content: "" !important;
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active {
+  width: 100%;
+  text-align: center;
+  background-color: #091c5c !important;
+  border-radius: 4px;
+  color: white;
+  margin-bottom: 3px;
+  border-radius: 20px;
+}
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active:hover {
+  color: white !important;
+  opacity: 0.75;
+}
+
+.woocommerce-info {
+  background-color: #091c5c !important;
+}
+
+fieldset {
+  background-color: white !important;
+}
+
+.input-text {
+  width: 100%;
+  padding: 12px 16px !important;
+  border: none;
+  border-radius: 8px;
+  background-color: #fff !important;
+  outline-color: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1254901961) !important;
+}
+
+.woocommerce-billing-fields__field-wrapper > .form-row {
+  margin-bottom: 10px;
+}
+
+.wc-credit-card-form.wc-payment-form {
+  background-color: transparent !important;
+}
+
+button.alt {
+  border-radius: 20px !important;
+  background-color: #091c5c !important;
+  color: white !important;
+}
+
+.woocommerce-privacy-policy-text {
+  display: none;
+}
+
+#payment > .place-order {
+  background-color: transparent !important;
+}
+
+input[type=radio]:first-child:checked + label:before {
+  color: #091c5c !important;
+}
+
+.button {
+  border-radius: 20px !important;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+.site-footer {
+  background-color: #f8f8f8 !important;
+  z-index: 2;
+}
+
+.powered-by-text {
+  color: #091c5c !important;
+  font-weight: 600;
+}
+
+/* Estilo para los inputs radio */
+.radio-input {
+  display: inline-block;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.radio-input input[type=radio] {
+  display: none;
+}
+
+.radio-input label {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 50px;
+  background-color: #f7f7f7;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.radio-input label:hover {
+  background-color: #eee;
+}
+
+.radio-input input[type=radio]:checked + label {
+  background-color: #4CAF50;
+  color: #fff;
+  border: 1px solid #4CAF50;
+}
+
+.radio-input input[type=radio]:checked + label::before {
+  content: "✓";
+  font-size: 14px;
+  margin-right: 10px;
+  color: #fff;
+}
+
+.form-aes .required {
+  margin-left: 5px;
 }/*# sourceMappingURL=style.css.map */

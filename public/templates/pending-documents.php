@@ -1,5 +1,5 @@
 <div class="content-dashboard">
-    <h4 style="font-size:20px;text-align:start;"><?= __('Pending Documents','form-plugin'); ?></h4>
+    <h4 style="font-size:20px;text-align:start;"><?= __('Pending Documents','aes'); ?></h4>
 
     <div style="margin-top:10px;">
         <?php if(!empty($students)): ?>
@@ -20,16 +20,7 @@
                                     <?= $student->name.' '.$student->last_name.' - '.$name; ?>
                                 </span>
                                 <span style="width:30%;text-align:end;">
-                                    <?= 
-                                        $status = match ($document->status){
-                                            '0' => __('No sent','form-plugin'),
-                                            '1' => __('Sent','form-plugin'),
-                                            '2' => __('Processing','form-plugin'),
-                                            '3' => __('Declined','form-plugin'),
-                                            '4' => __('Expired','form-plugin'),
-                                            '5' => __('Approved','form-plugin'),
-                                        }
-                                    ?>
+                                    <?= $status = get_status_document($document->status); ?>
                                 </span>
                             </div>
                         </div>

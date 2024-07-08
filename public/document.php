@@ -11,7 +11,14 @@ add_action('woocommerce_account_student-documents_endpoint', function() {
         5: aprobado
     */
 
-    $students = get_student(get_current_user_id());
+    $student_id = get_user_meta(get_current_user_id(),'student_id',true);
+  
+    if($student_id){
+        $students = get_student_from_id($student_id);
+    }else{
+        $students = get_student(get_current_user_id());
+    }
+    
     include(plugin_dir_path(__FILE__).'templates/documents.php');
 });
 
@@ -20,8 +27,10 @@ function save_document(){
 
         if($_GET['actions'] == 'save_documents'){
 
-            global $wpdb;
+            global $wpdb,$current_user;
+            $roles = $current_user->roles;
             $table_student_documents = $wpdb->prefix.'student_documents';
+            $table_students = $wpdb->prefix.'students';
 
             if(isset($_POST['students']) && !empty($_POST['students'])){
 
@@ -62,14 +71,59 @@ function save_document(){
                                     $deleted = wp_delete_attachment($upload_data['file'], true );
                                     $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
                                     wp_update_attachment_metadata($attach_id, $attach_data);
-                                    $wpdb->update($table_student_documents,['status' => 1,'attachment_id' => $attach_id],['student_id' => $student_id,'document_id' => $file_id ]);
+                                    $wpdb->update($table_student_documents,['status' => 1,'attachment_id' => $attach_id],['student_id' => $student_id,'id' => $file_id ]);
                                 }
                             }
                         }
-
-                        
                     }
+                    
+                    $email_update_document = WC()->mailer()->get_emails()['WC_Update_Document_Email'];
+                    $email_update_document->trigger($student_id);
+
+                    $access_virtual = true;
+
+                    $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
+
+                    if($documents_student){
+
+                        foreach($documents_student as $document){
+
+                            if($document->status == 0){
+                                $access_virtual = false;
+                            }
+                        }
+                    }
+
+                    //virtual classroom
+                    if($access_virtual){
+
+                        update_status_student($student_id,2);
+
+                        if(in_array('parent',$roles) && !in_array('student',$roles)){
+                            create_user_student($student_id);
+                        }
+
+                        $exist = is_search_student_by_email($student_id);
+                    
+                        if(!$exist){
+                            create_user_moodle($student_id);
+                        }else{
+                            $wpdb->update($table_students,['moodle_student_id' => $exist[0]['id']],['id' => $student_id]);
+
+                            $is_exist_password = is_password_user_moodle($student_id);
+
+                            if(!$is_exist_password){
+                                
+                                $password = generate_password_user();
+                                $wpdb->update($table_students,['moodle_password' => $password],['id' => $student_id]);
+                                change_password_user_moodle($student_id);
+                            }
+                        }
+                    }
+        
                 }
+
+                
             }
 
             wc_add_notice( __( 'Documents saved successfully.', 'form-plugin' ), 'success' );
@@ -85,27 +139,61 @@ add_action('wp_loaded','save_document');
 function view_pending_documents(){
     
     global $current_user;
+    $roles = $current_user->roles;
 
     $student_status = get_user_meta($current_user->ID,'status_register',true);
-    $students = get_student($current_user->ID);
+    $student_id = get_user_meta(get_current_user_id(),'student_id',true);
+  
+    if($student_id){
+        $students = get_student_from_id($student_id);
+    }else{
+        $students = get_student($current_user->ID);
+    }
+    
     $solvency_administrative = true;
 
-    if($student_status == 1 || $student_status == '1'){
+    if(in_array('parent',$roles) && in_array('student',$roles)){
 
-        foreach($students as $student){
-            $documents = get_documents($student->id);
+        if($student_status == 1 || $student_status == '1'){
 
-            foreach($documents as $document){
+            foreach($students as $student){
+                $documents = get_documents($student->id);
 
-                if($document->status != 5){
-                    $solvency_administrative = false;
+                foreach($documents as $document){
+
+                    if($document->status != 5){
+                        $solvency_administrative = false;
+                    }
                 }
             }
+        
+            if(!$solvency_administrative){
+                include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+            }
         }
-    
-        if(!$solvency_administrative){
-            include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+
+    }else if(in_array('parent',$roles) && !in_array('student',$roles)){
+
+        if($student_status == 1 || $student_status == '1'){
+
+            foreach($students as $student){
+                $documents = get_documents($student->id);
+
+                foreach($documents as $document){
+
+                    if($document->status != 5){
+                        $solvency_administrative = false;
+                    }
+                }
+            }
+        
+            if(!$solvency_administrative){
+                include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+            }
         }
+
+    }else if(!in_array('parent',$roles) && in_array('student',$roles)){
+        include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
     }
 
 }
@@ -113,31 +201,33 @@ function view_pending_documents(){
 add_action('woocommerce_account_dashboard','view_pending_documents');
 
 function get_name_document($document_id){
-
+    /*
     $name = match ($document_id) {
-        'certified_notes_high_school' => __('CERTIFIED NOTES HIGH SCHOOL','form-plugin'),
-        'high_school_diploma' => __('HIGH SCHOOL DIPLOMA','form-plugin'),
-        'id_parents' => __('ID OR CI OF THE PARENTS','form-plugin'),
-        'id_student' => __('ID STUDENTS','form-plugin'),
-        'photo_student_card' => __('PHOTO OF STUDENT CARD','form-plugin'),
-        'proof_of_grades' => __('PROOF OF GRADE','form-plugin'),
-        'proof_of_study' => __('PROOF OF STUDY','form-plugin'),
-        'vaccunation_card' => __('Vaccunation_card','form-plugin'),
+        'certified_notes_high_school' => __('CERTIFIED NOTES HIGH SCHOOL','aes'),
+        'high_school_diploma' => __('HIGH SCHOOL DIPLOMA','aes'),
+        'id_parents' => __('ID OR CI OF THE PARENTS','aes'),
+        'id_student' => __('ID STUDENTS','aes'),
+        'photo_student_card' => __('PHOTO OF STUDENT CARD','aes'),
+        'proof_of_grades' => __('PROOF OF GRADE','aes'),
+        'proof_of_study' => __('PROOF OF STUDY','aes'),
+        'vaccunation_card' => __('VACCUNATION CARD','aes'),
         default => '',
     };
 
     return $name;
+    */
+    return $document_id;
 }
 
 function get_status_document($status_id){
 
     $status = match ($status_id){
-        '0' => __('No sent','form-plugin'),
-        '1' => __('Sent','form-plugin'),
-        '2' => __('Processing','form-plugin'),
-        '3' => __('Declined','form-plugin'),
-        '4' => __('Expired','form-plugin'),
-        '5' => __('Approved','form-plugin'),
+        '0' => __('No sent','aes'),
+        '1' => __('Sent','aes'),
+        '2' => __('Processing','aes'),
+        '3' => __('Declined','aes'),
+        '4' => __('Expired','aes'),
+        '5' => __('Approved','aes'),
         default => '',
     };
 

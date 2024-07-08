@@ -1,15 +1,10 @@
 <div class="tabs-content">
 	<div class="wrap">
         <div style="text-align:start;">
-			<h1 class="wp-heading-line"><?= __('Departments','restaurant-system-app'); ?>
-			<a href="<?= admin_url('admin.php?page=add_admin_form_department_content') ?>">
-				<button class="button-link add-new-toggle" style="border: 1px solid #2271b1; padding: 6px; font-size: 13px; border-radius: 3px; text-decoration: none;">
-					<?php
-						printf( get_post_type_object( 'page' )->labels->add_new_item );
-					?>
-				</button>
-			</a>
-		</h1>
+			<h1 class="wp-heading-line"><?= __('Departments','restaurant-system-app'); ?></h1>
+		</div>
+		<div style="text-align:end;">
+			<a href="<?= admin_url('admin.php?page=add_admin_department_content&action=add'); ?>" class="button button-outline-primary"><?= __('Add Department','aes'); ?></a>
 		</div>
 		<form id="post-filter" method="get">
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />

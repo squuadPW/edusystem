@@ -22,27 +22,69 @@
                                     <th scope="row"><label for="input_id"><?= __('Date','aes').':'; ?></label></th>
                                     <td><?= $order->get_date_created()->format('F j, Y g:i a') ?></td>
                                 </tr>
-                                <tr>
-                                    <th scope="row"><label for="input_id"><?= __('Partner Name','aes').':'; ?></label></th>
-                                    <td><?= $order->get_billing_first_name().' '.$order->get_billing_last_name() ?></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><label for="input_id"><?= __('Payment Total','aes').':'; ?></label></th>
-                                    <td><?= get_woocommerce_currency_symbol().$order->get_total() ?></td>
-                                </tr>
+                                <?php if(!in_array('institutes',$roles)): ?>
+                                    <tr>
+                                        <th scope="row"><label for="input_id"><?= __('Partner Name','aes').':'; ?></label></th>
+                                        <td><?= $order->get_billing_first_name().' '.$order->get_billing_last_name() ?></td>
+                                    </tr>
+                                <?php endif; ?>
+                                <?php if(!in_array('institutes',$roles) && !in_array('alliance',$roles)): ?>
+                                    <tr>
+                                        <th scope="row"><label for="input_id"><?= __('Payment Total','aes').':'; ?></label></th>
+                                        <td><?= get_woocommerce_currency_symbol().$order->get_total() ?></td>
+                                    </tr>
+                                <?php endif; ?>
+                                <?php if(in_array('institute',$roles)): ?>
+                                    <tr>
+                                        <th scope="row"><label for="input_id"><?= __('Fee','aes').':'; ?></label></th>
+                                        <td><?= get_woocommerce_currency_symbol().number_format($order->get_meta('institute_fee'),2,'.',','); ?></td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php if(!in_array('alliance',$roles)): ?>
+                                        <tr>
+                                            <th scope="row"><label for="input_id"><?= __('Institute Fee','aes').':'; ?></label></th>
+                                            <td><?= get_woocommerce_currency_symbol().number_format($order->get_meta('institute_fee'),2,'.',','); ?></td>
+                                        </tr>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                                <?php if(in_array('alliance',$roles)): ?>
+                                    <tr>
+                                        <th scope="row"><label for="input_id"><?= __('Fee','aes').':'; ?></label></th>
+                                        <td><?= get_woocommerce_currency_symbol().number_format($order->get_meta('alliance_fee'),2,'.',','); ?></td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php if(!in_array('institutes',$roles)): ?>
+                                        <tr>
+                                            <th scope="row"><label for="input_id"><?= __('Alliance Fee','aes').':'; ?></label></th>
+                                            <td><?= get_woocommerce_currency_symbol().number_format($order->get_meta('alliance_fee'),2,'.',','); ?></td>
+                                        </tr>
+                                    <?php endif; ?>
+                                <?php endif; ?>
                                 <tr>
                                     <th scope="row"><label for="input_id"><?= __('Payment Method','aes').':'; ?></label></th>
                                     <td><?= $order->get_payment_method_title(); ?></td>
                                 </tr>
                                 <?php if($order->get_meta('_stripe_intent_id')){ ?>
-                                    <tr>
-                                        <th scope="row"><label for="input_id"><?= __('Transaction ID','aes').':'; ?></label></th>
-                                        <td><?= $order->get_meta('_stripe_intent_id'); ?></td>
-                                    </tr>
+                                    <?php if(!in_array('institute',$roles) && !in_array('alliance',$roles)): ?>
+                                        <tr>
+                                            <th scope="row"><label for="input_id"><?= __('Transaction ID','aes').':'; ?></label></th>
+                                            <td><?= $order->get_meta('_stripe_intent_id'); ?></td>
+                                        </tr>
+                                    <?php endif; ?>
+                                <?php } ?>
+                                <?php if($order->get_meta('transaction_id')){ ?>
+                                    <?php if(!in_array('institute',$roles) && !in_array('alliance',$roles)): ?>
+                                        <tr>
+                                            <th scope="row"><label for="input_id"><?= __('Transaction ID','aes').':'; ?></label></th>
+                                            <td><?= $order->get_meta('transaction_id'); ?></td>
+                                        </tr>
+                                    <?php endif; ?>
                                 <?php } ?>
                             </tbody>
                         </table>
-                        <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
+                        <?php if(!in_array('institutes',$roles) && !in_array('alliance',$roles)): ?>
+
+                            <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
                             <thead>
                                 <tr>
                                     <th scope="col" class="manage-column column-primary column-title"><?= __('Program','aes') ?></th>
@@ -61,16 +103,19 @@
                                     </tr>
                                 <?php } ?>
                             </tobdy>
-                        </table>
-                        <?php if($order->get_status() != 'completed'){ ?>
-                            <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
-                                <?php if(wp_is_mobile()){ ?>
-                                    <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve Payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-primary"><?= __('Approved Payment','aes'); ?></button>
-                                <?php }else{ ?>
-                                    <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve Payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" class="button button-primary"><?= __('Approved Payment','aes'); ?></button>
-                                <?php } ?>
-                            </div>
-                        <?php } ?>
+                            </table>
+
+                            <?php if($order->get_status() != 'completed'){ ?>
+                                <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
+                                    <?php if(wp_is_mobile()){ ?>
+                                        <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve Payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-primary"><?= __('Approved Payment','aes'); ?></button>
+                                    <?php }else{ ?>
+                                        <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve Payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" class="button button-primary"><?= __('Approved Payment','aes'); ?></button>
+                                    <?php } ?>
+                                </div>
+                            <?php } ?>
+
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
