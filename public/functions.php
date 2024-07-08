@@ -641,3 +641,23 @@ add_filter( 'woocommerce_account_dashboard', 'fee_inscription_button', 0);
 function fee_inscription_button(){
     include(plugin_dir_path(__FILE__).'templates/fee-inscription-payment.php');
 }
+
+function custom_coupon_applied_notice($message) {
+    wc_clear_notices();
+
+    $applied_coupons = WC()->cart->get_applied_coupons();
+    if ( ! empty( $applied_coupons ) ) {
+        $current_coupon = reset( $applied_coupons );
+    }
+    wc_add_notice(__($current_coupon.' applied successfully!', 'woocommerce'), 'success');
+}
+add_action('woocommerce_applied_coupon', 'custom_coupon_applied_notice');
+
+add_filter( 'woocommerce_cart_totals_coupon_label', 'remove_coupon_text' );
+function remove_coupon_text( $label ) {
+    $applied_coupons = WC()->cart->get_applied_coupons();
+    if ( ! empty( $applied_coupons ) ) {
+        $current_coupon = reset( $applied_coupons );
+    }
+    return $current_coupon; // Return an empty string to remove the label
+}
