@@ -30,7 +30,74 @@ function create_tables() {
   $table_alliances =  $wpdb->prefix.'alliances';
   $table_grades = $wpdb->prefix.'grades';
   $table_documents = $wpdb->prefix.'documents'; 
-  $table_student_payments = $wpdb->prefix.'student_payments'; 
+  $table_student_payments = $wpdb->prefix.'student_payments';
+  $table_pre_users = $wpdb->prefix.'pre_users';
+  $table_pre_students = $wpdb->prefix.'pre_students';
+  $table_student_scholarship_application = $wpdb->prefix.'student_scholarship_application';
+
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_pre_users}'") != $table_pre_users){
+
+    dbDelta( "CREATE TABLE " . $table_pre_users . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        name TEXT NOT NULL,
+        middle_name TEXT NULL,
+        last_name TEXT NOT NULL,
+        middle_last_name TEXT NULL,
+        birth_date DATE NULL,
+        partner_id INT(11) NULL,
+        email TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        type TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_pre_students}'") != $table_pre_students){
+
+    dbDelta( "CREATE TABLE " . $table_pre_students . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        type_document TEXT NULL,
+        id_document TEXT NULL,
+        name TEXT NOT NULL,
+        middle_name TEXT NULL,
+        last_name TEXT NOT NULL,
+        middle_last_name TEXT NULL,
+        birth_date DATE NOT NULL,
+        phone TEXT NOT NULL,
+        email TEXT NOT NULL,
+        gender TEXT NULL,
+        country TEXT NULL,
+        city TEXT NULL,
+        postal_code TEXT NULL,
+        grade_id INT(11) NOT NULL,
+        name_institute TEXT NOT NULL,
+        institute_id INT(11) NULL,
+        program_id TEXT NOT NULL,
+        partner_id INT(11) NOT NULL, 
+        status_id INT(11) NOT NULL,
+        moodle_student_id INT(11) NULL,
+        moodle_password TEXT NULL,
+        updated_at DATETIME NULL,
+        created_at DATETIME NOT NULL,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_scholarship_application}'") != $table_student_scholarship_application){
+
+    dbDelta( "CREATE TABLE " . $table_student_scholarship_application . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        student_id INT(11) NOT NULL,
+        partner_id INT(11) NOT NULL,
+        status_id INT(11) NOT NULL,
+        from_date DATE NULL,
+        until_date DATE NULL,
+        description TEXT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_departments}'") != $table_departments){
 

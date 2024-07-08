@@ -70,48 +70,48 @@ function save_student(){
 
             //add program to cart
             if($program == 'aes'){
-                // EN LOCAL
-                // switch ($grade) {
-                //     case '1':
-                //         $variation = wc_get_product(468);
-                //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(465, 1, 468, $metada);
-                //         break;
-
-                //     case '2':
-                //         $variation = wc_get_product(472);
-                //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(466, 1, 472, $metada);
-                //         break;
-
-                //     default:
-                //         $variation = wc_get_product(475);
-                //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(467, 1, 475, $metada);
-                //         break;
-                // }
-
-                // EN PRODUCTIVO
-                // DESCOMENTAR CUANDO ESTE EN PRODUCTIVO, Y COMENTAR EL PRIMERO
+                // EN LOCAL JOSE MORA
                 switch ($grade) {
                     case '1':
-                        $variation = wc_get_product(445);
+                        $variation = wc_get_product(468);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(441, 1, 445, $metada);
+                        $woocommerce->cart->add_to_cart(465, 1, 468, $metada);
                         break;
 
                     case '2':
-                        $variation = wc_get_product(448);
+                        $variation = wc_get_product(472);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(442, 1, 448, $metada);
+                        $woocommerce->cart->add_to_cart(466, 1, 472, $metada);
                         break;
 
                     default:
-                        $variation = wc_get_product(451);
+                        $variation = wc_get_product(475);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(443, 1, 451, $metada);
+                        $woocommerce->cart->add_to_cart(467, 1, 475, $metada);
                         break;
                 }
+
+                // EN PRODUCTIVO
+                // DESCOMENTAR CUANDO ESTE EN PRODUCTIVO, Y COMENTAR EL PRIMERO
+                // switch ($grade) {
+                //     case '1':
+                //         $variation = wc_get_product(445);
+                //         $metadata = $variation->get_meta_data();
+                //         $woocommerce->cart->add_to_cart(441, 1, 445, $metada);
+                //         break;
+
+                //     case '2':
+                //         $variation = wc_get_product(448);
+                //         $metadata = $variation->get_meta_data();
+                //         $woocommerce->cart->add_to_cart(442, 1, 448, $metada);
+                //         break;
+
+                //     default:
+                //         $variation = wc_get_product(451);
+                //         $metadata = $variation->get_meta_data();
+                //         $woocommerce->cart->add_to_cart(443, 1, 451, $metada);
+                //         break;
+                // }
             }else if($program == 'psp'){
                 $woocommerce->cart->add_to_cart(102,1);
             }else if($program == 'aes_psp'){

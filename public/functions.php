@@ -1,5 +1,6 @@
 <?php
 
+require plugin_dir_path( __FILE__ ) . 'student-scholarship.php';
 require plugin_dir_path( __FILE__ ) . 'student.php';
 require plugin_dir_path( __FILE__ ) . 'account.php';
 require plugin_dir_path( __FILE__ ) . 'institute.php';
@@ -47,6 +48,15 @@ function form_asp_psp(){
 }
 
 add_shortcode('form_asp_psp','form_asp_psp');
+
+function form_scholarship_application(){
+    $countries = get_countries();
+    $institutes = get_list_institutes_active();
+    $grades = get_grades();
+    include(plugin_dir_path(__FILE__).'templates/scholarship-application.php');
+}
+
+add_shortcode('form_scholarship_application','form_scholarship_application');
 
 function get_countries(){
     $wc_countries = new WC_Countries();

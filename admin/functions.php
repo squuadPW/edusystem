@@ -3,6 +3,7 @@
 require plugin_dir_path( __FILE__ ) . 'roles.php';
 require plugin_dir_path( __FILE__ ) . 'admission.php';
 require plugin_dir_path( __FILE__ ) . 'payments.php';
+require plugin_dir_path( __FILE__ ) . 'scholarships.php';
 require plugin_dir_path( __FILE__ ) . 'institute.php';
 require plugin_dir_path( __FILE__ ) . 'alliances.php';
 require plugin_dir_path( __FILE__ ) . 'departments.php';
@@ -40,6 +41,10 @@ function aes_scripts_admin(){
 
     if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_payments_content'){
         wp_enqueue_script('student-payment',plugins_url('aes').'/admin/assets/js/payment.js',array('jquery'),'1.0.0',true);    
+    }
+
+    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_scholarships_content'){
+        wp_enqueue_script('student-payment',plugins_url('aes').'/admin/assets/js/scholarship.js',array('jquery'),'1.0.0',true);    
     }
 
     if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content')){
@@ -175,6 +180,16 @@ function add_custom_admin_page() {
     );
 
     add_menu_page( 
+        __('Scholarship','aes'),
+        __('Scholarship','aes'),
+        'manager_scholarship_aes', 
+        'add_admin_form_scholarships_content',
+        'add_admin_form_scholarships_content', 
+        'dashicons-media-document', 
+        7
+    );
+
+    add_menu_page( 
         __('Institutes','aes'),
         __('Institutes','aes'),
         'manager_institutes_aes', 
@@ -217,6 +232,7 @@ function add_cap_to_administrator(){
     $role = get_role('administrator');
     $role->add_cap('manage_administrator_aes');
     $role->add_cap('manager_departments_aes');
+    $role->add_cap('manager_scholarship_aes');
     $role->add_cap('manager_admission_aes');
     $role->add_cap('manager_documents_aes');
     $role->add_cap('manager_payments_aes');

@@ -438,13 +438,13 @@ h3 {
 }
 
 .radio-input input[type=radio]:checked + label {
-  background-color: #4CAF50;
+  background-color: #091c5c;
   color: #fff;
-  border: 1px solid #4CAF50;
+  border: 1px solid #091c5c;
 }
 
 .radio-input input[type=radio]:checked + label::before {
-  content: "✓";
+  /* content: "✓"; */
   font-size: 14px;
   margin-right: 10px;
   color: #fff;
@@ -453,3 +453,28 @@ h3 {
 .form-aes .required {
   margin-left: 5px;
 }/*# sourceMappingURL=style.css.map */
+
+#apply-scholarship-btn {
+  /* Color de fondo */
+  background-color: #091c5c;
+  
+  /* Color de texto */
+  color: #ffffff;
+  
+  /* Estilos de fuente */
+  font-size: 18px;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+  
+  /* Estilos de botón */
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  
+  /* Efecto de hover */
+  transition: background-color 0.3s ease;
+}
+#apply-scholarship-btn:hover {
+  background-color: #063584; /* Color de fondo al pasar el mouse */
+}
