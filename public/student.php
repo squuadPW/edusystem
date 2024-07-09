@@ -76,18 +76,21 @@ function save_student(){
                         $variation = wc_get_product(468);
                         $metadata = $variation->get_meta_data();
                         $woocommerce->cart->add_to_cart(465, 1, 468, $metada);
+                        $woocommerce->cart->add_to_cart(484, 1);
                         break;
 
                     case '2':
                         $variation = wc_get_product(472);
                         $metadata = $variation->get_meta_data();
                         $woocommerce->cart->add_to_cart(466, 1, 472, $metada);
+                        $woocommerce->cart->add_to_cart(484, 1);
                         break;
 
                     default:
                         $variation = wc_get_product(475);
                         $metadata = $variation->get_meta_data();
                         $woocommerce->cart->add_to_cart(467, 1, 475, $metada);
+                        $woocommerce->cart->add_to_cart(484, 1);
                         break;
                 }
 

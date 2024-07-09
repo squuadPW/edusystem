@@ -585,6 +585,21 @@ function woocommerce_update_cart() {
     $woocommerce->cart->calculate_totals();
 }
 
+add_action( 'wp_ajax_nopriv_fee_update', 'fee_update');
+add_action( 'wp_ajax_fee_update', 'fee_update');
+
+function fee_update() {
+    global $woocommerce;
+    $value = $_POST['option'];
+    if ($value == 'true') {
+        $woocommerce->cart->add_to_cart(484, 1);
+        $woocommerce->cart->calculate_totals();
+    } else {
+        $woocommerce->cart->remove_cart_item($woocommerce->cart->generate_cart_id(484));
+        $woocommerce->cart->calculate_totals();
+    }
+}
+
 add_action( 'wp_ajax_nopriv_reload_payment_table', 'reload_payment_table');
 add_action( 'wp_ajax_reload_payment_table', 'reload_payment_table');
 
@@ -594,9 +609,14 @@ function reload_payment_table() {
         <?php
         $value = $_POST['option'];
         global $woocommerce;
-        $cart = $woocommerce->cart;
+        $cart = $woocommerce->cart->get_cart();
+
+        $filtered_products = array_filter($cart, function($product) {
+            return $product['product_id'] != 484;
+        });
+
         $cart_total = 0;
-        foreach ($cart->get_cart() as $key => $product) {
+        foreach ($filtered_products as $key => $product) {
             $product_id = $product['product_id'];
             $cart_total = $product['line_total'];
             // $price = $product['line_total']; 

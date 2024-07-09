@@ -1,7 +1,12 @@
 <?php
   global $woocommerce;
-  $cart = $woocommerce->cart;
-  foreach ($cart->get_cart() as $key => $product) {
+  $cart = $woocommerce->cart->get_cart();
+
+  $filtered_products = array_filter($cart, function($product) {
+      return $product['product_id'] != 484;
+  });
+
+  foreach ($filtered_products as $key => $product) {
     $product_id = $product['product_id'];
     $product = wc_get_product($product_id);
   }
@@ -9,7 +14,19 @@
   // Check if the product is a variable product
   if ($product->is_type('variable')) {
     ?>
-    
+
+    <div >
+      <div style="margin-bottom: 10px !important;">
+        <label class="fee-container">Fee inscription
+          <input name="fee" type="checkbox" checked="checked">
+          <span class="checkmark"></span>
+        </label>
+      </div>
+      <div class="text-start" style="margin-bottom: 10px !important; color: #bbb9b9; font-style: italic; font-size: 12px">
+        <p>By selecting this option, I authorize American Elite School to charge the initial registration fee. If I do not select this option, I will be able to pay the fee at a later date. (Not required immediately)</p>
+      </div>
+    </div>
+
     <div class="text-center">
       <label>Apply your scholarship to get the discount</label>
       <div id="button-schoolship"></div>
@@ -21,8 +38,12 @@
 
           <?php
             global $woocommerce;
-            $cart = $woocommerce->cart;
-            foreach ($cart->get_cart() as $key => $product) {
+            $cart = $woocommerce->cart->get_cart();
+
+            $filtered_products = array_filter($cart, function($product) {
+                return $product['product_id'] != 484;
+            });
+            foreach ($filtered_products as $key => $product) {
               $product_id = $product['product_id'];
               $product = wc_get_product($product_id);
               $variations = $product->get_available_variations();

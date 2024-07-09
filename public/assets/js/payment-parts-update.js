@@ -81,6 +81,29 @@
       });
     });
 
+    $('input[name="fee"]').on('change', function() {
+      // Get the cart update URL
+      var updateCartUrl = ajax_object.ajax_url + '?action=fee_update';
+
+      // Send an AJAX request to update the cart
+      $.ajax({
+        type: 'POST',
+        url: updateCartUrl,
+        data: {
+          'action': 'fee_update',
+          'option': $(this).is(':checked')
+        },
+        success: function(response) {
+          // Update the cart price
+          $('#cart_totals').html(response);
+          $(document.body).trigger('update_checkout');
+          setTimeout(() => {
+            reloadTable();
+          }, 250);
+        }
+      });
+    });
+
     // Add the applyScholarship function
     function applyScholarship() {
       // Apply the scholarship discount
