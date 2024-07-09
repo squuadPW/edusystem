@@ -343,6 +343,8 @@ function add_loginout_link( $items, $args ){
 
 function status_changed_payment($order_id, $old_status, $new_status){
 
+    try {
+        
         $order = wc_get_order($order_id);
         $customer_id = $order->get_customer_id();
         $status_register = get_user_meta($customer_id,'status_register',true);
@@ -391,11 +393,14 @@ function status_changed_payment($order_id, $old_status, $new_status){
             $date = $date->format('Y-m-d');
 
             $cuotes = $product->get_meta('num_cuotes_text') ? $product->get_meta('num_cuotes_text') : 1;
-            global $wpdb;
-
+            global $wpdb, $current_user;
+            $partner_id = is_user_logged_in() ? get_current_user_id() : $order->get_meta('student_id');
+            $table_students = $wpdb->prefix.'students';
+            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
+            $student_id = $student->id;
             $data = array(
                 'status_id' => $i == 0 ? 1 : 0, // Replace with the actual status ID
-                'student_id' => is_user_logged_in() ? get_current_user_id() : $order->get_meta('student_id'), // Replace with the actual student ID
+                'student_id' => $student_id, // Replace with the actual student ID
                 'product_id' => $product->get_id(), // Replace with the actual product ID
                 'amount' => $order->get_total(), // Replace with the actual amount
                 'type_payment' => $cuotes > 1 ? 1 : 2, // Replace with the actual payment type
@@ -406,10 +411,57 @@ function status_changed_payment($order_id, $old_status, $new_status){
             );
 
             $wpdb->insert($wpdb->prefix.'student_payments', $data);
-            // Get the variation product selected from the order
-    
+
+            // FEE DE INSCRIPCION
+            if ($product->get_id() == 484) {
+                $roles = $current_user->roles;
+                $table_student_documents = $wpdb->prefix.'student_documents';
+                $table_student_payment = $wpdb->prefix.'student_payments';
+                $access_virtual = true;
+                $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
+
+                if($documents_student){
+                    foreach($documents_student as $document){
+                        if($document->status == 0){
+                            $access_virtual = false;
+                        }
+                    }
+                }
+
+                // VERIFICAR FEE DE INSCRIPCION
+                $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and amount = 299.00");
+                // VERIFICAR FEE DE INSCRIPCION
+
+                //virtual classroom
+                if($access_virtual && isset($paid)){
+
+                    update_status_student($student_id,2);
+
+                    if(in_array('parent',$roles) && !in_array('student',$roles)){
+                        create_user_student($student_id);
+                    }
+
+                    $exist = is_search_student_by_email($student_id);
+                
+                    if(!$exist){
+                        create_user_moodle($student_id);
+                    }else{
+                        $wpdb->update($table_students,['moodle_student_id' => $exist[0]['id']],['id' => $student_id]);
+
+                        $is_exist_password = is_password_user_moodle($student_id);
+
+                        if(!$is_exist_password){
+                            
+                            $password = generate_password_user();
+                            $wpdb->update($table_students,['moodle_password' => $password],['id' => $student_id]);
+                            change_password_user_moodle($student_id);
+                        }
+                    }
+                }
+            }
+            // FEE DE INSCRIPCION
+
             if($order->get_meta('student_id')){
-    
                 $student_id = $order->get_meta('student_id');
                 update_status_student($student_id,1);
                 
@@ -426,7 +478,9 @@ function status_changed_payment($order_id, $old_status, $new_status){
             }
     
         }
-            
+    } catch (\Throwable $th) {
+        echo "<script>alert('error: $th');</script>";
+    }        
 }
             
 
@@ -639,6 +693,15 @@ add_action( 'woocommerce_before_calculate_totals', 'woocommerce_custom_price_to_
 
 add_filter( 'woocommerce_account_dashboard', 'fee_inscription_button', 0);
 function fee_inscription_button(){
+    // VERIFICAR FEE DE INSCRIPCION
+    global $wpdb;
+    $table_student_payment = $wpdb->prefix.'student_payments';
+    $table_students = $wpdb->prefix.'students';
+    $partner_id = get_current_user_id();
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
+    $student_id = $student->id;
+    $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and amount = 299.00");
+    // VERIFICAR FEE DE INSCRIPCION
     include(plugin_dir_path(__FILE__).'templates/fee-inscription-payment.php');
 }
 

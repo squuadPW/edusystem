@@ -94,8 +94,18 @@ function save_document(){
                         }
                     }
 
+                    // VERIFICAR FEE DE INSCRIPCION
+                    global $wpdb;
+                    $table_student_payment = $wpdb->prefix.'student_payments';
+                    $table_students = $wpdb->prefix.'students';
+                    $partner_id = get_current_user_id();
+                    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
+                    $student_id = $student->id;
+                    $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and amount = 299.00");
+                    // VERIFICAR FEE DE INSCRIPCION
+
                     //virtual classroom
-                    if($access_virtual){
+                    if($access_virtual && isset($paid)){
 
                         update_status_student($student_id,2);
 
