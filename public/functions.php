@@ -739,8 +739,11 @@ function fee_inscription_button(){
     $table_students = $wpdb->prefix.'students';
     $partner_id = get_current_user_id();
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
-    $student_id = $student->id;
-    $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and amount = 299.00");
+    $paid = false;
+    if (isset($student)) {
+        $student_id = $student->id;
+        $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and amount = 299.00");
+    }
     // VERIFICAR FEE DE INSCRIPCION
     include(plugin_dir_path(__FILE__).'templates/fee-inscription-payment.php');
 }
