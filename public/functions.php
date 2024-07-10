@@ -353,67 +353,70 @@ function status_changed_payment($order_id, $old_status, $new_status){
     
             update_user_meta($customer_id,'status_register',1);
 
-            // Get the variation product selected from the order
+            // FOR PROGRAM PAYMENT (AES PROGRAM)
             $items = $order->get_items();
-            $date_calc = '';
-
-            foreach ($items as $item) {
-                $product = $item->get_product();
-            }
-
-            // Only for product variation
-            if( $product->is_type('variation') ){
-                // Get the variation attributes
-                $variation_attributes = $product->get_variation_attributes();
-                // Loop through each selected attributes
-                foreach($variation_attributes as $attribute_taxonomy => $term_slug ){
-                    // Get product attribute name or taxonomy
-                    $taxonomy = str_replace('attribute_', '', $attribute_taxonomy );
-                    // The label name from the product attribute
-                    $attribute_name = wc_attribute_label( $taxonomy, $product );
-                    // The term name (or value) from this attribute
-                    if( taxonomy_exists($taxonomy) ) {
-                        $attribute_value = get_term_by( 'slug', $term_slug, $taxonomy )->name;
-                    } else {
-                        $attribute_value = $term_slug; // For custom product attributes
-                    }
-                }
-
-                switch ($attribute_value) {
-                    case 'Annual':
-                        $date_calc = '+1 year';
-                        break;
-                    case 'Semiannual':
-                        $date_calc = '+6 months';
-                        break;
-                }
-            }
-
+            global $wpdb, $current_user;
             $date = new DateTime('August 12');
             $date = $date->format('Y-m-d');
-
-            $cuotes = $product->get_meta('num_cuotes_text') ? $product->get_meta('num_cuotes_text') : 1;
-            global $wpdb, $current_user;
             $partner_id = is_user_logged_in() ? get_current_user_id() : $order->get_meta('student_id');
             $table_students = $wpdb->prefix.'students';
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
             $student_id = $student->id;
-            $data = array(
-                'status_id' => $i == 0 ? 1 : 0, // Replace with the actual status ID
-                'student_id' => $student_id, // Replace with the actual student ID
-                'product_id' => $product->get_id(), // Replace with the actual product ID
-                'amount' => $order->get_total(), // Replace with the actual amount
-                'type_payment' => $cuotes > 1 ? 1 : 2, // Replace with the actual payment type
-                'cuote' => ($i + 1), // Replace with the actual num coute
-                'num_cuotes' => $cuotes, // Replace with the num total of coutes
-                'date_payment' => date('Y-m-d'), // Replace with the date of first payment
-                'date_next_payment' => $cuotes > 1 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : date('Y-m-d'), // Replace with the date of next payment
-            );
 
-            $wpdb->insert($wpdb->prefix.'student_payments', $data);
+            foreach ($items as $item) {
+                $cuotes = 1;
+                $date_calc = '';
+                $product_id = $item->get_product()->get_id();
+                $is_variable = $item->get_product()->is_type('variation');
+                $is_variable = $item->get_product()->is_type('variation');
+                $price = $item->get_product()->get_price();
+
+                if($is_variable) {
+                    $product = $item->get_product();
+                    $variation_attributes = $product->get_variation_attributes();
+                    foreach($variation_attributes as $attribute_taxonomy => $term_slug ){
+                        $taxonomy = str_replace('attribute_', '', $attribute_taxonomy );
+                        $attribute_name = wc_attribute_label( $taxonomy, $product );
+                        if( taxonomy_exists($taxonomy) ) {
+                            $attribute_value = get_term_by( 'slug', $term_slug, $taxonomy )->name;
+                        } else {
+                            $attribute_value = $term_slug;
+                        }
+                    }
+    
+                    switch ($attribute_value) {
+                        case 'Annual':
+                            $date_calc = '+1 year';
+                            break;
+                        case 'Semiannual':
+                            $date_calc = '+6 months';
+                            break;
+                    }
+
+                    $cuotes = $product->get_meta('num_cuotes_text') ? $product->get_meta('num_cuotes_text') : 1;
+                }
+
+                $data = array(
+                    'status_id' => 1, 
+                    'student_id' => $student_id, 
+                    'product_id' => $product_id, // Use the new variable here
+                    'amount' => $price, 
+                    'type_payment' => $cuotes > 1 ? 1 : 2, 
+                    'cuote' => 1, 
+                    'num_cuotes' => $cuotes, 
+                    'date_payment' => date('Y-m-d'), 
+                    'date_next_payment' => $cuotes > 1 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : date('Y-m-d'), 
+                );
+                $wpdb->insert($wpdb->prefix.'student_payments', $data);
+            }
+            // FOR PROGRAM PAYMENT (AES PROGRAM)
 
             // FEE DE INSCRIPCION
-            if ($product->get_id() == 484) {
+            $product = null;
+            foreach ($items as $item) {
+                $product = strtolower($item->get_product()->get_name()) == 'fee inscription' ? $item->get_product() : $product;
+            }
+            if (isset($product)) {
                 $roles = $current_user->roles;
                 $table_student_documents = $wpdb->prefix.'student_documents';
                 $table_student_payment = $wpdb->prefix.'student_payments';
@@ -545,11 +548,11 @@ add_action( 'wp_ajax_woocommerce_update_cart', 'woocommerce_update_cart');
 
 function woocommerce_update_cart() {
     global $woocommerce;
-
     $coupon_code = '';
     $has_coupon = false;
     $cart =  $woocommerce->cart;
     $applied_coupons =  $woocommerce->cart->get_applied_coupons();
+    $products_id = [];
     if ( count( $applied_coupons ) > 0 ) {
         $has_coupon = true;
         foreach ($applied_coupons as $key => $coupon) {
@@ -559,25 +562,32 @@ function woocommerce_update_cart() {
 
     $value = $_POST['option'];
     foreach ($cart->get_cart() as $key => $product) {
-        $product_id = $product['product_id'];
-        // $price = $product['line_total']; 
-    }
-
-    $prices = [];
-    $product = wc_get_product($product_id);
-    $variations = $product->get_available_variations();
-    foreach ($variations as $key => $variation) {
-        array_push($prices, ['id' => $variations[$key]['variation_id'], 'name' => $variations[$key]['attributes']['attribute_pagos']]);
+        array_push($products_id, $product['product_id']);
     }
 
     $woocommerce->cart->empty_cart();
 
-    $column = 'name';
-    $value =  $value;    
-    $keys = array_keys(array_column($prices, $column));
-    $key = array_search($value, array_column($prices, $column));
+    foreach ($products_id as $key => $product_id) {
+        $variations = [];
+        $variations_product = [];
+        $product = wc_get_product($product_id);
+        if ($product->is_type('variable')) {
+            $variations_product = $product->get_available_variations();
+            foreach ($variations_product as $key => $variation) {
+                array_push($variations, ['id' => $variations_product[$key]['variation_id'], 'name' => $variations_product[$key]['attributes']['attribute_pagos']]);
+            }
+        
+            $column = 'name';
+            $value =  $value;    
+            $keys = array_keys(array_column($variations, $column));
+            $key = array_search($value, array_column($variations, $column));
 
-    $woocommerce->cart->add_to_cart($product_id, 1, $prices[$keys[$key]]['id']);
+            $woocommerce->cart->add_to_cart($product_id, 1, $variations[$keys[$key]]['id']);
+        } else {
+            $woocommerce->cart->add_to_cart($product_id, 1);
+        }
+    }
+
     if ($has_coupon) {
         $woocommerce->cart->apply_coupon( $coupon_code );
     }
@@ -591,11 +601,16 @@ add_action( 'wp_ajax_fee_update', 'fee_update');
 function fee_update() {
     global $woocommerce;
     $value = $_POST['option'];
+    // PROD
+    // $id = 63;
+
+    // LOCAL JOSE MORA
+    $id = 484;
     if ($value == 'true') {
-        $woocommerce->cart->add_to_cart(484, 1);
+        $woocommerce->cart->add_to_cart($id, 1);
         $woocommerce->cart->calculate_totals();
     } else {
-        $woocommerce->cart->remove_cart_item($woocommerce->cart->generate_cart_id(484));
+        $woocommerce->cart->remove_cart_item($woocommerce->cart->generate_cart_id($id));
         $woocommerce->cart->calculate_totals();
     }
 }
@@ -611,8 +626,13 @@ function reload_payment_table() {
         global $woocommerce;
         $cart = $woocommerce->cart->get_cart();
 
-        $filtered_products = array_filter($cart, function($product) {
-            return $product['product_id'] != 484;
+        // PROD
+        // $id = 63;
+
+        // LOCAL JOSE MORA
+        $id = 484;
+        $filtered_products = array_filter($cart, function($product) use($id) {
+            return $product['product_id'] != $id;
         });
 
         $cart_total = 0;

@@ -1,9 +1,14 @@
 <?php
   global $woocommerce;
   $cart = $woocommerce->cart->get_cart();
+  // PROD
+  // $id = 63;
 
-  $filtered_products = array_filter($cart, function($product) {
-      return $product['product_id'] != 484;
+  // LOCAL JOSE MORA
+  $id = 484;
+
+  $filtered_products = array_filter($cart, function($product) use($id) {
+      return $product['product_id'] != $id;
   });
 
   foreach ($filtered_products as $key => $product) {
@@ -40,8 +45,8 @@
             global $woocommerce;
             $cart = $woocommerce->cart->get_cart();
 
-            $filtered_products = array_filter($cart, function($product) {
-                return $product['product_id'] != 484;
+            $filtered_products = array_filter($cart, function($product) use($id) {
+                return $product['product_id'] != $id;
             });
             foreach ($filtered_products as $key => $product) {
               $product_id = $product['product_id'];
