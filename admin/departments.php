@@ -1,9 +1,116 @@
 <?php
 
 function list_admin_form_department_content(){
-    $list_departments = new TT_all_departments_List_Table;
-    $list_departments->prepare_items();
-    include(plugin_dir_path(__FILE__).'templates/list-departments.php');
+
+    if(isset($_GET['action']) && !empty($_GET['action'])){
+
+        global $wpdb;
+        $table_departments = $wpdb->prefix.'departments';
+
+        if($_GET['action'] == 'add'){
+
+            include(plugin_dir_path(__FILE__).'templates/register-departments.php');
+
+        }else if($_GET['action'] == 'add_department'){
+
+            $name = strtolower($_POST['name']);
+            $description = $_POST['description'];
+            $capabilities = $_POST['capabilities'];
+            $department_id = $_POST['department_id'];
+            
+            $role_name = str_replace('','_',$name);
+            $cap = [];
+            
+            if(isset($_POST['capabilities']) && !empty($_POST['capabilities'])){
+                
+                foreach($capabilities as $capability){
+                    $cap[$capability] = true;
+                }
+            }
+
+            //update
+            if(isset($_POST['department_id']) && !empty($_POST['department_id'])){
+
+                $role = get_role($role_name);
+
+                $current_capabilities = $role->capabilities;
+                if($current_capabilities){
+
+                    foreach($current_capabilities as $index => $current){
+
+                        $role->remove_cap($index);
+                    }
+                }
+
+                foreach($cap as $index =>  $c){
+                    $role->add_cap($index);
+                }
+
+                $role->add_cap('edit_posts');
+                $role->add_cap('manage_options');
+                $role->add_cap('read');
+                
+                $wpdb->update($table_departments,['description' => $description],['id' => $department_id]);
+
+                $message_success = __('Department updated','aes');
+                setcookie('message_success',$message_success,time() + 3600,'/');
+                wp_redirect(admin_url('admin.php?page=add_admin_department_content&action=edit&department_id='.$department_id));
+                exit;
+            }
+
+            //create
+
+            if(wp_roles()->is_role($role_name)){
+                
+                $message = __('Existing department.','aes');
+                include(plugin_dir_path(__FILE__).'templates/register-departments.php');
+                exit;
+            }
+
+                $wpdb->insert($table_departments,[
+                    'name' => strtolower($name),
+                    'description' => $description,
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+
+                $object_role = add_role($role_name,ucwords(strtolower($name)),$cap);
+                $object_role->add_cap('edit_posts');
+                $object_role->add_cap('manage_options');
+                $object_role->add_cap('read');
+    
+            wp_redirect(admin_url('admin.php?page=add_admin_department_content'));
+            exit;
+
+
+        }else if($_GET['action'] == 'edit'){
+
+            $department_id = $_GET['department_id'];
+            $department = get_department($department_id);
+            $name = $department->name;
+            $description = $department->description;
+            $role = get_role(str_replace('','_',$name));
+            $name = ucwords($department->name);
+            $capabilities = $role->capabilities;
+            include(plugin_dir_path(__FILE__).'templates/register-departments.php');
+
+        }else if($_GET['action'] == 'delete'){
+
+            $department_id = $_POST['delete_department_id'];
+            $data = $wpdb->get_row("SELECT * FROM {$table_departments} WHERE id={$department_id}");
+            $wpdb->delete($table_departments,['id' => $department_id]);
+
+            remove_role(str_replace('','_',$data->name));
+
+            wp_redirect(admin_url('admin.php?page=add_admin_department_content'));
+            exit;
+        }
+
+    }else{
+
+        $list_departments = new TT_all_departments_List_Table;
+        $list_departments->prepare_items();
+        include(plugin_dir_path(__FILE__).'templates/list-departments.php');
+    }
 }
 
 class TT_all_departments_List_Table extends WP_List_Table{
@@ -23,26 +130,25 @@ class TT_all_departments_List_Table extends WP_List_Table{
 
         global $current_user;
 
+
         switch($column_name){
             case 'name':
                 return $item['name'];
             case 'description':
                 return $item['description'];
             case 'created_at':   
-                return $item['created_at'];
+                $datetime = Datetime::createFromFormat('Y-m-d H:i:s',$item['created_at']);
+
+                return $datetime->format('F j, Y');
             case 'view_details':
-                return "<a href='#' class='button button-primary'>".__('View Details','form-plugin')."</a>";
+                return "<a href='".admin_url('admin.php?page=add_admin_department_content&action=edit&department_id='.$item['id'])."' class='button button-primary'>".__('Edit','aes')."</a>";
 			default:
 				return print_r($item,true);
         }
     }
 
 	function column_name($item){
-
-        return sprintf('%1$s<a href="javascript:void(0)">%2$s</a>',
-            '<span data-id="'.$item['id'].'" class="dashicons dashicons-menu handle" style="cursor:all-scroll;"></span>',
-            ucwords($item['name']),
-        );
+        return ucwords($item['name']);
     }
 
 	function column_cb($item){
@@ -93,7 +199,7 @@ class TT_all_departments_List_Table extends WP_List_Table{
 
 		$data_categories = $this->get_departments();
 
-		$per_page = 10;
+		$per_page = 100;
 
 		  
         $columns = $this->get_columns();
@@ -120,30 +226,11 @@ class TT_all_departments_List_Table extends WP_List_Table{
 
 }
 
-function add_admin_form_department_content(){
-    include(plugin_dir_path(__FILE__).'templates/register-departments.php');
-}
+function get_department($id){
 
-function save_departments() {
-    // Check if the form has been submitted
-    if (isset($_POST['action']) && $_POST['action'] == 'save_departments') {
-        // Get the form data
-        $name = sanitize_text_field($_POST['name']);
-        $description = sanitize_textarea_field($_POST['description']);
+    global $wpdb;
+    $table_departments = $wpdb->prefix. 'departments';
 
-        // Save the data to the database or perform any other desired action
-        // For example, let's assume you want to save the data to a custom table
-        global $wpdb;
-        $table_name = $wpdb->prefix. 'departments';
-        $wpdb->insert(
-            $table_name,
-            array(
-                'name' => $name,
-                'description' => $description
-            )
-        );
-
-        wp_redirect(admin_url('admin.php?page=list_admin_form_department_content'));
-        exit;
-    }
+    $data = $wpdb->get_row("SELECT * FROM {$table_departments} WHERE id={$id}");
+    return $data;
 }

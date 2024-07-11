@@ -141,4 +141,48 @@
 select[reaonly] {
   background-color: #f0f0f1;
   pointer-events: none;
+}
+
+#footer-thankyou {
+  display: none;
+}
+
+#footer-upgrade {
+  display: none;
+}
+
+div#application-passwords-section {
+  display: none;
+}
+
+#contextual-help-link {
+  display: none;
+}
+
+#dashboard-widgets-wrap {
+  display: none;
+}
+
+#collapse-button {
+  display: none;
+}
+
+#email-description {
+  display: none;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+.iti.iti--allow-dropdown.iti--separate-dial-code.iti--show-flags {
+  width: 100%;
+}
+
+.dashicons:before {
+  vertical-align: middle;
+}
+
+#inputStartDate {
+  background-color: #fff !important;
 }/*# sourceMappingURL=style.css.map */

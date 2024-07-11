@@ -1,6 +1,10 @@
 <div class="wrap">
-    <h2 style="margin-bottom:15px;"><?= __('Applicant details','aes'); ?></h2>
-
+    
+    <?php if(in_array('institutes',$roles)): ?>
+        <h2 style="margin-bottom:15px;"><?= __('Student details','aes'); ?></h2>
+    <?php else: ?>
+        <h2 style="margin-bottom:15px;"><?= __('Applicant details','aes'); ?></h2>
+    <?php endif; ?>
     <div style="diplay:flex;width:100%;">
         <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
@@ -150,46 +154,47 @@
             </div>
         </div>
     </div>
-
-    <h2 style="margin-bottom:15px;"><?= __('Documents','aes'); ?></h2>
-    <div id="notice-status" class="notice-custom notice-info" style="display:none;">
-        <p><?= __('Status change successfully','aes'); ?></p>
-    </div>
-    <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
-        <thead>
-            <tr>
-                <th scope="col" class="manage-column column-primary column-title"><?= __('Document','aes') ?></th>
-                <th scope="col" class="manage-column column-title-translate"><?= __('Status','aes') ?></th>
-                <th scope="col" class="manage-column column-price"><?= __('Actions','aes') ?></th>
-            </tr>
-        </thead>
-        <tbody id="table-documents">
-            <?php if(!empty($documents)): ?>
-                <?php foreach($documents as $document): ?>
-                    <tr id="<?= 'tr_document_'.$document->document_id; ?>">
-                        <td class="column-primary">
-                            <?= $name = get_name_document($document->document_id); ?>
-                            <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
-                        </td>
-                        <td id="<?= 'td_document_'.$document->document_id; ?>" data-colname="<?= __('Status','aes'); ?>">
-                            <b>
-                                <?= $status = get_status_document($document->status); ?>
-                            </b>
-                        </td>
-                        <td data-colname="<?= __('Actions','aes'); ?>">
-                            <?php if($document->status > 0): ?>
-                                <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" class="button button-primary"><?= __('View','aes'); ?></a>
-                                <?php if($document->status != 5): ?>
-                                    <button data-document-id="<?= $document->document_id; ?>" data-student-id="<?= $document->student_id; ?>" data-status="5" class="button change-status button-success"><?= __('Approved','aes'); ?></button>
+    <?php if(!in_array('institutes',$roles)): ?>
+        <h2 style="margin-bottom:15px;"><?= __('Documents','aes'); ?></h2>
+        <div id="notice-status" class="notice-custom notice-info" style="display:none;">
+            <p><?= __('Status change successfully','aes'); ?></p>
+        </div>
+        <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
+            <thead>
+                <tr>
+                    <th scope="col" class="manage-column column-primary column-title"><?= __('Document','aes') ?></th>
+                    <th scope="col" class="manage-column column-title-translate"><?= __('Status','aes') ?></th>
+                    <th scope="col" class="manage-column column-price"><?= __('Actions','aes') ?></th>
+                </tr>
+            </thead>
+            <tbody id="table-documents">
+                <?php if(!empty($documents)): ?>
+                    <?php foreach($documents as $document): ?>
+                        <tr id="<?= 'tr_document_'.$document->id; ?>">
+                            <td class="column-primary">
+                                <?= $name = get_name_document($document->document_id); ?>
+                                <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
+                            </td>
+                            <td id="<?= 'td_document_'.$document->document_id; ?>" data-colname="<?= __('Status','aes'); ?>">
+                                <b>
+                                    <?= $status = get_status_document($document->status); ?>
+                                </b>
+                            </td>
+                            <td data-colname="<?= __('Actions','aes'); ?>">
+                                <?php if($document->status > 0): ?>
+                                    <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" class="button button-primary"><?= __('View','aes'); ?></a>
+                                    <?php if($document->status != 5): ?>
+                                        <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>" data-status="5" class="button change-status button-success"><?= __('Approved','aes'); ?></button>
+                                    <?php endif; ?>
+                                    <?php if($document->status != 5 && $document->status != 3): ?>
+                                        <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>" data-status="3" class="button change-status button-danger"><?= __('Declined','aes'); ?></button>
+                                    <?php endif; ?>
                                 <?php endif; ?>
-                                <?php if($document->status != 5 && $document->status != 3): ?>
-                                    <button data-document-id="<?= $document->document_id; ?>" data-student-id="<?= $document->student_id; ?>" data-status="3" class="button change-status button-danger"><?= __('Declined','aes'); ?></button>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
 </div>

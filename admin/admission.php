@@ -4,18 +4,23 @@ function add_admin_form_admission_content(){
 
     if(isset($_GET['section_tab']) && !empty($_GET['section_tab'])){
 
+        /*
         if($_GET['section_tab'] == 'document_review'){
 
             $list_students = new TT_document_review_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__).'templates/list-student-documents.php');
-
-        }else if($_GET['section_tab'] == 'all_students'){
+         */
+        if($_GET['section_tab'] == 'all_students'){
 
             $list_students = new TT_all_student_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__).'templates/list-student-documents.php');
         }else if($_GET['section_tab'] == 'student_details'){
+
+            global $current_user;
+            $roles = $current_user->roles;
+
             $documents = get_documents($_GET['student_id']);
             $student = get_student_detail($_GET['student_id']);
             $countries = get_countries();
@@ -24,8 +29,8 @@ function add_admin_form_admission_content(){
         }
 
     }else{
-        $list_students = new TT_new_student_List_Table;
-	    $list_students->prepare_items();
+        $list_students = new TT_document_review_List_Table;
+        $list_students->prepare_items();
         include(plugin_dir_path(__FILE__).'templates/list-student-documents.php');
     }
 }
@@ -51,21 +56,10 @@ class TT_new_student_List_Table extends WP_List_Table{
             case 'full_name':
                 return $item['name'].' '.$item['last_name'];
             case 'program':
-                $program = match($item['program_id']){
-                    'aes' => __('AES (Dual Diploma)','form-plugin'),
-                    'psp' => __('PSP (Carrera Universitaria)','form-plugin'),
-                    'aes_psp' => __('AES (Dual Diploma)','form-plugin').','.__('AES (Dual Diploma)','form-plugin'),
-                };
-
+                $program = get_name_program($item['program_id']);
                 return $program;
             case 'grade':   
-                $grade = match($item['grade_id']){
-                    '1' => __('9no (antepenúltimo)','form-plugin'),
-                    '2' => __('10mo (penúltimo)','form-plugin'),
-                    '3' => __('11vo (último)','form-plugin'),
-                    '4' => __('Bachiller (graduado)','form-plugin')
-                };
-
+                $grade = get_name_grade($item['grade_id']);
                 return $grade;
             case 'view_details':
                 return "<a href='".admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id='.$item['id'])."' class='button button-primary'>".__('View Details','form-plugin')."</a>";
@@ -89,10 +83,10 @@ class TT_new_student_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
-            'full_name'     => __('Full name','form-plugin'),
-            'program'     => __('Program','form-plugin'),
-            'grade' => __('Grade','form-plugin'),
-            'view_details' => __('Actions','form-plugin'),
+            'full_name'     => __('Full name','aes'),
+            'program'     => __('Program','aes'),
+            'grade' => __('Grade','aes'),
+            'view_details' => __('Actions','aes'),
         );
 
         return $columns;
@@ -200,21 +194,10 @@ class TT_document_review_List_Table extends WP_List_Table{
             case 'full_name':
                 return $item['name'].' '.$item['last_name'];
             case 'program':
-                $program = match($item['program_id']){
-                    'aes' => __('AES (Dual Diploma)','form-plugin'),
-                    'psp' => __('PSP (Carrera Universitaria)','form-plugin'),
-                    'aes_psp' => __('AES (Dual Diploma)','form-plugin').','.__('AES (Dual Diploma)','form-plugin'),
-                };
-
+                $program = get_name_program($item['program_id']);
                 return $program;
             case 'grade':   
-                $grade = match($item['grade_id']){
-                    '1' => __('9no (antepenúltimo)','form-plugin'),
-                    '2' => __('10mo (penúltimo)','form-plugin'),
-                    '3' => __('11vo (último)','form-plugin'),
-                    '4' => __('Bachiller (graduado)','form-plugin')
-                };
-
+                $grade = get_name_grade($item['grade_id']);
                 return $grade;
             case 'pending_documents':
                 return $item['count_pending_documents'];
@@ -317,7 +300,7 @@ class TT_document_review_List_Table extends WP_List_Table{
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
             FROM {$table_students} as a 
             JOIN {$table_student_documents} b on b.student_id = a.id 
-            WHERE status_id=2 AND (b.status != 5) AND 
+            WHERE (b.status != 5) AND 
             (a.name  LIKE '{$search}' OR a.last_name LIKE '{$search}%' OR email LIKE '{$search}%')
             GROUP BY a.id
             ORDER BY a.updated_at ASC
@@ -332,7 +315,7 @@ class TT_document_review_List_Table extends WP_List_Table{
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
                 FROM {$table_students} as a 
                 JOIN {$table_student_documents} b on b.student_id = a.id 
-                WHERE status_id=2 AND (b.status != 5) 
+                WHERE (b.status != 5) 
                 GROUP BY a.id
                 ORDER BY a.updated_at ASC
             ","ARRAY_A");
@@ -439,10 +422,10 @@ class TT_all_student_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
-            'full_name'     => __('Full name','form-plugin'),
-            'program'     => __('Program','form-plugin'),
-            'grade' => __('Grade','form-plugin'),
-            'view_details' => __('Actions','form-plugin'),
+            'full_name'     => __('Full name','aes'),
+            'program'     => __('Program','aes'),
+            'grade' => __('Grade','aes'),
+            'view_details' => __('Actions','aes'),
         );
 
         return $columns;
@@ -456,9 +439,9 @@ class TT_all_student_List_Table extends WP_List_Table{
         if(isset($_POST['s']) && !empty($_POST['s'])){
 
             $search = $_POST['s'];
-            $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email LIKE '{$search}%') ORDER BY name ASC","ARRAY_A");
+            $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email LIKE '{$search}%') ORDER BY name ASC","ARRAY_A");
         }else{
-            $data = $wpdb->get_results("SELECT * FROM {$table_students}  ORDER BY name ASC","ARRAY_A");
+            $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1 ) ORDER BY name ASC","ARRAY_A");
         }
 
        
@@ -533,11 +516,22 @@ function update_status_documents(){
         $status_id = $_POST['status'];
         $document_id = $_POST['document_id'];
 
-        $wpdb->update($table_student_documents,['status' => $status_id,'updated_at' => date('Y-m-d H:i:s')],['document_id' => $document_id,'student_id' => $student_id]);
+        $wpdb->update($table_student_documents,['status' => $status_id,'updated_at' => date('Y-m-d H:i:s')],['id' => $document_id,'student_id' => $student_id]);
 
+        if($status_id == 3){
+            $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
+            $email_rejected_document->trigger($student_id,$document_id);
+        }
+
+        if($status_id == 5){
+            $email_rejected_document = WC()->mailer()->get_emails()['WC_Approved_Document_Email'];
+            $email_rejected_document->trigger($student_id,$document_id);
+        }
+        /*
         if($document_id == 'id_student' && $status_id == 5){
             update_status_student($student_id,2);
         }
+        */
 
         $documents = get_documents($student_id);
 
@@ -550,26 +544,15 @@ function update_status_documents(){
                 $solvency_administrative = false;
             }
 
-            if($document->document_id == $document_id){
+            if($document->id == $document_id){
 
                 $html .= '<td class="column-primary">';
-                    
-                        $name = match ($document->document_id) {
-                            'certified_notes_high_school' => __('CERTIFIED NOTES HIGH SCHOOL','form-plugin'),
-                            'high_school_diploma' => __('HIGH SCHOOL DIPLOMA','form-plugin'),
-                            'id_parents' => __('ID OR CI OF THE PARENTS','form-plugin'),
-                            'id_student' => __('ID STUDENTS','form-plugin'),
-                            'photo_student_card' => __('PHOTO OF STUDENT CARD','form-plugin'),
-                            'proof_of_grades' => __('PROOF OF GRADE','form-plugin'),
-                            'proof_of_study' => __('PROOF OF STUDY','form-plugin'),
-                            'vaccunation_card' => __('VACCUNATION CARD','form-plugin'),
-                        };
-
-                        $html .= $name;
+                
+                        $html .= $document->document_id;
                     
                     $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
-                $html .= '<td id="'."td_document_".$document->document_id.'" data-colname="'.__('Status','aes').'">';
+                $html .= '<td id="'."td_document_".$document->id.'" data-colname="'.__('Status','aes').'">';
                     $html .= "<b>";
                     
                         $status = match ($document->status){
@@ -587,18 +570,18 @@ function update_status_documents(){
                     if($document->status > 0){
                         $html .= '<a target="_blank" href="'.wp_get_attachment_url($document->attachment_id).'" class="button button-primary">'.__('View','aes').'</a>';
                         if($document->status != 5){
-                            $html .= ' <button data-document-id="'.$document->document_id.'" data-student-id="'.$document->student_id.'" data-status="5" class="button change-status button-success">'.__('Approved','aes').'</button>';
+                            $html .= ' <button data-document-id="'.$document->id.'" data-student-id="'.$document->student_id.'" data-status="5" class="button change-status button-success">'.__('Approved','aes').'</button>';
                         }
                         if($document->status != 5 && $document->status != 3){
-                            $html .=  ' <button data-document-id="'.$document->document_id.'" data-student-id="'.$document->student_id.'" data-status="3" class="button change-status button-danger">'.__('Declined','aes').'</button>';
+                            $html .=  ' <button data-document-id="'.$document->id.'" data-student-id="'.$document->student_id.'" data-status="3" class="button change-status button-danger">'.__('Declined','aes').'</button>';
                         }
                     }
                 $html .= "</td>";
             }
+        }
 
-            if($solvency_administrative){
-                update_status_student($student_id,3);
-            }
+        if($solvency_administrative){
+            update_status_student($student_id,3);
         }
 
         echo json_encode(['status' => 'success','message' => __('status changed','aes'),'html' => $html]);

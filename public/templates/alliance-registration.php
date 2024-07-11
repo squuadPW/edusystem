@@ -1,31 +1,31 @@
 <div class="title">
-    Registro de nuevos aliados
-    <br> interesados en celebrar convenios con <br> FGU y AES
+   <?= __('Registration of new alliances interested in entering into agreements with FGU and AES','aes'); ?>
 </div>
-<form method="POST" action="<?= the_permalink().'?action=save_alliances'; ?>">
+<form method="POST" action="<?= the_permalink(); ?>">
     <div class="grid grid-cols-12 gap-4">
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name">Nombres del aliado</label>
-            <input class="formdata" type="text" name="name" required>
+            <label for="name"><?= __('Name','aes'); ?><span class="required">*</span></label>
+            <input class="formdata" type="text" name="first_name" required>
+            <input type="hidden" name="action" value="save_alliances">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname">Apellidos del aliado</label>
+            <label for="lastname"><?= __('Last name','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="last_name" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname">Nombre de representante legal</label>
+            <label for="lastname"><?= __('Name of legal representative','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="name_legal" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="phone">Número de contacto</label>
+            <label for="phone"><?= __('Contact Number','aes'); ?><span class="required">*</span></label>
             <input class="formdata number_phone" type="tel" id="number_phone" name="number_phone" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="email">Correo electrónico</label>
-            <input class="formdata" type="email" name="email" required>
+            <label for="email"><?= __('Email','aes'); ?><span class="required">*</span></label>
+            <input class="formdata" type="email" name="current_email" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="country"><?= __('País de residencia','form-plugin'); ?></label>
+            <label for="country"><?= __('Country','aes'); ?><span class="required">*</span></label>
             <select name="country">
             <?php foreach($countries as $key => $country){ ?>
                 <option value="<?= $key ?>"><?= $country;?></option> 
@@ -33,33 +33,33 @@
             </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="city">Estado de residencia</label>
+            <label for="city"><?= __('State','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="state" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="city">Ciudad de residencia</label>
+            <label for="city"><?= __('City','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="city" required>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="city">Direccion de residencia</label>
+            <label for="city"><?= __('Address','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="address" required>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="terms" class="checkboxes">
                 <input type="checkbox" id="terms" name="terms" required>
-                Acepto los términos y condiciones
+               <?= __('I accept the terms and conditions','aes'); ?>
             </label>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="politic" class="checkboxes">
                 <input type="checkbox"  id="politic" name="politic" required>    
-                Acepto la Política de Tratamiento de Datos
+               <?= __('I accept the Data Processing Policy','aes'); ?>
             </label>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 bottom">
-            <button class="submit">Enviar</button>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 text-align-center">
+            <button class="submit"><?= __('Send','aes'); ?></button>
         </div>
     </div>
 </form>

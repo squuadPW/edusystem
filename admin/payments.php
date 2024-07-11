@@ -25,6 +25,9 @@ function add_admin_form_payments_content(){
             $list_payments->prepare_items();
             include(plugin_dir_path(__FILE__).'templates/list-payments.php');
         }else if($_GET['section_tab'] == 'order_detail'){
+
+            global $current_user;
+            $roles = $current_user->roles;
             $order_id = $_GET['order_id'];
             $order = wc_get_order($order_id);
 
@@ -90,7 +93,7 @@ class TT_payment_pending_List_Table extends WP_List_Table{
         $columns = array(
             'payment_id'     => __('Payment ID','aes'),
             'date'     => __('Date','aes'),
-            'partner_name'  => __('Partner Name','aes'),
+            'partner_name'  => __('Name','aes'),
             'total' => __('Total','aes'),
             'payment_method' => __('Payment Method','aes'),
             'status' => __('Status','aes'),
@@ -229,7 +232,7 @@ class TT_all_payments_List_Table extends WP_List_Table{
         $columns = array(
             'payment_id'     => __('Payment ID','aes'),
             'date'     => __('Date','aes'),
-            'partner_name'  => __('Partner Name','aes'),
+            'partner_name'  => __('Name','aes'),
             'total' => __('Total','aes'),
             'payment_method' => __('Payment Method','aes'),
             'status' => __('Status','aes'),
@@ -255,7 +258,7 @@ class TT_all_payments_List_Table extends WP_List_Table{
             foreach($orders as $order){
                 array_push($orders_array,[
                     'payment_id' => $order->get_id(),
-                    'date' => $order->get_date_paid()->format('F j, Y g:i a'),
+                    'date' => $order->get_date_created()->format('F j, Y g:i a'),
                     'partner_name' =>  $order->get_billing_first_name().' '.$order->get_billing_last_name(),
                     'total' => get_woocommerce_currency_symbol().$order->get_total(),
                     'status' => $order->get_status(),

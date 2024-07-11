@@ -1,0 +1,194 @@
+<?php
+
+function show_moodle_setting(){
+
+    if(isset($_GET['action']) && !empty($_GET['action'])){
+        if($_GET['action'] == 'save_setting'){
+
+            if(isset($_POST['moodle_url']) && !empty($_POST['moodle_url'])){
+                update_option('moodle_url',$_POST['moodle_url']);
+            }else{
+                update_option('moodle_url','');
+            }
+
+            if(isset($_POST['moodle_token']) && !empty($_POST['moodle_token'])){
+                update_option('moodle_token',$_POST['moodle_token']);
+            }else{
+                update_option('moodle_token','');
+            }
+        }
+
+        wp_redirect(admin_url('admin.php?page=moodle-setting'));
+        exit;
+
+    }else{
+        include(plugin_dir_path(__FILE__).'templates/moodle-setting.php');
+    }
+}
+
+function create_user_moodle($student_id){
+
+    global $wpdb;
+    $table_students = $wpdb->prefix.'students';
+
+    $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+
+    if(!empty($moodle_url) && !empty($moodle_token)){
+
+        $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php',$moodle_token);
+        $password = wp_generate_password(12);
+        
+        $users = ['users' => [
+            [
+                'username' => $data_student->email,
+                'firstname' => $data_student->name,
+                'lastname' => $data_student->last_name,
+                'email' => $data_student->email,
+                'password' => $password,
+                'lang' => 'en'
+            ]
+        ]];
+
+        $create_user = $MoodleRest->request('core_user_create_users',$users,MoodleRest::METHOD_POST);
+        $wpdb->update($table_students,[
+            'moodle_student_id' => $create_user[0]['id'],
+            'moodle_password' => $password
+        ],['id' => $student_id]);
+        return $create_user;
+    }
+
+    return;
+}
+
+/**
+ * status: 
+ * 1) nologin - can not access
+ * 2) manual - can access
+ *  
+*/ 
+
+function change_status_student($student_id,$status = 'manual'){
+
+    global $wpdb;
+    $table_students = $wpdb->prefix.'students';
+
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+
+    $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+
+    if(!empty($moodle_url) && !empty($moodle_token)){
+
+        if(!$data_student){
+
+            $moodle_student_id = $data_student->moodle_student_id;
+    
+            if(!empty($moodle_student_id)){
+                
+                $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php',$moodle_token);
+
+                $users = ['users' => [
+                        [
+                            'id' => $moodle_student_id,
+                            'auth' => $status,
+                        ]
+                    ]
+                ];
+
+                $update_user = $MoodleRest->request('core_user_update_users',$users,MoodleRest::METHOD_POST);
+                return $update_user;
+            }
+    
+        }
+    }
+
+    return;
+}
+
+function is_search_student_by_email($student_id){
+
+    global $wpdb;
+    $table_students = $wpdb->prefix.'students';
+
+    $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+
+    if(!empty($data_student)){
+
+        if(!empty($moodle_url) && !empty($moodle_token)){
+
+            $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php',$moodle_token);
+
+            $search = [
+                'field' => 'email',
+                'values' => [
+                    $data_student->email
+                ]
+            ];
+
+            $search_user = $MoodleRest->request('core_user_get_users_by_field',$search);
+
+            if(empty($search_user)){
+                return [];
+            }else{
+                return $search_user;
+            }
+        }
+    }
+}
+
+function change_password_user_moodle($student_id){
+
+    global $wpdb;
+    $table_students = $wpdb->prefix.'students';
+
+    $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+
+    if(!empty($moodle_url) && !empty($moodle_token)){
+
+        if($data_student){
+
+            $moodle_student_id = $data_student->moodle_student_id;
+
+            if(!empty($moodle_student_id)){
+                
+                $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php',$moodle_token);
+
+                $users = ['users' => [
+                        [
+                            'id' => $moodle_student_id,
+                            'password' => $data_student->moodle_password,
+                        ]
+                    ]
+                ];
+
+                $update_user = $MoodleRest->request('core_user_update_users',$users,MoodleRest::METHOD_POST);
+                return $update_user;
+            }
+        }
+    }
+}
+
+function get_url_login($email){
+
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+
+    if(!empty($moodle_url) && !empty($moodle_token)){
+
+        $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php',$moodle_token);
+
+        $data = ['user' => ['email' => $email]];
+
+        $url = $MoodleRest->request('auth_userkey_request_login_url',$data,MoodleRest::METHOD_POST);
+        return $url['loginurl'];
+    }
+}
