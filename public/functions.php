@@ -601,7 +601,10 @@ add_action( 'wp_ajax_fee_update', 'fee_update');
 function fee_update() {
     global $woocommerce;
     $value = $_POST['option'];
-    // PROD
+    // AWS ID
+    // $id = 63;
+
+    // DREAMHOST ID
     // $id = 63;
 
     // LOCAL JOSE MORA
@@ -626,7 +629,10 @@ function reload_payment_table() {
         global $woocommerce;
         $cart = $woocommerce->cart->get_cart();
 
-        // PROD
+        // AWS ID
+        // $id = 63;
+
+        // DREAMHOST ID
         // $id = 63;
 
         // LOCAL JOSE MORA

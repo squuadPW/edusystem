@@ -94,8 +94,7 @@ function save_student(){
                         break;
                 }
 
-                // EN PRODUCTIVO
-                // DESCOMENTAR CUANDO ESTE EN PRODUCTIVO, Y COMENTAR EL PRIMERO
+                // EN AWS
                 // switch ($grade) {
                 //     case '1':
                 //         $variation = wc_get_product(54);
@@ -116,6 +115,30 @@ function save_student(){
                 //         $metadata = $variation->get_meta_data();
                 //         $woocommerce->cart->add_to_cart(53, 1, 60, $metada);
                 //         $woocommerce->cart->add_to_cart(63, 1);
+                //         break;
+                // }
+
+                // EN DREAMHOST
+                // switch ($grade) {
+                //     case '1':
+                //         $variation = wc_get_product(445);
+                //         $metadata = $variation->get_meta_data();
+                //         $woocommerce->cart->add_to_cart(441, 1, 445, $metada);
+                //         $woocommerce->cart->add_to_cart(484, 1);
+                //         break;
+
+                //     case '2':
+                //         $variation = wc_get_product(448);
+                //         $metadata = $variation->get_meta_data();
+                //         $woocommerce->cart->add_to_cart(442, 1, 448, $metada);
+                //         $woocommerce->cart->add_to_cart(484, 1);
+                //         break;
+
+                //     default:
+                //         $variation = wc_get_product(451);
+                //         $metadata = $variation->get_meta_data();
+                //         $woocommerce->cart->add_to_cart(443, 1, 451, $metada);
+                //         $woocommerce->cart->add_to_cart(484, 1);
                 //         break;
                 // }
             }else if($program == 'psp'){

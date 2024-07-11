@@ -1,7 +1,10 @@
 <?php
   global $woocommerce;
   $cart = $woocommerce->cart->get_cart();
-  // PROD
+  // AWS ID
+  // $id = 63;
+
+  // DREAMHOST ID
   // $id = 63;
 
   // LOCAL JOSE MORA
