@@ -12,20 +12,20 @@
             <div class="subtitle text-align-center"><?= __('School or Institution Information','aes'); ?></div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Name of School or Institution','aes'); ?></label>
+            <label for="name"><?= __('Name of School or Institution','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="name_institute" required>
             <input type="hidden" name="action" value="save_institute">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="phone"><?= __('School or Institution Phone','aes'); ?></label>
+            <label for="phone"><?= __('School or Institution Phone','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="tel" id="number_phone" name="number_phone" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="email"><?= __('School or Institution Mail','aes'); ?></label>
+            <label for="email"><?= __('School or Institution Mail','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="email" name="current_email" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="country"><?= __('Country','aes'); ?></label>
+            <label for="country"><?= __('Country','aes'); ?><span class="required">*</span></label>
             <select name="country">
             <?php foreach($countries as $key => $country){ ?>
                 <option value="<?= $key ?>"><?= $country;?></option> 
@@ -33,15 +33,15 @@
             </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="state"><?= __('State','aes'); ?></label>
+            <label for="state"><?= __('State','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="state" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="city"><?= __('City','aes'); ?></label>
+            <label for="city"><?= __('City','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="city" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="address"><?= __('Address'); ?></label>
+            <label for="address"><?= __('Address'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="address" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -57,15 +57,15 @@
             <div class="subtitle text-align-center"><?= __('Contact','aes'); ?></div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="rector_name"><?= __('Rector\'s name','aes'); ?></label>
+            <label for="rector_name"><?= __('Rector\'s name','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="rector_name" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="rector_lastname"><?= __('Rector\'s last name','aes'); ?></label>
+            <label for="rector_lastname"><?= __('Rector\'s last name','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="rector_lastname" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="rector_phone"><?= __('Phone','aes'); ?></label>
+            <label for="rector_phone"><?= __('Phone','aes'); ?><span class="required">*</span></label>
             <input class="formdata number_phone" type="tel" id="rector_phone" name="rector_phone" required>
         </div>
 

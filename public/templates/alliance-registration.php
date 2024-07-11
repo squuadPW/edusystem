@@ -4,28 +4,28 @@
 <form method="POST" action="<?= the_permalink(); ?>">
     <div class="grid grid-cols-12 gap-4">
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Name','aes'); ?></label>
+            <label for="name"><?= __('Name','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="first_name" required>
             <input type="hidden" name="action" value="save_alliances">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Last name','aes'); ?></label>
+            <label for="lastname"><?= __('Last name','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="last_name" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Name of legal representative','aes'); ?></label>
+            <label for="lastname"><?= __('Name of legal representative','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="name_legal" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="phone"><?= __('Contact Number','aes'); ?></label>
+            <label for="phone"><?= __('Contact Number','aes'); ?><span class="required">*</span></label>
             <input class="formdata number_phone" type="tel" id="number_phone" name="number_phone" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="email"><?= __('Email','aes'); ?></label>
+            <label for="email"><?= __('Email','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="email" name="current_email" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="country"><?= __('Country','aes'); ?></label>
+            <label for="country"><?= __('Country','aes'); ?><span class="required">*</span></label>
             <select name="country">
             <?php foreach($countries as $key => $country){ ?>
                 <option value="<?= $key ?>"><?= $country;?></option> 
@@ -33,16 +33,16 @@
             </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="city"><?= __('State','aes'); ?></label>
+            <label for="city"><?= __('State','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="state" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="city"><?= __('City','aes'); ?></label>
+            <label for="city"><?= __('City','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="city" required>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="city"><?= __('Address','aes'); ?></label>
+            <label for="city"><?= __('Address','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="address" required>
         </div>
 
