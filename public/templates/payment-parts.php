@@ -5,7 +5,7 @@
   // $id = 63;
 
   // DREAMHOST ID
-  // $id = 63;
+  // $id = 484;
 
   // LOCAL JOSE MORA
   $id = 484;
@@ -20,7 +20,7 @@
   }
 
   // Check if the product is a variable product
-  if ($product->is_type('variable')) {
+  if (isset($product) && $product->is_type('variable')) {
     ?>
 
     <div >
