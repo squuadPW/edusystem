@@ -154,8 +154,8 @@ class TT_scholarship_pending_List_Table extends WP_List_Table{
             'scholarship_id'     => __('Scholarship ID','aes'),
             'student_name'  => __('Student','aes'),
             'student_email'  => __('Student email','aes'),
-            'partner_name' => __('Partner','aes'),
-            'partner_email' => __('Partner email','aes'),
+            'partner_name' => __('Parent','aes'),
+            'partner_email' => __('Parent email','aes'),
             'date'     => __('Created at','aes'),
             'view_details' => __('Actions','aes'),
         );

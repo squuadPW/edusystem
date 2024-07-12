@@ -575,4 +575,8 @@ h3 {
   content: "✓";
   color: #fff;
   font-size: 14px;
+}
+
+.capitalize {
+  text-transform: capitalize;
 }/*# sourceMappingURL=style.css.map */

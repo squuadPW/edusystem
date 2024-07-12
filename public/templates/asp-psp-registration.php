@@ -1,27 +1,27 @@
 <div class="title">
-   <?= __('STUDENT REGISTRATION APPLICANTS','aes'); ?>
+   <?= __('STUDENT REGISTRATION','aes'); ?>
 </div>
 <form method="POST" action="<?= the_permalink().'?action=save_student'; ?>" class="form-aes">
     <div class="grid grid-cols-12 gap-4">
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('Date of birth','aes'); ?><span class="required">*</span></label>
-            <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student" required>
+            <input class="formdata capitalize" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Student names','aes'); ?><span class="required">*</span></label>
-            <input class="formdata" type="text" name="name_student" autocomplete="off" required>
+            <label for="name"><?= __('Student name','aes'); ?><span class="required">*</span></label>
+            <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Student middle name','aes'); ?>&nbsp;<span>(<?= __('optional','aes') ?>)</span></label>
-            <input class="formdata" type="text" name="middle_name_student" autocomplete="off">
+            <label for="lastname"><?= __('Student second name','aes'); ?>&nbsp;<span>(<?= __('optional','aes') ?>)</span></label>
+            <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="lastname"><?= __('Student last name','aes'); ?><span class="required">*</span></label>
-            <input class="formdata" type="text" name="lastname_student" autocomplete="off" required>
+            <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Student middle last name','aes'); ?>&nbsp;<span>(<?= __('optional','aes') ?>)</span></label>
-            <input class="formdata" type="text" name="middle_last_name_student" autocomplete="off">
+            <label for="lastname"><?= __('Student second last name','aes'); ?>&nbsp;<span>(<?= __('optional','aes') ?>)</span></label>
+            <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="phone"><?= __('Student contact number','aes'); ?><span class="required">*</span></label>
@@ -33,11 +33,11 @@
         </div>
         <div id="parent_name_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="agent_name"><?= __('Parent\'s name','aes'); ?><span class="required">*</span></label>
-            <input class="formdata" type="text" name="agent_name" autocomplete="off" id="agent_name" required>
+            <input class="formdata capitalize" type="text" name="agent_name" autocomplete="off" id="agent_name" required>
         </div>
         <div id="parent-lastname-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="agent_name"><?= __('Parent\'s last name','aes'); ?><span class="required">*</span></label>
-            <input class="formdata" type="text" name="agent_last_name" autocomplete="off" id="agent_last_name" required>
+            <input class="formdata capitalize" type="text" name="agent_last_name" autocomplete="off" id="agent_last_name" required>
         </div>
         <div id="parent-country-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="phone"><?= __('Parent\'s contact number','aes'); ?><span class="required">*</span></label>

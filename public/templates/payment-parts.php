@@ -25,13 +25,10 @@
 
     <div >
       <div style="margin-bottom: 10px !important;">
-        <label class="fee-container">Fee inscription
+        <label class="fee-container"><strong>Registration fee $299.</strong> <span>(You can pay it before starting classes in your account)</span>
           <input name="fee" type="checkbox" checked="checked">
           <span class="checkmark"></span>
         </label>
-      </div>
-      <div class="text-start" style="margin-bottom: 10px !important; color: #bbb9b9; font-style: italic; font-size: 12px">
-        <p>By selecting this option, I authorize American Elite School to charge the initial registration fee. If I do not select this option, I will be able to pay the fee at a later date. (Not required immediately)</p>
       </div>
     </div>
 

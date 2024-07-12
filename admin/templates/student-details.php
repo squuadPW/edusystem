@@ -86,7 +86,7 @@
                                     </td>
                             </tbody>
                         </table>
-                        <h3 style="margin-bottom:0px;text-align:center;"><b><?= __('Partner Information','aes'); ?></b></h3>
+                        <h3 style="margin-bottom:0px;text-align:center;"><b><?= __('Parent Information','aes'); ?></b></h3>
                         <table class="form-table table-customize" style="margin-top:0px;">
                             <tbody>
                                 <tr>

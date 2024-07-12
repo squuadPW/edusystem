@@ -342,34 +342,54 @@ function add_loginout_link( $items, $args ){
 }
 
 function status_changed_payment($order_id, $old_status, $new_status){
+    global $wpdb, $current_user;
+    $order = wc_get_order($order_id);
+    $customer_id = $order->get_customer_id();
+    $status_register = get_user_meta($customer_id,'status_register',true);
+    $table_student_payment = $wpdb->prefix.'student_payments';
 
-    try {
-        
-        $order = wc_get_order($order_id);
-        $customer_id = $order->get_customer_id();
-        $status_register = get_user_meta($customer_id,'status_register',true);
+    if($order->get_status() == 'completed'){
 
-        if($order->get_status() == 'completed'){
-    
+        if (isset($status_register)) {
             update_user_meta($customer_id,'status_register',1);
+        }
 
-            // FOR PROGRAM PAYMENT (AES PROGRAM)
-            $items = $order->get_items();
-            global $wpdb, $current_user;
-            $date = new DateTime('August 12');
-            $date = $date->format('Y-m-d');
-            $partner_id = is_user_logged_in() ? get_current_user_id() : $order->get_meta('student_id');
-            $table_students = $wpdb->prefix.'students';
-            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
-            $student_id = $student->id;
+        if($order->get_meta('student_id')){
+            $student_id = $order->get_meta('student_id');
 
-            foreach ($items as $item) {
-                $cuotes = 1;
-                $date_calc = '';
-                $product_id = $item->get_product()->get_id();
-                $is_variable = $item->get_product()->is_type('variation');
-                $is_variable = $item->get_product()->is_type('variation');
-                $price = $item->get_product()->get_price();
+            $wpdb->query("UPDATE {$table_student_payment} SET status_id = 1 WHERE student_id = {$student_id} and order_id = {$order_id}");
+
+            update_status_student($student_id,1);
+            
+            $email_request_documents = WC()->mailer()->get_emails()['WC_Request_Documents_Email'];
+            $email_request_documents->trigger($student_id);
+            
+            return $data->url;
+        }   
+
+    }else{
+
+        if($status_register != 1 && $status_register != '1'){
+            update_user_meta($customer_id,'status_register',0);
+        }
+
+
+        // FOR PROGRAM PAYMENT (AES PROGRAM)
+        $items = $order->get_items();
+        $date = new DateTime('August 12');
+        $date = $date->format('Y-m-d');
+        $student_id = $order->get_meta('student_id');
+
+        foreach ($items as $item) {
+            $cuotes = 1;
+            $date_calc = '';
+            $product_id = $item->get_product()->get_id();
+            $is_variable = $item->get_product()->is_type('variation');
+            $is_variable = $item->get_product()->is_type('variation');
+            $price = $item->get_product()->get_price();
+
+            $exist = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = {$product_id} and order_id = {$order_id}");
+            if (!$exist) {
 
                 if($is_variable) {
                     $product = $item->get_product();
@@ -397,7 +417,8 @@ function status_changed_payment($order_id, $old_status, $new_status){
                 }
 
                 $data = array(
-                    'status_id' => 1, 
+                    'status_id' => 0, 
+                    'order_id' => $order_id, 
                     'student_id' => $student_id, 
                     'product_id' => $product_id, // Use the new variable here
                     'amount' => $price, 
@@ -409,81 +430,63 @@ function status_changed_payment($order_id, $old_status, $new_status){
                 );
                 $wpdb->insert($wpdb->prefix.'student_payments', $data);
             }
-            // FOR PROGRAM PAYMENT (AES PROGRAM)
-
-            // FEE DE INSCRIPCION
-            $product = null;
-            foreach ($items as $item) {
-                $product = strtolower($item->get_product()->get_name()) == 'fee inscription' ? $item->get_product() : $product;
-            }
-            if (isset($product)) {
-                $roles = $current_user->roles;
-                $table_student_documents = $wpdb->prefix.'student_documents';
-                $table_student_payment = $wpdb->prefix.'student_payments';
-                $access_virtual = true;
-                $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
-
-                if($documents_student){
-                    foreach($documents_student as $document){
-                        if($document->status == 0){
-                            $access_virtual = false;
-                        }
-                    }
-                }
-
-                // VERIFICAR FEE DE INSCRIPCION
-                $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and amount = 299.00");
-                // VERIFICAR FEE DE INSCRIPCION
-
-                //virtual classroom
-                if($access_virtual && isset($paid)){
-
-                    update_status_student($student_id,2);
-
-                    if(in_array('parent',$roles) && !in_array('student',$roles)){
-                        create_user_student($student_id);
-                    }
-
-                    $exist = is_search_student_by_email($student_id);
-                
-                    if(!$exist){
-                        create_user_moodle($student_id);
-                    }else{
-                        $wpdb->update($table_students,['moodle_student_id' => $exist[0]['id']],['id' => $student_id]);
-
-                        $is_exist_password = is_password_user_moodle($student_id);
-
-                        if(!$is_exist_password){
-                            
-                            $password = generate_password_user();
-                            $wpdb->update($table_students,['moodle_password' => $password],['id' => $student_id]);
-                            change_password_user_moodle($student_id);
-                        }
-                    }
-                }
-            }
-            // FEE DE INSCRIPCION
-
-            if($order->get_meta('student_id')){
-                $student_id = $order->get_meta('student_id');
-                update_status_student($student_id,1);
-                
-                $email_request_documents = WC()->mailer()->get_emails()['WC_Request_Documents_Email'];
-                $email_request_documents->trigger($student_id);
-                
-                return $data->url;
-            }   
-    
-        }else{
-    
-            if($status_register != 1 && $status_register != '1'){
-                update_user_meta($customer_id,'status_register',0);
-            }
-    
         }
-    } catch (\Throwable $th) {
-        echo "<script>alert('error: $th');</script>";
-    }        
+        // FOR PROGRAM PAYMENT (AES PROGRAM)
+
+        // FEE DE INSCRIPCION
+        $product = null;
+        foreach ($items as $item) {
+            $product = strtolower($item->get_product()->get_name()) == 'fee inscription' ? $item->get_product() : $product;
+        }
+        if (isset($product)) {
+            $roles = $current_user->roles;
+            $table_student_documents = $wpdb->prefix.'student_documents';
+            $table_student_payment = $wpdb->prefix.'student_payments';
+            $access_virtual = true;
+            $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
+
+            if($documents_student){
+                foreach($documents_student as $document){
+                    if($document->status == 0){
+                        $access_virtual = false;
+                    }
+                }
+            }
+
+            // VERIFICAR FEE DE INSCRIPCION
+            $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and amount = 299.00");
+            // VERIFICAR FEE DE INSCRIPCION
+
+            //virtual classroom
+            if($access_virtual && isset($paid)){
+
+                update_status_student($student_id,2);
+
+                if(in_array('parent',$roles) && !in_array('student',$roles)){
+                    create_user_student($student_id);
+                }
+
+                $exist = is_search_student_by_email($student_id);
+            
+                if(!$exist){
+                    create_user_moodle($student_id);
+                }else{
+                    $wpdb->update($table_students,['moodle_student_id' => $exist[0]['id']],['id' => $student_id]);
+
+                    $is_exist_password = is_password_user_moodle($student_id);
+
+                    if(!$is_exist_password){
+                        
+                        $password = generate_password_user();
+                        $wpdb->update($table_students,['moodle_password' => $password],['id' => $student_id]);
+                        change_password_user_moodle($student_id);
+                    }
+                }
+            }
+        }
+        // FEE DE INSCRIPCION
+
+    }  
 }
             
 
@@ -642,46 +645,51 @@ function reload_payment_table() {
         });
 
         $cart_total = 0;
+        $product_id = null;
         foreach ($filtered_products as $key => $product) {
             $product_id = $product['product_id'];
             $cart_total = $product['line_total'];
             // $price = $product['line_total']; 
         }
-        $product = wc_get_product($product_id);
-        $variations = $product->get_available_variations();
-        $date = new DateTime('August 12');
-        $date = $date->format('Y-m-d');
-        foreach ($variations as $key => $variation) {
-            if ($variation['attributes']['attribute_pagos'] === $value) {
-            ?>
-            <table class="payment-parts-table mt-5">
-            <tr>
-            <th class="payment-parts-table-header">Payment</th>
-            <th class="payment-parts-table-header">Date</th>
-            <th class="payment-parts-table-header">Amount</th>
-            </tr>
-            <?php
-            $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true );
-            for ($i=0; $i < $cuotes; $i++) { 
-        ?>
-            <tr class="payment-parts-table-row">
-                <td class="payment-parts-table-data"><?php echo ($i + 1)?></td>
-                <td class="payment-parts-table-data"><?php echo ($i === 0? date('Y-m-d') : (($value === 'Annual')? date('Y-m-d', strtotime('+'.$i.' year', strtotime($date))) : date('Y-m-d', strtotime('+'.($i*6).' months', strtotime($date)))))?></td>
-                <td class="payment-parts-table-data"><?php echo wc_price($cart_total)?></td>
-            </tr>
-            <?php
+        if(isset($product_id)) {
+            $product = wc_get_product($product_id);
+            if ($product->is_type('variable')) {
+                $variations = $product->get_available_variations();
+                $date = new DateTime('August 12');
+                $date = $date->format('Y-m-d');
+                foreach ($variations as $key => $variation) {
+                    if ($variation['attributes']['attribute_pagos'] === $value) {
+                    ?>
+                    <table class="payment-parts-table mt-5">
+                    <tr>
+                    <th class="payment-parts-table-header">Payment</th>
+                    <th class="payment-parts-table-header">Date</th>
+                    <th class="payment-parts-table-header">Amount</th>
+                    </tr>
+                    <?php
+                    $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true );
+                    for ($i=0; $i < $cuotes; $i++) { 
+                ?>
+                    <tr class="payment-parts-table-row">
+                        <td class="payment-parts-table-data"><?php echo ($i + 1)?></td>
+                        <td class="payment-parts-table-data"><?php echo ($i === 0? date('Y-m-d') : (($value === 'Annual')? date('Y-m-d', strtotime('+'.$i.' year', strtotime($date))) : date('Y-m-d', strtotime('+'.($i*6).' months', strtotime($date)))))?></td>
+                        <td class="payment-parts-table-data"><?php echo wc_price($cart_total)?></td>
+                    </tr>
+                    <?php
+                    }
+                ?>
+                    <tr>
+                        <th class="payment-parts-table-header text-end" colspan="3">Total</th>
+                    </tr>
+                    <tr class="payment-parts-table-row">
+                        <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes))?></td>
+                    </tr>
+                    </table>
+                <?php
+                    }
+                }
             }
-        ?>
-            <tr>
-                <th class="payment-parts-table-header text-end" colspan="3">Total</th>
-            </tr>
-            <tr class="payment-parts-table-row">
-                <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes))?></td>
-            </tr>
-            </table>
-        <?php
         }
-    }
         $html = ob_get_clean();
         echo $html;
         wp_die();
@@ -744,12 +752,8 @@ function fee_inscription_button(){
     $table_student_payment = $wpdb->prefix.'student_payments';
     $table_students = $wpdb->prefix.'students';
     $partner_id = get_current_user_id();
-    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
+    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
     $paid = false;
-    if (isset($student)) {
-        $student_id = $student->id;
-        $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and amount = 299.00");
-    }
     // VERIFICAR FEE DE INSCRIPCION
     include(plugin_dir_path(__FILE__).'templates/fee-inscription-payment.php');
 }
@@ -772,4 +776,18 @@ function remove_coupon_text( $label ) {
         $current_coupon = reset( $applied_coupons );
     }
     return $current_coupon; // Return an empty string to remove the label
+}
+
+add_action('woocommerce_checkout_create_order', 'get_student_id_from_cookie', 20, 2);
+function get_student_id_from_cookie( $order, $data ) {
+    if (isset($_COOKIE['fee_student_id'])) {
+        $fee_student_id = $_COOKIE['fee_student_id'];
+        if (empty($fee_student_id)) {
+            error_log('Cookie value is empty');
+        } else {
+            $order->add_meta_data( 'student_id', $fee_student_id );
+        }
+    } else {
+        error_log('Cookie is not set');
+    }
 }

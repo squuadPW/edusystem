@@ -115,6 +115,7 @@ function create_tables() {
     dbDelta( "CREATE TABLE " . $table_student_payments . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         status_id INT(11) NOT NULL,
+        order_id INT(11) NOT NULL,
         student_id INT(11) NOT NULL,
         product_id INT(11) NOT NULL,
         amount DOUBLE(10, 2) NOT NULL,
