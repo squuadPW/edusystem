@@ -34,26 +34,26 @@
                                         <td><?= get_woocommerce_currency_symbol().$order->get_total() ?></td>
                                     </tr>
                                 <?php endif; ?>
-                                <?php if(in_array('institute',$roles)): ?>
+                                <?php if(in_array('institute',$roles) && $order->get_meta('institute_fee')): ?>
                                     <tr>
                                         <th scope="row"><label for="input_id"><?= __('Fee','aes').':'; ?></label></th>
                                         <td><?= get_woocommerce_currency_symbol().number_format($order->get_meta('institute_fee'),2,'.',','); ?></td>
                                     </tr>
                                 <?php else: ?>
-                                    <?php if(!in_array('alliance',$roles)): ?>
+                                    <?php if(!in_array('alliance',$roles) && $order->get_meta('institute_fee')): ?>
                                         <tr>
                                             <th scope="row"><label for="input_id"><?= __('Institute Fee','aes').':'; ?></label></th>
                                             <td><?= get_woocommerce_currency_symbol().number_format($order->get_meta('institute_fee'),2,'.',','); ?></td>
                                         </tr>
                                     <?php endif; ?>
                                 <?php endif; ?>
-                                <?php if(in_array('alliance',$roles)): ?>
+                                <?php if(in_array('alliance',$roles) && $order->get_meta('institute_fee')): ?>
                                     <tr>
                                         <th scope="row"><label for="input_id"><?= __('Fee','aes').':'; ?></label></th>
                                         <td><?= get_woocommerce_currency_symbol().number_format($order->get_meta('alliance_fee'),2,'.',','); ?></td>
                                     </tr>
                                 <?php else: ?>
-                                    <?php if(!in_array('institutes',$roles)): ?>
+                                    <?php if(!in_array('institutes',$roles) && $order->get_meta('institute_fee')): ?>
                                         <tr>
                                             <th scope="row"><label for="input_id"><?= __('Alliance Fee','aes').':'; ?></label></th>
                                             <td><?= get_woocommerce_currency_symbol().number_format($order->get_meta('alliance_fee'),2,'.',','); ?></td>
