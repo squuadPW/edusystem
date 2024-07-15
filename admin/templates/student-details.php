@@ -42,6 +42,16 @@
                                         <label for="input_id"><b><?= __('ID Document','aes'); ?></b></label><br>
                                         <input type="text" style="width:100%" value="<?= $student->id_document; ?>" readonly>
                                     </td>
+                                    <?php 
+                                    if ($user_student) {
+                                        ?>
+                                            <td>
+                                                <label for="input_id"><b><?= __('Username','aes'); ?></b></label><br>
+                                                <input type="text" style="width:100%" value="<?= $user_student->user_nicename; ?>" readonly>
+                                            </td>
+                                        <?php
+                                    }
+                                    ?>
                                 </tr>
                                 <tr>
                                     <th scope="row" style="font-weight:400;">
@@ -97,6 +107,10 @@
                                     <td>
                                         <label for="input_id"><b><?= __('ID Document','aes'); ?></b></label><br>
                                         <input type="text" style="width:100%" value="<?= get_user_meta($partner->ID,'id_document',true); ?>" readonly>
+                                    </td>
+                                    <td>
+                                        <label for="input_id"><b><?= __('Username','aes'); ?></b></label><br>
+                                        <input type="text" style="width:100%" value="<?= $partner->user_nicename; ?>" readonly>
                                     </td>
                                 </tr>
                                 <tr>

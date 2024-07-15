@@ -213,67 +213,6 @@ function wpdocs_remove_dashboard_widgets(){
 
 add_filter('screen_options_show_screen', '__return_false');
 
-function add_logo_dashboard(){
-    echo '<style>
-
-    #toplevel_page_logo_based_menu:hover{
-        background-color: white !important;
-    }
-
-    @media screen and (min-width:992px){
-
-        #toplevel_page_logo_based_menu {
-            background-image: url('.plugins_url('aes').'/admin/assets/img/logo-aes.png'.');
-            background-size: contain;
-            background-repeat:no-repeat;
-            margin:10px !important;
-            background-color: white;
-        }
-
-        #toplevel_page_logo_based_menu:hover{
-             background-color: white;
-        }
-    }
-
-    @media screen and (min-width:783px) and (max-width:991px){
-
-        #toplevel_page_logo_based_menu {
-            background-image: url('.plugins_url('aes').'/admin/assets/img/logo-icon.png'.');
-            background-size: contain;
-            background-repeat:no-repeat;
-            margin-bottom:5px !important;
-            background-color: white !important;
-        }
-    }
-
-
-
-    @media screen and (max-width:782px){
-
-        #toplevel_page_logo_based_menu {
-            background-image: url('.plugins_url('aes').'/admin/assets/img/logo-aes.png'.');
-            background-size: contain;
-            background-repeat:no-repeat;
-            margin:10px !important;
-            width:90% !important;
-             background-color: white !important;
-        }
-    }
-
-  
-
-    a.wp-first-item.wp-not-current-submenu.menu-top.menu-icon-generic.toplevel_page_logo_based_menu.menu-top-last{
-        visibility:hidden;
-    }
-    
-    a.toplevel_page_logo_based_menu{
-        visibility: hidden !important;
-    }
- </style>';
-}
-
-add_action('admin_enqueue_scripts', 'add_logo_dashboard');
-
 function replace_howdy( $wp_admin_bar ) {
     $my_account = $wp_admin_bar->get_node( 'my-account' );
     $greeting = str_replace( 'Howdy,', '', $my_account->title );

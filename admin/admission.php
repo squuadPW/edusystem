@@ -18,13 +18,15 @@ function add_admin_form_admission_content(){
             include(plugin_dir_path(__FILE__).'templates/list-student-documents.php');
         }else if($_GET['section_tab'] == 'student_details'){
 
-            global $current_user;
+            global $current_user, $wpdb;
             $roles = $current_user->roles;
 
             $documents = get_documents($_GET['student_id']);
             $student = get_student_detail($_GET['student_id']);
             $countries = get_countries();
             $partner = get_userdata($student->partner_id);
+            $table_users = $wpdb->prefix.'users';
+            $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='". $student->email . "'");
             include(plugin_dir_path(__FILE__).'templates/student-details.php');
         }
 

@@ -776,8 +776,7 @@ function remove_coupon_text( $label ) {
 }
 
 function custom_login_redirect($redirect_to, $request, $user) {
-    global $current_user;
-    $roles = $current_user->roles;
+    $roles = isset($user->roles) ? $user->roles : [];
 
     if (in_array('admision', $roles, true)) {
         $redirect_to = admin_url('admin.php?page=add_admin_form_admission_content'); // Redirect admision to a custom dashboard
@@ -785,8 +784,7 @@ function custom_login_redirect($redirect_to, $request, $user) {
 
     return $redirect_to;
 }
-
-add_filter('login_redirect', 'custom_login_redirect', 0, 3);
+add_filter('login_redirect', 'custom_login_redirect', 10, 3);
 
 function custom_cart_item_name($item_name, $cart_item, $cart_item_key) {
     // Check if we're on the checkout page

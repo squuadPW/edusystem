@@ -250,27 +250,6 @@ function list_departments_admin_page_callback() {
   
 add_action('admin_menu', 'add_custom_admin_page');
 
-function custom_login_store(){
-
-
-    $url = 'https://americanelite.dreamhosters.com/wp-content/uploads/2024/05/cropped-American-elite-LOGO-1-600x188-1-1.png';
-    echo '
-    <style type="text/css">
-        #login h1 a, .login h1 a {
-            background-image: url('.$url.');
-        background-size: cover;
-        background-repeat: no-repeat;
-        width:110px;
-        height:110px;
-        background-color:white;
-        border-radius:50%;
-        }
-        
-    </style>';
-
-}
-add_action( 'login_enqueue_scripts', 'custom_login_store' );
-
 function get_dates_search($filter,$custom){
 
     if($filter == 'today'){
@@ -395,3 +374,87 @@ function save_num_cuotes( $variation_id, $i ) {
     }
 }
 // AGREGAR NUEVO CAMPO DE VARIACION DE PRODUCTO PARA JUGAR CON LOS VALORES DE LAS CUOTAS EN LOS PROGRAMAS
+
+// functions.php
+
+function add_logo_dashboard(){
+    $url = 'https://online.american-elite.us/wp-content/uploads/2024/06/cropped-cropped-cropped-American-elite-LOGO-1-600x188-1-2.png';
+    $url_small = 'https://americanelite.dreamhosters.com/wp-content/uploads/2024/05/cropped-American-elite-LOGO-1-600x188-1-1.png';
+    echo '<style>
+    @media screen and (min-width:992px){
+        #toplevel_page_logo_based_menu {
+            background-image: url('.$url.');
+            background-size: contain;
+            background-repeat:no-repeat;
+            margin:10px !important;
+        }
+    }
+    @media screen and (min-width:783px) and (max-width:991px){
+        #toplevel_page_logo_based_menu {
+            background-image: url('.$url_small.');
+            background-size: contain;
+            background-repeat:no-repeat;
+            margin-bottom:5px !important;
+        }
+    }
+    @media screen and (max-width:782px){
+        #toplevel_page_logo_based_menu {
+            background-image: url('.$url_small.');
+            background-size: contain;
+            background-repeat:no-repeat;
+            margin:10px !important;
+        }
+    }
+    a.wp-first-item.wp-not-current-submenu.menu-top.menu-icon-generic.toplevel_page_logo_based_menu.menu-top-last{
+        visibility:hidden;
+    }
+    a.toplevel_page_logo_based_menu{
+        visibility: hidden !important;
+    }
+ </style>';
+}
+add_action('admin_enqueue_scripts', 'add_logo_dashboard');
+
+function custom_login_store(){
+if(get_option('blog_img_logo')){
+    $url = 'https://online.american-elite.us/wp-content/uploads/2024/06/cropped-cropped-cropped-American-elite-LOGO-1-600x188-1-2.png';
+    echo '
+    <style type="text/css">
+        #login h1 a, .login h1 a {
+            background-image: url('.$url.');
+        background-size: cover;
+        background-repeat: no-repeat;
+        width:110px;
+        height:110px;
+        background-color:white;
+        border-radius:50%;
+        }
+    </style>';
+}
+}
+add_action( 'login_enqueue_scripts', 'custom_login_store' );
+
+function remove_text_admin_bar_profile( $wp_admin_bar ){
+    $avatar = get_avatar( get_current_user_id(), 16 );
+    if (!$wp_admin_bar->get_node( 'my-account' )){
+        return;
+    }
+    $wp_admin_bar->add_node( array(
+        'id' => 'my-account',
+        'title' => sprintf( '%s', wp_get_current_user()->user_firstname.' '.wp_get_current_user()->user_lastname ) . $avatar,
+    ) );
+}
+add_action( 'admin_bar_menu', 'remove_text_admin_bar_profile' );
+
+function aes_logo() {
+    add_menu_page('logo', 'logo', 'read', 'logo_based_menu', '', '', 1);
+}
+add_action('admin_menu','aes_logo');
+
+function hide_notices(){
+    if (!is_super_admin()) {
+        remove_all_actions( 'user_admin_notices' );
+        remove_all_actions( 'admin_notices' );
+    }
+}
+add_action('in_admin_header', 'hide_notices', 99);
