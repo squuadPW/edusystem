@@ -17,7 +17,7 @@ function list_admin_form_department_content(){
             $description = $_POST['description'];
             $capabilities = $_POST['capabilities'];
             $department_id = $_POST['department_id'];
-            
+
             $role_name = str_replace('','_',$name);
             $cap = [];
             
@@ -27,7 +27,6 @@ function list_admin_form_department_content(){
                     $cap[$capability] = true;
                 }
             }
-
             //update
             if(isset($_POST['department_id']) && !empty($_POST['department_id'])){
 
@@ -50,6 +49,15 @@ function list_admin_form_department_content(){
                 $role->add_cap('manage_options');
                 $role->add_cap('read');
                 
+                if (in_array('manager_users_aes', $capabilities)) {
+                    $role->add_cap('create_users');
+                    $role->add_cap('delete_users');
+                    $role->add_cap('edit_users');
+                    $role->add_cap('list_users');
+                    $role->add_cap('promote_users');
+                    $role->add_cap('remove_users');
+                }
+
                 $wpdb->update($table_departments,['description' => $description],['id' => $department_id]);
 
                 $message_success = __('Department updated','aes');

@@ -97,6 +97,12 @@
                     </th>
                     <td style="display:table-cell;padding:3px;"><label for="manager_scholarship_aes" style="margin-left:20px;"><?= __('Scholarchips','aes'); ?></label></td>
                 </tr>
+                <tr>
+                    <th scope="row" style="width:10px;padding:3px;">
+                        <input type="checkbox" name="capabilities[]" id="manager_users_aes" value="manager_users_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_users_aes'])) ? 'checked' : ''; ?>>
+                    </th>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_users_aes" style="margin-left:20px;"><?= __('Users','aes'); ?></label></td>
+                </tr>
             </tbody>
        </table>
        <div style="display:flex;width:100%;justify-content:end;margin-top:10px;">
