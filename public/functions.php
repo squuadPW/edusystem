@@ -787,3 +787,40 @@ function custom_login_redirect($redirect_to, $request, $user) {
 }
 
 add_filter('login_redirect', 'custom_login_redirect', 0, 3);
+
+function custom_cart_item_name($item_name, $cart_item, $cart_item_key) {
+    // Check if we're on the checkout page
+    if (is_checkout()) {
+        // Get the product ID
+        $product_id = $cart_item['product_id'];
+
+        // // Get the custom product name (e.g. from a custom field)
+        // $product = wc_get_product($product_id);
+        // $custom_name = $product->get_meta('num_cuotes_text') ? $product->get_meta('num_cuotes_text') : 1;
+
+        // // If custom name exists, use it, otherwise use the default name
+        // if ($custom_name > 1) {
+        //     $item_name = 'First payment of program';
+        // } else {
+        //     $item_name = $item_name;
+        // }
+
+        $item_name = $item_name;
+        if (str_contains($item_name, 'Annual') || str_contains($item_name, 'Semiannual')) {
+            $item = explode("-", $item_name);
+            $item_name = $item[0] . '- 1 cuote';
+        }
+    } 
+
+    return $item_name;
+}
+add_filter('woocommerce_cart_item_name', 'custom_cart_item_name', 10, 3);
+
+function hide_checkout_cart_item_quantity($quantity, $cart_item, $cart_item_key) {
+    // Check if we're on the checkout page
+    if (is_checkout()) {
+        $quantity = ''; // Return an empty string to hide the quantity
+    }
+    return $quantity;
+}
+add_filter('woocommerce_checkout_cart_item_quantity', 'hide_checkout_cart_item_quantity', 10, 3);

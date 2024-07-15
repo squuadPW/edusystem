@@ -49,13 +49,16 @@ function remove_menu_pages_roles(){
         if(in_array($role_name,$roles)){
             remove_menu_page('edit-comments.php');
             remove_menu_page('tools.php');
-            remove_menu_page('users.php');
             remove_menu_page('profile.php');
             remove_menu_page('index.php');
             remove_menu_page('edit.php');
             remove_menu_page('upload.php');
             remove_menu_page('options-general.php');
             remove_menu_page('wp-mail-smtp');
+
+            if ($role_name != 'administration') {
+                remove_menu_page('users.php');
+            }
         }
     }
 
@@ -63,7 +66,7 @@ function remove_menu_pages_roles(){
 
         remove_menu_page('edit-comments.php');
         remove_menu_page('tools.php');
-        remove_menu_page('users.php');
+        // remove_menu_page('users.php');
         remove_menu_page('profile.php');
         remove_menu_page('index.php');
         remove_menu_page('edit.php');
@@ -71,6 +74,9 @@ function remove_menu_pages_roles(){
         remove_menu_page('options-general.php');
         remove_menu_page('wp-mail-smtp');
 
+        if ($role_name != 'administration') {
+            remove_menu_page('users.php');
+        }
     }
 }
 
