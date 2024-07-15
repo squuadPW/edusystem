@@ -14,7 +14,7 @@ Text Domain:  form-plugin
 if(!class_exists('WP_List_Table')){
   require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
-
+require plugin_dir_path(__FILE__).'settings.php';
 require plugin_dir_path(__FILE__).'public/functions.php';
 require plugin_dir_path(__FILE__).'admin/functions.php';
 require_once(ABSPATH. 'wp-admin/includes/upgrade.php');

@@ -71,52 +71,52 @@ function save_student(){
             //add program to cart
             if($program == 'aes'){
                 // EN LOCAL JOSE MORA
-                switch ($grade) {
-                    case '1':
-                        $variation = wc_get_product(468);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(465, 1, 468, $metada);
-                        $woocommerce->cart->add_to_cart(484, 1);
-                        break;
-
-                    case '2':
-                        $variation = wc_get_product(472);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(466, 1, 472, $metada);
-                        $woocommerce->cart->add_to_cart(484, 1);
-                        break;
-
-                    default:
-                        $variation = wc_get_product(475);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(467, 1, 475, $metada);
-                        $woocommerce->cart->add_to_cart(484, 1);
-                        break;
-                }
-
-                // EN AWS
                 // switch ($grade) {
                 //     case '1':
-                //         $variation = wc_get_product(54);
+                //         $variation = wc_get_product(468);
                 //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(51, 1, 54, $metada);
-                //         $woocommerce->cart->add_to_cart(63, 1);
+                //         $woocommerce->cart->add_to_cart(465, 1, 468, $metada);
+                //         $woocommerce->cart->add_to_cart(484, 1);
                 //         break;
 
                 //     case '2':
-                //         $variation = wc_get_product(57);
+                //         $variation = wc_get_product(472);
                 //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(52, 1, 57, $metada);
-                //         $woocommerce->cart->add_to_cart(63, 1);
+                //         $woocommerce->cart->add_to_cart(466, 1, 472, $metada);
+                //         $woocommerce->cart->add_to_cart(484, 1);
                 //         break;
 
                 //     default:
-                //         $variation = wc_get_product(60);
+                //         $variation = wc_get_product(475);
                 //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(53, 1, 60, $metada);
-                //         $woocommerce->cart->add_to_cart(63, 1);
+                //         $woocommerce->cart->add_to_cart(467, 1, 475, $metada);
+                //         $woocommerce->cart->add_to_cart(484, 1);
                 //         break;
                 // }
+
+                // EN AWS
+                switch ($grade) {
+                    case '1':
+                        $variation = wc_get_product(54);
+                        $metadata = $variation->get_meta_data();
+                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, 54, $metada);
+                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                        break;
+
+                    case '2':
+                        $variation = wc_get_product(57);
+                        $metadata = $variation->get_meta_data();
+                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, 57, $metada);
+                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                        break;
+
+                    default:
+                        $variation = wc_get_product(60);
+                        $metadata = $variation->get_meta_data();
+                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, 60, $metada);
+                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                        break;
+                }
 
                 // EN DREAMHOST
                 // switch ($grade) {

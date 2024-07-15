@@ -605,13 +605,13 @@ function fee_update() {
     global $woocommerce;
     $value = $_POST['option'];
     // AWS ID
-    // $id = 63;
+     $id =AES_FEE_INSCRIPTION;
 
     // DREAMHOST ID
     // $id = 63;
 
     // LOCAL JOSE MORA
-    $id = 484;
+    //$id = 484;
     if ($value == 'true') {
         $woocommerce->cart->add_to_cart($id, 1);
         $woocommerce->cart->calculate_totals();
@@ -633,13 +633,13 @@ function reload_payment_table() {
         $cart = $woocommerce->cart->get_cart();
 
         // AWS ID
-        // $id = 63;
+         $id = AES_FEE_INSCRIPTION;
 
         // DREAMHOST ID
         // $id = 63;
 
         // LOCAL JOSE MORA
-        $id = 484;
+       // $id = 484;
         $filtered_products = array_filter($cart, function($product) use($id) {
             return $product['product_id'] != $id;
         });
@@ -791,3 +791,5 @@ function get_student_id_from_cookie( $order, $data ) {
         error_log('Cookie is not set');
     }
 }
+// Redirects
+
