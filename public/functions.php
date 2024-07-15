@@ -69,10 +69,10 @@ add_filter( 'woocommerce_checkout_fields', 'removed_custom_checkout_fields');
 function removed_custom_checkout_fields($fields){
 
     unset( $fields['billing']['billing_company']);
-    unset( $fields['billing']['billing_address_1']);
-    unset( $fields['billing']['billing_address_2']);
-    unset( $fields['billing']['billing_state']);
-    unset( $fields['billing']['billing_postcode']);
+    // unset( $fields['billing']['billing_address_1']);
+    // unset( $fields['billing']['billing_address_2']);
+    // unset( $fields['billing']['billing_state']);
+    // unset( $fields['billing']['billing_postcode']);
     unset( $fields['shipping']['shipping_first_name']);
     unset( $fields['shipping']['shipping_last_name']);
     unset( $fields['shipping']['shipping_address_1']);
@@ -774,3 +774,16 @@ function remove_coupon_text( $label ) {
     }
     return $current_coupon; // Return an empty string to remove the label
 }
+
+function custom_login_redirect($redirect_to, $request, $user) {
+    global $current_user;
+    $roles = $current_user->roles;
+
+    if (in_array('admision', $roles, true)) {
+        $redirect_to = admin_url('admin.php?page=add_admin_form_admission_content'); // Redirect admision to a custom dashboard
+    }
+
+    return $redirect_to;
+}
+
+add_filter('login_redirect', 'custom_login_redirect', 0, 3);
