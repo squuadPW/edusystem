@@ -1,14 +1,7 @@
 <?php
   global $woocommerce;
   $cart = $woocommerce->cart->get_cart();
-  // AWS ID
-   $id = 63;
-
-  // DREAMHOST ID
-  // $id = 484;
-
-  // LOCAL JOSE MORA
-  //$id = 484;
+  $id = AES_FEE_INSCRIPTION;
 
   $filtered_products = array_filter($cart, function($product) use($id) {
       return $product['product_id'] != $id;

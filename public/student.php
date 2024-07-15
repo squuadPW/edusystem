@@ -70,77 +70,29 @@ function save_student(){
 
             //add program to cart
             if($program == 'aes'){
-                // EN LOCAL JOSE MORA
-                // switch ($grade) {
-                //     case '1':
-                //         $variation = wc_get_product(468);
-                //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(465, 1, 468, $metada);
-                //         $woocommerce->cart->add_to_cart(484, 1);
-                //         break;
-
-                //     case '2':
-                //         $variation = wc_get_product(472);
-                //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(466, 1, 472, $metada);
-                //         $woocommerce->cart->add_to_cart(484, 1);
-                //         break;
-
-                //     default:
-                //         $variation = wc_get_product(475);
-                //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(467, 1, 475, $metada);
-                //         $woocommerce->cart->add_to_cart(484, 1);
-                //         break;
-                // }
-
-                // EN AWS
                 switch ($grade) {
                     case '1':
-                        $variation = wc_get_product(54);
+                        $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, 54, $metada);
+                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metada);
                         $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
                         break;
 
                     case '2':
-                        $variation = wc_get_product(57);
+                        $variation = wc_get_product(AES_DUAL_10MO_VARIABLE);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, 57, $metada);
+                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metada);
                         $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
                         break;
 
                     default:
-                        $variation = wc_get_product(60);
+                        $variation = wc_get_product(AES_DUAL_DEFAULT_VARIABLE);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, 60, $metada);
+                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metada);
                         $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
                         break;
                 }
 
-                // EN DREAMHOST
-                // switch ($grade) {
-                //     case '1':
-                //         $variation = wc_get_product(445);
-                //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(441, 1, 445, $metada);
-                //         $woocommerce->cart->add_to_cart(484, 1);
-                //         break;
-
-                //     case '2':
-                //         $variation = wc_get_product(448);
-                //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(442, 1, 448, $metada);
-                //         $woocommerce->cart->add_to_cart(484, 1);
-                //         break;
-
-                //     default:
-                //         $variation = wc_get_product(451);
-                //         $metadata = $variation->get_meta_data();
-                //         $woocommerce->cart->add_to_cart(443, 1, 451, $metada);
-                //         $woocommerce->cart->add_to_cart(484, 1);
-                //         break;
-                // }
             }else if($program == 'psp'){
                 $woocommerce->cart->add_to_cart(102,1);
             }else if($program == 'aes_psp'){

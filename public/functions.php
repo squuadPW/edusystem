@@ -604,14 +604,7 @@ add_action( 'wp_ajax_fee_update', 'fee_update');
 function fee_update() {
     global $woocommerce;
     $value = $_POST['option'];
-    // AWS ID
-     $id =AES_FEE_INSCRIPTION;
-
-    // DREAMHOST ID
-    // $id = 63;
-
-    // LOCAL JOSE MORA
-    //$id = 484;
+    $id = AES_FEE_INSCRIPTION;
     if ($value == 'true') {
         $woocommerce->cart->add_to_cart($id, 1);
         $woocommerce->cart->calculate_totals();
@@ -631,15 +624,7 @@ function reload_payment_table() {
         $value = $_POST['option'];
         global $woocommerce;
         $cart = $woocommerce->cart->get_cart();
-
-        // AWS ID
-         $id = AES_FEE_INSCRIPTION;
-
-        // DREAMHOST ID
-        // $id = 63;
-
-        // LOCAL JOSE MORA
-       // $id = 484;
+        $id = AES_FEE_INSCRIPTION;
         $filtered_products = array_filter($cart, function($product) use($id) {
             return $product['product_id'] != $id;
         });
@@ -777,19 +762,4 @@ function remove_coupon_text( $label ) {
     }
     return $current_coupon; // Return an empty string to remove the label
 }
-
-add_action('woocommerce_checkout_create_order', 'get_student_id_from_cookie', 20, 2);
-function get_student_id_from_cookie( $order, $data ) {
-    if (isset($_COOKIE['fee_student_id'])) {
-        $fee_student_id = $_COOKIE['fee_student_id'];
-        if (empty($fee_student_id)) {
-            error_log('Cookie value is empty');
-        } else {
-            $order->add_meta_data( 'student_id', $fee_student_id );
-        }
-    } else {
-        error_log('Cookie is not set');
-    }
-}
-// Redirects
 
