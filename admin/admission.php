@@ -584,6 +584,47 @@ function update_status_documents(){
             update_status_student($student_id,3);
         }
 
+        $table_student_documents = $wpdb->prefix.'student_documents';
+        $table_student_payment = $wpdb->prefix.'student_payments';
+        $table_students = $wpdb->prefix.'students';
+        $access_virtual = true;
+        $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
+        if($documents_student){
+            foreach($documents_student as $document){
+                if($document->status != 5){
+                    $access_virtual = false;
+                }
+            }
+
+            // VERIFICAR FEE DE INSCRIPCION
+            $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = ". AES_FEE_INSCRIPTION);
+            // VERIFICAR FEE DE INSCRIPCION
+
+            //virtual classroom
+            if($access_virtual && isset($paid)){
+
+                update_status_student($student_id,2);
+
+                create_user_student($student_id);
+
+                $exist = is_search_student_by_email($student_id);
+            
+                if(!$exist){
+                    create_user_moodle($student_id);
+                }else{
+                    $wpdb->update($table_students,['moodle_student_id' => $exist[0]['id']],['id' => $student_id]);
+
+                    $is_exist_password = is_password_user_moodle($student_id);
+
+                    if(!$is_exist_password){
+                        $password = generate_password_user();
+                        $wpdb->update($table_students,['moodle_password' => $password],['id' => $student_id]);
+                        change_password_user_moodle($student_id);
+                    }
+                }
+            }
+        }
+
         echo json_encode(['status' => 'success','message' => __('status changed','aes'),'html' => $html]);
 
     }

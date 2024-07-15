@@ -85,48 +85,46 @@ function save_document(){
                     $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
 
                     if($documents_student){
-
                         foreach($documents_student as $document){
-
-                            if($document->status == 0){
+                            if($document->status != 5){
                                 $access_virtual = false;
                             }
                         }
-                    }
 
-                    // VERIFICAR FEE DE INSCRIPCION
-                    global $wpdb;
-                    $table_student_payment = $wpdb->prefix.'student_payments';
-                    $table_students = $wpdb->prefix.'students';
-                    $partner_id = get_current_user_id();
-                    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
-                    $student_id = $student->id;
-                    $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and amount = 299.00");
-                    // VERIFICAR FEE DE INSCRIPCION
+                        // VER  IFICAR FEE DE INSCRIPCION
+                        global $wpdb;
+                        $table_student_payment = $wpdb->prefix.'student_payments';
+                        $table_students = $wpdb->prefix.'students';
+                        $partner_id = get_current_user_id();
+                        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
+                        $student_id = $student->id;
+                        $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = ". AES_FEE_INSCRIPTION);
+                        // VERIFICAR FEE DE INSCRIPCION
 
-                    //virtual classroom
-                    if($access_virtual && isset($paid)){
+                        //virtual classroom
+                        if($access_virtual && isset($paid)){
 
-                        update_status_student($student_id,2);
+                            update_status_student($student_id,2);
 
-                        if(in_array('parent',$roles) && !in_array('student',$roles)){
-                            create_user_student($student_id);
-                        }
+                            if(in_array('parent',$roles) && !in_array('student',$roles)){
+                                create_user_student($student_id);
+                            }
 
-                        $exist = is_search_student_by_email($student_id);
-                    
-                        if(!$exist){
-                            create_user_moodle($student_id);
-                        }else{
-                            $wpdb->update($table_students,['moodle_student_id' => $exist[0]['id']],['id' => $student_id]);
+                            $exist = is_search_student_by_email($student_id);
+                        
+                            if(!$exist){
+                                create_user_moodle($student_id);
+                            }else{
+                                $wpdb->update($table_students,['moodle_student_id' => $exist[0]['id']],['id' => $student_id]);
 
-                            $is_exist_password = is_password_user_moodle($student_id);
+                                $is_exist_password = is_password_user_moodle($student_id);
 
-                            if(!$is_exist_password){
-                                
-                                $password = generate_password_user();
-                                $wpdb->update($table_students,['moodle_password' => $password],['id' => $student_id]);
-                                change_password_user_moodle($student_id);
+                                if(!$is_exist_password){
+                                    
+                                    $password = generate_password_user();
+                                    $wpdb->update($table_students,['moodle_password' => $password],['id' => $student_id]);
+                                    change_password_user_moodle($student_id);
+                                }
                             }
                         }
                     }
