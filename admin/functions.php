@@ -458,3 +458,21 @@ function hide_notices(){
     }
 }
 add_action('in_admin_header', 'hide_notices', 99);
+
+add_action( 'login_enqueue_scripts', 'aes_change_login_logo' );
+function aes_change_login_logo() { ?>
+    <style type="text/css"> 
+        #login h1 a { 
+            background: url('https://americanelite.dreamhosters.com/wp-content/uploads/2024/05/cropped-American-elite-LOGO-1-600x188-1-1.png') no-repeat center center; 
+            background-size: 100px; 
+            height: 100px; 
+            margin: 0 auto; 
+            width: 100px; 
+        } 
+    </style>
+<?php }
+
+add_filter('login_headerurl', 'aes_login_redirect_url');
+function aes_login_redirect_url() {
+    return 'https://online.american-elite.us/'; // Replace with your desired URL
+}
