@@ -628,3 +628,12 @@ h3{
         text-transform: capitalize;
     }
   
+    .woocommerce-MyAccount-navigation {
+        display: block !important;
+    }
+    
+    @media screen and (max-width: 768px) {
+        .woocommerce-MyAccount-navigation {
+            display: none !important;
+        }
+    }

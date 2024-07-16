@@ -336,9 +336,15 @@ add_filter( 'wp_nav_menu_items', 'add_loginout_link', 10, 2 );
 
 function add_loginout_link( $items, $args ){
 
-    if(is_user_logged_in() && $args->theme_location == 'primary') {
-        $logout_link = wp_logout_url( get_home_url() );
+    if(is_user_logged_in()) {
         $items .= '<li><a href="'.get_permalink( get_option('woocommerce_myaccount_page_id') ).'">'.__('Dashboard','form-plugin').'</a></li>';
+        if ($args->theme_location != 'primary') {
+            $items .= '<li><a href="'.get_permalink( get_option('woocommerce_myaccount_page_id') ).'/orders">'.__('Payments','form-plugin').'</a></li>';
+            $items .= '<li><a href="'.get_permalink( get_option('woocommerce_myaccount_page_id') ).'/student">'.__('Students information','form-plugin').'</a></li>';
+            $items .= '<li><a href="'.get_permalink( get_option('woocommerce_myaccount_page_id') ).'/student-documents">'.__('Documents','form-plugin').'</a></li>';
+            $items .= '<li><a href="'.get_permalink( get_option('woocommerce_myaccount_page_id') ).'/edit-account">'.__('Account details','form-plugin').'</a></li>';
+        }
+        $logout_link = wp_logout_url( get_home_url() );
         $items .= '<li><a class="button-primary" style="font-size:14px;" href="'.$logout_link.'">'.__('Log out','form-plugin').'</a></li>';
     }
 
