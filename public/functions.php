@@ -786,6 +786,12 @@ function custom_login_redirect($redirect_to, $request, $user) {
 }
 add_filter('login_redirect', 'custom_login_redirect', 10, 3);
 
+function custom_logout_redirect($redirect_to, $request, $user) {
+    $redirect_to = home_url('my-account/'); // Redirect to My Account page
+    return $redirect_to;
+}
+add_filter('logout_redirect', 'custom_logout_redirect', 10, 3);
+
 function custom_cart_item_name($item_name, $cart_item, $cart_item_key) {
     // Check if we're on the checkout page
     if (is_checkout()) {
