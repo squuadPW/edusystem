@@ -1,16 +1,9 @@
 <div class="title">
     <?= __('Institution Registration','aes'); ?>
-    
-</div>
-<div class="subtitle mb-4" style="margin: 0 auto !important;margin-bottom:20px !important;" >
-<?= __('Registration Form for Institutions interested in entering into agreements with FGU and AES','aes'); ?>
 </div>
 <form method="POST" action="<?= the_permalink(); ?>">
     <div class="grid grid-cols-12 gap-4">
         <!-- Section -->
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <div class="subtitle text-align-center"><?= __('School or Institution Information','aes'); ?></div>
-        </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name"><?= __('Name of School or Institution','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="name_institute" required>

@@ -1,5 +1,5 @@
 <div class="title">
-   <?= __('STUDENT REGISTRATION','aes'); ?>
+    <?= __('Student applicant','aes'); ?>
 </div>
 <form method="POST" action="<?= the_permalink().'?action=save_student'; ?>" class="form-aes">
     <div class="grid grid-cols-12 gap-4">

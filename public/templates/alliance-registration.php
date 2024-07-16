@@ -1,5 +1,5 @@
 <div class="title">
-   <?= __('Registration of new alliances interested in entering into agreements with FGU and AES','aes'); ?>
+    <?= __('Alliance Registration','aes'); ?>
 </div>
 <form method="POST" action="<?= the_permalink(); ?>">
     <div class="grid grid-cols-12 gap-4">
