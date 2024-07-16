@@ -348,7 +348,7 @@ function add_loginout_link( $items, $args ){
         $items .= '<li><a class="button-primary" style="font-size:14px;" href="'.$logout_link.'">'.__('Log out','form-plugin').'</a></li>';
     }
 
-    elseif (!is_user_logged_in() && $args->theme_location == 'primary') {
+    elseif (!is_user_logged_in()) {
         $items .= '<li><a class="button-primary" style="font-size:14px;" href="' .get_permalink( get_option('woocommerce_myaccount_page_id') ). '">'.__('Log in','form-plugin').'</a></li>';
     }
 
