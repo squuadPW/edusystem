@@ -8,6 +8,19 @@
             <input class="formdata capitalize" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="birth_date"><?= __('Type document','aes'); ?><span class="required">*</span></label>
+            <select name="document_type" autocomplete="off" required>
+                <option value="passport">Passport</option>
+                <option value="identification_document">Identification Document</option>
+                <option value="ssn">SSN</option>
+                <!-- <option value="3">Dual Diploma</option> -->
+            </select>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="birth_date"><?= __('ID document','aes'); ?><span class="required">*</span></label>
+            <input class="formdata capitalize" autocomplete="off" type="text" id="id_document" name="id_document" required>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name"><?= __('Student name','aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
         </div>

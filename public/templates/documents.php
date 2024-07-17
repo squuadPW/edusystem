@@ -1,4 +1,15 @@
-<h2 style="font-size:24px;text-align:center;"><?= __('Documents','aes'); ?></h2>
+<div class="text-center info-box">
+        <h2 style="font-size:24px;text-align:center;"><?= __('Documents','aes'); ?></h2>
+        <p>To access the <a style="text-decoration: underline !important; color: #091c5c;" href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ) . '/student' ?>">virtual classroom</a>, please ensure you complete the following steps:</p>
+        <ul class="info-list">
+            <li>
+            <i class="fas fa-upload"></i>
+                Once your payment is approved, the option to upload all required documents is enabled in your registration form.
+            </li>
+            <li>
+        </ul>
+        <!-- <p class="info-note">Once both steps are complete, you will receive an email with instructions on how to access the virtual classroom. Please note that access will only be granted once all required documents have been received and your payment has been processed.</p> -->
+</div>
 
 <?php if(!empty($students)): ?>
 
@@ -35,7 +46,10 @@
                         </td>
                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number" data-title="<?= __('Action','aes'); ?>">
                             <?php if($document->status == 0 || $document->status == 3 || $document->status == 4){ ?>
-                                <input type="file" name="<?= 'document_'.$document->id.'_student_id_'.$student->id; ?>">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" name="<?= 'document_'.$document->id.'_student_id_'.$student->id; ?>">
+                                    <span class="custom-file-label">Select file</span>
+                                </div>
                             <?php }else{ ?>
                                 <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" type="button" class="button">View Document</a>
                             <?php } ?>

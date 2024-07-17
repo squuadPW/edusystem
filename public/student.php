@@ -11,6 +11,8 @@ function save_student(){
             setcookie('is_older','',time());
 
             $name = strtolower($_POST['name_student']);
+            $document_type = $_POST['document_type'];
+            $id_document = $_POST['id_document'];
             $middle_name_student = strtolower($_POST['middle_name_student']);
             $last_name = strtolower($_POST['lastname_student']);
             $middle_last_name_student = strtolower($_POST['middle_last_name_student']);
@@ -53,6 +55,8 @@ function save_student(){
 
             /* set cookie */
             setcookie('phone_student',$number_phone,time() + 3600);
+            setcookie('id_document',$id_document,time() + 3600);
+            setcookie('document_type',$document_type,time() + 3600);
             setcookie('email_student',$email_student,time() + 3600);
             setcookie('name_student',ucwords($name),time() + 3600);
             setcookie('middle_name_student',ucwords($middle_name_student),time() + 3600);
@@ -155,6 +159,8 @@ function insert_student($customer_id){
 
     $wpdb->insert($table_students,[
         'name' => $_COOKIE['name_student'],
+        'type_document' => $_COOKIE['document_type'],
+        'id_document' => $_COOKIE['id_document'],
         'middle_name' => $_COOKIE['middle_name_student'],
         'last_name' => $_COOKIE['last_name_student'],
         'middle_last_name' => $_COOKIE['middle_last_name_student'],

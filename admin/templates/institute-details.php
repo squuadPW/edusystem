@@ -243,7 +243,7 @@
                             <?php if(isset($institute) && !empty($institute)): ?>
                                 <?php if($institute->status == 0): ?>
                                     <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
-                                        <button type="button" data-id="1" data-title="<?= __('Approve Institution','aes'); ?>" data-message="<?= __('Do you want to approve this institution?','aes'); ?>" class="button button-primary change-status-institute"><?= __('Approved','aes'); ?></button>
+                                        <button type="button" data-id="1" data-title="<?= __('Approve Institution','aes'); ?>" data-message="<?= __('Do you want to approve this institution?','aes'); ?>" class="button button-primary change-status-institute"><?= __('Approve','aes'); ?></button>
                                         <button type="button" data-id="2" data-title="<?= __('Decline Institution','aes'); ?>" data-message="<?= __('Do pou you want to decline this institution?','aes'); ?>" class="button button-danger change-status-institute"><?= __('Declined','aes'); ?></button>
                                     </div>
                                 <?php elseif($institute->status == 1): ?>

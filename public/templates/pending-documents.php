@@ -1,5 +1,5 @@
 <div class="content-dashboard">
-    <h4 style="font-size:20px;text-align:start;"><?= __('Pending Documents','aes'); ?></h4>
+    <h4 style="font-size:20px;text-align:center;"><?= __('Pending Documents','aes'); ?> <br><a style="text-decoration: underline !important; color: #091c5c; font-size: 14px;" href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ) . '/student-documents' ?>">My documents</a></h4>
 
     <div style="margin-top:10px;">
         <?php if(!empty($students)): ?>

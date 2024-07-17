@@ -108,9 +108,9 @@
                             <?php if($order->get_status() != 'completed'){ ?>
                                 <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
                                     <?php if(wp_is_mobile()){ ?>
-                                        <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approved','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-primary"><?= __('Approved','aes'); ?></button>
+                                        <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-primary"><?= __('Approve','aes'); ?></button>
                                     <?php }else{ ?>
-                                        <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approved','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" class="button button-primary"><?= __('Approved','aes'); ?></button>
+                                        <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" class="button button-primary"><?= __('Approve','aes'); ?></button>
                                     <?php } ?>
                                 </div>
                             <?php } ?>

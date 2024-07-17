@@ -192,7 +192,7 @@
                             <?php if(isset($alliance) && !empty($alliance)): ?>
                                 <?php if($alliance->status == 0): ?>
                                     <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
-                                        <button type="button" data-id="1" data-alliance="<?= $alliance->id; ?>" data-title="<?= __('Approve Alliance','aes'); ?>" data-message="<?= __('Do you want to approve this alliance?','aes'); ?>" class="button button-primary change-status-alliance"><?= __('Approved','aes'); ?></button>
+                                        <button type="button" data-id="1" data-alliance="<?= $alliance->id; ?>" data-title="<?= __('Approve Alliance','aes'); ?>" data-message="<?= __('Do you want to approve this alliance?','aes'); ?>" class="button button-primary change-status-alliance"><?= __('Approve','aes'); ?></button>
                                         <button type="button" data-id="2" data-alliance="<?= $alliance->id; ?>" data-title="<?= __('Decline Alliance','aes'); ?>" data-message="<?= __('Do pou you want to decline this alliance?','aes'); ?>" class="button button-danger change-status-alliance"><?= __('Declined','aes'); ?></button>
                                     </div>
                                 <?php endif; ?>

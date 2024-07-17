@@ -449,7 +449,7 @@ function status_changed_payment($order_id, $old_status, $new_status){
         // FEE DE INSCRIPCION
         $product = null;
         foreach ($items as $item) {
-            $product = strtolower($item->get_product()->get_name()) == 'fee inscription' ? $item->get_product() : $product;
+            $product = $item->get_product()->get_id() == AES_FEE_INSCRIPTION ? $item->get_product() : $product;
         }
         if (isset($product)) {
             $roles = $current_user->roles;
@@ -786,6 +786,14 @@ function custom_login_redirect($redirect_to, $request, $user) {
 
     if (in_array('admision', $roles, true)) {
         $redirect_to = admin_url('admin.php?page=add_admin_form_admission_content'); // Redirect admision to a custom dashboard
+    }
+
+    if (in_array('finanzas', $roles, true)) {
+        $redirect_to = admin_url('admin.php?page=add_admin_form_payments_content'); // Redirect admision to a custom dashboard
+    }
+
+    if (in_array('administration', $roles, true)) {
+        $redirect_to = admin_url('admin.php?page=add_admin_institutes_content'); // Redirect admision to a custom dashboard
     }
 
     return $redirect_to;

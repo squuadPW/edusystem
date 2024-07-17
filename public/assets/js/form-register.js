@@ -173,6 +173,16 @@ document.addEventListener('DOMContentLoaded',function(){
 
         });
     }
+
+    const fileInputs = document.querySelectorAll('.custom-file-input');
+    const fileLabels = document.querySelectorAll('.custom-file-label');
+  
+    fileInputs.forEach((fileInput, index) => {
+      fileInput.addEventListener('change', () => {
+        const fileName = fileInput.files[0].name;
+        fileLabels[index].textContent = fileName ? fileName : 'Select file';
+      });
+    });
 });
 
 function diff_years(dt2, dt1) {

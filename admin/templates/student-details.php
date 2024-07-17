@@ -198,7 +198,7 @@
                                 <?php if($document->status > 0): ?>
                                     <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" class="button button-primary"><?= __('View','aes'); ?></a>
                                     <?php if($document->status != 5): ?>
-                                        <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>" data-status="5" class="button change-status button-success"><?= __('Approved','aes'); ?></button>
+                                        <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>" data-status="5" class="button change-status button-success"><?= __('Approve','aes'); ?></button>
                                     <?php endif; ?>
                                     <?php if($document->status != 5 && $document->status != 3): ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>" data-status="3" class="button change-status button-danger"><?= __('Declined','aes'); ?></button>

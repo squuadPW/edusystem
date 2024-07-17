@@ -52,9 +52,9 @@
                             <?php if($scholarship->status_id != 1){ ?>
                                 <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
                                     <?php if(wp_is_mobile()){ ?>
-                                        <button data-message="<?= __('Do you want to approve this scholarship?','aes'); ?>" data-title="<?= __('Approve Scholarship','aes'); ?>" data-id="<?= $scholarship->id; ?>" id="approved_scholarship" style="width:100%;" class="button button-primary"><?= __('Approved Scholarship','aes'); ?></button>
+                                        <button data-message="<?= __('Do you want to approve this scholarship?','aes'); ?>" data-title="<?= __('Approve Scholarship','aes'); ?>" data-id="<?= $scholarship->id; ?>" id="approved_scholarship" style="width:100%;" class="button button-primary"><?= __('Approve Scholarship','aes'); ?></button>
                                     <?php }else{ ?>
-                                        <button data-message="<?= __('Do you want to approve this scholarship?','aes'); ?>" data-title="<?= __('Approve Scholarship','aes'); ?>" data-id="<?= $scholarship->id; ?>" id="approved_scholarship" class="button button-primary"><?= __('Approved Scholarship','aes'); ?></button>
+                                        <button data-message="<?= __('Do you want to approve this scholarship?','aes'); ?>" data-title="<?= __('Approve Scholarship','aes'); ?>" data-id="<?= $scholarship->id; ?>" id="approved_scholarship" class="button button-primary"><?= __('Approve Scholarship','aes'); ?></button>
                                     <?php } ?>
                                 </div>
                             <?php } ?>
