@@ -29,6 +29,13 @@ function form_plugin_scripts(){
         'ajax_url' => admin_url('admin-ajax.php')
     ));
     wp_enqueue_script('payment-parts-update');
+
+    // form-register
+    wp_register_script('form-register',plugins_url('aes').'/public/assets/js/form-register.js', array('jquery'), '1.0.0', true);
+    wp_localize_script('form-register', 'ajax_object', array(
+        'ajax_url' => admin_url('admin-ajax.php')
+    ));
+    wp_enqueue_script('form-register');
 }
 
 add_action( 'wp_enqueue_scripts', 'form_plugin_scripts');
@@ -842,3 +849,40 @@ function hide_checkout_cart_item_quantity($quantity, $cart_item, $cart_item_key)
     return $quantity;
 }
 add_filter('woocommerce_checkout_cart_item_quantity', 'hide_checkout_cart_item_quantity', 10, 3);
+
+add_action( 'wp_ajax_nopriv_exist_user_email', 'exist_user_email');
+add_action( 'wp_ajax_exist_user_email', 'exist_user_email');
+function exist_user_email() {
+    global $wpdb;
+    $email = $_POST['option'];
+    $table_student = $wpdb->prefix.'students';
+    $table_users = $wpdb->prefix.'users';
+    $students = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_student WHERE email = %s", array($email)));
+    $users = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_users WHERE user_email = %s", array($email)));
+    
+    if (sizeof($students) > 0 || sizeof($users) > 0) {
+        echo 1;
+        exit;
+    } else {
+        echo 0;
+        exit;
+    }
+}
+
+add_action( 'wp_ajax_nopriv_exist_user_id', 'exist_user_id');
+add_action( 'wp_ajax_exist_user_id', 'exist_user_id');
+function exist_user_id() {
+    global $wpdb;
+    $id = $_POST['option'];
+    $type = $_POST['type'];
+    $table_student = $wpdb->prefix.'students';
+    $students = $wpdb->get_results("SELECT * FROM {$table_student} WHERE type_document = '{$type}' AND id_document = {$id}");
+    
+    if (sizeof($students) > 0) {
+        echo 1;
+        exit;
+    } else {
+        echo 0;
+        exit;
+    }
+}
