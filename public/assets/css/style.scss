@@ -38,7 +38,7 @@ input[type=text],input[type=email],input[type=tel],input[type=date]{
 
 textarea {
     width: 100%;
-    border-radius: 8px;
+    border-radius: 8px !important;
     border: solid 1px;
     box-shadow: none !important;
 }
