@@ -25,6 +25,7 @@ function save_partner(){
             $state = $_POST['state'];
             $city = $_POST['city'];
             $address = $_POST['address'];
+            $description = $_POST['description'];
 
             $user = get_user_by('email',$email);
 
@@ -40,6 +41,7 @@ function save_partner(){
                     'state' => $state,
                     'city' => $city,
                     'address' => $address,
+                    'description' => $description,
                     'type' => 0,
                     'status' => 0,
                     'created_at' => date('Y-m-d H:i:s')

@@ -52,6 +52,7 @@ function add_admin_institutes_content(){
             $address = $_POST['address'];
             $description = $_POST['description'];
             $reference = $_POST['reference'];
+            $business_name = $_POST['business_name'];
 
             //update
             if(isset($institute_id) && !empty($institute_id)){
@@ -70,6 +71,7 @@ function add_admin_institutes_content(){
                     'phone_rector' => $rector_phone,
                     'address' => $address,
                     'description' => $description,
+                    'business_name' => $business_name,
                     'updated_at' => date('Y-m-d H:i:s')
                 ],[ 'id' => $institute_id]);
                 
@@ -100,6 +102,7 @@ function add_admin_institutes_content(){
                         'reference' => $reference,
                         'address' => $address,
                         'description' => $description,
+                        'business_name' => $business_name,
                         'status' => 1,
                         'created_at' => date('Y-m-d H:i:s')
                     ]);

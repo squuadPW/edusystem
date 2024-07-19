@@ -28,6 +28,8 @@ function save_institute(){
             $rector_lastname = strtolower($_POST['rector_lastname']);
             $rector_phone = $_POST['number_rector_phone_hidden'];
             $reference = $_POST['reference'];
+            $description = $_POST['description'];
+            $business_name = $_POST['business_name'];
 
             $user = get_user_by('email',$email);
 
@@ -46,6 +48,8 @@ function save_institute(){
                     'lastname_rector' => $rector_lastname,
                     'phone_rector' => $rector_phone,
                     'reference' => $reference,
+                    'description' => $description,
+                    'business_name' => $business_name,
                     'status' => 0,
                     'fee' => 5.0,
                     'created_at' => date('Y-m-d H:i:s')

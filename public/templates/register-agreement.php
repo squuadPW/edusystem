@@ -10,6 +10,10 @@
             <input type="hidden" name="action" value="save_institute">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="name"><?= __('Business name','aes'); ?><span class="required">*</span></label>
+            <input class="formdata" type="text" name="business_name" required>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="phone"><?= __('School or Institution Phone','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="tel" id="number_phone" name="number_phone" required>
         </div>
@@ -43,6 +47,10 @@
                 <option value="1"><?= __('Primary','aes'); ?></option>
                 <option value="2" ><?= __('High School','aes'); ?></option>
             </select>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="name"><?= __('Description','aes'); ?><span class="required">*</span></label>
+            <textarea class="formdata" style="resize: none" type="text" name="description" required></textarea>
         </div>
 
         <!-- Section -->

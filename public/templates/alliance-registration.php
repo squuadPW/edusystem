@@ -45,6 +45,10 @@
             <label for="city"><?= __('Address','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="address" required>
         </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="name"><?= __('Description','aes'); ?><span class="required">*</span></label>
+            <textarea class="formdata" style="resize: none" type="text" name="description" required></textarea>
+        </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="terms" class="checkboxes">
