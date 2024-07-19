@@ -18,7 +18,7 @@ function show_admission_documents(){
                 $is_required = 0;
             }
 
-            $wpdb->update($table_documents,['name' => $name,'is_required' => $is_required],['id' => $document_id]);
+            $wpdb->update($table_documents,['name' => $name,'is_required' => $is_required, 'updated_at' => date('Y-m-d H:i:s')],['id' => $document_id]);
 
             wp_redirect(admin_url('admin.php?page=admission-documents'));
             exit;

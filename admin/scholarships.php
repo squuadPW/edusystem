@@ -8,39 +8,76 @@ function add_admin_form_scholarships_content(){
             try {
                     global $wpdb;
                     $scholarship_id = $_POST['scholarship_id'];
-                    $scholarship = $wpdb->get_row("SELECT * FROM wp_student_scholarship_application WHERE id = ".$scholarship_id);
+                    $scholarship = $wpdb->get_row("SELECT * FROM wp_student_scholarship_application WHERE id = {$scholarship_id}");
 
                     // GENERAMOS USUARIO PARA EL PARTNER
-                    $partner = $wpdb->get_row("SELECT * FROM wp_pre_users WHERE id = ".$scholarship->partner_id);
-                    $user_partner_id = wp_create_user($partner->email,generate_password_user(),$partner->email);
-                    $user_partner = new WP_User($user_partner_id);
-                    $user_partner->set_role( 'parent' );
+                    $partner = $wpdb->get_row("SELECT * FROM wp_pre_users WHERE id = {$scholarship->partner_id}");
+                    $username = $partner->email;
+                    $user_email = $partner->email;
+                    if ( username_exists( $username ) ) {
+                        $user_partner_id = username_exists( $username );
+                        $user_partner = new WP_User($user_partner_id);
+                        $user_partner->set_role( 'parent' );
+                    } else {
+                        $user_partner_id = wp_create_user($username, generate_password_user(), $user_email);
+                        $user_partner = new WP_User($user_partner_id);
+                        $user_partner->set_role( 'parent' );
+                    }
                     // GENERAMOS USUARIO PARA EL PARTNER
 
                     // CREAMOS REGISTRO EN TABLA STUDENTS
-                    $row = $wpdb->get_row("SELECT * FROM wp_pre_students WHERE id = ".$scholarship->student_id, ARRAY_A);
-                    $row['partner_id'] = $user_partner_id; // new value for partner_id
-                    $wpdb->insert('wp_students', $row);
+                    $pre_students_table = $wpdb->prefix . 'pre_students';
+                    $students_table = $wpdb->prefix . 'students';
+                    $pre_student_row = $wpdb->get_row("SELECT * FROM $pre_students_table WHERE id = {$scholarship->student_id}");                   
+                    $wpdb->insert(
+                        $students_table,
+                        array(
+                            'type_document' => $pre_student_row->type_document,
+                            'id_document' => $pre_student_row->id_document,
+                            'name' => $pre_student_row->name,
+                            'middle_name' => $pre_student_row->middle_name,
+                            'last_name' => $pre_student_row->last_name,
+                            'middle_last_name' => $pre_student_row->middle_last_name,
+                            'birth_date' => $pre_student_row->birth_date,
+                            'phone' => $pre_student_row->phone,
+                            'email' => $pre_student_row->email,
+                            'gender' => $pre_student_row->gender,
+                            'country' => $pre_student_row->country,
+                            'city' => $pre_student_row->city,
+                            'postal_code' => $pre_student_row->postal_code,
+                            'grade_id' => $pre_student_row->grade_id,
+                            'name_institute' => $pre_student_row->name_institute,
+                            'institute_id' => $pre_student_row->institute_id,
+                            'program_id' => $pre_student_row->program_id,
+                            'partner_id' => $user_partner_id,
+                            'status_id' => $pre_student_row->status_id,
+                            'moodle_student_id' => $pre_student_row->moodle_student_id,
+                            'moodle_password' => $pre_student_row->moodle_password,
+                        )
+                    );
+                    $student_id = $wpdb->insert_id; // Get the ID of the last inserted record
                     // CREAMOS REGISTRO EN TABLA STUDENTS
 
                     // GENERAMOS USUARIO PARA EL ESTUDIANTE
-                    $pre_student = $wpdb->get_row("SELECT * FROM wp_pre_students WHERE id = ".$scholarship->student_id);
-                    $user_student_id = wp_create_user($pre_student->email,generate_password_user(),$pre_student->email);
-                    $user_student = new WP_User($user_student_id);
-                    $user_student->set_role( 'parent' );
+                    $username = $pre_student_row->email;
+                    $user_email = $pre_student_row->email;
+                    if ( username_exists( $username ) ) {
+                        $user_id = username_exists( $username );
+                        $user = new WP_User($user_id);
+                        $user->set_role( 'student' );
+                    } else {
+                        $user_student_id = wp_create_user($username, generate_password_user(), $user_email);
+                        $user_student = new WP_User($user_student_id);
+                        $user_student->set_role( 'student' );
+                    }
 
-                    update_user_meta($user_student_id,'first_name',$row['name']);
-                    update_user_meta($user_student_id,'last_name',$row['last_name']);
-                    update_user_meta($user_student_id,'billing_phone',$row['phone']);
-                    update_user_meta($user_student_id,'billing_email',$row['email']);
-                    update_user_meta($user_student_id,'birth_date',$row['birth_date']);
-                    update_user_meta($user_student_id,'student_id',$wpdb->insert_id);
+                    insert_register_documents($student_id, $pre_student_row->grade_id);
                     // GENERAMOS USUARIO PARA EL ESTUDIANTE
 
                     // CREAMOS REGISTRO EN TABLA STUDENT_PAYMENTS
                     $data = array(
                         'status_id' => 1, // Replace with the actual status ID
-                        'student_id' => $user_student_id, // Replace with the actual student ID
+                        'student_id' => $student_id, // Replace with the actual student ID
                         'product_id' => $scholarship_id, // Replace with the actual product ID
                         'amount' => 0, // Replace with the actual amount
                         'type_payment' => 1, // Replace with the actual payment type
@@ -64,6 +101,31 @@ function add_admin_form_scholarships_content(){
                         )
                     );
                     // GUARDAMOS EL STATUS
+
+                    //ACTUALIZAMOS EL META DATA
+                    // PADRE
+                    update_user_meta($user_partner_id, 'billing_first_name', $partner->name);
+                    update_user_meta($user_partner_id, 'first_name', $partner->name);
+                    update_user_meta($user_partner_id, 'shipping_first_name', $partner->name);
+                    update_user_meta($user_partner_id, 'billing_last_name', $partner->last_name);
+                    update_user_meta($user_partner_id, 'last_name', $partner->last_name);
+                    update_user_meta($user_partner_id, 'shipping_last_name', $partner->last_name);
+                    update_user_meta($user_partner_id, 'billing_phone', $partner->phone);
+                    update_user_meta($user_partner_id, 'shipping_phone', $partner->phone);
+                    update_user_meta($user_partner_id, 'billing_email', $partner->email);
+                    update_user_meta($user_partner_id, 'billing_city', $pre_student_row->city);
+                    update_user_meta($user_partner_id, 'billing_country', $pre_student_row->country);
+
+                    // HIJO
+                    update_user_meta($user_student_id, 'first_name', $pre_student_row->name);
+                    update_user_meta($user_student_id, 'last_name', $pre_student_row->last_name);
+                    update_user_meta($user_student_id, 'billing_phone', $pre_student_row->phone);
+                    update_user_meta($user_student_id, 'billing_email', $pre_student_row->email);
+                    update_user_meta($user_student_id, 'birth_date', $pre_student_row->birth_date);
+                    update_user_meta($user_student_id, 'student_id', $student_id);
+                    //ACTUALIZAMOS EL META DATA
+
+                    wp_new_user_notification($user_partner_id, null, 'both' );
                     wp_redirect(admin_url('admin.php?page=add_admin_form_scholarships_content'));
                     exit;
             } catch (\Throwable $th) {
@@ -313,8 +375,8 @@ class TT_scholarship_all_List_Table extends WP_List_Table{
                     'date' => $scholarship->created_at,
                     'student_name' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
                     'student_email' => $student->email,
-                    'partner_name' => $partner->name . ' ' . $partner->middle_name . ' ' . $partner->last_name . ' ' . $partner->middle_last_name,
-                    'partner_email' => $partner->email
+                    'partner_name' => isset($partner) ? $partner->name . ' ' . $partner->middle_name . ' ' . $partner->last_name . ' ' . $partner->middle_last_name : 'N/A',
+                    'partner_email' => isset($partner) ? $partner->email : 'N/A'
                 ]);
             }
         }

@@ -210,43 +210,52 @@ class TT_document_review_List_Table extends WP_List_Table{
             case 'rejected_documents':
                 return $item['rejected_documents'];
             case 'waiting_time':
-                $updated_at = Datetime::createFromFormat('Y-m-d H:i:s',wp_date('Y-m-d H:i:s',strtotime($item['updated_at'])));
-                $time_now = Datetime::createFromFormat('Y-m-d H:i:s',wp_date('Y-m-d H:i:s'));
-                $diff = $updated_at->diff($time_now);
                 $html = "";
-              
-                if($diff->days < 15){
-
-                    if($diff->days == 1){
-
+                if (isset($item['updated_at'])) {
+                    $updated_at = Datetime::createFromFormat('Y-m-d H:i:s',wp_date('Y-m-d H:i:s',strtotime($item['updated_at'])));
+                    $time_now = Datetime::createFromFormat('Y-m-d H:i:s',wp_date('Y-m-d H:i:s'));
+                    $diff = $updated_at->diff($time_now);
+                  
+                    if($diff->days < 15){
+    
+                        if($diff->days == 1){
+    
+                            $html .= '
+                                <a href="javascript:void(0)" class="button button-success" style="border-radius:9px;">
+                                    <span>'.$diff->days.' '.__('Day','aes').'</span>
+                                </a>
+                            ';
+    
+                        }else{
+    
+                            $html .= '
+                                <a href="javascript:void(0)" class="button button-success" style="border-radius:9px;">
+                                    <span>'.$diff->days.' '.__('Days','aes').'</span>
+                                </a>
+                            ';
+                        }
+    
+                    }else if($diff->days < 35){
                         $html .= '
-                            <a href="javascript:void(0)" class="button button-success" style="border-radius:9px;">
-                                <span>'.$diff->days.' '.__('Day','aes').'</span>
+                            <a href="javascript:void(0)" class="button button-warning" style="border-radius:9px;">
+                                <span>'.$diff->days.' '.__('Days','aes').'</span>
                             </a>
                         ';
-
-                    }else{
-
+                    }else if($diff->days >= 35){
                         $html .= '
-                            <a href="javascript:void(0)" class="button button-success" style="border-radius:9px;">
+                            <a href="javascript:void(0)" class="button button-danger" style="border-radius:9px;">
                                 <span>'.$diff->days.' '.__('Days','aes').'</span>
                             </a>
                         ';
                     }
-
-                }else if($diff->days < 35){
+                } else {
                     $html .= '
-                        <a href="javascript:void(0)" class="button button-warning" style="border-radius:9px;">
-                            <span>'.$diff->days.' '.__('Days','aes').'</span>
-                        </a>
-                    ';
-                }else if($diff->days >= 35){
-                    $html .= '
-                        <a href="javascript:void(0)" class="button button-danger" style="border-radius:9px;">
-                            <span>'.$diff->days.' '.__('Days','aes').'</span>
-                        </a>
-                    ';
+                    <a href="javascript:void(0)" class="button button-danger" style="border-radius:9px;">
+                        <span>'.__('N/A Days','aes').'</span>
+                    </a>
+                ';
                 }
+                
 
                 return $html;
             case 'view_details':

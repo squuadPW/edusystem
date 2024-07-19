@@ -134,6 +134,21 @@
                                     <tr>
                                         <th scope="row" style="font-weight:400;">
                                             <?php if(isset($institute) && !empty($institute)): ?>
+                                                <label for="input_id"><b><?= __('Description','aes'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <textarea name="description" row="8" style="resize:none;width:100%;" <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>><?= $institute->description; ?></textarea>
+                                            <?php else: ?>
+                                                <label for="input_id"><b><?= __('Description','aes'); ?></b><span class="text-danger">*</span></label><br>
+                                                <textarea name="description" row="8" style="resize:none;width:100%;" required></textarea>
+                                            <?php endif; ?>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="form-table" style="margin-top:0px;">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <?php if(isset($institute) && !empty($institute)): ?>
 
                                                 <label for="input_id"><b><?= __('Level','aes'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
                                                 <?php if($institute->status == 0): ?>

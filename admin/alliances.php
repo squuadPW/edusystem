@@ -50,6 +50,7 @@ function add_admin_partners_content(){
             $state = $_POST['state'];
             $city = $_POST['city'];
             $address = $_POST['address'];
+            $description = $_POST['description'];
             $fee = str_replace('%','',$_POST['fee']);
 
             if(isset($_POST['alliance_id']) && !empty($_POST['alliance_id'])){
@@ -66,6 +67,7 @@ function add_admin_partners_content(){
                     'state' => $state,
                     'city' => $city,
                     'address' => $address,
+                    'description' => $description,
                     'fee' => $fee,
                     'updated_at' => date('Y-m-d H:i:s')
                 ],[
@@ -94,6 +96,7 @@ function add_admin_partners_content(){
                         'state' => $state,
                         'city' => $city,
                         'address' => $address,
+                        'description    ' => $description   ,
                         'status' => 1,
                         'fee' => floatval($fee),
                         'created_at' => date('Y-m-d H:i:s')

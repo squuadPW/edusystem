@@ -855,12 +855,20 @@ add_action( 'wp_ajax_exist_user_email', 'exist_user_email');
 function exist_user_email() {
     global $wpdb;
     $email = $_POST['option'];
+    $scholarship = $_POST['scholarship'];
     $table_student = $wpdb->prefix.'students';
     $table_users = $wpdb->prefix.'users';
+    $table_pre_users = $wpdb->prefix.'pre_users';
+    $table_pre_students = $wpdb->prefix.'pre_students';
     $students = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_student WHERE email = %s", array($email)));
     $users = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_users WHERE user_email = %s", array($email)));
     
-    if (sizeof($students) > 0 || sizeof($users) > 0) {
+    $pre_students = [];
+    if ($scholarship == 1) {
+        $pre_students = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_pre_students WHERE email = %s", array($email)));
+        $pre_users = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_pre_users WHERE email = %s", array($email)));
+    }
+    if (sizeof($students) > 0 || sizeof($users) > 0 || sizeof($pre_students) > 0 || sizeof($pre_users) > 0) {
         echo 1;
         exit;
     } else {
@@ -875,10 +883,16 @@ function exist_user_id() {
     global $wpdb;
     $id = $_POST['option'];
     $type = $_POST['type'];
+    $scholarship = $_POST['scholarship'];
     $table_student = $wpdb->prefix.'students';
+    $table_pre_student = $wpdb->prefix.'pre_students';
     $students = $wpdb->get_results("SELECT * FROM {$table_student} WHERE type_document = '{$type}' AND id_document = {$id}");
     
-    if (sizeof($students) > 0) {
+    $pre_students = [];
+    if ($scholarship == 1) {
+        $pre_students = $wpdb->get_results("SELECT * FROM {$table_pre_student} WHERE type_document = '{$type}' AND id_document = {$id}");
+    }
+    if (sizeof($students) > 0 || sizeof($pre_students) > 0) {
         echo 1;
         exit;
     } else {

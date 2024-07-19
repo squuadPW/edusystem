@@ -49,6 +49,8 @@ function add_admin_institutes_content(){
             $rector_name = $_POST['rector_name'];
             $rector_last_name = $_POST['rector_last_name'];
             $rector_phone = $_POST['rector_phone_hidden'];
+            $address = $_POST['address'];
+            $description = $_POST['description'];
             $reference = $_POST['reference'];
 
             //update
@@ -66,6 +68,8 @@ function add_admin_institutes_content(){
                     'name_rector' => $rector_name,
                     'lastname_rector' => $rector_last_name,
                     'phone_rector' => $rector_phone,
+                    'address' => $address,
+                    'description' => $description,
                     'updated_at' => date('Y-m-d H:i:s')
                 ],[ 'id' => $institute_id]);
                 
@@ -94,6 +98,8 @@ function add_admin_institutes_content(){
                         'lastname_rector' => $rector_last_name,
                         'phone_rector' => $rector_phone,
                         'reference' => $reference,
+                        'address' => $address,
+                        'description' => $description,
                         'status' => 1,
                         'created_at' => date('Y-m-d H:i:s')
                     ]);

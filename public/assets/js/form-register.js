@@ -188,13 +188,14 @@ const sameEmailParent = document.querySelector("#sameemailparent");
 const existStudentEmail = document.querySelector("#existstudentemail");
 const existParentEmail = document.querySelector("#existparentemail");
 const existStudentId = document.querySelector("#exisstudentid");
-const emailStudentInput = form.querySelector('input[name="email_student"]');
-const emailPartnerInput = form.querySelector('input[name="email_partner"]');
-const idDocument = form.querySelector('input[name="id_document"]');
-const typeDocument = form.querySelector('select[name="document_type"]');
+const emailStudentInput = form?.querySelector('input[name="email_student"]');
+const emailPartnerInput = form?.querySelector('input[name="email_partner"]');
+const idDocument = form?.querySelector('input[name="id_document"]');
+const typeDocument = form?.querySelector('select[name="document_type"]');
 
 emailStudentInput.addEventListener("input", checkEmails);
 emailPartnerInput.addEventListener("input", checkEmails);
+
 function checkEmails() {
   const emailStudent = emailStudentInput.value;
   const emailPartner = emailPartnerInput.value;
@@ -221,40 +222,40 @@ function checkEmails() {
   }
 }
 
-function sendAjaxIdDocument() {
+function sendAjaxIdDocument(scholarship = 0) {
   if (timer) {
     clearTimeout(timer);
   }
   timer = setTimeout(() => {
     if (idDocument.value && typeDocument.value) {
-        sendAjax("action=exist_user_id", idDocument.value, 1, typeDocument.value);
+        sendAjax("action=exist_user_id", idDocument.value, 1, typeDocument.value, scholarship);
     }
   }, 1000);
 }
 
-function sendAjaxPartnerEmailDocument() {
+function sendAjaxPartnerEmailDocument(scholarship = 0) {
     if (timer) {
       clearTimeout(timer);
     }
     timer = setTimeout(() => {
       if (emailPartnerInput.value) {
-        sendAjax("action=exist_user_email", emailPartnerInput.value, 2);
+        sendAjax("action=exist_user_email", emailPartnerInput.value, 2, null, scholarship);
       }
     }, 1000);
   }
 
-  function sendAjaxStudentEmailDocument() {
+  function sendAjaxStudentEmailDocument(scholarship = 0) {
     if (timer) {
       clearTimeout(timer);
     }
     timer = setTimeout(() => {
       if (emailStudentInput.value) {
-        sendAjax("action=exist_user_email", emailStudentInput.value, 3);
+        sendAjax("action=exist_user_email", emailStudentInput.value, 3, null, scholarship);
       }
     }, 1000);
   }
 
-  function sendAjax(action, value, input, second_value = null) {
+  function sendAjax(action, value, input, second_value = null, scholarship = 0) {
     const XHR = new XMLHttpRequest();
     XHR.open("POST", `${ajax_object.ajax_url}?${action}`, true);
     XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -262,6 +263,9 @@ function sendAjaxPartnerEmailDocument() {
     let params = `${action}&option=${value}`;
     if (second_value) {
       params += `&type=${second_value}`;
+    }
+    if (scholarship) {
+      params += `&scholarship=${scholarship}`;
     }
     XHR.send(params);
     XHR.onload = function() {

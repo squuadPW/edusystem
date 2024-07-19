@@ -2,7 +2,7 @@
     <h2 style="margin-bottom:15px;"><?= __('Alliance Details','aes'); ?></h2>
 
     <?php if(isset($_COOKIE['message']) && !empty($_COOKIE['message'])){ ?>
-        <div class="notice notice-error is-dismissible"><p><?= $_COOKIE['message']; ?></p></div>
+        <div class="notice notice-success is-dismissible"><p><?= $_COOKIE['message']; ?></p></div>
         <?php setcookie('message','',time(),'/'); ?>
     <?php } ?>
     <?php if(isset($_COOKIE['message-error']) && !empty($_COOKIE['message-error'])){ ?>
@@ -184,6 +184,19 @@
                                             <th colspan="3">
                                                 <label for="input_id"><b><?= __('Address','aes'); ?></b><span class="text-danger">*</span></label><br>
                                                 <textarea name="address" type="text" style="width:100%;height:100px;resize:none;" required></textarea>
+                                            </th>
+                                        <?php endif; ?>
+                                    </tr>
+                                    <tr>
+                                        <?php if(isset($alliance) && !empty($alliance)): ?>
+                                            <th colspan="3">
+                                                <label for="input_id"><b><?= __('Description','aes'); ?></b><?= ($alliance->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <textarea name="description" type="text" style="width:100%;height:100px;resize:none;" <?= ($alliance->status == 1) ? 'required' : 'readonly'; ?>><?=  (!empty($alliance->description)) ? $alliance->description : ''; ?></textarea>
+                                            </th>
+                                        <?php else: ?>
+                                            <th colspan="3">
+                                                <label for="input_id"><b><?= __('Description','aes'); ?></b><span class="text-danger">*</span></label><br>
+                                                <textarea name="description" type="text" style="width:100%;height:100px;resize:none;" required></textarea>
                                             </th>
                                         <?php endif; ?>
                                     </tr>
