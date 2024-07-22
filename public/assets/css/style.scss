@@ -731,5 +731,43 @@ h3{
       }
 
       .woocommerce-form-row {
-        margin-top: 10px !important;
+        margin-top: 20px !important;
+      }
+
+      .lost_reset_password {
+        width: 60%;
+        margin: auto;
+      }
+      
+      /* Mobile responsive */
+      @media (max-width: 480px) {
+        .lost_reset_password {
+          width: 90%;
+          display: grid;
+          p {
+            width: 100% !important;
+          }
+        }
+      }
+      
+      /* Tablet responsive */
+      @media (min-width: 481px) and (max-width: 768px) {
+        .lost_reset_password {
+          width: 60%;
+          display: grid;
+          p {
+            width: 100% !important;
+          }
+        }
+      }
+      
+      /* Desktop responsive */
+      @media (min-width: 769px) {
+        .lost_reset_password {
+          width: 32%;
+          display: grid;
+          p {
+            width: 100% !important;
+          }
+        }
       }
