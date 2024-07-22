@@ -230,6 +230,31 @@
                                     </tr>
                                 </tbody>
                             </table>
+
+                            <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;"><b><?= __('Alliances Information','aes'); ?></b></h3>
+                            <table class="form-table table-customize" style="margin-top:0px;">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <?php if(isset($institute) && !empty($institute)): ?>
+                                                <label for="input_id"><b><?= __('Alliance','aes'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <select name="alliance" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%">
+                                                    <?php foreach ($alliances as $alliance): ?>
+                                                        <option value="<?= $alliance->id ?>" <?= ($institute->alliance_id == $alliance->id) ? 'selected' : ''; ?>><?= $alliance->name ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            <?php else: ?>
+                                                <label for="input_id"><b><?= __('Alliance','aes'); ?></b><span class="text-danger">*</span></label><br>
+                                                <select name="alliance" required style="width: 100%">
+                                                    <?php foreach ($alliances as $alliance): ?>
+                                                        <option value="<?= $alliance->id ?>"><?= $alliance->name ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            <?php endif; ?>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table>
                             <?php if(isset($institute) && !empty($institute)): ?>
                                 <?php if($institute->status == 0): ?>
                                     <h3 style="margin-bottom:0px;text-align:center;"><b><?= __('Reference','aes'); ?></b></h3>

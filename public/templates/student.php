@@ -60,8 +60,8 @@
                             <button class="button" disabled><?= __('Access','aes') ?></button>
                         <?php } ?>
                     </td>
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('Edit','aes'); ?>">
-                        <a href="<?= wc_get_account_endpoint_url('student-details').'/?student='.$row->id; ?>" class="button button-primary"><?= __('Edit','aes'); ?></a>
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('View','aes'); ?>">
+                        <a href="<?= wc_get_account_endpoint_url('student-details').'/?student='.$row->id; ?>" class="button button-primary"><?= __('View','aes'); ?></a>
                     </td>
                 </tr>
             <?php endforeach; ?>

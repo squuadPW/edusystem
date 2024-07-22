@@ -53,6 +53,7 @@ function add_admin_institutes_content(){
             $description = $_POST['description'];
             $reference = $_POST['reference'];
             $business_name = $_POST['business_name'];
+            $alliance_id = $_POST['alliance'];
 
             //update
             if(isset($institute_id) && !empty($institute_id)){
@@ -72,6 +73,7 @@ function add_admin_institutes_content(){
                     'address' => $address,
                     'description' => $description,
                     'business_name' => $business_name,
+                    'alliance_id' => $alliance_id,
                     'updated_at' => date('Y-m-d H:i:s')
                 ],[ 'id' => $institute_id]);
                 
@@ -103,6 +105,7 @@ function add_admin_institutes_content(){
                         'address' => $address,
                         'description' => $description,
                         'business_name' => $business_name,
+                        'alliance_id' => $alliance_id,
                         'status' => 1,
                         'created_at' => date('Y-m-d H:i:s')
                     ]);
@@ -160,6 +163,7 @@ function add_admin_institutes_content(){
             $institute_id =$_GET['institute_id'];
             $institute = get_institute_details($institute_id);
             $countries = get_countries();
+            $alliances = get_alliances();
             include(plugin_dir_path(__FILE__).'templates/institute-details.php');
         }  
         
@@ -240,6 +244,15 @@ function get_institute_details($institute_id){
 
     $institute = $wpdb->get_row("SELECT * FROM {$table_institutes} WHERE id={$institute_id}");
     return $institute;
+}
+
+function get_alliances(){
+
+    global $wpdb;
+    $table_alliances =  $wpdb->prefix.'alliances';
+
+    $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances}");
+    return $alliances;
 }
 
 function get_name_level($level_id){

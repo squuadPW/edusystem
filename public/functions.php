@@ -886,11 +886,11 @@ function exist_user_id() {
     $scholarship = $_POST['scholarship'];
     $table_student = $wpdb->prefix.'students';
     $table_pre_student = $wpdb->prefix.'pre_students';
-    $students = $wpdb->get_results("SELECT * FROM {$table_student} WHERE type_document = '{$type}' AND id_document = {$id}");
+    $students = $wpdb->get_results("SELECT * FROM {$table_student} WHERE type_document = '{$type}' AND id_document = '{$id}'");
     
     $pre_students = [];
     if ($scholarship == 1) {
-        $pre_students = $wpdb->get_results("SELECT * FROM {$table_pre_student} WHERE type_document = '{$type}' AND id_document = {$id}");
+        $pre_students = $wpdb->get_results("SELECT * FROM {$table_pre_student} WHERE type_document = '{$type}' AND id_document = '{$id}'");
     }
     if (sizeof($students) > 0 || sizeof($pre_students) > 0) {
         echo 1;

@@ -1,3 +1,7 @@
+<?php 
+$countries = get_countries();
+?>
+
 <div class="wrap">
     
     <?php if(in_array('institutes',$roles)): ?>
@@ -6,168 +10,195 @@
         <h2 style="margin-bottom:15px;"><?= __('Applicant details','aes'); ?></h2>
     <?php endif; ?>
     <div style="diplay:flex;width:100%;">
-        <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
+        <a class="button button-outline-primary" href="<?php echo admin_url('/admin.php?page=add_admin_form_admission_content') ?>"><?= __('Back') ?></a>
     </div>
     <div style="display:flex;width:100%;justify-content:end;">
         <button data-id="<?= $student->id; ?>" id="button-export-xlsx" class="button button-primary"><?= __('Export Excel','aes'); ?></button>
     </div>
-    <div id="dashboard-widgets" class="metabox-holder">
-        <div id="postbox-container-1" style="width:100% !important;">
-            <div id="normal-sortables">
-                <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
-                    <div class="inside">
-                        <table class="form-table table-customize" style="margin-top:0px;">
-                            <tbody>
-                                <tr>
-                                    <th scope="row" style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('Program','aes'); ?></b></label><br>
-                                        <input type="text" value="<?= get_name_program($student->program_id); ?>" style="width:100%" readonly>
-                                    </th>
-                                    <td>
-                                        <label for="input_id"><b><?= __('Grade','aes'); ?></b></label><br>
-                                        <input type="text" value="<?= get_name_grade($student->grade_id); ?>" style="width:100%" readonly>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        <table>
-                        <h3 style="margin-bottom:0px;text-align:center;"><b><?= __('Personal Information','aes'); ?></b></h3>
-                        <table class="form-table table-customize" style="margin-top:0px;">
-                            <tbody>
-                                <tr>
-                                    <th scope="row" style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('Document Type','aes'); ?></b></label><br>
-                                        <input type="text" value="<?= get_name_type_document($student->type_document); ?>" style="width:100%" readonly>
-                                    </th>
-                                    <td>
-                                        <label for="input_id"><b><?= __('ID Document','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%" value="<?= $student->id_document; ?>" readonly>
-                                    </td>
-                                    <?php 
-                                    if ($user_student) {
-                                        ?>
+    <form id="student-form" method="post" action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=save_users_details'); ?>">
+        <div id="dashboard-widgets" class="metabox-holder">
+            <div id="postbox-container-1" style="width:100%!important;">
+                <div id="normal-sortables">
+                    <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
+                        <div class="inside">
+                            <table class="form-table table-customize" style="margin-top:0px;">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <label for="program"><b><?php _e('Program', 'aes');?></b></label><br>
+                                            <input readonly type="text" id="program" name="program" value="<?php echo get_name_program($student->program_id);?>" style="width:100%">
+                                        </th>
+                                        <td>
+                                            <label for="grade"><b><?php _e('Grade', 'aes');?></b></label><br>
+                                            <input readonly type="text" id="grade" name="grade" value="<?php echo get_name_grade($student->grade_id);?>" style="width:100%">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <h3 style="margin-bottom:0px;text-align:center;"><b><?php _e('Personal Information', 'aes');?></b></h3>
+                            <table class="form-table table-customize" style="margin-top:0px;">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <label for="document_type"><b><?php _e('Document Type', 'aes');?></b></label><br>
+                                            <select name="document_type" id="document_type" value="<?php echo get_name_type_document($student->type_document);?>" style="width:100%" required>
+                                                <option value="identification_document" <?= ($student->type_document == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document','aes'); ?></option>
+                                                <option value="passport" <?= ($student->type_document == 'passport') ? 'selected' : ''; ?>><?= __('Passport','aes'); ?></option>
+                                                <option value="ssn" <?= ($student->type_document == 'ssn') ? 'selected' : ''; ?>><?= __('SNN','aes'); ?></option>
+                                            </select>
+                                        </th>
+                                        <td>
+                                            <label for="id_document"><b><?php _e('ID Document', 'aes');?></b></label><br>
+                                            <input type="text" id="id_document" name="id_document" value="<?php echo $student->id_document;?>" style="width:100%">
+                                            <input type="hidden" id="id" name="id" value="<?php echo $student->id;?>" style="width:100%" required>
+                                        </td>
+                                        <?php if ($user_student) {?>
                                             <td>
-                                                <label for="input_id"><b><?= __('Username','aes'); ?></b></label><br>
-                                                <input type="text" style="width:100%" value="<?= $user_student->user_nicename; ?>" readonly>
+                                                <label for="username"><b><?php _e('Username', 'aes');?></b></label><br>
+                                                <input type="text" id="username" name="username" value="<?php echo $user_student->user_nicename;?>" style="width:100%" required>
                                             </td>
-                                        <?php
-                                    }
-                                    ?>
-                                </tr>
-                                <tr>
-                                    <th scope="row" style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('First name','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%" value="<?= $student->name ?>" readonly>
-                                    </th>
-                                    <td>
-                                        <label for="input_id"><b><?= __('Last name','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%" value="<?= $student->last_name; ?>" readonly>
-                                    </td>
-                                    <td>
-                                        <label for="input_id"><b><?= __('Birth date','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%;pointer-events:none;" class="birth_date" value="<?= $student->birth_date; ?>" readonly>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('Gender','aes'); ?></b></label><br>
-                                        <input type="text" name="gender" value="<?= get_gender($student->gender); ?>" style="width:100%;" readonly>
-                                    </th>
-                                    <td>
-                                        <label for="input_id"><b><?= __('Country','aes'); ?></b></label><br>
-                                        <input type="text" value="<?= get_name_country($student->country); ?>" style="width:100%;" readonly>
-                                    </td>
-                                    <td>
-                                        <label for="input_id"><b><?= __('City','aes'); ?></b></label><br>
-                                        <input type="text" value="<?= $student->city; ?>" style="width:100%;" readonly> 
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th scope="row" style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('Postal Code','aes'); ?></b></label><br>
-                                        <input type="text" name="text" value="<?= $student->postal_code; ?>" style="width:100%;" readonly>
-                                    </th>
-                                    <td>
-                                        <label for="input_id"><b><?= __('Email','aes'); ?></b></label><br>
-                                        <input type="text" name="email" value="<?= $student->email; ?>" id="email" style="width:100%;" readonly>
-                                    </td>
-                                    <td>
-                                        <label for="input_id"><b><?= __('Phone','aes'); ?></b></label><br>
-                                        <input type="text" name="email" id="email" style="width:100%;" value="<?= $student->phone; ?>" readonly>
-                                    </td>
-                            </tbody>
-                        </table>
-                        <h3 style="margin-bottom:0px;text-align:center;"><b><?= __('Parent Information','aes'); ?></b></h3>
-                        <table class="form-table table-customize" style="margin-top:0px;">
-                            <tbody>
-                                <tr>
-                                    <th scope="row" style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('Document Type','aes'); ?></b></label><br>
-                                        <input type="text" value="<?= get_name_type_document($student->type_document); ?>" style="width:100%" readonly>
-                                    </th>
-                                    <td>
-                                        <label for="input_id"><b><?= __('ID Document','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%" value="<?= get_user_meta($partner->ID,'id_document',true); ?>" readonly>
-                                    </td>
-                                    <td>
-                                        <label for="input_id"><b><?= __('Username','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%" value="<?= $partner->user_nicename; ?>" readonly>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('First name','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%" value="<?= $partner->first_name; ?>" readonly>
-                                    </th>
-                                    <td>
-                                        <label for="input_id"><b><?= __('Last name','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%" value="<?= $partner->last_name; ?>" readonly>
-                                    </td>
-                                    <td>
-                                        <label for="input_id"><b><?= __('Birth date','aes'); ?></b></label><br>
-                                        <input type="text" style="width:100%;pointer-events:none;" class="birth_date" value="<?= get_user_meta($partner->ID,'birth_date',true); ?>"  readonly>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('Gender','aes'); ?></b></label><br>
-                                        <input type="text" name="gender" value="<?= get_gender(get_user_meta($partner->ID,'gender',true)); ?>" style="width:100%;" readonly>
-                                    </th>
-                                    <td>
-                                        <label for="input_id"><b><?= __('Country','aes'); ?></b></label><br>
-                                        <input type="text" value="<?= get_name_country(get_user_meta($partner->ID,'billing_country',true)); ?>" style="width:100%;" readonly>
-                                    </td>
-                                    <td>
-                                        <label for="input_id"><b><?= __('City','aes'); ?></b></label><br>
-                                        <input type="text" value="<?= get_user_meta($partner->ID,'billing_city',true) ?>" style="width:100%;" readonly> 
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('Postal Code','aes'); ?></b></label><br>
-                                        <input type="text" name="text" value="<?= get_user_meta($partner->ID,'billing_postcode',true) ?>" style="width:100%;" readonly>
-                                    </th>
-                                    <td style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('Email','aes'); ?></b></label><br>
-                                        <input type="text" name="email" value="<?= get_user_meta($partner->ID,'billing_email',true) ?>" style="width:100%;" readonly>
-                                    </td>
-                                    <td>
-                                        <label for="input_id"><b><?= __('Phone','aes'); ?></b></label><br>
-                                        <input type="text" name="email" value="<?= get_user_meta($partner->ID,'billing_phone',true) ?>" style="width:100%;" readonly>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="font-weight:400;">
-                                        <label for="input_id"><b><?= __('Occupation','aes'); ?></b></label><br>
-                                        <input type="text" name="text" value="<?= get_user_meta($partner->ID,'occupation',true) ?>" style="width:100%;" readonly>
-                                    </th>
-                                </tr>
-                            </tbody>
-                        </table>
+                                        <?php }?>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <label for="first_name"><b><?php _e('First name', 'aes');?></b></label><br>
+                                            <input type="text" id="first_name" name="first_name" value="<?php echo $student->name;?>" style="width:100%" required>
+                                        </th>
+                                        <td>
+                                            <label for="last_name"><b><?php _e('Last name', 'aes');?></b></label><br>
+                                            <input type="text" id="last_name" name="last_name" value="<?php echo $student->last_name;?>" style="width:100%" required>
+                                        </td>
+                                        <td>
+                                            <label for="birth_date"><b><?php _e('Birth date', 'aes');?> <?php echo $student->birth_date;?></b></label><br>
+                                            <input type="text" id="birth_date" name="birth_date" value="<?php echo date('m/d/Y', strtotime($student->birth_date)); ?>" required style="width:100%; background-color: white;" class="birth_date">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <label for="gender"><b><?php _e('Gender', 'aes');?></b></label><br>
+                                            <select name="gender" id="gender" value="<?php echo get_gender($student->gender);?>" style="width:100%" required>
+                                                <option value="male" <?= ($student->gender == 'male') ? 'selected' : ''; ?>><?= __('Male','aes'); ?></option>
+                                                <option value="female" <?= ($student->gender == 'female') ? 'selected' : ''; ?>><?= __('Female','aes'); ?></option>
+                                            </select>
+                                        </th>
+                                        <td>
+                                            <label for="country"><b><?php _e('Country', 'aes');?></b></label><br>
+                                            <select id="country" name="country" value="<?php echo get_name_country($student->country);?>" style="width:100%;" required>
+                                                <?php foreach($countries as $key => $country){ ?>
+                                                    <option value="<?= $key ?>" <?= (get_name_country($student->country == $key)) ? 'selected' : ''; ?>><?= $country;?></option> 
+                                                <?php } ?>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <label for="city"><b><?php _e('City', 'aes');?></b></label><br>
+                                            <input type="text" id="city" name="city" value="<?php echo $student->city;?>" style="width:100%;" required> 
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <label for="postal_code"><b><?php _e('Postal Code', 'aes');?></b></label><br>
+                                            <input type="text" id="postal_code" name="postal_code" value="<?php echo $student->postal_code;?>" style="width:100%;" required>
+                                        </th>
+                                        <td>
+                                            <label for="email"><b><?php _e('Email', 'aes');?></b></label><br>
+                                            <input type="text" id="email" name="email" value="<?php echo $student->email;?>" style="width:100%;" required>
+                                            <input type="hidden" id="old_email" name="old_email" value="<?php echo $student->email;?>" style="width:100%;">
+                                        </td>
+                                        <td>
+                                            <label for="phone"><b><?php _e('Phone', 'aes');?></b></label><br>
+                                            <input type="text" id="phone" name="phone" value="<?php echo $student->phone;?>" style="width:100%;" required>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <h3 style="margin-bottom:0px;text-align:center;"><b><?php _e('Parent Information', 'aes');?></b></h3>
+                            <table class="form-table table-customize" style="margin-top:0px;">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <label for="parent_document_type"><b><?php _e('Document Type', 'aes');?></b></label><br>
+                                            <select name="parent_document_type" id="parent_document_type" value="<?php echo get_user_meta($partner->ID,'type_document',true);?>" style="width:100%" required>
+                                                <option value="identification_document" <?= (get_user_meta($partner->ID,'type_document',true) == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document','aes'); ?></option>
+                                                <option value="passport" <?= (get_user_meta($partner->ID,'type_document',true) == 'passport') ? 'selected' : ''; ?>><?= __('Passport','aes'); ?></option>
+                                                <option value="ssn" <?= (get_user_meta($partner->ID,'type_document',true) == 'ssn') ? 'selected' : ''; ?>><?= __('SNN','aes'); ?></option>
+                                            </select>
+                                        </th>
+                                        <td>
+                                            <label for="parent_id_document"><b><?php _e('ID Document', 'aes');?></b></label><br>
+                                            <input type="text" id="parent_id_document" name="parent_id_document" value="<?php echo get_user_meta($partner->ID,'id_document',true);?>" style="width:100%" required>
+                                            <input type="hidden" id="parent_id" name="parent_id" value="<?php echo $partner->ID;?>" style="width:100%">
+                                        </td>
+                                        <td>
+                                            <label for="parent_username"><b><?php _e('Username', 'aes');?></b></label><br>
+                                            <input type="text" id="parent_username" name="parent_username" value="<?php echo $partner->user_nicename;?>" style="width:100%" required>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <label for="parent_first_name"><b><?php _e('First name', 'aes');?></b></label><br>
+                                            <input type="text" id="parent_first_name" name="parent_first_name" value="<?php echo $partner->first_name;?>" style="width:100%" required>
+                                        </th>
+                                        <td>
+                                            <label for="parent_last_name"><b><?php _e('Last name', 'aes');?></b></label><br>
+                                            <input type="text" id="parent_last_name" name="parent_last_name" value="<?php echo $partner->last_name;?>" style="width:100%" required>
+                                        </td>
+                                        <td>
+                                            <label for="parent_birth_date"><b><?php _e('Birth date', 'aes');?></b></label><br>
+                                            <input type="text" id="parent_birth_date" name="parent_birth_date" value="<?php echo get_user_meta($partner->ID,'birth_date',true);?>" style="width:100%; background-color: white;" class="birth_date" required>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <label for="parent_gender"><b><?php _e('Gender', 'aes');?></b></label><br>
+                                            <select name="parent_gender" id="parent_gender" value="<?php echo get_user_meta($partner->ID,'gender',true);?>" style="width:100%" required>
+                                                <option value="male" <?= (get_user_meta($partner->ID,'gender',true) == 'male') ? 'selected' : ''; ?>><?= __('Male','aes'); ?></option>
+                                                <option value="female" <?= (get_user_meta($partner->ID,'gender',true) == 'female') ? 'selected' : ''; ?>><?= __('Female','aes'); ?></option>
+                                            </select>
+                                        </th>
+                                        <td>
+                                            <label for="parent_country"><b><?php _e('Country', 'aes');?></b></label><br>
+                                            <select id="parent_country" name="parent_country" value="<?php echo get_name_country(get_user_meta($partner->ID,'billing_country',true));?>" style="width:100%;" required>
+                                                <?php foreach($countries as $key => $country){ ?>
+                                                    <option value="<?= $key ?>" <?= (get_name_country(get_user_meta($partner->ID,'billing_country',true) == $key)) ? 'selected' : ''; ?>><?= $country;?></option> 
+                                                <?php } ?>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <label for="parent_city"><b><?php _e('City', 'aes');?></b></label><br>
+                                            <input type="text" id="parent_city" name="parent_city" value="<?php echo get_user_meta($partner->ID,'billing_city',true) ?>" style="width:100%;" required> 
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <label for="parent_postal_code"><b><?php _e('Postal Code', 'aes');?></b></label><br>
+                                            <input type="text" id="parent_postal_code" name="parent_postal_code" value="<?php echo get_user_meta($partner->ID,'billing_postcode',true) ?>" style="width:100%;" required>
+                                        </th>
+                                        <td>
+                                            <label for="parent_email"><b><?php _e('Email', 'aes');?></b></label><br>
+                                            <input type="text" id="parent_email" name="parent_email" value="<?php echo get_user_meta($partner->ID,'billing_email',true) ?>" style="width:100%;" required>
+                                        </td>
+                                        <td>
+                                            <label for="parent_phone"><b><?php _e('Phone', 'aes');?></b></label><br>
+                                            <input type="text" id="parent_phone" name="parent_phone" value="<?php echo get_user_meta($partner->ID,'billing_phone',true) ?>" style="width:100%;" required>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <label for="parent_occupation"><b><?php _e('Occupation', 'aes');?></b></label><br>
+                                            <input type="text" id="parent_occupation" name="parent_occupation" value="<?php echo get_user_meta($partner->ID,'occupation',true) ?>" style="width:100%;" required>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p style="text-align: end">
+                                <input type="submit" value="<?php _e('Save Changes', 'aes');?>" class="button button-primary">
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
     <?php if(!in_array('institutes',$roles)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Documents','aes'); ?></h2>
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">

@@ -384,25 +384,38 @@ function add_logo_dashboard(){
     @media screen and (min-width:992px){
         #toplevel_page_logo_based_menu {
             background-image: url('.$url.');
-            background-size: contain;
-            background-repeat:no-repeat;
-            margin:10px !important;
+            background-size: 90%;
+            background-repeat: no-repeat;
+            margin: 10px !important;
+            background-color: #ffffff;
+            padding: 10px !important;
+            border-radius: 10px;
+            background-position: center;
         }
     }
     @media screen and (min-width:783px) and (max-width:991px){
         #toplevel_page_logo_based_menu {
             background-image: url('.$url_small.');
-            background-size: contain;
-            background-repeat:no-repeat;
-            margin-bottom:5px !important;
+            background-size: 80%;
+            background-repeat: no-repeat;
+            margin: 5px !important;
+            background-color: #ffffff;
+            padding: 0px !important;
+            border-radius: 6px;
+            background-position: center;
+            width: 70% !important;
         }
     }
     @media screen and (max-width:782px){
         #toplevel_page_logo_based_menu {
             background-image: url('.$url_small.');
-            background-size: contain;
-            background-repeat:no-repeat;
-            margin:10px !important;
+            background-size: 20%;
+            background-repeat: no-repeat;
+            background-color: #ffffff !important;
+            margin: 10px !important;
+            width: 90% !important;
+            border-radius: 10px;
+            background-position: center;
         }
     }
     a.wp-first-item.wp-not-current-submenu.menu-top.menu-icon-generic.toplevel_page_logo_based_menu.menu-top-last{

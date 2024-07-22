@@ -1,4 +1,3 @@
-
 <?php
     foreach ($students as $key => $student) {
         ?>

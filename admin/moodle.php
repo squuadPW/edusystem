@@ -30,8 +30,10 @@ function create_user_moodle($student_id){
 
     global $wpdb;
     $table_students = $wpdb->prefix.'students';
+    $table_users = $wpdb->prefix.'users';
 
     $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+    $address = get_user_meta($data_student->partner_id, 'billing_address_1', true);
 
     $moodle_url = get_option('moodle_url');
     $moodle_token = get_option('moodle_token');
@@ -48,6 +50,13 @@ function create_user_moodle($student_id){
                 'lastname' => $data_student->last_name,
                 'email' => $data_student->email,
                 'password' => $password,
+                'city' => $data_student->city,
+                'country' => $data_student->country,
+                'middlename' => $data_student->middle_name,
+                'idnumber' => $data_student->id_document,
+                'phone2' => $data_student->phone,
+                'institution' => $data_student->name_institute,
+                'address' => $address,
                 'lang' => 'en'
             ]
         ]];

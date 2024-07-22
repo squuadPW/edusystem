@@ -19,7 +19,7 @@
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('ID document','aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" autocomplete="off" type="text" id="id_document" name="id_document" oninput="sendAjaxIdDocument()" required>
-            <span id="exisstudentid" style="font-style: italic; color: red; font-size: 12px; display: none">Este ID ya se encuentra asociado a un usuario</span>
+            <span id="exisstudentid" style="font-style: italic; color: red; font-size: 12px; display: none">This ID is already associated with a user</span>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name"><?= __('Student name','aes'); ?><span class="required">*</span></label>
@@ -44,8 +44,8 @@
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="email"><?= __('Student email address','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="email" name="email_student" autocomplete="off" oninput="sendAjaxStudentEmailDocument()" required>
-            <span id="existstudentemail" style="font-style: italic; color: red; font-size: 12px; display: none">Este correo ya se encuentra asociado a un usuario</span>
-            <span id="sameemailstudent" style="font-style: italic; color: red; font-size: 12px; display: none">El representante no puede compartir el mismo correo que el estudiante</span>
+            <span id="existstudentemail" style="font-style: italic; color: red; font-size: 12px; display: none">This email is already associated with a user</span>
+            <span id="sameemailstudent" style="font-style: italic; color: red; font-size: 12px; display: none">The representative cannot share the same email as the student</span>
         </div>
         <div id="parent_name_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="agent_name"><?= __('Parent\'s name','aes'); ?><span class="required">*</span></label>
@@ -62,8 +62,8 @@
         <div id="parent-email-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="email"><?= __('Parent\'s email address','aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="email" name="email_partner" autocomplete="off" id="email_partner" oninput="sendAjaxPartnerEmailDocument()" required>
-            <span id="existparentemail" style="font-style: italic; color: red; font-size: 12px; display: none">Este correo ya se encuentra asociado a un usuario</span>
-            <span id="sameemailparent" style="font-style: italic; color: red; font-size: 12px; display: none">El representante no puede compartir el mismo correo que el estudiante</span>
+            <span id="existparentemail" style="font-style: italic; color: red; font-size: 12px; display: none">This email is already associated with a user</span>
+            <span id="sameemailparent" style="font-style: italic; color: red; font-size: 12px; display: none">The representative cannot share the same email as the student</span>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="country"><?= __('Country','form-plugin'); ?><span class="required">*</span></label>
