@@ -1,11 +1,11 @@
 <div class="content-dashboard">
-    <h4 style="font-size:20px;text-align:center;"><?= __('Pending Documents','aes'); ?> <br><a style="text-decoration: underline !important; color: #091c5c; font-size: 14px;" href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ) . '/student-documents' ?>">My documents</a></h4>
+    <h4 style="font-size:20px;text-align:center;"><?= __('Pending Documents for all students','aes'); ?> <br><a style="text-decoration: underline !important; color: #091c5c; font-size: 14px;" href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ) . '/student-documents' ?>">My documents</a></h4>
 
     <div style="margin-top:10px;">
         <?php if(!empty($students)): ?>
            <?php foreach($students as $student): ?>
                 <?php $documents = get_documents($student->id); ?>
-                <div style="border: 1px solid #091c5c; background-color: #f2f2f3; padding: 18px; border-radius: 15px;">
+                <div style="border: 1px solid #091c5c; background-color: #f2f2f3; padding: 18px; border-radius: 15px; margin-bottom: 10px">
                 <?php foreach($documents as $document): ?>
                     <?php if($document->status == 0 || $document->status == 1 || $document->status == 3 || $document->status == 4): ?>
                         <div style="display:flex;width:100%;flex-direction:row; margin-bottom: 10px">

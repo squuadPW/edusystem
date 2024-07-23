@@ -108,6 +108,186 @@ function save_student(){
             exit;
         };
 
+        if($_GET['action'] == 'new_applicant_others'){
+
+            global $woocommerce;
+
+            setcookie('is_older','',time());
+
+            $name = strtolower($_POST['name_student']);
+            $document_type = $_POST['document_type'];
+            $id_document = $_POST['id_document'];
+            $middle_name_student = strtolower($_POST['middle_name_student']);
+            $last_name = strtolower($_POST['lastname_student']);
+            $middle_last_name_student = strtolower($_POST['middle_last_name_student']);
+            $number_phone = $_POST['number_phone_hidden'];
+            $email_student = strtolower($_POST['email_student']);
+            $birth_date = $_POST['birth_date_student'];
+            $program = $_POST['program'];
+            $grade = $_POST['grade'];
+            $name_institute = strtolower($_POST['name_institute']);
+            $institute_id = $_POST['institute_id'];
+
+            if(!empty($institute_id) && $institute_id != 'other'){
+
+                $institute = get_institute_details($institute_id);
+                $name_institute = strtolower($institute->name);
+
+                setcookie('institute_id',ucwords($institute_id),time() + 3600);
+            }
+
+            // for the parent, use the actual user logged
+            setcookie('agent_name',ucwords(get_user_meta(get_current_user_id(),'first_name',true)),time() + 3600);
+            setcookie('agent_last_name',ucwords(get_user_meta(get_current_user_id(),'last_name',true)),time() + 3600);
+            setcookie('email_partner',ucwords(get_user_meta(get_current_user_id(),'billing_email',true)),time() + 3600);
+            setcookie('number_partner',get_user_meta(get_current_user_id(),'billing_phone',true),time() + 3600);
+            setcookie('billing_city',ucwords(get_user_meta(get_current_user_id(),'billing_city',true)),time() + 3600);
+            setcookie('billing_country',get_user_meta(get_current_user_id(),'billing_country',true),time() + 3600);
+            setcookie('is_older',true,time() + 3600);
+
+            /* set cookie */
+            setcookie('phone_student',$number_phone,time() + 3600);
+            setcookie('id_document',$id_document,time() + 3600);
+            setcookie('document_type',$document_type,time() + 3600);
+            setcookie('email_student',$email_student,time() + 3600);
+            setcookie('name_student',ucwords($name),time() + 3600);
+            setcookie('middle_name_student',ucwords($middle_name_student),time() + 3600);
+            setcookie('last_name_student',ucwords($last_name),time() + 3600);
+            setcookie('middle_last_name_student',ucwords($middle_last_name_student),time() + 3600);
+            setcookie('name_institute',ucwords($name_institute),time() + 3600);
+            setcookie('birth_date',$birth_date,time() + 3600);
+            setcookie('initial_grade',$grade,time() + 3600);
+            setcookie('program_id',$program,time() + 3600);
+           
+            //clear cart
+            $woocommerce->cart->empty_cart(); 
+
+            //add program to cart
+            if($program == 'aes'){
+                switch ($grade) {
+                    case '1':
+                        $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
+                        $metadata = $variation->get_meta_data();
+                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                        break;
+
+                    case '2':
+                        $variation = wc_get_product(AES_DUAL_10MO_VARIABLE);
+                        $metadata = $variation->get_meta_data();
+                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                        break;
+
+                    default:
+                        $variation = wc_get_product(AES_DUAL_DEFAULT_VARIABLE);
+                        $metadata = $variation->get_meta_data();
+                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                        break;
+                }
+
+            }else if($program == 'psp'){
+                $woocommerce->cart->add_to_cart(102,1);
+            }else if($program == 'aes_psp'){
+                $woocommerce->cart->add_to_cart(103,1);
+                $woocommerce->cart->add_to_cart(102,1);
+            }
+
+            wp_redirect(wc_get_checkout_url());
+            exit;
+        };
+
+        if($_GET['action'] == 'new_applicant_me'){
+
+            global $woocommerce;
+
+            setcookie('is_older','',time());
+
+            $name = strtolower(get_user_meta(get_current_user_id(),'first_name',true));
+            $document_type = $_POST['document_type'];
+            $id_document = $_POST['id_document'];
+            $middle_name_student = '';
+            $last_name = strtolower(get_user_meta(get_current_user_id(),'last_name',true));
+            $middle_last_name_student = '';
+            $number_phone = get_user_meta(get_current_user_id(),'billing_phone',true);
+            $email_student = strtolower(get_user_meta(get_current_user_id(),'billing_email',true));
+            $birth_date = $_POST['birth_date_student'];
+            $program = $_POST['program'];
+            $grade = $_POST['grade'];
+            $name_institute = strtolower($_POST['name_institute']);
+            $institute_id = $_POST['institute_id'];
+
+            if(!empty($institute_id) && $institute_id != 'other'){
+
+                $institute = get_institute_details($institute_id);
+                $name_institute = strtolower($institute->name);
+
+                setcookie('institute_id',ucwords($institute_id),time() + 3600);
+            }
+
+            // for the parent, use the actual user logged
+            setcookie('agent_name',ucwords(get_user_meta(get_current_user_id(),'first_name',true)),time() + 3600);
+            setcookie('agent_last_name',ucwords(get_user_meta(get_current_user_id(),'last_name',true)),time() + 3600);
+            setcookie('email_partner',ucwords(get_user_meta(get_current_user_id(),'billing_email',true)),time() + 3600);
+            setcookie('number_partner',get_user_meta(get_current_user_id(),'billing_phone',true),time() + 3600);
+            setcookie('billing_city',ucwords(get_user_meta(get_current_user_id(),'billing_city',true)),time() + 3600);
+            setcookie('billing_country',get_user_meta(get_current_user_id(),'billing_country',true),time() + 3600);
+            setcookie('is_older',true,time() + 3600);
+
+            /* set cookie */
+            setcookie('phone_student',$number_phone,time() + 3600);
+            setcookie('id_document',$id_document,time() + 3600);
+            setcookie('document_type',$document_type,time() + 3600);
+            setcookie('email_student',$email_student,time() + 3600);
+            setcookie('name_student',ucwords($name),time() + 3600);
+            setcookie('middle_name_student',ucwords($middle_name_student),time() + 3600);
+            setcookie('last_name_student',ucwords($last_name),time() + 3600);
+            setcookie('middle_last_name_student',ucwords($middle_last_name_student),time() + 3600);
+            setcookie('name_institute',ucwords($name_institute),time() + 3600);
+            setcookie('birth_date',$birth_date,time() + 3600);
+            setcookie('initial_grade',$grade,time() + 3600);
+            setcookie('program_id',$program,time() + 3600);
+           
+            //clear cart
+            $woocommerce->cart->empty_cart(); 
+
+            //add program to cart
+            if($program == 'aes'){
+                switch ($grade) {
+                    case '1':
+                        $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
+                        $metadata = $variation->get_meta_data();
+                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                        break;
+
+                    case '2':
+                        $variation = wc_get_product(AES_DUAL_10MO_VARIABLE);
+                        $metadata = $variation->get_meta_data();
+                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                        break;
+
+                    default:
+                        $variation = wc_get_product(AES_DUAL_DEFAULT_VARIABLE);
+                        $metadata = $variation->get_meta_data();
+                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                        break;
+                }
+
+            }else if($program == 'psp'){
+                $woocommerce->cart->add_to_cart(102,1);
+            }else if($program == 'aes_psp'){
+                $woocommerce->cart->add_to_cart(103,1);
+                $woocommerce->cart->add_to_cart(102,1);
+            }
+
+            wp_redirect(wc_get_checkout_url());
+            exit;
+        };
+
     }
 }
 
@@ -118,11 +298,16 @@ add_action('woocommerce_account_student_endpoint', function(){
     global $current_user;
     $roles = $current_user->roles;
 
-    $student_id = get_user_meta(get_current_user_id(),'student_id',true);
-   
-    if($student_id){
-        $student = get_student_from_id($student_id);
-    }else{
+    if(!in_array('parent',$roles) && in_array('student',$roles)){
+        $student_id = get_user_meta(get_current_user_id(),'student_id',true);
+        if($student_id){
+            $student = get_student_from_id($student_id);
+        }else{
+            $student = get_student(get_current_user_id());
+        }
+    }
+
+    if (in_array('parent',$roles) && in_array('student',$roles) || in_array('parent',$roles) && !in_array('student',$roles)) {
         $student = get_student(get_current_user_id());
     }
 
@@ -180,7 +365,6 @@ function insert_student($customer_id){
     ]);
 
     $student_id = $wpdb->insert_id;
-
     return $student_id;
 }
 
@@ -208,6 +392,8 @@ function create_user_student($student_id){
             update_user_meta($user_id,'student_id',$student_id);
             wp_new_user_notification($user_id, null, 'both' );
             return $user_id;
+        } else {
+            $user->add_role( 'student' );
         }
 
         update_user_meta($user->ID,'student_id',$student_id);

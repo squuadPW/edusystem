@@ -9,51 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  if (document.getElementById("birth_date_student")) {
-    flatpickr(document.getElementById("birth_date_student"), {
-      dateFormat: "m/d/Y",
-      disableMobile: "false",
-      maxDate: "today",
-    });
-
-    document
-      .getElementById("birth_date_student")
-      .addEventListener("change", (e) => {
-        date = e.target.value;
-        date = date.split("/");
-
-        start = new Date(date[2], date[0] - 1, date[1]);
-        today = new Date();
-        diff = diff_years(today, start);
-
-        if (diff >= 18) {
-          document.getElementById("parent_name_field").style.display = "none";
-          document.getElementById("parent-lastname-field").style.display =
-            "none";
-          document.getElementById("parent-country-field").style.display =
-            "none";
-          document.getElementById("parent-email-field").style.display = "none";
-
-          document.getElementById("agent_name").required = false;
-          document.getElementById("agent_last_name").required = false;
-          document.getElementById("number_partner").required = false;
-          document.getElementById("email_partner").required = false;
-        } else {
-          document.getElementById("parent_name_field").style.display = "block";
-          document.getElementById("parent-lastname-field").style.display =
-            "block";
-          document.getElementById("parent-country-field").style.display =
-            "block";
-          document.getElementById("parent-email-field").style.display = "block";
-
-          document.getElementById("agent_name").required = true;
-          document.getElementById("agent_last_name").required = true;
-          document.getElementById("number_partner").required = true;
-          document.getElementById("email_partner").required = true;
-        }
-      });
-  }
-
   if (not_institute) {
     not_institute.addEventListener("change", (e) => {
       if (e.target.value == "other") {
@@ -191,32 +146,55 @@ const emailStudentInput = form?.querySelector('input[name="email_student"]');
 const emailPartnerInput = form?.querySelector('input[name="email_partner"]');
 const idDocument = form?.querySelector('input[name="id_document"]');
 const typeDocument = form?.querySelector('select[name="document_type"]');
+const dont_allow_adult = document.getElementById("dont_allow_adult");
+const dontBeAdult = document.querySelector("#dontBeAdult");
 
 emailStudentInput?.addEventListener("input", checkEmails);
 emailPartnerInput?.addEventListener("input", checkEmails);
 
 function checkEmails() {
-  const emailStudent = emailStudentInput.value;
-  const emailPartner = emailPartnerInput.value;
+  const emailStudent = emailStudentInput?.value;
+  const emailPartner = emailPartnerInput?.value;
   if (
     emailStudent === emailPartner &&
     emailPartner != "" &&
     emailPartner != ""
   ) {
     buttonSave.disabled = true;
-    sameEmailStudent.style.display = "block";
-    sameEmailParent.style.display = "block";
+    if (sameEmailStudent) {
+      sameEmailStudent.style.display = "block";
+    }
+
+    if (sameEmailParent) {
+      sameEmailParent.style.display = "block";
+    }
   } else {
-    sameEmailStudent.style.display = "none";
-    sameEmailParent.style.display = "none";
-    if (
-      existParentEmail.style.display === "none" &&
-      existStudentEmail.style.display === "none" &&
-      existStudentId.style.display === "none" &&
-      sameEmailParent.style.display === "none" &&
-      sameEmailStudent.style.display === "none"
-    ) {
-      buttonSave.disabled = false;
+    if (sameEmailStudent) {
+      sameEmailStudent.style.display = "none";
+    }
+
+    if (sameEmailParent) {
+      sameEmailParent.style.display = "none";
+    }
+    if (dont_allow_adult && dont_allow_adult?.value == 1) {
+      if (
+        existStudentEmail?.style.display === "none" &&
+        existStudentId?.style.display === "none" &&
+        sameEmailStudent?.style.display === "none" &&
+        dontBeAdult?.style.display === "none"
+      ) {
+        buttonSave.disabled = false;
+      }
+    } else {
+      if (
+        existParentEmail?.style.display === "none" &&
+        existStudentEmail?.style.display === "none" &&
+        existStudentId?.style.display === "none" &&
+        sameEmailParent?.style.display === "none" &&
+        sameEmailStudent?.style.display === "none"
+      ) {
+        buttonSave.disabled = false;
+      }
     }
   }
 }
@@ -227,100 +205,308 @@ function sendAjaxIdDocument(scholarship = 0) {
   }
   timer = setTimeout(() => {
     if (idDocument.value && typeDocument.value) {
-        sendAjax("action=exist_user_id", idDocument.value, 1, typeDocument.value, scholarship);
+      sendAjax(
+        "action=exist_user_id",
+        idDocument.value,
+        1,
+        typeDocument.value,
+        scholarship
+      );
     }
   }, 1000);
 }
 
 function sendAjaxPartnerEmailDocument(scholarship = 0) {
-    if (timer) {
-      clearTimeout(timer);
-    }
-    timer = setTimeout(() => {
-      if (emailPartnerInput.value) {
-        sendAjax("action=exist_user_email", emailPartnerInput.value, 2, null, scholarship);
-      }
-    }, 1000);
+  if (timer) {
+    clearTimeout(timer);
   }
-
-  function sendAjaxStudentEmailDocument(scholarship = 0) {
-    if (timer) {
-      clearTimeout(timer);
+  timer = setTimeout(() => {
+    if (emailPartnerInput?.value) {
+      sendAjax(
+        "action=exist_user_email",
+        emailPartnerInput?.value,
+        2,
+        null,
+        scholarship
+      );
     }
-    timer = setTimeout(() => {
-      if (emailStudentInput.value) {
-        sendAjax("action=exist_user_email", emailStudentInput.value, 3, null, scholarship);
-      }
-    }, 1000);
+  }, 1000);
+}
+
+function sendAjaxStudentEmailDocument(scholarship = 0) {
+  if (timer) {
+    clearTimeout(timer);
   }
+  timer = setTimeout(() => {
+    if (emailStudentInput.value) {
+      sendAjax(
+        "action=exist_user_email",
+        emailStudentInput.value,
+        3,
+        null,
+        scholarship
+      );
+    }
+  }, 1000);
+}
 
-  function sendAjax(action, value, input, second_value = null, scholarship = 0) {
-    const XHR = new XMLHttpRequest();
-    XHR.open("POST", `${ajax_object.ajax_url}?${action}`, true);
-    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    XHR.responseType = "text";
-    let params = `${action}&option=${value}`;
-    if (second_value) {
-      params += `&type=${second_value}`;
-    }
-    if (scholarship) {
-      params += `&scholarship=${scholarship}`;
-    }
-    XHR.send(params);
-    XHR.onload = function() {
-      if (XHR.status === 200) {
-        if (action === "action=exist_user_id") {
-          if (XHR.response === "0") {
-            existStudentId.style.display = "none";
+function sendAjax(action, value, input, second_value = null, scholarship = 0) {
+  const XHR = new XMLHttpRequest();
+  XHR.open("POST", `${ajax_object.ajax_url}?${action}`, true);
+  XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  XHR.responseType = "text";
+  let params = `${action}&option=${value}`;
+  if (second_value) {
+    params += `&type=${second_value}`;
+  }
+  if (scholarship) {
+    params += `&scholarship=${scholarship}`;
+  }
+  XHR.send(params);
+  XHR.onload = function () {
+    if (XHR.status === 200) {
+      if (action === "action=exist_user_id") {
+        if (XHR.response === "0") {
+          existStudentId.style.display = "none";
+          if (dont_allow_adult && dont_allow_adult?.value == 1) {
             if (
-              existParentEmail.style.display === "none" &&
-              existStudentEmail.style.display === "none" &&
-              existStudentId.style.display === "none" &&
-              sameEmailParent.style.display === "none" &&
-              sameEmailStudent.style.display === "none"
+              existStudentEmail?.style.display === "none" &&
+              existStudentId?.style.display === "none" &&
+              sameEmailStudent?.style.display === "none" &&
+              dontBeAdult?.style.display === "none"
             ) {
               buttonSave.disabled = false;
             }
           } else {
-            existStudentId.style.display = "block";
-            buttonSave.disabled = true;
-          }
-        } else if (action === "action=exist_user_email" && input === 2) {
-          if (XHR.response === "0") {
-            existParentEmail.style.display = "none";
             if (
-              existParentEmail.style.display === "none" &&
-              existStudentEmail.style.display === "none" &&
-              existStudentId.style.display === "none" &&
-              sameEmailParent.style.display === "none" &&
-              sameEmailStudent.style.display === "none"
+              existParentEmail?.style.display === "none" &&
+              existStudentEmail?.style.display === "none" &&
+              existStudentId?.style.display === "none" &&
+              sameEmailParent?.style.display === "none" &&
+              sameEmailStudent?.style.display === "none"
+            ) {
+              buttonSave.disabled = false;
+            }
+          }
+        } else {
+          existStudentId.style.display = "block";
+          buttonSave.disabled = true;
+        }
+      } else if (action === "action=exist_user_email" && input === 2) {
+        if (XHR.response === "0") {
+          existParentEmail.style.display = "none";
+          if (dont_allow_adult && dont_allow_adult?.value == 1) {
+            if (
+              existStudentEmail?.style.display === "none" &&
+              existStudentId?.style.display === "none" &&
+              sameEmailStudent?.style.display === "none" &&
+              dontBeAdult?.style.display === "none"
             ) {
               buttonSave.disabled = false;
             }
           } else {
-            existParentEmail.style.display = "block";
-            buttonSave.disabled = true;
-          }
-        } else if (action === "action=exist_user_email" && input === 3) {
-          if (XHR.response === "0") {
-            existStudentEmail.style.display = "none";
             if (
-              existParentEmail.style.display === "none" &&
-              existStudentEmail.style.display === "none" &&
-              existStudentId.style.display === "none" &&
-              sameEmailParent.style.display === "none" &&
-              sameEmailStudent.style.display === "none"
+              existParentEmail?.style.display === "none" &&
+              existStudentEmail?.style.display === "none" &&
+              existStudentId?.style.display === "none" &&
+              sameEmailParent?.style.display === "none" &&
+              sameEmailStudent?.style.display === "none"
+            ) {
+              buttonSave.disabled = false;
+            }
+          }
+        } else {
+          existParentEmail.style.display = "block";
+          buttonSave.disabled = true;
+        }
+      } else if (action === "action=exist_user_email" && input === 3) {
+        if (XHR.response === "0") {
+          existStudentEmail.style.display = "none";
+          if (dont_allow_adult && dont_allow_adult?.value == 1) {
+            if (
+              existStudentEmail?.style.display === "none" &&
+              existStudentId?.style.display === "none" &&
+              sameEmailStudent?.style.display === "none" &&
+              dontBeAdult?.style.display === "none"
             ) {
               buttonSave.disabled = false;
             }
           } else {
-            existStudentEmail.style.display = "block";
-            buttonSave.disabled = true;
+            if (
+              existParentEmail?.style.display === "none" &&
+              existStudentEmail?.style.display === "none" &&
+              existStudentId?.style.display === "none" &&
+              sameEmailParent?.style.display === "none" &&
+              sameEmailStudent?.style.display === "none"
+            ) {
+              buttonSave.disabled = false;
+            }
           }
+        } else {
+          existStudentEmail.style.display = "block";
+          buttonSave.disabled = true;
         }
       }
-    };
-  }
+    }
+  };
+}
+
+if (document.getElementById("birth_date_student")) {
+  flatpickr(document.getElementById("birth_date_student"), {
+    dateFormat: "m/d/Y",
+    disableMobile: "false",
+    maxDate: "today",
+  });
+
+  document
+    .getElementById("birth_date_student")
+    .addEventListener("change", (e) => {
+      date = e.target.value;
+      date = date.split("/");
+
+      start = new Date(date[2], date[0] - 1, date[1]);
+      today = new Date();
+      diff = diff_years(today, start);
+
+      if (diff >= 18) {
+        if (dont_allow_adult && dont_allow_adult?.value == 1) {
+          dontBeAdult.style.display = "block";
+          buttonSave.disabled = true;
+        } else {
+          dontBeAdult.style.display = "none";
+          if (dont_allow_adult && dont_allow_adult?.value == 1) {
+            if (
+              existStudentEmail?.style.display === "none" &&
+              existStudentId?.style.display === "none" &&
+              sameEmailStudent?.style.display === "none" &&
+              dontBeAdult?.style.display === "none"
+            ) {
+              buttonSave.disabled = false;
+            }
+          } else {
+            if (
+              existParentEmail?.style.display === "none" &&
+              existStudentEmail?.style.display === "none" &&
+              existStudentId?.style.display === "none" &&
+              sameEmailParent?.style.display === "none" &&
+              sameEmailStudent?.style.display === "none"
+            ) {
+              buttonSave.disabled = false;
+            }
+          }
+          var parentNameField = document.getElementById("parent_name_field");
+          if (parentNameField) {
+            parentNameField.style.display = "none";
+          }
+
+          var parentLastNameField = document.getElementById(
+            "parent-lastname-field"
+          );
+          if (parentLastNameField) {
+            parentLastNameField.style.display = "none";
+          }
+
+          var parentCountryField = document.getElementById(
+            "parent-country-field"
+          );
+          if (parentCountryField) {
+            parentCountryField.style.display = "none";
+          }
+
+          var parentEmailField = document.getElementById("parent-email-field");
+          if (parentEmailField) {
+            parentEmailField.style.display = "none";
+          }
+
+          var agentName = document.getElementById("agent_name");
+          if (agentName) {
+            agentName.required = false;
+          }
+
+          var agentLastName = document.getElementById("agent_last_name");
+          if (agentLastName) {
+            agentLastName.required = false;
+          }
+
+          var numberPartner = document.getElementById("number_partner");
+          if (numberPartner) {
+            numberPartner.required = false;
+          }
+
+          var emailPartner = document.getElementById("email_partner");
+          if (emailPartner) {
+            emailPartner.required = false;
+          }
+        }
+      } else {
+        dontBeAdult.style.display = "none";
+        if (dont_allow_adult && dont_allow_adult?.value == 1) {
+          if (
+            existStudentEmail?.style.display === "none" &&
+            existStudentId?.style.display === "none" &&
+            sameEmailStudent?.style.display === "none" &&
+            dontBeAdult?.style.display === "none"
+          ) {
+            buttonSave.disabled = false;
+          }
+        } else {
+          if (
+            existParentEmail?.style.display === "none" &&
+            existStudentEmail?.style.display === "none" &&
+            existStudentId?.style.display === "none" &&
+            sameEmailParent?.style.display === "none" &&
+            sameEmailStudent?.style.display === "none"
+          ) {
+            buttonSave.disabled = false;
+          }
+        }
+
+        var parentNameField = document.getElementById("parent_name_field");
+        if (parentNameField) {
+          parentNameField.style.display = "block";
+        }
+
+        var parentLastNameField = document.getElementById(
+          "parent-lastname-field"
+        );
+        if (parentLastNameField) {
+          parentLastNameField.style.display = "block";
+        }
+
+        var parentCountryField = document.getElementById(
+          "parent-country-field"
+        );
+        if (parentCountryField) {
+          parentCountryField.style.display = "block";
+        }
+
+        var parentEmailField = document.getElementById("parent-email-field");
+        if (parentEmailField) {
+          parentEmailField.style.display = "block";
+        }
+
+        var agentName = document.getElementById("agent_name");
+        if (agentName) {
+          agentName.required = true;
+        }
+
+        var agentLastName = document.getElementById("agent_last_name");
+        if (agentLastName) {
+          agentLastName.required = true;
+        }
+
+        var numberPartner = document.getElementById("number_partner");
+        if (numberPartner) {
+          numberPartner.required = true;
+        }
+
+        var emailPartner = document.getElementById("email_partner");
+        if (emailPartner) {
+          emailPartner.required = true;
+        }
+      }
+    });
+}
 
 function diff_years(dt2, dt1) {
   let diff = (dt2.getTime() - dt1.getTime()) / 1000;
@@ -344,3 +530,31 @@ function setCookie(name, value) {
   expires = "; expires=" + date.toGMTString();
   document.cookie = name + "=" + value + expires + "; path=/";
 }
+
+const segmentButtons = document.querySelectorAll(".segment-button");
+
+segmentButtons.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    // Remove active class from all buttons
+    segmentButtons.forEach((btn) => btn.classList.remove("active"));
+
+    // Add active class to the clicked button
+    event.target.classList.add("active");
+
+    // Get the currently selected option
+    const selectedOption = event.target.getAttribute("data-option");
+    if (selectedOption == "others") {
+      const formMe = document.getElementById("form-me");
+      formMe.style.display = "none";
+
+      const formOthers = document.getElementById("form-others");
+      formOthers.style.display = "block";
+    } else {
+      const formOthers = document.getElementById("form-others");
+      formOthers.style.display = "none";
+
+      const formMe = document.getElementById("form-me");
+      formMe.style.display = "block";
+    }
+  });
+});

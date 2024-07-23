@@ -124,7 +124,7 @@ function woocommerce_checkout_order_created_action($order){
 
         $student_id = insert_student($customer_id);
         insert_register_documents($student_id,$_COOKIE['initial_grade']);
-        
+
         $order->update_meta_data('student_id',$student_id);
         $order->save();
 
@@ -223,7 +223,11 @@ function remove_my_account_links( $menu_links ){
 
     if(in_array('parent',$roles) || in_array('student',$roles)){
 
-        $menu_links['dashboard'] = __('Dashboard','form-plugin');
+        $birthday = get_user_meta($current_user->ID, 'birth_date', true);
+        $age = floor((time() - strtotime($birthday)) / 31556926);
+        if ($age >= 18) {
+            $menu_links['dashboard'] = __('Dashboard','form-plugin');
+        }
 
         if(in_array('parent',$roles)){
             $menu_links['orders'] = __('Payments','form-plugin');
@@ -261,24 +265,29 @@ function remove_my_account_links( $menu_links ){
             + array_slice( $menu_links,1, NULL, true );
         }
 
-        if(in_array('parent',$roles) && in_array('student',$roles)){
+        // if(in_array('parent',$roles) && in_array('student',$roles)){
 
-            $menu_links = array_slice( $menu_links, 0,2 , true )
-            + array( 'student' => __('Student Information','aes') )
-            + array_slice( $menu_links, 2, NULL, true );
+        //     $menu_links = array_slice( $menu_links, 0,2 , true )
+        //     + array( 'student' => __('Student Information','aes') )
+        //     + array_slice( $menu_links, 2, NULL, true );
 
-        }else if(in_array('parent',$roles) && !in_array('student',$roles)){
+        // }else if(in_array('parent',$roles) && !in_array('student',$roles)){
 
-            $menu_links = array_slice( $menu_links, 0,2 , true )
-            + array( 'student' => __('Students Information','aes') )
-            + array_slice( $menu_links, 2, NULL, true );
+        //     $menu_links = array_slice( $menu_links, 0,2 , true )
+        //     + array( 'student' => __('Students Information','aes') )
+        //     + array_slice( $menu_links, 2, NULL, true );
 
-        }else if(!in_array('parent',$roles) && in_array('student',$roles)){
+        // }else if(!in_array('parent',$roles) && in_array('student',$roles)){
 
-            $menu_links = array_slice( $menu_links, 0,1 , true )
-            + array( 'student' => __('Student Information','aes') )
-            + array_slice( $menu_links, 1, NULL, true );
-        }
+        //     $menu_links = array_slice( $menu_links, 0,1 , true )
+        //     + array( 'student' => __('Student Information','aes') )
+        //     + array_slice( $menu_links, 1, NULL, true );
+        // }
+
+        $menu_links = array_slice( $menu_links, 0,2 , true )
+        + array( 'student' => __('Student Information','aes') )
+        + array_slice( $menu_links, 2, NULL, true );
+        
         /*
         if(in_array('student',$roles) && in_array('parent',$roles)){
 
@@ -344,6 +353,14 @@ add_filter( 'wp_nav_menu_items', 'add_loginout_link', 10, 2 );
 function add_loginout_link( $items, $args ){
 
     if(is_user_logged_in()) {
+
+        global $current_user;
+        $birthday = get_user_meta($current_user->ID, 'birth_date', true);
+        $age = floor((time() - strtotime($birthday)) / 31556926);
+        if ($age > 18) {
+            $items.= '<li><a href="'.home_url().'">'.__('Home','form-plugin').'</a></li>';
+        }
+
         $items .= '<li><a href="'.get_permalink( get_option('woocommerce_myaccount_page_id') ).'">'.__('Dashboard','form-plugin').'</a></li>';
         if ($args->theme_location != 'primary') {
             $items .= '<li><a href="'.get_permalink( get_option('woocommerce_myaccount_page_id') ).'/orders">'.__('Payments','form-plugin').'</a></li>';
@@ -381,7 +398,7 @@ function status_changed_payment($order_id, $old_status, $new_status){
             $wpdb->query("UPDATE {$table_student_payment} SET status_id = 1 WHERE student_id = {$student_id} and order_id = {$order_id}");
 
             update_status_student($student_id,1);
-            
+
             $email_request_documents = WC()->mailer()->get_emails()['WC_Request_Documents_Email'];
             $email_request_documents->trigger($student_id);
             
@@ -903,3 +920,18 @@ function exist_user_id() {
         exit;
     }
 }
+
+function redirect_logged_in_users_to_my_account() {
+    if ( is_user_logged_in() && is_front_page() ) {
+        $current_user = wp_get_current_user();
+        $birthday = get_user_meta($current_user->ID, 'birth_date', true);
+        $age = floor((time() - strtotime($birthday)) / 31556926);
+        if ($age < 18) {
+            $page_id = wc_get_page_id('myaccount');
+            $url = get_permalink($page_id);
+            wp_redirect($url);
+            exit;
+        }
+    }
+}
+add_action('template_redirect', 'redirect_logged_in_users_to_my_account');
