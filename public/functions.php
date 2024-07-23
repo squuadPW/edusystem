@@ -855,20 +855,23 @@ add_action( 'wp_ajax_exist_user_email', 'exist_user_email');
 function exist_user_email() {
     global $wpdb;
     $email = $_POST['option'];
-    $scholarship = $_POST['scholarship'];
+    $scholarship = $_POST['scholarship'] ?? null;
     $table_student = $wpdb->prefix.'students';
     $table_users = $wpdb->prefix.'users';
     $table_pre_users = $wpdb->prefix.'pre_users';
     $table_pre_students = $wpdb->prefix.'pre_students';
+
     $students = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_student WHERE email = %s", array($email)));
     $users = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_users WHERE user_email = %s", array($email)));
-    
-    $pre_students = [];
+
+    $pre_students = array();
+    $pre_users = array();
     if ($scholarship == 1) {
         $pre_students = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_pre_students WHERE email = %s", array($email)));
         $pre_users = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_pre_users WHERE email = %s", array($email)));
     }
-    if (sizeof($students) > 0 || sizeof($users) > 0 || sizeof($pre_students) > 0 || sizeof($pre_users) > 0) {
+
+    if (!empty($students) || !empty($users) || !empty($pre_students) || !empty($pre_users)) {
         echo 1;
         exit;
     } else {

@@ -148,7 +148,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       setTimeout(() => {
         value = document.getElementById("billing_phone_hidden").value;
-        console.log(value);
         setCookie("phone_student", value);
       }, 1000);
     });
@@ -193,8 +192,8 @@ const emailPartnerInput = form?.querySelector('input[name="email_partner"]');
 const idDocument = form?.querySelector('input[name="id_document"]');
 const typeDocument = form?.querySelector('select[name="document_type"]');
 
-emailStudentInput.addEventListener("input", checkEmails);
-emailPartnerInput.addEventListener("input", checkEmails);
+emailStudentInput?.addEventListener("input", checkEmails);
+emailPartnerInput?.addEventListener("input", checkEmails);
 
 function checkEmails() {
   const emailStudent = emailStudentInput.value;
