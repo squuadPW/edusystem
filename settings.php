@@ -38,4 +38,10 @@
 
 	define( 'AES_DUAL_DEFAULT', '467' );    // Product initial 11 and bacheloder
 	define( 'AES_DUAL_DEFAULT_VARIABLE','475'); // Product variable
+
+
+	// FOR ALL USERS, DONT COMMENT
+	define( 'AES_PROGRAM_ID','HSD-01'); // AES program for endpoint for laravel create user and move documents
+	define( 'AES_PERIOD','20232024'); // AES period for endpoint for laravel create user and move documents
+	define( 'AES_TYPE_PROGRAM','0'); // AES type of program for endpoint for laravel create user and move documents
 ?>

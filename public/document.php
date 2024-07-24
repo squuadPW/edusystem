@@ -92,7 +92,12 @@ function save_document(){
                     $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
 
                     if($documents_student){
+                        $documents_to_send = [];
                         foreach($documents_student as $document){
+                            if ($document->attchment_id) {
+                                $attachment_url = wp_get_attachment_url($document->attachment_id);
+                                array_push($documents_to_send, $attachment_url);
+                            }
                             if($document->status != 5){
                                 $access_virtual = false;
                             }

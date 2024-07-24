@@ -12,6 +12,7 @@ require plugin_dir_path( __FILE__ ) . 'emails/function.php';
 require plugin_dir_path( __FILE__ ) . 'user.php';
 require plugin_dir_path( __FILE__ ) . 'moodle/rest.php';
 require plugin_dir_path( __FILE__ ) . 'moodle.php';
+require plugin_dir_path( __FILE__ ) . 'laravelRequests.php';
 require plugin_dir_path( __FILE__ ) . 'documents.php';
 
 // modules institutes

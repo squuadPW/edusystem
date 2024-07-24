@@ -727,7 +727,11 @@ function update_status_documents(){
         $access_virtual = true;
         $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
         if($documents_student){
+            $documents_to_send = [];
             foreach($documents_student as $document){
+                if ($document->attachment_id) {
+                    array_push($documents_to_send, $document);
+                }
                 if($document->status != 5){
                     $access_virtual = false;
                 }
@@ -736,7 +740,6 @@ function update_status_documents(){
             // VERIFICAR FEE DE INSCRIPCION
             $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = ". AES_FEE_INSCRIPTION);
             // VERIFICAR FEE DE INSCRIPCION
-
             //virtual classroom
             if($access_virtual && isset($paid)){
 
@@ -745,7 +748,50 @@ function update_status_documents(){
                 create_user_student($student_id);
 
                 $exist = is_search_student_by_email($student_id);
-            
+
+                // $table_name = $wpdb->prefix. 'students'; // assuming the table name is "wp_students"
+                // $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
+                // $type_document = array(
+                //     'identification_document' => 1,
+                //     'passport' => 2,
+                //     'ssn' => 4,
+                // )[$student->type_document];
+                
+                // $fields = array(
+                //     'id_document' => $student->id_document,
+                //     'type_document' => $type_document,
+                //     'cod_program' => AES_PROGRAM_ID,
+                //     'cod_tip' => AES_TYPE_PROGRAM,
+                //     'cod_period' => AES_PERIOD,
+                //     'firstname' => $student->firstname .' '. $student->middle_name,
+                //     'lastname' => $student->last_name .' '. $student->middle_last_name,
+                //     'birth_date' => $student->birth_date,
+                //     'gender' => $student->gender,
+                //     'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
+                //     'phone' => $student->phone,
+                //     'email' => $student->email,
+                //     'country' => $student->country,
+                //     'city' => $student->city,
+                //     'postal_code' => $student->postal_code,
+                // );
+                
+                // $files = [];
+                // foreach ($documents_to_send as $key => $doc) {
+                //     $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
+                //     $file_path = get_attached_file( $doc->attachment_id );
+                //     if ( file_exists( $file_path ) && is_readable( $file_path ) ) {
+                //         try {
+                //             $file_contents = file_get_contents( $file_path );
+                //             $files[$id_requisito] = $file_contents;
+                //         } catch (Exception $e) {
+                //             // handle file read error
+                //         }
+                //     }
+                // }
+                
+                // create_user_laravel($fields, $files);
+                // exit;
+
                 if(!$exist){
                     create_user_moodle($student_id);
                 }else{
