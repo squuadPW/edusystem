@@ -743,54 +743,58 @@ function update_status_documents(){
             //virtual classroom
             if($access_virtual && isset($paid)){
 
+
+                $table_name = $wpdb->prefix. 'students'; // assuming the table name is "wp_students"
+                $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
+                $type_document = array(
+                    'identification_document' => 1,
+                    'passport' => 2,
+                    'ssn' => 4,
+                )[$student->type_document];
+                
+                $fields = array(
+                    'id_document' => $student->id_document,
+                    'type_document' => $type_document,
+                    'cod_program' => AES_PROGRAM_ID,
+                    'cod_tip' => AES_TYPE_PROGRAM,
+                    'cod_period' => AES_PERIOD,
+                    'firstname' => $student->name .' '. $student->middle_name,
+                    'lastname' => $student->last_name .' '. $student->middle_last_name,
+                    'birth_date' => $student->birth_date,
+                    'gender' => $student->gender,
+                    'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
+                    'phone' => $student->phone,
+                    'email' => $student->email,
+                    'country' => $student->country,
+                    'city' => $student->city,
+                    'postal_code' => $student->postal_code,
+                );
+                
+                $files = [];
+                foreach ($documents_to_send as $key => $doc) {
+                    $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
+                    $attachment_id = $doc->attachment_id;
+
+                    $attachment_url = wp_get_attachment_url($attachment_id);
+                    $attachment_metadata = wp_get_attachment_metadata($attachment_id);
+                    
+                    // Obtener la ruta del archivo en el servidor
+                    $attachment_path = get_attached_file($attachment_id);
+                    
+                    // Obtener el contenido del archivo
+                    $attachment_content = file_get_contents($attachment_path);
+                    
+                    // Hacer algo con el contenido del archivo...
+                    $files[$id_requisito] = base64_encode($attachment_content);
+                }
+
+                $response = create_user_laravel($fields, $files);
+
                 update_status_student($student_id,2);
 
                 create_user_student($student_id);
 
                 $exist = is_search_student_by_email($student_id);
-
-                // $table_name = $wpdb->prefix. 'students'; // assuming the table name is "wp_students"
-                // $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
-                // $type_document = array(
-                //     'identification_document' => 1,
-                //     'passport' => 2,
-                //     'ssn' => 4,
-                // )[$student->type_document];
-                
-                // $fields = array(
-                //     'id_document' => $student->id_document,
-                //     'type_document' => $type_document,
-                //     'cod_program' => AES_PROGRAM_ID,
-                //     'cod_tip' => AES_TYPE_PROGRAM,
-                //     'cod_period' => AES_PERIOD,
-                //     'firstname' => $student->firstname .' '. $student->middle_name,
-                //     'lastname' => $student->last_name .' '. $student->middle_last_name,
-                //     'birth_date' => $student->birth_date,
-                //     'gender' => $student->gender,
-                //     'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
-                //     'phone' => $student->phone,
-                //     'email' => $student->email,
-                //     'country' => $student->country,
-                //     'city' => $student->city,
-                //     'postal_code' => $student->postal_code,
-                // );
-                
-                // $files = [];
-                // foreach ($documents_to_send as $key => $doc) {
-                //     $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
-                //     $file_path = get_attached_file( $doc->attachment_id );
-                //     if ( file_exists( $file_path ) && is_readable( $file_path ) ) {
-                //         try {
-                //             $file_contents = file_get_contents( $file_path );
-                //             $files[$id_requisito] = $file_contents;
-                //         } catch (Exception $e) {
-                //             // handle file read error
-                //         }
-                //     }
-                // }
-                
-                // create_user_laravel($fields, $files);
-                // exit;
 
                 if(!$exist){
                     create_user_moodle($student_id);

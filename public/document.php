@@ -94,7 +94,7 @@ function save_document(){
                     if($documents_student){
                         $documents_to_send = [];
                         foreach($documents_student as $document){
-                            if ($document->attchment_id) {
+                            if ($document->attachment_id) {
                                 $attachment_url = wp_get_attachment_url($document->attachment_id);
                                 array_push($documents_to_send, $attachment_url);
                             }
