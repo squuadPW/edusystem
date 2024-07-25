@@ -4,18 +4,18 @@
         <?php elseif(in_array('parent',$roles)): ?>
             <h2 style="font-size:24px;text-align:center;"><?= __('Students Information','form-plugin'); ?></h2>
         <?php endif; ?>
-        <p>To access the virtual classroom, please ensure you complete the following steps:</p>
+        <p><?= __('To access the virtual classroom, please ensure you complete the following steps:','form-plugin'); ?></p>
         <ul class="info-list">
             <li>
             <i class="fas fa-upload"></i>
-            Upload all required documents marked with an asterisk (*) <a style="text-decoration: underline !important; color: #091c5c;" href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ) . '/student-documents' ?>">here</a>
+            <?= __('Upload all required documents marked with an asterisk (*)','form-plugin'); ?> <a style="text-decoration: underline !important; color: #091c5c;" href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ) . '/student-documents' ?>"><?= __('here','form-plugin'); ?></a>
             </li>
             <li>
             <i class="fas fa-credit-card"></i>
-            If you haven't already, please process the payment for your registration fee. This will enable us to finalize your registration and grant you access to the virtual classroom.
+            <?= __('If you haven\'t already, please process the payment for your registration fee. This will enable us to finalize your registration and grant you access to the virtual classroom.','form-plugin'); ?>
             </li>
         </ul>
-        <p class="info-note">Once both steps are complete, you will receive an email with instructions on how to access the virtual classroom. Please note that access will only be granted once all required documents have been received and your payment has been processed.</p>
+        <p class="info-note"><?= __('Once both steps are complete, you will receive an email with instructions on how to access the virtual classroom. Please note that access will only be granted once all required documents have been received and your payment has been processed.','form-plugin'); ?></p>
 </div>
 <table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table" style="margin-top:20px;">
     <thead>
