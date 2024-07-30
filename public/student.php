@@ -16,7 +16,7 @@ function save_student(){
             $middle_name_student = strtolower($_POST['middle_name_student']);
             $last_name = strtolower($_POST['lastname_student']);
             $middle_last_name_student = strtolower($_POST['middle_last_name_student']);
-            $number_phone = $_POST['number_phone_hidden'];
+            $number_phone = $_POST['number_phone'] ? $_POST['number_phone'] : $_POST['number_phone_hidden'];
             $number_partner = $_POST['number_partner_hidden']; 
             $email_student = strtolower($_POST['email_student']);
             $email_partner = strtolower($_POST['email_partner']);

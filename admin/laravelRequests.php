@@ -1,8 +1,8 @@
 <?php
 
 function create_user_laravel($fields, $files) {
-  // $url = 'https://ppadmin.american-elite.us/';
-  $url = 'https://5128-190-142-88-208.ngrok-free.app/';
+  $url = 'https://ppadmin.american-elite.us/';
+  // $url = 'https://8f59asdasd-190-142-88-208.ngrok-free.app/';
 
   $ch = curl_init($url.'api/public/create-student');
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -21,10 +21,10 @@ function create_user_laravel($fields, $files) {
   $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
   if (curl_errno($ch)) {
-    //   echo 'Error: ' . curl_error($ch);
+      // echo 'Error: ' . curl_error($ch);
   } else {
-    //   echo "Response code: $response_code";
-    //   echo "Response body: $response";
+      // echo "Response code: $response_code";
+      // echo "Response body: $response";
   }
 
   curl_close($ch);

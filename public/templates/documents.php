@@ -47,7 +47,7 @@
                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number" data-title="<?= __('Action','aes'); ?>">
                             <?php if($document->status == 0 || $document->status == 3 || $document->status == 4){ ?>
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input" name="<?= 'document_'.$document->id.'_student_id_'.$student->id; ?>">
+                                    <input type="file" class="custom-file-input" name="<?= 'document_'.$document->id.'_student_id_'.$student->id; ?>" accept=".pdf">
                                     <span class="custom-file-label">Select file</span>
                                 </div>
                             <?php }else{ ?>

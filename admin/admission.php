@@ -788,7 +788,7 @@ function update_status_documents(){
                     $files[$id_requisito] = base64_encode($attachment_content);
                 }
 
-                $response = create_user_laravel($fields, $files);
+                create_user_laravel($fields, $files);
 
                 update_status_student($student_id,2);
 

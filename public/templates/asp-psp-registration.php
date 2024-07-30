@@ -329,8 +329,8 @@
             <div id="parent-email-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="email"><?= __('Parent\'s email address','aes'); ?><span class="required">*</span></label>
                 <input class="formdata" type="email" name="email_partner" autocomplete="off" id="email_partner" oninput="sendAjaxPartnerEmailDocument()" required>
-                <span id="existstudentemail" style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user','aes'); ?></span>
-                <span id="sameemailstudent" style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student','aes'); ?></span>
+                <span id="existparentemail" style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user','aes'); ?></span>
+                <span id="sameemailparent" style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student','aes'); ?></span>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="country"><?= __('Country','form-plugin'); ?><span class="required">*</span></label>
