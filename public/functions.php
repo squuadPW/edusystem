@@ -36,6 +36,12 @@ function form_plugin_scripts(){
         'ajax_url' => admin_url('admin-ajax.php')
     ));
     wp_enqueue_script('form-register');
+
+    wp_register_script('create-password',plugins_url('aes').'/public/assets/js/create-password.js', array('jquery'), '1.0.0', true);
+    wp_localize_script('create-password', 'ajax_object', array(
+        'ajax_url' => admin_url('admin-ajax.php')
+    ));
+    wp_enqueue_script('create-password');
 }
 
 add_action( 'wp_enqueue_scripts', 'form_plugin_scripts');
@@ -1033,5 +1039,68 @@ function sendOrderbitrix($id_bitrix, $id_order, $status) {
     } else {
         // Handle the error
         error_log('Error: ' . wp_remote_retrieve_response_message($response));
+    }
+}
+
+add_action('wp', 'verificar_contraseña');
+function verificar_contraseña() {
+    // Verifica si el usuario está en la página de "Mi cuenta"
+    if (is_account_page()) {
+        // Verifica si el usuario está conectado
+        if (is_user_logged_in()) {
+            // Obtiene el ID del usuario actual
+            $current_user = wp_get_current_user();
+            $roles = $current_user->roles;
+            if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+                // Agrega un script para levantar el modal
+                add_action('wp_footer', 'modal_create_password');
+            }
+        } 
+    }
+}
+
+function modal_create_password() {
+    // Imprime el contenido del archivo modal-reset-password.php
+    echo file_get_contents(plugin_dir_path(__FILE__).'templates/create-password.php');
+}
+
+add_action('wp_ajax_nopriv_create_password', 'create_password');
+add_action('wp_ajax_create_password', 'create_password');
+
+function create_password() {
+    // Verifica si el usuario está conectado
+    if (is_user_logged_in()) {
+        // Obtiene el ID del usuario actual
+        $current_user = wp_get_current_user();
+        
+        // Obtiene la contraseña y la confirmación de la contraseña
+        $contraseña = sanitize_text_field($_POST['password']);
+        $confirmar_contraseña = sanitize_text_field($_POST['confirm_password']);
+        
+        // Verifica si las contraseñas coinciden
+        if ($contraseña === $confirmar_contraseña) {
+            // Actualiza la contraseña del usuario
+            wp_set_password($contraseña, $current_user->ID);
+            
+            // Actualiza la columna user_pass_reset en la tabla wp_users
+            global $wpdb;
+            $wpdb->update($wpdb->users, array('user_pass_reset' => 1), array('ID' => $current_user->ID));
+            
+            // Envía un mensaje de éxito
+            wp_send_json(array('success' => true));
+
+            // Cierra la sesión del usuario
+            wp_logout();
+
+            // Redirige al usuario a la página de login
+            wp_redirect(wp_login_url());
+            exit;
+        } else {
+            // Envía un mensaje de error
+            wp_send_json(array('success' => false, 'error' => 'Las contraseñas no coinciden'));
+        }
+    } else {
+        // Envía un mensaje de error
+        wp_send_json(array('success' => false, 'error' => 'Debes estar conectado para cambiar la contraseña'));
     }
 }
