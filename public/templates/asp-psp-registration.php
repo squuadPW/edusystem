@@ -267,8 +267,7 @@
     <div class="title">
         <?= __('Student applicant','aes'); ?>
     </div>
-
-    <form method="POST" action="<?= the_permalink().'?action=save_student'; ?>" class="form-aes">
+        <form method="POST" action="<?php the_permalink();?>?action=save_student&idbitrix=<?php echo $_GET['idbitrix'] ?? null ?>" class="form-aes">
         <div class="grid grid-cols-12 gap-4">
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date"><?= __('Date of birth','aes'); ?><span class="required">*</span></label>

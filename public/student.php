@@ -68,6 +68,10 @@ function save_student(){
             setcookie('birth_date',$birth_date,time() + 3600);
             setcookie('initial_grade',$grade,time() + 3600);
             setcookie('program_id',$program,time() + 3600);
+            $id_bitrix = $_GET['idbitrix'];
+            if (isset($id_bitrix)) {
+                setcookie('id_bitrix',$id_bitrix,time() + 3600);
+            }
            
             //clear cart
             $woocommerce->cart->empty_cart(); 

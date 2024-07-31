@@ -126,6 +126,7 @@ function woocommerce_checkout_order_created_action($order){
         insert_register_documents($student_id,$_COOKIE['initial_grade']);
 
         $order->update_meta_data('student_id',$student_id);
+        $order->update_meta_data('id_bitrix', $_COOKIE['id_bitrix']);
         $order->save();
 
         $email_new_student = WC()->mailer()->get_emails()['WC_New_Applicant_Email'];
@@ -397,6 +398,10 @@ function status_changed_payment($order_id, $old_status, $new_status){
 
             $wpdb->query("UPDATE {$table_student_payment} SET status_id = 1 WHERE student_id = {$student_id} and order_id = {$order_id}");
 
+            if ($order->get_meta('id_bitrix')) {
+                sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());
+            }
+
             update_status_student($student_id,1);
 
             $email_request_documents = WC()->mailer()->get_emails()['WC_Request_Documents_Email'];
@@ -554,6 +559,10 @@ function status_changed_payment($order_id, $old_status, $new_status){
                     }
 
                     create_user_laravel($fields, $files);
+
+                    if ($order->get_meta('id_bitrix')) {
+                        sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());
+                    }
 
                     update_status_student($student_id,2);
 
@@ -994,3 +1003,35 @@ function redirect_logged_in_users_to_my_account() {
     }
 }
 add_action('template_redirect', 'redirect_logged_in_users_to_my_account');
+
+function sendOrderbitrix($id_bitrix, $id_order, $status) {
+    // Define los datos del body
+    $body = array(
+        'id_bitrix' => $id_bitrix,
+        'order_id' => $id_order, // reemplaza con el valor real
+        'status_id' => $status // reemplaza con el valor real
+    );
+    error_log('body: '.json_encode($body));
+
+    // Construct the API URL
+    $url = 'https://api.luannerkerton.com/api/addNewOrderAes';
+
+    // Use WordPress's built-in HTTP API to make a POST request
+    $response = wp_remote_post($url, array(
+        'headers' => array(
+            'Content-Type' => 'application/json'
+        ),
+        'body' => json_encode($body)
+    ));
+
+    // Check if the response was successful
+    if (wp_remote_retrieve_response_code($response) === 200) {
+        // Get the JSON data from the response
+        $data = json_decode(wp_remote_retrieve_body($response), true);
+        error_log('data: ' . json_encode($data));
+        // Do something with the data...
+    } else {
+        // Handle the error
+        error_log('Error: ' . wp_remote_retrieve_response_message($response));
+    }
+}
