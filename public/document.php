@@ -143,6 +143,14 @@ function save_document(){
                             );
                             
                             $files = [];
+                            $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
+                            $documents_to_send = [];
+                            foreach($all_documents_student as $document){
+                                if ($document->attachment_id) {
+                                    array_push($documents_to_send, $document);
+                                }
+                            }
+
                             foreach ($documents_to_send as $key => $doc) {
                                 $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
                                 $attachment_id = $doc->attachment_id;
