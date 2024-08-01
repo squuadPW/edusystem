@@ -836,24 +836,19 @@ if (idBitrix) {
       let last_name = data.last_name.split(' ');
       let tutor = data.tutor.split(' ');
 
-      const birthdateString = data.birthdate;
-      const birthdateParts = birthdateString.split('T')[0].split('-');
-      const timezoneOffset = parseInt(birthdateString.match(/\+([\d]+)/)[1]);
-      
-      const birthdate = new Date(Date.UTC(birthdateParts[0], birthdateParts[1] - 1, birthdateParts[2]));
-      birthdate.setUTCHours(birthdate.getUTCHours() + timezoneOffset);
-      
-      const formattedBirthdate = `${birthdate.getUTCDate().toString().padStart(2, '0')}/${(birthdate.getUTCMonth() + 1).toString().padStart(2, '0')}/${birthdate.getUTCFullYear()}`;
-      
-      const birthstudent = document.querySelector('input[name="birth_date_student"]');
-      birthstudent.value = formattedBirthdate;
-      // Refresh the intlTelInput library
-      birthstudent.dispatchEvent(new Event('input'));
+      var fecha = new Date(data.birthdate);
+      fecha.setDate(fecha.getDate() + 1);
+      var fechaIso = fecha.toISOString().split('T')[0];
+      flatpickr("#birth_date_student", {
+        defaultDate: fechaIso,
+        altFormat: 'm/d/Y'
+      });
 
+      // Refresh the intlTelInput library
       document.querySelector('input[name="name_student"]').value = name[0];
-      document.querySelector('input[name="middle_name_student"]').value = name[1];
+      document.querySelector('input[name="middle_name_student"]').value = name[1] ?? '';
       document.querySelector('input[name="lastname_student"]').value = last_name[0];
-      document.querySelector('input[name="middle_last_name_student"]').value = last_name[1];
+      document.querySelector('input[name="middle_last_name_student"]').value = last_name[1] ?? '';
       document.querySelector('input[name="agent_name"]').value = tutor[0];
       document.querySelector('input[name="agent_last_name"]').value = tutor[1];
       const input = document.querySelector('input[name="number_phone"]');

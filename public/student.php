@@ -450,10 +450,10 @@ function get_documents($student_id){
 function get_name_grade($grade_id){
 
     $grade = match($grade_id){
-        '1' => __('9no (antepenultimate)','aes'),
-        '2' => __('10mo (penultimate)','aes'),
-        '3' => __('11vo (Last)','aes'),
-        '4' => __('Bachelor (graduate)','aes'),
+        '1' => __('Lower','aes'),
+        '2' => __('Middle','aes'),
+        '3' => __('Upper','aes'),
+        '4' => __('Graduate','aes'),
         default => ''
     };
 

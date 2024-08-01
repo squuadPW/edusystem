@@ -51,7 +51,7 @@
                 <div class="radio-input">
                     <input <?php echo $key === 0 ? 'checked' : '' ?> class="form-check-input" type="radio" id="<?php echo $variation['variation_id']; ?>" name="option" value="<?php echo $variation['attributes']['attribute_pagos']; ?>">
                     <label class="form-check-label" for="<?php echo $variation['variation_id']; ?>">
-                      <?php echo $cuotes . ($key === 0 ? ' Payment' : ' Payments'); ?> 
+                      <?php echo $cuotes . ($key === 0 ? ' Payment<br>(Unique)' : ' Payments <br> (' . $variation['attributes']['attribute_pagos'] . ')'); ?> 
                     </label>
                 </div>
                 <?php

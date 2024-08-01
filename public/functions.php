@@ -494,12 +494,7 @@ function status_changed_payment($order_id, $old_status, $new_status){
             $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
 
             if($documents_student){
-                $documents_to_send = [];
                 foreach($documents_student as $document){
-                    if ($document->attachment_id) {
-                        $attachment_url = wp_get_attachment_url($document->attachment_id);
-                        array_push($documents_to_send, $attachment_url);
-                    }
                     if($document->status != 5){
                         $access_virtual = false;
                     }
@@ -511,7 +506,6 @@ function status_changed_payment($order_id, $old_status, $new_status){
 
                 //virtual classroom
                 if($access_virtual && isset($paid)){
-
                     $table_name = $wpdb->prefix. 'students'; // assuming the table name is "wp_students"
                     $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
                     $type_document = array(
@@ -752,14 +746,14 @@ function reload_payment_table() {
             if ($product->is_type('variable')) {
                 $variations = $product->get_available_variations();
                 $date = new DateTime('August 12');
-                $date = $date->format('Y-m-d');
+                $date = $date->format('m-d-Y');
                 foreach ($variations as $key => $variation) {
                     if ($variation['attributes']['attribute_pagos'] === $value) {
                     ?>
                     <table class="payment-parts-table mt-5">
                     <tr>
                     <th class="payment-parts-table-header">Payment</th>
-                    <th class="payment-parts-table-header">Date</th>
+                    <th class="payment-parts-table-header">Next date payment</th>
                     <th class="payment-parts-table-header">Amount</th>
                     </tr>
                     <?php
@@ -768,7 +762,7 @@ function reload_payment_table() {
                 ?>
                     <tr class="payment-parts-table-row">
                         <td class="payment-parts-table-data"><?php echo ($i + 1)?></td>
-                        <td class="payment-parts-table-data"><?php echo ($i === 0? date('Y-m-d') : (($value === 'Annual')? date('Y-m-d', strtotime('+'.$i.' year', strtotime($date))) : date('Y-m-d', strtotime('+'.($i*6).' months', strtotime($date)))))?></td>
+                        <td class="payment-parts-table-data"><?php echo ($i === 0? date('m-d-Y') . ' (Current)' : (($value === 'Annual')? date('m-d-Y', strtotime('+'.$i.' year', strtotime($date))) : date('m-d-Y', strtotime('+'.($i*6).' months', strtotime($date)))))?></td>
                         <td class="payment-parts-table-data"><?php echo wc_price($cart_total)?></td>
                     </tr>
                     <?php

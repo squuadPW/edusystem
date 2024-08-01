@@ -319,6 +319,8 @@ class TT_document_review_List_Table extends WP_List_Table{
         global $current_user;
 
         switch($column_name){
+            case 'index':
+                return $item['index'];
             case 'full_name':
                 return $item['name'].' '.$item['last_name'];
             case 'program':
@@ -406,6 +408,7 @@ class TT_document_review_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
+            'index' => __('Index', 'aes'),
             'full_name'     => __('Full name','aes'),
             'program'     => __('Program','aes'),
             'grade' => __('Grade','aes'),
@@ -505,6 +508,12 @@ class TT_document_review_List_Table extends WP_List_Table{
 		$current_page = $this->get_pagenum();
     
         $total_items = count($data);
+
+        $data = array();
+        foreach ($data_categories as $key => $value) {
+            $value['index'] = $key + 1;
+            $data[] = $value;
+        }
 		
         $this->items = $data;
 	}
@@ -529,6 +538,8 @@ class TT_all_student_List_Table extends WP_List_Table{
         global $current_user;
 
         switch($column_name){
+            case 'index':
+                return $item['index'];
             case 'full_name':
                 return $item['name'].' '.$item['last_name'];
             case 'program':
@@ -559,6 +570,7 @@ class TT_all_student_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
+            'index' => __('Index', 'aes'),
             'full_name'     => __('Full name','aes'),
             'program'     => __('Program','aes'),
             'grade' => __('Grade','aes'),
@@ -630,6 +642,12 @@ class TT_all_student_List_Table extends WP_List_Table{
     
         $total_items = count($data);
 		
+        $data = array();
+        foreach ($data_categories as $key => $value) {
+            $value['index'] = $key + 1;
+            $data[] = $value;
+        }
+
         $this->items = $data;
 	}
 
@@ -727,11 +745,7 @@ function update_status_documents(){
         $access_virtual = true;
         $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
         if($documents_student){
-            $documents_to_send = [];
             foreach($documents_student as $document){
-                if ($document->attachment_id) {
-                    array_push($documents_to_send, $document);
-                }
                 if($document->status != 5){
                     $access_virtual = false;
                 }
@@ -742,8 +756,6 @@ function update_status_documents(){
             // VERIFICAR FEE DE INSCRIPCION
             //virtual classroom
             if($access_virtual && isset($paid)){
-
-
                 $table_name = $wpdb->prefix. 'students'; // assuming the table name is "wp_students"
                 $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
                 $type_document = array(
