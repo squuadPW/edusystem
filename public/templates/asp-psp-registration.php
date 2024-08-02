@@ -267,7 +267,10 @@
     <div class="title">
         <?= __('Student applicant','aes'); ?>
     </div>
-        <form method="POST" action="<?php the_permalink();?>?action=save_student&idbitrix=<?php echo $_GET['idbitrix'] ?? null ?>" class="form-aes">
+    <form method="POST" action="<?php the_permalink();?>?action=save_student&idbitrix=<?php echo $_GET['idbitrix'] ?? null ?>" class="form-aes">
+        <div id="loading" style="display: none; text-align: center; font-weight: 600; font-style: italic; padding: 20px">
+            <p><span class="loading-dots" style="margin-right: 8px"></span> Cargando información del estudiante <span class="loading-dots"></span></p>
+        </div>
         <div class="grid grid-cols-12 gap-4">
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date"><?= __('Date of birth','aes'); ?><span class="required">*</span></label>

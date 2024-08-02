@@ -569,6 +569,7 @@ segmentButtons.forEach((button) => {
 const idBitrix = new URLSearchParams(window.location.search).get('idbitrix');
 
 if (idBitrix) {
+  document.getElementById('loading').style.display = 'block';
   const countries = {
     "AF": "Afghanistan",
     "AL": "Albania",
@@ -877,6 +878,10 @@ if (idBitrix) {
       const countryCode = Object.keys(countries).find(key => countries[key].toLowerCase() === data.country.toLowerCase());
       document.querySelector('select[name="country"]').value = countryCode;
       document.querySelector('input[name="city"]').value = data.city;
+
+      document.getElementById('loading').style.display = 'none';
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+      document.getElementById('loading').style.display = 'none';
+    });
 }
