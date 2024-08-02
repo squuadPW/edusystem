@@ -1079,15 +1079,12 @@ function create_password() {
             // Actualiza la columna user_pass_reset en la tabla wp_users
             global $wpdb;
             $wpdb->update($wpdb->users, array('user_pass_reset' => 1), array('ID' => $current_user->ID));
-            
-            // Envía un mensaje de éxito
-            wp_send_json(array('success' => true));
 
             // Cierra la sesión del usuario
             wp_logout();
 
-            // Redirige al usuario a la página de login
-            wp_redirect(wp_login_url());
+            $my_account_page = get_permalink( wc_get_page_id( 'myaccount' ) );
+            wp_send_json(array('success' => true, 'redirect' => $my_account_page));
             exit;
         } else {
             // Envía un mensaje de error

@@ -41,7 +41,7 @@ var save = document.getElementById('save_password');
                         alert('Password saved successfully');
                         // Cierra el modal
                         modal.style.display = 'none';
-                        location.reload();
+                        window.location.href = response.redirect;
                     } else {
                         alert('Error saving password');
                     }
