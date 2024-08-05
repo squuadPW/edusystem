@@ -1,8 +1,7 @@
 <?php
 
 function create_user_laravel($fields, $files) {
-  $url = 'https://ppadmin.american-elite.us/';
-  // $url = 'https://8f59asdasd-190-142-88-208.ngrok-free.app/';
+  $url = URL_LARAVEL_PPADMIN;
 
   $ch = curl_init($url.'api/public/create-student');
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
