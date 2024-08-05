@@ -21,32 +21,32 @@
                                             <?php 
                                                 $status = get_status_document($document->status);
                                                 if($status === 'No sent') { ?>
-                                                    <span>
+                                                    <a style="text-decoration: underline !important;"  href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
-                                                    </span>
+                                                    </a>
                                                 <?php } elseif($status === 'Sent') { ?>
-                                                    <span style="color: blue">
+                                                    <a style="text-decoration: underline !important; color: blue;"  href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
                                                     </span>
                                                 <?php } elseif($status === 'Processing') { ?>
-                                                    <span style="color: yellow">
+                                                    <a style="text-decoration: underline !important; color: yellow;"  href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
                                                     </span>
                                                 <?php } elseif($status === 'Declined' || $status === 'Expired') { ?>
-                                                    <span style="color: red">
+                                                    <a style="text-decoration: underline !important; color: red;"  href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
                                                     </span>
                                                 <?php } elseif($status === 'Approved') { ?>
-                                                    <span style="color: green">
+                                                    <a style="text-decoration: underline !important; color: green;"  href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
                                                     </span>
                                                 <?php } else { ?>
-                                                    <span>
+                                                    <a style="text-decoration: underline !important;"  href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
                                                     </span>

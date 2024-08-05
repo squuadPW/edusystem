@@ -402,7 +402,20 @@ function status_changed_payment($order_id, $old_status, $new_status){
         if($order->get_meta('student_id')){
             $student_id = $order->get_meta('student_id');
 
-            $wpdb->query("UPDATE {$table_student_payment} SET status_id = 1 WHERE student_id = {$student_id} and order_id = {$order_id}");
+            $query = $wpdb->prepare("
+                UPDATE {$table_student_payment} 
+                SET status_id = 1 
+                WHERE id IN (
+                    SELECT MIN(id) 
+                    FROM {$table_student_payment} 
+                    WHERE student_id = %d 
+                    AND order_id = %d 
+                    AND status_id = 0 
+                    GROUP BY product_id
+                )
+            ", $student_id, $order_id);
+            
+            $wpdb->query($query);
 
             if ($order->get_meta('id_bitrix')) {
                 sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());
@@ -464,19 +477,22 @@ function status_changed_payment($order_id, $old_status, $new_status){
                     $cuotes = $product->get_meta('num_cuotes_text') ? $product->get_meta('num_cuotes_text') : 1;
                 }
 
-                $data = array(
-                    'status_id' => 0, 
-                    'order_id' => $order_id, 
-                    'student_id' => $student_id, 
-                    'product_id' => $product_id, // Use the new variable here
-                    'amount' => $price, 
-                    'type_payment' => $cuotes > 1 ? 1 : 2, 
-                    'cuote' => 1, 
-                    'num_cuotes' => $cuotes, 
-                    'date_payment' => date('Y-m-d'), 
-                    'date_next_payment' => $cuotes > 1 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : date('Y-m-d'), 
-                );
-                $wpdb->insert($wpdb->prefix.'student_payments', $data);
+                for ($i=0; $i < $cuotes; $i++) { 
+                    $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
+                    $data = array(
+                        'status_id' => 0, 
+                        'order_id' => $order_id, 
+                        'student_id' => $student_id, 
+                        'product_id' => $product_id, // Use the new variable here
+                        'amount' => $price, 
+                        'type_payment' => $cuotes > 1 ? 1 : 2, 
+                        'cuote' => ($i + 1), 
+                        'num_cuotes' => $cuotes, 
+                        'date_payment' => $i == 0 ? date('Y-m-d') : null, 
+                        'date_next_payment' => $date, 
+                    );
+                    $wpdb->insert($wpdb->prefix.'student_payments', $data);
+                }
             }
         }
         // FOR PROGRAM PAYMENT (AES PROGRAM)
@@ -746,7 +762,7 @@ function reload_payment_table() {
             if ($product->is_type('variable')) {
                 $variations = $product->get_available_variations();
                 $date = new DateTime('August 12');
-                $date = $date->format('m-d-Y');
+                $date = $date->format('Y-m-d');
                 foreach ($variations as $key => $variation) {
                     if ($variation['attributes']['attribute_pagos'] === $value) {
                     ?>
@@ -757,12 +773,22 @@ function reload_payment_table() {
                     <th class="payment-parts-table-header">Amount</th>
                     </tr>
                     <?php
+                    $date_calc = '';
+                    switch ($value) {
+                        case 'Annual':
+                            $date_calc = '+1 year';
+                            break;
+                        case 'Semiannual':
+                            $date_calc = '+6 months';
+                            break;
+                    }
                     $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true );
-                    for ($i=0; $i < $cuotes; $i++) { 
+                    for ($i=0; $i < $cuotes; $i++) {
+                    $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
                 ?>
                     <tr class="payment-parts-table-row">
-                        <td class="payment-parts-table-data"><?php echo ($i + 1)?></td>
-                        <td class="payment-parts-table-data"><?php echo ($i === 0? date('m-d-Y') . ' (Current)' : (($value === 'Annual')? date('m-d-Y', strtotime('+'.$i.' year', strtotime($date))) : date('m-d-Y', strtotime('+'.($i*6).' months', strtotime($date)))))?></td>
+                        <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
+                        <td class="payment-parts-table-data"><?php echo ($i === 0 ? date('m-d-Y') . ' (Current)' : date('m-d-Y', strtotime($date)))?></td>
                         <td class="payment-parts-table-data"><?php echo wc_price($cart_total)?></td>
                     </tr>
                     <?php
@@ -1094,4 +1120,26 @@ function create_password() {
         // Envía un mensaje de error
         wp_send_json(array('success' => false, 'error' => 'Debes estar conectado para cambiar la contraseña'));
     }
+}
+
+add_action( 'woocommerce_after_account_orders', 'custom_content_after_orders' );
+function custom_content_after_orders() {
+    global $wpdb;
+    $pending_payments = [];
+    $payments = [];
+    $table_student_payments = $wpdb->prefix.'student_payments';
+    $table_students = $wpdb->prefix.'students';
+    $partner_id = get_current_user_id();
+    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
+
+    // Group payments by student_id and status_id
+    $student_payments = [];
+    foreach ($students as $key => $student) {
+        $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$student->id} AND status_id = 0");
+        if (sizeof($payments) > 0) {
+            $student_payments[$student->id] = $payments;
+        }
+    }
+
+    include(plugin_dir_path(__FILE__).'templates/next-payments.php');
 }
