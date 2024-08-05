@@ -1,9 +1,9 @@
 <?php
 
 function create_user_laravel($fields, $files) {
-  $url = URL_LARAVEL_PPADMIN;
+  $url = URL_LARAVEL_PPADMIN.'api/public/create-student';
 
-  $ch = curl_init($url.'api/public/create-student');
+  $ch = curl_init($url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($ch, CURLOPT_POST, true);
 
@@ -19,12 +19,12 @@ function create_user_laravel($fields, $files) {
   $response = curl_exec($ch);
   $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-  if (curl_errno($ch)) {
-      // echo 'Error: ' . curl_error($ch);
-  } else {
-      // echo "Response code: $response_code";
-      // echo "Response body: $response";
-  }
+  // if (curl_errno($ch)) {
+  //     echo 'Error: ' . curl_error($ch);
+  // } else {
+  //     echo "Response code: $response_code";
+  //     echo "Response body: $response";
+  // }
 
   curl_close($ch);
 }
