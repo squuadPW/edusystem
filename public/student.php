@@ -172,21 +172,21 @@ function save_student(){
                     case '1':
                         $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metadata);
                         $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
                         break;
 
                     case '2':
                         $variation = wc_get_product(AES_DUAL_10MO_VARIABLE);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metadata);
                         $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
                         break;
 
                     default:
                         $variation = wc_get_product(AES_DUAL_DEFAULT_VARIABLE);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metadata);
                         $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
                         break;
                 }
@@ -262,21 +262,21 @@ function save_student(){
                     case '1':
                         $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metadata);
                         $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
                         break;
 
                     case '2':
                         $variation = wc_get_product(AES_DUAL_10MO_VARIABLE);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metadata);
                         $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
                         break;
 
                     default:
                         $variation = wc_get_product(AES_DUAL_DEFAULT_VARIABLE);
                         $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metada);
+                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metadata);
                         $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
                         break;
                 }
