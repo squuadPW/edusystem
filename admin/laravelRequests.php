@@ -1,9 +1,9 @@
 <?php
 
 function create_user_laravel($fields, $files) {
-  $url = URL_LARAVEL_PPADMIN.'api/public/create-student';
+  $url = URL_LARAVEL_PPADMIN;
 
-  $ch = curl_init($url);
+  $ch = curl_init($url.'api/public/create-student');
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($ch, CURLOPT_POST, true);
 
