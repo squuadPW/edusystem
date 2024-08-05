@@ -14,7 +14,7 @@
                 <?php foreach ($payments as $payment) { ?>
                     <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-pending">
                         <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="Total"><?php echo $payment->cuote ?></td>
-                        <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date" data-title="Date"><?php echo date('m-d-Y', strtotime($payment->date_next_payment)) ?></td>
+                        <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date" data-title="Date"><?php echo date('F d, Y', strtotime($payment->date_next_payment)) ?></td>
                         <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="Total"><?php echo wc_price($payment->amount) ?></td>
                     </tr>
                 <?php } ?>

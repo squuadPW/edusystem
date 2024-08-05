@@ -788,7 +788,7 @@ function reload_payment_table() {
                 ?>
                     <tr class="payment-parts-table-row">
                         <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
-                        <td class="payment-parts-table-data"><?php echo ($i === 0 ? date('m-d-Y') . ' (Current)' : date('m-d-Y', strtotime($date)))?></td>
+                        <td class="payment-parts-table-data"><?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date)))?></td>
                         <td class="payment-parts-table-data"><?php echo wc_price($cart_total)?></td>
                     </tr>
                     <?php
