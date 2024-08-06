@@ -58,6 +58,34 @@ function add_admin_form_academic_periods_content(){
                     'status_id' => $status_id,
                     'created_at' => date('Y-m-d H:i:s')
                 ]);
+                
+                // $args = array(
+                //     'role' => 'parent',
+                // );
+                
+                // $users = get_users($args);
+                
+                // foreach ($users as $user) {
+                //     $customer_id = $user->ID;
+                //     $product_id = 484;
+                //     $variation_id = 123; // ID of the selected variation
+                //     $quantity = 1;
+                //     $total = wc_get_product($product_id)->get_price();
+                
+                //     $args = array(
+                //         'customer_id' => $customer_id,
+                //         'status' => 'pending-payment',
+                //     );
+                
+                //     $order = wc_create_order($args);
+                
+                //     $product = wc_get_product($product_id);
+                //     $variation = wc_get_product_variation($variation_id);
+                
+                //     $order->add_product($variation, $quantity);
+                //     $order->set_total($total);
+                //     $order->save();
+                // }
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
                 exit;

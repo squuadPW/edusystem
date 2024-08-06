@@ -441,17 +441,17 @@ function status_changed_payment($order_id, $old_status, $new_status){
         $date = new DateTime('August 12');
         $date = $date->format('Y-m-d');
         $student_id = $order->get_meta('student_id');
-
+        
         foreach ($items as $item) {
             $cuotes = 1;
             $date_calc = '';
-            $product_id = $item->get_product()->get_id();
+            $product_id = $item->get_product_id(); // Get the product ID
+            $variation_id = $item->get_variation_id(); // Get the variation ID
             $is_variable = $item->get_product()->is_type('variation');
             $price = $item->get_product()->get_price();
-
             $exist = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = {$product_id} and order_id = {$order_id}");
             if (!$exist) {
-
+        
                 if($is_variable) {
                     $product = $item->get_product();
                     $variation_attributes = $product->get_variation_attributes();
@@ -464,7 +464,7 @@ function status_changed_payment($order_id, $old_status, $new_status){
                             $attribute_value = $term_slug;
                         }
                     }
-    
+        
                     switch ($attribute_value) {
                         case 'Annual':
                             $date_calc = '+1 year';
@@ -473,17 +473,18 @@ function status_changed_payment($order_id, $old_status, $new_status){
                             $date_calc = '+6 months';
                             break;
                     }
-
+        
                     $cuotes = $product->get_meta('num_cuotes_text') ? $product->get_meta('num_cuotes_text') : 1;
                 }
-
+        
                 for ($i=0; $i < $cuotes; $i++) { 
                     $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
                     $data = array(
                         'status_id' => 0, 
                         'order_id' => $order_id, 
                         'student_id' => $student_id, 
-                        'product_id' => $product_id, // Use the new variable here
+                        'product_id' => $product_id, 
+                        'variation_id' => $variation_id, 
                         'amount' => $price, 
                         'type_payment' => $cuotes > 1 ? 1 : 2, 
                         'cuote' => ($i + 1), 
