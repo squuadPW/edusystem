@@ -1,10 +1,11 @@
 <?php
 
-function add_admin_form_academic_periods_content(){
+function add_admin_form_academic_periods_content()
+{
 
-    if(isset($_GET['action']) && !empty($_GET['action'])){
+    if (isset($_GET['action']) && !empty($_GET['action'])) {
 
-        if($_GET['action'] == 'change_status_academic_period'){
+        if ($_GET['action'] == 'change_status_academic_period') {
             try {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
                 exit;
@@ -15,77 +16,144 @@ function add_admin_form_academic_periods_content(){
         }
     }
 
-    if(isset($_GET['section_tab']) && !empty($_GET['section_tab'])){
-        if($_GET['section_tab'] == 'period_details'){
-            $period =$_GET['period_id'];
+    if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
+        if ($_GET['section_tab'] == 'period_details') {
+            $period = $_GET['period_id'];
             $period = get_period_details($period);
-            include(plugin_dir_path(__FILE__).'templates/academic-period-detail.php');
-        } 
-        if($_GET['section_tab'] == 'add_period'){
-            include(plugin_dir_path(__FILE__).'templates/academic-period-detail.php');
+            include (plugin_dir_path(__FILE__) . 'templates/academic-period-detail.php');
+        }
+        if ($_GET['section_tab'] == 'add_period') {
+            include (plugin_dir_path(__FILE__) . 'templates/academic-period-detail.php');
         }
 
-    }else{
+    } else {
 
-        if($_GET['action'] == 'save_period_details'){
+        if ($_GET['action'] == 'save_period_details') {
             global $wpdb;
-            $table_periods =  $wpdb->prefix.'academic_periods';
+            $table_periods = $wpdb->prefix . 'academic_periods';
             $period_id = $_POST['period_id'];
             $name = $_POST['name'];
             $code = $_POST['code'];
             $status_id = $_POST['status_id'] ?? 0;
 
             //update
-            if(isset($period_id) && !empty($period_id)){
+            if (isset($period_id) && !empty($period_id)) {
 
-                $wpdb->update($table_periods,[
+                $wpdb->update($table_periods, [
                     'name' => $name,
                     'code' => $code,
                     'status_id' => $status_id,
-                ],[ 'id' => $period_id]);
-                
-                setcookie('message',__('Changes saved successfully.','aes'),time() + 3600,'/');
-                wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id='.$period_id));
+                ], ['id' => $period_id]);
+
+                if ($status_id == 1) {
+                    $args = array(
+                        'role' => 'parent',
+                    );
+
+                    $users = get_users($args);
+
+                    foreach ($users as $user) {
+                        $customer_id = $user->ID;
+
+                        // Get student IDs from wp_students table where partner_id is customer_id
+                        $student_ids = $wpdb->get_col("SELECT id FROM wp_students WHERE partner_id = '$customer_id'");
+
+                        // Get payments from wp_student_payments table where student_id is in student_ids and status_id is 0
+                        $payments = [];
+                        if (sizeof($student_ids) > 0) {
+                            $payments = $wpdb->get_results("
+                                SELECT DISTINCT product_id, variation_id, student_id 
+                                FROM wp_student_payments 
+                                WHERE student_id IN (" . implode(',', $student_ids) . ") 
+                                AND status_id = 0
+                            ");
+                        }
+
+                        foreach ($payments as $key => $payment) {
+                            if ($payment->product_id && $payment->variation_id) {
+                                $product_id = $payment->product_id;
+                                $variation_id = $payment->variation_id;
+                                $total = wc_get_product($product_id)->get_price();
+                                $quantity = 1;
+
+                                // Obtiene el objeto de producto variación
+                                $variation = wc_get_product($variation_id);
+
+                                // Crea el pedido
+                                $order_args = array(
+                                    'customer_id' => $customer_id,
+                                    'status' => 'pending-payment',
+                                );
+                                $order = wc_create_order($order_args);
+                                $order->add_product($variation, $quantity);
+                                $order->set_total($total);
+                                $order->update_meta_data('student_id', $payment->student_id);
+                                $order->save();
+                            }
+                        }
+                    }
+                }
+
+                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id=' . $period_id));
                 exit;
+            } else {
 
-                
-            //insert
-            }else{
-
-                $wpdb->insert($table_periods,[
+                $wpdb->insert($table_periods, [
                     'name' => $name,
                     'code' => $code,
                     'status_id' => $status_id,
                     'created_at' => date('Y-m-d H:i:s')
                 ]);
-                
-                // $args = array(
-                //     'role' => 'parent',
-                // );
-                
-                // $users = get_users($args);
-                
-                // foreach ($users as $user) {
-                //     $customer_id = $user->ID;
-                //     $product_id = 484;
-                //     $variation_id = 123; // ID of the selected variation
-                //     $quantity = 1;
-                //     $total = wc_get_product($product_id)->get_price();
-                
-                //     $args = array(
-                //         'customer_id' => $customer_id,
-                //         'status' => 'pending-payment',
-                //     );
-                
-                //     $order = wc_create_order($args);
-                
-                //     $product = wc_get_product($product_id);
-                //     $variation = wc_get_product_variation($variation_id);
-                
-                //     $order->add_product($variation, $quantity);
-                //     $order->set_total($total);
-                //     $order->save();
-                // }
+
+                if ($status_id == 1) {
+                    $args = array(
+                        'role' => 'parent',
+                    );
+
+                    $users = get_users($args);
+
+                    foreach ($users as $user) {
+                        $customer_id = $user->ID;
+
+                        // Get student IDs from wp_students table where partner_id is customer_id
+                        $student_ids = $wpdb->get_col("SELECT id FROM wp_students WHERE partner_id = '$customer_id'");
+
+                        // Get payments from wp_student_payments table where student_id is in student_ids and status_id is 0
+                        $payments = [];
+                        if (sizeof($student_ids) > 0) {
+                            $payments = $wpdb->get_results("
+                                SELECT DISTINCT product_id, variation_id, student_id 
+                                FROM wp_student_payments 
+                                WHERE student_id IN (" . implode(',', $student_ids) . ") 
+                                AND status_id = 0
+                            ");
+                        }
+
+                        foreach ($payments as $key => $payment) {
+                            if ($payment->product_id && $payment->variation_id) {
+                                $product_id = $payment->product_id;
+                                $variation_id = $payment->variation_id;
+                                $total = wc_get_product($product_id)->get_price();
+                                $quantity = 1;
+
+                                // Obtiene el objeto de producto variación
+                                $variation = wc_get_product($variation_id);
+
+                                // Crea el pedido
+                                $order_args = array(
+                                    'customer_id' => $customer_id,
+                                    'status' => 'pending-payment',
+                                );
+                                $order = wc_create_order($order_args);
+                                $order->add_product($variation, $quantity);
+                                $order->set_total($total);
+                                $order->update_meta_data('student_id', $payment->student_id);
+                                $order->save();
+                            }
+                        }
+                    }
+                }
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
                 exit;
@@ -94,31 +162,35 @@ function add_admin_form_academic_periods_content(){
         } else {
             $list_academic_periods = new TT_academic_period_all_List_Table;
             $list_academic_periods->prepare_items();
-            include(plugin_dir_path(__FILE__).'templates/list-academic-periods.php');
+            include (plugin_dir_path(__FILE__) . 'templates/list-academic-periods.php');
         }
     }
 }
 
-class TT_academic_period_all_List_Table extends WP_List_Table{
+class TT_academic_period_all_List_Table extends WP_List_Table
+{
 
-    function __construct(){
-        global $status, $page,$categories;
-         
-        parent::__construct( array(
-            'singular'  => 'academic_period_',    
-            'plural'    => 'academic_period_s',
-            'ajax'      => true
-        ) );
-        
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'academic_period_',
+                'plural' => 'academic_period_s',
+                'ajax' => true
+            ));
+
     }
 
-    function column_default($item, $column_name){
+    function column_default($item, $column_name)
+    {
 
         global $current_user;
 
-        switch($column_name){
+        switch ($column_name) {
             case 'academic_period_id':
-                return '#'.$item[$column_name];
+                return '#' . $item[$column_name];
             case 'name':
                 return ucwords($item[$column_name]);
             case 'status_id':
@@ -126,49 +198,53 @@ class TT_academic_period_all_List_Table extends WP_List_Table{
                     case 1:
                         return 'Active';
                         break;
-                    
+
                     default:
                         return 'Inactive';
                         break;
                 }
             case 'view_details':
-                return "<a href='".admin_url('/admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id='.$item['academic_period_id'])."' class='button button-primary'>".__('View Details','aes')."</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id=' . $item['academic_period_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
     }
 
-    function column_name($item){
+    function column_name($item)
+    {
 
         return ucwords($item['name']);
     }
 
-    function column_cb($item){
+    function column_cb($item)
+    {
         return '';
     }
 
-    function get_columns(){
+    function get_columns()
+    {
 
         $columns = array(
-            'academic_period_code'     => __('Code','aes'),
-            'name'  => __('Name','aes'),
-            'status_id'  => __('Status','aes'),
-            'date'     => __('Created at','aes'),
-            'view_details' => __('Actions','aes'),
+            'academic_period_code' => __('Code', 'aes'),
+            'name' => __('Name', 'aes'),
+            'status_id' => __('Status', 'aes'),
+            'date' => __('Created at', 'aes'),
+            'view_details' => __('Actions', 'aes'),
         );
 
         return $columns;
     }
 
-    function get_academic_period_pendings(){
+    function get_academic_period_pendings()
+    {
         global $wpdb;
         $academic_periods_array = [];
 
         $academic_periods = $wpdb->get_results("SELECT * FROM wp_academic_periods");
 
-        if($academic_periods){
-            foreach($academic_periods as $academic_period){
-                array_push($academic_periods_array,[
+        if ($academic_periods) {
+            foreach ($academic_periods as $academic_period) {
+                array_push($academic_periods_array, [
                     'academic_period_code' => $academic_period->code,
                     'academic_period_id' => $academic_period->id,
                     'name' => $academic_period->name,
@@ -179,33 +255,37 @@ class TT_academic_period_all_List_Table extends WP_List_Table{
         }
 
         return $academic_periods_array;
-    }   
+    }
 
-    function get_sortable_columns() {
+    function get_sortable_columns()
+    {
         $sortable_columns = [];
         return $sortable_columns;
     }
 
-    function get_bulk_actions() {
+    function get_bulk_actions()
+    {
         $actions = [];
         return $actions;
     }
 
-    function process_bulk_action(){
-        
+    function process_bulk_action()
+    {
+
         //Detect when a bulk action is being triggered...
-        if( 'delete'===$this->current_action() ) {
+        if ('delete' === $this->current_action()) {
             wp_die('Items deleted (or they would be if we had items to delete)!');
-        }  
+        }
     }
 
-    function prepare_items(){
+    function prepare_items()
+    {
 
         $data_academic_periods = $this->get_academic_period_pendings();
 
         $per_page = 10;
 
-          
+
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
@@ -214,26 +294,28 @@ class TT_academic_period_all_List_Table extends WP_List_Table{
         $this->process_bulk_action();
         $data = $data_academic_periods;
 
-        function usort_reorder($a,$b){
+        function usort_reorder($a, $b)
+        {
             $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
-            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc'; 
-            $result = strcmp($a[$orderby], $b[$orderby]); 
-            return ($order==='asc') ? $result : -$result;
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
         }
-       
+
         $current_page = $this->get_pagenum();
-    
+
         $total_items = count($data);
-		
+
         $this->items = $data;
     }
 
 }
 
-function get_period_details($period_id){
+function get_period_details($period_id)
+{
 
     global $wpdb;
-    $table_periods =  $wpdb->prefix.'academic_periods';
+    $table_periods = $wpdb->prefix . 'academic_periods';
 
     $period = $wpdb->get_row("SELECT * FROM {$table_periods} WHERE id={$period_id}");
     return $period;

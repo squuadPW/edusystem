@@ -409,11 +409,10 @@ function status_changed_payment($order_id, $old_status, $new_status){
                     SELECT MIN(id) 
                     FROM {$table_student_payment} 
                     WHERE student_id = %d 
-                    AND order_id = %d 
                     AND status_id = 0 
                     GROUP BY product_id
                 )
-            ", $student_id, $order_id);
+            ", $student_id);
             
             $wpdb->query($query);
 
@@ -492,7 +491,14 @@ function status_changed_payment($order_id, $old_status, $new_status){
                         'date_payment' => $i == 0 ? date('Y-m-d') : null, 
                         'date_next_payment' => $date, 
                     );
-                    $wpdb->insert($wpdb->prefix.'student_payments', $data);
+                
+                    // Busca si ya existe una fila con los mismos valores
+                    $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND product_id = %d AND variation_id = %d AND cuote = %d", $student_id, $product_id, $variation_id, ($i + 1)));
+                
+                    if (!$existing_row) {
+                        // Si no se encuentra ninguna fila, inserta la nueva fila
+                        $wpdb->insert($wpdb->prefix.'student_payments', $data);
+                    }
                 }
             }
         }
