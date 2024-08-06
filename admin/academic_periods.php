@@ -52,14 +52,12 @@ function add_admin_form_academic_periods_content(){
             //insert
             }else{
 
-                error_log(
-                    $wpdb->insert($table_periods,[
-                        'name' => $name,
-                        'code' => $code,
-                        'status_id' => $status_id,
-                        'created_at' => date('Y-m-d H:i:s')
-                    ])
-                );
+                $wpdb->insert($table_periods,[
+                    'name' => $name,
+                    'code' => $code,
+                    'status_id' => $status_id,
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
                 exit;
