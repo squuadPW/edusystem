@@ -197,7 +197,7 @@ function add_custom_admin_page() {
         'manager_academic_periods_aes', 
         'add_admin_form_academic_periods_content',
         'add_admin_form_academic_periods_content', 
-        'dashicons-media-document', 
+        'dashicons-welcome-learn-more', 
         7
     );
 
