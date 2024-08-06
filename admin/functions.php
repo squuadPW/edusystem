@@ -5,6 +5,7 @@ require plugin_dir_path( __FILE__ ) . 'admission.php';
 require plugin_dir_path( __FILE__ ) . 'payments.php';
 require plugin_dir_path( __FILE__ ) . 'scholarships.php';
 require plugin_dir_path( __FILE__ ) . 'academic_periods.php';
+require plugin_dir_path( __FILE__ ) . 'staff.php';
 require plugin_dir_path( __FILE__ ) . 'institute.php';
 require plugin_dir_path( __FILE__ ) . 'alliances.php';
 require plugin_dir_path( __FILE__ ) . 'departments.php';
@@ -202,6 +203,16 @@ function add_custom_admin_page() {
     );
 
     add_menu_page( 
+        __('Staff','aes'),
+        __('Staff','aes'),
+        'manager_staff_aes', 
+        'add_admin_form_staff_content',
+        'add_admin_form_staff_content', 
+        'dashicons-buddicons-buddypress-logo', 
+        7
+    );
+
+    add_menu_page( 
         __('Institutes','aes'),
         __('Institutes','aes'),
         'manager_institutes_aes', 
@@ -246,6 +257,7 @@ function add_cap_to_administrator(){
     $role->add_cap('manager_departments_aes');
     $role->add_cap('manager_scholarship_aes');
     $role->add_cap('manager_academic_periods_aes');
+    $role->add_cap('manager_staff_aes');
     $role->add_cap('manager_admission_aes');
     $role->add_cap('manager_documents_aes');
     $role->add_cap('manager_payments_aes');
