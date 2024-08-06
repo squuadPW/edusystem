@@ -12,7 +12,7 @@
 
 	// define( 'AES_DUAL_DEFAULT', '53' );    // Product initial 11 and bacheloder
 	// define( 'AES_DUAL_DEFAULT_VARIABLE','60'); // Product variable
-	// define( 'ROLES_OF_STAFF', array('finance', 'admision', 'finanzas'));
+	// define( 'ROLES_OF_STAFF', array('administrator', 'administrador', 'admision', 'admission', 'alliance', 'finanzas', 'allied'));
      
 	// DREAM HOST
 	// define( 'AES_FEE_INSCRIPTION','527' );
@@ -26,7 +26,7 @@
 
 	// define( 'AES_DUAL_DEFAULT', '518' );    // Product initial 11 and bacheloder
 	// define( 'AES_DUAL_DEFAULT_VARIABLE','525'); // Product variable
-	// define( 'ROLES_OF_STAFF', array('finance', 'admision', 'finanzas'));
+	// define( 'ROLES_OF_STAFF', array('administrator', 'administration', 'admission', 'alliance', 'finance', 'admision', 'finanzas'));
 
 	// LOCAL JOSE MORA
 	define( 'AES_FEE_INSCRIPTION','484' );
