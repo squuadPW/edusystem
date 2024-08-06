@@ -99,6 +99,12 @@
                 </tr>
                 <tr>
                     <th scope="row" style="width:10px;padding:3px;">
+                        <input type="checkbox" name="capabilities[]" id="manager_academic_periods_aes" value="manager_academic_periods_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_academic_periods_aes'])) ? 'checked' : ''; ?>>
+                    </th>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_academic_periods_aes" style="margin-left:20px;"><?= __('Academic periods','aes'); ?></label></td>
+                </tr>
+                <tr>
+                    <th scope="row" style="width:10px;padding:3px;">
                         <input type="checkbox" name="capabilities[]" id="manager_users_aes" value="manager_users_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_users_aes'])) ? 'checked' : ''; ?>>
                     </th>
                     <td style="display:table-cell;padding:3px;"><label for="manager_users_aes" style="margin-left:20px;"><?= __('Users','aes'); ?></label></td>

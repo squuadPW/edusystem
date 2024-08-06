@@ -34,6 +34,19 @@ function create_tables() {
   $table_pre_users = $wpdb->prefix.'pre_users';
   $table_pre_students = $wpdb->prefix.'pre_students';
   $table_student_scholarship_application = $wpdb->prefix.'student_scholarship_application';
+  $table_academic_periods = $wpdb->prefix.'academic_periods';
+
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_academic_periods}'") != $table_academic_periods){
+
+    dbDelta( "CREATE TABLE " . $table_academic_periods . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        name TEXT NOT NULL,
+        code TEXT NOT NULL,
+        status_id INT(11) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_pre_users}'") != $table_pre_users){
 
