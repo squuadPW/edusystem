@@ -766,7 +766,6 @@ h3 {
 .segment-button.active {
   background-color: #2c2e88;
   color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Add animation to the segment buttons */
