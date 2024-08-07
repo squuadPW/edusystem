@@ -62,7 +62,7 @@ function add_admin_form_academic_periods_content()
                         $payments = [];
                         if (sizeof($student_ids) > 0) {
                             $payments = $wpdb->get_results("
-                                SELECT DISTINCT product_id, variation_id, student_id 
+                                SELECT DISTINCT product_id, variation_id, student_id, amount 
                                 FROM wp_student_payments 
                                 WHERE student_id IN (" . implode(',', $student_ids) . ") 
                                 AND status_id = 0
@@ -73,7 +73,7 @@ function add_admin_form_academic_periods_content()
                             if ($payment->product_id && $payment->variation_id) {
                                 $product_id = $payment->product_id;
                                 $variation_id = $payment->variation_id;
-                                $total = wc_get_product($product_id)->get_price();
+                                $total = wc_price($payment->amount);
                                 $quantity = 1;
 
                                 // Obtiene el objeto de producto variación
