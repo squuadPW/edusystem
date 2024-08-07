@@ -1,5 +1,5 @@
 <div class="content-dashboard">
-    <div style="margin-top:10px;">
+    <div style="margin-top:48px;">
         <?php if(!empty($students)): ?>
            <?php foreach($students as $student): ?>
                 <?php $documents = get_documents($student->id); ?>
@@ -12,7 +12,7 @@
                                 Upload documents here
                             </a>
                         </h4>
-                        <div style="border: 1px solid #091c5c; background-color: #f2f2f3; padding: 18px; border-radius: 15px; margin-bottom: 10px">
+                        <div style="background-color: #f7f7f7; padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-bottom: 10px">
                             <?php foreach($documents as $document): ?>
                                 <?php if($document->status == 0 || $document->status == 1 || $document->status == 3 || $document->status == 4): ?>
 

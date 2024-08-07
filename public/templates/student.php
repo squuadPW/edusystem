@@ -1,67 +1,105 @@
-<div class="text-center info-box">
-        <?php if(in_array('student',$roles)): ?>
-            <h2 style="font-size:24px;text-align:center;"><?= __('Student Information','form-plugin'); ?></h2>
-        <?php elseif(in_array('parent',$roles)): ?>
-            <h2 style="font-size:24px;text-align:center;"><?= __('Students Information','form-plugin'); ?></h2>
+<?php
+
+global $wpdb;
+$current_user = wp_get_current_user();
+$table_students = $wpdb->prefix . 'students';
+$student_logged = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+?>
+
+<?php if (!$student_logged->moodle_password) { ?>
+    <div class="text-center info-box">
+        <?php if (in_array('student', $roles)): ?>
+            <h2 style="font-size:24px;text-align:center;"><?= __('Student Information', 'form-plugin'); ?></h2>
+        <?php elseif (in_array('parent', $roles)): ?>
+            <h2 style="font-size:24px;text-align:center;"><?= __('Students Information', 'form-plugin'); ?></h2>
         <?php endif; ?>
-        <p><?= __('To access the virtual classroom, please ensure you complete the following steps:','form-plugin'); ?></p>
+
+        <p><?= __('To access the virtual classroom, please ensure you complete the following steps:', 'form-plugin'); ?></p>
         <ul class="info-list">
             <li>
-            <i class="fas fa-upload"></i>
-            <?= __('Upload all required documents marked with an asterisk (*)','form-plugin'); ?> <a style="text-decoration: underline !important; color: #091c5c;" href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ) . '/student-documents' ?>"><?= __('here','form-plugin'); ?></a>
+                <i class="fas fa-upload"></i>
+                <?= __('Upload all required documents marked with an asterisk (*)', 'form-plugin'); ?> <a
+                    style="text-decoration: underline !important; color: #091c5c;"
+                    href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents' ?>"><?= __('here', 'form-plugin'); ?></a>
             </li>
             <li>
-            <i class="fas fa-credit-card"></i>
-            <?= __('If you haven\'t already, please process the payment for your registration fee. This will enable us to finalize your registration and grant you access to the virtual classroom.','form-plugin'); ?>
+                <i class="fas fa-credit-card"></i>
+                <?= __('If you haven\'t already, please process the payment for your registration fee. This will enable us to finalize your registration and grant you access to the virtual classroom.', 'form-plugin'); ?>
             </li>
         </ul>
-        <p class="info-note"><?= __('Once both steps are complete, you will receive an email with instructions on how to access the virtual classroom. Please note that access will only be granted once all required documents have been received and your payment has been processed.','form-plugin'); ?></p>
-</div>
-<table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table" style="margin-top:20px;">
+        <p class="info-note">
+            <?= __('Once both steps are complete, you will receive an email with instructions on how to access the virtual classroom. Please note that access will only be granted once all required documents have been received and your payment has been processed.', 'form-plugin'); ?>
+        </p>
+    </div>
+<?php } else { ?>
+    <?php if (in_array('student', $roles)): ?>
+        <h2 style="font-size:24px;text-align:center;"><?= __('Student Information', 'form-plugin'); ?></h2>
+    <?php elseif (in_array('parent', $roles)): ?>
+        <h2 style="font-size:24px;text-align:center;"><?= __('Students Information', 'form-plugin'); ?></h2>
+    <?php endif; ?>
+<?php } ?>
+<table
+    class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
+    style="margin-top:20px;">
     <thead>
         <tr>
-            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span class="nobr"><?= __('Full Name','aes'); ?></span></th>
-            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span class="nobr"><?= __('Grade','aes'); ?></span></th>
-            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span class="nobr"><?= __('Program(s)','aes'); ?></span></th>
-            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span class="nobr"><?= __('Email','aes'); ?></span></th>
-            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span class="nobr"><?= __('Virtual Classroom','aes'); ?></span></th>
-            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span class="nobr"><?= __('Actions','aes'); ?></span></th>
+            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span
+                    class="nobr"><?= __('Full Name', 'aes'); ?></span></th>
+            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
+                    class="nobr"><?= __('Grade', 'aes'); ?></span></th>
+            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
+                    class="nobr"><?= __('Program(s)', 'aes'); ?></span></th>
+            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
+                    class="nobr"><?= __('Email', 'aes'); ?></span></th>
+            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
+                    class="nobr"><?= __('Virtual Classroom', 'aes'); ?></span></th>
+            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
+                    class="nobr"><?= __('Actions', 'aes'); ?></span></th>
         </tr>
     </thead>
     <tbody>
-        <?php if(!empty($student)): ?>
-            <?php foreach($student as $row): ?>
+        <?php if (!empty($student)): ?>
+            <?php foreach ($student as $row): ?>
                 <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number" data-title="<?= __('Full Name','aes'); ?>">
-                        <?= $row->name.' '.$row->last_name; ?>
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
+                        data-title="<?= __('Full Name', 'aes'); ?>">
+                        <?= $row->name . ' ' . $row->last_name; ?>
                     </td>
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status" data-title="<?= __('Grade','aes'); ?>">
-                       <?= $grade = get_name_grade($row->grade_id); ?>
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
+                        data-title="<?= __('Grade', 'aes'); ?>">
+                        <?= $grade = get_name_grade($row->grade_id); ?>
                     </td>
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('Program','aes') ?>">
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
+                        data-title="<?= __('Program', 'aes') ?>">
                         <?= $program = get_name_program($row->program_id); ?>
                     </td>
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('Email','aes') ?>">
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
+                        data-title="<?= __('Email', 'aes') ?>">
                         <?= $row->email; ?>
                     </td>
                     <!--
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('Program','aes') ?>">
-                        <?php if(!empty($row->moodle_password)): ?>
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('Program', 'aes') ?>">
+                        <?php if (!empty($row->moodle_password)): ?>
                         <form class="woocommerce-form woocommerce-form-login login mt-4">
                             <input class="woocommerce-Input woocommerce-Input--text input-text input-no-style" type="password" name="password" id="password" value="<?= $row->moodle_password; ?>">
                         </form>
                         <?php endif; ?>
                     </td>
                     -->
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('Virtual Classroom','aes'); ?>">
-                        <?php if($row->moodle_student_id > 0){ ?>
-                            <a target="_blank" class="button" href="<?= home_url('?action=access_moodle_url&student_id='.$row->id); ?>" disabled><?= __('Access','aes') ?></a>
-                        <?php }else{ ?>
-                            <button class="button" disabled><?= __('Access','aes') ?></button>
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
+                        data-title="<?= __('Virtual Classroom', 'aes'); ?>">
+                        <?php if ($row->moodle_student_id > 0) { ?>
+                            <a target="_blank" class="button"
+                                href="<?= home_url('?action=access_moodle_url&student_id=' . $row->id); ?>"
+                                disabled><?= __('Access', 'aes') ?></a>
+                        <?php } else { ?>
+                            <button class="button" disabled><?= __('Access', 'aes') ?></button>
                         <?php } ?>
                     </td>
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('View','aes'); ?>">
-                        <a href="<?= wc_get_account_endpoint_url('student-details').'/?student='.$row->id; ?>" class="button button-primary"><?= __('View','aes'); ?></a>
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
+                        data-title="<?= __('View', 'aes'); ?>">
+                        <a href="<?= wc_get_account_endpoint_url('student-details') . '/?student=' . $row->id; ?>"
+                            class="button button-primary"><?= __('View', 'aes'); ?></a>
                     </td>
                 </tr>
             <?php endforeach; ?>
