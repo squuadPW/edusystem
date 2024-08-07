@@ -106,6 +106,12 @@ class TT_staff_all_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'id':
                 return '#' . $item[$column_name];
+            case 'user_login':
+                return $item[$column_name];
+            case 'display_name':
+                return $item[$column_name];
+            case 'email':
+                return $item[$column_name];
             case 'view_details':
                 return "<a href='" . admin_url('/admin.php?page=add_admin_form_staff_content&section_tab=staff_details&staff_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
             default:
@@ -128,10 +134,10 @@ class TT_staff_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'id' => __('ID', 'aes'),
             'user_login' => __('User login', 'aes'),
-            'names' => __('Names', 'aes'),
             'email' => __('Email', 'aes'),
+            'display_name' => __('Display name', 'aes'),
+            'names' => __('Names', 'aes'),
             'roles' => __('Roles', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
@@ -158,11 +164,16 @@ class TT_staff_all_List_Table extends WP_List_Table
                 array_push($staff_array, [
                     'id' => $staff->ID,
                     'user_login' => $staff->user_login,
+                    'display_name' => $staff->display_name,
                     'names' => get_user_meta($staff->ID, 'first_name', true) . ' ' . get_user_meta($staff->ID, 'last_name', true),
                     'email' => $staff->user_email,
                     'roles' => implode(', ', $roles),
                 ]);
             }
+
+            usort($staff_array, function($a, $b) {
+                return strnatcasecmp($a['roles'], $b['roles']);
+            });
         }
 
         return $staff_array;

@@ -9,7 +9,7 @@
 	// define( 'AES_DUAL_10MO_VARIABLE','57'); // Product variable
 	// define( 'AES_DUAL_DEFAULT', '53' );    // Product initial 11 and bacheloder
 	// define( 'AES_DUAL_DEFAULT_VARIABLE','60'); // Product variable
-	// define( 'ROLES_OF_STAFF', array('administrator', 'administrador', 'admision', 'admission', 'alliance', 'finanzas', 'allied'));
+	// define( 'ROLES_OF_STAFF', array('administrator', 'administrador', 'admision', 'admission', 'alliance', 'administration', 'allied'));
      
 	// DREAM HOST
 	// define( 'AES_FEE_INSCRIPTION','527' );
@@ -20,7 +20,7 @@
 	// define( 'AES_DUAL_10MO_VARIABLE','522'); // Product variable
 	// define( 'AES_DUAL_DEFAULT', '518' );    // Product initial 11 and bacheloder
 	// define( 'AES_DUAL_DEFAULT_VARIABLE','525'); // Product variable
-	// define( 'ROLES_OF_STAFF', array('administrator', 'administration', 'admission', 'alliance', 'finance', 'admision', 'finanzas'));
+	// define( 'ROLES_OF_STAFF', array('administrator', 'administration', 'admission', 'alliance', 'finance', 'admision', 'administration'));
 
 	// LOCAL JOSE MORA
 	define( 'AES_FEE_INSCRIPTION','484' );
@@ -31,7 +31,7 @@
 	define( 'AES_DUAL_10MO_VARIABLE','472'); // Product variable
 	define( 'AES_DUAL_DEFAULT', '467' );    // Product initial 11 and bacheloder
 	define( 'AES_DUAL_DEFAULT_VARIABLE','475'); // Product variable
-	define( 'ROLES_OF_STAFF', array('administrator', 'administration', 'admission', 'alliance', 'finance', 'admision', 'finanzas'));
+	define( 'ROLES_OF_STAFF', array('administrator', 'administration', 'admission', 'alliance', 'finance', 'admision', 'administration'));
 
 	// FOR ALL USERS, DONT COMMENT
 	define( 'AES_PROGRAM_ID','HSD-01'); // AES program for endpoint for laravel create user and move documents

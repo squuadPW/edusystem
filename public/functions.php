@@ -913,13 +913,13 @@ function custom_login_redirect($redirect_to, $request, $user) {
         $redirect_to = admin_url('admin.php?page=add_admin_form_admission_content'); // Redirect admision to a custom dashboard
     }
 
-    if (in_array('finanzas', $roles, true)) {
+    if (in_array('administration', $roles, true)) {
         $redirect_to = admin_url('admin.php?page=add_admin_form_payments_content'); // Redirect admision to a custom dashboard
     }
 
-    if (in_array('administration', $roles, true)) {
-        $redirect_to = admin_url('admin.php?page=add_admin_institutes_content'); // Redirect admision to a custom dashboard
-    }
+    // if (in_array('administration', $roles, true)) {
+    //     $redirect_to = admin_url('admin.php?page=add_admin_institutes_content'); // Redirect admision to a custom dashboard
+    // }
 
     return $redirect_to;
 }
