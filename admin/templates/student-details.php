@@ -228,7 +228,10 @@ $countries = get_countries();
                             <td data-colname="<?= __('Actions','aes'); ?>">
                                 <?php if($document->status > 0): ?>
                                     <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" class="button button-primary"><?= __('View','aes'); ?></a>
-                                    <?php if($document->status != 5): ?>
+                                    <?php if($document->status != 1) { ?>
+                                        <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>" data-status="1" class="button change-status button-warning"><?= __('Revert','aes'); ?></button>
+                                    <?php } ?>
+                                    <?php if($document->status != 5 && $document->status != 3): ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>" data-status="5" class="button change-status button-success"><?= __('Approve','aes'); ?></button>
                                     <?php endif; ?>
                                     <?php if($document->status != 5 && $document->status != 3): ?>

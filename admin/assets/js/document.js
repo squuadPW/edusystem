@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  buttons_change_status = document.querySelectorAll(".change-status");
   button_export_xlsx = document.getElementById("button-export-xlsx");
   input_birth_date = document.querySelectorAll(".birth_date");
 
@@ -7,65 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
     input_birth_date.forEach((input) => {
       flatpickr(input, {
         dateFormat: "m/d/Y",
-      });
-    });
-  }
-
-  if (buttons_change_status) {
-    buttons_change_status.forEach((button) => {
-      button.addEventListener("click", (e) => {
-        // Deshabilitar todos los botones con la clase change-status
-        buttons_change_status.forEach((btn) => {
-          btn.disabled = true;
-        });
-        document_id = button.getAttribute("data-document-id");
-        status_id = button.getAttribute("data-status");
-        student_id = button.getAttribute("data-student-id");
-
-        let htmlLoading = "";
-        htmlLoading +=
-          "<td class='column-primary id column-id' colspan='3' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
-
-        document.getElementById("tr_document_" + document_id).innerHTML =
-          htmlLoading;
-        document.getElementById("notice-status").style.display = "none";
-
-        const XHR = new XMLHttpRequest();
-        XHR.open("POST", update_status_documents.url, true);
-        XHR.setRequestHeader(
-          "Content-type",
-          "application/x-www-form-urlencoded"
-        );
-        XHR.responseType = "text";
-        XHR.send(
-          "action=" +
-            update_status_documents.action +
-            "&student_id=" +
-            student_id +
-            "&document_id=" +
-            document_id +
-            "&status=" +
-            status_id
-        );
-        XHR.onload = function () {
-          if (this.readyState == "4" && XHR.status === 200) {
-            let result = JSON.parse(XHR.responseText);
-            if (result.status == "success") {
-              document.getElementById("notice-status").style.display = "block";
-              document.getElementById("tr_document_" + document_id).innerHTML =
-                result.html;
-
-              setTimeout(() => {
-                document.getElementById("notice-status").style.display = "none";
-              }, 2000);
-            }
-
-            // Habilitar nuevamente los botones cuando se completa la solicitud
-            buttons_change_status.forEach((btn) => {
-              btn.disabled = false;
-            });
-          }
-        };
       });
     });
   }
@@ -298,5 +238,87 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       };
     });
+  }
+
+
+  let initialized = false;
+  if(initialized == false) {
+    watchButtons();
+  }
+
+  function watchButtons() {
+    initialized = true;
+    buttons_change_status = document.querySelectorAll(".change-status");
+    buttons_change_status.forEach((button) => {
+      button.addEventListener("click", (e) => {
+        const action = button.textContent;
+
+        const confirmMessage = `Are you sure you want to ${action.toLowerCase()} this document?`;
+
+        if (confirm(confirmMessage)) {
+          buttons_status(button);
+        }
+      });
+    });
+  }
+
+  function buttons_status(button) {
+      // Deshabilitar todos los botones con la clase change-status
+      buttons_change_status.forEach((btn) => {
+        btn.disabled = true;
+      });
+      document_id = button.getAttribute("data-document-id");
+      status_id = button.getAttribute("data-status");
+      student_id = button.getAttribute("data-student-id");
+
+      let htmlLoading = "";
+      htmlLoading +=
+        "<td class='column-primary id column-id' colspan='3' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+
+      document.getElementById("tr_document_" + document_id).innerHTML =
+        htmlLoading;
+      document.getElementById("notice-status").style.display = "none";
+
+      const XHR = new XMLHttpRequest();
+      XHR.open("POST", update_status_documents.url, true);
+      XHR.setRequestHeader(
+        "Content-type",
+        "application/x-www-form-urlencoded"
+      );
+      XHR.responseType = "text";
+      XHR.send(
+        "action=" +
+          update_status_documents.action +
+          "&student_id=" +
+          student_id +
+          "&document_id=" +
+          document_id +
+          "&status=" +
+          status_id
+      );
+      XHR.onload = function () {
+        if (this.readyState == "4" && XHR.status === 200) {
+          let result = JSON.parse(XHR.responseText);
+          if (result.status == "success") {
+            // document.getElementById("notice-status").style.display = "block";
+            document.getElementById("tr_document_" + document_id).innerHTML =
+              result.html;
+
+              buttons_change_status.forEach((button) => {
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+              });
+              watchButtons();
+            // setTimeout(() => {
+            //   document.getElementById("notice-status").style.display = "none";
+            // }, 2000);
+          }
+
+          // Habilitar nuevamente los botones cuando se completa la solicitud
+          buttons_change_status.forEach((btn) => {
+            btn.disabled = false;
+          });
+        }
+      };
   }
 });

@@ -699,39 +699,40 @@ function update_status_documents(){
                 $solvency_administrative = false;
             }
 
-            if($document->id == $document_id){
-
+            if ($document->id == $document_id) {
+                $html .= '<tr id="' . 'tr_document_' . $document->id . '">';
                 $html .= '<td class="column-primary">';
+                $html .= get_name_document($document->document_id);
+                $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
+                $html .= "</td>";
                 
-                        $html .= $document->document_id;
-                    
-                    $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
+                $html .= '<td id="' . 'td_document_' . $document->document_id . '" data-colname="' . __('Status', 'aes') . '">';
+                $html .= "<b>";
+                $html .= get_status_document($document->status);
+                $html .= "</b>";
                 $html .= "</td>";
-                $html .= '<td id="'."td_document_".$document->id.'" data-colname="'.__('Status','aes').'">';
-                    $html .= "<b>";
-                    
-                        $status = match ($document->status){
-                            '0' => __('No sent','form-plugin'),
-                            '1' => __('Sent','form-plugin'),
-                            '2' => __('Processing','form-plugin'),
-                            '3' => __('Declined','form-plugin'),
-                            '4' => __('Expired','form-plugin'),
-                            '5' => __('Approved','form-plugin'),
-                        };
-                        $html .= $status;
-                    $html .= "</b>";
-                $html .= "</td>";
-                $html .= '<td data-colname="'.__('Actions','aes').'">';
-                    if($document->status > 0){
-                        $html .= '<a target="_blank" href="'.wp_get_attachment_url($document->attachment_id).'" class="button button-primary">'.__('View','aes').'</a>';
-                        if($document->status != 5){
-                            $html .= ' <button data-document-id="'.$document->id.'" data-student-id="'.$document->student_id.'" data-status="5" class="button change-status button-success">'.__('Approved','aes').'</button>';
-                        }
-                        if($document->status != 5 && $document->status != 3){
-                            $html .=  ' <button data-document-id="'.$document->id.'" data-student-id="'.$document->student_id.'" data-status="3" class="button change-status button-danger">'.__('Declined','aes').'</button>';
-                        }
+                
+                $html .= '<td data-colname="' . __('Actions', 'aes') . '">';
+                if ($document->status > 0) {
+                    $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '" class="button button-primary">' . __('View', 'aes') . '</a>';
+                
+                    // Revert button
+                    if ($document->status != 1) {
+                        $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="1" class="button change-status button-warning" style="margin-left: 3px; margin-right: 3px;">' . __('Revert', 'aes') . '</button>';
                     }
+                
+                    // Approved button
+                    if ($document->status != 5 && $document->status != 3) {
+                        $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="5" class="button change-status button-success" style="margin-left: 3px; margin-right: 3px;">' . __('Approve', 'aes') . '</button>';
+                    }
+                
+                    // Declined button
+                    if ($document->status != 5 && $document->status != 3) {
+                        $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="3" class="button change-status button-danger" style="margin-left: 3px; margin-right: 3px;">' . __('Decline', 'aes') . '</button>';
+                    }
+                }
                 $html .= "</td>";
+                $html .= "</tr>";
             }
         }
 
@@ -794,17 +795,8 @@ function update_status_documents(){
                 foreach ($documents_to_send as $key => $doc) {
                     $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
                     $attachment_id = $doc->attachment_id;
-
-                    $attachment_url = wp_get_attachment_url($attachment_id);
-                    $attachment_metadata = wp_get_attachment_metadata($attachment_id);
-                    
-                    // Obtener la ruta del archivo en el servidor
                     $attachment_path = get_attached_file($attachment_id);
-                    
-                    // Obtener el contenido del archivo
                     $attachment_content = file_get_contents($attachment_path);
-                    
-                    // Hacer algo con el contenido del archivo...
                     $files[$id_requisito] = base64_encode($attachment_content);
                 }
 
