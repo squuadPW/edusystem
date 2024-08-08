@@ -160,6 +160,9 @@ class TT_staff_all_List_Table extends WP_List_Table
             foreach ($staffs as $staff) {
                 $user_data = get_userdata($staff->ID);
                 $roles = $user_data->roles;
+                $roles = array_map(function($value) {
+                    return str_replace("administrador", "manager", $value);
+                }, $roles);
 
                 array_push($staff_array, [
                     'id' => $staff->ID,
@@ -167,7 +170,7 @@ class TT_staff_all_List_Table extends WP_List_Table
                     'display_name' => $staff->display_name,
                     'names' => get_user_meta($staff->ID, 'first_name', true) . ' ' . get_user_meta($staff->ID, 'last_name', true),
                     'email' => $staff->user_email,
-                    'roles' => str_replace('Administrador', 'Manager', implode(', ', $roles)),
+                    'roles' => implode(', ', $roles),
                 ]);
             }
 

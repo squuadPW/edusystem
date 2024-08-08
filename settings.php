@@ -37,5 +37,5 @@
 	define( 'AES_PROGRAM_ID','HSD-01'); // AES program for endpoint for laravel create user and move documents
 	define( 'AES_PERIOD','20232024'); // AES period for endpoint for laravel create user and move documents
 	define( 'AES_TYPE_PROGRAM','0'); // AES type of program for endpoint for laravel create user and move documents
-	define( 'URL_LARAVEL_PPADMIN','https://ppadmin.american-elite.us/'); 
+	define( 'URL_LARAVEL_PPADMIN','https://admin.american-elite.us/'); 
 ?>
