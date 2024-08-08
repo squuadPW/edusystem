@@ -45,7 +45,7 @@ function add_admin_form_staff_content()
                     'user_email' => $email,
                 );
 
-                if (isset($password)) {
+                if ($password != '') {
                     $user_data['user_pass'] = $password;
                 }
                 wp_update_user($user_data);
@@ -167,7 +167,7 @@ class TT_staff_all_List_Table extends WP_List_Table
                     'display_name' => $staff->display_name,
                     'names' => get_user_meta($staff->ID, 'first_name', true) . ' ' . get_user_meta($staff->ID, 'last_name', true),
                     'email' => $staff->user_email,
-                    'roles' => implode(', ', $roles),
+                    'roles' => str_replace('Administrador', 'manager', implode(', ', $roles)),
                 ]);
             }
 
