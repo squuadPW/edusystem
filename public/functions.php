@@ -1224,3 +1224,41 @@ function student_password_Reset( $user ) {
     $wpdb->update($wpdb->users, array('user_pass_reset' => 1), array('ID' => $user_id));
 }
 add_action( 'password_reset', 'student_password_Reset' );
+
+function reload_moodle_users() {
+    register_rest_route('students', '/mooodle', array(
+        'methods' => 'GET',
+        'callback' => 'students_moodle',
+        'permission_callback' => '__return_true'
+    ));
+}
+
+add_action('rest_api_init', 'reload_moodle_users');
+
+function students_moodle() {
+    global $wpdb;
+    $args = array(
+        'role' => 'student',
+    );
+
+    $users = get_users($args);
+    foreach ($users as $key => $user) {
+        $table_students = $wpdb->prefix.'students';
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user->data->user_email}'");
+        $student_id = $student->id;
+
+        $exist = is_search_student_by_email($student_id);
+        if ($exist) {
+            $wpdb->update($table_students,['moodle_student_id' => $exist[0]['id']],['id' => $student_id]);
+
+            $is_exist_password = is_password_user_moodle($student_id);
+    
+            if(!$is_exist_password){
+                $password = generate_password_user();
+                $wpdb->update($table_students,['moodle_password' => $password],['id' => $student_id]);
+                change_password_user_moodle($student_id);
+            }
+        }
+    }
+    return true;
+}
