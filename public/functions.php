@@ -419,17 +419,17 @@ function status_changed_payment($order_id, $old_status, $new_status)
             $student_id = $order->get_meta('student_id');
 
             $query = $wpdb->prepare("
-                UPDATE {$table_student_payment} 
-                SET status_id = 1 
-                WHERE id IN (
-                    SELECT MIN(id) 
-                    FROM {$table_student_payment} 
-                    WHERE student_id = %d 
-                    AND status_id = 0 
+                UPDATE {$table_student_payment} AS a
+                INNER JOIN (
+                    SELECT MIN(id) AS min_id
+                    FROM {$table_student_payment}
+                    WHERE student_id = %d
+                    AND status_id = 0
                     GROUP BY product_id
-                )
+                ) AS b ON a.id = b.min_id
+                SET a.status_id = 1
             ", $student_id);
-
+        
             $wpdb->query($query);
 
             if ($order->get_meta('id_bitrix')) {

@@ -252,7 +252,7 @@ function get_alliances(){
     global $wpdb;
     $table_alliances =  $wpdb->prefix.'alliances';
 
-    $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances}");
+    $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 1");
     return $alliances;
 }
 

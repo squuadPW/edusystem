@@ -5,7 +5,7 @@ function delete_data_student($user_id){
     global $wpdb;
     $table_student_documents = $wpdb->prefix.'student_documents';
     $table_students = $wpdb->prefix.'students';
-    $table_student_payments = $wpdb->prefix.'student_payment';
+    $table_student_payments = $wpdb->prefix.'student_payments';
 
     $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id={$user_id}");
 
