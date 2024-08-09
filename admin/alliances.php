@@ -96,7 +96,7 @@ function add_admin_partners_content(){
                         'state' => $state,
                         'city' => $city,
                         'address' => $address,
-                        'description    ' => $description   ,
+                        'description' => $description,
                         'status' => 1,
                         'fee' => floatval($fee),
                         'created_at' => date('Y-m-d H:i:s')

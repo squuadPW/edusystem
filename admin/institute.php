@@ -190,6 +190,7 @@ function add_admin_institutes_content(){
 
         if($_GET['section_tab'] == 'add_institute'){
             $countries = get_countries();
+            $alliances = get_alliances();
             include(plugin_dir_path(__FILE__).'templates/institute-details.php');
         }
 
