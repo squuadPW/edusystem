@@ -61,7 +61,7 @@
                                     <?php endif; ?>
                                 <?php endif; ?>
                                 <tr>
-                                    <th scope="row"><label for="input_id"><?= __('Payment Method','aes').':'; ?></label></th>
+                                    <th scope="row"><label for="input_id"><?= __('Payment Method selected','aes').':'; ?></label></th>
                                     <td><?= $order->get_payment_method_title(); ?></td>
                                 </tr>
                                 <?php if($order->get_meta('_stripe_intent_id')){ ?>
@@ -69,6 +69,14 @@
                                         <tr>
                                             <th scope="row"><label for="input_id"><?= __('Transaction ID','aes').':'; ?></label></th>
                                             <td><?= $order->get_meta('_stripe_intent_id'); ?></td>
+                                        </tr>
+                                    <?php endif; ?>
+                                <?php } ?>
+                                <?php if($order->get_meta('payment_method')){ ?>
+                                    <?php if(!in_array('institute',$roles) && !in_array('alliance',$roles)): ?>
+                                        <tr>
+                                            <th scope="row"><label for="input_id"><?= __('Payment method used','aes').':'; ?></label></th>
+                                            <td><?= $order->get_meta('payment_method'); ?></td>
                                         </tr>
                                     <?php endif; ?>
                                 <?php } ?>
