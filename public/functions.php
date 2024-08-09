@@ -1217,3 +1217,10 @@ function yaycommerce_refresh_checkout_on_payment_methods_change()
         });
    ");
 }
+
+function student_password_Reset( $user ) {
+    global $wpdb;
+    $user_id = $user->get('ID');
+    $wpdb->update($wpdb->users, array('user_pass_reset' => 1), array('ID' => $user_id));
+}
+add_action( 'password_reset', 'student_password_Reset' );
