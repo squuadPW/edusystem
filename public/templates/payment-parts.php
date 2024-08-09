@@ -18,14 +18,22 @@
 
     <div >
       <div style="margin-bottom: 10px !important;">
-        <label class="fee-container"><strong>Registration fee $299.</strong> <span>(You can pay it before starting classes in your account)</span>
+      <?php
+        $product_fee = wc_get_product(AES_FEE_INSCRIPTION);
+        $product_price = $product_fee->get_price();
+      ?>
+        <?php if($product_price < 299) { ?>
+            <label class="fee-container"><strong>Registration fee <span style="text-decoration: line-through;"><?php echo wc_price(299) ?></span></strong><span> with a 50% discount, you pay: <strong><?php echo wc_price($product_price) ?></strong> <br> (You can pay it before starting classes in your account)</span>
+          <?php } else { ?>
+            <label class="fee-container"><strong>Registration fee <?php echo wc_price($product_price) ?></strong> <br><span>(You can pay it before starting classes in your account)</span>
+            <?php } ?>
           <input name="fee" type="checkbox" checked="checked">
           <span class="checkmark"></span>
         </label>
       </div>
     </div>
 
-    <div class="text-center">
+    <div class="text-center" style="padding: 18px 0px;">
       <label>Apply your scholarship to get the discount</label>
       <div id="button-schoolship"></div>
     </div>
