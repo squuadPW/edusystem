@@ -3,6 +3,7 @@
 function add_expedited_order_woocommerce_email( $email_classes ){
 
     require plugin_dir_path( __FILE__ ) . 'class-wc-new-applicant-email.php';
+    require plugin_dir_path( __FILE__ ) . 'class-wc-welcome-student-email.php';
     require plugin_dir_path( __FILE__ ) . 'class-wc-update-document-email.php';
     require plugin_dir_path( __FILE__ ) . 'class-wc-approved-document-email.php';
     require plugin_dir_path( __FILE__ ) . 'class-wc-rejected-document-email.php';
@@ -15,6 +16,7 @@ function add_expedited_order_woocommerce_email( $email_classes ){
     require plugin_dir_path( __FILE__ ) . 'class-wc-request-documents-email.php';
 
     $email_classes['WC_New_Applicant_Email'] = new WC_New_Applicant_Email();
+    $email_classes['WC_Welcome_Student_Email'] = new WC_Welcome_Student_Email();
     $email_classes['WC_Request_Documents_Email'] = new WC_Request_Documents_Email();
     $email_classes['WC_Update_Document_Email'] = new WC_Update_Document_Email();
     $email_classes['WC_Approved_Document_Email'] = new WC_Approved_Document_Email();

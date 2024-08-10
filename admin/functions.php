@@ -514,3 +514,75 @@ add_filter('login_headerurl', 'aes_login_redirect_url');
 function aes_login_redirect_url() {
     return 'https://online.american-elite.us/'; // Replace with your desired URL
 }
+
+// Add a custom action to the user list
+add_filter( 'user_row_actions', 'add_welcome_student_action', 10, 2 );
+function add_welcome_student_action( $actions, $user_object ) {
+    // Get the user roles
+    $user_roles = $user_object->roles;
+    
+    // Check if the user has the "student" role
+    if ( in_array( 'student', $user_roles ) ) {
+        $actions['welcome_student'] = '<a href="#" onclick="welcomeStudent(' . $user_object->ID . ')">Welcome Student</a>';
+    }
+    return $actions;
+}
+
+// Add a JavaScript code to trigger the welcome student function
+add_action( 'admin_footer', 'add_welcome_student_js' );
+function add_welcome_student_js() {
+    ?>
+    <script>
+        function welcomeStudent(userId) {
+            jQuery.post(ajaxurl, {
+                'action': 'welcome_student',
+                'user_id': userId
+            }, function(response) {
+                console.log(response);
+            });
+        }
+    </script>
+    <?php
+}
+
+// Handle the AJAX request to trigger the welcome student function
+add_action( 'wp_ajax_welcome_student', 'welcome_student_ajax_handler' );
+function welcome_student_ajax_handler() {
+    $user_id = $_POST['user_id'];
+    $user = get_userdata( $user_id );
+    welcome_students($user->user_login);
+    wp_die();
+}
+
+function welcome_students($user_login) {
+    // Get the student ID from the user data
+    global $wpdb;
+    $table_students = $wpdb->prefix.'students';
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user_login}'");
+    if ($student) {
+        $student_id = $student->id;
+        $user = get_user_by('login', $user_login);
+        $reset_key = get_password_reset_key($user);
+        $reset_url = network_site_url("wp-login.php?action=rp&key=$reset_key&login=" . rawurlencode($user->user_login), 'login');
+
+        // Get the WC_Request_Documents_Email instance
+        $email_welcome_student = WC()->mailer()->get_emails()['WC_Welcome_Student_Email'];
+    
+        // Trigger the custom email with the reset URL
+        $email_welcome_student->trigger($student_id, $reset_url);
+
+        // Display a success notice to the admin
+        admin_notice('Student welcome email sent successfully!', 'success');
+    } else {
+        // Display an error notice to the admin
+        admin_notice('Failed to send student welcome email.', 'error');
+    }
+}
+
+function admin_notice($message, $type = 'success') {
+    ?>
+    <div class="notice notice-<?php echo $type; ?> is-dismissible">
+        <p><?php echo $message; ?></p>
+    </div>
+    <?php
+}
