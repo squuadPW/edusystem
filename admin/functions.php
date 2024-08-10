@@ -550,7 +550,7 @@ add_action( 'wp_ajax_welcome_student', 'welcome_student_ajax_handler' );
 function welcome_student_ajax_handler() {
     $user_id = $_POST['user_id'];
     $user = get_userdata( $user_id );
-    welcome_students($user->user_login);
+    welcome_students($user->user_email);
     wp_die();
 }
 
@@ -572,10 +572,10 @@ function welcome_students($user_login) {
         $email_welcome_student->trigger($student_id, $reset_url);
 
         // Display a success notice to the admin
-        admin_notice('Student welcome email sent successfully!', 'success');
+        error_log('Student welcome email sent successfully!');
     } else {
         // Display an error notice to the admin
-        admin_notice('Failed to send student welcome email.', 'error');
+        error_log('Failed to send student welcome email.');
     }
 }
 
