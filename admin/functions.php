@@ -561,7 +561,7 @@ function welcome_students($user_login) {
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user_login}'");
     if ($student) {
         $student_id = $student->id;
-        $user = get_user_by('login', $user_login);
+        $user = get_user_by('email', $user_login);
         $reset_key = get_password_reset_key($user);
         $reset_url = network_site_url("wp-login.php?action=rp&key=$reset_key&login=" . rawurlencode($user->user_login), 'login');
 
