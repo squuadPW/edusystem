@@ -194,7 +194,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;"><b><?= __('Contact Information','aes'); ?></b></h3>
+                            <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;"><b><?= __('Rector Information','aes'); ?></b></h3>
                             <table class="form-table table-customize" style="margin-top:0px;">
                                 <tbody>
                                     <tr>
@@ -231,6 +231,42 @@
                                 </tbody>
                             </table>
 
+                            <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;"><b><?= __('Contact Information','aes'); ?></b></h3>
+                            <table class="form-table table-customize" style="margin-top:0px;">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <?php if(isset($institute) && !empty($institute)): ?>
+                                                <label for="input_id"><b><?= __('Contact Name','aes'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="text" name="contact_name"  value="<?= ucwords($institute->name_contact); ?>" <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
+                                            <?php else: ?>
+                                                <label for="input_id"><b><?= __('Contact Name','aes'); ?></b><span class="text-danger">*</span></label><br>
+                                                <input type="text" name="contact_name"  value="" required>
+                                            <?php endif; ?>
+                                        </th>
+                                        <td>
+                                            <?php if(isset($institute) && !empty($institute)): ?>
+                                                <label for="input_id"><b><?= __('Contact Lastname','aes'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="text" name="contact_last_name"  value="<?= ucwords($institute->lastname_contact); ?>" <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
+                                            <?php else: ?>
+                                                <label for="input_id"><b><?= __('Contact Lastname','aes'); ?></b><span class="text-danger">*</span></label><br>
+                                                <input type="text" name="contact_last_name"  value="" required>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php if(isset($institute) && !empty($institute)): ?>
+                                                <label for="input_id"><b><?= __('Phone','aes'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="text" id="contact_phone" name="contact_phone"  value="<?= ucwords($institute->phone_contact); ?>" <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
+                                                <input type="hidden" id="contact_phone_hidden" name="contact_phone_hidden"  value="<?= ucwords($institute->phone_contact); ?>">
+                                            <?php else: ?>
+                                                <label for="input_id"><b><?= __('Phone','aes'); ?></b><span class="text-danger">*</span></label><br>
+                                                <input type="text" id="contact_phone" name="contact_phone"  value="" required>
+                                                <input type="hidden" id="contact_phone_hidden" name="contact_phone_hidden"  value="">
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                             <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;"><b><?= __('Alliances Information','aes'); ?></b></h3>
                             <table class="form-table table-customize" style="margin-top:0px;">
                                 <tbody>
@@ -240,14 +276,14 @@
                                                 <label for="input_id"><b><?= __('Alliance','aes'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
                                                 <select name="alliance" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%">
                                                     <?php foreach ($alliances as $alliance): ?>
-                                                        <option value="<?= $alliance->id ?>" <?= ($institute->alliance_id == $alliance->id) ? 'selected' : ''; ?>><?= $alliance->name ?></option>
+                                                        <option value="<?= $alliance->id ?>" <?= ($institute->alliance_id == $alliance->id) ? 'selected' : ''; ?>><?= $alliance->name ?> <?= $alliance->last_name ?> - <?= $alliance->code ?></option>
                                                     <?php endforeach; ?>
                                                 </select>
                                             <?php else: ?>
                                                 <label for="input_id"><b><?= __('Alliance','aes'); ?></b><span class="text-danger">*</span></label><br>
                                                 <select name="alliance" required style="width: 100%">
                                                     <?php foreach ($alliances as $alliance): ?>
-                                                        <option value="<?= $alliance->id ?>"><?= $alliance->name ?></option>
+                                                        <option value="<?= $alliance->id ?>"><?= $alliance->name ?> <?= $alliance->last_name ?> - <?= $alliance->code ?></option>
                                                     <?php endforeach; ?>
                                                 </select>
                                             <?php endif; ?>

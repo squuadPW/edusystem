@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded',function(){
     button_delete_institute = document.getElementById('button-delete-institute');
     button_delete_institute_alliance = document.getElementById('button-delete-institute-alliance');
     number_rector_phone = document.getElementById('rector_phone');
+    number_contact_phone = document.getElementById('contact_phone');
     number_phone = document.getElementById('phone');
     fee = document.getElementById('fee');
     input_date = document.getElementById('input-date');
@@ -97,6 +98,30 @@ document.addEventListener('DOMContentLoaded',function(){
 
             number_rector_phone.addEventListener('change',handleChange);
             number_rector_phone.addEventListener('keyup', handleChange);
+        }
+
+        if(number_contact_phone){
+
+            let iti_number_phone_contact = window.intlTelInput(number_contact_phone, {
+                nationalMode: true,
+                initialCountry: "auto",
+                separateDialCode: true,
+                strictMode: true,
+                geoIpLookup: callback => {
+                fetch("https://ipapi.co/json")
+                    .then(res => res.json())
+                    .then(data => callback(data.country_code))
+                    .catch(() => callback("us"));
+                },
+                utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js"
+            });
+
+            function handleChange(){
+                document.getElementById("contact_phone_hidden").value = iti_number_phone_contact.getNumber(); 
+            }
+
+            number_contact_phone.addEventListener('change',handleChange);
+            number_contact_phone.addEventListener('keyup', handleChange);
         }
 
         if(number_phone){

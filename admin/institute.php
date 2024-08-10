@@ -49,6 +49,9 @@ function add_admin_institutes_content(){
             $rector_name = $_POST['rector_name'];
             $rector_last_name = $_POST['rector_last_name'];
             $rector_phone = $_POST['rector_phone_hidden'];
+            $contact_name = $_POST['contact_name'];
+            $contact_last_name = $_POST['contact_last_name'];
+            $contact_phone = $_POST['contact_phone_hidden'];
             $address = $_POST['address'];
             $description = $_POST['description'];
             $reference = $_POST['reference'];
@@ -70,6 +73,9 @@ function add_admin_institutes_content(){
                     'name_rector' => $rector_name,
                     'lastname_rector' => $rector_last_name,
                     'phone_rector' => $rector_phone,
+                    'name_contact' => $contact_name,
+                    'lastname_contact' => $contact_last_name,
+                    'phone_contact' => $contact_phone,
                     'address' => $address,
                     'description' => $description,
                     'business_name' => $business_name,
@@ -101,6 +107,9 @@ function add_admin_institutes_content(){
                         'name_rector' => $rector_name,
                         'lastname_rector' => $rector_last_name,
                         'phone_rector' => $rector_phone,
+                        'name_contact' => $contact_name,
+                        'lastname_contact' => $contact_last_name,
+                        'phone_contact' => $contact_phone,
                         'reference' => $reference,
                         'address' => $address,
                         'description' => $description,
@@ -322,6 +331,7 @@ class TT_institutes_review_List_Table extends WP_List_Table{
             'email'         => __('Email','aes'),
             'country'         => __('Country','aes'),
             'name_rector'   => __('Name Rector','aes'),
+            'name_contact'   => __('Name Contact','aes'),
             'view_details' => __('Actions','aes'),
         );
 
@@ -428,8 +438,8 @@ class TT_institutes_List_Table extends WP_List_Table{
                 return $name;
             case 'name_rector':
                 return ucwords($item['name_rector']).' '.ucwords($item['lastname_rector']);
-                $status = get_name_status_institute($item[$column_name]);
-                return $status;
+            case 'name_contact':
+                return ucwords($item['name_contact']).' '.ucwords($item['lastname_contact']);
             case 'view_details':
                 return "
                     <a style='margin:3px;' href='".admin_url('/admin.php?page=add_admin_institutes_content&section_tab=fee_institute&institute_id='.$item['id'])."' class='button button-primary'><span class='dashicons dashicons-money-alt'></span>".__('Fees','form-plugin')."</a>
@@ -459,6 +469,7 @@ class TT_institutes_List_Table extends WP_List_Table{
             'email'         => __('Email','aes'),
             'country'         => __('Country','aes'),
             'name_rector'   => __('Name Rector','aes'),
+            'name_contact'   => __('Name Contact','aes'),
             'view_details' => __('Actions','aes'),
         );
 
