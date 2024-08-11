@@ -1205,7 +1205,7 @@ function yaycommerce_add_checkout_fee_for_gateway()
         $cart_subtotal = WC()->cart->get_subtotal();
         $discount = WC()->cart->get_cart_discount_total();
         $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
-        WC()->cart->add_fee('Credit card Fee', $stripe_fee_amount);
+        WC()->cart->add_fee('Credit card fee', $stripe_fee_amount);
     }
 
     if ($chosen_gateway == 'other_payment') {
