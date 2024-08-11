@@ -765,7 +765,8 @@ function update_status_documents(){
                     'ssn' => 4,
                 )[$student->type_document];
                 
-                $fields = array(
+                $files_to_send = array();
+                $fields_to_send = array(
                     'id_document' => $student->id_document,
                     'type_document' => $type_document,
                     'cod_program' => AES_PROGRAM_ID,
@@ -783,7 +784,6 @@ function update_status_documents(){
                     'postal_code' => $student->postal_code,
                 );
                 
-                $files = [];
                 $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
                 $documents_to_send = [];
                 foreach($all_documents_student as $document){
@@ -796,11 +796,16 @@ function update_status_documents(){
                     $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
                     $attachment_id = $doc->attachment_id;
                     $attachment_path = get_attached_file($attachment_id);
-                    $attachment_content = file_get_contents($attachment_path);
-                    $files[$id_requisito] = base64_encode($attachment_content);
+                    $file_name = basename($attachment_path);
+                    $file_type = mime_content_type($attachment_path);
+
+                    $files_to_send[] = array(
+                        'file' => curl_file_create($attachment_path, $file_type, $file_name),
+                        'id_requisito' => $id_requisito
+                    );
                 }
 
-                create_user_laravel($fields, $files);
+                create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
                 update_status_student($student_id,2);
 
