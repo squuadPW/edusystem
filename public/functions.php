@@ -545,22 +545,23 @@ function status_changed_payment($order_id, $old_status, $new_status)
 
                 //virtual classroom
                 if ($access_virtual && isset($paid)) {
-                    $table_name = $wpdb->prefix . 'students'; // assuming the table name is "wp_students"
+                    $table_name = $wpdb->prefix. 'students'; // assuming the table name is "wp_students"
                     $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
                     $type_document = array(
                         'identification_document' => 1,
                         'passport' => 2,
                         'ssn' => 4,
                     )[$student->type_document];
-
-                    $fields = array(
+                    
+                    $files_to_send = array();
+                    $fields_to_send = array(
                         'id_document' => $student->id_document,
                         'type_document' => $type_document,
                         'cod_program' => AES_PROGRAM_ID,
                         'cod_tip' => AES_TYPE_PROGRAM,
                         'cod_period' => AES_PERIOD,
-                        'firstname' => $student->name . ' ' . $student->middle_name,
-                        'lastname' => $student->last_name . ' ' . $student->middle_last_name,
+                        'firstname' => $student->name .' '. $student->middle_name,
+                        'lastname' => $student->last_name .' '. $student->middle_last_name,
                         'birth_date' => $student->birth_date,
                         'gender' => $student->gender,
                         'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
@@ -570,34 +571,29 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         'city' => $student->city,
                         'postal_code' => $student->postal_code,
                     );
-
-                    $files = [];
+                    
                     $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
                     $documents_to_send = [];
-                    foreach ($all_documents_student as $document) {
+                    foreach($all_documents_student as $document){
                         if ($document->attachment_id) {
                             array_push($documents_to_send, $document);
                         }
                     }
-
+    
                     foreach ($documents_to_send as $key => $doc) {
                         $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
                         $attachment_id = $doc->attachment_id;
-
-                        $attachment_url = wp_get_attachment_url($attachment_id);
-                        $attachment_metadata = wp_get_attachment_metadata($attachment_id);
-
-                        // Obtener la ruta del archivo en el servidor
                         $attachment_path = get_attached_file($attachment_id);
-
-                        // Obtener el contenido del archivo
-                        $attachment_content = file_get_contents($attachment_path);
-
-                        // Hacer algo con el contenido del archivo...
-                        $files[$id_requisito] = base64_encode($attachment_content);
+                        $file_name = basename($attachment_path);
+                        $file_type = mime_content_type($attachment_path);
+    
+                        $files_to_send[] = array(
+                            'file' => curl_file_create($attachment_path, $file_type, $file_name),
+                            'id_requisito' => $id_requisito
+                        );
                     }
-
-                    create_user_laravel($fields, $files);
+    
+                    create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
                     if ($order->get_meta('id_bitrix')) {
                         sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());

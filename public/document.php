@@ -118,7 +118,8 @@ function save_document(){
                                 'ssn' => 4,
                             )[$student->type_document];
                             
-                            $fields = array(
+                            $files_to_send = array();
+                            $fields_to_send = array(
                                 'id_document' => $student->id_document,
                                 'type_document' => $type_document,
                                 'cod_program' => AES_PROGRAM_ID,
@@ -136,7 +137,6 @@ function save_document(){
                                 'postal_code' => $student->postal_code,
                             );
                             
-                            $files = [];
                             $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
                             $documents_to_send = [];
                             foreach($all_documents_student as $document){
@@ -144,25 +144,21 @@ function save_document(){
                                     array_push($documents_to_send, $document);
                                 }
                             }
-
+            
                             foreach ($documents_to_send as $key => $doc) {
                                 $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
                                 $attachment_id = $doc->attachment_id;
-
-                                $attachment_url = wp_get_attachment_url($attachment_id);
-                                $attachment_metadata = wp_get_attachment_metadata($attachment_id);
-                                
-                                // Obtener la ruta del archivo en el servidor
                                 $attachment_path = get_attached_file($attachment_id);
-                                
-                                // Obtener el contenido del archivo
-                                $attachment_content = file_get_contents($attachment_path);
-                                
-                                // Hacer algo con el contenido del archivo...
-                                $files[$id_requisito] = base64_encode($attachment_content);
+                                $file_name = basename($attachment_path);
+                                $file_type = mime_content_type($attachment_path);
+            
+                                $files_to_send[] = array(
+                                    'file' => curl_file_create($attachment_path, $file_type, $file_name),
+                                    'id_requisito' => $id_requisito
+                                );
                             }
-
-                            create_user_laravel($fields, $files);
+            
+                            create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
                             update_status_student($student_id,2);
 
