@@ -584,14 +584,16 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
                         $attachment_id = $doc->attachment_id;
                         $attachment_path = get_attached_file($attachment_id);
-                        $file_name = basename($attachment_path);
-                        $file_type = mime_content_type($attachment_path);
-    
-                        $files_to_send[] = array(
-                            'file' => curl_file_create($attachment_path, $file_type, $file_name),
-                            'id_requisito' => $id_requisito
-                        );
-                    }
+                        if($attachment_path) {
+                            $file_name = basename($attachment_path);
+                            $file_type = mime_content_type($attachment_path);
+        
+                            $files_to_send[] = array(
+                                'file' => curl_file_create($attachment_path, $file_type, $file_name),
+                                'id_requisito' => $id_requisito
+                            );
+                        } 
+                    } 
     
                     create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
