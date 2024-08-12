@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: AES
-Plugin URI: https://americanelite.dreamhosters.com/wp-admin/plugins.php
+Plugin URI: https://online.american-elite.us//wp-admin/plugins.php
 Description: Plugin for AES
 Version:01
 Author: AES
-Author URI:https://americanelite.dreamhosters.com/wp-admin/plugins.php
+Author URI: https://online.american-elite.us//wp-admin/plugins.php
 License:      GPL2
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain:  form-plugin

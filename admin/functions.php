@@ -404,7 +404,7 @@ function save_num_cuotes( $variation_id, $i ) {
 
 function add_logo_dashboard(){
     $url = 'https://online.american-elite.us/wp-content/uploads/2024/06/cropped-cropped-cropped-American-elite-LOGO-1-600x188-1-2.png';
-    $url_small = 'https://americanelite.dreamhosters.com/wp-content/uploads/2024/05/cropped-American-elite-LOGO-1-600x188-1-1.png';
+    $url_small = 'https://online.american-elite.us/wp-content/uploads/2024/06/cropped-cropped-cropped-American-elite-LOGO-1-600x188-1-2.png';
     echo '<style>
     @media screen and (min-width:992px){
         #toplevel_page_logo_based_menu {
@@ -501,7 +501,7 @@ add_action( 'login_enqueue_scripts', 'aes_change_login_logo' );
 function aes_change_login_logo() { ?>
     <style type="text/css"> 
         #login h1 a { 
-            background: url('https://americanelite.dreamhosters.com/wp-content/uploads/2024/05/cropped-American-elite-LOGO-1-600x188-1-1.png') no-repeat center center; 
+            background: url('http://online.american-elite.us/wp-content/uploads/2024/06/cropped-cropped-cropped-American-elite-LOGO-1-600x188-1-2-1.png') no-repeat center center; 
             background-size: 100px; 
             height: 100px; 
             margin: 0 auto; 
