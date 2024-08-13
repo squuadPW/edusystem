@@ -14,9 +14,12 @@ function add_admin_form_admission_content(){
             $grade = $_POST['grade'];
             $document_type = $_POST['document_type'];
             $id_document = $_POST['id_document'];
+            $academic_period = $_POST['academic_period'];
             $username = $_POST['username'] ?? null;
             $first_name = $_POST['first_name'];
+            $middle_name = $_POST['middle_name'];
             $last_name = $_POST['last_name'];
+            $middle_last_name = $_POST['middle_last_name'];
             $birth_date = $_POST['birth_date'];
             $gender = $_POST['gender'];
             $country = $_POST['country'];
@@ -33,8 +36,11 @@ function add_admin_form_admission_content(){
                 array(
                     'type_document' => $document_type,
                     'id_document' => $id_document,
+                    'academic_period' => $academic_period,
                     'name' => $first_name,
+                    'middle_name' => $middle_name,
                     'last_name' => $last_name,
+                    'middle_last_name' => $middle_last_name,
                     'birth_date' => date('Y-m-d', strtotime($birth_date)),
                     'phone' => $phone,
                     'email' => $email,
@@ -807,11 +813,11 @@ function update_status_documents(){
                     } 
                 } 
 
-                create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
+                // create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
                 update_status_student($student_id,2);
 
-                create_user_student($student_id);
+                // create_user_student($student_id);
 
                 $exist = is_search_student_by_email($student_id);
 

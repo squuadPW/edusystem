@@ -36,7 +36,7 @@ $countries = get_countries();
                                 </tbody>
                             </table>
                             <h3 style="margin-bottom:0px;text-align:center;"><b><?php _e('Personal Information', 'aes');?></b></h3>
-                            <table class="form-table table-customize" style="margin-top:0px;">
+                            <table class="form-table" style="margin-top:0px;">
                                 <tbody>
                                     <tr>
                                         <th scope="row" style="font-weight:400;">
@@ -58,6 +58,10 @@ $countries = get_countries();
                                                 <input type="text" id="username" name="username" value="<?php echo $user_student->user_nicename;?>" style="width:100%" required>
                                             </td>
                                         <?php }?>
+                                        <td>
+                                            <label for="birth_date"><b><?php _e('Birth date', 'aes');?> <?php echo $student->birth_date;?></b></label><br>
+                                            <input type="text" id="birth_date" name="birth_date" value="<?php echo date('m/d/Y', strtotime($student->birth_date)); ?>" required style="width:100%; background-color: white;" class="birth_date">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th scope="row" style="font-weight:400;">
@@ -65,12 +69,16 @@ $countries = get_countries();
                                             <input type="text" id="first_name" name="first_name" value="<?php echo $student->name;?>" style="width:100%" required>
                                         </th>
                                         <td>
+                                            <label for="middle_name"><b><?php _e('Middle name', 'aes');?></b></label><br>
+                                            <input type="text" id="middle_name" name="middle_name" value="<?php echo $student->middle_name;?>" style="width:100%">
+                                        </td>
+                                        <td>
                                             <label for="last_name"><b><?php _e('Last name', 'aes');?></b></label><br>
                                             <input type="text" id="last_name" name="last_name" value="<?php echo $student->last_name;?>" style="width:100%" required>
                                         </td>
                                         <td>
-                                            <label for="birth_date"><b><?php _e('Birth date', 'aes');?> <?php echo $student->birth_date;?></b></label><br>
-                                            <input type="text" id="birth_date" name="birth_date" value="<?php echo date('m/d/Y', strtotime($student->birth_date)); ?>" required style="width:100%; background-color: white;" class="birth_date">
+                                            <label for="middle_last_name"><b><?php _e('Middle last name', 'aes');?></b></label><br>
+                                            <input type="text" id="middle_last_name" name="middle_last_name" value="<?php echo $student->middle_last_name;?>" style="width:100%">
                                         </td>
                                     </tr>
                                     <tr>
@@ -81,6 +89,7 @@ $countries = get_countries();
                                                 <option value="female" <?= ($student->gender == 'female') ? 'selected' : ''; ?>><?= __('Female','aes'); ?></option>
                                             </select>
                                         </th>
+
                                         <td>
                                             <label for="country"><b><?php _e('Country', 'aes');?></b></label><br>
                                             <select id="country" name="country" value="<?php echo get_name_country($student->country);?>" style="width:100%;" required>
@@ -89,16 +98,18 @@ $countries = get_countries();
                                                 <?php } ?>
                                             </select>
                                         </td>
+
                                         <td>
                                             <label for="city"><b><?php _e('City', 'aes');?></b></label><br>
                                             <input type="text" id="city" name="city" value="<?php echo $student->city;?>" style="width:100%;" required> 
                                         </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row" style="font-weight:400;">
+
+                                        <td>
                                             <label for="postal_code"><b><?php _e('Postal Code', 'aes');?></b></label><br>
                                             <input type="text" id="postal_code" name="postal_code" value="<?php echo $student->postal_code;?>" style="width:100%;" required>
-                                        </th>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td>
                                             <label for="email"><b><?php _e('Email', 'aes');?></b></label><br>
                                             <input type="text" id="email" name="email" value="<?php echo $student->email;?>" style="width:100%;" required>
@@ -107,6 +118,11 @@ $countries = get_countries();
                                         <td>
                                             <label for="phone"><b><?php _e('Phone', 'aes');?></b></label><br>
                                             <input type="text" id="phone" name="phone" value="<?php echo $student->phone;?>" style="width:100%;" required>
+                                        </td>
+
+                                        <td>
+                                            <label for="academic_period"><b><?php _e('Academic period', 'aes');?></b></label><br>
+                                            <input type="text" id="academic_period" name="academic_period" value="<?php echo $student->academic_period;?>" style="width:100%" required>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -125,8 +141,8 @@ $countries = get_countries();
                                         </th>
                                         <td>
                                             <label for="parent_id_document"><b><?php _e('ID Document', 'aes');?></b></label><br>
-                                            <input type="text" id="parent_id_document" name="parent_id_document" value="<?php echo get_user_meta($partner->ID,'id_document',true);?>" style="width:100%" required>
-                                            <input type="hidden" id="parent_id" name="parent_id" value="<?php echo $partner->ID;?>" style="width:100%">
+                                            <input type="text" id="parent_id_document" name="parent_id_document" value="<?php echo get_user_meta($partner->ID,'id_document',true);?>" style="width:100%">
+                                            <input type="hidden" id="parent_id" name="parent_id" value="<?php echo $partner->ID;?>" style="width:100%" required>
                                         </td>
                                         <td>
                                             <label for="parent_username"><b><?php _e('Username', 'aes');?></b></label><br>
@@ -150,7 +166,7 @@ $countries = get_countries();
                                     <tr>
                                         <th scope="row" style="font-weight:400;">
                                             <label for="parent_gender"><b><?php _e('Gender', 'aes');?></b></label><br>
-                                            <select name="parent_gender" id="parent_gender" value="<?php echo get_user_meta($partner->ID,'gender',true);?>" style="width:100%" required>
+                                            <select name="parent_gender" id="parent_gender" value="<?php echo get_user_meta($partner->ID,'gender',true);?>" style="width:100%"  required>
                                                 <option value="male" <?= (get_user_meta($partner->ID,'gender',true) == 'male') ? 'selected' : ''; ?>><?= __('Male','aes'); ?></option>
                                                 <option value="female" <?= (get_user_meta($partner->ID,'gender',true) == 'female') ? 'selected' : ''; ?>><?= __('Female','aes'); ?></option>
                                             </select>
@@ -185,7 +201,7 @@ $countries = get_countries();
                                     <tr>
                                         <th scope="row" style="font-weight:400;">
                                             <label for="parent_occupation"><b><?php _e('Occupation', 'aes');?></b></label><br>
-                                            <input type="text" id="parent_occupation" name="parent_occupation" value="<?php echo get_user_meta($partner->ID,'occupation',true) ?>" style="width:100%;" required>
+                                            <input type="text" id="parent_occupation" name="parent_occupation" value="<?php echo get_user_meta($partner->ID,'occupation',true) ?>" style="width:100%;">
                                         </th>
                                     </tr>
                                 </tbody>

@@ -417,6 +417,7 @@ function status_changed_payment($order_id, $old_status, $new_status)
 
         if ($order->get_meta('student_id')) {
             $student_id = $order->get_meta('student_id');
+            create_user_student($student_id);
 
             $query = $wpdb->prepare("
                 UPDATE {$table_student_payment} AS a
@@ -595,7 +596,7 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         } 
                     } 
     
-                    create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
+                    // create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
                     if ($order->get_meta('id_bitrix')) {
                         sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());
@@ -603,9 +604,9 @@ function status_changed_payment($order_id, $old_status, $new_status)
 
                     update_status_student($student_id, 2);
 
-                    if (in_array('parent', $roles) && !in_array('student', $roles)) {
-                        create_user_student($student_id);
-                    }
+                    // if (in_array('parent', $roles) && !in_array('student', $roles)) {
+                    //     create_user_student($student_id);
+                    // }
 
                     $exist = is_search_student_by_email($student_id);
 

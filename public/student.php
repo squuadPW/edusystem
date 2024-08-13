@@ -346,10 +346,19 @@ function insert_student($customer_id){
     global $wpdb;
     $table_students = $wpdb->prefix.'students';
 
+    global $wpdb;
+    $table_academic_periods = $wpdb->prefix.'academic_periods';
+    $query = $wpdb->prepare("SELECT code FROM " . $table_academic_periods . "
+                             WHERE status_id = %d 
+                             ORDER BY created_at DESC LIMIT 1", 1);
+    $result = $wpdb->get_var($query);
+
+    $code = $result ? $result :  AES_PERIOD;
     $wpdb->insert($table_students,[
         'name' => $_COOKIE['name_student'],
         'type_document' => $_COOKIE['document_type'],
         'id_document' => $_COOKIE['id_document'],
+        'academic_period' => $code,
         'middle_name' => $_COOKIE['middle_name_student'],
         'last_name' => $_COOKIE['last_name_student'],
         'middle_last_name' => $_COOKIE['middle_last_name_student'],
