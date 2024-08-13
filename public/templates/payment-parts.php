@@ -57,9 +57,9 @@
                 $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true );
                 ?>
                 <div class="radio-input">
-                    <input <?php echo $key === 0 ? 'checked' : '' ?> class="form-check-input" type="radio" id="<?php echo $variation['variation_id']; ?>" name="option" value="<?php echo $variation['attributes']['attribute_pagos']; ?>">
+                    <input <?php echo $key === 0 ? 'checked' : '' ?> class="form-check-input" type="radio" id="<?php echo $variation['variation_id']; ?>" name="option" value="<?php echo $variation['attributes']['attribute_payments']; ?>">
                     <label class="form-check-label" for="<?php echo $variation['variation_id']; ?>">
-                      <?php echo $cuotes . ($key === 0 ? ' Payment<br>(Unique)' : ' Payments <br> (' . $variation['attributes']['attribute_pagos'] . ')'); ?> 
+                      <?php echo $cuotes . ($key === 0 ? ' Payment<br>(Unique)' : ' Payments <br> (' . $variation['attributes']['attribute_payments'] . ')'); ?> 
                     </label>
                 </div>
                 <?php

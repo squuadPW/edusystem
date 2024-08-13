@@ -45,54 +45,54 @@ function add_admin_form_academic_periods_content()
                     'status_id' => $status_id,
                 ], ['id' => $period_id]);
 
-                if ($status_id == 1) {
-                    $args = array(
-                        'role' => 'parent',
-                    );
+                // if ($status_id == 1) {
+                //     $args = array(
+                //         'role' => 'parent',
+                //     );
 
-                    $users = get_users($args);
+                //     $users = get_users($args);
 
-                    foreach ($users as $user) {
-                        $customer_id = $user->ID;
+                //     foreach ($users as $user) {
+                //         $customer_id = $user->ID;
 
-                        // Get student IDs from wp_students table where partner_id is customer_id
-                        $student_ids = $wpdb->get_col("SELECT id FROM wp_students WHERE partner_id = '$customer_id'");
+                //         // Get student IDs from wp_students table where partner_id is customer_id
+                //         $student_ids = $wpdb->get_col("SELECT id FROM wp_students WHERE partner_id = '$customer_id'");
 
-                        // Get payments from wp_student_payments table where student_id is in student_ids and status_id is 0
-                        $payments = [];
-                        if (sizeof($student_ids) > 0) {
-                            $payments = $wpdb->get_results("
-                                SELECT DISTINCT product_id, variation_id, student_id, amount 
-                                FROM wp_student_payments 
-                                WHERE student_id IN (" . implode(',', $student_ids) . ") 
-                                AND status_id = 0
-                            ");
-                        }
+                //         // Get payments from wp_student_payments table where student_id is in student_ids and status_id is 0
+                //         $payments = [];
+                //         if (sizeof($student_ids) > 0) {
+                //             $payments = $wpdb->get_results("
+                //                 SELECT DISTINCT product_id, variation_id, student_id, amount 
+                //                 FROM wp_student_payments 
+                //                 WHERE student_id IN (" . implode(',', $student_ids) . ") 
+                //                 AND status_id = 0
+                //             ");
+                //         }
 
-                        foreach ($payments as $key => $payment) {
-                            if ($payment->product_id && $payment->variation_id) {
-                                $product_id = $payment->product_id;
-                                $variation_id = $payment->variation_id;
-                                $total = wc_price($payment->amount);
-                                $quantity = 1;
+                //         foreach ($payments as $key => $payment) {
+                //             if ($payment->product_id && $payment->variation_id) {
+                //                 $product_id = $payment->product_id;
+                //                 $variation_id = $payment->variation_id;
+                //                 $total = wc_price($payment->amount);
+                //                 $quantity = 1;
 
-                                // Obtiene el objeto de producto variación
-                                $variation = wc_get_product($variation_id);
+                //                 // Obtiene el objeto de producto variación
+                //                 $variation = wc_get_product($variation_id);
 
-                                // Crea el pedido
-                                $order_args = array(
-                                    'customer_id' => $customer_id,
-                                    'status' => 'pending-payment',
-                                );
-                                $order = wc_create_order($order_args);
-                                $order->add_product($variation, $quantity);
-                                $order->set_total($total);
-                                $order->update_meta_data('student_id', $payment->student_id);
-                                $order->save();
-                            }
-                        }
-                    }
-                }
+                //                 // Crea el pedido
+                //                 $order_args = array(
+                //                     'customer_id' => $customer_id,
+                //                     'status' => 'pending-payment',
+                //                 );
+                //                 $order = wc_create_order($order_args);
+                //                 $order->add_product($variation, $quantity);
+                //                 $order->set_total($total);
+                //                 $order->update_meta_data('student_id', $payment->student_id);
+                //                 $order->save();
+                //             }
+                //         }
+                //     }
+                // }
 
                 setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id=' . $period_id));
@@ -106,54 +106,54 @@ function add_admin_form_academic_periods_content()
                     'created_at' => date('Y-m-d H:i:s')
                 ]);
 
-                if ($status_id == 1) {
-                    $args = array(
-                        'role' => 'parent',
-                    );
+                // if ($status_id == 1) {
+                //     $args = array(
+                //         'role' => 'parent',
+                //     );
 
-                    $users = get_users($args);
+                //     $users = get_users($args);
 
-                    foreach ($users as $user) {
-                        $customer_id = $user->ID;
+                //     foreach ($users as $user) {
+                //         $customer_id = $user->ID;
 
-                        // Get student IDs from wp_students table where partner_id is customer_id
-                        $student_ids = $wpdb->get_col("SELECT id FROM wp_students WHERE partner_id = '$customer_id'");
+                //         // Get student IDs from wp_students table where partner_id is customer_id
+                //         $student_ids = $wpdb->get_col("SELECT id FROM wp_students WHERE partner_id = '$customer_id'");
 
-                        // Get payments from wp_student_payments table where student_id is in student_ids and status_id is 0
-                        $payments = [];
-                        if (sizeof($student_ids) > 0) {
-                            $payments = $wpdb->get_results("
-                                SELECT DISTINCT product_id, variation_id, student_id 
-                                FROM wp_student_payments 
-                                WHERE student_id IN (" . implode(',', $student_ids) . ") 
-                                AND status_id = 0
-                            ");
-                        }
+                //         // Get payments from wp_student_payments table where student_id is in student_ids and status_id is 0
+                //         $payments = [];
+                //         if (sizeof($student_ids) > 0) {
+                //             $payments = $wpdb->get_results("
+                //                 SELECT DISTINCT product_id, variation_id, student_id 
+                //                 FROM wp_student_payments 
+                //                 WHERE student_id IN (" . implode(',', $student_ids) . ") 
+                //                 AND status_id = 0
+                //             ");
+                //         }
 
-                        foreach ($payments as $key => $payment) {
-                            if ($payment->product_id && $payment->variation_id) {
-                                $product_id = $payment->product_id;
-                                $variation_id = $payment->variation_id;
-                                $total = wc_get_product($product_id)->get_price();
-                                $quantity = 1;
+                //         foreach ($payments as $key => $payment) {
+                //             if ($payment->product_id && $payment->variation_id) {
+                //                 $product_id = $payment->product_id;
+                //                 $variation_id = $payment->variation_id;
+                //                 $total = wc_get_product($product_id)->get_price();
+                //                 $quantity = 1;
 
-                                // Obtiene el objeto de producto variación
-                                $variation = wc_get_product($variation_id);
+                //                 // Obtiene el objeto de producto variación
+                //                 $variation = wc_get_product($variation_id);
 
-                                // Crea el pedido
-                                $order_args = array(
-                                    'customer_id' => $customer_id,
-                                    'status' => 'pending-payment',
-                                );
-                                $order = wc_create_order($order_args);
-                                $order->add_product($variation, $quantity);
-                                $order->set_total($total);
-                                $order->update_meta_data('student_id', $payment->student_id);
-                                $order->save();
-                            }
-                        }
-                    }
-                }
+                //                 // Crea el pedido
+                //                 $order_args = array(
+                //                     'customer_id' => $customer_id,
+                //                     'status' => 'pending-payment',
+                //                 );
+                //                 $order = wc_create_order($order_args);
+                //                 $order->add_product($variation, $quantity);
+                //                 $order->set_total($total);
+                //                 $order->update_meta_data('student_id', $payment->student_id);
+                //                 $order->save();
+                //             }
+                //         }
+                //     }
+                // }
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
                 exit;

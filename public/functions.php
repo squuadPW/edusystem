@@ -723,7 +723,7 @@ function woocommerce_update_cart()
         if ($product->is_type('variable')) {
             $variations_product = $product->get_available_variations();
             foreach ($variations_product as $key => $variation) {
-                array_push($variations, ['id' => $variations_product[$key]['variation_id'], 'name' => $variations_product[$key]['attributes']['attribute_pagos']]);
+                array_push($variations, ['id' => $variations_product[$key]['variation_id'], 'name' => $variations_product[$key]['attributes']['attribute_payments']]);
             }
 
             $column = 'name';
@@ -791,7 +791,7 @@ function reload_payment_table()
             $date = new DateTime('August 12');
             $date = $date->format('Y-m-d');
             foreach ($variations as $key => $variation) {
-                if ($variation['attributes']['attribute_pagos'] === $value) {
+                if ($variation['attributes']['attribute_payments'] === $value) {
                     ?>
                     <table class="payment-parts-table mt-5">
                         <tr>
