@@ -384,7 +384,6 @@ if (document.getElementById("birth_date_student")) {
       start = new Date(date[2], date[0] - 1, date[1]);
       today = new Date();
       diff = diff_years(today, start);
-
       if (diff >= 18) {
         if (dont_allow_adult && dont_allow_adult?.value == 1) {
           if (dontBeAdult) {
@@ -534,7 +533,8 @@ if (document.getElementById("birth_date_student")) {
 function diff_years(dt2, dt1) {
   let diff = (dt2.getTime() - dt1.getTime()) / 1000;
   diff /= 60 * 60 * 24;
-  return Math.abs(Math.round(diff / 365.25));
+  return Math.abs(Math.floor(diff / 365.25)); // Trunca hacia abajo
+  // return Math.abs(Math.ceil(diff / 365.25)); // Trunca hacia arriba
 }
 
 function getCookie(name) {
