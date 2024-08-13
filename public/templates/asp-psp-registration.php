@@ -234,8 +234,8 @@
                         </select>
                     </div>
                     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                        <label for="name_institute"><?= __('Name of School or Institution with Agreement','aes'); ?><span id="institute_id_required" class="required">*</span></label>
-                        <select name="institute_id" autocomplete="off" id="institute_id" required>
+                        <label for="name_institute"><?= __('Name of School or Institution with Agreement','aes'); ?><span id="institute_id_required_others" class="required">*</span></label>
+                        <select name="institute_id" autocomplete="off" id="institute_id_others" required>
                             <option value=""><?= __('Select a institute','aes'); ?></option>
                             <?php foreach($institutes as $institute): ?>
                                 <option value="<?= $institute->id; ?>"><?= $institute->name; ?></option>
@@ -243,9 +243,9 @@
                             <option value="other"><?= __('Other','aes'); ?></option>
                         </select>
                     </div>
-                    <div id="name-institute-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="display:none;">
+                    <div id="name-institute-field-others" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="display:none;">
                         <label for="name_institute"><?= __('Name Institute','aes'); ?><span class="required">*</span></label>
-                        <input class="formdata" autocomplete="off" type="text" id="name_institute" name="name_institute">
+                        <input class="formdata" autocomplete="off" type="text" id="name_institute_others" name="name_institute">
                     </div>
                     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                         <input type="checkbox" id="terms" name="terms" required>

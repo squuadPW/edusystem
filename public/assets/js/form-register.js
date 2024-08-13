@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   not_institute = document.getElementById("institute_id");
+  not_institute_others = document.getElementById("institute_id_others");
 
   if (document.getElementById("birth_date")) {
     flatpickr(document.getElementById("birth_date"), {
@@ -20,6 +21,22 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("name-institute-field").style.display = "none";
         document.getElementById("name_institute").required = false;
         document.getElementById("institute_id").required = true;
+        document.getElementById("institute_id_required").textContent = "*";
+      }
+    });
+  }
+
+  if (not_institute_others) {
+    not_institute_others.addEventListener("change", (e) => {
+      if (e.target.value == "other") {
+        document.getElementById("name-institute-field-others").style.display = "block";
+        document.getElementById("name_institute_others").required = true;
+        document.getElementById("institute_id_others").required = false;
+        document.getElementById("institute_id_required").textContent = "";
+      } else {
+        document.getElementById("name-institute-field-others").style.display = "none";
+        document.getElementById("name_institute_others").required = false;
+        document.getElementById("institute_id_required_others").required = true;
         document.getElementById("institute_id_required").textContent = "*";
       }
     });
