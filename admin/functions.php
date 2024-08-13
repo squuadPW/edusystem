@@ -5,6 +5,7 @@ require plugin_dir_path( __FILE__ ) . 'admission.php';
 require plugin_dir_path( __FILE__ ) . 'payments.php';
 require plugin_dir_path( __FILE__ ) . 'scholarships.php';
 require plugin_dir_path( __FILE__ ) . 'academic_periods.php';
+require plugin_dir_path( __FILE__ ) . 'send-email.php';
 require plugin_dir_path( __FILE__ ) . 'staff.php';
 require plugin_dir_path( __FILE__ ) . 'institute.php';
 require plugin_dir_path( __FILE__ ) . 'alliances.php';
@@ -203,6 +204,16 @@ function add_custom_admin_page() {
     );
 
     add_menu_page( 
+        __('Send email','aes'),
+        __('Send email','aes'),
+        'manager_send_email_aes', 
+        'add_admin_form_send_email_content',
+        'add_admin_form_send_email_content', 
+        'dashicons-email-alt2', 
+        8
+    );
+
+    add_menu_page( 
         __('Staff','aes'),
         __('Staff','aes'),
         'manager_staff_aes', 
@@ -257,6 +268,7 @@ function add_cap_to_administrator(){
     $role->add_cap('manager_departments_aes');
     $role->add_cap('manager_scholarship_aes');
     $role->add_cap('manager_academic_periods_aes');
+    $role->add_cap('manager_send_email_aes');
     $role->add_cap('manager_staff_aes');
     $role->add_cap('manager_admission_aes');
     $role->add_cap('manager_documents_aes');
