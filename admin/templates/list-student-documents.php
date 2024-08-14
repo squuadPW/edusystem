@@ -15,10 +15,21 @@
 			<?php endif; ?>
 		</div>
 		<form action="" id="post-filter" method="post">
-			<p class="search-box">
+			<p class="search-box" =>
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','aes').':'; ?></label>
 				<input type="search" id="search-box-id-search-input" name="s" value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
 				<input type="submit" id="search-submit" class="button" value="Search">
+			</p>
+			<p class="search-box" style="margin-right: 10px">
+				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','aes').':'; ?></label>
+				<select name="academic_period">
+						<option value="" selected>Select academic period to filter</option>
+					<?php foreach ($periods as $key => $period) { ?>
+						<option value="<?php echo $period->code; ?>" <?= !empty($_POST['academic_period']) ? (($_POST['academic_period'] == $period->code) ? 'selected' : '') : ''; ?>>
+							<?php echo $period->name; ?>
+						</option>
+					<?php } ?>
+				</select>
 			</p>
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
 			<?php $list_students->display() ?>
