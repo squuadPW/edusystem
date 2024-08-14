@@ -25,33 +25,38 @@
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
                                                     </a>
+                                                    </span>
                                                 <?php } elseif($status === 'Sent') { ?>
                                                     <a style="text-decoration: underline !important; color: blue;"  href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
+                                                    </a>
                                                     </span>
                                                 <?php } elseif($status === 'Processing') { ?>
                                                     <a style="text-decoration: underline !important; color: yellow;"  href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
+                                                    </a>
                                                     </span>
                                                 <?php } elseif($status === 'Declined' || $status === 'Expired') { ?>
                                                     <a style="text-decoration: underline !important; color: red;"  href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
+                                                    </a>
                                                     </span>
                                                 <?php } elseif($status === 'Approved') { ?>
                                                     <a style="text-decoration: underline !important; color: green;"  href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
+                                                    </a>
                                                     </span>
                                                 <?php } else { ?>
                                                     <a style="text-decoration: underline !important;"  href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                                         <?php $name = get_name_document($document->document_id); ?>
                                                         <?= $student->name.' '.$student->last_name.' - '.$name; ?>
+                                                    </a>
                                                     </span>
                                                 <?php } ?>
-                                        </span>
                                         <span style="width:30%;text-align:end;">
                                             <?php 
                                             $status = get_status_document($document->status);
