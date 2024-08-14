@@ -110,11 +110,11 @@ $countries = get_countries();
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>
+                                        <th>
                                             <label for="email"><b><?php _e('Email', 'aes');?></b></label><br>
                                             <input type="text" id="email" name="email" value="<?php echo $student->email;?>" style="width:100%;" required>
                                             <input type="hidden" id="old_email" name="old_email" value="<?php echo $student->email;?>" style="width:100%;">
-                                        </td>
+                                        </th>
                                         <td>
                                             <label for="phone"><b><?php _e('Phone', 'aes');?></b></label><br>
                                             <input type="text" id="phone" name="phone" value="<?php echo $student->phone;?>" style="width:100%;" required>
@@ -122,13 +122,17 @@ $countries = get_countries();
 
                                         <td>
                                             <label for="academic_period"><b><?php _e('Academic period', 'aes');?></b></label><br>
-                                            <select name="academic_period" required>
+                                            <select name="academic_period" required style="width:100%;">
                                                     <?php foreach ($periods as $key => $period) { ?>
                                                         <option value="<?php echo $period->code; ?>" <?= ($student->academic_period == $period->code) ? 'selected' : ''; ?>>
                                                             <?php echo $period->name; ?>
                                                         </option>
                                                     <?php } ?>
                                                 </select>
+                                        </td>
+                                        <td>
+                                            <label for="new_password"><b><?php _e('New password for student', 'aes');?></label><br>
+                                            <input type="password" id="new_password" name="new_password" style="width:100%; background-color: white;">
                                         </td>
                                     </tr>
                                 </tbody>

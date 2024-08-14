@@ -558,25 +558,27 @@ function save_student_details(){
 
         if($_GET['action'] == 'access_moodle_url'){
 
-            global $wpdb;
+            global $wpdb, $current_user;
             $table_students = $wpdb->prefix.'students';
             $student_id = $_GET['student_id']; 
-
             $data = $wpdb->get_row("SELECT * FROM {$table_students} where id={$student_id}");
 
-            if($data){
+            if ($current_user && ($current_user->user_email == $data->email)) {
 
-                $data_url = get_url_login($data->email);
-             
-                if(isset($data_url) && !empty($data_url)){
-                    nocache_headers();
-                    wp_redirect($data_url);
-                }else{
-                    nocache_headers();
-                    wp_redirect(get_option('moodle_url'));
+                if($data){
+    
+                    $data_url = get_url_login($data->email);
+                 
+                    if(isset($data_url) && !empty($data_url)){
+                        nocache_headers();
+                        wp_redirect($data_url);
+                    }else{
+                        nocache_headers();
+                        wp_redirect(get_option('moodle_url'));
+                    }
+    
+                    exit;
                 }
-
-                exit;
             }
         }
     }

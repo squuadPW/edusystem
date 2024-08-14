@@ -17,6 +17,7 @@ function add_admin_form_admission_content()
             $id_document = $_POST['id_document'];
             $academic_period = $_POST['academic_period'];
             $username = $_POST['username'] ?? null;
+            $new_password = $_POST['new_password'] ?? null;
             $first_name = $_POST['first_name'];
             $middle_name = $_POST['middle_name'];
             $last_name = $_POST['last_name'];
@@ -73,6 +74,12 @@ function add_admin_form_admission_content()
                     array('%d')
                 );
             }
+
+            if ($new_password && isset($user_student)) {
+                $user_id = $user_student->ID; // Replace with the ID of the user you want to update
+                wp_set_password($new_password, $user_student->ID);
+            }
+
             //METAADATA
             update_user_meta($id, 'first_name', $first_name);
             update_user_meta($id, 'last_name', $last_name);
