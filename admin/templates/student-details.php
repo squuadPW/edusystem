@@ -122,7 +122,13 @@ $countries = get_countries();
 
                                         <td>
                                             <label for="academic_period"><b><?php _e('Academic period', 'aes');?></b></label><br>
-                                            <input type="text" id="academic_period" name="academic_period" value="<?php echo $student->academic_period;?>" style="width:100%" required>
+                                            <select name="academic_period" required>
+                                                    <?php foreach ($periods as $key => $period) { ?>
+                                                        <option value="<?php echo $period->code; ?>" <?= ($student->academic_period == $period->code) ? 'selected' : ''; ?>>
+                                                            <?php echo $period->name; ?>
+                                                        </option>
+                                                    <?php } ?>
+                                                </select>
                                         </td>
                                     </tr>
                                 </tbody>
