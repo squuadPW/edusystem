@@ -604,7 +604,7 @@ function view_access_classroom(){
         $data = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
     }
 
-    if($data->status_id <= 1){
+    if(!$data->moodle_student_id){
         return;
     }
 
