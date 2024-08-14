@@ -819,7 +819,7 @@ function update_status_documents(){
 
                 update_status_student($student_id,2);
 
-                // create_user_student($student_id);
+                create_user_student($student_id);
 
                 $exist = is_search_student_by_email($student_id);
 

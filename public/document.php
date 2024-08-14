@@ -164,9 +164,9 @@ function save_document(){
 
                             update_status_student($student_id,2);
 
-                            // if(in_array('parent',$roles) && !in_array('student',$roles)){
-                            //     create_user_student($student_id);
-                            // }
+                            if(in_array('parent',$roles) && !in_array('student',$roles)){
+                                create_user_student($student_id);
+                            }
 
                             $exist = is_search_student_by_email($student_id);
                         
