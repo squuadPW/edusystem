@@ -5,7 +5,7 @@
 do_action( 'woocommerce_email_header', $email_heading, $email ); 
 
 ?>
-    <p><?php printf( esc_html__( 'I am writing to inform you that your document,%s, has been approved. We have carefully reviewed your document and believe that it meets all of our requirements. ', 'aes' ),get_name_document($document->document_id)); ?></p>
+    <p><?php printf( esc_html__( 'I am writing to inform you that your document has been approved. We have carefully reviewed your document and believe that it meets all of our requirements. ', 'aes' )); ?></p>
 
 <?php 
 /**
