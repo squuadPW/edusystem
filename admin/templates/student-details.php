@@ -70,7 +70,7 @@ $countries = get_countries();
                                         </th>
                                         <td>
                                             <label for="middle_name"><b><?php _e('Middle name', 'aes');?></b></label><br>
-                                            <input type="text" id="middle_name" name="middle_name" value="<?php echo $student->middle_name;?>" style="width:100%">
+                                            <input type="text" id="middle_name" name="middle_name" value="<?php echo $student->middle_name;?>" style="width:100%" required>
                                         </td>
                                         <td>
                                             <label for="last_name"><b><?php _e('Last name', 'aes');?></b></label><br>
@@ -78,7 +78,7 @@ $countries = get_countries();
                                         </td>
                                         <td>
                                             <label for="middle_last_name"><b><?php _e('Middle last name', 'aes');?></b></label><br>
-                                            <input type="text" id="middle_last_name" name="middle_last_name" value="<?php echo $student->middle_last_name;?>" style="width:100%">
+                                            <input type="text" id="middle_last_name" name="middle_last_name" value="<?php echo $student->middle_last_name;?>" style="width:100%" required>
                                         </td>
                                     </tr>
                                     <tr>

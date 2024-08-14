@@ -387,6 +387,8 @@ class TT_document_review_List_Table extends WP_List_Table
                 return $item['review_pending_documents'];
             case 'rejected_documents':
                 return $item['rejected_documents'];
+            case 'moodle_active':
+                return $item['moodle_active'];
             case 'waiting_time':
                 $html = "";
                 if (isset($item['updated_at'])) {
@@ -470,6 +472,7 @@ class TT_document_review_List_Table extends WP_List_Table
             'pending_review_documents' => __('for Review', 'aes'),
             'approved_documents' => __('Approved', 'aes'),
             'rejected_documents' => __('Rejected', 'aes'),
+            'moodle_active' => __('Moodle', 'aes'),
             'waiting_time' => __('Waiting Time', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
@@ -599,6 +602,7 @@ class TT_document_review_List_Table extends WP_List_Table
         $data = array();
         foreach ($data_categories as $key => $value) {
             $value['index'] = $key + 1;
+            $value['moodle_active'] = isset($value['moodle_student_id']) ? '<div style="background-color: #f98012; text-align: center; border-radius: 10px; font-weight: bold; color: #000000; width: 40px; ">Yes</div>' : '<div style="background-color: #dfdedd; text-align: center; border-radius: 10px; font-weight: bold; color: #000000; width: 40px; ">No</div>';
             $data[] = $value;
         }
 
@@ -638,6 +642,8 @@ class TT_all_student_List_Table extends WP_List_Table
             case 'grade':
                 $grade = get_name_grade($item['grade_id']);
                 return $grade;
+            case 'moodle_active':
+                return $item['moodle_active'];
             case 'view_details':
                 return "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'form-plugin') . "</a>";
             default:
@@ -668,6 +674,7 @@ class TT_all_student_List_Table extends WP_List_Table
             'full_name' => __('Full name', 'aes'),
             'program' => __('Program', 'aes'),
             'grade' => __('Grade', 'aes'),
+            'moodle_active' => __('Moodle', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
 
@@ -753,6 +760,7 @@ class TT_all_student_List_Table extends WP_List_Table
         $data = array();
         foreach ($data_categories as $key => $value) {
             $value['index'] = $key + 1;
+            $value['moodle_active'] = isset($value['moodle_student_id']) ? '<div style="background-color: #f98012; text-align: center; border-radius: 10px; font-weight: bold; color: #000000; width: 40px; ">Yes</div>' : '<div style="background-color: #dfdedd; text-align: center; border-radius: 10px; font-weight: bold; color: #000000; width: 40px; ">No</div>';
             $data[] = $value;
         }
 

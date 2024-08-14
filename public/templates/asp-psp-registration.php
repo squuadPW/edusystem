@@ -41,16 +41,16 @@
                         <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
                     </div>
                     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                        <label for="lastname"><?= __('Student second name','aes'); ?>&nbsp;<span>(<?= __('optional','aes') ?>)</span></label>
-                        <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off">
+                        <label for="lastname"><?= __('Student second name','aes'); ?><span class="required">*</span></label>
+                        <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off" required>
                     </div>
                     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                         <label for="lastname"><?= __('Student last name','aes'); ?><span class="required">*</span></label>
                         <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
                     </div>
                     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                        <label for="lastname"><?= __('Student second last name','aes'); ?>&nbsp;<span>(<?= __('optional','aes') ?>)</span></label>
-                        <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off">
+                        <label for="lastname"><?= __('Student second last name','aes'); ?><span class="required">*</span></label>
+                        <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
                     </div>
                     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                         <label for="phone"><?= __('Student contact number','aes'); ?><span class="required">*</span></label>
@@ -198,16 +198,16 @@
                         <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
                     </div>
                     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                        <label for="lastname"><?= __('Student second name','aes'); ?>&nbsp;<span>(<?= __('optional','aes') ?>)</span></label>
-                        <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off">
+                        <label for="lastname"><?= __('Student second name','aes'); ?><span class="required">*</span></label>
+                        <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off" required>
                     </div>
                     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                         <label for="lastname"><?= __('Student last name','aes'); ?><span class="required">*</span></label>
                         <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
                     </div>
                     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                        <label for="lastname"><?= __('Student second last name','aes'); ?>&nbsp;<span>(<?= __('optional','aes') ?>)</span></label>
-                        <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off">
+                        <label for="lastname"><?= __('Student second last name','aes'); ?><span class="required">*</span></label>
+                        <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
                     </div>
                     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                         <label for="phone"><?= __('Student contact number','aes'); ?><span class="required">*</span></label>
@@ -297,16 +297,16 @@
                 <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="lastname"><?= __('Student second name','aes'); ?>&nbsp;<span>(<?= __('optional','aes') ?>)</span></label>
-                <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off">
+                <label for="lastname"><?= __('Student second name','aes'); ?><span class="required">*</span></label>
+                <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off" required>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="lastname"><?= __('Student last name','aes'); ?><span class="required">*</span></label>
                 <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="lastname"><?= __('Student second last name','aes'); ?>&nbsp;<span>(<?= __('optional','aes') ?>)</span></label>
-                <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off">
+                <label for="lastname"><?= __('Student second last name','aes'); ?><span class="required">*</span></label>
+                <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="phone"><?= __('Student contact number','aes'); ?><span class="required">*</span></label>
