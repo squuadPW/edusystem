@@ -52,8 +52,6 @@ $student_logged = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                     class="nobr"><?= __('Email', 'aes'); ?></span></th>
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                    class="nobr"><?= __('Virtual Classroom', 'aes'); ?></span></th>
-            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                     class="nobr"><?= __('Actions', 'aes'); ?></span></th>
         </tr>
     </thead>
@@ -86,16 +84,6 @@ $student_logged = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{
                         <?php endif; ?>
                     </td>
                     -->
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                        data-title="<?= __('Virtual Classroom', 'aes'); ?>">
-                        <?php if ($row->moodle_student_id > 0) { ?>
-                            <a target="_blank" class="button"
-                                href="<?= home_url('?action=access_moodle_url&student_id=' . $row->id); ?>"
-                                disabled><?= __('Access', 'aes') ?></a>
-                        <?php } else { ?>
-                            <button class="button" disabled><?= __('Access', 'aes') ?></button>
-                        <?php } ?>
-                    </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                         data-title="<?= __('View', 'aes'); ?>">
                         <a href="<?= wc_get_account_endpoint_url('student-details') . '/?student=' . $row->id; ?>"
