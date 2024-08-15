@@ -363,6 +363,21 @@ class TT_document_review_List_Table extends WP_List_Table
 
     }
 
+    function single_row( $item ) {
+        static $row_class = '';
+        $row_class = ( $row_class == '' ? 'alternate' : '' );
+
+        // Add your custom styles here
+        $style = '';
+        if ( $item['review_pending_documents'] > 0 ) {
+            $style = 'style="background-color: #c6c5e0 !important;"';
+        }
+
+        echo '<tr id="user_' . $item->ID . '" class="' . $row_class . '" ' . $style . '>';
+        $this->single_row_columns( $item );
+        echo '</tr>';
+    }
+
     function column_default($item, $column_name)
     {
 
