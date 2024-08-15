@@ -259,7 +259,7 @@ class TT_new_student_List_Table extends WP_List_Table
                 FROM {$table_students} as a 
                 JOIN {$table_student_documents} b on b.student_id = a.id 
                 WHERE status_id=1 AND a.academic_period = '$period' AND b.status != 0 AND 
-                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email LIKE '{$search}%')
+                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%')
                 GROUP BY a.id
                 ", "ARRAY_A");
             } else {
@@ -267,7 +267,7 @@ class TT_new_student_List_Table extends WP_List_Table
                 FROM {$table_students} as a 
                 JOIN {$table_student_documents} b on b.student_id = a.id 
                 WHERE status_id=1 AND b.status != 0 AND 
-                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email LIKE '{$search}%')
+                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email or id_document LIKE '{$search}%')
                 GROUP BY a.id
                 ", "ARRAY_A");
             }
@@ -499,7 +499,7 @@ class TT_document_review_List_Table extends WP_List_Table
                 FROM {$table_students} as a 
                 JOIN {$table_student_documents} b on b.student_id = a.id 
                 WHERE (b.status != 5) AND a.academic_period = '$period' AND 
-                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email LIKE '{$search}%')
+                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%')
                 GROUP BY a.id
                 ORDER BY a.updated_at ASC
                 ", "ARRAY_A");
@@ -512,7 +512,7 @@ class TT_document_review_List_Table extends WP_List_Table
                 FROM {$table_students} as a 
                 JOIN {$table_student_documents} b on b.student_id = a.id 
                 WHERE (b.status != 5) AND 
-                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email LIKE '{$search}%')
+                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%')
                 GROUP BY a.id
                 ORDER BY a.updated_at ASC
             ", "ARRAY_A");
@@ -691,9 +691,9 @@ class TT_all_student_List_Table extends WP_List_Table
             $search = $_POST['s'];
             if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
                 $period = $_POST['academic_period'];
-                $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND academic_period = '$period' AND (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email LIKE '{$search}%') ORDER BY name ASC", "ARRAY_A");
+                $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND academic_period = '$period' AND (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%') ORDER BY name ASC", "ARRAY_A");
             } else {
-                $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email LIKE '{$search}%') ORDER BY name ASC", "ARRAY_A");
+                $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%') ORDER BY name ASC", "ARRAY_A");
             }
         } else {
             if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
