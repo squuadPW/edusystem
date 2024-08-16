@@ -540,6 +540,34 @@ function add_welcome_student_action( $actions, $user_object ) {
     return $actions;
 }
 
+// Add a new column to the user list
+function add_last_login_column($columns) {
+    $columns['last_login'] = 'Last login';
+    unset($columns['posts']);
+    return $columns;
+}
+add_filter('manage_users_columns', 'add_last_login_column');
+
+// Populate the last login column with user data
+function populate_last_login_column($value, $column_name, $user_id) {
+    if ($column_name == 'last_login') {
+        $last_login = get_user_meta($user_id, 'last_login', true);
+        if ($last_login) {
+            return date_i18n('Y-m-d H:i:s', $last_login);
+        } else {
+            return 'N/A'; // or any other default value you want to display
+        }
+    }
+    return $value;
+}
+add_action('manage_users_custom_column', 'populate_last_login_column', 10, 3);
+
+function update_last_login($user_login, $user) {
+    $current_time = current_time('timestamp');
+    update_user_meta($user->ID, 'last_login', $current_time);
+}
+add_action('wp_login', 'update_last_login', 10, 2);
+
 // Add a JavaScript code to trigger the welcome student function
 add_action( 'admin_footer', 'add_welcome_student_js' );
 function add_welcome_student_js() {
