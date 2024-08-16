@@ -414,6 +414,18 @@ if (document.getElementById("birth_date_student")) {
               buttonSave.disabled = false;
             }
           }
+          var parentBirthDateField = document.getElementById("parent_birth_date_field");
+          if (parentBirthDateField) {
+            parentBirthDateField.style.display = "none";
+          }
+          var parentDocumentTypeField = document.getElementById("parent_document_type_field");
+          if (parentDocumentTypeField) {
+            parentDocumentTypeField.style.display = "none";
+          }
+          var parentIdDocumentField = document.getElementById("parent_id_document_field");
+          if (parentIdDocumentField) {
+            parentIdDocumentField.style.display = "none";
+          }
           var parentNameField = document.getElementById("parent_name_field");
           if (parentNameField) {
             parentNameField.style.display = "none";
@@ -482,7 +494,18 @@ if (document.getElementById("birth_date_student")) {
             buttonSave.disabled = false;
           }
         }
-
+        var parentBirthDateField = document.getElementById("parent_birth_date_field");
+        if (parentBirthDateField) {
+          parentBirthDateField.style.display = "block";
+        }
+        var parentDocumentTypeField = document.getElementById("parent_document_type_field");
+        if (parentDocumentTypeField) {
+          parentDocumentTypeField.style.display = "block";
+        }
+        var parentIdDocumentField = document.getElementById("parent_id_document_field");
+        if (parentIdDocumentField) {
+          parentIdDocumentField.style.display = "block";
+        }
         var parentNameField = document.getElementById("parent_name_field");
         if (parentNameField) {
           parentNameField.style.display = "block";

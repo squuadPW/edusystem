@@ -903,21 +903,32 @@ function update_status_documents()
 
                 $files_to_send = array();
                 $fields_to_send = array(
+                    // DATOS DEL ESTUDIANTE
                     'id_document' => $student->id_document,
                     'type_document' => $type_document,
-                    'cod_program' => AES_PROGRAM_ID,
-                    'cod_tip' => AES_TYPE_PROGRAM,
-                    'cod_period' => AES_PERIOD,
                     'firstname' => $student->name . ' ' . $student->middle_name,
                     'lastname' => $student->last_name . ' ' . $student->middle_last_name,
                     'birth_date' => $student->birth_date,
-                    'gender' => $student->gender,
-                    'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
                     'phone' => $student->phone,
                     'email' => $student->email,
-                    'country' => $student->country,
-                    'city' => $student->city,
-                    'postal_code' => $student->postal_code,
+
+                    // PADRE
+                    'id_document_re' => get_user_meta($student->partner_id, 'id_document', true), // por hacer
+                    'type_document_re' => get_user_meta($student->partner_id, 'type_document', true), // por hacer
+                    'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
+                    'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
+                    'birth_date_re' =>  get_user_meta($student->partner_id, 'birth_date', true), // por hacer
+                    'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
+                    'email_re' => get_user_meta($student->partner_id, 'billing_email', true),
+
+                    'cod_program' => AES_PROGRAM_ID,
+                    'cod_tip' => AES_TYPE_PROGRAM,
+                    'cod_period' => AES_PERIOD,
+                    'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
+                    'country' => get_user_meta($student->partner_id, 'billing_country', true),
+                    'city' => get_user_meta($student->partner_id, 'billing_city', true),
+                    'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true),
+                    'etnia' => $student->etnia // por hacer
                 );
 
                 $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
