@@ -1269,3 +1269,80 @@ function students_moodle() {
     }
     return true;
 }
+
+
+function reload_moodle_usernames() {
+    register_rest_route('moodle', '/usernames', array(
+        'methods' => 'GET',
+        'callback' => 'update_usernames_moodle',
+        'permission_callback' => '__return_true'
+    ));
+}
+
+add_action('rest_api_init', 'reload_moodle_usernames');
+
+function update_usernames_moodle(){
+
+    // solo los estudiantes nuevos
+    global $wpdb;
+    $table_students = $wpdb->prefix.'students';
+    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id=79");
+
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+
+    if(!empty($moodle_url) && !empty($moodle_token)){
+
+        $users = [];
+        foreach ($students as $key => $data_student) {
+            $moodle_student_id = $data_student->moodle_student_id;
+            $id_document = $data_student->id_document;
+
+            if(!empty($moodle_student_id)){
+                
+                array_push($users, [
+                    'id' => $moodle_student_id,
+                    'username' => $id_document,
+                ]);
+
+            }
+        }
+
+        $users_to_send = ['users' => $users];
+        $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php',$moodle_token);
+        $update_user = $MoodleRest->request('core_user_update_users',$users_to_send,MoodleRest::METHOD_POST);
+        return $update_user;
+    }
+}
+
+function reload_moodle_ids() {
+    register_rest_route('moodle', '/ids', array(
+        'methods' => 'GET',
+        'callback' => 'update_ids_moodle',
+        'permission_callback' => '__return_true'
+    ));
+}
+
+add_action('rest_api_init', 'reload_moodle_ids');
+
+function update_ids_moodle(){
+
+    global $wpdb;
+    $table_students = $wpdb->prefix.'students';
+
+    $students = $wpdb->get_results("SELECT * FROM {$table_students}");
+
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+
+    if(!empty($moodle_url) && !empty($moodle_token)){
+
+        foreach ($students as $key => $data_student) {
+            $exist = is_search_student_by_email($data_student->id);
+            if ($exist) {
+                $wpdb->update($table_students, ['moodle_student_id' => $exist[0]['id']], ['id' => $data_student->id]);
+            }
+        }
+        return true;
+    }
+}

@@ -651,6 +651,8 @@ class TT_all_student_List_Table extends WP_List_Table
                 return $item['index'];
             case 'full_name':
                 return $item['name'] . ' ' . $item['last_name'];
+            case 'email':
+                return $item['email'];
             case 'program':
                 $program = get_name_program($item['program_id']);
                 return $program;
@@ -687,6 +689,7 @@ class TT_all_student_List_Table extends WP_List_Table
         $columns = array(
             'index' => __('Index', 'aes'),
             'full_name' => __('Full name', 'aes'),
+            'email' => __('Email', 'aes'),
             'program' => __('Program', 'aes'),
             'grade' => __('Grade', 'aes'),
             'moodle_active' => __('Moodle', 'aes'),
