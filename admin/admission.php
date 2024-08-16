@@ -811,10 +811,10 @@ function update_status_documents()
             $email_rejected_document->trigger($student_id, $document_id);
         }
 
-        if ($status_id == 5) {
-            $email_rejected_document = WC()->mailer()->get_emails()['WC_Approved_Document_Email'];
-            $email_rejected_document->trigger($student_id, $document_id);
-        }
+        // if ($status_id == 5) {
+        //     $email_rejected_document = WC()->mailer()->get_emails()['WC_Approved_Document_Email'];
+        //     $email_rejected_document->trigger($student_id, $document_id);
+        // }
         /*
         if($document_id == 'id_student' && $status_id == 5){
             update_status_student($student_id,2);
