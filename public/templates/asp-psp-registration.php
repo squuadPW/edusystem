@@ -17,6 +17,7 @@ if (is_user_logged_in()) {
         ?>
         <form method="POST" action="<?= the_permalink() . '?action=new_applicant_others'; ?>" class="form-aes" id="form-others">
             <div class="grid grid-cols-12 gap-4">
+                <!-- DATOS DEL ESTUDIANTE -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
                     <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
@@ -29,6 +30,7 @@ if (is_user_logged_in()) {
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
                     <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <option value="passport"><?= __('Passport', 'aes'); ?></option>
                         <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
                         <option value="ssn"><?= __('SSN', 'aes'); ?></option>
@@ -40,6 +42,14 @@ if (is_user_logged_in()) {
                         oninput="sendAjaxIdDocument()" required>
                     <span id="exisstudentid"
                         style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
+                </div>
+                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                    <label for="gender"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
+                    <select class="form-control" id="gender" required name="gender">
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                        <option value="male"><?= __('Male', 'aes'); ?></option>
+                        <option value="female"><?= __('Female', 'aes'); ?></option>
+                    </select>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="name"><?= __('Student name', 'aes'); ?><span class="required">*</span></label>
@@ -71,8 +81,27 @@ if (is_user_logged_in()) {
                         style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The student cannot share the same email as the representative', 'aes'); ?></span>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                    <label for="etnia"><?= __('Ethnicity', 'aes'); ?><span class="required">*</span></label>
+                    <select class="form-control" id="etnia" required name="etnia">
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                        <option value="1"><?= __('African American', 'aes'); ?></option>
+                        <option value="2"><?= __('Asian', 'aes'); ?></option>
+                        <option value="3"><?= __('Caucasian', 'aes'); ?></option>
+                        <option value="4"><?= __('Hispanic', 'aes'); ?></option>
+                        <option value="5"><?= __('Native American', 'aes'); ?></option>
+                        <option value="6"><?= __('Other', 'aes'); ?></option>
+                        <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
+                    </select>
+                </div>
+
+                <!-- DATOS DEL GRADO -->
+                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
+                    <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
+                </div>
+                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="grade"><?= __('Student grade', 'aes'); ?><span class="required">*</span></label>
                     <select name="grade" autocomplete="off" required>
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <?php foreach ($grades as $grade): ?>
                             <option value="<?= $grade->id; ?>"><?= $grade->name; ?></option>
                         <?php endforeach; ?>
@@ -81,6 +110,7 @@ if (is_user_logged_in()) {
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="program"><?= __('Program of your interest', 'aes'); ?><span class="required">*</span></label>
                     <select name="program" autocomplete="off" required>
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <option value="aes"><?= __('Dual diploma', 'aes'); ?></option>
                     </select>
                 </div>
@@ -88,7 +118,7 @@ if (is_user_logged_in()) {
                     <label for="name_institute"><?= __('Name of School or Institution with Agreement', 'aes'); ?><span
                             id="institute_id_required" class="required">*</span></label>
                     <select name="institute_id" autocomplete="off" id="institute_id" required>
-                        <option value=""><?= __('Select a institute', 'aes'); ?></option>
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <?php foreach ($institutes as $institute): ?>
                             <option value="<?= $institute->id; ?>"><?= $institute->name; ?></option>
                         <?php endforeach; ?>
@@ -124,35 +154,49 @@ if (is_user_logged_in()) {
 
         <form method="POST" action="<?= the_permalink() . '?action=new_applicant_me'; ?>" class="form-aes" id="form-me">
             <div class="grid grid-cols-12 gap-4">
-                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                    <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
-                    <select value="<?php echo get_user_meta(get_current_user_id(), 'type_document', true) ?>"
-                        name="document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
-                        <option value="passport"><?= __('Passport', 'aes'); ?></option>
-                        <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
-                        <option value="ssn"><?= __('SSN', 'aes'); ?></option>
-                    </select>
-                </div>
-                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                    <label for="id_document_parent"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
-                    <input value="<?php echo get_user_meta(get_current_user_id(), 'id_document', true) ?>"
-                        class="formdata capitalize" autocomplete="off" type="text" id="id_document_parent"
-                        name="id_document_parent" oninput="sendAjaxIdDocument()" required>
-                    <span id="exisstudentid"
-                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
-                </div>
-                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                    <label for="birth_date_student"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
-                    <input value="<?php echo get_user_meta(get_current_user_id(), 'birth_date', true) ?>" class="formdata"
-                        autocomplete="off" type="date" id="birth_date_student" name="birth_date_student" required>
-                    <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
-                        value="0">
-                    <span id="dontBeAdult"
-                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('Another student of legal age cannot register', 'aes'); ?></span>
-                </div>
+                <!-- DATOS DEL ESTUDIANTE -->
+                <?php if (!get_user_meta(get_current_user_id(), 'type_document', true) || !get_user_meta(get_current_user_id(), 'id_document', true) || !get_user_meta(get_current_user_id(), 'birth_date', true)) { ?>
+                    <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                        <label for="birth_date_parent"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
+                        <input class="formdata" autocomplete="off" type="date" id="birth_date_parent" name="birth_date_parent"
+                            required>
+                    </div>
+                    <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                        <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
+                        <select value="<?php echo get_user_meta(get_current_user_id(), 'type_document', true) ?>"
+                            name="parent_document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
+                            <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                            <option value="passport"><?= __('Passport', 'aes'); ?></option>
+                            <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
+                            <option value="ssn"><?= __('SSN', 'aes'); ?></option>
+                        </select>
+                    </div>
+                    <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                        <label for="id_document_parent"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
+                        <input value="<?php echo get_user_meta(get_current_user_id(), 'id_document', true) ?>"
+                            class="formdata capitalize" autocomplete="off" type="text" id="id_document_parent"
+                            name="id_document_parent" oninput="sendAjaxIdDocument()" required>
+                        <span id="exisstudentid"
+                            style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
+                    </div>
+                    <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                        <label for="gender_parent"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
+                        <select class="form-control" id="gender_parent" required name="gender_parent">
+                            <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                            <option value="male"><?= __('Male', 'aes'); ?></option>
+                            <option value="female"><?= __('Female', 'aes'); ?></option>
+                        </select>
+                    </div>
+                    <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
+                        <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
+                    </div>
+                <?php } ?>
+
+                <!-- DATOS DEL GRADO -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="grade"><?= __('Student grade', 'aes'); ?><span class="required">*</span></label>
                     <select name="grade" autocomplete="off" required>
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <?php foreach ($grades as $grade): ?>
                             <option value="<?= $grade->id; ?>"><?= $grade->name; ?></option>
                         <?php endforeach; ?>
@@ -161,6 +205,7 @@ if (is_user_logged_in()) {
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="program"><?= __('Program of your interest', 'aes'); ?><span class="required">*</span></label>
                     <select name="program" autocomplete="off" required>
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <option value="aes"><?= __('Dual diploma', 'aes'); ?></option>
                     </select>
                 </div>
@@ -168,7 +213,7 @@ if (is_user_logged_in()) {
                     <label for="name_institute"><?= __('Name of School or Institution with Agreement', 'aes'); ?><span
                             id="institute_id_required" class="required">*</span></label>
                     <select name="institute_id" autocomplete="off" id="institute_id" required>
-                        <option value=""><?= __('Select a institute', 'aes'); ?></option>
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <?php foreach ($institutes as $institute): ?>
                             <option value="<?= $institute->id; ?>"><?= $institute->name; ?></option>
                         <?php endforeach; ?>
@@ -196,6 +241,7 @@ if (is_user_logged_in()) {
 
         <form method="POST" action="<?= the_permalink() . '?action=new_applicant_others'; ?>" class="form-aes" id="form-others"
             style="display:none">
+            <!-- DATOS DEL ESTUDIANTE -->
             <div class="grid grid-cols-12 gap-4">
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
@@ -207,6 +253,7 @@ if (is_user_logged_in()) {
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
                     <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <option value="passport"><?= __('Passport', 'aes'); ?></option>
                         <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
                         <option value="ssn"><?= __('SSN', 'aes'); ?></option>
@@ -218,6 +265,14 @@ if (is_user_logged_in()) {
                         oninput="sendAjaxIdDocument()" required>
                     <span id="exisstudentid"
                         style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
+                </div>
+                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                    <label for="gender"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
+                    <select class="form-control" id="gender" required name="gender">
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                        <option value="male"><?= __('Male', 'aes'); ?></option>
+                        <option value="female"><?= __('Female', 'aes'); ?></option>
+                    </select>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="name"><?= __('Student name', 'aes'); ?><span class="required">*</span></label>
@@ -249,8 +304,27 @@ if (is_user_logged_in()) {
                         style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student', 'aes'); ?></span>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                    <label for="etnia"><?= __('Ethnicity', 'aes'); ?><span class="required">*</span></label>
+                    <select class="form-control" id="etnia" required name="etnia">
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                        <option value="1"><?= __('African American', 'aes'); ?></option>
+                        <option value="2"><?= __('Asian', 'aes'); ?></option>
+                        <option value="3"><?= __('Caucasian', 'aes'); ?></option>
+                        <option value="4"><?= __('Hispanic', 'aes'); ?></option>
+                        <option value="5"><?= __('Native American', 'aes'); ?></option>
+                        <option value="6"><?= __('Other', 'aes'); ?></option>
+                        <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
+                    </select>
+                </div>
+
+                <!-- DATOS DEL GRADO -->
+                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
+                    <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
+                </div>
+                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="grade"><?= __('Student grade', 'aes'); ?><span class="required">*</span></label>
                     <select name="grade" autocomplete="off" required>
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <?php foreach ($grades as $grade): ?>
                             <option value="<?= $grade->id; ?>"><?= $grade->name; ?></option>
                         <?php endforeach; ?>
@@ -259,6 +333,7 @@ if (is_user_logged_in()) {
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="program"><?= __('Program of your interest', 'aes'); ?><span class="required">*</span></label>
                     <select name="program" autocomplete="off" required>
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <option value="aes"><?= __('Dual diploma', 'aes'); ?></option>
                     </select>
                 </div>
@@ -266,7 +341,7 @@ if (is_user_logged_in()) {
                     <label for="name_institute"><?= __('Name of School or Institution with Agreement', 'aes'); ?><span
                             id="institute_id_required_others" class="required">*</span></label>
                     <select name="institute_id" autocomplete="off" id="institute_id_others" required>
-                        <option value=""><?= __('Select a institute', 'aes'); ?></option>
+                        <option value=""><?= __('Select an option', 'aes'); ?></option>
                         <?php foreach ($institutes as $institute): ?>
                             <option value="<?= $institute->id; ?>"><?= $institute->name; ?></option>
                         <?php endforeach; ?>
@@ -335,6 +410,14 @@ if (is_user_logged_in()) {
                     style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="gender"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
+                <select class="form-control" id="gender" required name="gender">
+                    <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                    <option value="male"><?= __('Male', 'aes'); ?></option>
+                    <option value="female"><?= __('Female', 'aes'); ?></option>
+                </select>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="name"><?= __('Student name', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
             </div>
@@ -367,13 +450,13 @@ if (is_user_logged_in()) {
                 <label for="etnia"><?= __('Ethnicity', 'aes'); ?><span class="required">*</span></label>
                 <select class="form-control" id="etnia" required name="etnia">
                     <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
-                    <option value="1">AFRICAN AMERICAN</option>
-                    <option value="2">ASIAN</option>
-                    <option value="3">CAUCASIAN</option>
-                    <option value="4">HISPANIC</option>
-                    <option value="5">NATIVE AMERICAN</option>
-                    <option value="6">OTHER</option>
-                    <option value="7">CHOOSE NOT TO RESPOND</option>
+                    <option value="1"><?= __('African American', 'aes'); ?></option>
+                    <option value="2"><?= __('Asian', 'aes'); ?></option>
+                    <option value="3"><?= __('Caucasian', 'aes'); ?></option>
+                    <option value="4"><?= __('Hispanic', 'aes'); ?></option>
+                    <option value="5"><?= __('Native American', 'aes'); ?></option>
+                    <option value="6"><?= __('Other', 'aes'); ?></option>
+                    <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
                 </select>
             </div>
 
@@ -389,7 +472,7 @@ if (is_user_logged_in()) {
             </div>
             <div id="parent_document_type_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
-                <select name="document_type_parent" autocomplete="off" id="parent_document_type" required>
+                <select name="parent_document_type" autocomplete="off" id="parent_document_type" required>
                     <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                     <option value="passport"><?= __('Passport', 'aes'); ?></option>
                     <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
@@ -398,7 +481,16 @@ if (is_user_logged_in()) {
             </div>
             <div id="parent_id_document_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="id_document_parent"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
-                <input class="formdata capitalize" autocomplete="off" type="text" id="id_document_parent" name="id_document_parent" required>
+                <input class="formdata capitalize" autocomplete="off" type="text" id="id_document_parent"
+                    name="id_document_parent" required>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="gender_parent"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
+                <select class="form-control" id="gender_parent" required name="gender_parent">
+                    <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                    <option value="male"><?= __('Male', 'aes'); ?></option>
+                    <option value="female"><?= __('Female', 'aes'); ?></option>
+                </select>
             </div>
             <div id="parent_name_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="agent_name"><?= __('Parent\'s name', 'aes'); ?><span class="required">*</span></label>

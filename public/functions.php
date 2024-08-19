@@ -26,24 +26,33 @@ function form_plugin_scripts()
 
     // PAYMENTS PARTS
     wp_register_script('payment-parts-update', plugins_url('aes') . '/public/assets/js/payment-parts-update.js', array('jquery'), '1.0.0', true);
-    wp_localize_script('payment-parts-update', 'ajax_object', array(
-        'ajax_url' => admin_url('admin-ajax.php')
-    )
+    wp_localize_script(
+        'payment-parts-update',
+        'ajax_object',
+        array(
+            'ajax_url' => admin_url('admin-ajax.php')
+        )
     );
     wp_enqueue_script('payment-parts-update');
 
     // form-register
     wp_register_script('form-register', plugins_url('aes') . '/public/assets/js/form-register.js', array('jquery'), '1.0.0', true);
-    wp_localize_script('form-register', 'ajax_object', array(
-        'ajax_url' => admin_url('admin-ajax.php')
-    )
+    wp_localize_script(
+        'form-register',
+        'ajax_object',
+        array(
+            'ajax_url' => admin_url('admin-ajax.php')
+        )
     );
     wp_enqueue_script('form-register');
 
     wp_register_script('create-password', plugins_url('aes') . '/public/assets/js/create-password.js', array('jquery'), '1.0.0', true);
-    wp_localize_script('create-password', 'ajax_object', array(
-        'ajax_url' => admin_url('admin-ajax.php')
-    )
+    wp_localize_script(
+        'create-password',
+        'ajax_object',
+        array(
+            'ajax_url' => admin_url('admin-ajax.php')
+        )
     );
     wp_enqueue_script('create-password');
 }
@@ -63,7 +72,7 @@ function form_asp_psp()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
-    include (plugin_dir_path(__FILE__) . 'templates/asp-psp-registration.php');
+    include(plugin_dir_path(__FILE__) . 'templates/asp-psp-registration.php');
 }
 
 add_shortcode('form_asp_psp', 'form_asp_psp');
@@ -73,7 +82,7 @@ function form_scholarship_application()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
-    include (plugin_dir_path(__FILE__) . 'templates/scholarship-application.php');
+    include(plugin_dir_path(__FILE__) . 'templates/scholarship-application.php');
 }
 
 add_shortcode('form_scholarship_application', 'form_scholarship_application');
@@ -132,7 +141,6 @@ function woocommerce_checkout_order_created_action($order)
         isset($_COOKIE['name_student']) && !empty($_COOKIE['name_student']) &&
         isset($_COOKIE['last_name_student']) && !empty($_COOKIE['last_name_student']) &&
         isset($_COOKIE['birth_date']) && !empty($_COOKIE['birth_date']) &&
-        isset($_COOKIE['name_institute']) && !empty($_COOKIE['name_institute']) &&
         isset($_COOKIE['initial_grade']) && !empty($_COOKIE['initial_grade']) &&
         isset($_COOKIE['program_id']) && !empty($_COOKIE['program_id']) &&
         isset($_COOKIE['email_partner']) && !empty($_COOKIE['email_partner']) &&
@@ -156,6 +164,17 @@ function woocommerce_checkout_order_created_action($order)
         add_role_user($customer_id, 'parent');
     }
 
+    if (
+        isset($_COOKIE['id_document_parent']) && !empty($_COOKIE['id_document_parent']) &&
+        isset($_COOKIE['parent_document_type']) && !empty($_COOKIE['parent_document_type']) &&
+        isset($_COOKIE['birth_date_parent']) && !empty($_COOKIE['birth_date_parent']) &&
+        isset($_COOKIE['gender_parent']) && !empty($_COOKIE['gender_parent'])
+    ) {
+        update_user_meta($customer_id, 'type_document', $_COOKIE['parent_document_type']);
+        update_user_meta($customer_id, 'id_document', $_COOKIE['id_document_parent']);
+        update_user_meta($customer_id, 'birth_date', $_COOKIE['birth_date_parent']);
+        update_user_meta($customer_id, 'gender', $_COOKIE['gender_parent']);
+    }
 
     //validate cookie and set metadata
     if (isset($_COOKIE['fee_student_id']) && !empty($_COOKIE['fee_student_id'])) {
@@ -165,26 +184,32 @@ function woocommerce_checkout_order_created_action($order)
 
     set_institute_in_order($order);
 
+    setcookie('is_older', '', time());
+    setcookie('etnia', '', time());
+    setcookie('phone_student', '', time());
+    setcookie('id_document', '', time());
+    setcookie('document_type', '', time());
+    setcookie('email_student', '', time());
     setcookie('name_student', '', time());
     setcookie('middle_name_student', '', time());
-    setcookie('middle_last_name_student', '', time());
     setcookie('last_name_student', '', time());
+    setcookie('middle_last_name_student', '', time());
     setcookie('billing_city', '', time());
     setcookie('billing_country', '', time());
-    setcookie('billing_phone', '', time());
-    setcookie('billing_email', '', time());
-    setcookie('initial_grade', '', time());
-    setcookie('institute_name', '', time());
+    setcookie('name_institute', '', time());
     setcookie('institute_id', '', time());
     setcookie('birth_date', '', time());
+    setcookie('initial_grade', '', time());
     setcookie('program_id', '', time());
     setcookie('agent_name', '', time());
     setcookie('agent_last_name', '', time());
     setcookie('email_partner', '', time());
     setcookie('number_partner', '', time());
-    setcookie('name_institute', '', time());
-    setcookie('is_older', '', time());
-    setcookie('fee_student_id', '', time()); // Don't forget to delete the cookie after using it
+    setcookie('birth_date_parent', '', time());
+    setcookie('parent_document_type', '', time());
+    setcookie('id_document_parent', '', time());
+    setcookie('id_bitrix', '', time());
+    setcookie('institute_id', '', time());
 }
 
 add_action('woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action');
@@ -430,7 +455,7 @@ function status_changed_payment($order_id, $old_status, $new_status)
                 ) AS b ON a.id = b.min_id
                 SET a.status_id = 1
             ", $student_id);
-        
+
             $wpdb->query($query);
 
             if ($order->get_meta('id_bitrix')) {
@@ -546,14 +571,14 @@ function status_changed_payment($order_id, $old_status, $new_status)
 
                 //virtual classroom
                 if ($access_virtual && isset($paid)) {
-                    $table_name = $wpdb->prefix. 'students'; // assuming the table name is "wp_students"
+                    $table_name = $wpdb->prefix . 'students'; // assuming the table name is "wp_students"
                     $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
                     $type_document = array(
                         'identification_document' => 1,
                         'passport' => 2,
                         'ssn' => 4,
                     )[$student->type_document];
-                    
+
                     $files_to_send = array();
                     $fields_to_send = array(
                         'id_document' => $student->id_document,
@@ -561,8 +586,8 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         'cod_program' => AES_PROGRAM_ID,
                         'cod_tip' => AES_TYPE_PROGRAM,
                         'cod_period' => AES_PERIOD,
-                        'firstname' => $student->name .' '. $student->middle_name,
-                        'lastname' => $student->last_name .' '. $student->middle_last_name,
+                        'firstname' => $student->name . ' ' . $student->middle_name,
+                        'lastname' => $student->last_name . ' ' . $student->middle_last_name,
                         'birth_date' => $student->birth_date,
                         'gender' => $student->gender,
                         'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
@@ -572,30 +597,30 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         'city' => $student->city,
                         'postal_code' => $student->postal_code,
                     );
-                    
+
                     $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
                     $documents_to_send = [];
-                    foreach($all_documents_student as $document){
+                    foreach ($all_documents_student as $document) {
                         if ($document->attachment_id) {
                             array_push($documents_to_send, $document);
                         }
                     }
-    
+
                     foreach ($documents_to_send as $key => $doc) {
                         $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
                         $attachment_id = $doc->attachment_id;
                         $attachment_path = get_attached_file($attachment_id);
-                        if($attachment_path) {
+                        if ($attachment_path) {
                             $file_name = basename($attachment_path);
                             $file_type = mime_content_type($attachment_path);
-        
+
                             $files_to_send[] = array(
                                 'file' => curl_file_create($attachment_path, $file_type, $file_name),
                                 'id_requisito' => $id_requisito
                             );
-                        } 
-                    } 
-    
+                        }
+                    }
+
                     // create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
                     if ($order->get_meta('id_bitrix')) {
@@ -640,10 +665,12 @@ function insert_data_student($order)
 
     if (isset($_COOKIE['institute_id']) && !empty($_COOKIE['institute_id'])) {
 
-        $institute = get_institute_details($institute_id);
+        $institute = get_institute_details($_COOKIE['institute_id']);
 
         $data_student = [
             'birth_date' => $_COOKIE['birth_date'],
+            'gender' => $_COOKIE['gender'],
+            'ethnicity' => $_COOKIE['ethnicity'],
             'name_student' => $_COOKIE['name_student'],
             'middle_name_student' => $_COOKIE['middle_name_student'],
             'last_name_student' => $_COOKIE['middle_name_student'],
@@ -664,6 +691,8 @@ function insert_data_student($order)
 
         $data_student = [
             'birth_date' => $_COOKIE['birth_date'],
+            'gender' => $_COOKIE['gender'],
+            'ethnicity' => $_COOKIE['ethnicity'],
             'name_student' => $_COOKIE['name_student'],
             'middle_name_student' => $_COOKIE['middle_name_student'],
             'last_name_student' => $_COOKIE['middle_name_student'],
@@ -688,7 +717,7 @@ function insert_data_student($order)
 add_action('woocommerce_after_checkout_billing_form', 'payments_parts');
 function payments_parts()
 {
-    include (plugin_dir_path(__FILE__) . 'templates/payment-parts.php');
+    include(plugin_dir_path(__FILE__) . 'templates/payment-parts.php');
 }
 
 add_action('wp_ajax_nopriv_woocommerce_update_cart', 'woocommerce_update_cart');
@@ -816,7 +845,8 @@ function reload_payment_table()
                             <tr class="payment-parts-table-row">
                                 <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
                                 <td class="payment-parts-table-data">
-                                    <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?></td>
+                                    <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?>
+                                </td>
                                 <td class="payment-parts-table-data"><?php echo wc_price($cart_total) ?></td>
                             </tr>
                             <?php
@@ -908,7 +938,7 @@ function fee_inscription_button()
         }
     }
     // VERIFICAR FEE DE INSCRIPCION
-    include (plugin_dir_path(__FILE__) . 'templates/fee-inscription-payment.php');
+    include(plugin_dir_path(__FILE__) . 'templates/fee-inscription-payment.php');
 }
 
 function custom_coupon_applied_notice($message)
@@ -1037,7 +1067,7 @@ function exist_user_id()
     global $wpdb;
     $id = $_POST['option'];
     $type = $_POST['type'];
-    $scholarship = $_POST['scholarship'];
+    $scholarship = isset($_POST['scholarship']) ? $_POST['scholarship'] : null;
     $table_student = $wpdb->prefix . 'students';
     $table_pre_student = $wpdb->prefix . 'pre_students';
     $students = $wpdb->get_results("SELECT * FROM {$table_student} WHERE type_document = '{$type}' AND id_document = '{$id}'");
@@ -1085,12 +1115,14 @@ function sendOrderbitrix($id_bitrix, $id_order, $status)
     $url = 'https://api.luannerkerton.com/api/addNewOrderAes';
 
     // Use WordPress's built-in HTTP API to make a POST request
-    $response = wp_remote_post($url, array(
-        'headers' => array(
-            'Content-Type' => 'application/json'
-        ),
-        'body' => json_encode($body)
-    )
+    $response = wp_remote_post(
+        $url,
+        array(
+            'headers' => array(
+                'Content-Type' => 'application/json'
+            ),
+            'body' => json_encode($body)
+        )
     );
 
     // Check if the response was successful
@@ -1188,7 +1220,7 @@ function custom_content_after_orders()
         }
     }
 
-    include (plugin_dir_path(__FILE__) . 'templates/next-payments.php');
+    include(plugin_dir_path(__FILE__) . 'templates/next-payments.php');
 }
 
 add_action('woocommerce_cart_calculate_fees', 'yaycommerce_add_checkout_fee_for_gateway');
@@ -1225,14 +1257,16 @@ function yaycommerce_refresh_checkout_on_payment_methods_change()
    ");
 }
 
-function student_password_Reset( $user ) {
+function student_password_Reset($user)
+{
     global $wpdb;
     $user_id = $user->get('ID');
     $wpdb->update($wpdb->users, array('user_pass_reset' => 1), array('ID' => $user_id));
 }
-add_action( 'password_reset', 'student_password_Reset' );
+add_action('password_reset', 'student_password_Reset');
 
-function reload_moodle_users() {
+function reload_moodle_users()
+{
     register_rest_route('students', '/mooodle', array(
         'methods' => 'GET',
         'callback' => 'students_moodle',
@@ -1242,7 +1276,8 @@ function reload_moodle_users() {
 
 add_action('rest_api_init', 'reload_moodle_users');
 
-function students_moodle() {
+function students_moodle()
+{
     global $wpdb;
     $args = array(
         'role' => 'student',
@@ -1250,19 +1285,19 @@ function students_moodle() {
 
     $users = get_users($args);
     foreach ($users as $key => $user) {
-        $table_students = $wpdb->prefix.'students';
+        $table_students = $wpdb->prefix . 'students';
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user->data->user_email}'");
         $student_id = $student->id;
 
         $exist = is_search_student_by_email($student_id);
         if ($exist) {
-            $wpdb->update($table_students,['moodle_student_id' => $exist[0]['id']],['id' => $student_id]);
+            $wpdb->update($table_students, ['moodle_student_id' => $exist[0]['id']], ['id' => $student_id]);
 
             $is_exist_password = is_password_user_moodle($student_id);
-    
-            if(!$is_exist_password){
+
+            if (!$is_exist_password) {
                 $password = generate_password_user();
-                $wpdb->update($table_students,['moodle_password' => $password],['id' => $student_id]);
+                $wpdb->update($table_students, ['moodle_password' => $password], ['id' => $student_id]);
                 change_password_user_moodle($student_id);
             }
         }
@@ -1271,7 +1306,8 @@ function students_moodle() {
 }
 
 
-function reload_moodle_usernames() {
+function reload_moodle_usernames()
+{
     register_rest_route('moodle', '/usernames', array(
         'methods' => 'GET',
         'callback' => 'update_usernames_moodle',
@@ -1281,48 +1317,50 @@ function reload_moodle_usernames() {
 
 add_action('rest_api_init', 'reload_moodle_usernames');
 
-function update_usernames_moodle(){
+function update_usernames_moodle()
+{
 
     // solo los estudiantes nuevos
     global $wpdb;
-    $table_students = $wpdb->prefix.'students';
+    $table_students = $wpdb->prefix . 'students';
     $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id=66");
 
     $moodle_url = get_option('moodle_url');
     $moodle_token = get_option('moodle_token');
 
-    if(!empty($moodle_url) && !empty($moodle_token)){
+    if (!empty($moodle_url) && !empty($moodle_token)) {
 
         $users = [];
         foreach ($students as $key => $data_student) {
             if (isset($data_student->moodle_student_id)) {
                 $moodle_student_id = $data_student->moodle_student_id;
                 $id_document = $data_student->id_document;
-    
-                if(!empty($moodle_student_id)){
-                    
+
+                if (!empty($moodle_student_id)) {
+
                     array_push($users, [
                         'id' => $moodle_student_id,
                         'username' => $id_document,
                     ]);
-    
+
                 }
             }
         }
 
         $users_to_send = ['users' => $users];
         if (sizeof($users_to_send['users']) > 0) {
-            $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php',$moodle_token);
-            $update_user = $MoodleRest->request('core_user_update_users',$users_to_send,MoodleRest::METHOD_POST);
+            $MoodleRest = new MoodleRest($moodle_url . 'webservice/rest/server.php', $moodle_token);
+            $update_user = $MoodleRest->request('core_user_update_users', $users_to_send, MoodleRest::METHOD_POST);
             return $update_user;
         } else {
             return 'no users to send';
         }
-        
+
     }
 }
 
-function reload_moodle_ids() {
+function reload_moodle_ids()
+{
     register_rest_route('moodle', '/ids', array(
         'methods' => 'GET',
         'callback' => 'update_ids_moodle',
@@ -1332,17 +1370,18 @@ function reload_moodle_ids() {
 
 add_action('rest_api_init', 'reload_moodle_ids');
 
-function update_ids_moodle(){
+function update_ids_moodle()
+{
 
     global $wpdb;
-    $table_students = $wpdb->prefix.'students';
+    $table_students = $wpdb->prefix . 'students';
 
     $students = $wpdb->get_results("SELECT * FROM {$table_students}");
 
     $moodle_url = get_option('moodle_url');
     $moodle_token = get_option('moodle_token');
 
-    if(!empty($moodle_url) && !empty($moodle_token)){
+    if (!empty($moodle_url) && !empty($moodle_token)) {
 
         foreach ($students as $key => $data_student) {
             $exist = is_search_student_by_email($data_student->id);
