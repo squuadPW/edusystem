@@ -1,360 +1,261 @@
 <?php
 
-function save_student(){
-    if(
+function save_student()
+{
+    if (
         isset($_GET['action']) && !empty($_GET['action'])
-    ){
-        if($_GET['action'] == 'save_student'){
+    ) {
 
-            global $woocommerce;
+        $action = $_GET['action'];
+        global $woocommerce;
 
-            setcookie('is_older','',time());
+        // Datos del estudiante
+        $birth_date = $_POST['birth_date_student'];
+        $document_type = $_POST['document_type'];
+        $id_document = $_POST['id_document'];
+        $name = strtolower($_POST['name_student']);
+        $middle_name_student = strtolower($_POST['middle_name_student']);
+        $last_name = strtolower($_POST['lastname_student']);
+        $middle_last_name_student = strtolower($_POST['middle_last_name_student']);
+        $number_phone = $_POST['number_phone'] ? $_POST['number_phone'] : $_POST['number_phone_hidden'];
+        $email_student = strtolower($_POST['email_student']);
+        $etnia = $_POST['etnia'];
 
-            $name = strtolower($_POST['name_student']);
-            $document_type = $_POST['document_type'];
-            $id_document = $_POST['id_document'];
-            $middle_name_student = strtolower($_POST['middle_name_student']);
-            $last_name = strtolower($_POST['lastname_student']);
-            $middle_last_name_student = strtolower($_POST['middle_last_name_student']);
-            $number_phone = $_POST['number_phone'] ? $_POST['number_phone'] : $_POST['number_phone_hidden'];
-            $number_partner = $_POST['number_partner_hidden']; 
-            $email_student = strtolower($_POST['email_student']);
-            $email_partner = strtolower($_POST['email_partner']);
-            $country = $_POST['country'];
-            $city = strtolower($_POST['city']);
-            $birth_date = $_POST['birth_date_student'];
-            $agent_name = strtolower($_POST['agent_name']);
-            $agent_last_name = strtolower($_POST['agent_last_name']);
-            $program = $_POST['program'];
-            $grade = $_POST['grade'];
-            $name_institute = strtolower($_POST['name_institute']);
-            $institute_id = $_POST['institute_id'];
+        // Datos del padre
+        $birth_date_parent = $_POST['birth_date_parent'];
+        $parent_document_type = $_POST['parent_document_type'];
+        $id_document_parent = $_POST['id_document_parent'];
+        $agent_name = strtolower($_POST['agent_name']);
+        $agent_last_name = strtolower($_POST['agent_last_name']);
+        $number_partner = $_POST['number_partner_hidden'];
+        $email_partner = strtolower($_POST['email_partner']);
 
-            if(!empty($institute_id) && $institute_id != 'other'){
+        // DATOS EXTRAS
+        $country = $_POST['country'];
+        $city = strtolower($_POST['city']);
+        $program = $_POST['program'];
+        $grade = $_POST['grade'];
+        $institute_id = $_POST['institute_id'];
+        $name_institute = strtolower($_POST['name_institute']);
 
-                $institute = get_institute_details($institute_id);
-                $name_institute = strtolower($institute->name);
+        switch ($action) {
+            case 'save_student':
+                setcookie('is_older', '', time());
+                setcookie('etnia', $etnia, time() + 3600);
+                setcookie('phone_student', $number_phone, time() + 3600);
+                setcookie('id_document', $id_document, time() + 3600);
+                setcookie('document_type', $document_type, time() + 3600);
+                setcookie('email_student', $email_student, time() + 3600);
+                setcookie('name_student', ucwords($name), time() + 3600);
+                setcookie('middle_name_student', ucwords($middle_name_student), time() + 3600);
+                setcookie('last_name_student', ucwords($last_name), time() + 3600);
+                setcookie('middle_last_name_student', ucwords($middle_last_name_student), time() + 3600);
+                setcookie('billing_city', ucwords($city), time() + 3600);
+                setcookie('billing_country', $country, time() + 3600);
+                setcookie('name_institute', ucwords($name_institute), time() + 3600);
+                setcookie('birth_date', $birth_date, time() + 3600);
+                setcookie('initial_grade', $grade, time() + 3600);
+                setcookie('program_id', $program, time() + 3600);
 
-                setcookie('institute_id',ucwords($institute_id),time() + 3600);
-            }
-
-            if(!empty($agent_name) && !empty($agent_last_name) && !empty($email_partner) && !empty($number_partner)){
-
-                setcookie('agent_name',ucwords($agent_name),time() + 3600);
-                setcookie('agent_last_name',ucwords($agent_last_name),time() + 3600);
-                setcookie('email_partner',$email_partner,time() + 3600);
-                setcookie('number_partner',$number_partner,time() + 3600);
-            }else{
-
-                setcookie('agent_name',ucwords($name),time() + 3600);
-                setcookie('agent_last_name',ucwords($last_name),time() + 3600);
-                setcookie('email_partner',$email_student,time() + 3600);
-                setcookie('number_partner',$number_phone,time() + 3600);
-                setcookie('is_older',true,time() + 3600);
-            }
-
-            /* set cookie */
-            setcookie('phone_student',$number_phone,time() + 3600);
-            setcookie('id_document',$id_document,time() + 3600);
-            setcookie('document_type',$document_type,time() + 3600);
-            setcookie('email_student',$email_student,time() + 3600);
-            setcookie('name_student',ucwords($name),time() + 3600);
-            setcookie('middle_name_student',ucwords($middle_name_student),time() + 3600);
-            setcookie('last_name_student',ucwords($last_name),time() + 3600);
-            setcookie('middle_last_name_student',ucwords($middle_last_name_student),time() + 3600);
-            setcookie('billing_city',ucwords($city),time() + 3600);
-            setcookie('billing_country',$country,time() + 3600);
-            setcookie('name_institute',ucwords($name_institute),time() + 3600);
-            setcookie('birth_date',$birth_date,time() + 3600);
-            setcookie('initial_grade',$grade,time() + 3600);
-            setcookie('program_id',$program,time() + 3600);
-            $id_bitrix = $_GET['idbitrix'];
-            if (isset($id_bitrix)) {
-                setcookie('id_bitrix',$id_bitrix,time() + 3600);
-            }
-           
-            //clear cart
-            $woocommerce->cart->empty_cart(); 
-
-            //add program to cart
-            if($program == 'aes'){
-                switch ($grade) {
-                    case '1':
-                        $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metadata);
-                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
-                        break;
-
-                    case '2':
-                        $variation = wc_get_product(AES_DUAL_10MO_VARIABLE);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metadata);
-                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
-                        break;
-
-                    default:
-                        $variation = wc_get_product(AES_DUAL_DEFAULT_VARIABLE);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metadata);
-                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
-                        break;
+                if (!empty($agent_name) && !empty($agent_last_name) && !empty($email_partner) && !empty($number_partner)) {
+                    setcookie('agent_name', ucwords($agent_name), time() + 3600);
+                    setcookie('agent_last_name', ucwords($agent_last_name), time() + 3600);
+                    setcookie('email_partner', $email_partner, time() + 3600);
+                    setcookie('number_partner', $number_partner, time() + 3600);
+                    setcookie('birth_date_parent', $birth_date_parent, time() + 3600);
+                    setcookie('parent_document_type', $parent_document_type, time() + 3600);
+                    setcookie('id_document_parent', $id_document_parent, time() + 3600);
+                } else {
+                    setcookie('agent_name', ucwords($name), time() + 3600);
+                    setcookie('agent_last_name', ucwords($last_name), time() + 3600);
+                    setcookie('email_partner', $email_student, time() + 3600);
+                    setcookie('number_partner', $number_phone, time() + 3600);
+                    setcookie('is_older', true, time() + 3600);
                 }
 
-            }else if($program == 'psp'){
-                $woocommerce->cart->add_to_cart(102,1);
-            }else if($program == 'aes_psp'){
-                $woocommerce->cart->add_to_cart(103,1);
-                $woocommerce->cart->add_to_cart(102,1);
-            }
-
-            wp_redirect(wc_get_checkout_url());
-            exit;
-        };
-
-        if($_GET['action'] == 'new_applicant_others'){
-
-            global $woocommerce;
-
-            setcookie('is_older','',time());
-
-            $name = strtolower($_POST['name_student']);
-            $document_type = $_POST['document_type'];
-            $id_document = $_POST['id_document'];
-            $middle_name_student = strtolower($_POST['middle_name_student']);
-            $last_name = strtolower($_POST['lastname_student']);
-            $middle_last_name_student = strtolower($_POST['middle_last_name_student']);
-            $number_phone = $_POST['number_phone_hidden'];
-            $email_student = strtolower($_POST['email_student']);
-            $birth_date = $_POST['birth_date_student'];
-            $program = $_POST['program'];
-            $grade = $_POST['grade'];
-            $name_institute = strtolower($_POST['name_institute']);
-            $institute_id = $_POST['institute_id'];
-
-            if(!empty($institute_id) && $institute_id != 'other'){
-
-                $institute = get_institute_details($institute_id);
-                $name_institute = strtolower($institute->name);
-
-                setcookie('institute_id',ucwords($institute_id),time() + 3600);
-            }
-
-            // for the parent, use the actual user logged
-            setcookie('agent_name',ucwords(get_user_meta(get_current_user_id(),'first_name',true)),time() + 3600);
-            setcookie('agent_last_name',ucwords(get_user_meta(get_current_user_id(),'last_name',true)),time() + 3600);
-            setcookie('email_partner',ucwords(get_user_meta(get_current_user_id(),'billing_email',true)),time() + 3600);
-            setcookie('number_partner',get_user_meta(get_current_user_id(),'billing_phone',true),time() + 3600);
-            setcookie('billing_city',ucwords(get_user_meta(get_current_user_id(),'billing_city',true)),time() + 3600);
-            setcookie('billing_country',get_user_meta(get_current_user_id(),'billing_country',true),time() + 3600);
-            setcookie('is_older',true,time() + 3600);
-
-            /* set cookie */
-            setcookie('phone_student',$number_phone,time() + 3600);
-            setcookie('id_document',$id_document,time() + 3600);
-            setcookie('document_type',$document_type,time() + 3600);
-            setcookie('email_student',$email_student,time() + 3600);
-            setcookie('name_student',ucwords($name),time() + 3600);
-            setcookie('middle_name_student',ucwords($middle_name_student),time() + 3600);
-            setcookie('last_name_student',ucwords($last_name),time() + 3600);
-            setcookie('middle_last_name_student',ucwords($middle_last_name_student),time() + 3600);
-            setcookie('name_institute',ucwords($name_institute),time() + 3600);
-            setcookie('birth_date',$birth_date,time() + 3600);
-            setcookie('initial_grade',$grade,time() + 3600);
-            setcookie('program_id',$program,time() + 3600);
-           
-            //clear cart
-            $woocommerce->cart->empty_cart(); 
-
-            //add program to cart
-            if($program == 'aes'){
-                switch ($grade) {
-                    case '1':
-                        $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metadata);
-                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
-                        break;
-
-                    case '2':
-                        $variation = wc_get_product(AES_DUAL_10MO_VARIABLE);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metadata);
-                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
-                        break;
-
-                    default:
-                        $variation = wc_get_product(AES_DUAL_DEFAULT_VARIABLE);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metadata);
-                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
-                        break;
+                $id_bitrix = $_GET['idbitrix'];
+                if (isset($id_bitrix)) {
+                    setcookie('id_bitrix', $id_bitrix, time() + 3600);
                 }
 
-            }else if($program == 'psp'){
-                $woocommerce->cart->add_to_cart(102,1);
-            }else if($program == 'aes_psp'){
-                $woocommerce->cart->add_to_cart(103,1);
-                $woocommerce->cart->add_to_cart(102,1);
-            }
+                if (!empty($institute_id) && $institute_id != 'other') {
+                    $institute = get_institute_details($institute_id);
+                    $name_institute = strtolower($institute->name);
+                    setcookie('institute_id', ucwords($institute_id), time() + 3600);
+                }
+                break;
+            case 'new_applicant_others':
+                setcookie('is_older', '', time());
+                setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 3600);
+                setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 3600);
+                setcookie('email_partner', ucwords(get_user_meta(get_current_user_id(), 'billing_email', true)), time() + 3600);
+                setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 3600);
+                setcookie('billing_city', ucwords(get_user_meta(get_current_user_id(), 'billing_city', true)), time() + 3600);
+                setcookie('billing_country', get_user_meta(get_current_user_id(), 'billing_country', true), time() + 3600);
+                setcookie('is_older', true, time() + 3600);
+                setcookie('phone_student', $number_phone, time() + 3600);
+                setcookie('id_document', $id_document, time() + 3600);
+                setcookie('document_type', $document_type, time() + 3600);
+                setcookie('email_student', $email_student, time() + 3600);
+                setcookie('name_student', ucwords($name), time() + 3600);
+                setcookie('middle_name_student', ucwords($middle_name_student), time() + 3600);
+                setcookie('last_name_student', ucwords($last_name), time() + 3600);
+                setcookie('middle_last_name_student', ucwords($middle_last_name_student), time() + 3600);
+                setcookie('name_institute', ucwords($name_institute), time() + 3600);
+                setcookie('birth_date', $birth_date, time() + 3600);
+                setcookie('initial_grade', $grade, time() + 3600);
+                setcookie('program_id', $program, time() + 3600);
 
-            wp_redirect(wc_get_checkout_url());
-            exit;
-        };
-
-        if($_GET['action'] == 'new_applicant_me'){
-
-            global $woocommerce;
-
-            setcookie('is_older','',time());
-
-            $name = strtolower(get_user_meta(get_current_user_id(),'first_name',true));
-            $document_type = $_POST['document_type'];
-            $id_document = $_POST['id_document'];
-            $middle_name_student = '';
-            $last_name = strtolower(get_user_meta(get_current_user_id(),'last_name',true));
-            $middle_last_name_student = '';
-            $number_phone = get_user_meta(get_current_user_id(),'billing_phone',true);
-            $email_student = strtolower(get_user_meta(get_current_user_id(),'billing_email',true));
-            $birth_date = $_POST['birth_date_student'];
-            $program = $_POST['program'];
-            $grade = $_POST['grade'];
-            $name_institute = strtolower($_POST['name_institute']);
-            $institute_id = $_POST['institute_id'];
-
-            if(!empty($institute_id) && $institute_id != 'other'){
-
-                $institute = get_institute_details($institute_id);
-                $name_institute = strtolower($institute->name);
-
-                setcookie('institute_id',ucwords($institute_id),time() + 3600);
-            }
-
-            // for the parent, use the actual user logged
-            setcookie('agent_name',ucwords(get_user_meta(get_current_user_id(),'first_name',true)),time() + 3600);
-            setcookie('agent_last_name',ucwords(get_user_meta(get_current_user_id(),'last_name',true)),time() + 3600);
-            setcookie('email_partner',ucwords(get_user_meta(get_current_user_id(),'billing_email',true)),time() + 3600);
-            setcookie('number_partner',get_user_meta(get_current_user_id(),'billing_phone',true),time() + 3600);
-            setcookie('billing_city',ucwords(get_user_meta(get_current_user_id(),'billing_city',true)),time() + 3600);
-            setcookie('billing_country',get_user_meta(get_current_user_id(),'billing_country',true),time() + 3600);
-            setcookie('is_older',true,time() + 3600);
-
-            /* set cookie */
-            setcookie('phone_student',$number_phone,time() + 3600);
-            setcookie('id_document',$id_document,time() + 3600);
-            setcookie('document_type',$document_type,time() + 3600);
-            setcookie('email_student',$email_student,time() + 3600);
-            setcookie('name_student',ucwords($name),time() + 3600);
-            setcookie('middle_name_student',ucwords($middle_name_student),time() + 3600);
-            setcookie('last_name_student',ucwords($last_name),time() + 3600);
-            setcookie('middle_last_name_student',ucwords($middle_last_name_student),time() + 3600);
-            setcookie('name_institute',ucwords($name_institute),time() + 3600);
-            setcookie('birth_date',$birth_date,time() + 3600);
-            setcookie('initial_grade',$grade,time() + 3600);
-            setcookie('program_id',$program,time() + 3600);
-           
-            //clear cart
-            $woocommerce->cart->empty_cart(); 
-
-            //add program to cart
-            if($program == 'aes'){
-                switch ($grade) {
-                    case '1':
-                        $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metadata);
-                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
-                        break;
-
-                    case '2':
-                        $variation = wc_get_product(AES_DUAL_10MO_VARIABLE);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metadata);
-                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
-                        break;
-
-                    default:
-                        $variation = wc_get_product(AES_DUAL_DEFAULT_VARIABLE);
-                        $metadata = $variation->get_meta_data();
-                        $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metadata);
-                        $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
-                        break;
+                $id_bitrix = $_GET['idbitrix'];
+                if (isset($id_bitrix)) {
+                    setcookie('id_bitrix', $id_bitrix, time() + 3600);
                 }
 
-            }else if($program == 'psp'){
-                $woocommerce->cart->add_to_cart(102,1);
-            }else if($program == 'aes_psp'){
-                $woocommerce->cart->add_to_cart(103,1);
-                $woocommerce->cart->add_to_cart(102,1);
+                if (!empty($institute_id) && $institute_id != 'other') {
+                    $institute = get_institute_details($institute_id);
+                    $name_institute = strtolower($institute->name);
+                    setcookie('institute_id', ucwords($institute_id), time() + 3600);
+                }
+                break;
+            case 'new_applicant_me':
+                setcookie('is_older', '', time());
+                setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 3600);
+                setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 3600);
+                setcookie('email_partner', ucwords(get_user_meta(get_current_user_id(), 'billing_email', true)), time() + 3600);
+                setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 3600);
+                setcookie('billing_city', ucwords(get_user_meta(get_current_user_id(), 'billing_city', true)), time() + 3600);
+                setcookie('billing_country', get_user_meta(get_current_user_id(), 'billing_country', true), time() + 3600);
+                setcookie('is_older', true, time() + 3600);
+                setcookie('phone_student', $number_phone, time() + 3600);
+                setcookie('id_document', $id_document, time() + 3600);
+                setcookie('document_type', $document_type, time() + 3600);
+                setcookie('email_student', $email_student, time() + 3600);
+                setcookie('name_student', ucwords($name), time() + 3600);
+                setcookie('middle_name_student', ucwords($middle_name_student), time() + 3600);
+                setcookie('last_name_student', ucwords($last_name), time() + 3600);
+                setcookie('middle_last_name_student', ucwords($middle_last_name_student), time() + 3600);
+                setcookie('name_institute', ucwords($name_institute), time() + 3600);
+                setcookie('birth_date', $birth_date, time() + 3600);
+                setcookie('initial_grade', $grade, time() + 3600);
+                setcookie('program_id', $program, time() + 3600);
+
+                $id_bitrix = $_GET['idbitrix'];
+                if (isset($id_bitrix)) {
+                    setcookie('id_bitrix', $id_bitrix, time() + 3600);
+                }
+
+                if (!empty($institute_id) && $institute_id != 'other') {
+                    $institute = get_institute_details($institute_id);
+                    $name_institute = strtolower($institute->name);
+                    setcookie('institute_id', ucwords($institute_id), time() + 3600);
+                }
+                break;
+        }
+
+        //clear cart
+        $woocommerce->cart->empty_cart();
+
+        //add program to cart
+        if ($program == 'aes') {
+            switch ($grade) {
+                case '1':
+                    $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
+                    $metadata = $variation->get_meta_data();
+                    $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metadata);
+                    $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                    break;
+
+                case '2':
+                    $variation = wc_get_product(AES_DUAL_10MO_VARIABLE);
+                    $metadata = $variation->get_meta_data();
+                    $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metadata);
+                    $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                    break;
+
+                default:
+                    $variation = wc_get_product(AES_DUAL_DEFAULT_VARIABLE);
+                    $metadata = $variation->get_meta_data();
+                    $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metadata);
+                    $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                    break;
             }
 
-            wp_redirect(wc_get_checkout_url());
-            exit;
-        };
+        } else if ($program == 'psp') {
+            $woocommerce->cart->add_to_cart(102, 1);
+        } else if ($program == 'aes_psp') {
+            $woocommerce->cart->add_to_cart(103, 1);
+            $woocommerce->cart->add_to_cart(102, 1);
+        }
+
+        wp_redirect(wc_get_checkout_url());
+        exit;
 
     }
 }
 
-add_action('wp_loaded','save_student');
+add_action('wp_loaded', 'save_student');
 
-add_action('woocommerce_account_student_endpoint', function(){
+add_action('woocommerce_account_student_endpoint', function () {
 
     global $current_user;
     $roles = $current_user->roles;
 
-    if(!in_array('parent',$roles) && in_array('student',$roles)){
-        $student_id = get_user_meta(get_current_user_id(),'student_id',true);
-        if($student_id){
+    if (!in_array('parent', $roles) && in_array('student', $roles)) {
+        $student_id = get_user_meta(get_current_user_id(), 'student_id', true);
+        if ($student_id) {
             $student = get_student_from_id($student_id);
-        }else{
+        } else {
             $student = get_student(get_current_user_id());
         }
     }
 
-    if (in_array('parent',$roles) && in_array('student',$roles) || in_array('parent',$roles) && !in_array('student',$roles)) {
+    if (in_array('parent', $roles) && in_array('student', $roles) || in_array('parent', $roles) && !in_array('student', $roles)) {
         $student = get_student(get_current_user_id());
     }
 
 
-    include(plugin_dir_path(__FILE__).'templates/student.php');
+    include(plugin_dir_path(__FILE__) . 'templates/student.php');
 });
 
-add_action('woocommerce_account_student-details_endpoint', function(){
+add_action('woocommerce_account_student-details_endpoint', function () {
 
     $student = get_student_detail($_GET['student']);
-    include(plugin_dir_path(__FILE__).'templates/student-details.php');
+    include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
 });
 
-function get_student($partner_id){
+function get_student($partner_id)
+{
 
     global $wpdb;
-    $table_students = $wpdb->prefix.'students';
+    $table_students = $wpdb->prefix . 'students';
     $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id={$partner_id}");
     return $data;
-}  
+}
 
-function get_student_from_id($student_id){
+function get_student_from_id($student_id)
+{
 
     global $wpdb;
-    $table_students = $wpdb->prefix.'students';
+    $table_students = $wpdb->prefix . 'students';
     $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id={$student_id}");
     return $data;
 }
 
-function insert_student($customer_id){
+function insert_student($customer_id)
+{
 
     global $wpdb;
-    $table_students = $wpdb->prefix.'students';
+    $table_students = $wpdb->prefix . 'students';
 
     global $wpdb;
-    $table_academic_periods = $wpdb->prefix.'academic_periods';
+    $table_academic_periods = $wpdb->prefix . 'academic_periods';
     $query = $wpdb->prepare("SELECT code FROM " . $table_academic_periods . "
                              WHERE status_id = %d 
                              ORDER BY created_at DESC LIMIT 1", 1);
     $result = $wpdb->get_var($query);
 
-    $code = $result ? $result :  AES_PERIOD;
-    $wpdb->insert($table_students,[
+    $code = $result ? $result : AES_PERIOD;
+    $wpdb->insert($table_students, [
         'name' => $_COOKIE['name_student'],
         'type_document' => $_COOKIE['document_type'],
         'id_document' => $_COOKIE['id_document'],
@@ -362,12 +263,12 @@ function insert_student($customer_id){
         'middle_name' => $_COOKIE['middle_name_student'],
         'last_name' => $_COOKIE['last_name_student'],
         'middle_last_name' => $_COOKIE['middle_last_name_student'],
-        'birth_date' => date_i18n('Y-m-d',strtotime($_COOKIE['birth_date'])),
+        'birth_date' => date_i18n('Y-m-d', strtotime($_COOKIE['birth_date'])),
         'grade_id' => $_COOKIE['initial_grade'],
         'name_institute' => $_COOKIE['name_institute'],
         'institute_id' => $_COOKIE['institute_id'],
         'program_id' => $_COOKIE['program_id'],
-        'partner_id' => $customer_id, 
+        'partner_id' => $customer_id,
         'phone' => $_COOKIE['phone_student'],
         'email' => $_COOKIE['email_student'],
         'status_id' => 0,
@@ -381,62 +282,65 @@ function insert_student($customer_id){
     return $student_id;
 }
 
-function create_user_student($student_id){
+function create_user_student($student_id)
+{
 
     global $wpdb;
-    $table_students = $wpdb->prefix.'students';
+    $table_students = $wpdb->prefix . 'students';
 
     $data = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
 
-    if($data){
+    if ($data) {
 
-        $user = get_user_by('email',$data->email);
+        $user = get_user_by('email', $data->email);
 
-        if(!$user){
-            $user_id = wp_create_user($data->email,generate_password_user(),$data->email);
+        if (!$user) {
+            $user_id = wp_create_user($data->email, generate_password_user(), $data->email);
             $user = new WP_User($user_id);
-            $user->set_role( 'student' );
+            $user->set_role('student');
 
-            update_user_meta($user_id,'first_name',$data->name);
-            update_user_meta($user_id,'last_name',$data->last_name);
-            update_user_meta($user_id,'billing_phone',$data->phone);
-            update_user_meta($user_id,'billing_email',$data->email);
-            update_user_meta($user_id,'birth_date',$data->birth_date);
-            update_user_meta($user_id,'student_id',$student_id);
-            wp_new_user_notification($user_id, null, 'both' );
+            update_user_meta($user_id, 'first_name', $data->name);
+            update_user_meta($user_id, 'last_name', $data->last_name);
+            update_user_meta($user_id, 'billing_phone', $data->phone);
+            update_user_meta($user_id, 'billing_email', $data->email);
+            update_user_meta($user_id, 'birth_date', $data->birth_date);
+            update_user_meta($user_id, 'student_id', $student_id);
+            wp_new_user_notification($user_id, null, 'both');
             return $user_id;
         } else {
-            $user->add_role( 'student' );
+            $user->add_role('student');
         }
 
-        update_user_meta($user->ID,'student_id',$student_id);
+        update_user_meta($user->ID, 'student_id', $student_id);
 
         return $user->ID;
     }
 }
 
-function update_status_student($student_id,$status_id){
+function update_status_student($student_id, $status_id)
+{
     global $wpdb;
-    $table_students = $wpdb->prefix.'students';
-    $wpdb->update($table_students,[
+    $table_students = $wpdb->prefix . 'students';
+    $wpdb->update($table_students, [
         'status_id' => $status_id,
         'updated_at' => date('Y-m-d H:i:s')
-    ],['id' => $student_id]);
+    ], ['id' => $student_id]);
 }
 
-function insert_register_documents($student_id,$grade_id){
+function insert_register_documents($student_id, $grade_id)
+{
 
     global $wpdb;
-    $table_student_documents = $wpdb->prefix.'student_documents';
-    $table_documents = $wpdb->prefix.'documents'; 
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+    $table_documents = $wpdb->prefix . 'documents';
 
     $documents = $wpdb->get_results("SELECT * FROM {$table_documents} WHERE grade_id={$grade_id}");
 
-    if($documents){
+    if ($documents) {
 
-        foreach($documents as $document){
+        foreach ($documents as $document) {
 
-            $wpdb->insert($table_student_documents,[
+            $wpdb->insert($table_student_documents, [
                 'student_id' => $student_id,
                 'document_id' => $document->name,
                 'is_required' => $document->is_required,
@@ -447,43 +351,47 @@ function insert_register_documents($student_id,$grade_id){
     }
 }
 
-function get_documents($student_id){
+function get_documents($student_id)
+{
 
     global $wpdb;
-    $table_student_documents = $wpdb->prefix.'student_documents';
+    $table_student_documents = $wpdb->prefix . 'student_documents';
 
     $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
     return $documents;
 }
 
-function get_name_grade($grade_id){
+function get_name_grade($grade_id)
+{
 
-    $grade = match($grade_id){
-        '1' => __('Lower','aes'),
-        '2' => __('Middle','aes'),
-        '3' => __('Upper','aes'),
-        '4' => __('Graduate','aes'),
+    $grade = match ($grade_id) {
+        '1' => __('Lower', 'aes'),
+        '2' => __('Middle', 'aes'),
+        '3' => __('Upper', 'aes'),
+        '4' => __('Graduate', 'aes'),
         default => ''
     };
 
     return $grade;
 }
 
-function get_name_program($program_id){
+function get_name_program($program_id)
+{
 
-    $program = match($program_id){
-        'aes' => __('AES (Dual Diploma)','aes'),
+    $program = match ($program_id) {
+        'aes' => __('AES (Dual Diploma)', 'aes'),
         default => "",
     };
 
     return $program;
 }
 
-function get_gender($gender_id){
+function get_gender($gender_id)
+{
 
-    $gender = match($gender_id){
-        'male' => __('Male','aes'),
-        'female' => __('Female','aes'),
+    $gender = match ($gender_id) {
+        'male' => __('Male', 'aes'),
+        'female' => __('Female', 'aes'),
         default => "",
     };
 
@@ -491,16 +399,17 @@ function get_gender($gender_id){
 
 }
 
-function save_student_details(){
+function save_student_details()
+{
 
-    if(isset($_POST['action']) && !empty($_POST['action'])){
+    if (isset($_POST['action']) && !empty($_POST['action'])) {
 
 
-        if($_POST['action'] == 'save_student_details'){
+        if ($_POST['action'] == 'save_student_details') {
 
             global $wpdb;
-            $table_students = $wpdb->prefix.'students';
-           
+            $table_students = $wpdb->prefix . 'students';
+
             $student_id = $_POST['student_id'];
             $document_type = $_POST['document_type'];
             $id_document = $_POST['id_document'];
@@ -515,7 +424,7 @@ function save_student_details(){
             $city = $_POST['city'];
             $postal_code = $_POST['postal_code'];
 
-            $wpdb->update($table_students,[
+            $wpdb->update($table_students, [
                 'type_document' => $document_type,
                 'id_document' => $id_document,
                 'name' => $first_name,
@@ -528,55 +437,55 @@ function save_student_details(){
                 'country' => $country,
                 'city' => $city,
                 'postal_code' => $postal_code,
-            ],[
+            ], [
                 'id' => $student_id
             ]);
 
-        
-            wc_add_notice(__( 'information changed successfully.', 'aes' ), 'success' );
-            wp_redirect(wc_get_account_endpoint_url('student-details').'/?student='.$student_id);
+
+            wc_add_notice(__('information changed successfully.', 'aes'), 'success');
+            wp_redirect(wc_get_account_endpoint_url('student-details') . '/?student=' . $student_id);
             exit;
-            
+
         }
 
-        if($_POST['action'] == 'save_password_moodle'){
+        if ($_POST['action'] == 'save_password_moodle') {
 
             global $wpdb;
-            $table_students = $wpdb->prefix.'students';
+            $table_students = $wpdb->prefix . 'students';
 
             $moodle_password = $_POST['password'];
             $student_id = $_POST['student_id'];
-            $wpdb->update($table_students,['moodle_password' => $moodle_password],['id' => $student_id]);
+            $wpdb->update($table_students, ['moodle_password' => $moodle_password], ['id' => $student_id]);
             change_password_user_moodle($student_id);
-            wc_add_notice(__( 'information changed successfully.', 'aes' ), 'success' );
-            wp_redirect(wc_get_account_endpoint_url('student-details').'/?student='.$student_id);
+            wc_add_notice(__('information changed successfully.', 'aes'), 'success');
+            wp_redirect(wc_get_account_endpoint_url('student-details') . '/?student=' . $student_id);
             exit;
         }
     }
 
-    if(isset($_GET['action']) && !empty($_GET['action'])){
+    if (isset($_GET['action']) && !empty($_GET['action'])) {
 
-        if($_GET['action'] == 'access_moodle_url'){
+        if ($_GET['action'] == 'access_moodle_url') {
 
             global $wpdb, $current_user;
-            $table_students = $wpdb->prefix.'students';
-            $student_id = $_GET['student_id']; 
+            $table_students = $wpdb->prefix . 'students';
+            $student_id = $_GET['student_id'];
             $data = $wpdb->get_row("SELECT * FROM {$table_students} where id={$student_id}");
 
             if ($current_user && ($current_user->user_email == $data->email)) {
 
-                if($data){
-    
+                if ($data) {
+
                     $data_url = get_url_login($data->email);
-                 
-                    if(isset($data_url) && !empty($data_url)){
+
+                    if (isset($data_url) && !empty($data_url)) {
                         nocache_headers();
                         wp_redirect($data_url);
-                    }else{
+                    } else {
                         nocache_headers();
                         wp_redirect(get_option('moodle_url'));
                     }
-    
+
                     exit;
                 }
             }
@@ -584,31 +493,32 @@ function save_student_details(){
     }
 }
 
-add_action('wp_loaded','save_student_details');
+add_action('wp_loaded', 'save_student_details');
 
-function view_access_classroom(){
+function view_access_classroom()
+{
 
-    global $current_user,$wpdb;
-    $table_students = $wpdb->prefix.'students';
+    global $current_user, $wpdb;
+    $table_students = $wpdb->prefix . 'students';
     $roles = $current_user->roles;
 
-    if(!in_array('student',$roles)){
+    if (!in_array('student', $roles)) {
         return;
     }
 
-    $student_id = get_user_meta($current_user->ID,'student_id',true);
+    $student_id = get_user_meta($current_user->ID, 'student_id', true);
 
-    if(!$student_id){
+    if (!$student_id) {
         $data = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
-    }else{
+    } else {
         $data = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
     }
 
-    if(!$data->moodle_student_id){
+    if (!$data->moodle_student_id) {
         return;
     }
 
-    include(plugin_dir_path(__FILE__).'templates/student-access-classroom.php');
+    include(plugin_dir_path(__FILE__) . 'templates/student-access-classroom.php');
 }
 
-add_action('woocommerce_account_dashboard','view_access_classroom');
+add_action('woocommerce_account_dashboard', 'view_access_classroom');

@@ -1286,7 +1286,7 @@ function update_usernames_moodle(){
     // solo los estudiantes nuevos
     global $wpdb;
     $table_students = $wpdb->prefix.'students';
-    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id=66");
+    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id=79");
 
     $moodle_url = get_option('moodle_url');
     $moodle_token = get_option('moodle_token');
@@ -1295,30 +1295,23 @@ function update_usernames_moodle(){
 
         $users = [];
         foreach ($students as $key => $data_student) {
-            if (isset($data_student->moodle_student_id)) {
-                $moodle_student_id = $data_student->moodle_student_id;
-                $id_document = $data_student->id_document;
-    
-                if(!empty($moodle_student_id)){
-                    
-                    array_push($users, [
-                        'id' => $moodle_student_id,
-                        'username' => $id_document,
-                    ]);
-    
-                }
+            $moodle_student_id = $data_student->moodle_student_id;
+            $id_document = $data_student->id_document;
+
+            if(!empty($moodle_student_id)){
+                
+                array_push($users, [
+                    'id' => $moodle_student_id,
+                    'username' => $id_document,
+                ]);
+
             }
         }
 
         $users_to_send = ['users' => $users];
-        if (sizeof($users_to_send['users']) > 0) {
-            $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php',$moodle_token);
-            $update_user = $MoodleRest->request('core_user_update_users',$users_to_send,MoodleRest::METHOD_POST);
-            return $update_user;
-        } else {
-            return 'no users to send';
-        }
-        
+        $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php',$moodle_token);
+        $update_user = $MoodleRest->request('core_user_update_users',$users_to_send,MoodleRest::METHOD_POST);
+        return $update_user;
     }
 }
 

@@ -126,18 +126,18 @@ if (is_user_logged_in()) {
             <div class="grid grid-cols-12 gap-4">
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
-                    <select value="<?php echo get_user_meta(get_current_user_id(), 'type_document', true) ?>" name="document_type"
-                        autocomplete="off" oninput="sendAjaxIdDocument()" required>
+                    <select value="<?php echo get_user_meta(get_current_user_id(), 'type_document', true) ?>"
+                        name="document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
                         <option value="passport"><?= __('Passport', 'aes'); ?></option>
                         <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
                         <option value="ssn"><?= __('SSN', 'aes'); ?></option>
                     </select>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                    <label for="id_document"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
+                    <label for="id_document_parent"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
                     <input value="<?php echo get_user_meta(get_current_user_id(), 'id_document', true) ?>"
-                        class="formdata capitalize" autocomplete="off" type="text" id="id_document" name="id_document"
-                        oninput="sendAjaxIdDocument()" required>
+                        class="formdata capitalize" autocomplete="off" type="text" id="id_document_parent"
+                        name="id_document_parent" oninput="sendAjaxIdDocument()" required>
                     <span id="exisstudentid"
                         style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
                 </div>
@@ -321,6 +321,7 @@ if (is_user_logged_in()) {
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
                 <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
+                    <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                     <option value="passport"><?= __('Passport', 'aes'); ?></option>
                     <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
                     <option value="ssn"><?= __('SSN', 'aes'); ?></option>
@@ -363,18 +364,23 @@ if (is_user_logged_in()) {
                     style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The student cannot share the same email as the representative', 'aes'); ?></span>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="etnia"><?= __('Etnia', 'aes'); ?><span class="required">*</span></label>
-                <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
-                    <option value="passport"><?= __('Passport', 'aes'); ?></option>
-                    <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
-                    <option value="ssn"><?= __('SSN', 'aes'); ?></option>
+                <label for="etnia"><?= __('Ethnicity', 'aes'); ?><span class="required">*</span></label>
+                <select class="form-control" id="etnia" required name="etnia">
+                    <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                    <option value="1">AFRICAN AMERICAN</option>
+                    <option value="2">ASIAN</option>
+                    <option value="3">CAUCASIAN</option>
+                    <option value="4">HISPANIC</option>
+                    <option value="5">NATIVE AMERICAN</option>
+                    <option value="6">OTHER</option>
+                    <option value="7">CHOOSE NOT TO RESPOND</option>
                 </select>
             </div>
 
 
             <!-- DATOS DEL PADRE -->
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
-                <div class="subtitle text-align-center"><?= __('Parent details','aes'); ?></div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title">
+                <div class="subtitle text-align-center"><?= __('Parent details', 'aes'); ?></div>
             </div>
             <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date_parent"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
@@ -383,18 +389,16 @@ if (is_user_logged_in()) {
             </div>
             <div id="parent_document_type_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
-                <select name="document_type_parent" autocomplete="off" oninput="sendAjaxIdDocument()" required>
+                <select name="document_type_parent" autocomplete="off" id="parent_document_type" required>
+                    <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                     <option value="passport"><?= __('Passport', 'aes'); ?></option>
                     <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
                     <option value="ssn"><?= __('SSN', 'aes'); ?></option>
                 </select>
             </div>
             <div id="parent_id_document_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="birth_date"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
-                <input class="formdata capitalize" autocomplete="off" type="text" id="id_document" name="id_document"
-                    oninput="sendAjaxIdDocument()" required>
-                <span id="exisstudentid"
-                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
+                <label for="id_document_parent"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
+                <input class="formdata capitalize" autocomplete="off" type="text" id="id_document_parent" name="id_document_parent" required>
             </div>
             <div id="parent_name_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="agent_name"><?= __('Parent\'s name', 'aes'); ?><span class="required">*</span></label>
@@ -406,7 +410,7 @@ if (is_user_logged_in()) {
                 <input class="formdata capitalize" type="text" name="agent_last_name" autocomplete="off"
                     id="agent_last_name" required>
             </div>
-            <div id="parent-country-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <div id="parent-phone-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="phone"><?= __('Parent\'s contact number', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata" type="tel" id="number_partner" autocomplete="off" id="number_partner"
                     name="number_partner" required>
@@ -423,6 +427,7 @@ if (is_user_logged_in()) {
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="country"><?= __('Country', 'form-plugin'); ?><span class="required">*</span></label>
                 <select name="country" autocomplete="off" required>
+                    <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                     <?php foreach ($countries as $key => $country) { ?>
                         <option value="<?= $key ?>"><?= $country; ?></option>
                     <?php } ?>
@@ -435,11 +440,12 @@ if (is_user_logged_in()) {
 
             <!-- DATOS DEL GRADO -->
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
-                <div class="subtitle text-align-center"><?= __('Degree details','aes'); ?></div>
+                <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="grade"><?= __('Student grade', 'aes'); ?><span class="required">*</span></label>
                 <select name="grade" autocomplete="off" required>
+                    <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                     <?php foreach ($grades as $grade): ?>
                         <option value="<?= $grade->id; ?>"><?= $grade->name; ?></option>
                     <?php endforeach; ?>
@@ -448,6 +454,7 @@ if (is_user_logged_in()) {
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="program"><?= __('Program of your interest', 'aes'); ?><span class="required">*</span></label>
                 <select name="program" autocomplete="off" required>
+                    <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                     <option value="aes"><?= __('Dual diploma', 'aes'); ?></option>
                 </select>
             </div>
@@ -455,7 +462,7 @@ if (is_user_logged_in()) {
                 <label for="name_institute"><?= __('Name of School or Institution with Agreement', 'aes'); ?><span
                         id="institute_id_required" class="required">*</span></label>
                 <select name="institute_id" autocomplete="off" id="institute_id" required>
-                    <option value=""><?= __('Select a institute', 'aes'); ?></option>
+                    <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                     <?php foreach ($institutes as $institute): ?>
                         <option value="<?= $institute->id; ?>"><?= $institute->name; ?></option>
                     <?php endforeach; ?>

@@ -145,8 +145,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   fileInputs.forEach((fileInput, index) => {
     fileInput.addEventListener("change", () => {
-      const fileName = fileInput.files[0].name;
-      fileLabels[index].textContent = fileName ? fileName : "Select file";
+      if (fileInput.files[0].type != 'application/pdf') {
+        alert('Only PDF files allowed');
+        fileInput.value = '';
+        fileLabels[index].textContent = 'Select file';
+      } else {
+        const fileName = fileInput.files[0].name;
+        fileLabels[index].textContent = fileName ? fileName : "Select file";
+      }
     });
   });
 });
@@ -414,18 +420,27 @@ if (document.getElementById("birth_date_student")) {
               buttonSave.disabled = false;
             }
           }
+
+          var parentTitle = document.getElementById("parent-title");
+          if (parentTitle) {
+            parentTitle.style.display = "none";
+          }
+
           var parentBirthDateField = document.getElementById("parent_birth_date_field");
           if (parentBirthDateField) {
             parentBirthDateField.style.display = "none";
           }
+
           var parentDocumentTypeField = document.getElementById("parent_document_type_field");
           if (parentDocumentTypeField) {
             parentDocumentTypeField.style.display = "none";
           }
+
           var parentIdDocumentField = document.getElementById("parent_id_document_field");
           if (parentIdDocumentField) {
             parentIdDocumentField.style.display = "none";
           }
+
           var parentNameField = document.getElementById("parent_name_field");
           if (parentNameField) {
             parentNameField.style.display = "none";
@@ -438,16 +453,31 @@ if (document.getElementById("birth_date_student")) {
             parentLastNameField.style.display = "none";
           }
 
-          var parentCountryField = document.getElementById(
-            "parent-country-field"
+          var parentPhoneField = document.getElementById(
+            "parent-phone-field"
           );
-          if (parentCountryField) {
-            parentCountryField.style.display = "none";
+          if (parentPhoneField) {
+            parentPhoneField.style.display = "none";
           }
 
           var parentEmailField = document.getElementById("parent-email-field");
           if (parentEmailField) {
             parentEmailField.style.display = "none";
+          }
+
+          var parentDocumentType = document.getElementById("parent_document_type");
+          if (parentDocumentType) {
+            parentDocumentType.required = false;
+          }
+
+          var birthDateParent = document.getElementById("birth_date_parent");
+          if (birthDateParent) {
+            birthDateParent.required = false;
+          }
+
+          var parentIdDocument = document.getElementById("id_document_parent");
+          if (parentIdDocument) {
+            parentIdDocument.required = false;
           }
 
           var agentName = document.getElementById("agent_name");
@@ -494,61 +524,85 @@ if (document.getElementById("birth_date_student")) {
             buttonSave.disabled = false;
           }
         }
-        var parentBirthDateField = document.getElementById("parent_birth_date_field");
-        if (parentBirthDateField) {
-          parentBirthDateField.style.display = "block";
-        }
-        var parentDocumentTypeField = document.getElementById("parent_document_type_field");
-        if (parentDocumentTypeField) {
-          parentDocumentTypeField.style.display = "block";
-        }
-        var parentIdDocumentField = document.getElementById("parent_id_document_field");
-        if (parentIdDocumentField) {
-          parentIdDocumentField.style.display = "block";
-        }
-        var parentNameField = document.getElementById("parent_name_field");
-        if (parentNameField) {
-          parentNameField.style.display = "block";
-        }
 
-        var parentLastNameField = document.getElementById(
-          "parent-lastname-field"
-        );
-        if (parentLastNameField) {
-          parentLastNameField.style.display = "block";
-        }
+        var parentTitle = document.getElementById("parent-title");
+          if (parentTitle) {
+            parentTitle.style.display = "block";
+          }
 
-        var parentCountryField = document.getElementById(
-          "parent-country-field"
-        );
-        if (parentCountryField) {
-          parentCountryField.style.display = "block";
-        }
+          var parentBirthDateField = document.getElementById("parent_birth_date_field");
+          if (parentBirthDateField) {
+            parentBirthDateField.style.display = "block";
+          }
 
-        var parentEmailField = document.getElementById("parent-email-field");
-        if (parentEmailField) {
-          parentEmailField.style.display = "block";
-        }
+          var parentDocumentTypeField = document.getElementById("parent_document_type_field");
+          if (parentDocumentTypeField) {
+            parentDocumentTypeField.style.display = "block";
+          }
 
-        var agentName = document.getElementById("agent_name");
-        if (agentName) {
-          agentName.required = true;
-        }
+          var parentIdDocumentField = document.getElementById("parent_id_document_field");
+          if (parentIdDocumentField) {
+            parentIdDocumentField.style.display = "block";
+          }
 
-        var agentLastName = document.getElementById("agent_last_name");
-        if (agentLastName) {
-          agentLastName.required = true;
-        }
+          var parentNameField = document.getElementById("parent_name_field");
+          if (parentNameField) {
+            parentNameField.style.display = "block";
+          }
 
-        var numberPartner = document.getElementById("number_partner");
-        if (numberPartner) {
-          numberPartner.required = true;
-        }
+          var parentLastNameField = document.getElementById(
+            "parent-lastname-field"
+          );
+          if (parentLastNameField) {
+            parentLastNameField.style.display = "block";
+          }
 
-        var emailPartner = document.getElementById("email_partner");
-        if (emailPartner) {
-          emailPartner.required = true;
-        }
+          var parentPhoneField = document.getElementById(
+            "parent-phone-field"
+          );
+          if (parentPhoneField) {
+            parentPhoneField.style.display = "block";
+          }
+
+          var parentEmailField = document.getElementById("parent-email-field");
+          if (parentEmailField) {
+            parentEmailField.style.display = "block";
+          }
+
+          var parentDocumentType = document.getElementById("parent_document_type");
+          if (parentDocumentType) {
+            parentDocumentType.required = true;
+          }
+
+          var birthDateParent = document.getElementById("birth_date_parent");
+          if (birthDateParent) {
+            birthDateParent.required = true;
+          }
+
+          var parentIdDocument = document.getElementById("id_document_parent");
+          if (parentIdDocument) {
+            parentIdDocument.required = true;
+          }
+
+          var agentName = document.getElementById("agent_name");
+          if (agentName) {
+            agentName.required = true;
+          }
+
+          var agentLastName = document.getElementById("agent_last_name");
+          if (agentLastName) {
+            agentLastName.required = true;
+          }
+
+          var numberPartner = document.getElementById("number_partner");
+          if (numberPartner) {
+            numberPartner.required = true;
+          }
+
+          var emailPartner = document.getElementById("email_partner");
+          if (emailPartner) {
+            emailPartner.required = true;
+          }
       }
     });
 }
@@ -558,6 +612,14 @@ function diff_years(dt2, dt1) {
   diff /= 60 * 60 * 24;
   return Math.abs(Math.floor(diff / 365.25)); // Trunca hacia abajo
   // return Math.abs(Math.ceil(diff / 365.25)); // Trunca hacia arriba
+}
+
+if (document.getElementById("birth_date_parent")) {
+  flatpickr(document.getElementById("birth_date_parent"), {
+    dateFormat: "m/d/Y",
+    disableMobile: "false",
+    maxDate: "today",
+  });
 }
 
 function getCookie(name) {
