@@ -308,6 +308,8 @@ if (is_user_logged_in()) {
                 <div class="loader"></div>
             </div>
         </div>
+
+        <!-- DATOS DEL ESTUDIANTE -->
         <div class="grid grid-cols-12 gap-4">
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
@@ -359,6 +361,20 @@ if (is_user_logged_in()) {
                     style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
                 <span id="sameemailstudent"
                     style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The student cannot share the same email as the representative', 'aes'); ?></span>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="etnia"><?= __('Etnia', 'aes'); ?><span class="required">*</span></label>
+                <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
+                    <option value="passport"><?= __('Passport', 'aes'); ?></option>
+                    <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
+                    <option value="ssn"><?= __('SSN', 'aes'); ?></option>
+                </select>
+            </div>
+
+
+            <!-- DATOS DEL PADRE -->
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
+                <div class="subtitle text-align-center"><?= __('Parent details','aes'); ?></div>
             </div>
             <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date_parent"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
@@ -415,6 +431,11 @@ if (is_user_logged_in()) {
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="city"><?= __('City', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata" type="text" name="city" autocomplete="off" required>
+            </div>
+
+            <!-- DATOS DEL GRADO -->
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
+                <div class="subtitle text-align-center"><?= __('Degree details','aes'); ?></div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="grade"><?= __('Student grade', 'aes'); ?><span class="required">*</span></label>
