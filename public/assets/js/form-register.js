@@ -145,8 +145,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   fileInputs.forEach((fileInput, index) => {
     fileInput.addEventListener("change", () => {
-      const fileName = fileInput.files[0].name;
-      fileLabels[index].textContent = fileName ? fileName : "Select file";
+      if (fileInput.files[0].type != 'application/pdf') {
+        alert('Only PDF files allowed');
+        fileInput.value = '';
+        fileLabels[index].textContent = 'Select file';
+      } else {
+        const fileName = fileInput.files[0].name;
+        fileLabels[index].textContent = fileName ? fileName : "Select file";
+      }
     });
   });
 });
