@@ -1281,130 +1281,17 @@ function student_password_Reset($user)
 }
 add_action('password_reset', 'student_password_Reset');
 
-function reload_moodle_users()
+function wp_api()
 {
-    register_rest_route('students', '/mooodle', array(
+    register_rest_route('wp', '/api', array(
         'methods' => 'GET',
-        'callback' => 'students_moodle',
+        'callback' => 'wp_api_callback',
         'permission_callback' => '__return_true'
     ));
 }
+add_action('rest_api_init', 'wp_api');
 
-add_action('rest_api_init', 'reload_moodle_users');
-
-function students_moodle()
+function wp_api_callback()
 {
-    global $wpdb;
-    $args = array(
-        'role' => 'student',
-    );
-
-    $users = get_users($args);
-    foreach ($users as $key => $user) {
-        $table_students = $wpdb->prefix . 'students';
-        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user->data->user_email}'");
-        $student_id = $student->id;
-
-        $exist = is_search_student_by_email($student_id);
-        if ($exist) {
-            $wpdb->update($table_students, ['moodle_student_id' => $exist[0]['id']], ['id' => $student_id]);
-
-            $is_exist_password = is_password_user_moodle($student_id);
-
-            if (!$is_exist_password) {
-                $password = generate_password_user();
-                $wpdb->update($table_students, ['moodle_password' => $password], ['id' => $student_id]);
-                change_password_user_moodle($student_id);
-            }
-        }
-    }
     return true;
-}
-
-
-function reload_moodle_usernames()
-{
-    register_rest_route('moodle', '/usernames', array(
-        'methods' => 'GET',
-        'callback' => 'update_usernames_moodle',
-        'permission_callback' => '__return_true'
-    ));
-}
-
-add_action('rest_api_init', 'reload_moodle_usernames');
-
-function update_usernames_moodle()
-{
-
-    // solo los estudiantes nuevos
-    global $wpdb;
-    $table_students = $wpdb->prefix . 'students';
-    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id=66");
-
-    $moodle_url = get_option('moodle_url');
-    $moodle_token = get_option('moodle_token');
-
-    if (!empty($moodle_url) && !empty($moodle_token)) {
-
-        $users = [];
-        foreach ($students as $key => $data_student) {
-            if (isset($data_student->moodle_student_id)) {
-                $moodle_student_id = $data_student->moodle_student_id;
-                $id_document = $data_student->id_document;
-
-                if (!empty($moodle_student_id)) {
-
-                    array_push($users, [
-                        'id' => $moodle_student_id,
-                        'username' => $id_document,
-                    ]);
-
-                }
-            }
-        }
-
-        $users_to_send = ['users' => $users];
-        if (sizeof($users_to_send['users']) > 0) {
-            $MoodleRest = new MoodleRest($moodle_url . 'webservice/rest/server.php', $moodle_token);
-            $update_user = $MoodleRest->request('core_user_update_users', $users_to_send, MoodleRest::METHOD_POST);
-            return $update_user;
-        } else {
-            return 'no users to send';
-        }
-
-    }
-}
-
-function reload_moodle_ids()
-{
-    register_rest_route('moodle', '/ids', array(
-        'methods' => 'GET',
-        'callback' => 'update_ids_moodle',
-        'permission_callback' => '__return_true'
-    ));
-}
-
-add_action('rest_api_init', 'reload_moodle_ids');
-
-function update_ids_moodle()
-{
-
-    global $wpdb;
-    $table_students = $wpdb->prefix . 'students';
-
-    $students = $wpdb->get_results("SELECT * FROM {$table_students}");
-
-    $moodle_url = get_option('moodle_url');
-    $moodle_token = get_option('moodle_token');
-
-    if (!empty($moodle_url) && !empty($moodle_token)) {
-
-        foreach ($students as $key => $data_student) {
-            $exist = is_search_student_by_email($data_student->id);
-            if ($exist) {
-                $wpdb->update($table_students, ['moodle_student_id' => $exist[0]['id']], ['id' => $data_student->id]);
-            }
-        }
-        return true;
-    }
 }
