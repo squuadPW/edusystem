@@ -164,16 +164,24 @@ function woocommerce_checkout_order_created_action($order)
         add_role_user($customer_id, 'parent');
     }
 
-    if (
-        isset($_COOKIE['id_document_parent']) && !empty($_COOKIE['id_document_parent']) &&
-        isset($_COOKIE['parent_document_type']) && !empty($_COOKIE['parent_document_type']) &&
-        isset($_COOKIE['birth_date_parent']) && !empty($_COOKIE['birth_date_parent']) &&
-        isset($_COOKIE['gender_parent']) && !empty($_COOKIE['gender_parent'])
-    ) {
-        update_user_meta($customer_id, 'type_document', $_COOKIE['parent_document_type']);
+    if (isset($_COOKIE['id_document_parent']) && !empty($_COOKIE['id_document_parent'])) {
         update_user_meta($customer_id, 'id_document', $_COOKIE['id_document_parent']);
+    }
+    
+    if (isset($_COOKIE['parent_document_type']) && !empty($_COOKIE['parent_document_type'])) {
+        update_user_meta($customer_id, 'type_document', $_COOKIE['parent_document_type']);
+    }
+    
+    if (isset($_COOKIE['birth_date_parent']) && !empty($_COOKIE['birth_date_parent'])) {
         update_user_meta($customer_id, 'birth_date', $_COOKIE['birth_date_parent']);
+    }
+    
+    if (isset($_COOKIE['gender_parent']) && !empty($_COOKIE['gender_parent'])) {
         update_user_meta($customer_id, 'gender', $_COOKIE['gender_parent']);
+    }
+    
+    if (isset($_COOKIE['ethnicity_parent']) && !empty($_COOKIE['ethnicity_parent'])) {
+        update_user_meta($customer_id, 'ethnicity', $_COOKIE['ethnicity_parent']);
     }
 
     //validate cookie and set metadata
@@ -185,7 +193,8 @@ function woocommerce_checkout_order_created_action($order)
     set_institute_in_order($order);
 
     setcookie('is_older', '', time());
-    setcookie('etnia', '', time());
+    setcookie('ethnicity', '', time());
+    setcookie('ethnicity_parent', '', time());
     setcookie('phone_student', '', time());
     setcookie('id_document', '', time());
     setcookie('document_type', '', time());
@@ -210,6 +219,7 @@ function woocommerce_checkout_order_created_action($order)
     setcookie('id_document_parent', '', time());
     setcookie('id_bitrix', '', time());
     setcookie('institute_id', '', time());
+    setcookie('gender', '', time());
 }
 
 add_action('woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action');
