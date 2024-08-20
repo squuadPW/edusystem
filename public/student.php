@@ -70,7 +70,6 @@ function save_student()
         }
 
         setcookie('name_institute', ucwords($name_institute), time() + 3600);
-
         switch ($action) {
             case 'save_student':
                 if (!empty($agent_name) && !empty($agent_last_name) && !empty($email_partner) && !empty($number_partner) && !empty($birth_date_parent) && !empty($parent_document_type) && !empty($id_document_parent)) {
@@ -178,6 +177,7 @@ function redirect_to_checkout($program, $grade)
     }
 
     wp_redirect(wc_get_checkout_url());
+    exit;
 }
 
 add_action('wp_loaded', 'save_student');
