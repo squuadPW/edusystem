@@ -28,6 +28,13 @@
                                         <td><?= $order->get_billing_first_name().' '.$order->get_billing_last_name() ?></td>
                                     </tr>
                                 <?php endif; ?>
+                                <?php if(!in_array('institutes',$roles) && $order->get_meta('student_data')): ?>
+                                    <tr>
+                                        <th scope="row"><label for="input_id"><?= __('Student Name','aes').':'; ?></label></th>
+                                        <td><?= $order->get_meta('student_data')['name_student'] . ' ' .  $order->get_meta('student_data')['middle_name_student'] . ' ' .  $order->get_meta('student_data')['last_name_student'] . ' ' .  $order->get_meta('student_data')['middle_last_name_student'] ?></td>
+
+                                    </tr>
+                                <?php endif; ?>
                                 <?php if(!in_array('institutes',$roles) && !in_array('alliance',$roles)): ?>
                                     <tr>
                                         <th scope="row"><label for="input_id"><?= __('Payment Total','aes').':'; ?></label></th>

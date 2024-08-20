@@ -649,10 +649,12 @@ class TT_all_student_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'index':
                 return $item['index'];
-            case 'full_name':
-                return $item['name'] . ' ' . $item['last_name'];
+            case 'student':
+                return $item['student'];
             case 'email':
                 return $item['email'];
+            case 'parent':
+                return $item['parent'];
             case 'program':
                 $program = get_name_program($item['program_id']);
                 return $program;
@@ -688,8 +690,8 @@ class TT_all_student_List_Table extends WP_List_Table
 
         $columns = array(
             'index' => __('Index', 'aes'),
-            'full_name' => __('Full name', 'aes'),
-            'email' => __('Email', 'aes'),
+            'student' => __('Student', 'aes'),
+            'parent' => __('Parent', 'aes'),
             'program' => __('Program', 'aes'),
             'grade' => __('Grade', 'aes'),
             'moodle_active' => __('Moodle', 'aes'),
@@ -776,8 +778,21 @@ class TT_all_student_List_Table extends WP_List_Table
         $total_items = count($data);
 
         $data = array();
+        $url = admin_url('user-edit.php?user_id=');
+        global $current_user;
+        $roles = $current_user->roles;
         foreach ($data_categories as $key => $value) {
+            $parent = get_user_by('id', $value['partner_id']);
+            $student = get_user_by('email', $value['email']);
+
             $value['index'] = $key + 1;
+            if(in_array('owner',$roles) || in_array('administrator',$roles)){
+                $value['student'] = '<a href="'. $url . $student->ID .'" target="_blank">'. $value['name'] . ' ' . $value['middle_name'] . ' ' . $value['last_name'] . ' ' . $value['middle_last_name'] .'</a>';
+                $value['parent'] = '<a href="'. $url . $parent->ID .'" target="_blank">'. $parent->first_name . ' ' . $parent->last_name .'</a>';
+            } else {
+                $value['student'] = $value['name'] . ' ' . $value['middle_name'] . ' ' . $value['last_name'] . ' ' . $value['middle_last_name'];
+                $value['parent'] = $parent->first_name . ' ' . $parent->last_name;
+            }
             $value['moodle_active'] = isset($value['moodle_student_id']) ? '<div style="background-color: #f98012; text-align: center; border-radius: 10px; font-weight: bold; color: #000000; width: 40px; ">Yes</div>' : '<div style="background-color: #dfdedd; text-align: center; border-radius: 10px; font-weight: bold; color: #000000; width: 40px; ">No</div>';
             $data[] = $value;
         }

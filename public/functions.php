@@ -482,6 +482,7 @@ function status_changed_payment($order_id, $old_status, $new_status)
         $date = new DateTime('August 12');
         $date = $date->format('Y-m-d');
         $student_id = $order->get_meta('student_id');
+        $total_discount = $order->get_total_discount();
 
         foreach ($items as $item) {
             $cuotes = 1;
@@ -489,7 +490,10 @@ function status_changed_payment($order_id, $old_status, $new_status)
             $product_id = $item->get_product_id(); // Get the product ID
             $variation_id = $item->get_variation_id(); // Get the variation ID
             $is_variable = $item->get_product()->is_type('variation');
-            $price = $item->get_product()->get_price();
+            $price = $item->get_product()->get_price($variation_id); // Get the price of the selected variation
+            if ($is_variable) {
+                $price -= $total_discount;
+            }
             $exist = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = {$product_id} and order_id = {$order_id}");
             if (!$exist) {
 
@@ -673,7 +677,8 @@ function insert_data_student($order)
             'ethnicity' => $_COOKIE['ethnicity'],
             'name_student' => $_COOKIE['name_student'],
             'middle_name_student' => $_COOKIE['middle_name_student'],
-            'last_name_student' => $_COOKIE['middle_name_student'],
+            'last_name_student' => $_COOKIE['last_name_student'],
+            'middle_last_name_student' => $_COOKIE['middle_last_name_student'],
             'phone_student' => $_COOKIE['phone_student'],
             'email_student' => $_COOKIE['email_student'],
             'initial_grade' => get_name_grade($_COOKIE['initial_grade']),
@@ -695,7 +700,8 @@ function insert_data_student($order)
             'ethnicity' => $_COOKIE['ethnicity'],
             'name_student' => $_COOKIE['name_student'],
             'middle_name_student' => $_COOKIE['middle_name_student'],
-            'last_name_student' => $_COOKIE['middle_name_student'],
+            'last_name_student' => $_COOKIE['last_name_student'],
+            'middle_last_name_student' => $_COOKIE['middle_last_name_student'],
             'phone_student' => $_COOKIE['phone_student'],
             'email_student' => $_COOKIE['email_student'],
             'initial_grade' => get_name_grade($_COOKIE['initial_grade']),
