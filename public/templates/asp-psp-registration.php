@@ -89,7 +89,7 @@ if (is_user_logged_in()) {
                         <option value="3"><?= __('Caucasian', 'aes'); ?></option>
                         <option value="4"><?= __('Hispanic', 'aes'); ?></option>
                         <option value="5"><?= __('Native American', 'aes'); ?></option>
-                        <option value="6"><?= __('Other', 'aes'); ?></option>
+                        
                         <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
                     </select>
                 </div>
@@ -225,7 +225,7 @@ if (is_user_logged_in()) {
                             <option value="3"><?= __('Caucasian', 'aes'); ?></option>
                             <option value="4"><?= __('Hispanic', 'aes'); ?></option>
                             <option value="5"><?= __('Native American', 'aes'); ?></option>
-                            <option value="6"><?= __('Other', 'aes'); ?></option>
+                            
                             <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
                         </select>
                     </div>
@@ -354,7 +354,7 @@ if (is_user_logged_in()) {
                         <option value="3"><?= __('Caucasian', 'aes'); ?></option>
                         <option value="4"><?= __('Hispanic', 'aes'); ?></option>
                         <option value="5"><?= __('Native American', 'aes'); ?></option>
-                        <option value="6"><?= __('Other', 'aes'); ?></option>
+                        
                         <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
                     </select>
                 </div>
@@ -497,7 +497,7 @@ if (is_user_logged_in()) {
                     <option value="3"><?= __('Caucasian', 'aes'); ?></option>
                     <option value="4"><?= __('Hispanic', 'aes'); ?></option>
                     <option value="5"><?= __('Native American', 'aes'); ?></option>
-                    <option value="6"><?= __('Other', 'aes'); ?></option>
+                    
                     <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
                 </select>
             </div>
