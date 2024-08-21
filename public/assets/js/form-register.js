@@ -160,6 +160,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const instituteSelect = document.getElementById('institute_id');
 
   countrySelect.addEventListener('change', function() {
+      document.getElementById('institute_id').value = '';
+      document.getElementById('name_institute').value = '';
+      document.getElementById("name-institute-field").style.display = "none";
+      document.getElementById("name_institute").required = false;
+      document.getElementById("institute_id").required = true;
+      document.getElementById("institute_id_required").textContent = "*";
+
       const selectedCountry = countrySelect.value;
       const options = instituteSelect.options;
       for (let i = 0; i < options.length; i++) {
