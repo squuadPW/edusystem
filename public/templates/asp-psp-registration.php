@@ -560,7 +560,7 @@ if (is_user_logged_in()) {
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="country"><?= __('Country', 'form-plugin'); ?><span class="required">*</span></label>
-                <select name="country" autocomplete="off" required>
+                <select name="country" autocomplete="off" required id="country-select">
                     <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                     <?php foreach ($countries as $key => $country) { ?>
                         <option value="<?= $key ?>"><?= $country; ?></option>
@@ -596,9 +596,9 @@ if (is_user_logged_in()) {
                 <label for="name_institute"><?= __('Name of School or Institution with Agreement', 'aes'); ?><span
                         id="institute_id_required" class="required">*</span></label>
                 <select name="institute_id" autocomplete="off" id="institute_id" required>
-                    <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                    <option value="" selected="selected" data-others="1"><?= __('Select an option', 'aes'); ?></option>
                     <?php foreach ($institutes as $institute): ?>
-                        <option value="<?= $institute->id; ?>"><?= $institute->name; ?></option>
+                        <option value="<?= $institute->id; ?>" data-others="0" data-country="<?= $institute->country; ?>"><?= $institute->name; ?></option>
                     <?php endforeach; ?>
                     <option value="other"><?= __('Other', 'aes'); ?></option>
                 </select>
