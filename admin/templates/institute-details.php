@@ -87,7 +87,7 @@
                                                 <?php if($institute->status == 0): ?>
                                                     <input type="text" name="country"  value="<?= get_name_country($institute->country); ?>" readonly>
                                                 <?php elseif($institute->status == 1): ?>
-                                                    <select name="country" required>
+                                                    <select name="country" required id="country-selector">
                                                         <?php foreach($countries as $key => $country){ ?>
                                                             <option value="<?= $key; ?>" <?= ($institute->country == $key) ? 'selected' : ''; ?>><?= $country ?></option>
                                                         <?php } ?>
@@ -95,7 +95,7 @@
                                                 <?php endif; ?>
                                             <?php else: ?>
                                                 <label for="input_id"><b><?= __('Country','aes'); ?></b><span class="text-danger">*</span></label><br>
-                                                <select name="country" required>
+                                                <select name="country" required id="country-selector">
                                                     <?php foreach($countries as $key => $country){ ?>
                                                         <option value="<?= $key; ?>"><?= $country ?></option>
                                                     <?php } ?>
@@ -104,11 +104,22 @@
                                         </td>
                                         <td>
                                             <?php if(isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('State','aes'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <input type="text" name="state" value="<?= ucwords($institute->state); ?>"  <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>> 
+                                                <div id="state-td">
+                                                    <label for="input_id"><b><?= __('State','aes'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                    <select id="state-selector" name="state">
+                                                    <?php foreach($states as $key => $state){ ?>
+                                                        <option value="<?= $key; ?>" <?= $key == $institute->state ? 'selected' : ''; ?>><?= $state ?></option>
+                                                    <?php } ?>
+                                                        <!-- states will be populated dynamically using JavaScript -->
+                                                    </select>
+                                                </div>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('State','aes'); ?></b><span class="text-danger">*</span></label><br>
-                                                <input type="text" name="state" value=""  required> 
+                                                <div id="state-td" style="display: none">
+                                                    <label for="input_id"><b><?= __('State','aes'); ?></b><span class="text-danger">*</span></label><br>
+                                                    <select id="state-selector" name="state">
+                                                        <!-- states will be populated dynamically using JavaScript -->
+                                                    </select>
+                                                </div>
                                             <?php endif; ?>
                                         </td>
                                         <td>

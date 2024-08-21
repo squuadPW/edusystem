@@ -626,3 +626,14 @@ function admin_notice($message, $type = 'success') {
     </div>
     <?php
 }
+
+function get_states_by_country() {
+    $country_code = $_POST['country_code'];
+    $wc_countries = new WC_Countries();
+    $states = $wc_countries->get_states($country_code);
+    echo json_encode($states);
+    exit;
+  }
+  
+  add_action('wp_ajax_get_states_by_country', 'get_states_by_country');
+  add_action('wp_ajax_nopriv_get_states_by_country', 'get_states_by_country');

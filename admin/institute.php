@@ -172,6 +172,7 @@ function add_admin_institutes_content(){
             $institute_id =$_GET['institute_id'];
             $institute = get_institute_details($institute_id);
             $countries = get_countries();
+            $states = get_states_by_country_code($institute->country);
             $alliances = get_alliances();
             include(plugin_dir_path(__FILE__).'templates/institute-details.php');
         }  

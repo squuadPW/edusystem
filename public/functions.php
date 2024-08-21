@@ -94,6 +94,13 @@ function get_countries()
     return $countries;
 }
 
+function get_states_by_country_code($country_code)
+{
+    $wc_countries = new WC_Countries();
+    $states = $wc_countries->get_states($country_code);
+    return $states;
+}
+
 add_filter('woocommerce_checkout_fields', 'removed_custom_checkout_fields');
 
 function removed_custom_checkout_fields($fields)
