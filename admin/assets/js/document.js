@@ -321,4 +321,33 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       };
   }
+
+  const moodleActiveElements = document.querySelectorAll('.moodle-active');
+  moodleActiveElements.forEach(function(element) {
+      element.addEventListener('click', function() {
+          if (element.dataset.moodle == 'Yes') {
+            loadLastAccessMoodle(element.dataset.student_id);
+          }
+      });
+  });
+
+  function loadLastAccessMoodle(student_id) {
+    const XHR = new XMLHttpRequest();
+    XHR.open("POST", last_access_moodle.url, true);
+    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    XHR.responseType = "text";
+    XHR.send(
+      "action=" + last_access_moodle.action + "&student_id=" + student_id
+    );
+    XHR.onload = function () {
+      if (this.readyState == "4" && XHR.status === 200) {
+        if (!JSON.parse(XHR.response).last_access) {
+          alert('This user has not logged in to Moodle.');
+        } else {
+          alert(`This user's last login to Moodle was ${JSON.parse(XHR.response).last_access}`);
+          
+        }
+      }
+    };
+  }
 });

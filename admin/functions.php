@@ -91,6 +91,11 @@ function aes_scripts_admin(){
             'url' => admin_url( 'admin-ajax.php' ),
             'action' => 'get_student_details' 
         ]);
+
+        wp_localize_script('student-documents','last_access_moodle',[
+            'url' => admin_url( 'admin-ajax.php' ),
+            'action' => 'last_access_moodle' 
+        ]);
     }
     
 }

@@ -617,7 +617,9 @@ class TT_document_review_List_Table extends WP_List_Table
         $data = array();
         foreach ($data_categories as $key => $value) {
             $value['index'] = $key + 1;
-            $value['moodle_active'] = isset($value['moodle_student_id']) ? '<div style="background-color: #f98012; text-align: center; border-radius: 10px; font-weight: bold; color: #000000; width: 40px; ">Yes</div>' : '<div style="background-color: #dfdedd; text-align: center; border-radius: 10px; font-weight: bold; color: #000000; width: 40px; ">No</div>';
+            $moodleActive = isset($value['moodle_student_id']) ? 'Yes' : 'No';
+            $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px"';
+            $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" '.$moodleActiveStyle.'>'.$moodleActive.'</span>';
             $data[] = $value;
         }
 
@@ -793,7 +795,9 @@ class TT_all_student_List_Table extends WP_List_Table
                 $value['student'] = $value['name'] . ' ' . $value['middle_name'] . ' ' . $value['last_name'] . ' ' . $value['middle_last_name'];
                 $value['parent'] = $parent->first_name . ' ' . $parent->last_name;
             }
-            $value['moodle_active'] = isset($value['moodle_student_id']) ? '<div style="background-color: #f98012; text-align: center; border-radius: 10px; font-weight: bold; color: #000000; width: 40px; ">Yes</div>' : '<div style="background-color: #dfdedd; text-align: center; border-radius: 10px; font-weight: bold; color: #000000; width: 40px; ">No</div>';
+            $moodleActive = isset($value['moodle_student_id']) ? 'Yes' : 'No';
+            $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px"';
+            $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" '.$moodleActiveStyle.'>'.$moodleActive.'</span>';
             $data[] = $value;
         }
 
@@ -1068,6 +1072,19 @@ function update_status_documents()
 
 add_action('wp_ajax_nopriv_update_status_documents', 'update_status_documents');
 add_action('wp_ajax_update_status_documents', 'update_status_documents');
+
+function last_access_moodle()
+{
+    $student_id = $_POST['student_id'];
+    $exist = is_search_student_by_email($student_id);
+    $last_access = $exist[0]['lastaccess'];
+    $date = $last_access != 0 ? date("Y-m-d H:i:s", $last_access) : null;
+    wp_send_json(array('last_access' => $date));
+    die();
+}
+
+add_action('wp_ajax_nopriv_last_access_moodle', 'last_access_moodle');
+add_action('wp_ajax_last_access_moodle', 'last_access_moodle');
 
 function update_payment()
 {
