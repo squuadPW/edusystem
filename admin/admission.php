@@ -618,7 +618,7 @@ class TT_document_review_List_Table extends WP_List_Table
         foreach ($data_categories as $key => $value) {
             $value['index'] = $key + 1;
             $moodleActive = isset($value['moodle_student_id']) ? 'Yes' : 'No';
-            $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px"';
+            $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px; cursor: not-allowed"';
             $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" '.$moodleActiveStyle.'>'.$moodleActive.'</span>';
             $data[] = $value;
         }
@@ -796,7 +796,7 @@ class TT_all_student_List_Table extends WP_List_Table
                 $value['parent'] = $parent->first_name . ' ' . $parent->last_name;
             }
             $moodleActive = isset($value['moodle_student_id']) ? 'Yes' : 'No';
-            $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px"';
+            $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px; cursor: not-allowed"';
             $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" '.$moodleActiveStyle.'>'.$moodleActive.'</span>';
             $data[] = $value;
         }
