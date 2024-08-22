@@ -89,7 +89,6 @@ if (is_user_logged_in()) {
                         <option value="3"><?= __('Caucasian', 'aes'); ?></option>
                         <option value="4"><?= __('Hispanic', 'aes'); ?></option>
                         <option value="5"><?= __('Native American', 'aes'); ?></option>
-                        
                         <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
                     </select>
                 </div>
@@ -189,7 +188,8 @@ if (is_user_logged_in()) {
 
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="name"><?= __('Student name', 'aes'); ?><span class="required">*</span></label>
-                    <input value="<?php echo get_user_meta(get_current_user_id(), 'first_name', true)?>" class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
+                    <input value="<?php echo get_user_meta(get_current_user_id(), 'first_name', true) ?>"
+                        class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="lastname"><?= __('Student second name', 'aes'); ?><span class="required">*</span></label>
@@ -197,7 +197,8 @@ if (is_user_logged_in()) {
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="lastname"><?= __('Student last name', 'aes'); ?><span class="required">*</span></label>
-                    <input value="<?php echo get_user_meta(get_current_user_id(), 'last_name', true)?>" class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
+                    <input value="<?php echo get_user_meta(get_current_user_id(), 'last_name', true) ?>"
+                        class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="lastname"><?= __('Student second last name', 'aes'); ?><span class="required">*</span></label>
@@ -225,7 +226,7 @@ if (is_user_logged_in()) {
                             <option value="3"><?= __('Caucasian', 'aes'); ?></option>
                             <option value="4"><?= __('Hispanic', 'aes'); ?></option>
                             <option value="5"><?= __('Native American', 'aes'); ?></option>
-                            
+
                             <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
                         </select>
                     </div>
@@ -354,7 +355,6 @@ if (is_user_logged_in()) {
                         <option value="3"><?= __('Caucasian', 'aes'); ?></option>
                         <option value="4"><?= __('Hispanic', 'aes'); ?></option>
                         <option value="5"><?= __('Native American', 'aes'); ?></option>
-                        
                         <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
                     </select>
                 </div>
@@ -497,7 +497,6 @@ if (is_user_logged_in()) {
                     <option value="3"><?= __('Caucasian', 'aes'); ?></option>
                     <option value="4"><?= __('Hispanic', 'aes'); ?></option>
                     <option value="5"><?= __('Native American', 'aes'); ?></option>
-                    
                     <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
                 </select>
             </div>
