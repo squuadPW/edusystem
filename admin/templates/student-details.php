@@ -39,58 +39,58 @@ $countries = get_countries();
                             <table class="form-table" style="margin-top:0px;">
                                 <tbody>
                                     <tr>
-                                        <th scope="row" style="font-weight:400;">
+                                        <td scope="row" style="width: auto !important">
                                             <label for="document_type"><b><?php _e('Document Type', 'aes');?></b></label><br>
                                             <select name="document_type" id="document_type" value="<?php echo get_name_type_document($student->type_document);?>" style="width:100%" required>
                                                 <option value="identification_document" <?= ($student->type_document == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document','aes'); ?></option>
                                                 <option value="passport" <?= ($student->type_document == 'passport') ? 'selected' : ''; ?>><?= __('Passport','aes'); ?></option>
                                                 <option value="ssn" <?= ($student->type_document == 'ssn') ? 'selected' : ''; ?>><?= __('SNN','aes'); ?></option>
                                             </select>
-                                        </th>
-                                        <td>
+                                        </td>
+                                        <td style="width: auto !important">
                                             <label for="id_document"><b><?php _e('ID Document', 'aes');?></b></label><br>
                                             <input type="text" id="id_document" name="id_document" value="<?php echo $student->id_document;?>" style="width:100%">
                                             <input type="hidden" id="id" name="id" value="<?php echo $student->id;?>" style="width:100%" required>
                                         </td>
                                         <?php if ($user_student) {?>
-                                            <td>
+                                            <td style="width: auto !important">
                                                 <label for="username"><b><?php _e('Username', 'aes');?></b></label><br>
                                                 <input type="text" id="username" name="username" value="<?php echo $user_student->user_nicename;?>" style="width:100%" required>
                                             </td>
                                         <?php }?>
-                                        <td>
+                                        <td style="width: auto !important">
                                             <label for="birth_date"><b><?php _e('Birth date', 'aes');?> <?php echo $student->birth_date;?></b></label><br>
                                             <input type="text" id="birth_date" name="birth_date" value="<?php echo date('m/d/Y', strtotime($student->birth_date)); ?>" required style="width:100%; background-color: white;" class="birth_date">
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th scope="row" style="font-weight:400;">
+                                        <td scope="row" style="width: auto !important">
                                             <label for="first_name"><b><?php _e('First name', 'aes');?></b></label><br>
                                             <input type="text" id="first_name" name="first_name" value="<?php echo $student->name;?>" style="width:100%" required>
-                                        </th>
-                                        <td>
+                                        </td>
+                                        <td style="width: auto !important">
                                             <label for="middle_name"><b><?php _e('Middle name', 'aes');?></b></label><br>
                                             <input type="text" id="middle_name" name="middle_name" value="<?php echo $student->middle_name;?>" style="width:100%" required>
                                         </td>
-                                        <td>
+                                        <td style="width: auto !important">
                                             <label for="last_name"><b><?php _e('Last name', 'aes');?></b></label><br>
                                             <input type="text" id="last_name" name="last_name" value="<?php echo $student->last_name;?>" style="width:100%" required>
                                         </td>
-                                        <td>
+                                        <td style="width: auto !important">
                                             <label for="middle_last_name"><b><?php _e('Middle last name', 'aes');?></b></label><br>
                                             <input type="text" id="middle_last_name" name="middle_last_name" value="<?php echo $student->middle_last_name;?>" style="width:100%" required>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th scope="row" style="font-weight:400;">
+                                        <td scope="row" style="width: auto !important">
                                             <label for="gender"><b><?php _e('Gender', 'aes');?></b></label><br>
                                             <select name="gender" id="gender" value="<?php echo get_gender($student->gender);?>" style="width:100%" required>
                                                 <option value="male" <?= ($student->gender == 'male') ? 'selected' : ''; ?>><?= __('Male','aes'); ?></option>
                                                 <option value="female" <?= ($student->gender == 'female') ? 'selected' : ''; ?>><?= __('Female','aes'); ?></option>
                                             </select>
-                                        </th>
+                                        </td>
 
-                                        <td>
+                                        <td style="width: auto !important">
                                             <label for="country"><b><?php _e('Country', 'aes');?></b></label><br>
                                             <select id="country" name="country" value="<?php echo get_name_country($student->country);?>" style="width:100%;" required>
                                                 <?php foreach($countries as $key => $country){ ?>
@@ -99,28 +99,28 @@ $countries = get_countries();
                                             </select>
                                         </td>
 
-                                        <td>
+                                        <td style="width: auto !important">
                                             <label for="city"><b><?php _e('City', 'aes');?></b></label><br>
                                             <input type="text" id="city" name="city" value="<?php echo $student->city;?>" style="width:100%;" required> 
                                         </td>
 
-                                        <td>
+                                        <td style="width: auto !important">
                                             <label for="postal_code"><b><?php _e('Postal Code', 'aes');?></b></label><br>
                                             <input type="text" id="postal_code" name="postal_code" value="<?php echo $student->postal_code;?>" style="width:100%;" required>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>
+                                        <td style="width: auto !important">
                                             <label for="email"><b><?php _e('Email', 'aes');?></b></label><br>
                                             <input type="text" id="email" name="email" value="<?php echo $student->email;?>" style="width:100%;" required>
                                             <input type="hidden" id="old_email" name="old_email" value="<?php echo $student->email;?>" style="width:100%;">
-                                        </th>
-                                        <td>
+                                        </td>
+                                        <td style="width: auto !important">
                                             <label for="phone"><b><?php _e('Phone', 'aes');?></b></label><br>
                                             <input type="text" id="phone" name="phone" value="<?php echo $student->phone;?>" style="width:100%;" required>
                                         </td>
 
-                                        <td>
+                                        <td style="width: auto !important">
                                             <label for="academic_period"><b><?php _e('Academic period', 'aes');?></b></label><br>
                                             <select name="academic_period" required style="width:100%;">
                                                     <?php foreach ($periods as $key => $period) { ?>
@@ -130,7 +130,7 @@ $countries = get_countries();
                                                     <?php } ?>
                                                 </select>
                                         </td>
-                                        <td>
+                                        <td style="width: auto !important">
                                             <label for="new_password"><b><?php _e('New password for student', 'aes');?></label><br>
                                             <input type="password" id="new_password" name="new_password" style="width:100%; background-color: white;">
                                         </td>
