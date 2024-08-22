@@ -599,26 +599,103 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         'passport' => 2,
                         'ssn' => 4,
                     )[$student->type_document];
-
+    
                     $files_to_send = array();
+                    $type_document = '';
+                    switch ($student->type_document) {
+                        case 'identification_document':
+                            $type_document = 1;
+                            break;
+                        case 'passport':
+                            $type_document = 2;
+                            break;
+                        case 'ssn':
+                            $type_document = 4;
+                            break;
+                    }
+    
+                    $type_document_re = '';
+                    switch (get_user_meta($student->partner_id, 'type_document', true)) {
+                        case 'identification_document':
+                            $type_document_re = 1;
+                            break;
+                        case 'passport':
+                            $type_document_re = 2;
+                            break;
+                        case 'ssn':
+                            $type_document_re = 4;
+                            break;
+                    }
+    
+                    
+                    $gender = '';
+                    switch ($student->gender) {
+                        case 'male':
+                            $gender = 'M';
+                            break;
+                        case 'female':
+                            $gender = 'F';
+                            break;
+                    }
+    
+                    
+                    $gender_re = '';
+                    switch (get_user_meta($student->partner_id, 'gender', true)) {
+                        case 'male':
+                            $gender_re = 'M';
+                            break;
+                        case 'female':
+                            $gender_re = 'F';
+                            break;
+                    }
+    
+                    $grade = '';
+                    switch ($student->grade_id) {
+                        case 1:
+                            $grade = 9;
+                            break;
+                        case 2:
+                            $grade = 10;
+                            break;
+                        case 3:
+                            $grade = 11;
+                            break;
+                        case 4:
+                            $grade = 12;
+                            break;
+                    }
                     $fields_to_send = array(
+                        // DATOS DEL ESTUDIANTE
                         'id_document' => $student->id_document,
                         'type_document' => $type_document,
-                        'cod_program' => AES_PROGRAM_ID,
-                        'cod_tip' => AES_TYPE_PROGRAM,
-                        'cod_period' => AES_PERIOD,
                         'firstname' => $student->name . ' ' . $student->middle_name,
                         'lastname' => $student->last_name . ' ' . $student->middle_last_name,
                         'birth_date' => $student->birth_date,
-                        'gender' => $student->gender,
-                        'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
                         'phone' => $student->phone,
                         'email' => $student->email,
-                        'country' => $student->country,
-                        'city' => $student->city,
-                        'postal_code' => $student->postal_code,
+                        'etnia' => $student->ethnicity,
+                        'grade' => $grade,
+                        'gender' => $gender,
+    
+                        // PADRE
+                        'id_document_re' => get_user_meta($student->partner_id, 'id_document', true), 
+                        'type_document_re' => $type_document_re,
+                        'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
+                        'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
+                        'birth_date_re' =>  get_user_meta($student->partner_id, 'birth_date', true),
+                        'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
+                        'email_re' => get_user_meta($student->partner_id, 'billing_email', true),
+                        'gender_re' => $gender_re,
+    
+                        'cod_program' => AES_PROGRAM_ID,
+                        'cod_tip' => AES_TYPE_PROGRAM,
+                        'cod_period' => AES_PERIOD,
+                        'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
+                        'country' => get_user_meta($student->partner_id, 'billing_country', true),
+                        'city' => get_user_meta($student->partner_id, 'billing_city', true),
+                        'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true),
                     );
-
+    
                     $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
                     $documents_to_send = [];
                     foreach ($all_documents_student as $document) {
@@ -626,7 +703,7 @@ function status_changed_payment($order_id, $old_status, $new_status)
                             array_push($documents_to_send, $document);
                         }
                     }
-
+    
                     foreach ($documents_to_send as $key => $doc) {
                         $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
                         $attachment_id = $doc->attachment_id;
@@ -634,15 +711,15 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         if ($attachment_path) {
                             $file_name = basename($attachment_path);
                             $file_type = mime_content_type($attachment_path);
-
+    
                             $files_to_send[] = array(
                                 'file' => curl_file_create($attachment_path, $file_type, $file_name),
                                 'id_requisito' => $id_requisito
                             );
                         }
                     }
-
-                    // create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
+    
+                    create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
                     if ($order->get_meta('id_bitrix')) {
                         sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());

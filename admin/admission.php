@@ -917,6 +917,69 @@ function update_status_documents()
                 )[$student->type_document];
 
                 $files_to_send = array();
+                $type_document = '';
+                switch ($student->type_document) {
+                    case 'identification_document':
+                        $type_document = 1;
+                        break;
+                    case 'passport':
+                        $type_document = 2;
+                        break;
+                    case 'ssn':
+                        $type_document = 4;
+                        break;
+                }
+
+                $type_document_re = '';
+                switch (get_user_meta($student->partner_id, 'type_document', true)) {
+                    case 'identification_document':
+                        $type_document_re = 1;
+                        break;
+                    case 'passport':
+                        $type_document_re = 2;
+                        break;
+                    case 'ssn':
+                        $type_document_re = 4;
+                        break;
+                }
+
+                
+                $gender = '';
+                switch ($student->gender) {
+                    case 'male':
+                        $gender = 'M';
+                        break;
+                    case 'female':
+                        $gender = 'F';
+                        break;
+                }
+
+                
+                $gender_re = '';
+                switch (get_user_meta($student->partner_id, 'gender', true)) {
+                    case 'male':
+                        $gender_re = 'M';
+                        break;
+                    case 'female':
+                        $gender_re = 'F';
+                        break;
+                }
+
+                $grade = '';
+                switch ($student->grade_id) {
+                    case 1:
+                        $grade = 9;
+                        break;
+                    case 2:
+                        $grade = 10;
+                        break;
+                    case 3:
+                        $grade = 11;
+                        break;
+                    case 4:
+                        $grade = 12;
+                        break;
+                }
                 $fields_to_send = array(
                     // DATOS DEL ESTUDIANTE
                     'id_document' => $student->id_document,
@@ -926,15 +989,19 @@ function update_status_documents()
                     'birth_date' => $student->birth_date,
                     'phone' => $student->phone,
                     'email' => $student->email,
+                    'etnia' => $student->ethnicity,
+                    'grade' => $grade,
+                    'gender' => $gender,
 
                     // PADRE
-                    'id_document_re' => get_user_meta($student->partner_id, 'id_document', true), // por hacer
-                    'type_document_re' => get_user_meta($student->partner_id, 'type_document', true), // por hacer
+                    'id_document_re' => get_user_meta($student->partner_id, 'id_document', true), 
+                    'type_document_re' => $type_document_re,
                     'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
                     'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
-                    'birth_date_re' =>  get_user_meta($student->partner_id, 'birth_date', true), // por hacer
+                    'birth_date_re' =>  get_user_meta($student->partner_id, 'birth_date', true),
                     'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
                     'email_re' => get_user_meta($student->partner_id, 'billing_email', true),
+                    'gender_re' => $gender_re,
 
                     'cod_program' => AES_PROGRAM_ID,
                     'cod_tip' => AES_TYPE_PROGRAM,
@@ -943,7 +1010,6 @@ function update_status_documents()
                     'country' => get_user_meta($student->partner_id, 'billing_country', true),
                     'city' => get_user_meta($student->partner_id, 'billing_city', true),
                     'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true),
-                    'etnia' => $student->etnia // por hacer
                 );
 
                 $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
@@ -969,7 +1035,7 @@ function update_status_documents()
                     }
                 }
 
-                // create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
+                create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
                 update_status_student($student_id, 2);
 
