@@ -194,7 +194,8 @@ function save_document(){
                                 'etnia' => $student->ethnicity,
                                 'grade' => $grade,
                                 'gender' => $gender,
-            
+                                'cod_period' => $student->academic_period,
+
                                 // PADRE
                                 'id_document_re' => get_user_meta($student->partner_id, 'id_document', true), 
                                 'type_document_re' => $type_document_re,
@@ -207,7 +208,6 @@ function save_document(){
             
                                 'cod_program' => AES_PROGRAM_ID,
                                 'cod_tip' => AES_TYPE_PROGRAM,
-                                'cod_period' => AES_PERIOD,
                                 'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
                                 'country' => get_user_meta($student->partner_id, 'billing_country', true),
                                 'city' => get_user_meta($student->partner_id, 'billing_city', true),
