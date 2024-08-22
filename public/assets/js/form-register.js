@@ -155,6 +155,31 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+
+  const countrySelect = document.getElementById('country-select');
+  const instituteSelect = document.getElementById('institute_id');
+
+  countrySelect.addEventListener('change', function() {
+      document.getElementById('institute_id').value = '';
+      document.getElementById('name_institute').value = '';
+      document.getElementById("name-institute-field").style.display = "none";
+      document.getElementById("name_institute").required = false;
+      document.getElementById("institute_id").required = true;
+      document.getElementById("institute_id_required").textContent = "*";
+
+      const selectedCountry = countrySelect.value;
+      const options = instituteSelect.options;
+      for (let i = 0; i < options.length; i++) {
+          const option = options[i];
+          if (option.dataset.others == '0') {
+            if (option.dataset.country === selectedCountry || option.value === '') {
+              option.style.display = 'block';
+            } else {
+              option.style.display = 'none';
+            }
+          }
+      }
+  });
 });
 
 let timer = null;

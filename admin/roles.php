@@ -56,6 +56,7 @@ function remove_menu_pages_roles(){
             remove_menu_page('options-general.php');
             remove_menu_page('wp-mail-smtp');
             remove_menu_page('wpfront-user-role-editor-all-roles');
+            remove_menu_page('freshdesk-menu-handle');
 
             if ($role_name != 'owner') {
                 remove_menu_page('users.php');
@@ -74,6 +75,7 @@ function remove_menu_pages_roles(){
         remove_menu_page('upload.php');
         remove_menu_page('options-general.php');
         remove_menu_page('wp-mail-smtp');
+        remove_menu_page('freshdesk-menu-handle');
 
         if ($role_name != 'owner') {
             remove_menu_page('users.php');
