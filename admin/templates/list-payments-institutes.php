@@ -25,11 +25,11 @@
         <?php }else{ ?>
             <select id="typeFilter" name="typeFilter" autocomplete="off">
         <?php } ?>
-            <option value="today" selected><?= __('Today','restaurant-system-app'); ?></option>
+            <option value="today"><?= __('Today','restaurant-system-app'); ?></option>
             <option value="yesterday"><?= __('yesterday','restaurant-system-app'); ?></option>
             <option value="this-week"><?= __('This week','restaurant-system-app'); ?></option>
             <option value="last-week"><?= __('Last week','restaurant-system-app'); ?></option>
-            <option value="this-month"><?= __('This month','restaurant-system-app'); ?></option>
+            <option value="this-month" selected><?= __('This month','restaurant-system-app'); ?></option>
             <option value="last-month"><?= __('Last month','restaurant-system-app'); ?></option>
             <option value="custom"><?= __('Custom','restaurant-system-app'); ?></option>
         </select>
