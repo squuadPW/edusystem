@@ -59,7 +59,7 @@ $countries = get_countries();
                                             </td>
                                         <?php }?>
                                         <td style="width: auto !important">
-                                            <label for="birth_date"><b><?php _e('Birth date', 'aes');?> <?php echo $student->birth_date;?></b></label><br>
+                                            <label for="birth_date"><b><?php _e('Birth date', 'aes');?></b></label><br>
                                             <input type="text" id="birth_date" name="birth_date" value="<?php echo date('m/d/Y', strtotime($student->birth_date)); ?>" required style="width:100%; background-color: white;" class="birth_date">
                                         </td>
                                     </tr>
