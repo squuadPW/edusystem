@@ -215,4 +215,14 @@ div#application-passwords-section {
 .button-outline-primary {
   border-color: #2e6da4;
   color: #2e6da4;
+}
+
+.card-report-sales {
+  width: 120px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px;
+  border-right: 2px solid #2271b1;
+  margin: 4px;
+  font-size: 18px;
 }/*# sourceMappingURL=style.css.map */

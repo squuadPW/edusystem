@@ -2,6 +2,7 @@
 
 require plugin_dir_path( __FILE__ ) . 'roles.php';
 require plugin_dir_path( __FILE__ ) . 'admission.php';
+require plugin_dir_path( __FILE__ ) . 'report.php';
 require plugin_dir_path( __FILE__ ) . 'payments.php';
 require plugin_dir_path( __FILE__ ) . 'scholarships.php';
 require plugin_dir_path( __FILE__ ) . 'academic_periods.php';
@@ -57,6 +58,15 @@ function aes_scripts_admin(){
         wp_localize_script('institute','list_fee_institute',[
             'url' => admin_url( 'admin-ajax.php' ),
             'action' => 'list_fee_institute' 
+        ]);
+    }
+
+    if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales')){
+        wp_enqueue_script('report',plugins_url('aes').'/admin/assets/js/report.js',array('jquery'),'1.0.0',true);
+
+        wp_localize_script('report','list_orders_sales',[
+            'url' => admin_url( 'admin-ajax.php' ),
+            'action' => 'list_orders_sales' 
         ]);
     }
     
@@ -179,6 +189,18 @@ function add_custom_admin_page() {
     add_submenu_page('add_admin_form_admission_content',__('Required Documents','aes'),__('Required Documents','aes'),'manager_documents_aes','admission-documents','show_admission_documents', 10);
 
     add_menu_page( 
+        __('Report','aes'),
+        __('Report','aes'),
+        'manager_report_aes', 
+        'add_admin_form_report_content',
+        'add_admin_form_report_content', 
+        'dashicons-list-view', 
+        7
+    );
+
+    add_submenu_page('add_admin_form_report_content',__('Sales','aes'),__('Sales','aes'),'manager_sales_aes','report-sales','show_report_sales', 10);
+
+    add_menu_page( 
         __('Payments','aes'),
         __('Payments','aes'),
         'manager_payments_aes', 
@@ -276,6 +298,8 @@ function add_cap_to_administrator(){
     $role->add_cap('manager_send_email_aes');
     $role->add_cap('manager_staff_aes');
     $role->add_cap('manager_admission_aes');
+    $role->add_cap('manager_report_aes');
+    $role->add_cap('manager_sales_aes');
     $role->add_cap('manager_documents_aes');
     $role->add_cap('manager_payments_aes');
     $role->add_cap('manager_alliances_aes');
