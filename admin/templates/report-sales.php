@@ -33,12 +33,6 @@
             <div>Accounts receivable </div>
             <div style="margin-top: 10px"><strong id="receivable"></strong></div>
         </div>
-        <?php foreach ($orders['payment_methods'] as $key => $paymen_method) { ?>
-            <div class="card-report-sales" id="payment-options" style="background-color: #d4c6e7;">
-                <div><?php echo $key ?></div>
-                <div style="margin-top: 10px"><strong id="<?php echo $key ?>"><?php echo $paymen_method ?></strong></div>
-            </div>
-        <?php } ?>
     </div>
     <div style="width:100%;text-align:center;padding-top:10px;">
 

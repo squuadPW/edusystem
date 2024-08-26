@@ -50,7 +50,6 @@ function get_orders($start, $end)
         $institute_fee += (float) $order->get_meta('institute_fee');
         $alliance_fee += (float) $order->get_meta('alliance_fee');
         $fee_payment += 0;
-        $fee_system += ($order->get_total() * 0.01); // 1% del total de la orden
         $tax += $order->get_total_tax(); // obtenemos el tax de la orden
         $gross += ($order->get_subtotal() ? $order->get_subtotal() : 0);
         $discount += ($order->get_total_discount() ? $order->get_total_discount() : 0);
@@ -62,6 +61,11 @@ function get_orders($start, $end)
 
         // obtenemos el método de pago y sumamos el total del pedido a su total
         $payment_method = $order->get_payment_method_title();
+        if ($payment_method != 'Credit Card') {
+            $fee_system += ($order->get_total() * 0.014); // 1% del total de la orden
+        } else {
+            $fee_system += (float) $order->get_meta('fee_squuad'); // 1% del total de la orden
+        }
         if (!isset($payment_methods[$payment_method])) {
             $payment_methods[$payment_method] = 0;
         }
@@ -81,8 +85,12 @@ function get_orders($start, $end)
         if ($month == 8) { // August is the 8th month
             $order_id = $cuote->order_id;
             $order = wc_get_order($order_id);
-            $discount = $order->get_total_discount();
-            $receivable += ($cuote->amount - $discount);
+            if ($order) {
+                $discount = $order->get_total_discount();
+                $receivable += ($cuote->amount - $discount);
+            } else {
+                $receivable += $cuote->amount;    
+            }
         } else {
             $receivable += $cuote->amount;
         }
