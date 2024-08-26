@@ -183,8 +183,8 @@ function add_admin_institutes_content(){
             $roles = $current_user->roles;
             $institute_id = $_GET['institute_id'];
             $institute = get_institute_details($institute_id);
-            $date = get_dates_search('today','');
-            $start_date = date('m/d/Y',strtotime('today'));
+            $date = get_dates_search('this-month','');
+            $start_date = date('01/m/Y', strtotime('first day of this month'));
             $orders = get_order_institutes($date[0],$date[1]);
             include(plugin_dir_path(__FILE__).'templates/list-payments-institutes.php');
         }
