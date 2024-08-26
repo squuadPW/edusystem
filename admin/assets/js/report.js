@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("table-institutes-payment").innerHTML =
             result.html;
             document.getElementById("gross").innerHTML = result.data.gross;
+            document.getElementById("orders").innerHTML = result.data.orders.length;
             document.getElementById("net").innerHTML = result.data.net;
             document.getElementById("a_fee").innerHTML = result.data.alliance_fee;
             document.getElementById("i_fee").innerHTML = result.data.institute_fee;
@@ -122,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (result.status == "success") {
           document.getElementById("gross").innerHTML = result.orders.gross;
+          document.getElementById("orders").innerHTML = result.orders.orders.length;
           document.getElementById("net").innerHTML = result.orders.net;
           document.getElementById("fees").innerHTML = result.orders.fees;
           document.getElementById("tax").innerHTML =

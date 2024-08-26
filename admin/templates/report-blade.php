@@ -1,5 +1,9 @@
 <div class="wrap">
     <div class="grid-container-report" id="card-totals-sales">
+        <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
+            <div>Total orders</div>
+            <div style="margin-top: 10px"><strong id="orders"></strong></div>
+        </div>
         <div class="card-report-sales tooltip" title="Gross sales of orders" style="background-color: #d6ecfb;">
             <div>Gross sales of orders</div>
             <div style="margin-top: 10px"><strong id="gross"></strong></div>
@@ -13,7 +17,7 @@
         <div class="card-report-sales tooltip"
             title="Total fees for all orders. Including institution fee, alliance fee, payment fee, system fee"
             style="background-color: #fff7d4;">
-            <div>Sale of fees</div>
+            <div>Total fees</div>
             <div style="margin-top: 10px"><strong id="fees"></strong></div>
         </div>
         <div class="card-report-sales tooltip" title="Total taxes of all orders" style="background-color: #c791c7;">

@@ -1,5 +1,9 @@
 <div class="wrap">
     <div id="card-totals-sales" class="grid-container-report">
+        <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
+            <div>Total orders</div>
+            <div style="margin-top: 10px"><strong id="orders"></strong></div>
+        </div>
         <div style="background-color: #d6ecfb;" class="card-report-sales tooltip" title="Gross sales of orders">
             <div>Gross sales of orders</div>
             <div style="margin-top: 10px"><strong id="gross"></strong></div>
