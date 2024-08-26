@@ -61,12 +61,19 @@ function aes_scripts_admin(){
         ]);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales')){
+    if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales' || $_GET['page'] == 'add_admin_form_report_content')){
         wp_enqueue_script('report',plugins_url('aes').'/admin/assets/js/report.js',array('jquery'),'1.0.0',true);
+        wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js');
+        wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js');
 
         wp_localize_script('report','list_orders_sales',[
             'url' => admin_url( 'admin-ajax.php' ),
             'action' => 'list_orders_sales' 
+        ]);
+
+        wp_localize_script('report','load_chart_data',[
+            'url' => admin_url( 'admin-ajax.php' ),
+            'action' => 'load_chart_data' 
         ]);
     }
     

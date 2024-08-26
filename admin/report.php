@@ -13,19 +13,22 @@ function show_report_sales()
 
     } else {
         global $current_user;
-        $date = get_dates_search('this-month', '');
-        $start_date = date('01/m/Y', strtotime('first day of this month'));
-        $orders = get_orders($date[0], $date[1]);
         include(plugin_dir_path(__FILE__) . 'templates/report-sales.php');
     }
 }
 
 function get_orders($start, $end)
 {
+    global $wpdb;
     $data_fees = [];
     $institute_fee = 0.00;
     $alliance_fee = 0.00;
-    $total = 0.00;
+    $gross = 0.00;
+    $discount = 0.00;
+    $receivable = 0.00;
+    $tax = 0.00;
+    $fee_payment = 0.00;
+    $fee_system = 0.00;
     $payment_methods = []; // array para almacenar los métodos de pago y sus totales
     $strtotime_start = strtotime($start);
     $strtotime_end = strtotime($end);
@@ -46,7 +49,16 @@ function get_orders($start, $end)
 
         $institute_fee += (float) $order->get_meta('institute_fee');
         $alliance_fee += (float) $order->get_meta('alliance_fee');
-        $net_total += $order->get_total(); // sumamos el total del pedido al total general
+        $fee_payment += 0;
+        $fee_system += ($order->get_total() * 0.01); // 1% del total de la orden
+        $tax += $order->get_total_tax(); // obtenemos el tax de la orden
+        $gross += ($order->get_subtotal() ? $order->get_subtotal() : 0);
+        $discount += ($order->get_total_discount() ? $order->get_total_discount() : 0);
+        if ($order->get_fees()) {
+            foreach ( $order->get_fees() as $fee ) {
+                $fee_payment += $fee->get_amount();
+            }
+        }
 
         // obtenemos el método de pago y sumamos el total del pedido a su total
         $payment_method = $order->get_payment_method_title();
@@ -61,12 +73,57 @@ function get_orders($start, $end)
         return get_woocommerce_currency_symbol() . number_format($total, 2, '.', ',');
     }, $payment_methods);
 
+    $table_student_payments = $wpdb->prefix.'student_payments';
+    $cuotes = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE status_id=0");
+    foreach ($cuotes as $cuote) {
+        $created_at = $cuote->created_at;
+        $month = date('n', strtotime($created_at)); // extract month from date string
+        if ($month == 8) { // August is the 8th month
+            $order_id = $cuote->order_id;
+            $order = wc_get_order($order_id);
+            $discount = $order->get_total_discount();
+            $receivable += ($cuote->amount - $discount);
+        } else {
+            $receivable += $cuote->amount;
+        }
+    }
+
+    $total_fees = (((($institute_fee + $alliance_fee) + $tax) + $fee_payment) + $fee_system);
     return [
         'institute_fee' => get_woocommerce_currency_symbol() . number_format($institute_fee, 2, '.', ','),
         'alliance_fee' => get_woocommerce_currency_symbol() . number_format($alliance_fee, 2, '.', ','),
-        'net_total' => get_woocommerce_currency_symbol() . number_format($net_total, 2, '.', ','),
+        'tax' => get_woocommerce_currency_symbol() . number_format($tax, 2, '.', ','),
+        'fee_payment' => get_woocommerce_currency_symbol() . number_format($fee_payment, 2, '.', ','),
+        'fee_system' => get_woocommerce_currency_symbol() . number_format($fee_system, 2, '.', ','),
+        'fees' => get_woocommerce_currency_symbol() . number_format($total_fees, 2, '.', ','),
+        'gross' => get_woocommerce_currency_symbol() . number_format($gross, 2, '.', ','),
+        'net' => get_woocommerce_currency_symbol() . number_format((($gross - $discount) - $total_fees), 2, '.', ','),
+        'receivable' => get_woocommerce_currency_symbol() . number_format($receivable, 2, '.', ','),
         'payment_methods' => (array) $payment_methods,
-        'orders' => $data_fees
+        'orders' => $data_fees,
+    ];
+}
+
+function get_orders_by_date($date)
+{
+    $args['limit'] = -1;
+    $args['status'] = 'wc-completed';
+    $args['date_created'] = $date;
+    $institute_fee = 0.00;
+    $alliance_fee = 0.00;
+    $gross = 0.00;
+    $discount = 0.00;
+    $orders = wc_get_orders($args);
+    foreach ($orders as $order) {
+        $institute_fee += (float) $order->get_meta('institute_fee');
+        $alliance_fee += (float) $order->get_meta('alliance_fee');
+        $gross += ($order->get_subtotal() ? $order->get_subtotal() : 0);
+        $discount += ($order->get_total_discount() ? $order->get_total_discount() : 0);
+    }
+
+    return [
+        'gross' => $gross,
+        'net' => (($gross - $discount) - ($institute_fee + $alliance_fee)),
     ];
 }
 
@@ -121,5 +178,62 @@ add_action('wp_ajax_list_orders_sales', 'get_list_orders_sales');
 
 function add_admin_form_report_content()
 {
-    echo '';
+    include(plugin_dir_path(__FILE__) . 'templates/report-blade.php');
 }
+
+
+function get_load_chart_data()
+{
+    if (isset($_POST['filter']) && !empty($_POST['filter'])) {
+
+        $filter = $_POST['filter'];
+        $custom = $_POST['custom'];
+
+        $dates = get_dates_search($filter, $custom);
+        $orders = get_orders($dates[0], $dates[1]);
+
+        $date1 = new DateTime($dates[0]);
+        $date2 = new DateTime($dates[1]);
+
+        $interval = $date1->diff($date2);
+
+        $labels = array();
+        $net_sale_count = array();
+        $gross_sale_counte = array();
+
+        for ($i = 0; $i <= $interval->days; $i++) {
+            $currentDate = clone $date1;
+            $currentDate->modify("+$i days");
+            array_push($labels, $currentDate->format('M j, Y'));
+
+            $info_orders = get_orders_by_date($currentDate->format('Y-m-d'));
+            array_push($net_sale_count, $info_orders['net']);
+            array_push($gross_sale_counte, $info_orders['gross']);
+        }
+
+        $chart_data = array(
+            'labels' => $labels,
+            'datasets' => array(
+                array(
+                    'label' => 'Gross sale',
+                    'data' => $gross_sale_counte,
+                    'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
+                    'borderColor' => 'rgba(54, 162, 235, 1)',
+                    'borderWidth' => 1
+                ),
+                array(
+                    'label' => 'Net sale',
+                    'data' => $net_sale_count,
+                    'backgroundColor' => 'rgba(255, 99, 132, 0.2)',
+                    'borderColor' => 'rgba(255, 99, 132, 1)',
+                    'borderWidth' => 1
+                )
+            )
+        );
+        echo json_encode(['status' => 'success', 'chart_data' => $chart_data, 'orders' => $orders]);
+        exit;
+    }
+}
+
+add_action('wp_ajax_nopriv_load_chart_data', 'get_load_chart_data');
+add_action('wp_ajax_load_chart_data', 'get_load_chart_data');

@@ -218,11 +218,43 @@ div#application-passwords-section {
 }
 
 .card-report-sales {
-  width: 120px;
   background-color: #ffffff;
   border-radius: 8px;
   padding: 10px;
-  border-right: 2px solid #2271b1;
   margin: 4px;
   font-size: 18px;
+  text-align: center;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+/* CSS Styles */
+.grid-container-report {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 18px;
 }/*# sourceMappingURL=style.css.map */
