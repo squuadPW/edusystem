@@ -1039,7 +1039,7 @@ function update_status_documents()
                     }
                 }
 
-                // create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
+                create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
                 update_status_student($student_id, 2);
 

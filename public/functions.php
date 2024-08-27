@@ -719,7 +719,7 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         }
                     }
     
-                    // create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
+                    create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
                     if ($order->get_meta('id_bitrix')) {
                         sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());
