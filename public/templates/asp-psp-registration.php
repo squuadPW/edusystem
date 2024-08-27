@@ -549,7 +549,7 @@ if (is_user_logged_in()) {
                 <span id="sameemailparent"
                     style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student', 'aes'); ?></span>
             </div>
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="parent-gender-field">
                 <label for="gender_parent"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
                 <select class="form-control" id="gender_parent" required name="gender_parent">
                     <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>

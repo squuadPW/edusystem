@@ -490,6 +490,11 @@ if (document.getElementById("birth_date_student")) {
             parentEmailField.style.display = "none";
           }
 
+          var parentGenderField = document.getElementById("parent-gender-field");
+          if (parentGenderField) {
+            parentGenderField.style.display = "none";
+          }
+
           var parentDocumentType = document.getElementById("parent_document_type");
           if (parentDocumentType) {
             parentDocumentType.required = false;
@@ -523,6 +528,13 @@ if (document.getElementById("birth_date_student")) {
           var emailPartner = document.getElementById("email_partner");
           if (emailPartner) {
             emailPartner.required = false;
+          }
+
+          var parentGenderField = document.getElementById(
+            "gender_parent"
+          );
+          if (parentGenderField) {
+            parentGenderField.required = false;
           }
         }
       } else {
@@ -589,6 +601,14 @@ if (document.getElementById("birth_date_student")) {
             parentPhoneField.style.display = "block";
           }
 
+          
+          var parentGenderField = document.getElementById(
+            "parent-gender-field"
+          );
+          if (parentGenderField) {
+            parentGenderField.style.display = "block";
+          }
+
           var parentEmailField = document.getElementById("parent-email-field");
           if (parentEmailField) {
             parentEmailField.style.display = "block";
@@ -627,6 +647,13 @@ if (document.getElementById("birth_date_student")) {
           var emailPartner = document.getElementById("email_partner");
           if (emailPartner) {
             emailPartner.required = true;
+          }
+
+          var parentGenderField = document.getElementById(
+            "gender_parent"
+          );
+          if (parentGenderField) {
+            parentGenderField.required = true;
           }
       }
     });
