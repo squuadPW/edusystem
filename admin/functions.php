@@ -61,7 +61,7 @@ function aes_scripts_admin(){
         ]);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales' || $_GET['page'] == 'add_admin_form_report_content')){
+    if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables'){
         wp_enqueue_script('report',plugins_url('aes').'/admin/assets/js/report.js',array('jquery'),'1.0.0',true);
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js');
         wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js');
@@ -69,6 +69,11 @@ function aes_scripts_admin(){
         wp_localize_script('report','list_orders_sales',[
             'url' => admin_url( 'admin-ajax.php' ),
             'action' => 'list_orders_sales' 
+        ]);
+
+        wp_localize_script('report','list_accounts_receivables',[
+            'url' => admin_url( 'admin-ajax.php' ),
+            'action' => 'list_accounts_receivables' 
         ]);
 
         wp_localize_script('report','load_chart_data',[
@@ -206,6 +211,7 @@ function add_custom_admin_page() {
     );
 
     add_submenu_page('add_admin_form_report_content',__('Sales','aes'),__('Sales','aes'),'manager_sales_aes','report-sales','show_report_sales', 10);
+    add_submenu_page('add_admin_form_report_content',__('Accounts receivable','aes'),__('Accounts receivable','aes'),'manager_accounts_receivables_aes','report-accounts-receivables','show_report_accounts_receivables', 10);
 
     add_menu_page( 
         __('Payments','aes'),
@@ -307,6 +313,7 @@ function add_cap_to_administrator(){
     $role->add_cap('manager_admission_aes');
     $role->add_cap('manager_report_aes');
     $role->add_cap('manager_sales_aes');
+    $role->add_cap('manager_accounts_receivables_aes');
     $role->add_cap('manager_documents_aes');
     $role->add_cap('manager_payments_aes');
     $role->add_cap('manager_alliances_aes');
@@ -333,6 +340,10 @@ function get_dates_search($filter,$custom){
         $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('-1 days')).'00:00','Y-m-d H:i');
         $end = get_gmt_from_date(wp_date('Y-m-d',).'00:00','Y-m-d H:i');
 
+    }else if($filter == 'tomorrow'){
+        $start = get_gmt_from_date(wp_date('Y-m-d').'00:00','Y-m-d H:i');
+        $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('+1 days')).'00:00','Y-m-d H:i');
+
     }else if($filter == 'this-week'){
 
         $date = Datetime ::createFromFormat('Y-m-d',wp_date('Y-m-d'));
@@ -355,6 +366,12 @@ function get_dates_search($filter,$custom){
         $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('this week -1 days')).'23:59','Y-m-d H:i');
         
 
+    }else if($filter == 'next-week'){
+        
+        $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('this week')).'00:00','Y-m-d H:i');
+        $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('next week -1 days')).'23:59','Y-m-d H:i');
+        
+
     }else if($filter == 'this-month'){
         
         $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('first day of this month')).'00:00','Y-m-d H:i');
@@ -364,6 +381,12 @@ function get_dates_search($filter,$custom){
 
         $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('first day of last month')).'00:00','Y-m-d H:i');
         $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('last day of last month')).'23:59','Y-m-d H:i');
+        
+       
+    }else if($filter == 'next-month'){
+
+        $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('first day of next month')).'00:00','Y-m-d H:i');
+        $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('last day of next month')).'23:59','Y-m-d H:i');
         
        
     }else if($filter == 'custom'){

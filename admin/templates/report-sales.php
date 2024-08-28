@@ -94,7 +94,7 @@
                             <?= $order['student']; ?>
                         </td>
                         <td class="column" data-colname="<?= __('Total', 'restaurant-system-app'); ?>">
-                            <?= get_woocommerce_currency_symbol() . $order['total']; ?>
+                            <?= wc_price($order['total']) ; ?>
                         </td>
                         <td class="column" data-colname="<?= __('Created', 'restaurant-system-app'); ?>">
                             <b><?= $order['created_at']; ?></b>
@@ -107,7 +107,7 @@
                 <?php } ?>
             <?php } else { ?>
                 <tr>
-                    <td colspan='5' style='text-align:center;'><?= __('There are not records', 'aes') ?></td>
+                    <td colspan='6' style='text-align:center;'><?= __('There are not records', 'aes') ?></td>
                 </tr>
             <?php } ?>
         </tbody>

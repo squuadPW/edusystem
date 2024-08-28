@@ -257,4 +257,11 @@ div#application-passwords-section {
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin: 18px;
+}
+
+.grid-container-report-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 18px;
 }/*# sourceMappingURL=style.css.map */

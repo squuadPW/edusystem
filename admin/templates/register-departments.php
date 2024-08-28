@@ -133,6 +133,12 @@
                     </th>
                     <td style="display:table-cell;padding:3px;"><label for="manager_sales_aes" style="margin-left:20px;"><?= __('Sales','aes'); ?></label></td>
                 </tr>
+                <tr>
+                    <th scope="row" style="width:10px;padding:3px;">
+                        <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_accounts_receivables_aes" id="manager_accounts_receivables_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_accounts_receivables_aes'])) ? 'checked' : ''; ?>>
+                    </th>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_accounts_receivables_aes" style="margin-left:20px;"><?= __('Accounts receivable','aes'); ?></label></td>
+                </tr>
             </tbody>
        </table>
        <div style="display:flex;width:100%;justify-content:end;margin-top:10px;">
