@@ -121,7 +121,7 @@ class TT_payment_pending_List_Table extends WP_List_Table{
                     'payment_id' => $order->get_id(),
                     'date' => $order->get_date_created()->format('F j, Y g:i a'),
                     'partner_name' =>  $order->get_billing_first_name().' '.$order->get_billing_last_name(),
-                    'total' => get_woocommerce_currency_symbol().$order->get_total(),
+                    'total' => wc_price($order->get_total()),
                     'status' => $order->get_status(),
                     'payment_method' => $order->get_payment_method_title()
                 ]);
@@ -260,7 +260,7 @@ class TT_all_payments_List_Table extends WP_List_Table{
                     'payment_id' => $order->get_id(),
                     'date' => $order->get_date_created()->format('F j, Y g:i a'),
                     'partner_name' =>  $order->get_billing_first_name().' '.$order->get_billing_last_name(),
-                    'total' => get_woocommerce_currency_symbol().$order->get_total(),
+                    'total' => wc_price($order->get_total()),
                     'status' => $order->get_status(),
                     'payment_method' => $order->get_payment_method_title()
                 ]);
