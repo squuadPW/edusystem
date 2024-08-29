@@ -51,7 +51,7 @@
         </div>
     </div>
     <div style="text-align: center !important;">
-        <span style="border-bottom: 1px solid gray; width: 100% !important; font-weight: 600; padding: 10px; margin: 10px; font-size: 18px;">Payment methods used for orders</span>
+        <span style="border-bottom: 1px solid gray; width: 100% !important; font-weight: 600; padding: 10px; margin: 10px; font-size: 18px;">Payment methods used by users</span>
         <div id="card-totals-sales" class="grid-container-report-4"></div>
     </div>
     <div style="width:100%;text-align:center;padding-top:10px;">
