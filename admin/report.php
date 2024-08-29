@@ -403,7 +403,7 @@ function list_sales_product()
                 $product = wc_get_product($product_id);
                 $product_name = $product->get_name();
 
-                $html .= "<tr style='background-color: #f6f7f7; -webkit-box-shadow: 0px -1px 0.5px 0px rgb(121 120 120 / 30%); -moz-box-shadow: 0px -1px 0.5px 0px rgb(121 120 120 / 30%); box-shadow: 0px -1px 0.5px 0px rgb(121 120 120 / 30%);'>";
+                $html .= "<tr style='background-color: #f6f7f7; -webkit-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); -moz-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%);'>";
                 $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'aes') . "'>";
                 $html .= '#' . $product_id;
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
