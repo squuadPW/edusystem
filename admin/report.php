@@ -518,11 +518,12 @@ function list_report_students()
 
         foreach ($students as $student) {
             $parent = get_user_by('id', $student->partner_id);
+            $user_student = get_user_by('email', $student->email);
 
             $html .= "<tr>";
             $html .= "<td class='column' data-colname='" . __('Academic Period', 'restaurant-system-app') . "'>" . $student->academic_period . "</td>";
             $html .= "<td class='column' data-colname='" . __('Parent', 'restaurant-system-app') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . get_user_meta($parent->ID, 'first_name', true) . ' ' . get_user_meta($parent->ID, 'last_name', true) . "</a></td>";
-            $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $student->student_id . '" target="_blank">' . $student->name . ' ' . ($student->middle_name ?? '') . ' ' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . "</a></td>";
+            $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . $student->name . ' ' . ($student->middle_name ?? '') . ' ' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . "</a></td>";
             $html .= "<td class='column' data-colname='" . __('Country', 'restaurant-system-app') . "'>" . $student->country . "</td>";
             $html .= "<td class='column' data-colname='" . __('Grade', 'restaurant-system-app') . "'>" . get_name_grade($student->grade_id) . "</td>";
             $html .= "<td class='column' data-colname='" . __('Program', 'restaurant-system-app') . "'>" . get_name_program($student->program_id) . "</td>";
