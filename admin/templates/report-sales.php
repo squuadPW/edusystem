@@ -1,12 +1,22 @@
 <div class="wrap">
-    <div id="card-totals-sales" class="grid-container-report">
+    <div class="grid-container-report">
         <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
             <div>Total orders</div>
             <div style="margin-top: 10px"><strong id="orders"></strong></div>
         </div>
+    </div>
+    <div class="grid-container-report-4">
         <div style="background-color: #d6ecfb;" class="card-report-sales tooltip" title="Gross sales of orders">
             <div>Gross sales of orders</div>
             <div style="margin-top: 10px"><strong id="gross"></strong></div>
+        </div>
+        <div style="background-color: #59e58291;" class="card-report-sales tooltip" title="Gross sales of orders">
+            <div>Discount</div>
+            <div style="margin-top: 10px"><strong id="discount"></strong></div>
+        </div>
+        <div style="background-color: #d10c0c42;" class="card-report-sales tooltip" title="Gross sales of orders">
+            <div>Adjusted gross</div>
+            <div style="margin-top: 10px"><strong id="adjusted_gross"></strong></div>
         </div>
         <div style="background-color: #ffe0e6;" class="card-report-sales tooltip"
             title="The subtraction of the institution fee, alliance fee, payment fee, system fee and the order tax is applied">
@@ -25,7 +35,8 @@
             <div>Payments fee</div>
             <div style="margin-top: 10px"><strong id="p_fees"></strong></div>
         </div>
-        <div style="background-color: #fff7d4;" class="card-report-sales tooltip" title="Total fees for system (Edusof)">
+        <div style="background-color: #fff7d4;" class="card-report-sales tooltip"
+            title="Total fees for system (Edusof)">
             <div>Edusof fee</div>
             <div style="margin-top: 10px"><strong id="e_fees"></strong></div>
         </div>
@@ -33,10 +44,15 @@
             <div>Tax total </div>
             <div style="margin-top: 10px"><strong id="tax"></strong></div>
         </div>
-        <div style="background-color: #c5f3c5;" class="card-report-sales tooltip" title="All upcoming accounts receivable (pending quotes)">
+        <div style="background-color: #c5f3c5;" class="card-report-sales tooltip"
+            title="All upcoming accounts receivable (pending quotes)">
             <div>Accounts receivable </div>
             <div style="margin-top: 10px"><strong id="receivable"></strong></div>
         </div>
+    </div>
+    <div style="text-align: center !important;">
+        <span style="border-bottom: 1px solid gray; width: 100% !important; font-weight: 600; padding: 10px; margin: 10px; font-size: 18px;">Payment methods used for orders</span>
+        <div id="card-totals-sales" class="grid-container-report-4"></div>
     </div>
     <div style="width:100%;text-align:center;padding-top:10px;">
 
@@ -94,7 +110,7 @@
                             <?= $order['student']; ?>
                         </td>
                         <td class="column" data-colname="<?= __('Total', 'restaurant-system-app'); ?>">
-                            <?= wc_price($order['total']) ; ?>
+                            <?= wc_price($order['total']); ?>
                         </td>
                         <td class="column" data-colname="<?= __('Created', 'restaurant-system-app'); ?>">
                             <b><?= $order['created_at']; ?></b>

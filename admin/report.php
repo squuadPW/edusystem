@@ -57,14 +57,14 @@ function get_orders($start, $end)
 
     foreach ($orders as $order) {
         $customer = get_user_by('id', $order->get_customer_id());
-        $student_mail = $order->get_meta('student_data') ? $order->get_meta('student_data')['email_student'] : null;
-        $table_students = $wpdb->prefix.'students';
-        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$student_mail}'");
-        $user_student = get_user_by('email', $student_mail);
+        $student_id = $order->get_meta('student_id') ? $order->get_meta('student_id') : null;
+        $table_students = $wpdb->prefix . 'students';
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id='{$student_id}'");
+        $user_student = get_user_by('email', $student->email);
         array_push($data_fees, [
             'order_id' => $order->get_id(),
             'customer' => $customer,
-            'student' => (array)$student,
+            'student' => (array) $student,
             'student_id' => $user_student ? $user_student->ID : null,
             'total' => $order->get_total(),
             'created_at' => $order->get_date_created()->format('F j, Y g:i a')
@@ -77,7 +77,7 @@ function get_orders($start, $end)
         $gross += ($order->get_subtotal() ? $order->get_subtotal() : 0);
         $discount += ($order->get_total_discount() ? $order->get_total_discount() : 0);
         if ($order->get_fees()) {
-            foreach ( $order->get_fees() as $fee ) {
+            foreach ($order->get_fees() as $fee) {
                 $fee_payment += $fee->get_amount();
             }
         }
@@ -100,7 +100,7 @@ function get_orders($start, $end)
         return wc_price($total);
     }, $payment_methods);
 
-    $table_student_payments = $wpdb->prefix.'student_payments';
+    $table_student_payments = $wpdb->prefix . 'student_payments';
     $cuotes = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_student_payments} WHERE status_id = %s AND date_next_payment BETWEEN %s AND %s ORDER BY date_next_payment ASC", 0, $start, $end));
     $cuotes_array = array();
     foreach ($cuotes as $cuote) {
@@ -108,8 +108,8 @@ function get_orders($start, $end)
         $customer = get_user_by('id', $student->partner_id);
         $user_student = get_user_by('email', $student->email);
 
-        $cuote->student = (array)$student;
-        $cuote->customer = (array)$customer;
+        $cuote->student = (array) $student;
+        $cuote->customer = (array) $customer;
         $cuote->student_id = $user_student ? $user_student->ID : null;
 
         $product = wc_get_product($cuote->variation_id ? $cuote->variation_id : $cuote->product_id);
@@ -123,8 +123,8 @@ function get_orders($start, $end)
                 $order_id = $cuote->order_id;
                 $order = wc_get_order($order_id);
                 if ($order) {
-                    $discount = $order->get_total_discount();
-                    $value = ($cuote->amount - $discount);
+                    $discount_order = $order->get_total_discount();
+                    $value = ($cuote->amount - $discount_order);
                     $cuote->amount = $value < 0 ? $cuote->amount : $value;
                 }
             }
@@ -144,6 +144,8 @@ function get_orders($start, $end)
         'fees' => wc_price($total_fees),
         'gross' => wc_price($gross),
         'net' => wc_price((($gross - $discount) - $total_fees)),
+        'adjusted_gross' => wc_price($gross - $discount),
+        'discount' => wc_price($discount),
         'receivable' => wc_price($receivable),
         'payment_methods' => (array) $payment_methods,
         'cuotes' => $cuotes_array,
@@ -198,12 +200,12 @@ function get_list_orders_sales()
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
                 if ($order['customer']) {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . '<a href="'. $url . $order['customer']->data->ID .'" target="_blank">' . get_user_meta($order['customer']->data->ID, 'first_name', true) . ' ' . get_user_meta($order['customer']->data->ID, 'last_name', true) . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order['customer']->data->ID . '" target="_blank">' . get_user_meta($order['customer']->data->ID, 'first_name', true) . ' ' . get_user_meta($order['customer']->data->ID, 'last_name', true) . "</a></td>";
                 } else {
                     $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>N/A</td>";
                 }
-                if ($order['student']){
-                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="'. $url . $order['student_id'] .'" target="_blank">' . $order['student']['name'] . ' ' . $order['student']['middle_name'] . ' ' . $order['student']['last_name'] . ' ' . $order['student']['middle_last_name'] . "</a></td>";
+                if ($order['student']) {
+                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order['student_id'] . '" target="_blank">' . $order['student']['name'] . ' ' . $order['student']['middle_name'] . ' ' . $order['student']['last_name'] . ' ' . $order['student']['middle_last_name'] . "</a></td>";
                 } else {
                     $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>N/A</td>";
                 }
@@ -249,13 +251,13 @@ function list_accounts_receivables()
 
             foreach ($orders['cuotes'] as $order) {
                 $html .= "<tr>";
-                if ($order->customer['data']){
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . '<a href="'. $url . $order->customer['data']->ID .'" target="_blank">' . get_user_meta($order->customer['data']->ID, 'first_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'last_name', true) . "</a></td>";
+                if ($order->customer['data']) {
+                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . get_user_meta($order->customer['data']->ID, 'first_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'last_name', true) . "</a></td>";
                 } else {
                     $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>N/A</td>";
                 }
-                if ($order->student){
-                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="'. $url . $order->student_id .'" target="_blank">' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '') . ' ' . $order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . "</a></td>";
+                if ($order->student) {
+                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '') . ' ' . $order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . "</a></td>";
                 } else {
                     $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>N/A</td>";
                 }

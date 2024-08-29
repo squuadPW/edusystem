@@ -64,6 +64,10 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("tax").innerHTML = result.data.tax;
           document.getElementById("receivable").innerHTML =
             result.data.receivable;
+          document.getElementById("discount").innerHTML =
+            result.data.discount;
+          document.getElementById("adjusted_gross").innerHTML =
+            result.data.adjusted_gross;
 
           // Eliminar todos los elementos con id payment-options
           var paymentOptions = document.querySelectorAll("#payment-options");
@@ -130,6 +134,10 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("tax").innerHTML = result.orders.tax;
           document.getElementById("receivable").innerHTML =
             result.orders.receivable;
+          document.getElementById("discount").innerHTML =
+            result.orders.discount;
+          document.getElementById("adjusted_gross").innerHTML =
+            result.orders.adjusted_gross;
 
           // reload chart
           const chartData = result.chart_data;
