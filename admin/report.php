@@ -22,6 +22,23 @@ function show_report_sales()
     }
 }
 
+function show_report_sales_product()
+{
+    if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
+        if ($_GET['section_tab'] == 'payment-detail') {
+            global $current_user;
+            $roles = $current_user->roles;
+            $order_id = $_GET['payment_id'];
+            $order = wc_get_order($order_id);
+            include(plugin_dir_path(__FILE__) . 'templates/payment-details.php');
+        }
+
+    } else {
+        global $current_user;
+        include(plugin_dir_path(__FILE__) . 'templates/report-sales-product.php');
+    }
+}
+
 function show_report_accounts_receivables()
 {
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
@@ -52,8 +69,8 @@ function show_report_students()
 
     } else {
         global $current_user, $wpdb;
-        $table_academic_periods = $wpdb->prefix.'academic_periods';
-        $table_grades = $wpdb->prefix.'grades';
+        $table_academic_periods = $wpdb->prefix . 'academic_periods';
+        $table_grades = $wpdb->prefix . 'grades';
         $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
         $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
         include(plugin_dir_path(__FILE__) . 'templates/report-students.php');
@@ -203,29 +220,91 @@ function get_orders_by_date($date)
     ];
 }
 
-function get_students_report($academic_period, $grade) {
+function get_products_by_order($start, $end)
+{
+    $strtotime_start = strtotime($start);
+    $strtotime_end = strtotime($end);
+    $args['limit'] = -1;
+    $args['status'] = 'wc-completed';
+    $args['date_created'] = $strtotime_start . '...' . $strtotime_end;
+    $orders = wc_get_orders($args);
+
+    $product_quantities = array();
+    $product_subtotals = array();
+    $product_discounts = array();
+    $product_totals = array();
+    $product_taxs = array();
+
+    foreach ($orders as $order) {
+        $order_id = $order->get_id();
+        $order_items = $order->get_items();
+        $discount = $order->get_total_discount();
+
+        foreach ($order_items as $item) {
+            $product_id = $item->get_product_id();
+            $product_name = $item->get_name();
+            $quantity = $item->get_quantity();
+            $subtotal = $item->get_subtotal();
+            $tax = $item->get_total_tax();
+            $total = $item->get_total();
+
+            if (!isset($product_quantities[$product_id])) {
+                $product_quantities[$product_id] = 0;
+            }
+            if (!isset($product_subtotals[$product_id])) {
+                $product_subtotals[$product_id] = 0;
+            }
+            if (!isset($product_discounts[$product_id])) {
+                $product_discounts[$product_id] = 0;
+            }
+            if (!isset($product_totals[$product_id])) {
+                $product_totals[$product_id] = 0;
+            }
+            if (!isset($product_taxs[$product_id])) {
+                $product_taxs[$product_id] = 0;
+            }
+
+            $product_quantities[$product_id] += $quantity;
+            $product_subtotals[$product_id] += $subtotal;
+            $product_taxs[$product_id] += $tax;
+            $product_discounts[$product_id] += ($product_id != AES_FEE_INSCRIPTION) ? $discount : 0;
+            $product_totals[$product_id] += $total;
+        }
+    }
+
+    return [
+        'product_quantities' => $product_quantities,
+        'product_subtotals' => $product_subtotals,
+        'product_discounts' => $product_discounts,
+        'product_totals' => $product_totals,
+    ];
+
+}
+
+function get_students_report($academic_period, $grade)
+{
     global $wpdb;
-    $table_students = $wpdb->prefix.'students';
-    
+    $table_students = $wpdb->prefix . 'students';
+
     $conditions = array();
     $params = array();
-    
+
     if (!empty($academic_period)) {
         $conditions[] = "academic_period = %s";
         $params[] = $academic_period;
     }
-    
+
     if (!empty($grade)) {
         $conditions[] = "grade_id = %s";
         $params[] = $grade;
     }
-    
+
     $query = "SELECT * FROM {$table_students}";
-    
+
     if (!empty($conditions)) {
         $query .= " WHERE " . implode(" AND ", $conditions);
     }
-    
+
     $students = $wpdb->get_results($wpdb->prepare($query, $params));
 
 
@@ -289,6 +368,57 @@ function get_list_orders_sales()
 
 add_action('wp_ajax_nopriv_list_orders_sales', 'get_list_orders_sales');
 add_action('wp_ajax_list_orders_sales', 'get_list_orders_sales');
+
+function list_sales_product()
+{
+
+    if (isset($_POST['filter']) && !empty($_POST['filter'])) {
+
+        $filter = $_POST['filter'];
+        $custom = $_POST['custom'];
+
+        $html = "";
+        $dates = get_dates_search($filter, $custom);
+        $orders = get_products_by_order($dates[0], $dates[1]);
+
+        if (!empty($orders['product_quantities'])) {
+
+            uasort($orders['product_quantities'], function($a, $b) {
+                return $b <=> $a;
+            });
+
+            foreach ($orders['product_quantities'] as $product_id => $quantity) {
+                $product = wc_get_product($product_id);
+                $product_name = $product->get_name();
+
+                $html .= "<tr>";
+                $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'aes') . "'>";
+                $html .= '#' . $product_id;
+                $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
+                $html .= "</td>";
+                $html .= "<td class='column' data-colname='" . __('Product', 'restaurant-system-app') . "'>" . $product_name . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Quantity', 'restaurant-system-app') . "'>" . $quantity . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Subtotal', 'restaurant-system-app') . "'>" . wc_price($orders['product_subtotals'][$product_id]) . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Discount', 'restaurant-system-app') . "'>" . wc_price($orders['product_discounts'][$product_id]) . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Tax', 'restaurant-system-app') . "'>" . wc_price($orders['product_taxs'][$product_id]) . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Total', 'restaurant-system-app') . "'>" . wc_price(($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]))) . "</td>";
+
+                $html .= "</tr>";
+            }
+
+        } else {
+            $html .= "<tr>";
+            $html .= "<td colspan='6' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html .= "</tr>";
+        }
+
+        echo json_encode(['status' => 'success', 'html' => $html, 'data' => $orders]);
+        exit;
+    }
+}
+
+add_action('wp_ajax_nopriv_list_sales_product', 'list_sales_product');
+add_action('wp_ajax_list_sales_product', 'list_sales_product');
 
 function list_accounts_receivables()
 {

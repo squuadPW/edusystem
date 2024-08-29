@@ -94,6 +94,49 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 
+  if (document.getElementById("update_data_sales_product")) {
+    load_sales_product();
+    document.getElementById("update_data_sales_product").addEventListener("click", () => {
+      load_sales_product();
+    });
+  }
+
+  function load_sales_product() {
+    let filter = document.getElementById("typeFilter").value;
+    let custom = document.getElementById("inputStartDate").value;
+
+    let htmlLoading = "";
+
+    htmlLoading += "<tr>";
+    htmlLoading +=
+      "<td class='column-primary id column-id' colspan='7' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+    htmlLoading += "</tr>";
+
+    document.getElementById("table-institutes-payment").innerHTML = htmlLoading;
+
+    const XHR = new XMLHttpRequest();
+    XHR.open("POST", list_sales_product.url, true);
+    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    XHR.responseType = "text";
+    XHR.send(
+      "action=" +
+        list_sales_product.action +
+        "&filter=" +
+        filter +
+        "&custom=" +
+        custom
+    );
+    XHR.onload = function () {
+      if (this.readyState == "4" && XHR.status === 200) {
+        let result = JSON.parse(XHR.responseText);
+
+        if (result.status == "success") {
+          document.getElementById("table-institutes-payment").innerHTML = result.html;
+        }
+      }
+    };
+  }
+
   if (document.getElementById("update_data_chart")) {
     var chart;
     load_chart();

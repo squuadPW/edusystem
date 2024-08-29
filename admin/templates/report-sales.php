@@ -96,36 +96,7 @@
             </tr>
         </thead>
         <tbody id="table-institutes-payment">
-            <?php if (!empty($orders['orders'])) { ?>
-                <?php foreach ($orders['orders'] as $order) { ?>
-                    <tr>
-                        <td class="column column-primary" data-colname="<?= __('Payment ID', 'restaurant-system-app'); ?>">
-                            <?= '#' . $order['order_id']; ?>
-                            <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
-                        </td>
-                        <td class="column" data-colname="<?= __('Parent', 'restaurant-system-app'); ?>">
-                            <?= $order['customer']; ?>
-                        </td>
-                        <td class="column" data-colname="<?= __('Student', 'restaurant-system-app'); ?>">
-                            <?= $order['student']; ?>
-                        </td>
-                        <td class="column" data-colname="<?= __('Total', 'restaurant-system-app'); ?>">
-                            <?= wc_price($order['total']); ?>
-                        </td>
-                        <td class="column" data-colname="<?= __('Created', 'restaurant-system-app'); ?>">
-                            <b><?= $order['created_at']; ?></b>
-                        </td>
-                        <td class="column" data-colname="<?= __('Action', 'restaurant-system-app'); ?>">
-                            <a class='button button-primary'
-                                href="<?= admin_url('admin.php?page=report-sales&section_tab=payment-detail&payment_id=' . $order['order_id']) ?>"><?= __('View details', 'aes'); ?></a>
-                        </td>
-                    </tr>
-                <?php } ?>
-            <?php } else { ?>
-                <tr>
-                    <td colspan='6' style='text-align:center;'><?= __('There are not records', 'aes') ?></td>
-                </tr>
-            <?php } ?>
+
         </tbody>
     </table>
 </div>
