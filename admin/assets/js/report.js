@@ -214,4 +214,54 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     };
   }
+
+  if (document.getElementById("update_data_report_students")) {
+    load_report_students();
+    document
+      .getElementById("update_data_report_students")
+      .addEventListener("click", () => {
+        load_report_students();
+      });
+  }
+
+  function load_report_students() {
+    let academic_period = document.getElementById("academic_period").value;
+    let grade = document.getElementById("grade").value;
+
+    let htmlLoading = "";
+
+    htmlLoading += "<tr>";
+    htmlLoading +=
+      "<td class='column-primary id column-id' colspan='7' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+    htmlLoading += "</tr>";
+
+    document.getElementById("table-institutes-payment").innerHTML = htmlLoading;
+
+    const XHR = new XMLHttpRequest();
+    XHR.open("POST", list_report_students.url, true);
+    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    XHR.responseType = "text";
+    XHR.send(
+      "action=" +
+        list_report_students.action +
+        "&academic_period=" +
+        academic_period +
+        "&period=" +
+        grade
+    );
+    XHR.onload = function () {
+      if (this.readyState == "4" && XHR.status === 200) {
+        let result = JSON.parse(XHR.responseText);
+
+        if (result.status == "success") {
+          document.getElementById("table-institutes-payment").innerHTML =
+            result.html;
+          document.getElementById("students").innerHTML =
+            result.data.length;
+          // document.getElementById("receivable").innerHTML =
+          //   result.data.receivable;
+        }
+      }
+    };
+  }
 });

@@ -1,5 +1,10 @@
 <?php
 
+function add_admin_form_report_content()
+{
+    include(plugin_dir_path(__FILE__) . 'templates/report-blade.php');
+}
+
 function show_report_sales()
 {
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
@@ -34,6 +39,28 @@ function show_report_accounts_receivables()
     }
 }
 
+function show_report_students()
+{
+    if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
+        if ($_GET['section_tab'] == 'payment-detail') {
+            global $current_user;
+            $roles = $current_user->roles;
+            $order_id = $_GET['payment_id'];
+            $order = wc_get_order($order_id);
+            include(plugin_dir_path(__FILE__) . 'templates/payment-details.php');
+        }
+
+    } else {
+        global $current_user, $wpdb;
+        $table_academic_periods = $wpdb->prefix.'academic_periods';
+        $table_grades = $wpdb->prefix.'grades';
+        $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+        $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
+        include(plugin_dir_path(__FILE__) . 'templates/report-students.php');
+    }
+}
+
+// GET ORDERS
 function get_orders($start, $end)
 {
     global $wpdb;
@@ -176,6 +203,35 @@ function get_orders_by_date($date)
     ];
 }
 
+function get_students_report($academic_period, $grade) {
+    global $wpdb;
+    $table_students = $wpdb->prefix.'students';
+    
+    $conditions = array();
+    $params = array();
+    
+    if (!empty($academic_period)) {
+        $conditions[] = "academic_period = %s";
+        $params[] = $academic_period;
+    }
+    
+    if (!empty($grade)) {
+        $conditions[] = "grade_id = %s";
+        $params[] = $grade;
+    }
+    
+    $query = "SELECT * FROM {$table_students}";
+    
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+    
+    $students = $wpdb->get_results($wpdb->prepare($query, $params));
+
+
+    return $students;
+}
+// GET ORDERS
 
 function get_list_orders_sales()
 {
@@ -283,11 +339,44 @@ function list_accounts_receivables()
 add_action('wp_ajax_nopriv_list_accounts_receivables', 'list_accounts_receivables');
 add_action('wp_ajax_list_accounts_receivables', 'list_accounts_receivables');
 
-
-function add_admin_form_report_content()
+function list_report_students()
 {
-    include(plugin_dir_path(__FILE__) . 'templates/report-blade.php');
+
+    $academic_period = $_POST['academic_period'] ?? '';
+    $grade = $_POST['period'] ?? '';
+
+    $html = "";
+    $students = get_students_report($academic_period, $grade);
+    $url = admin_url('user-edit.php?user_id=');
+
+    if (!empty($students)) {
+
+        foreach ($students as $student) {
+            $parent = get_user_by('id', $student->partner_id);
+
+            $html .= "<tr>";
+            $html .= "<td class='column' data-colname='" . __('Academic Period', 'restaurant-system-app') . "'>" . $student->academic_period . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Parent', 'restaurant-system-app') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . get_user_meta($parent->ID, 'first_name', true) . ' ' . get_user_meta($parent->ID, 'last_name', true) . "</a></td>";
+            $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $student->student_id . '" target="_blank">' . $student->name . ' ' . ($student->middle_name ?? '') . ' ' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . "</a></td>";
+            $html .= "<td class='column' data-colname='" . __('Country', 'restaurant-system-app') . "'>" . $student->country . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Grade', 'restaurant-system-app') . "'>" . get_name_grade($student->grade_id) . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Program', 'restaurant-system-app') . "'>" . get_name_program($student->program_id) . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Institute', 'restaurant-system-app') . "'>" . $student->name_institute . "</td>";
+            $html .= "</tr>";
+        }
+
+    } else {
+        $html .= "<tr>";
+        $html .= "<td colspan='7' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+        $html .= "</tr>";
+    }
+
+    echo json_encode(['status' => 'success', 'html' => $html, 'data' => $students]);
+    exit;
 }
+
+add_action('wp_ajax_nopriv_list_report_students', 'list_report_students');
+add_action('wp_ajax_list_report_students', 'list_report_students');
 
 
 function get_load_chart_data()
