@@ -241,12 +241,14 @@ function get_products_by_order($start, $end)
         $discount = $order->get_total_discount();
 
         foreach ($order_items as $item) {
-            $product_id = $item->get_product_id();
-            $product_name = $item->get_name();
+            $use_product_id = $item->get_product_id();
+            $use_variation_id = $item->get_variation_id();
             $quantity = $item->get_quantity();
             $subtotal = $item->get_subtotal();
             $tax = $item->get_total_tax();
             $total = $item->get_total();
+
+            $product_id = $use_product_id;
 
             if (!isset($product_quantities[$product_id])) {
                 $product_quantities[$product_id] = 0;
@@ -265,18 +267,29 @@ function get_products_by_order($start, $end)
             }
 
             $product_quantities[$product_id] += $quantity;
+            $product_quantities_variation[$product_id][$use_variation_id] += $quantity;
             $product_subtotals[$product_id] += $subtotal;
+            $product_subtotals_variation[$product_id][$use_variation_id] += $subtotal;
             $product_taxs[$product_id] += $tax;
+            $product_taxs_variation[$product_id][$use_variation_id] += $tax;
             $product_discounts[$product_id] += ($product_id != AES_FEE_INSCRIPTION) ? $discount : 0;
+            $product_discounts_variation[$product_id][$use_variation_id] += ($product_id != AES_FEE_INSCRIPTION) ? $discount : 0;
             $product_totals[$product_id] += $total;
+            $product_totals_variation[$product_id][$use_variation_id] += $total;
         }
     }
 
     return [
         'product_quantities' => $product_quantities,
+        'product_quantities_variation' => $product_quantities_variation,
         'product_subtotals' => $product_subtotals,
+        'product_subtotals_variation' => $product_subtotals_variation,
         'product_discounts' => $product_discounts,
+        'product_discounts_variation' => $product_discounts_variation,
+        'product_taxs' => $product_taxs,
+        'product_taxs_variation' => $product_taxs_variation,
         'product_totals' => $product_totals,
+        'product_totals_variation' => $product_totals_variation,
     ];
 
 }
@@ -328,7 +341,6 @@ function get_list_orders_sales()
         if (!empty($orders['orders'])) {
 
             foreach ($orders['orders'] as $order) {
-
                 $html .= "<tr>";
                 $html .= "<td class='column column-primary' data-colname='" . __('Payment ID', 'aes') . "'>";
                 $html .= '#' . $order['order_id'];
@@ -391,24 +403,47 @@ function list_sales_product()
                 $product = wc_get_product($product_id);
                 $product_name = $product->get_name();
 
-                $html .= "<tr>";
+                $html .= "<tr style='background-color: #c9c9c9ad; -webkit-box-shadow: 0px -1px 0.5px 0px rgb(121 120 120 / 30%); -moz-box-shadow: 0px -1px 0.5px 0px rgb(121 120 120 / 30%); box-shadow: 0px -1px 0.5px 0px rgb(121 120 120 / 30%);'>";
                 $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'aes') . "'>";
                 $html .= '#' . $product_id;
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
-                $html .= "<td class='column' data-colname='" . __('Product', 'restaurant-system-app') . "'>" . $product_name . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Quantity', 'restaurant-system-app') . "'>" . $quantity . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Subtotal', 'restaurant-system-app') . "'>" . wc_price($orders['product_subtotals'][$product_id]) . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Discount', 'restaurant-system-app') . "'>" . wc_price($orders['product_discounts'][$product_id]) . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Tax', 'restaurant-system-app') . "'>" . wc_price($orders['product_taxs'][$product_id]) . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Total', 'restaurant-system-app') . "'>" . wc_price(($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]))) . "</td>";
-
+                $html .= "<td class='column' data-colname='" . __('Product', 'restaurant-system-app') . "'><strong>" . $product_name . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Quantity', 'restaurant-system-app') . "'><strong>" . $quantity . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Subtotal', 'restaurant-system-app') . "'><strong>" . wc_price($orders['product_subtotals'][$product_id]) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Discount', 'restaurant-system-app') . "'><strong>" . wc_price($orders['product_discounts'][$product_id]) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Tax', 'restaurant-system-app') . "'><strong>" . wc_price($orders['product_taxs'][$product_id]) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Total', 'restaurant-system-app') . "'><strong>" . wc_price(($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]))) . "</strong></td>";
                 $html .= "</tr>";
+
+                uasort($orders['product_quantities_variation'][$product_id], function($a, $b) {
+                    return $b <=> $a;
+                });
+                foreach ($orders['product_quantities_variation'][$product_id] as $key => $variation) {
+                    if ($key > 0) {
+                        $product = wc_get_product($key);
+                        $product_name = $product->get_name();
+                        $ex_product_name = explode(' - ', $product_name);
+
+                        $html .= "<tr style='background-color: #c9c9c957;'>";
+                        $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'aes') . "'>";
+                        $html .= '#' . $key;
+                        $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
+                        $html .= "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Product', 'restaurant-system-app') . "'>" . $ex_product_name[1] . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Quantity', 'restaurant-system-app') . "'>" . $orders['product_quantities_variation'][$product_id][$key] . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Subtotal', 'restaurant-system-app') . "'>" . wc_price($orders['product_subtotals_variation'][$product_id][$key]) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Discount', 'restaurant-system-app') . "'>" . wc_price($orders['product_discounts_variation'][$product_id][$key]) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Tax', 'restaurant-system-app') . "'>" . wc_price($orders['product_taxs_variation'][$product_id][$key]) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Total', 'restaurant-system-app') . "'>" . wc_price(($orders['product_subtotals_variation'][$product_id][$key] - ($orders['product_discounts_variation'][$product_id][$key] - $orders['product_taxs_variation'][$product_id][$key]))) . "</td>";
+                        $html .= "</tr>";
+                    }
+                }
             }
 
         } else {
             $html .= "<tr>";
-            $html .= "<td colspan='6' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html .= "<td colspan='7' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
             $html .= "</tr>";
         }
 
