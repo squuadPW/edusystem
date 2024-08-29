@@ -141,9 +141,15 @@
                 </tr>
                 <tr>
                     <th scope="row" style="width:10px;padding:3px;">
-                        <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manage_report_students_es" id="manage_report_students_es" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manage_report_students_es'])) ? 'checked' : ''; ?>>
+                        <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_report_students_aes" id="manager_report_students_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_report_students_aes'])) ? 'checked' : ''; ?>>
                     </th>
-                    <td style="display:table-cell;padding:3px;"><label for="manage_report_students_es" style="margin-left:20px;"><?= __('Report students','aes'); ?></label></td>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_report_students_aes" style="margin-left:20px;"><?= __('Report students','aes'); ?></label></td>
+                </tr>
+                <tr>
+                    <th scope="row" style="width:10px;padding:3px;">
+                        <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_report_sales_product" id="manager_report_sales_product" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_report_sales_product'])) ? 'checked' : ''; ?>>
+                    </th>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_report_sales_product" style="margin-left:20px;"><?= __('Report sales by product','aes'); ?></label></td>
                 </tr>
             </tbody>
        </table>
