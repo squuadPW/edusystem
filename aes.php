@@ -29,8 +29,7 @@ function create_tables() {
   $table_institutes =  $wpdb->prefix.'institutes';
   $table_alliances =  $wpdb->prefix.'alliances';
   $table_grades = $wpdb->prefix.'grades';
-  $table_documents = $wpdb->prefix.'documents'; 
-  $table_student_payments = $wpdb->prefix.'student_payments';
+  $table_documents = $wpdb->prefix.'documents';
   $table_pre_users = $wpdb->prefix.'pre_users';
   $table_pre_students = $wpdb->prefix.'pre_students';
   $table_student_scholarship_application = $wpdb->prefix.'student_scholarship_application';
@@ -128,14 +127,15 @@ function create_tables() {
     dbDelta( "CREATE TABLE " . $table_student_payments . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         status_id INT(11) NOT NULL,
-        order_id INT(11) NOT NULL,
         student_id INT(11) NOT NULL,
+        order_id INT(11) NULL,
         product_id INT(11) NOT NULL,
+        variation_id INT(11) NULL,
         amount DOUBLE(10, 2) NOT NULL,
         type_payment INT(11) NOT NULL,
         cuote INT(11) NOT NULL,
         num_cuotes INT(11) NOT NULL,
-        date_payment DATE NOT NULL,
+        date_payment DATE NULL,
         date_next_payment DATE NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
@@ -148,6 +148,8 @@ function create_tables() {
         id INT(11) NOT NULL AUTO_INCREMENT,
         type_document TEXT NULL,
         id_document TEXT NULL,
+        ethnicity TEXT NULL,
+        academic_period TEXT NULL,
         name TEXT NOT NULL,
         middle_name TEXT NULL,
         last_name TEXT NOT NULL,
@@ -202,14 +204,19 @@ function create_tables() {
         address TEXT NOT NULL,
         level_id INT(11) NOT NULL,
         name_rector TEXT NOT NULL,
+        name_contact TEXT NOT NULL,
         lastname_rector TEXT NOT NULL,
+        lastname_contact TEXT NOT NULL,
         phone_rector TEXT NOT NULL,
+        phone_contact TEXT NOT NULL,
         reference TEXT NOT NULL,
         status INT(11) NOT NULL,
         alliance_id INT(11) NULL,
+        fee float NOT NULL,
+        business_name TEXT NOT NULL,
+        description TEXT NOT NULL,
         updated_at DATETIME NULL,
         created_at DATETIME NOT NULL,
-        fee float NOT NULL,
         PRIMARY KEY (id))$charset_collate;"
     );
   }
@@ -232,6 +239,7 @@ function create_tables() {
         type INT(11) NULL,
         status INT(11) NOT NULL,
         fee float NOT NULL,
+        description TEXT NOT NULL,
         updated_at DATETIME NULL,
         created_at DATETIME NOT NULL,
         PRIMARY KEY (id))$charset_collate;"
@@ -277,6 +285,7 @@ function create_tables() {
       name TEXT NOT NULL,
       grade_id INT(11) NOT NULL,
       is_required INT(11) NOT NULL,
+      id_requisito INT(11) NOT NULL,
       updated_at DATETIME NULL,
       created_at DATETIME NOT NULL,
       PRIMARY KEY (id))$charset_collate;"
