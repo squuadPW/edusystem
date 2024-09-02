@@ -152,7 +152,7 @@ function add_admin_form_admission_content()
             include(plugin_dir_path(__FILE__).'templates/list-student-documents.php');
          */
         if ($_GET['section_tab'] == 'all_students') {
-            $table_academic_periods = $wpdb->prefix.'academic_periods';
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             $list_students = new TT_all_student_List_Table;
             $list_students->prepare_items();
@@ -172,7 +172,7 @@ function add_admin_form_admission_content()
         }
 
     } else {
-        $table_academic_periods = $wpdb->prefix.'academic_periods';
+        $table_academic_periods = $wpdb->prefix . 'academic_periods';
         $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
         $list_students = new TT_document_review_List_Table;
         $list_students->prepare_items();
@@ -320,7 +320,7 @@ class TT_new_student_List_Table extends WP_List_Table
 
         $data_categories = $this->get_new_students();
 
-        $per_page = 10;
+        $per_page = 20;
 
 
         $columns = $this->get_columns();
@@ -363,18 +363,19 @@ class TT_document_review_List_Table extends WP_List_Table
 
     }
 
-    function single_row( $item ) {
+    function single_row($item)
+    {
         static $row_class = '';
-        $row_class = ( $row_class == '' ? 'alternate' : '' );
+        $row_class = ($row_class == '' ? 'alternate' : '');
 
         // Add your custom styles here
         $style = '';
-        if ( $item['review_pending_documents'] > 0 ) {
+        if ($item['review_pending_documents'] > 0) {
             $style = 'style="background-color: #c6c5e0 !important;"';
         }
 
         echo '<tr id="user_' . $item->ID . '" class="' . $row_class . '" ' . $style . '>';
-        $this->single_row_columns( $item );
+        $this->single_row_columns($item);
         echo '</tr>';
     }
 
@@ -479,7 +480,6 @@ class TT_document_review_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'index' => __('Index', 'aes'),
             'full_name' => __('Full name', 'aes'),
             'program' => __('Program', 'aes'),
             'grade' => __('Grade', 'aes'),
@@ -501,12 +501,15 @@ class TT_document_review_List_Table extends WP_List_Table
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $table_student_documents = $wpdb->prefix . 'student_documents';
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
 
         if (isset($_POST['s']) && !empty($_POST['s'])) {
             $search = $_POST['s'];
             if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
                 $period = $_POST['academic_period'];
-                $data = $wpdb->get_results("SELECT a.*,
+                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*,
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
@@ -517,9 +520,10 @@ class TT_document_review_List_Table extends WP_List_Table
                 (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%')
                 GROUP BY a.id
                 ORDER BY a.updated_at ASC
+                LIMIT {$per_page} OFFSET {$offset}
                 ", "ARRAY_A");
             } else {
-                $data = $wpdb->get_results("SELECT a.*, 
+                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*, 
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
@@ -530,12 +534,13 @@ class TT_document_review_List_Table extends WP_List_Table
                 (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%')
                 GROUP BY a.id
                 ORDER BY a.updated_at ASC
+                LIMIT {$per_page} OFFSET {$offset}
             ", "ARRAY_A");
             }
         } else {
             if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
                 $period = $_POST['academic_period'];
-                $data = $wpdb->get_results("SELECT a.*, 
+                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*, 
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
@@ -545,9 +550,10 @@ class TT_document_review_List_Table extends WP_List_Table
                 WHERE (b.status != 5) AND a.academic_period = '$period' 
                 GROUP BY a.id
                 ORDER BY a.updated_at ASC
+                LIMIT {$per_page} OFFSET {$offset}
             ", "ARRAY_A");
             } else {
-                $data = $wpdb->get_results("SELECT a.*, 
+                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*, 
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
                 (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
@@ -557,11 +563,13 @@ class TT_document_review_List_Table extends WP_List_Table
                 WHERE (b.status != 5) 
                 GROUP BY a.id
                 ORDER BY a.updated_at ASC
+                LIMIT {$per_page} OFFSET {$offset}
             ", "ARRAY_A");
             }
         }
 
-        return $data;
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+        return ['data' => $data, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -589,18 +597,15 @@ class TT_document_review_List_Table extends WP_List_Table
     function prepare_items()
     {
 
-        $data_categories = $this->get_pending_students();
-
-        $per_page = 10;
-
-
+        $pending_students = $this->get_pending_students();
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
-
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        $data = $data_categories;
+        $data_categories = $pending_students['data'];
+        $data = $pending_students['data'];
+        $total_count = (int) $pending_students['total_count'];
 
         function usort_reorder($a, $b)
         {
@@ -610,18 +615,20 @@ class TT_document_review_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $current_page = $this->get_pagenum();
-
-        $total_items = count($data);
-
         $data = array();
         foreach ($data_categories as $key => $value) {
             $value['index'] = $key + 1;
             $moodleActive = isset($value['moodle_student_id']) ? 'Yes' : 'No';
             $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px; cursor: not-allowed"';
-            $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" '.$moodleActiveStyle.'>'.$moodleActive.'</span>';
+            $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" ' . $moodleActiveStyle . '>' . $moodleActive . '</span>';
             $data[] = $value;
         }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
 
         $this->items = $data;
     }
@@ -691,7 +698,6 @@ class TT_all_student_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'index' => __('Index', 'aes'),
             'student' => __('Student', 'aes'),
             'parent' => __('Parent', 'aes'),
             'program' => __('Program', 'aes'),
@@ -708,25 +714,29 @@ class TT_all_student_List_Table extends WP_List_Table
 
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
 
         if (isset($_POST['s']) && !empty($_POST['s'])) {
             $search = $_POST['s'];
             if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
                 $period = $_POST['academic_period'];
-                $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND academic_period = '$period' AND (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%') ORDER BY name ASC", "ARRAY_A");
+                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND academic_period = '$period' AND (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%') ORDER BY name ASC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
             } else {
-                $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%') ORDER BY name ASC", "ARRAY_A");
+                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%') ORDER BY name ASC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
             }
         } else {
             if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
                 $period = $_POST['academic_period'];
-                $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND academic_period = '$period' ORDER BY name ASC", "ARRAY_A");
+                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND academic_period = '$period' ORDER BY name ASC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
             } else {
-                $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1 ) ORDER BY name ASC", "ARRAY_A");
+                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1 ) ORDER BY name ASC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
             }
         }
 
-        return $data;
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+        return ['data' => $data, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -754,18 +764,15 @@ class TT_all_student_List_Table extends WP_List_Table
     function prepare_items()
     {
 
-        $data_categories = $this->get_students();
-
-        $per_page = 10;
-
-
+        $students = $this->get_students();
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
 
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        $data = $data_categories;
+        $data = $students['data'];
+        $total_count = (int) $students['total_count'];
 
         function usort_reorder($a, $b)
         {
@@ -775,31 +782,33 @@ class TT_all_student_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $current_page = $this->get_pagenum();
-
-        $total_items = count($data);
-
         $data = array();
         $url = admin_url('user-edit.php?user_id=');
         global $current_user;
         $roles = $current_user->roles;
-        foreach ($data_categories as $key => $value) {
+        foreach ($students['data'] as $key => $value) {
             $parent = get_user_by('id', $value['partner_id']);
             $student = get_user_by('email', $value['email']);
 
             $value['index'] = $key + 1;
-            if(in_array('owner',$roles) || in_array('administrator',$roles)){
-                $value['student'] = '<a href="'. $url . $student->ID .'" target="_blank">'. $value['name'] . ' ' . $value['middle_name'] . ' ' . $value['last_name'] . ' ' . $value['middle_last_name'] .'</a>';
-                $value['parent'] = '<a href="'. $url . $parent->ID .'" target="_blank">'. $parent->first_name . ' ' . $parent->last_name .'</a>';
+            if (in_array('owner', $roles) || in_array('administrator', $roles)) {
+                $value['student'] = '<a href="' . $url . $student->ID . '" target="_blank">' . $value['name'] . ' ' . $value['middle_name'] . ' ' . $value['last_name'] . ' ' . $value['middle_last_name'] . '</a>';
+                $value['parent'] = '<a href="' . $url . $parent->ID . '" target="_blank">' . $parent->first_name . ' ' . $parent->last_name . '</a>';
             } else {
                 $value['student'] = $value['name'] . ' ' . $value['middle_name'] . ' ' . $value['last_name'] . ' ' . $value['middle_last_name'];
                 $value['parent'] = $parent->first_name . ' ' . $parent->last_name;
             }
             $moodleActive = isset($value['moodle_student_id']) ? 'Yes' : 'No';
             $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px; cursor: not-allowed"';
-            $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" '.$moodleActiveStyle.'>'.$moodleActive.'</span>';
+            $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" ' . $moodleActiveStyle . '>' . $moodleActive . '</span>';
             $data[] = $value;
         }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
 
         $this->items = $data;
     }
@@ -947,7 +956,7 @@ function update_status_documents()
                         break;
                 }
 
-                
+
                 $gender = '';
                 switch ($student->gender) {
                     case 'male':
@@ -958,7 +967,7 @@ function update_status_documents()
                         break;
                 }
 
-                
+
                 $gender_re = '';
                 switch (get_user_meta($student->partner_id, 'gender', true)) {
                     case 'male':
@@ -999,11 +1008,11 @@ function update_status_documents()
                     'cod_period' => $student->academic_period,
 
                     // PADRE
-                    'id_document_re' => get_user_meta($student->partner_id, 'id_document', true), 
+                    'id_document_re' => get_user_meta($student->partner_id, 'id_document', true),
                     'type_document_re' => $type_document_re,
                     'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
                     'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
-                    'birth_date_re' =>  get_user_meta($student->partner_id, 'birth_date', true),
+                    'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
                     'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
                     'email_re' => get_user_meta($student->partner_id, 'billing_email', true),
                     'gender_re' => $gender_re,
