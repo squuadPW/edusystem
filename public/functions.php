@@ -833,9 +833,6 @@ function woocommerce_update_cart()
     $products_id = [];
     if (count($applied_coupons) > 0) {
         $has_coupon = true;
-        foreach ($applied_coupons as $key => $coupon) {
-            $coupon_code = $coupon;
-        }
     }
 
     $value = $_POST['option'];
@@ -844,6 +841,7 @@ function woocommerce_update_cart()
     }
 
     $woocommerce->cart->empty_cart();
+    $variation = '';
 
     foreach ($products_id as $key => $product_id) {
         $variations = [];
@@ -861,14 +859,25 @@ function woocommerce_update_cart()
             $key = array_search($value, array_column($variations, $column));
 
             $woocommerce->cart->add_to_cart($product_id, 1, $variations[$keys[$key]]['id']);
+            $variation = $variations[$keys[$key]]['name'];
         } else {
             $woocommerce->cart->add_to_cart($product_id, 1);
         }
     }
 
-    if ($has_coupon) {
-        $woocommerce->cart->apply_coupon($coupon_code);
+    if ($variation != 'Complete') {
+        // Remover el cupón con la clave "fee_inscription" de la matriz $applied_coupons
+        $applied_coupons = array_diff($applied_coupons, array("registration fee discount"));
+    } else {
+        // Agregar el cupón con la clave "fee_inscription" a la matriz $applied_coupons
+        array_push($applied_coupons, 'registration fee discount');
     }
+    
+    // Aplicar los cupones restantes en la matriz $applied_coupons
+    foreach ($applied_coupons as $key => $coupon) {
+        $woocommerce->cart->apply_coupon($coupon);
+    }
+
     // Calculate totals
     $woocommerce->cart->calculate_totals();
 }
@@ -976,10 +985,16 @@ function reload_button_schoolship()
 {
     ob_start();
     global $woocommerce;
-    $cart = $woocommerce->cart;
+    $has_scholarship = false;
+    $applied_coupons = $woocommerce->cart->get_applied_coupons();
+    foreach ($applied_coupons as $key => $coupon) {
+        if ($coupon == 'latam schoolarship') {
+            $has_scholarship = true;
+        }
+    }
     ?>
     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
-        <?php if (count($cart->get_applied_coupons()) > 0): ?>
+        <?php if ($has_scholarship): ?>
             <button id="apply-scholarship-btn" type="button" disabled>Scholarship already applied</button>
         <?php else: ?>
             <button id="apply-scholarship-btn" type="button">Activate scholarship</button>
@@ -1053,15 +1068,14 @@ function custom_coupon_applied_notice($message)
 }
 add_action('woocommerce_applied_coupon', 'custom_coupon_applied_notice');
 
-add_filter('woocommerce_cart_totals_coupon_label', 'remove_coupon_text');
-function remove_coupon_text($label)
-{
-    $applied_coupons = WC()->cart->get_applied_coupons();
-    if (!empty($applied_coupons)) {
-        $current_coupon = reset($applied_coupons);
-    }
-    return $current_coupon; // Return an empty string to remove the label
-}
+// Hook to update coupon label individually for each coupon
+function update_coupon_label_individually($coupon_html, $coupon) {
+    $coupon_html = str_replace('Coupon:', '', $coupon_html);
+    return $coupon_html;
+  }
+  
+  // Apply the hook
+add_filter('woocommerce_cart_totals_coupon_label', 'update_coupon_label_individually', 10, 2);
 
 function custom_login_redirect($redirect_to, $request, $user)
 {

@@ -176,6 +176,8 @@ function redirect_to_checkout($program, $grade)
         $woocommerce->cart->add_to_cart(102, 1);
     }
 
+    $woocommerce->cart->apply_coupon('Registration fee discount');
+
     wp_redirect(wc_get_checkout_url());
     exit;
 }
