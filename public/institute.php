@@ -92,9 +92,16 @@ function set_institute_in_order($order){
             $order->update_meta_data('institute_id',$_COOKIE['institute_id']);
 
             $fee_institute = $data->fee;
-            $total_order = $order->get_total();
+            $discount = $order->get_total_discount();
+            $order_items = $order->get_items();
+    
+            foreach ($order_items as $item) {
+                $product_id = $item->get_product_id();
+                $subtotal = ($product_id != AES_FEE_INSCRIPTION) ? $item->get_subtotal() : $subtotal;
+            }
 
-            $total_institute_fee = ($fee_institute * $order->get_total()) / 100;
+            $total_for_fee = ($subtotal - $discount);
+            $total_institute_fee = ($fee_institute * $total_for_fee) / 100;
             $order->update_meta_data('institute_fee',$total_institute_fee);
            
 
@@ -108,7 +115,7 @@ function set_institute_in_order($order){
                 if(!empty($data_alliance)){
 
                     $fee_alliance = $data_alliance->fee;
-                    $total_alliance_fee = ($fee_alliance * $order->get_total()) / 100;
+                    $total_alliance_fee = ($fee_alliance * $total_for_fee) / 100;
                     $order->update_meta_data('alliance_fee',$total_alliance_fee);
                 }
             }
