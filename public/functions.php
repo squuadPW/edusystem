@@ -892,9 +892,11 @@ function fee_update()
     $id = AES_FEE_INSCRIPTION;
     if ($value == 'true') {
         $woocommerce->cart->add_to_cart($id, 1);
+        // $woocommerce->cart->apply_coupon('Registration fee discount');
         $woocommerce->cart->calculate_totals();
     } else {
         $woocommerce->cart->remove_cart_item($woocommerce->cart->generate_cart_id($id));
+        // $woocommerce->cart->remove_coupon('Registration fee discount');
         $woocommerce->cart->calculate_totals();
     }
 }
