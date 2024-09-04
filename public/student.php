@@ -178,6 +178,19 @@ function redirect_to_checkout($program, $grade)
 
     $woocommerce->cart->apply_coupon('Registration fee discount');
 
+    if (is_user_logged_in()) {
+        global $wpdb;
+        $current_user = wp_get_current_user();
+        $partner_id = $current_user->ID;
+        $table_students = $wpdb->prefix . 'students';
+        $result = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_students WHERE partner_id = %s", $partner_id));
+        if (sizeof($result) > 1) {
+            $woocommerce->cart->apply_coupon('Brothers discount');
+        } else if (sizeof($result) == 1) {
+            $woocommerce->cart->apply_coupon('Brothers discount initial');
+        }
+    }
+
     wp_redirect(wc_get_checkout_url());
     exit;
 }
