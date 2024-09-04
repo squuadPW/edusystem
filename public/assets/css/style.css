@@ -862,4 +862,7 @@ h3 {
   100% {
     transform: rotate(360deg);
   }
+}
+.woocommerce-remove-coupon {
+  display: none;
 }/*# sourceMappingURL=style.css.map */
