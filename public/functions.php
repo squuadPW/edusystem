@@ -890,13 +890,32 @@ function fee_update()
     global $woocommerce;
     $value = $_POST['option'];
     $id = AES_FEE_INSCRIPTION;
+    $products_id = [];
+
     if ($value == 'true') {
         $woocommerce->cart->add_to_cart($id, 1);
-        // $woocommerce->cart->apply_coupon('Registration fee discount');
+
+        foreach ($woocommerce->cart->get_cart() as $key => $product) {
+            array_push($products_id, $product['variation_id'] ? $product['variation_id'] : $product['product_id']);
+        }
+    
+        $is_complete = false;
+        foreach ($products_id as $key => $product_id) {
+            $product = wc_get_product($product_id);
+            $product_name = $product->get_name();
+            if (str_contains($product_name, 'Complete')) {
+                $is_complete = true;
+            }
+        }
+    
+        if ($is_complete) {
+            $woocommerce->cart->apply_coupon('Registration fee discount');
+        }
+
         $woocommerce->cart->calculate_totals();
     } else {
         $woocommerce->cart->remove_cart_item($woocommerce->cart->generate_cart_id($id));
-        // $woocommerce->cart->remove_coupon('Registration fee discount');
+        $woocommerce->cart->remove_coupon('Registration fee discount');
         $woocommerce->cart->calculate_totals();
     }
 }
