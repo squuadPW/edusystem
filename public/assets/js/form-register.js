@@ -159,14 +159,27 @@ document.addEventListener("DOMContentLoaded", function () {
   const countrySelect = document.getElementById('country-select');
   const instituteSelect = document.getElementById('institute_id');
 
-  countrySelect.addEventListener('change', function() {
-      document.getElementById('institute_id').value = '';
-      document.getElementById('name_institute').value = '';
-      document.getElementById("name-institute-field").style.display = "none";
-      document.getElementById("name_institute").required = false;
-      document.getElementById("institute_id").required = true;
-      document.getElementById("institute_id_required").textContent = "*";
-
+  if (countrySelect) {
+    countrySelect.addEventListener("change", function () {
+      if (document.getElementById("institute_id")) {
+        document.getElementById("institute_id").value = ""; 
+      }
+      if (document.getElementById("name_institute")) {
+        document.getElementById("name_institute").value = ""; 
+      }
+      if (document.getElementById("name-institute-field")) {
+        document.getElementById("name-institute-field").style.display = "none"; 
+      }
+      if (document.getElementById("name_institute")) {
+        document.getElementById("name_institute").required = false; 
+      }
+      if (document.getElementById("institute_id")) {
+        document.getElementById("institute_id").required = true; 
+      }
+      if (document.getElementById("institute_id_required")) {
+        document.getElementById("institute_id_required").textContent = "*"; 
+      }
+  
       const selectedCountry = countrySelect.value;
       const options = instituteSelect.options;
       for (let i = 0; i < options.length; i++) {
@@ -179,7 +192,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           }
       }
-  });
+    });
+  }
 });
 
 let timer = null;

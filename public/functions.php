@@ -1083,16 +1083,17 @@ function custom_coupon_applied_notice($message)
 
     $applied_coupons = WC()->cart->get_applied_coupons();
     if (!empty($applied_coupons)) {
-        $current_coupon = reset($applied_coupons);
+        $coupon_list = implode(', ', array_map('ucwords', $applied_coupons));
+        wc_add_notice(__($coupon_list.' applied successfully', 'woocommerce'), 'success');
     }
-    wc_add_notice(__($current_coupon . ' applied successfully!', 'woocommerce'), 'success');
 }
 add_action('woocommerce_applied_coupon', 'custom_coupon_applied_notice');
 
 // Hook to update coupon label individually for each coupon
 function update_coupon_label_individually($coupon_html, $coupon) {
-    $coupon_html = str_replace('Coupon:', '', $coupon_html);
-    return $coupon_html;
+    // $coupon_html = str_replace('Coupon:', $coupon, $coupon_html);
+    // $coupon_html = str_replace($coupon, '', $coupon_html);
+    return ucfirst($coupon->code);
   }
   
   // Apply the hook
