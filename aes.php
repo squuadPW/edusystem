@@ -182,6 +182,7 @@ function create_tables() {
         student_id INT(11) NOT NULL,
         document_id TEXT NOT NULL,
         attachment_id BIGINT NOT NULL,
+        approved_by INT(11) NULL,
         status INT(11) NOT NULL,
         is_required INT(11) NOT NULL DEFAULT 0,
         updated_at DATETIME NULL,

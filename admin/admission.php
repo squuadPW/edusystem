@@ -505,68 +505,41 @@ class TT_document_review_List_Table extends WP_List_Table
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
-            $search = $_POST['s'];
-            if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
-                $period = $_POST['academic_period'];
-                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
-                FROM {$table_students} as a 
-                JOIN {$table_student_documents} b on b.student_id = a.id 
-                WHERE (b.status != 5) AND a.academic_period = '$period' AND 
-                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%')
-                GROUP BY a.id
-                ORDER BY a.updated_at ASC
-                LIMIT {$per_page} OFFSET {$offset}
-                ", "ARRAY_A");
-            } else {
-                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*, 
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
-                FROM {$table_students} as a 
-                JOIN {$table_student_documents} b on b.student_id = a.id 
-                WHERE (b.status != 5) AND 
-                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%')
-                GROUP BY a.id
-                ORDER BY a.updated_at ASC
-                LIMIT {$per_page} OFFSET {$offset}
-            ", "ARRAY_A");
-            }
-        } else {
-            if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
-                $period = $_POST['academic_period'];
-                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*, 
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
-                FROM {$table_students} as a 
-                JOIN {$table_student_documents} b on b.student_id = a.id 
-                WHERE (b.status != 5) AND a.academic_period = '$period' 
-                GROUP BY a.id
-                ORDER BY a.updated_at ASC
-                LIMIT {$per_page} OFFSET {$offset}
-            ", "ARRAY_A");
-            } else {
-                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*, 
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
-                (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
-                FROM {$table_students} as a 
-                JOIN {$table_student_documents} b on b.student_id = a.id 
-                WHERE (b.status != 5) 
-                GROUP BY a.id
-                ORDER BY a.updated_at ASC
-                LIMIT {$per_page} OFFSET {$offset}
-            ", "ARRAY_A");
+        $search = sanitize_text_field($_GET['s']);
+        $period = sanitize_text_field($_GET['academic_period']);
+        $date_selected = sanitize_text_field($_GET['date_selected']);
+
+        if ($date_selected) {
+            $today = date('Y-m-d'); // get today's date
+            $filter_date = '';
+            switch ($date_selected) {
+                case '1':
+                    $filter_date = date('Y-m-d', strtotime('-15 days', strtotime($today))); // 15 days ago
+                    break;
+                case '2':
+                    $filter_date = date('Y-m-d', strtotime('-35 days', strtotime($today))); // 35 days ago
+                    break;
+                case '3':
+                    $filter_date = date('Y-m-d', strtotime('-365 days', strtotime($today))); // more than 35 days ago
+                    break;
             }
         }
+
+        $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*,
+        (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
+        (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
+        (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
+        (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
+        FROM {$table_students} as a 
+        JOIN {$table_student_documents} b on b.student_id = a.id 
+        WHERE (b.status != 5)
+        " . ($search ? " AND a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%'" : "") . "
+        " . ($date_selected ? " AND a.created_at >= '$filter_date'" : "") . "
+        " . ($period ? " AND a.academic_period = '$period'" : "") . "
+        GROUP BY a.id
+        ORDER BY a.updated_at DESC
+        LIMIT {$per_page} OFFSET {$offset}
+        ", "ARRAY_A");
 
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
         return ['data' => $data, 'total_count' => $total_count];
@@ -711,29 +684,37 @@ class TT_all_student_List_Table extends WP_List_Table
 
     function get_students()
     {
-
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
-            $search = $_POST['s'];
-            if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
-                $period = $_POST['academic_period'];
-                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND academic_period = '$period' AND (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%') ORDER BY name ASC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
-            } else {
-                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND (name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%') ORDER BY name ASC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
-            }
-        } else {
-            if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
-                $period = $_POST['academic_period'];
-                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1) AND academic_period = '$period' ORDER BY name ASC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
-            } else {
-                $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1 ) ORDER BY name ASC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        $search = sanitize_text_field($_GET['s']);
+        $period = sanitize_text_field($_GET['academic_period']);
+        $date_selected = sanitize_text_field($_GET['date_selected']);
+
+
+        if ($date_selected) {
+            $today = date('Y-m-d'); // get today's date
+            $filter_date = '';
+            switch ($date_selected) {
+                case '1':
+                    $filter_date = date('Y-m-d', strtotime('-15 days', strtotime($today))); // 15 days ago
+                    break;
+                case '2':
+                    $filter_date = date('Y-m-d', strtotime('-35 days', strtotime($today))); // 35 days ago
+                    break;
+                case '3':
+                    $filter_date = date('Y-m-d', strtotime('-365 days', strtotime($today))); // more than 35 days ago
+                    break;
             }
         }
+
+        $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE (status_id = 2 OR status_id = 1)
+        " . ($search ? " AND name  LIKE '{$search}%' OR last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%'" : "") . "
+        " . ($date_selected ? " AND created_at >= '$filter_date'" : "") . "
+        " . ($period ? " AND academic_period = '$period'" : "") . " ORDER BY name ASC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
 
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
         return ['data' => $data, 'total_count' => $total_count];
@@ -829,13 +810,14 @@ function update_status_documents()
 
     if (isset($_POST['document_id']) && !empty($_POST['document_id']) && isset($_POST['status']) && !empty($_POST['status']) && isset($_POST['student_id']) && !empty($_POST['student_id'])) {
 
-        global $wpdb;
+        global $wpdb, $current_user;
+        $roles = $current_user->roles;
         $table_student_documents = $wpdb->prefix . 'student_documents';
         $student_id = $_POST['student_id'];
         $status_id = $_POST['status'];
         $document_id = $_POST['document_id'];
 
-        $wpdb->update($table_student_documents, ['status' => $status_id, 'updated_at' => date('Y-m-d H:i:s')], ['id' => $document_id, 'student_id' => $student_id]);
+        $wpdb->update($table_student_documents, ['approved_by' => $current_user->ID, 'status' => $status_id, 'updated_at' => date('Y-m-d H:i:s')], ['id' => $document_id, 'student_id' => $student_id]);
 
         if ($status_id == 3) {
             $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
@@ -875,6 +857,18 @@ function update_status_documents()
                 $html .= get_status_document($document->status);
                 $html .= "</b>";
                 $html .= "</td>";
+
+                if (in_array('owner', $roles) || in_array('administrator', $roles) || in_array('administrador', $roles)) {
+                    $html .= '<td id="' . 'td_document_' . $document->document_id . '" data-colname="' . __('Updated', 'aes') . '">';
+                    $html .= "<b>";
+                    if ($document->approved_by) { 
+                        $html .= get_user_meta($document->approved_by, 'first_name', true) . ' ' . get_user_meta($document->approved_by, 'last_name', true);
+                    } else {
+                        $html .= 'N/A';
+                    }
+                    $html .= "</b>";
+                    $html .= "</td>";
+                }
 
                 $html .= '<td data-colname="' . __('Actions', 'aes') . '">';
                 if ($document->status > 0) {

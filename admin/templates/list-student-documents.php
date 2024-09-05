@@ -14,10 +14,10 @@
 				<h1 class="wp-heading-line"><?= __('All Applicants','aes'); ?></h1>
 			<?php endif; ?>
 		</div>
-		<form action="" id="post-filter" method="post">
+		<form action="" id="post-filter" method="get">
 			<p class="search-box" =>
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','aes').':'; ?></label>
-				<input type="search" placeholder="Search by names and identification document" id="search-box-id-search-input" name="s" value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
+				<input type="search" placeholder="Search by names and identification document" id="search-box-id-search-input" name="s" value="<?= (!empty($_GET['s'])) ? $_GET['s'] : ''; ?>">
 				<input type="submit" id="search-submit" class="button" value="Search">
 			</p>
 			<p class="search-box" style="margin-right: 10px">
@@ -25,13 +25,25 @@
 				<select name="academic_period">
 						<option value="" selected>Select academic period to filter</option>
 					<?php foreach ($periods as $key => $period) { ?>
-						<option value="<?php echo $period->code; ?>" <?= !empty($_POST['academic_period']) ? (($_POST['academic_period'] == $period->code) ? 'selected' : '') : ''; ?>>
+						<option value="<?php echo $period->code; ?>" <?= !empty($_GET['academic_period']) ? (($_GET['academic_period'] == $period->code) ? 'selected' : '') : ''; ?>>
 							<?php echo $period->name; ?>
 						</option>
 					<?php } ?>
 				</select>
 			</p>
+			<p class="search-box" style="margin-right: 10px">
+				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Date','aes').':'; ?></label>
+				<select name="date_selected">
+						<option value="" selected>Select date range</option>
+						<option value="1" <?= !empty($_GET['date_selected']) ? (($_GET['date_selected'] == 1) ? 'selected' : '') : ''; ?>>Last 15 days</option>
+						<option value="2" <?= !empty($_GET['date_selected']) ? (($_GET['date_selected'] == 2) ? 'selected' : '') : ''; ?>>Last 35 days</option>
+						<option value="3" <?= !empty($_GET['date_selected']) ? (($_GET['date_selected'] == 3) ? 'selected' : '') : ''; ?>>More than 35 days</option>
+				</select>
+			</p>
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+			<?php if($_GET['section_tab']) { ?>
+				<input type="hidden" name="section_tab" value="<?php echo $_GET['section_tab'] ?>" />
+			<?php } ?>
 			<?php $list_students->display() ?>
 		</form>  
     </div>
