@@ -858,17 +858,30 @@ function update_status_documents()
                 $html .= "</b>";
                 $html .= "</td>";
 
-                if (in_array('owner', $roles) || in_array('administrator', $roles) || in_array('administrador', $roles)) {
-                    $html .= '<td id="' . 'td_document_' . $document->document_id . '" data-colname="' . __('Updated', 'aes') . '">';
-                    $html .= "<b>";
-                    if ($document->approved_by) { 
-                        $html .= get_user_meta($document->approved_by, 'first_name', true) . ' ' . get_user_meta($document->approved_by, 'last_name', true);
+                $html .= '<td id="' . 'td_upload_at_' . $document->document_id . '" data-colname="' . __('Date upload', 'aes') . '">';
+                $html .= "<b>";
+                $html .= $document->upload_at ?? 'N/A';;
+                $html .= "</b>";
+                $html .= "</td>";
+
+                $approved_by = '';
+                if ($document->updated_at) {
+                    if (in_array('owner', $roles) || in_array('administrator', $roles) || in_array('administrador', $roles)) {
+                        if ($document->approved_by) { 
+                            $approved_by = $document->updated_at . ' by ' . get_user_meta($document->approved_by, 'first_name', true) . ' ' . get_user_meta($document->approved_by, 'last_name', true);
+                        }
                     } else {
-                        $html .= 'N/A';
+                        $approved_by = $document->updated_at;
                     }
-                    $html .= "</b>";
-                    $html .= "</td>";
+                } else {
+                    $approved_by = 'N/A';
                 }
+
+                $html .= '<td id="' . 'td_updated_at_' . $document->document_id . '" data-colname="' . __('Date updated', 'aes') . '">';
+                $html .= "<b>";
+                $html .= $approved_by;
+                $html .= "</b>";
+                $html .= "</td>";
 
                 $html .= '<td data-colname="' . __('Actions', 'aes') . '">';
                 if ($document->status > 0) {

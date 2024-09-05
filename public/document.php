@@ -78,7 +78,7 @@ function save_document(){
                                     $deleted = wp_delete_attachment($upload_data['file'], true );
                                     $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
                                     wp_update_attachment_metadata($attach_id, $attach_data);
-                                    $wpdb->update($table_student_documents,['status' => 1,'attachment_id' => $attach_id],['student_id' => $student_id,'id' => $file_id ]);
+                                    $wpdb->update($table_student_documents,['status' => 1,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $student_id,'id' => $file_id ]);
                                 }
                             }
                         }

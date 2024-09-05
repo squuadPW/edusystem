@@ -321,12 +321,8 @@ $countries = get_countries();
                 <tr>
                     <th scope="col" class="manage-column column-primary column-title"><?= __('Document', 'aes') ?></th>
                     <th scope="col" class="manage-column column-title-translate"><?= __('Status', 'aes') ?></th>
-                    <?php
-                    global $current_user;
-                    $roles = $current_user->roles;
-                    if (in_array('owner', $roles) || in_array('administrator', $roles) || in_array('administrador', $roles)) { ?>
-                        <th scope="col" class="manage-column column-title-translate"><?= __('Updated by', 'aes') ?></th>
-                    <?php } ?>
+                    <th scope="col" class="manage-column column-title-translate"><?= __('Date upload', 'aes') ?></th>
+                    <th scope="col" class="manage-column column-title-translate"><?= __('Date updated', 'aes') ?></th>
                     <th scope="col" class="manage-column column-price"><?= __('Actions', 'aes') ?></th>
                 </tr>
             </thead>
@@ -343,26 +339,24 @@ $countries = get_countries();
                                     <?= $status = get_status_document($document->status); ?>
                                 </b>
                             </td>
-                            <?php
-                            global $current_user;
-                            $roles = $current_user->roles;
-                            if (in_array('owner', $roles) || in_array('administrator', $roles) || in_array('administrador', $roles)) {
-                                if ($document->approved_by) { ?>
-                                    <td id="<?= 'td_approved_by_' . $document->approved_by; ?>"
-                                        data-colname="<?= __('Updated by', 'aes'); ?>">
-                                        <b>
-                                            <? echo get_user_meta($document->approved_by, 'first_name', true) . ' ' . get_user_meta($document->approved_by, 'last_name', true); ?>
-                                        </b>
-                                    </td>
-                                <?php } else { ?>
-                                    <td id="<?= 'td_approved_by_' . $document->approved_by; ?>"
-                                        data-colname="<?= __('Updated by', 'aes'); ?>">
-                                        <b>
-                                            N/A
-                                        </b>
-                                    </td>
-                                <?php } ?>
-                            <?php } ?>
+                            <td id="<?= 'td_upload_at_' . $document->document_id; ?>" data-colname="<?= __('Date upload', 'aes'); ?>">
+                                <b>
+                                    <?= $document->upload_at ?? 'N/A'; ?>
+                                </b>
+                            </td>
+                            <td id="<?= 'td_updated_at_' . $document->document_id; ?>" data-colname="<?= __('Date updated', 'aes'); ?>">
+                                <b>
+                                    <?= $document->updated_at ?? 'N/A'; ?>
+                                    <?php
+                                        global $current_user;
+                                        $roles = $current_user->roles;
+                                        if (in_array('owner', $roles) || in_array('administrator', $roles) || in_array('administrador', $roles)) {
+                                            if ($document->approved_by) { ?>
+                                                by <? echo get_user_meta($document->approved_by, 'first_name', true) . ' ' . get_user_meta($document->approved_by, 'last_name', true); ?>
+                                            <?php }?>
+                                    <?php } ?>
+                                </b>
+                            </td>
                             <td data-colname="<?= __('Actions', 'aes'); ?>">
                                 <?php if ($document->status > 0): ?>
                                     <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>"
