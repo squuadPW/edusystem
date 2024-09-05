@@ -914,3 +914,39 @@ h3{
   .woocommerce-remove-coupon {
     display: none;
   }
+
+  .modal-missing-documents {
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: auto; /* Enable scroll if needed */
+    @media screen and (max-width: 767px){
+      padding: 0 !important;
+    }
+    .modal-content {
+      width: 80% !important;
+      @media screen and (max-width: 767px){
+        width: 100% !important;
+        border-radius: 0px !important;
+        margin: 0;
+      }
+      #canvas {
+        border-bottom: 1px solid black;
+        margin: auto;
+      }
+    }
+  }
+  
+  .close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
