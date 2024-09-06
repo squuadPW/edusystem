@@ -305,6 +305,7 @@ function create_tables() {
               'name' => 'CERTIFIED NOTES HIGH SCHOOL',
               'grade_id' => $grade->id,
               'is_required' => 0,
+              'id_requisito' => 'NC',
               'created_at' => date('Y-m-d H:i:s') 
             ]);
 
@@ -312,6 +313,7 @@ function create_tables() {
               'name' => 'HIGH SCHOOL DIPLOMA',
               'grade_id' => $grade->id,
               'is_required' => 0,
+              'id_requisito' => 'TB',
               'created_at' => date('Y-m-d H:i:s') 
             ]);
 
@@ -319,6 +321,7 @@ function create_tables() {
               'name' => 'ID OR CI OF THE PARENTS',
               'grade_id' => $grade->id,
               'is_required' => 1,
+              'id_requisito' => 'IR',
               'created_at' => date('Y-m-d H:i:s') 
             ]);
 
@@ -326,6 +329,7 @@ function create_tables() {
               'name' => 'ID STUDENTS',
               'grade_id' => $grade->id,
               'is_required' => 1,
+              'id_requisito' => 'ID',
               'created_at' => date('Y-m-d H:i:s') 
             ]);
 
@@ -333,6 +337,7 @@ function create_tables() {
               'name' => 'PHOTO OF STUDENT CARD',
               'grade_id' => $grade->id,
               'is_required' => 1,
+              'id_requisito' => 'FP',
               'created_at' => date('Y-m-d H:i:s') 
             ]);
 
@@ -340,6 +345,7 @@ function create_tables() {
               'name' => 'PROOF OF GRADE',
               'grade_id' => $grade->id,
               'is_required' => 0,
+              'id_requisito' => 'PG',
               'created_at' => date('Y-m-d H:i:s') 
             ]);
 
@@ -347,6 +353,7 @@ function create_tables() {
               'name' => 'PROOF OF STUDY',
               'grade_id' => $grade->id,
               'is_required' => 0,
+              'id_requisito' => 'PS',
               'created_at' => date('Y-m-d H:i:s') 
             ]);
 
@@ -354,6 +361,25 @@ function create_tables() {
               'name' => 'VACCUNATION CARD',
               'grade_id' => $grade->id,
               'is_required' => 1,
+              'id_requisito' => 'TV',
+              'created_at' => date('Y-m-d H:i:s') 
+            ]);
+
+            $wpdb->insert($table_documents,[
+              'name' => 'ENROLLMENT',
+              'grade_id' => $grade->id,
+              'is_required' => 1,
+              'is_visible' => 0,
+              'id_requisito' => 'EN',
+              'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $wpdb->insert($table_documents,[
+              'name' => 'MISSING DOCUMENT',
+              'grade_id' => $grade->id,
+              'is_required' => 0,
+              'is_visible' => 0,
+              'id_requisito' => 'MD',
               'created_at' => date('Y-m-d H:i:s') 
             ]);
         } 
