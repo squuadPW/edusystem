@@ -7,10 +7,15 @@ function add_admin_form_payments_content()
 
         if ($_GET['action'] == 'change_status_payment') {
 
+            global $current_user;
+            $name = get_user_meta($current_user->ID, 'first_name', true) . ' ' . get_user_meta($current_user->ID, 'last_name', true);
             $order_id = $_POST['order_id'];
+            $description = $_POST['description'];
 
             $order = wc_get_order($order_id);
             $order->update_status('completed');
+            $order->add_order_note('Payment approved by '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
+            $order->update_meta_data('payment_approved_by', $current_user->ID);
             $order->save();
 
             wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
