@@ -954,6 +954,46 @@ h3{
   .modal-enrollment {
     border-radius: 0px !important;
     width: 70% !important;
+    overflow: auto;
+    canvas {
+      border-bottom: 1px solid gray;
+    }
+    .p-0 {
+      padding: 0 !important;
+    }
+    .mb-10 {
+      margin-bottom: 10px;
+    }
+
+    .container-enrollment {
+      padding: 0;
+      margin: 10px 0px !important;
+      border: 1px solid gray;
+    }
+
+    .title-enrollment {
+      padding: 4px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .subtitle-enrollment {
+      background-color: blue;
+      color: white;
+      padding: 4px;
+      text-align: center;
+      font-weight: 600;
+    }
+    div {
+      padding: 8px;
+    }
+    .d-flex {
+      display: flex;
+      div {
+        flex: 50%;
+      }
+    }
     @media screen and (max-width: 767px){
       width: 100% !important;
       margin: 0 !important;
