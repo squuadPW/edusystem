@@ -254,15 +254,56 @@ document.addEventListener("DOMContentLoaded", function () {
         const action = button.textContent;
 
         const confirmMessage = `Are you sure you want to ${action.toLowerCase()} this document?`;
-
+  
         if (confirm(confirmMessage)) {
-          buttons_status(button);
+          if (action.toLowerCase() === 'decline') {
+            // Open modal with textarea for description
+            const modal = document.getElementById('decline-modal'); // assume you have a modal with id "decline-modal"
+            modal.style.display = 'block';
+  
+            const textarea = document.querySelector('textarea[name="decline-description"]');
+            const saveButton = document.getElementById('decline-save'); // assume you have a button with id "decline-save"
+  
+            saveButton.addEventListener('click', () => {
+              const description = textarea.value;
+              if (description) {
+                // Save the description and continue with buttons_status
+                buttons_status(button, description);
+                modal.style.display = 'none';
+                textarea.value = '';
+              } else {
+                confirm('The description is required');
+              }
+            });
+          } else {
+            buttons_status(button);
+          }
         }
       });
     });
   }
 
-  function buttons_status(button) {
+  var modalCloseElements = document.querySelectorAll('#decline-exit-icon, #decline-exit-button');
+  if (modalCloseElements) {
+    modalCloseElements.forEach(function(element) {
+      element.addEventListener('click', function() {
+        document.getElementById('decline-modal').style.display = 'none';
+        const textarea = document.querySelector('textarea[name="decline-description"]');
+        textarea.value = '';
+      });
+    });
+  }
+
+  var modalCloseElementsDetail = document.querySelectorAll('#detail-exit-icon, #detail-exit-button');
+  if (modalCloseElementsDetail) {
+    modalCloseElementsDetail.forEach(function(element) {
+      element.addEventListener('click', function() {
+        document.getElementById('detail-modal').style.display = 'none';
+      });
+    });
+  }
+
+  function buttons_status(button, description = null) {
       // Deshabilitar todos los botones con la clase change-status
       buttons_change_status.forEach((btn) => {
         btn.disabled = true;
@@ -294,7 +335,9 @@ document.addEventListener("DOMContentLoaded", function () {
           "&document_id=" +
           document_id +
           "&status=" +
-          status_id
+          status_id +
+          "&description=" +
+          description
       );
       XHR.onload = function () {
         if (this.readyState == "4" && XHR.status === 200) {
@@ -351,3 +394,27 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 });
+
+function watchDetails(doc) {
+  document.getElementById("date_user_registered").innerHTML = doc.created_at ?? 'N/A';
+  document.getElementById("date_upload_documents").innerHTML = doc.upload_at ?? 'N/A';
+  document.getElementById("date_status_change").innerHTML = doc.updated_at ?? 'N/A';
+  document.getElementById("description_status_changed").innerHTML = doc.description ?? 'N/A';
+  document.getElementById("status_changed_by").innerHTML = 'Loading...';
+
+  const XHR = new XMLHttpRequest();
+  XHR.open("POST", get_approved_by.url, true);
+  XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  XHR.responseType = "text";
+  XHR.send(
+    "action=" + get_approved_by.action + "&approved_by=" + doc.approved_by
+  );
+  XHR.onload = function () {
+    if (this.readyState == "4" && XHR.status === 200) {
+      document.getElementById("status_changed_by").innerHTML = JSON.parse(XHR.response).approved_by != ' ' ? JSON.parse(XHR.response).approved_by : 'N/A';
+    }
+  };
+
+  const modal = document.getElementById('detail-modal');
+  modal.style.display = 'block';
+}

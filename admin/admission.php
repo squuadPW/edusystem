@@ -816,8 +816,9 @@ function update_status_documents()
         $student_id = $_POST['student_id'];
         $status_id = $_POST['status'];
         $document_id = $_POST['document_id'];
+        $description = (!$_POST['description'] || $_POST['description'] == 'null') ? null : $_POST['description'];
 
-        $wpdb->update($table_student_documents, ['approved_by' => $current_user->ID, 'status' => $status_id, 'updated_at' => date('Y-m-d H:i:s')], ['id' => $document_id, 'student_id' => $student_id]);
+        $wpdb->update($table_student_documents, ['approved_by' => $current_user->ID, 'status' => $status_id, 'updated_at' => date('Y-m-d H:i:s'), 'description' => $description], ['id' => $document_id, 'student_id' => $student_id]);
 
         if ($status_id == 3) {
             $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
@@ -852,18 +853,6 @@ function update_status_documents()
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
 
-                $html .= '<td id="' . 'td_document_' . $document->document_id . '" data-colname="' . __('Status', 'aes') . '">';
-                $html .= "<b>";
-                $html .= get_status_document($document->status);
-                $html .= "</b>";
-                $html .= "</td>";
-
-                $html .= '<td id="' . 'td_upload_at_' . $document->document_id . '" data-colname="' . __('Date upload', 'aes') . '">';
-                $html .= "<b>";
-                $html .= $document->upload_at ?? 'N/A';;
-                $html .= "</b>";
-                $html .= "</td>";
-
                 $approved_by = '';
                 if ($document->updated_at) {
                     if (in_array('owner', $roles) || in_array('administrator', $roles) || in_array('administrador', $roles)) {
@@ -885,7 +874,8 @@ function update_status_documents()
 
                 $html .= '<td data-colname="' . __('Actions', 'aes') . '">';
                 if ($document->status > 0) {
-                    $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '" class="button button-primary">' . __('View', 'aes') . '</a>';
+                    $html .= "<a style='margin-left: 3px; margin-right: 3px;' target='_blank' onclick='watchDetails(". json_encode($document) .")' class='button button-primary-outline'>" . __('View detail', 'aes') . "</a>";
+                    $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '" class="button button-primary">' . __('View documment', 'aes') . '</a>';
 
                     // Revert button
                     if ($document->status != 1) {
@@ -1101,6 +1091,16 @@ function last_access_moodle()
 
 add_action('wp_ajax_nopriv_last_access_moodle', 'last_access_moodle');
 add_action('wp_ajax_last_access_moodle', 'last_access_moodle');
+
+function get_approved_by()
+{
+    $user_id = $_POST['approved_by'];
+    wp_send_json(array('approved_by' => get_user_meta($user_id, 'first_name', true) . ' ' . get_user_meta($user_id, 'last_name', true)));
+    die();
+}
+
+add_action('wp_ajax_nopriv_get_approved_by', 'get_approved_by');
+add_action('wp_ajax_get_approved_by', 'get_approved_by');
 
 function update_payment()
 {

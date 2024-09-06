@@ -128,6 +128,11 @@ function aes_scripts_admin(){
             'url' => admin_url( 'admin-ajax.php' ),
             'action' => 'last_access_moodle' 
         ]);
+
+        wp_localize_script('student-documents','get_approved_by',[
+            'url' => admin_url( 'admin-ajax.php' ),
+            'action' => 'get_approved_by' 
+        ]);
     }
     
 }

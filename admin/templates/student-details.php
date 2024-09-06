@@ -321,8 +321,6 @@ $countries = get_countries();
                 <tr>
                     <th scope="col" class="manage-column column-primary column-title"><?= __('Document', 'aes') ?></th>
                     <th scope="col" class="manage-column column-title-translate"><?= __('Status', 'aes') ?></th>
-                    <th scope="col" class="manage-column column-title-translate"><?= __('Date upload', 'aes') ?></th>
-                    <th scope="col" class="manage-column column-title-translate"><?= __('Date updated', 'aes') ?></th>
                     <th scope="col" class="manage-column column-price"><?= __('Actions', 'aes') ?></th>
                 </tr>
             </thead>
@@ -339,28 +337,12 @@ $countries = get_countries();
                                     <?= $status = get_status_document($document->status); ?>
                                 </b>
                             </td>
-                            <td id="<?= 'td_upload_at_' . $document->document_id; ?>" data-colname="<?= __('Date upload', 'aes'); ?>">
-                                <b>
-                                    <?= $document->upload_at ?? 'N/A'; ?>
-                                </b>
-                            </td>
-                            <td id="<?= 'td_updated_at_' . $document->document_id; ?>" data-colname="<?= __('Date updated', 'aes'); ?>">
-                                <b>
-                                    <?= $document->updated_at ?? 'N/A'; ?>
-                                    <?php
-                                        global $current_user;
-                                        $roles = $current_user->roles;
-                                        if (in_array('owner', $roles) || in_array('administrator', $roles) || in_array('administrador', $roles)) {
-                                            if ($document->approved_by) { ?>
-                                                by <? echo get_user_meta($document->approved_by, 'first_name', true) . ' ' . get_user_meta($document->approved_by, 'last_name', true); ?>
-                                            <?php }?>
-                                    <?php } ?>
-                                </b>
-                            </td>
                             <td data-colname="<?= __('Actions', 'aes'); ?>">
                                 <?php if ($document->status > 0): ?>
+                                    <a target="_blank" onclick='watchDetails(<?= json_encode($document) ?>)'
+                                        class="button button-primary-outline"><?= __('View detail', 'aes'); ?></a>
                                     <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>"
-                                        class="button button-primary"><?= __('View', 'aes'); ?></a>
+                                        class="button button-primary"><?= __('View documment', 'aes'); ?></a>
                                     <?php if ($document->status != 1) { ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
                                             data-status="1" class="button change-status button-warning"><?= __('Revert', 'aes'); ?></button>
@@ -371,7 +353,7 @@ $countries = get_countries();
                                     <?php endif; ?>
                                     <?php if ($document->status != 5 && $document->status != 3): ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
-                                            data-status="3" class="button change-status button-danger"><?= __('Declined', 'aes'); ?></button>
+                                            data-status="3" class="button change-status button-danger"><?= __('Decline', 'aes'); ?></button>
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </td>
@@ -381,4 +363,59 @@ $countries = get_countries();
             </tbody>
         </table>
     <?php endif; ?>
+</div>
+
+
+<div id='decline-modal' class='modal' style='display:none'>
+	<div class='modal-content'>
+		<div class="modal-header">
+		<h3 style="font-size:20px;"><?= __('Decline Document') ?></h3>
+			<span id="decline-exit-icon" class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+		</div>
+		<div class="modal-body" style="margin-top:10px;padding:0px;">
+            <div>
+                <label for="decline-description"><b><?= __('Reason why it is declined','aes'); ?></b><span class="text-danger">*</span></label><br>
+                <textarea name="decline-description" type="text" style="width: 100%;"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="decline-save" type="submit" class="button button-danger"><?= __('Decline','aes'); ?></button>
+            <button id="decline-exit-button" type="button" class="button button-outline-primary modal-close"><?= __('Exit','aes'); ?></button>
+        </div>
+	</div>
+</div>
+
+
+<div id='detail-modal' class='modal' style='display:none'>
+	<div class='modal-content' style="width: 70%;">
+		<div class="modal-header">
+		<h3 style="font-size:20px;"><?= __('Detail Document') ?></h3>
+			<span id="detail-exit-icon" class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+		</div>
+		<div class="modal-body" style="padding:10px;">
+            <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+            <thead>
+                <tr>
+                    <th scope="col" class=" manage-column column"><?= __('Date user registered', 'restaurant-system-app'); ?></th>
+                    <th scope="col" class=" manage-column column-primary"><?= __('Date upload documents', 'restaurant-system-app'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Date status change', 'restaurant-system-app'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Status changed by', 'restaurant-system-app'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Reason of decline', 'restaurant-system-app'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="td" id="date_user_registered"></td>
+                    <td class="td" id="date_upload_documents"></td>
+                    <td class="td" id="date_status_change"></td>
+                    <td class="td" id="status_changed_by"></td>
+                    <td class="td" id="description_status_changed"></td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="modal-footer">
+            <button id="detail-exit-button" type="button" class="button button-outline-primary modal-close"><?= __('Exit','aes'); ?></button>
+        </div>
+	</div>
 </div>
