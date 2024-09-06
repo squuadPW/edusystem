@@ -1281,14 +1281,29 @@ function verificar_contraseña()
         // Verifica si el usuario está conectado
         if (is_user_logged_in()) {
             // Obtiene el ID del usuario actual
-            $current_user = wp_get_current_user();
+            global $current_user, $wpdb;
+            $table_students = $wpdb->prefix.'students';
             $roles = $current_user->roles;
+            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID} ORDER BY id DESC");
+            $documents = get_documents($student->id);
+            $document_enrollment = array_filter($documents, function($document) {
+                return $document->document_id == 'ENROLLMENT';
+            });
+
             if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                 // Agrega un script para levantar el modal
                 add_action('wp_footer', 'modal_create_password');
+            } else if ($document_enrollment[0]->attachment_id == 0 && (in_array('student', $roles, true))) {
+                add_action('wp_footer', 'modal_enrollment_student');
             }
         }
     }
+}
+
+function modal_enrollment_student()
+{
+    // Imprime el contenido del archivo modal-reset-password.php
+    echo file_get_contents(plugin_dir_path(__FILE__) . 'templates/create-enrollment.php');
 }
 
 function modal_create_password()
