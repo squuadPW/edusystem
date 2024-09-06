@@ -14,8 +14,8 @@
                         </h4>
                         <div style="background-color: #f7f7f7; padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-bottom: 10px">
                             <?php foreach($documents as $document): ?>
-                                <?php if($document->status == 0 || $document->status == 1 || $document->status == 3 || $document->status == 4): ?>
-
+                                <?php if($document->is_visible) { ?>
+                                    <?php if($document->status == 0 || $document->status == 1 || $document->status == 3 || $document->status == 4): ?>
                                     <div style="display:flex;width:100%;flex-direction:row; margin-bottom: 10px">
                                         <span style="width:70%">
                                             <?php 
@@ -75,7 +75,8 @@
                                             <?php } ?>
                                         </span>
                                     </div>
-                                <?php endif; ?>
+                                    <?php endif; ?>
+                                <?php } ?>
                             <?php endforeach; ?>
                             </div>
                     <?php } ?>
