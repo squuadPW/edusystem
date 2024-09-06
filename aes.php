@@ -185,6 +185,7 @@ function create_tables() {
         approved_by INT(11) NULL,
         status INT(11) NOT NULL,
         is_required INT(11) NOT NULL DEFAULT 0,
+        upload_at DATETIME NULL,
         updated_at DATETIME NULL,
         created_at DATETIME NOT NULL,
         PRIMARY KEY (id))$charset_collate;"
