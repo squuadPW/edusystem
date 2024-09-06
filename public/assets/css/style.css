@@ -905,4 +905,15 @@ h3 {
   color: #000;
   text-decoration: none;
   cursor: pointer;
+}
+
+.modal-enrollment {
+  border-radius: 0px !important;
+  width: 70% !important;
+}
+@media screen and (max-width: 767px) {
+  .modal-enrollment {
+    width: 100% !important;
+    margin: 0 !important;
+  }
 }/*# sourceMappingURL=style.css.map */
