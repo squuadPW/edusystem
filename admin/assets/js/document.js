@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   button_export_xlsx = document.getElementById("button-export-xlsx");
   input_birth_date = document.querySelectorAll(".birth_date");
+  modal = document.getElementById('decline-modal'); // assume you have a modal with id "decline-modal"
+  documentId = null;
 
   if (input_birth_date) {
     input_birth_date.forEach((input) => {
@@ -251,30 +253,14 @@ document.addEventListener("DOMContentLoaded", function () {
     buttons_change_status = document.querySelectorAll(".change-status");
     buttons_change_status.forEach((button) => {
       button.addEventListener("click", (e) => {
+        documentId = button.dataset.documentId;
         const action = button.textContent;
 
         const confirmMessage = `Are you sure you want to ${action.toLowerCase()} this document?`;
-  
         if (confirm(confirmMessage)) {
           if (action.toLowerCase() === 'decline') {
             // Open modal with textarea for description
-            const modal = document.getElementById('decline-modal'); // assume you have a modal with id "decline-modal"
             modal.style.display = 'block';
-  
-            const textarea = document.querySelector('textarea[name="decline-description"]');
-            const saveButton = document.getElementById('decline-save'); // assume you have a button with id "decline-save"
-  
-            saveButton.addEventListener('click', () => {
-              const description = textarea.value;
-              if (description) {
-                // Save the description and continue with buttons_status
-                buttons_status(button, description);
-                modal.style.display = 'none';
-                textarea.value = '';
-              } else {
-                confirm('The description is required');
-              }
-            });
           } else {
             buttons_status(button);
           }
@@ -290,6 +276,25 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('decline-modal').style.display = 'none';
         const textarea = document.querySelector('textarea[name="decline-description"]');
         textarea.value = '';
+      });
+    });
+  }
+
+  var modalSaveElements = document.querySelectorAll('#decline-save');
+  if (modalSaveElements) {
+    modalSaveElements.forEach(function(element) {
+      element.addEventListener('click', function() {
+        const textarea = document.querySelector('textarea[name="decline-description"]');
+        const description = textarea.value;
+        if (description) {
+          button = document.querySelector(`[data-document-id="${documentId}"]`);
+          buttons_status(button, description);
+
+          modal.style.display = 'none';
+          textarea.value = '';
+        } else {
+          alert('The description is required');
+        }
       });
     });
   }
