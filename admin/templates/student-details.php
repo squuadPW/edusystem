@@ -339,10 +339,8 @@ $countries = get_countries();
                             </td>
                             <td data-colname="<?= __('Actions', 'aes'); ?>">
                                 <?php if ($document->status > 0): ?>
-                                    <a target="_blank" onclick='watchDetails(<?= json_encode($document) ?>)'
-                                        class="button button-primary-outline"><?= __('View detail', 'aes'); ?></a>
-                                    <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>"
-                                        class="button button-primary"><?= __('View documment', 'aes'); ?></a>
+                                    <a target="_blank" onclick='watchDetails(<?= json_encode($document) ?>)'><button type="button" class="button button-primary-outline other-buttons-document"><?= __('View detail', 'aes'); ?></button></a>
+                                    <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>"><button type="button" class="button button-primary other-buttons-document"><?= __('View documment', 'aes'); ?></button></a>
                                     <?php if ($document->status != 1) { ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
                                             data-status="1" class="button change-status button-warning"><?= __('Revert', 'aes'); ?></button>

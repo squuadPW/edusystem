@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
   input_birth_date = document.querySelectorAll(".birth_date");
   modal = document.getElementById('decline-modal'); // assume you have a modal with id "decline-modal"
   documentId = null;
+  statusId = null;
 
   if (input_birth_date) {
     input_birth_date.forEach((input) => {
@@ -251,9 +252,11 @@ document.addEventListener("DOMContentLoaded", function () {
   function watchButtons() {
     initialized = true;
     buttons_change_status = document.querySelectorAll(".change-status");
+    other_buttons_document = document.querySelectorAll(".other-buttons-document");
     buttons_change_status.forEach((button) => {
       button.addEventListener("click", (e) => {
         documentId = button.dataset.documentId;
+        statusId = button.dataset.status;
         const action = button.textContent;
 
         const confirmMessage = `Are you sure you want to ${action.toLowerCase()} this document?`;
@@ -287,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const textarea = document.querySelector('textarea[name="decline-description"]');
         const description = textarea.value;
         if (description) {
-          button = document.querySelector(`[data-document-id="${documentId}"]`);
+          button = document.querySelector(`[data-document-id="${documentId}"][data-status="${statusId}"]`);
           buttons_status(button, description);
 
           modal.style.display = 'none';
@@ -311,6 +314,9 @@ document.addEventListener("DOMContentLoaded", function () {
   function buttons_status(button, description = null) {
       // Deshabilitar todos los botones con la clase change-status
       buttons_change_status.forEach((btn) => {
+        btn.disabled = true;
+      });
+      other_buttons_document.forEach((btn) => {
         btn.disabled = true;
       });
       document_id = button.getAttribute("data-document-id");
@@ -364,6 +370,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
           // Habilitar nuevamente los botones cuando se completa la solicitud
           buttons_change_status.forEach((btn) => {
+            btn.disabled = false;
+          });
+          other_buttons_document.forEach((btn) => {
             btn.disabled = false;
           });
         }

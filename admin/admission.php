@@ -853,29 +853,16 @@ function update_status_documents()
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
 
-                $approved_by = '';
-                if ($document->updated_at) {
-                    if (in_array('owner', $roles) || in_array('administrator', $roles) || in_array('administrador', $roles)) {
-                        if ($document->approved_by) { 
-                            $approved_by = $document->updated_at . ' by ' . get_user_meta($document->approved_by, 'first_name', true) . ' ' . get_user_meta($document->approved_by, 'last_name', true);
-                        }
-                    } else {
-                        $approved_by = $document->updated_at;
-                    }
-                } else {
-                    $approved_by = 'N/A';
-                }
-
-                $html .= '<td id="' . 'td_updated_at_' . $document->document_id . '" data-colname="' . __('Date updated', 'aes') . '">';
+                $html .= '<td id="' . 'td_document_' . $document->document_id . '" data-colname="' . __('Status', 'aes') . '">';
                 $html .= "<b>";
-                $html .= $approved_by;
+                $html .= get_status_document($document->status);
                 $html .= "</b>";
                 $html .= "</td>";
 
                 $html .= '<td data-colname="' . __('Actions', 'aes') . '">';
                 if ($document->status > 0) {
-                    $html .= "<a style='margin-left: 3px; margin-right: 3px;' target='_blank' onclick='watchDetails(". json_encode($document) .")' class='button button-primary-outline'>" . __('View detail', 'aes') . "</a>";
-                    $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '" class="button button-primary">' . __('View documment', 'aes') . '</a>';
+                    $html .= "<a style='margin-right: 3px;' target='_blank' onclick='watchDetails(". json_encode($document) .")'><button type='button' class='button button-primary-outline other-buttons-document'>" . __('View detail', 'aes') . "</button></a>";
+                    $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '"><button type="button" class="button button-primary other-buttons-document">' . __('View documment', 'aes') . '</button></a>';
 
                     // Revert button
                     if ($document->status != 1) {
