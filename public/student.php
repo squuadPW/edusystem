@@ -349,6 +349,7 @@ function insert_register_documents($student_id, $grade_id)
                 'student_id' => $student_id,
                 'document_id' => $document->name,
                 'is_required' => $document->is_required,
+                'is_visible' => $document->is_visible,
                 'status' => 0,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
