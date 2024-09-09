@@ -912,42 +912,6 @@ h3 {
   width: 70% !important;
   overflow: auto;
 }
-.modal-enrollment canvas {
-  border-bottom: 1px solid gray;
-}
-.modal-enrollment .p-0 {
-  padding: 0 !important;
-}
-.modal-enrollment .mb-10 {
-  margin-bottom: 10px;
-}
-.modal-enrollment .container-enrollment {
-  padding: 0;
-  margin: 10px 0px !important;
-  border: 1px solid gray;
-}
-.modal-enrollment .title-enrollment {
-  padding: 4px;
-  text-align: center;
-  font-weight: bold;
-  font-size: 20px;
-}
-.modal-enrollment .subtitle-enrollment {
-  background-color: blue;
-  color: white;
-  padding: 4px;
-  text-align: center;
-  font-weight: 600;
-}
-.modal-enrollment div {
-  padding: 8px;
-}
-.modal-enrollment .d-flex {
-  display: flex;
-}
-.modal-enrollment .d-flex div {
-  flex: 50%;
-}
 @media screen and (max-width: 767px) {
   .modal-enrollment {
     width: 100% !important;

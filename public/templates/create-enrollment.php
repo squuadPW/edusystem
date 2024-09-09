@@ -1,92 +1,108 @@
 <!-- Modal container -->
 <div id="modal-contraseña" class="modal" style="overflow: auto; padding: 0 !important">
     <div class="modal-content modal-enrollment">
-        <div class="modal-body">
+        <div class="modal-body" id="content-pdf">
             <div style="padding: 0 !important; text-align: center">
                 <span style="font-size: 12px;">3105 NW 107 Avenue, Doral, FL 33172 | (786) 361 – 9307 |
                     www.American-elite.us</span>
-                <h4 class="title-enrollment">ENROLLMENT AGREEMENT</h4>
+                <h4 style="padding: 4px; text-align: center; font-weight: bold; font-size: 20px;">ENROLLMENT AGREEMENT
+                </h4>
             </div>
-            <div class="container-enrollment">
-                <h4 class="subtitle-enrollment">STUDENT PERSONAL INFORMATION</h4>
-                <div class="d-flex p-0">
-                    <div>
+            <div style="padding: 0; margin: 10px 0px !important; border: 1px solid gray;" id="student-information">
+                <h4 style="background-color: #091c5c; color: white; padding: 4px; text-align: center; font-weight: 600;">
+                    STUDENT PERSONAL INFORMATION</h4>
+                <div style="padding: 0 !important; display: flex;">
+                    <div style="flex: 50%;padding: 8px;">
                         <label for="complete_name">Complete name</label>
-                        <input type="text" name="complete_name">
+                        <input type="text" name="complete_name" value="<?php echo $user['student_full_name'] ?>"
+                            disabled>
+
+                        <input type="hidden" name="student_user_id" value="<?php echo $student_id ?>">
+                        <input type="hidden" name="parent_user_id" value="<?php echo $partner_id ?>">
                     </div>
-                    <div>
+                    <div style="flex: 50%;padding: 8px;">
                         <label for="date">Date</label>
-                        <input type="text" name="date">
+                        <input type="text" name="date" value="<?php echo $user['student_created_at'] ?>" disabled>
                     </div>
                 </div>
-                <div class="d-flex p-0">
-                    <div>
+                <div style="padding: 0 !important; display: flex">
+                    <div style="flex: 50%;padding: 8px;">
                         <label for="birth_date">Date of Birth</label>
-                        <input type="text" name="birth_date">
+                        <input type="text" name="birth_date" value="<?php echo $user['student_birth_date'] ?>" disabled>
                     </div>
-                    <div>
+                    <div style="flex: 50%;padding: 8px;">
                         <label for="gender">Gender</label>
-                        <input type="text" name="gender">
+                        <input type="text" name="gender" value="<?php echo $user['student_gender'] ?>" disabled>
                     </div>
                 </div>
-                <div>
+                <div style="padding: 8px;">
                     <label for="address">Address</label>
-                    <input type="text" name="address">
+                    <input type="text" name="address" value="<?php echo $user['student_address'] ?>" disabled>
                 </div>
-                <div>
+                <div style="padding: 8px;">
                     <label for="country">Country</label>
-                    <input type="text" name="country">
+                    <input type="text" name="country" value="<?php echo $user['student_country'] ?>" disabled>
                 </div>
-                <div class="d-flex p-0">
-                    <div>
+                <div style="padding: 0 !important; display: flex;">
+                    <div style="flex: 50%; padding: 8px">
                         <label for="phone">Phone</label>
-                        <input type="text" name="phone">
+                        <input type="text" name="phone" value="<?php echo $user['student_phone'] ?>" disabled>
                     </div>
-                    <div>
+                    <div style="flex: 50%; padding: 8px">
                         <label for="cell">Cell</label>
-                        <input type="text" name="cell">
+                        <input type="text" name="cell" value="<?php echo $user['student_phone'] ?>" disabled>
                     </div>
-                    <div>
+                    <div style="flex: 50%; padding: 8px">
                         <label for="parent_cell">Parents Cell</label>
-                        <input type="text" name="parent_cell">
+                        <input type="text" name="parent_cell" value="<?php echo $user['parent_cell'] ?>" disabled>
                     </div>
                 </div>
-                <div>
+                <div style="padding: 8px;">
                     <label for="parent_identification">Identification of parent</label>
-                    <input type="text" name="parent_identification">
+                    <input type="text" name="parent_identification" value="<?php echo $user['parent_identification'] ?>"
+                        disabled>
                 </div>
-                <div>
+                <div style="padding: 8px;">
                     <label for="child_identification">Identification of child</label>
-                    <input type="text" name="child_identification">
+                    <input type="text" name="child_identification" value="<?php echo $user['student_identification'] ?>"
+                        disabled>
                 </div>
-                <div>
+                <div style="padding: 8px;">
                     <label for="parent_name">Parent/Legal Guardian Full Name</label>
-                    <input type="text" name="parent_name">
+                    <input type="text" name="parent_name" value="<?php echo $user['parent_full_name'] ?>" disabled>
                 </div>
-                <div>
+                <div style="padding: 8px;">
                     <label for="parent_email">Email (Required to access parent portal):</label>
-                    <input type="text" name="parent_email">
+                    <input type="text" name="parent_email" value="<?php echo $user['parent_email'] ?>" disabled>
+                </div>
+                <div style="padding: 8px;">
+                    <label for="parent_email">Email (Required to access student portal):</label>
+                    <input type="text" name="student_email" value="<?php echo $user['student_email'] ?>" disabled>
                 </div>
             </div>
-            <div class="container-enrollment">
-                <h4 class="subtitle-enrollment">SCHOOL INFORMATION</h4>
-                <div>
+            <div style="padding: 0; margin: 10px 0px !important; border: 1px solid gray;" id="school-information">
+                <h4 style="background-color: #091c5c; color: white; padding: 4px; text-align: center; font-weight: 600;">
+                    SCHOOL INFORMATION</h4>
+                <div style="padding: 8px;">
                     <label for="name_last_school">Name of Last or Concurrent School</label>
-                    <input type="text" name="name_last_school">
+                    <input type="text" name="name_last_school"
+                        value="<?php echo isset($institute) ? $institute->name : $institute_name ?>" disabled>
                 </div>
-                <div>
+                <div style="padding: 8px;">
                     <label for="school_address">School Address</label>
-                    <input type="text" name="school_address">
+                    <input type="text" name="school_address"
+                        value="<?php echo isset($institute) ? $institute->address : '' ?>" <?php echo isset($institute) ? 'disabled' : '' ?>>
                 </div>
-                <div>
+                <div style="padding: 8px;">
                     <label for="school_phone">Phone</label>
-                    <input type="text" name="school_phone">
+                    <input type="text" name="school_phone"
+                        value="<?php echo isset($institute) ? $institute->phone : '' ?>" <?php echo isset($institute) ? 'disabled' : '' ?>>
                 </div>
-                <div>
+                <div style="padding: 8px;">
                     <label for="last_date_attended">Last date Attended</label>
                     <input type="text" name="last_date_attended">
                 </div>
-                <div>
+                <div style="padding: 8px;">
                     <label for="address">Last completed grade</label>
 
                     <div>
@@ -109,9 +125,10 @@
                     </div>
                 </div>
             </div>
-            <div class="container-enrollment">
-                <h4 class="subtitle-enrollment">METHOD OF TUITION PAYMENT</h4>
-                <div>
+            <div style="padding: 0; margin: 10px 0px !important; border: 1px solid gray;" id="tuition-payment">
+                <h4 style="background-color: #091c5c; color: white; padding: 4px; text-align: center; font-weight: 600;">
+                    METHOD OF TUITION PAYMENT</h4>
+                <div style="padding: 8px;">
                     <label for="address">Method of tuition payment</label>
 
                     <div>
@@ -129,9 +146,10 @@
                     </div>
                 </div>
             </div>
-            <div class="container-enrollment">
-                <h4 class="subtitle-enrollment">STUDENT AGREEMENT</h4>
-                <div>
+            <div style="padding: 0; margin: 10px 0px !important; border: 1px solid gray;" id="student-agreement">
+                <h4 style="background-color: #091c5c; color: white; padding: 4px; text-align: center; font-weight: 600;">
+                    STUDENT AGREEMENT</h4>
+                <div style="padding: 8px;">
                     <p>By signing the agreement herein, the student and their parent/guardian enter into agreement with
                         American Elite School (AES), under
                         which the student/parent/guardian will pay tuition and fees and adhere to the school’s policies
@@ -148,89 +166,56 @@
                         acceptance to the program. Failure to do so will result in
                         being dropped from the program and you will have to reapply for admission.</p>
 
-                    <div class="d-flex p-0">
-                        <div>
-                            <div class="p-0 mb-10">
+                    <div style="padding: 0 !important; display: flex">
+                        <div style="flex: 50%;">
+                            <div style="padding: 8px !important; margin-bottom: 10px;">
                                 <label for="complete_name">Applicant name</label>
-                                <input type="text" name="complete_name">
+                                <input type="text" name="complete_name" value="<?php echo $user['student_full_name'] ?>"
+                                    disabled>
                             </div>
-                            <p>Applicant signature</p>
-                            <canvas id="signature-student" width="100%" height="200"></canvas>
-                            <button id="clear-student">Clear</button>
+                            <div style="padding: 8px !important;">
+                                <p>Applicant signature</p>
+                                <?php if (!isset($parent_signature)) { ?>
+                                    <canvas id="signature-student" width="100%" height="200"
+                                        style="border-bottom: 1px solid gray"></canvas>
+                                    <button id="clear-student">Clear</button>
+                                <?php } else { ?>
+                                    <p>Firma ya realizada</p>
+                                <?php } ?>
+                            </div>
                         </div>
-                        <div>
-                            <div class="p-0 mb-10">
+                        <div style="flex: 50%">
+                            <div style="padding: 8px !important; margin-bottom: 10px;">
                                 <label for="parent_name">Parent/Legal Guardian Name</label>
-                                <input type="text" name="parent_name">
+                                <input type="text" name="parent_name" value="<?php echo $user['parent_full_name'] ?>"
+                                    disabled>
                             </div>
-                            <p>Parent / Guardian signature</p>
-                            <canvas id="signature-parent" width="100%" height="200"></canvas>
-                            <button id="clear-parent" class="mb-10">Clear</button>
+                            <div style="padding: 8px !important;">
+                                <p>Parent / Guardian signature</p>
+                                <?php if (!isset($parent_signature)) { ?>
+                                    <canvas id="signature-parent" width="100%" height="200"
+                                        style="border-bottom: 1px solid gray"></canvas>
+                                    <button id="clear-parent" style="margin-bottom: 10px;">Clear</button>
+                                <?php } else { ?>
+                                    <p>Firma ya realizada</p>
+                                <?php } ?>
+                            </div>
                         </div>
                     </div>
-                    <div>
+                    <div style="padding: 8px;">
                         <label for="date">Date</label>
-                        <input type="text" name="date">
+                        <input type="text" name="date" value="<?php echo $user['today'] ?>" disabled>
                     </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer" style="text-align: center; display: block">
-            <button type="button" class="submit">Generar</button>
+            <button type="button" class="submit" id="saveSignatures">Save</button>
         </div>
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+    integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-<script>
-
-    let signaturePadStudent;
-    let signaturePadParent;
-
-    function resizeCanvas(canvasId) {
-        const canvas = document.getElementById(canvasId);
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        let width, height;
-
-        // Set different canvas sizes based on screen sizes
-        if (window.matchMedia("(max-width: 768px)").matches) { // mobile
-            width = 150;
-            height = 100;
-        } else { // laptop
-            width = 300;
-            height = 100;
-        }
-
-        canvas.width = width * ratio;
-        canvas.height = height * ratio;
-        canvas.style.width = width + 'px';
-        canvas.style.height = height + 'px';
-        canvas.getContext("2d").scale(ratio, ratio);
-    }
-
-    window.addEventListener("resize", function () {
-        resizeCanvas('signature-student');
-        resizeCanvas('signature-parent');
-    });
-
-    window.addEventListener("orientationchange", function () {
-        resizeCanvas('signature-student');
-        resizeCanvas('signature-parent');
-    });
-
-    resizeCanvas('signature-student');
-    resizeCanvas('signature-parent');
-
-    // Create the SignaturePad objects after the canvas elements have been resized
-    signaturePadStudent = new SignaturePad(document.getElementById('signature-student'));
-    signaturePadParent = new SignaturePad(document.getElementById('signature-parent'));
-
-    document.getElementById('clear-student').addEventListener('click', () => {
-        signaturePadStudent.clear();
-    });
-
-    document.getElementById('clear-parent').addEventListener('click', () => {
-        signaturePadParent.clear();
-    });
-
-</script>

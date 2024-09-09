@@ -55,6 +55,16 @@ function form_plugin_scripts()
         )
     );
     wp_enqueue_script('create-password');
+
+    wp_register_script('create-enrollment', plugins_url('aes') . '/public/assets/js/create-enrollment.js', array('jquery'), '1.0.0', true);
+    wp_localize_script(
+        'create-enrollment',
+        'ajax_object',
+        array(
+            'ajax_url' => admin_url('admin-ajax.php')
+        )
+    );
+    wp_enqueue_script('create-enrollment');
 }
 
 add_action('wp_enqueue_scripts', 'form_plugin_scripts');
@@ -174,19 +184,19 @@ function woocommerce_checkout_order_created_action($order)
     if (isset($_COOKIE['id_document_parent']) && !empty($_COOKIE['id_document_parent'])) {
         update_user_meta($customer_id, 'id_document', $_COOKIE['id_document_parent']);
     }
-    
+
     if (isset($_COOKIE['parent_document_type']) && !empty($_COOKIE['parent_document_type'])) {
         update_user_meta($customer_id, 'type_document', $_COOKIE['parent_document_type']);
     }
-    
+
     if (isset($_COOKIE['birth_date_parent']) && !empty($_COOKIE['birth_date_parent'])) {
         update_user_meta($customer_id, 'birth_date', $_COOKIE['birth_date_parent']);
     }
-    
+
     if (isset($_COOKIE['gender_parent']) && !empty($_COOKIE['gender_parent'])) {
         update_user_meta($customer_id, 'gender', $_COOKIE['gender_parent']);
     }
-    
+
     if (isset($_COOKIE['ethnicity_parent']) && !empty($_COOKIE['ethnicity_parent'])) {
         update_user_meta($customer_id, 'ethnicity', $_COOKIE['ethnicity_parent']);
     }
@@ -599,7 +609,7 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         'passport' => 2,
                         'ssn' => 4,
                     )[$student->type_document];
-    
+
                     $files_to_send = array();
                     $type_document = '';
                     switch ($student->type_document) {
@@ -613,7 +623,7 @@ function status_changed_payment($order_id, $old_status, $new_status)
                             $type_document = 4;
                             break;
                     }
-    
+
                     $type_document_re = '';
                     switch (get_user_meta($student->partner_id, 'type_document', true)) {
                         case 'identification_document':
@@ -626,8 +636,8 @@ function status_changed_payment($order_id, $old_status, $new_status)
                             $type_document_re = 4;
                             break;
                     }
-    
-                    
+
+
                     $gender = '';
                     switch ($student->gender) {
                         case 'male':
@@ -637,8 +647,8 @@ function status_changed_payment($order_id, $old_status, $new_status)
                             $gender = 'F';
                             break;
                     }
-    
-                    
+
+
                     $gender_re = '';
                     switch (get_user_meta($student->partner_id, 'gender', true)) {
                         case 'male':
@@ -648,7 +658,7 @@ function status_changed_payment($order_id, $old_status, $new_status)
                             $gender_re = 'F';
                             break;
                     }
-    
+
                     $grade = '';
                     switch ($student->grade_id) {
                         case 1:
@@ -679,15 +689,15 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         'cod_period' => $student->academic_period,
 
                         // PADRE
-                        'id_document_re' => get_user_meta($student->partner_id, 'id_document', true), 
+                        'id_document_re' => get_user_meta($student->partner_id, 'id_document', true),
                         'type_document_re' => $type_document_re,
                         'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
                         'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
-                        'birth_date_re' =>  get_user_meta($student->partner_id, 'birth_date', true),
+                        'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
                         'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
                         'email_re' => get_user_meta($student->partner_id, 'billing_email', true),
                         'gender_re' => $gender_re,
-    
+
                         'cod_program' => AES_PROGRAM_ID,
                         'cod_tip' => AES_TYPE_PROGRAM,
                         'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
@@ -695,7 +705,7 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         'city' => get_user_meta($student->partner_id, 'billing_city', true),
                         'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true),
                     );
-    
+
                     $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
                     $documents_to_send = [];
                     foreach ($all_documents_student as $document) {
@@ -703,7 +713,7 @@ function status_changed_payment($order_id, $old_status, $new_status)
                             array_push($documents_to_send, $document);
                         }
                     }
-    
+
                     foreach ($documents_to_send as $key => $doc) {
                         $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
                         $attachment_id = $doc->attachment_id;
@@ -711,14 +721,14 @@ function status_changed_payment($order_id, $old_status, $new_status)
                         if ($attachment_path) {
                             $file_name = basename($attachment_path);
                             $file_type = mime_content_type($attachment_path);
-    
+
                             $files_to_send[] = array(
                                 'file' => curl_file_create($attachment_path, $file_type, $file_name),
                                 'id_requisito' => $id_requisito
                             );
                         }
                     }
-    
+
                     create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
 
                     if ($order->get_meta('id_bitrix')) {
@@ -872,7 +882,7 @@ function woocommerce_update_cart()
         // Agregar el cupón con la clave "fee_inscription" a la matriz $applied_coupons
         array_push($applied_coupons, 'registration fee discount');
     }
-    
+
     // Aplicar los cupones restantes en la matriz $applied_coupons
     foreach ($applied_coupons as $key => $coupon) {
         $woocommerce->cart->apply_coupon($coupon);
@@ -898,7 +908,7 @@ function fee_update()
         foreach ($woocommerce->cart->get_cart() as $key => $product) {
             array_push($products_id, $product['variation_id'] ? $product['variation_id'] : $product['product_id']);
         }
-    
+
         $is_complete = false;
         foreach ($products_id as $key => $product_id) {
             $product = wc_get_product($product_id);
@@ -907,7 +917,7 @@ function fee_update()
                 $is_complete = true;
             }
         }
-    
+
         if ($is_complete) {
             $woocommerce->cart->apply_coupon('Registration fee discount');
         }
@@ -1084,19 +1094,20 @@ function custom_coupon_applied_notice($message)
     $applied_coupons = WC()->cart->get_applied_coupons();
     if (!empty($applied_coupons)) {
         $coupon_list = implode(', ', array_map('ucwords', $applied_coupons));
-        wc_add_notice(__($coupon_list.' applied successfully', 'woocommerce'), 'success');
+        wc_add_notice(__($coupon_list . ' applied successfully', 'woocommerce'), 'success');
     }
 }
 add_action('woocommerce_applied_coupon', 'custom_coupon_applied_notice');
 
 // Hook to update coupon label individually for each coupon
-function update_coupon_label_individually($coupon_html, $coupon) {
+function update_coupon_label_individually($coupon_html, $coupon)
+{
     // $coupon_html = str_replace('Coupon:', $coupon, $coupon_html);
     // $coupon_html = str_replace($coupon, '', $coupon_html);
     return ucfirst($coupon->code);
-  }
-  
-  // Apply the hook
+}
+
+// Apply the hook
 add_filter('woocommerce_cart_totals_coupon_label', 'update_coupon_label_individually', 10, 2);
 
 function custom_login_redirect($redirect_to, $request, $user)
@@ -1282,11 +1293,11 @@ function verificar_contraseña()
         if (is_user_logged_in()) {
             // Obtiene el ID del usuario actual
             global $current_user, $wpdb;
-            $table_students = $wpdb->prefix.'students';
+            $table_students = $wpdb->prefix . 'students';
             $roles = $current_user->roles;
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID} ORDER BY id DESC");
             $documents = get_documents($student->id);
-            $document_enrollment = array_filter($documents, function($document) {
+            $document_enrollment = array_filter($documents, function ($document) {
                 return $document->document_id == 'ENROLLMENT';
             });
 
@@ -1303,7 +1314,47 @@ function verificar_contraseña()
 function modal_enrollment_student()
 {
     // Imprime el contenido del archivo modal-reset-password.php
-    echo file_get_contents(plugin_dir_path(__FILE__) . 'templates/create-enrollment.php');
+    global $wpdb, $current_user;
+    $roles = $current_user->roles;
+    if (in_array('student', $roles)) {
+        $table_students = $wpdb->prefix . 'students';
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+        $partner_id = $student->partner_id;
+        $student_id = $student->id;
+        $institute_id = $student->institute_id;
+    } else if (in_array('parent', $roles)) {
+        $table_students = $wpdb->prefix . 'students';
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+        $student_id = $student->id;
+        $partner_id = $current_user->ID;
+        $institute_id = $student->institute_id;
+    }
+
+    $institute = $institute_id ? get_institute_details($institute_id) : null;
+    $institute_name = $student->institute_name;
+    $table_signatures = $wpdb->prefix . 'users_signatures';
+    $student_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$student_id}'");
+    $parent_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$partner_id}'");
+    $user = [
+        'student_full_name' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
+        'student_created_at' => $student->created_at,
+        'student_birth_date' => $student->birth_date,
+        'student_gender' => ucfirst($student->gender),
+        'student_address' => get_user_meta($partner_id, 'billing_address_1', true),
+        'student_country' => get_user_meta($partner_id, 'billing_country', true),
+        'student_phone' => $student->phone,
+        'parent_cell' => get_user_meta($partner_id, 'billing_phone', true),
+        'parent_identification' => get_user_meta($partner_id, 'id_document', true),
+        'student_identification' => $student->id_document,
+        'parent_full_name' => get_user_meta($student->partner_id, 'first_name', true) . ' ' . get_user_meta($student->partner_id, 'last_name', true),
+        'parent_email' => get_user_meta($student->partner_id, 'billing_email', true),
+        'student_email' => $student->email,
+        'today' => date('Y-m-d'),
+    ];
+    ob_start();
+    include plugin_dir_path(__FILE__) . 'templates/create-enrollment.php';
+    $template_content = ob_get_clean();
+    echo $template_content;
 }
 
 function modal_create_password()
@@ -1349,6 +1400,52 @@ function create_password()
         // Envía un mensaje de error
         wp_send_json(array('success' => false, 'error' => 'Debes estar conectado para cambiar la contraseña'));
     }
+}
+
+// In your WordPress plugin or theme's functions.php file
+
+add_action('wp_ajax_create_enrollment_document', 'create_enrollment_document_callback');
+add_action('wp_ajax_nopriv_create_enrollment_document', 'create_enrollment_document_callback');
+
+function create_enrollment_document_callback() {
+    // Check if the request is valid
+    if (!isset($_POST['action']) || $_POST['action'] !== 'create_enrollment_document') {
+        wp_send_json_error('Invalid request');
+    }
+
+    // Get the uploaded file
+    global $wpdb;
+    $table_student_documents = $wpdb->prefix.'student_documents';
+    $table_students = $wpdb->prefix.'students';
+    $file = $_FILES['document'];
+    $student_id = $_POST['student_user_id'];
+    $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+
+    // Check if the file is a valid PDF
+    if ($file['type'] !== 'application/pdf') {
+        wp_send_json_error('Invalid file type');
+    }
+
+    // Upload the file to the WordPress media library
+    $upload = wp_upload_bits($file['name'], null, file_get_contents($file['tmp_name']));
+    if (!$upload || is_wp_error($upload)) {
+        wp_send_json_error('Failed to upload file');
+    }
+
+    $attachment = array(
+        'post_mime_type' => $upload['type'],
+        'post_title' => $file['name'],
+        'post_content' => '',
+        'post_status' => 'inherit'
+    );
+
+    $attach_id = wp_insert_attachment($attachment, $upload['file']);
+    $attach_data = wp_generate_attachment_metadata($attach_id, $upload['file']);
+    wp_update_attachment_metadata($attach_id, $attach_data);
+    $wpdb->update($table_student_documents,['status' => 5,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $student_id,'document_id' => 'ENROLLMENT' ]);
+
+    // Return the media ID
+    wp_send_json_success(['media_id' => $attach_id, 'upload' => $upload, 'file' => $file]);
 }
 
 add_action('woocommerce_after_account_orders', 'custom_content_after_orders');
