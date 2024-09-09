@@ -1318,13 +1318,17 @@ function modal_enrollment_student()
     $roles = $current_user->roles;
     if (in_array('student', $roles)) {
         $table_students = $wpdb->prefix . 'students';
+        $table_student_payments = $wpdb->prefix . 'student_payments';
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+        $payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY id DESC");
         $partner_id = $student->partner_id;
         $student_id = $student->id;
         $institute_id = $student->institute_id;
     } else if (in_array('parent', $roles)) {
         $table_students = $wpdb->prefix . 'students';
+        $table_student_payments = $wpdb->prefix . 'student_payments';
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+        $payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY id DESC");
         $student_id = $student->id;
         $partner_id = $current_user->ID;
         $institute_id = $student->institute_id;
@@ -1338,6 +1342,8 @@ function modal_enrollment_student()
     $user = [
         'student_full_name' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
         'student_created_at' => $student->created_at,
+        'student_grade' => $student->grade_id,
+        'student_payment' => $payment->type_payment,
         'student_birth_date' => $student->birth_date,
         'student_gender' => ucfirst($student->gender),
         'student_address' => get_user_meta($partner_id, 'billing_address_1', true),

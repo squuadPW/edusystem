@@ -82,19 +82,24 @@ signaturePadStudent.addEventListener("afterUpdateStroke", () => {
 
 save_signatures.addEventListener("click", function () {
   if (!signaturePadStudent.isEmpty() && !signaturePadParent.isEmpty()) {
-    var element = document.getElementById("content-pdf");
-    var opt = {
-      margin: 0,
-      image: { type: "jpeg", quality: 0.98 },
-      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-      pagebreak: { after: ["#student-information", "#tuition-payment"] },
-    };
-
-    // New Promise-based usage:
-    html2pdf().set(opt).from(element).save();
-    html2pdf().set(opt).from(element).outputPdf('blob', 'enrollment.pdf').then((response => {
-      sendSignatures(response);
-    }))
+    document.getElementById('content-pdf').style.display = "block";
+    setTimeout(() => {
+      var element = document.getElementById("content-pdf");
+      console.log(element)
+      var opt = {
+        margin: [0.2, 0, 0, 0],
+        image: { type: "jpeg", quality: 0.98 },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        html2canvas:  { scale: 2 },
+        pagebreak: { after: "#part1" },
+      };
+  
+      // New Promise-based usage:
+      html2pdf().set(opt).from(element).save();
+      html2pdf().set(opt).from(element).outputPdf('blob', 'enrollment.pdf').then((response => {
+        sendSignatures(response);
+      }));
+    }, 100);
   } else {
     sendSignatures();
   }
@@ -124,4 +129,13 @@ function sendSignatures(doc = null) {
             // Handle successful response
         }
     };
+  }
+  
+  function updateGrade(id) {
+    const gradeSpans = document.querySelectorAll('[id^="grade"]');
+    gradeSpans.forEach(span => {
+      span.textContent = '( )'; // reset all spans to blank space
+    });
+    const selectedSpan = document.getElementById(id);
+    selectedSpan.textContent = '(✓)'; // set the selected span to "✓"
   }
