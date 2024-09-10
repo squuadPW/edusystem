@@ -1386,6 +1386,15 @@ function modal_enrollment_student()
     include plugin_dir_path(__FILE__) . 'templates/create-enrollment.php';
 }
 
+function modal_missing_documents($student_id)
+{
+    global $wpdb;
+    $student = get_student_detail($student_id);
+    $table_student_documents = $wpdb->prefix.'student_documents';
+    $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE attachment_id=0 AND is_visible=1 AND student_id={$student_id}");
+    include plugin_dir_path(__FILE__) . 'templates/create-missing-documents.php';
+}
+
 function modal_create_password()
 {
     // Imprime el contenido del archivo modal-reset-password.php

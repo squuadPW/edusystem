@@ -86,7 +86,7 @@ function save_document(){
                     }
 
                     if (sizeof($missing_documents) > 0) {
-                        // ejecutamos modal aqui
+                        modal_missing_documents($student_id);
                     } else {
                         $email_update_document = WC()->mailer()->get_emails()['WC_Update_Document_Email'];
                         $email_update_document->trigger($student_id);
