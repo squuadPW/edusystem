@@ -15,7 +15,7 @@ function resizeCanvas(canvasId) {
       height = 100;
     } else {
       // laptop
-      width = 500;
+      width = 324;
       height = 100;
     }
 
