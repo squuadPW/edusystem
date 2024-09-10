@@ -100,6 +100,7 @@ if (document.getElementById("signature-student")) {
       var element = document.getElementById("content-pdf");
       var opt = {
         margin: [0.2, 0, 0, 0],
+        filename: 'enrollment.pdf',
         image: { type: "jpeg", quality: 0.98 },
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
         html2canvas: { scale: 2 },
