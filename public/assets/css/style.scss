@@ -960,3 +960,10 @@ h3{
       margin: 0 !important;
     }
   }
+
+/* When the modal is open, set the overflow property of the body element to hidden */
+body.modal-open {
+  overflow: hidden;
+    top: 0 !important;
+    position: absolute;
+}

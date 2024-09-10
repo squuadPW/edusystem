@@ -1,4 +1,7 @@
-<!-- Modal container -->
+
+
+<!-- Your modal content here -->
+<div class="modal-content" id="modal-content">
 <div id="modal-contraseña" class="modal" style="overflow: auto; padding: 0 !important">
     <div class="modal-content modal-enrollment">
         <!-- <div class="modal-body" style="display: none">
@@ -409,3 +412,4 @@
     integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+</div>

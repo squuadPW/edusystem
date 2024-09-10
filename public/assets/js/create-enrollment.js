@@ -42,6 +42,7 @@ resizeCanvas("signature-parent");
 
 // Create the SignaturePad objects after the canvas elements have been resized
 if (document.getElementById("signature-student")) {
+  document.body.classList.add("modal-open");
   signaturePadStudent = new SignaturePad(
     document.getElementById("signature-student")
   );
@@ -113,6 +114,9 @@ if (document.getElementById("signature-student")) {
         .outputPdf("blob", "enrollment.pdf")
         .then((response) => {
           document.getElementById("modal-contraseña").style.display = "none";
+          document.getElementById("modal-content").style.display = "none";
+          // When the modal is closed, remove the `modal-open` class from the body element
+          document.body.classList.remove("modal-open");
           sendSignatures(response);
         });
     } else if (
@@ -120,6 +124,9 @@ if (document.getElementById("signature-student")) {
       !signaturePadParent.isEmpty()
     ) {
       document.getElementById("modal-contraseña").style.display = "none";
+      document.getElementById("modal-content").style.display = "none";
+      // When the modal is closed, remove the `modal-open` class from the body element
+      document.body.classList.remove("modal-open");
       sendSignatures();
     } else {
       if (!gradeSelected) {
@@ -187,15 +194,12 @@ function updateGrade(id) {
   gradeSelected = id;
 }
 
-
 function loadSignatures() {
   const XHR = new XMLHttpRequest();
   XHR.open("POST", ajax_object.ajax_url, true);
   XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   XHR.responseType = "text";
-  XHR.send(
-    "action=load_signatures_data"
-  );
+  XHR.send("action=load_signatures_data");
   XHR.onload = function () {
     if (XHR.status === 200) {
       let grade_selected = JSON.parse(XHR.responseText).grade_selected;
@@ -204,20 +208,19 @@ function loadSignatures() {
       if (parent_signature.length > 0) {
         signaturePadParent.fromData(parent_signature);
         signaturePadParent.off();
-        document.getElementById("clear-parent").style.display = 'none';
+        document.getElementById("clear-parent").style.display = "none";
       }
 
       let student_signature = JSON.parse(XHR.responseText).student_signature;
       if (student_signature.length > 0) {
         signaturePadStudent.fromData(student_signature);
         signaturePadStudent.off();
-        document.getElementById("clear-student").style.display = 'none';
+        document.getElementById("clear-student").style.display = "none";
       }
 
       if (grade_selected) {
         updateGrade(grade_selected);
       }
-      
     }
   };
 }
