@@ -11,11 +11,11 @@ function resizeCanvas(canvasId) {
     // Set different canvas sizes based on screen sizes
     if (window.matchMedia("(max-width: 768px)").matches) {
       // mobile
-      width = 150;
+      width = 250;
       height = 100;
     } else {
       // laptop
-      width = 300;
+      width = 500;
       height = 100;
     }
 
