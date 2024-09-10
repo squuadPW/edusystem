@@ -930,6 +930,37 @@ function fee_update()
     }
 }
 
+add_action('wp_ajax_nopriv_load_signatures_data', 'load_signatures_data');
+add_action('wp_ajax_load_signatures_data', 'load_signatures_data');
+
+function load_signatures_data()
+{
+    // Imprime el contenido del archivo modal-reset-password.php
+    global $wpdb, $current_user;
+    $roles = $current_user->roles;
+    if (in_array('student', $roles)) {
+        $table_students = $wpdb->prefix . 'students';
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+        $partner_id = $student->partner_id;
+        $student_id = $current_user->ID;
+    } else if (in_array('parent', $roles)) {
+        $table_students = $wpdb->prefix . 'students';
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+        $user_student = get_user_by('email', $student->email);
+        $student_id = $user_student->ID;
+        $partner_id = $current_user->ID;
+    }
+    $table_signatures = $wpdb->prefix . 'users_signatures';
+    $student_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$student_id}'");
+    $parent_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$partner_id}'");
+    if ($parent_signature) {
+        $grade_selected = $parent_signature->grade_selected ? $parent_signature->grade_selected : null;
+    } else if ($student_signature) {
+        $grade_selected = $student_signature->grade_selected ? $student_signature->grade_selected : null;
+    }
+    wp_send_json(array('grade_selected' => $grade_selected, 'parent_signature' => $parent_signature ? json_decode($parent_signature->signature) : [], 'student_signature' => $student_signature ? json_decode($student_signature->signature) : []));
+}
+
 add_action('wp_ajax_nopriv_reload_payment_table', 'reload_payment_table');
 add_action('wp_ajax_reload_payment_table', 'reload_payment_table');
 
@@ -1293,18 +1324,15 @@ function verificar_contraseña()
         if (is_user_logged_in()) {
             // Obtiene el ID del usuario actual
             global $current_user, $wpdb;
-            $table_students = $wpdb->prefix . 'students';
+            $table_user_signatures = $wpdb->prefix . 'users_signatures';
             $roles = $current_user->roles;
-            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID} ORDER BY id DESC");
-            $documents = get_documents($student->id);
-            $document_enrollment = array_filter($documents, function ($document) {
-                return $document->document_id == 'ENROLLMENT';
-            });
+
+            $user_enrollment_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'ENROLLMENT' ORDER BY id DESC");
 
             if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                 // Agrega un script para levantar el modal
                 add_action('wp_footer', 'modal_create_password');
-            } else if ($document_enrollment[0]->attachment_id == 0 && (in_array('student', $roles, true))) {
+            } else if (!isset($user_enrollment_signature) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                 add_action('wp_footer', 'modal_enrollment_student');
             }
         }
@@ -1322,23 +1350,21 @@ function modal_enrollment_student()
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
         $payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY id DESC");
         $partner_id = $student->partner_id;
-        $student_id = $student->id;
+        $student_id = $current_user->ID;
         $institute_id = $student->institute_id;
     } else if (in_array('parent', $roles)) {
         $table_students = $wpdb->prefix . 'students';
         $table_student_payments = $wpdb->prefix . 'student_payments';
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+        $user_student = get_user_by('email', $student->email);
         $payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY id DESC");
-        $student_id = $student->id;
+        $student_id = $user_student->ID;
         $partner_id = $current_user->ID;
         $institute_id = $student->institute_id;
     }
 
     $institute = $institute_id ? get_institute_details($institute_id) : null;
     $institute_name = $student->institute_name;
-    $table_signatures = $wpdb->prefix . 'users_signatures';
-    $student_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$student_id}'");
-    $parent_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$partner_id}'");
     $user = [
         'student_full_name' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
         'student_created_at' => $student->created_at,
@@ -1357,10 +1383,7 @@ function modal_enrollment_student()
         'student_email' => $student->email,
         'today' => date('Y-m-d'),
     ];
-    ob_start();
     include plugin_dir_path(__FILE__) . 'templates/create-enrollment.php';
-    $template_content = ob_get_clean();
-    echo $template_content;
 }
 
 function modal_create_password()
@@ -1422,33 +1445,74 @@ function create_enrollment_document_callback() {
     // Get the uploaded file
     global $wpdb;
     $table_student_documents = $wpdb->prefix.'student_documents';
+    $table_users_signatures = $wpdb->prefix.'users_signatures';
     $table_students = $wpdb->prefix.'students';
     $file = $_FILES['document'];
-    $student_id = $_POST['student_user_id'];
-    $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+    $signature_parent = json_decode(json_decode('"'.$_POST['signature_parent'].'"', true));
+    $signature_student = json_decode(json_decode('"'.$_POST['signature_student'].'"', true));
+    $partner_user_id = $_POST['partner_user_id'];
+    $student_user_id = $_POST['student_user_id'];
+    $grade_selected = $_POST['grade_selected'];
 
-    // Check if the file is a valid PDF
-    if ($file['type'] !== 'application/pdf') {
-        wp_send_json_error('Invalid file type');
+    //SAVE THE SIGNATURE OF STUDENT
+    if (sizeof($signature_student) > 0) {
+        $data = array(
+            'user_id' => $student_user_id,
+            'signature' => json_encode($signature_student),
+            'document_id' => 'ENROLLMENT',
+            'grade_selected' => $grade_selected
+        );
+
+        $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_users_signatures} WHERE user_id = %d AND document_id = %d", $student_user_id, 'ENROLLMENT'));
+        if (!$existing_row) {
+            $wpdb->insert($table_users_signatures, $data);
+        }
     }
+    //SAVE THE SIGNATURE OF STUDENT
 
-    // Upload the file to the WordPress media library
-    $upload = wp_upload_bits($file['name'], null, file_get_contents($file['tmp_name']));
-    if (!$upload || is_wp_error($upload)) {
-        wp_send_json_error('Failed to upload file');
+    //SAVE THE SIGNATURE OF PARENT
+    if (sizeof($signature_parent) > 0) {
+        $data = array(
+            'user_id' => $partner_user_id,
+            'signature' => json_encode($signature_parent),
+            'document_id' => 'ENROLLMENT',
+            'grade_selected' => $grade_selected
+        );
+
+        $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_users_signatures} WHERE user_id = %d AND document_id = %d", $partner_user_id, 'ENROLLMENT'));
+        if (!$existing_row) {
+            $wpdb->insert($table_users_signatures, $data);
+        }
     }
+    //SAVE THE SIGNATURE OF PARENT
 
-    $attachment = array(
-        'post_mime_type' => $upload['type'],
-        'post_title' => $file['name'],
-        'post_content' => '',
-        'post_status' => 'inherit'
-    );
+    // SAVE THE DOCUMENT
+    if ($file) {
+        if ($file['type'] !== 'application/pdf') {
+            wp_send_json_error('Invalid file type');
+        }
+    
+        $upload = wp_upload_bits($file['name'], null, file_get_contents($file['tmp_name']));
+        if (!$upload || is_wp_error($upload)) {
+            wp_send_json_error('Failed to upload file');
+        }
+    
+        $attachment = array(
+            'post_mime_type' => $upload['type'],
+            'post_title' => $file['name'],
+            'post_content' => '',
+            'post_status' => 'inherit'
+        );
+    
+        $attach_id = wp_insert_attachment($attachment, $upload['file']);
+        $attach_data = wp_generate_attachment_metadata($attach_id, $upload['file']);
+        wp_update_attachment_metadata($attach_id, $attach_data);
 
-    $attach_id = wp_insert_attachment($attachment, $upload['file']);
-    $attach_data = wp_generate_attachment_metadata($attach_id, $upload['file']);
-    wp_update_attachment_metadata($attach_id, $attach_data);
-    $wpdb->update($table_student_documents,['status' => 5,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $student_id,'document_id' => 'ENROLLMENT' ]);
+        $user_student = get_user_by('id', $student_user_id);
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user_student->data->user_email}'");
+        $wpdb->update($table_student_documents,['status' => 5,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $student->id,'document_id' => 'ENROLLMENT' ]);
+    }
+    // SAVE THE DOCUMENT
 
     // Return the media ID
     wp_send_json_success(['media_id' => $attach_id, 'upload' => $upload, 'file' => $file]);
