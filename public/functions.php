@@ -12,6 +12,7 @@ require plugin_dir_path(__FILE__) . 'academic_services.php';
 
 function form_plugin_scripts()
 {
+    global $wp;
     wp_enqueue_style('dashicons');
     wp_enqueue_style('admin-flatpickr', plugins_url('aes') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('aes') . '/public/assets/css/intlTelInput.css');
@@ -65,6 +66,18 @@ function form_plugin_scripts()
         )
     );
     wp_enqueue_script('create-enrollment');
+
+    if (str_contains(home_url( $wp->request ), 'student-documents')) {
+        wp_register_script('create-missing-documents', plugins_url('aes') . '/public/assets/js/create-missing-documents.js', array('jquery'), '1.0.0', true);
+        wp_localize_script(
+            'create-missing-documents',
+            'ajax_object',
+            array(
+                'ajax_url' => admin_url('admin-ajax.php')
+            )
+        );
+        wp_enqueue_script('create-missing-documents');
+    }
 }
 
 add_action('wp_enqueue_scripts', 'form_plugin_scripts');
@@ -1460,19 +1473,27 @@ function create_enrollment_document_callback() {
     $signature_parent = json_decode(json_decode('"'.$_POST['signature_parent'].'"', true));
     $signature_student = json_decode(json_decode('"'.$_POST['signature_student'].'"', true));
     $partner_user_id = $_POST['partner_user_id'];
-    $student_user_id = $_POST['student_user_id'];
-    $grade_selected = $_POST['grade_selected'];
+    if ($_POST['id_student_to_use']) {
+        $student_id = $_POST['id_student_to_use'];
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+        $user_student = get_user_by('email', $student->email);
+        $student_user_id = $user_student->ID;
+    } else {
+        $student_user_id = $_POST['student_user_id'];
+    }
+    $grade_selected = $_POST['grade_selected'] ?? null;
+    $document_id = $_POST['document_id'] ?? 'ENROLLMENT';
 
     //SAVE THE SIGNATURE OF STUDENT
     if (sizeof($signature_student) > 0) {
         $data = array(
             'user_id' => $student_user_id,
             'signature' => json_encode($signature_student),
-            'document_id' => 'ENROLLMENT',
+            'document_id' => $document_id,
             'grade_selected' => $grade_selected
         );
 
-        $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_users_signatures} WHERE user_id = %d AND document_id = %d", $student_user_id, 'ENROLLMENT'));
+        $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_users_signatures} WHERE user_id = %d AND document_id = %s", $student_user_id, $document_id));
         if (!$existing_row) {
             $wpdb->insert($table_users_signatures, $data);
         }
@@ -1480,15 +1501,15 @@ function create_enrollment_document_callback() {
     //SAVE THE SIGNATURE OF STUDENT
 
     //SAVE THE SIGNATURE OF PARENT
-    if (sizeof($signature_parent) > 0) {
+    if (isset($signature_parent) && sizeof($signature_parent) > 0) {
         $data = array(
             'user_id' => $partner_user_id,
             'signature' => json_encode($signature_parent),
-            'document_id' => 'ENROLLMENT',
+            'document_id' => $document_id,
             'grade_selected' => $grade_selected
         );
 
-        $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_users_signatures} WHERE user_id = %d AND document_id = %d", $partner_user_id, 'ENROLLMENT'));
+        $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_users_signatures} WHERE user_id = %d AND document_id = %d", $partner_user_id, $document_id));
         if (!$existing_row) {
             $wpdb->insert($table_users_signatures, $data);
         }
@@ -1519,12 +1540,25 @@ function create_enrollment_document_callback() {
 
         $user_student = get_user_by('id', $student_user_id);
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user_student->data->user_email}'");
-        $wpdb->update($table_student_documents,['status' => 5,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $student->id,'document_id' => 'ENROLLMENT' ]);
+        $wpdb->update($table_student_documents,['status' => 5,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $student->id,'document_id' => $document_id ]);
     }
     // SAVE THE DOCUMENT
 
     // Return the media ID
     wp_send_json_success(['media_id' => $attach_id, 'upload' => $upload, 'file' => $file]);
+}
+
+add_action('wp_ajax_get_student_missing_documents', 'get_student_missing_documents_callback');
+add_action('wp_ajax_nopriv_get_student_missing_documents', 'get_student_missing_documents_callback');
+
+function get_student_missing_documents_callback() {
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_document = $wpdb->prefix . 'student_documents';
+    $student_id = $_POST['student_id'];
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+    $documents = $wpdb->get_results("SELECT * FROM {$table_student_document} WHERE student_id = {$student_id} AND attachment_id=0 AND is_visible=1");
+    wp_send_json_success(['student' => $student, 'documents' => $documents]);
 }
 
 add_action('woocommerce_after_account_orders', 'custom_content_after_orders');

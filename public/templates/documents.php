@@ -96,3 +96,9 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
         </div>
     </form>
 <?php endif; ?>
+
+<?php 
+if ($_GET['missing']) {
+    include('create-missing-documents.php'); 
+}
+?>

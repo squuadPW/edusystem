@@ -38,6 +38,9 @@ function save_document(){
             $roles = $current_user->roles;
             $table_student_documents = $wpdb->prefix.'student_documents';
             $table_students = $wpdb->prefix.'students';
+            $table_users_signatures = $wpdb->prefix.'users_signatures';
+            $missing_documents = [];
+            $user_signature = null;
 
             if(isset($_POST['students']) && !empty($_POST['students'])){
 
@@ -47,7 +50,6 @@ function save_document(){
                 foreach($students as $student_id){
                     $files = $_POST['file_student_'.$student_id.'_id'];
 
-                    $missing_documents = [];
                     foreach($files as $file_id){
                         
                         $status = $_POST['status_file_'.$file_id.'_student_id_'.$student_id];
@@ -80,13 +82,17 @@ function save_document(){
                                     $wpdb->update($table_student_documents,['status' => 1,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $student_id,'id' => $file_id ]);
                                 }
                             } else {
-                                array_push($missing_documents, $file_id);
+                                if (!in_array($student_id, $missing_documents)) {
+                                    array_push($missing_documents, $student_id);
+                                }
                             }
                         }
                     }
 
                     if (sizeof($missing_documents) > 0) {
-                        modal_missing_documents($student_id);
+                        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+                        $user_student = get_user_by('email', $student->email);
+                        $user_signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id = {$user_student->ID} AND document_id='MISSING DOCUMENTS'");
                     } else {
                         $email_update_document = WC()->mailer()->get_emails()['WC_Update_Document_Email'];
                         $email_update_document->trigger($student_id);
@@ -275,7 +281,31 @@ function save_document(){
             }
 
             wc_add_notice( __( 'Documents saved successfully.', 'form-plugin' ), 'success' );
-            wp_redirect(wc_get_endpoint_url('student-documents', '', get_permalink(get_option('woocommerce_myaccount_page_id'))));
+            $url = wc_get_endpoint_url('student-documents', '', get_permalink(get_option('woocommerce_myaccount_page_id')));
+            if (count($missing_documents) > 0 && !$user_signature) {
+                $url .= "?missing=". json_encode($missing_documents) . ""; // append data as query parameters
+            }
+            wp_redirect($url);
+            exit;
+        }
+    }
+
+    if($_GET['missing']) {
+        global $wpdb,$current_user;
+        $roles = $current_user->roles;
+        $table_students = $wpdb->prefix.'students';
+        $table_users_signatures = $wpdb->prefix.'users_signatures';
+        $user_signature = null;
+
+        foreach (json_decode($_GET['missing']) as $key => $student_id) {
+            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+            $user_student = get_user_by('email', $student->email);
+            $user_signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id = {$user_student->ID} AND document_id='MISSING DOCUMENTS'");
+        }
+
+        if ($user_signature) {
+            $url = wc_get_endpoint_url('student-documents', '', get_permalink(get_option('woocommerce_myaccount_page_id')));
+            wp_redirect($url);
             exit;
         }
     }

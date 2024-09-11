@@ -100,7 +100,7 @@ if (document.getElementById("signature-student")) {
       var element = document.getElementById("content-pdf");
       var opt = {
         margin: [0.2, 0, 0, 0],
-        filename: 'enrollment.pdf',
+        filename: 'Student Enrollment Agreement.pdf',
         image: { type: "jpeg", quality: 0.98 },
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
         html2canvas: { scale: 2 },
@@ -112,7 +112,7 @@ if (document.getElementById("signature-student")) {
       html2pdf()
         .set(opt)
         .from(element)
-        .outputPdf("blob", "enrollment.pdf")
+        .outputPdf("blob", "Student Enrollment Agreement.pdf")
         .then((response) => {
           document.getElementById("modal-contraseña").style.display = "none";
           document.getElementById("modal-content").style.display = "none";
@@ -167,7 +167,7 @@ function sendSignatures(doc = null) {
   formData.append("grade_selected", gradeSelected);
 
   if (doc) {
-    formData.append("document", doc, "enrollment.pdf");
+    formData.append("document", doc, "Student Enrollment Agreement.pdf");
   }
 
   const XHR = new XMLHttpRequest();

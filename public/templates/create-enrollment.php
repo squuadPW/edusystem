@@ -125,7 +125,6 @@
                             METHOD OF TUITION PAYMENT</h4>
                         <div style="display: flex">
                             <div style="flex: auto; border: 1px solid gray; padding: 8px;">
-                                <strong>Name of Last or Concurrent School:</strong> <br>
                                 [<?php echo $user['student_payment'] == '2' ? '✓' : '  ' ?>] Full Academic year payment
                                 at
                                 time of signing enrollment agreement. <br>
