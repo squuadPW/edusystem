@@ -10,7 +10,7 @@
             <h6 style="padding: 4px; text-align: center; font-weight: bold; font-size: 20px;">MISSING DOCUMENT
               COMMITMENT LETTER</h6>
           </div>
-          <div style="color: black; font-size: 16px;">
+          <div style="color: black; font-size: 14px;">
   <p style="padding: 20px">          I, <span id="name"></span>, identified with the identification document N °.
 <span id="id_document"></span>, I agree to deliver to American Elite School, the missing documents and / or
 requirements for the admission process, since these are an integral part of my file, the
@@ -30,8 +30,14 @@ documents.
             </p>
           </div>
           <div style="text-align: center">
+            <strong>Signature of Applicant</strong>
             <canvas id="signature-student-missing-documents" style="margin: auto !important; display: flex !important; border-bottom: 1px solid gray" width="100%" height="200"></canvas>
             <button id="clear-student">Clear</button>
+          </div>
+
+          <div style="text-align: center;  padding: 20px">
+            <strong>Date</strong> <br>
+            <span id="currentDate"></span>
           </div>
         </div>
       </div>

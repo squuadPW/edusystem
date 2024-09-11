@@ -78,6 +78,7 @@ if (missingParam) {
       save_signatures.addEventListener("click", function () {
         save_signatures.disabled = true;
         if (!signaturePadStudent.isEmpty()) {
+          document.getElementById("clear-student").style.display = 'none';
           var element = document.getElementById("content-pdf");
           var opt = {
             margin: [0.2, 0, 0, 0],
@@ -157,9 +158,12 @@ if (missingParam) {
           const pendingDocuments = document.querySelector('#pending-documents');
           const name = document.getElementById('name');
           const id_document = document.getElementById('id_document');
+          const currentDate = document.getElementById('currentDate');
+          let today = new Date().toLocaleDateString()
 
           name.innerHTML = `${student.name} ${student.middle_name} ${student.last_name} ${student.middle_last_name}`;
           id_document.innerHTML = `${student.id_document}`;
+          currentDate.innerHTML = today;
           // Loop through the <li> elements using a `forEach` loop
           listItems.forEach((listItem, index) => {
             // Create a new <li> element

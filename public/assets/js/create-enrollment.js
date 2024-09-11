@@ -96,7 +96,8 @@ if (document.getElementById("signature-student")) {
         );
         return;
       }
-
+      document.getElementById("clear-student").style.display = 'none';
+      document.getElementById("clear-parent").style.display = 'none';
       var element = document.getElementById("content-pdf");
       var opt = {
         margin: [0.2, 0, 0, 0],
@@ -104,7 +105,7 @@ if (document.getElementById("signature-student")) {
         image: { type: "jpeg", quality: 0.98 },
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
         html2canvas: { scale: 2 },
-        pagebreak: { after: "#part1" },
+        pagebreak: { after: "#part1"  },
       };
 
       // New Promise-based usage:
