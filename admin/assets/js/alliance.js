@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded',function(){
         buttons_delete_alliance.addEventListener('click',(e) => {
 
             alliance_id = buttons_delete_alliance.getAttribute('data-id');
-            console.log(alliance_id);
             document.getElementById('delete_alliance_id').value = alliance_id;
             document.getElementById('modalDeleteAlliance').style.display = "block";
         });

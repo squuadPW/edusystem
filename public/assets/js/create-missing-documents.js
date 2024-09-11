@@ -51,7 +51,6 @@ if (missingParam) {
 
     // Create the SignaturePad objects after the canvas elements have been resized
     if (document.getElementById("signature-student-missing-documents")) {
-      console.log('missing')
       document.body.classList.add("modal-open");
       signaturePadStudent = new SignaturePad(
         document.getElementById("signature-student-missing-documents")
