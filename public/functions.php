@@ -964,8 +964,8 @@ function load_signatures_data()
         $partner_id = $current_user->ID;
     }
     $table_signatures = $wpdb->prefix . 'users_signatures';
-    $student_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$student_id}'");
-    $parent_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$partner_id}'");
+    $student_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$student_id}' AND document_id='ENROLLMENT'");
+    $parent_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$partner_id}' AND document_id='ENROLLMENT'");
     if ($parent_signature) {
         $grade_selected = $parent_signature->grade_selected ? $parent_signature->grade_selected : null;
     } else if ($student_signature) {
@@ -1338,14 +1338,23 @@ function verificar_contraseña()
             // Obtiene el ID del usuario actual
             global $current_user, $wpdb;
             $table_user_signatures = $wpdb->prefix . 'users_signatures';
+            $table_students = $wpdb->prefix . 'students';
+            $table_student_payments = $wpdb->prefix . 'student_payments';
             $roles = $current_user->roles;
-
             $user_enrollment_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+
+            if (in_array('student', $roles)) {
+                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+                $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
+            } else if (in_array('parent', $roles)) {
+                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+                $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
+            }
 
             if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                 // Agrega un script para levantar el modal
                 add_action('wp_footer', 'modal_create_password');
-            } else if (!isset($user_enrollment_signature) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+            } else if ((!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                 add_action('wp_footer', 'modal_enrollment_student');
             }
         }
