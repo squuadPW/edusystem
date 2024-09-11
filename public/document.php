@@ -41,7 +41,7 @@ function save_document(){
             $table_users_signatures = $wpdb->prefix.'users_signatures';
             $missing_documents = [];
             $user_signature = null;
-
+            $pending_required_documents = false;
             if(isset($_POST['students']) && !empty($_POST['students'])){
 
                 $students = $_POST['students'];
@@ -82,9 +82,15 @@ function save_document(){
                                     $wpdb->update($table_student_documents,['status' => 1,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $student_id,'id' => $file_id ]);
                                 }
                             } else {
+                                $file_is_required = $_POST['file_is_required'.$file_id.'_student_id_'.$student_id];
+                                if ($file_is_required == 1 && !$pending_required_documents) {
+                                    $pending_required_documents = true;
+                                }
+
                                 if (!in_array($student_id, $missing_documents)) {
                                     array_push($missing_documents, $student_id);
                                 }
+
                             }
                         }
                     }
@@ -280,6 +286,9 @@ function save_document(){
                 
             }
 
+            if ($pending_required_documents) {
+                $missing_documents = [];
+            }
             wc_add_notice( __( 'Documents saved successfully.', 'form-plugin' ), 'success' );
             $url = wc_get_endpoint_url('student-documents', '', get_permalink(get_option('woocommerce_myaccount_page_id')));
             if (count($missing_documents) > 0 && !$user_signature) {
