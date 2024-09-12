@@ -275,22 +275,22 @@ function create_tables() {
 
 
     $wpdb->insert($table_grades,[
-      'name' => '9no (antepenultimate)',
+      'name' => 'Lower',
       'created_at' => date('Y-m-d H:i:s') 
     ]);
 
     $wpdb->insert($table_grades,[
-      'name' => '10mo (penultimate)',
+      'name' => 'Middle',
       'created_at' => date('Y-m-d H:i:s') 
     ]);
 
     $wpdb->insert($table_grades,[
-      'name' => '11vo (last)',
+      'name' => 'Upper',
       'created_at' => date('Y-m-d H:i:s') 
     ]);
 
     $wpdb->insert($table_grades,[
-      'name' => 'Bachelor (graduate)',
+      'name' => 'Graduate',
       'created_at' => date('Y-m-d H:i:s') 
     ]);
   }
@@ -374,7 +374,7 @@ function create_tables() {
             $wpdb->insert($table_documents,[
               'name' => 'VACCUNATION CARD',
               'grade_id' => $grade->id,
-              'is_required' => 1,
+              'is_required' => 0,
               'id_requisito' => 'TV',
               'created_at' => date('Y-m-d H:i:s') 
             ]);
