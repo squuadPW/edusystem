@@ -140,7 +140,7 @@
                         <th scope="col" class=" manage-column column-primary">
                             <?= __('Status', 'restaurant-system-app'); ?></th>
                         <th scope="col" class=" manage-column column-email">
-                            <?= __('Created', 'restaurant-system-app'); ?></th>
+                            <?= __('Month', 'restaurant-system-app'); ?></th>
                         <th scope="col" class=" manage-column column-phone"><?= __('Amount', 'restaurant-system-app'); ?>
                         </th>
                         <th scope="col" class=" manage-column column"><?= __('Total orders', 'restaurant-system-app'); ?></th>

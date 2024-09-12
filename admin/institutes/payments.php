@@ -318,7 +318,7 @@ function get_transactions_institutes($start, $end, $id = "", $status = 0)
     foreach ($transactions as $order) {
         array_push($data_fees, [
             'status' => get_status_payment_institute($order->status_id),
-            'created_at' => $order->created_at,
+            'month' => $order->month,
             'amount' => $order->amount,
             'total_orders' => $order->total_orders,
         ]);
@@ -469,7 +469,7 @@ function get_invoices_institute()
                 $html_transactions .= "<td class='column column-primary' data-colname='" . __('Status', 'aes') . "'>";
                 $html_transactions .= $order['status'];
                 $html_transactions .= "</td>";
-                $html_transactions .= "<td class='column' data-colname='" . __('Created', 'restaurant-system-app') . "'><b>" . $order['created_at'] . "</b></td>";
+                $html_transactions .= "<td class='column' data-colname='" . __('Month', 'restaurant-system-app') . "'><b>" . $order['month'] . "</b></td>";
                 $html_transactions .= "<td class='column' data-colname='" . __('Amount', 'restaurant-system-app') . "'>" . wc_price($order['amount']) . "</td>";
                 $html_transactions .= "<td class='column' data-colname='" . __('Total orders', 'restaurant-system-app') . "'><b>" . $order['total_orders'] . "</b></td>";
                 $html_transactions .= "</tr>";
