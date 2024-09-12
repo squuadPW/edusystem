@@ -1637,15 +1637,21 @@ add_action('password_reset', 'student_password_Reset');
 
 function wp_api()
 {
-    register_rest_route('wp', '/api', array(
+    register_rest_route('api', '/assign-documents-students', array(
         'methods' => 'GET',
-        'callback' => 'wp_api_callback',
+        'callback' => 'assign_documents_students',
         'permission_callback' => '__return_true'
     ));
+
+    // register_rest_route('api', '/other-endpoint', array(
+    //     'methods' => 'GET',
+    //     'callback' => 'other_endpoint_callback',
+    //     'permission_callback' => '__return_true'
+    // ));
 }
 add_action('rest_api_init', 'wp_api');
 
-function wp_api_callback()
+function assign_documents_students()
 {
     global $wpdb;
     $table_students = $wpdb->prefix.'students';
@@ -1704,3 +1710,8 @@ function wp_api_callback()
 
     wp_send_json(array('studens_affected' => $users_affected));
 }
+
+// function other_endpoint_callback()
+// {
+//     return true;
+// }
