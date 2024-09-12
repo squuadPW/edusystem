@@ -16,7 +16,7 @@
         </div>
     <?php endif; ?>
     <div>
-        <h3><?= __('Fee Total','aes').': '; ?><span id="fee-total"><?= get_woocommerce_currency_symbol().$orders['total']; ?></span></h3>
+        <h3><?= __('Fee Total','aes').': '; ?><span id="fee-total"><?= $orders['total']; ?></span></h3>
     <div>
     <div style="width:100%;text-align:end;padding-top:10px;">
     

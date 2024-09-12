@@ -52,7 +52,7 @@ function aes_scripts_admin(){
         wp_enqueue_script('student-payment',plugins_url('aes').'/admin/assets/js/scholarship.js',array('jquery'),'1.0.0',true);    
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content')){
+    if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')){
         wp_enqueue_script('institute',plugins_url('aes').'/admin/assets/js/institute.js',array('jquery'),'1.0.0',true);
 
         wp_localize_script('institute','list_fee_institute',[
@@ -163,6 +163,17 @@ function add_custom_admin_page() {
             'list_admin_institutes_payments_content',
             'list_admin_institutes_payments_content', 
             'dashicons-money-alt',
+            11
+        );
+
+        
+        add_menu_page(
+            __('Invoice','aes'),
+            __('Invoice','aes'),
+            'read',
+            'list_admin_institutes_invoice_content',
+            'list_admin_institutes_invoice_content', 
+            'dashicons-admin-page',
             11
         );
     }

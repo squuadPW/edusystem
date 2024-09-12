@@ -9,7 +9,26 @@ document.addEventListener('DOMContentLoaded',function(){
     fee = document.getElementById('fee');
     input_date = document.getElementById('input-date');
     filter_date = document.getElementById('filter-date');
+    toggleButton = document.getElementById('toggle-table');
+    tabOrders = document.getElementById('tab-orders');
+    tabPayments = document.getElementById('tab-payments');
 
+     if (toggleButton) {
+        
+        toggleButton.addEventListener('click', function () {
+            if (tabOrders.style.display === 'none') {
+                tabOrders.style.display = 'table';
+                tabPayments.style.display = 'none';
+                toggleButton.textContent = 'Show payments'
+            } else {
+                tabOrders.style.display = 'none';
+                tabPayments.style.display = 'table';
+                toggleButton.textContent = 'Show orders';
+            }
+        });
+     }
+
+    
     if(buttons_change_status){
 
         buttons_change_status.forEach((button) => {
@@ -165,40 +184,74 @@ document.addEventListener('DOMContentLoaded',function(){
         
         }); 
     }
+    function loadData() {
+        filter = document.getElementById('typeFilter').value;
+        custom = document.getElementById('inputStartDate').value;
+        institute_id = document.getElementById('institute_id').value;
 
-    if(document.getElementById('update_data')){
+        let htmlLoading = "";
 
-        document.getElementById('update_data').addEventListener('click',() => {
-
-            filter = document.getElementById('typeFilter').value;
-            custom = document.getElementById('inputStartDate').value;
-            institute_id = document.getElementById('institute_id').value;
-
-            let htmlLoading = "";
-
-            htmlLoading += "<tr>";
-            htmlLoading += "<td class='column-primary id column-id' colspan='5' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
-            htmlLoading += "</tr>";
-                
+        htmlLoading += "<tr>";
+        htmlLoading += "<td class='column-primary id column-id' colspan='5' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+        htmlLoading += "</tr>";
+            
+        if (document.getElementById('table-institutes-payment')) {
             document.getElementById('table-institutes-payment').innerHTML = htmlLoading;
+            if (document.getElementById('length-invoices')) {
+                document.getElementById('length-invoices').innerHTML = '';
+                document.getElementById('total-invoices').innerHTML = '';   
+            }
+        }
 
-            const XHR= new XMLHttpRequest();
-            XHR.open('POST',list_fee_institute.url,true);
-            XHR.setRequestHeader('Content-type','application/x-www-form-urlencoded');
-            XHR.responseType ='text';
-            XHR.send('action='+ list_fee_institute.action + '&filter=' + filter + '&custom=' + custom + "&institute_id=" + institute_id);
-            XHR.onload = function(){
+        htmlLoading = "";
+        htmlLoading += "<tr>";
+        htmlLoading += "<td class='column-primary id column-id' colspan='4' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+        htmlLoading += "</tr>";
 
-                if(this.readyState=='4' && XHR.status === 200) {
+        if (document.getElementById('table-institutes-payment-payments')) {
+            document.getElementById('table-institutes-payment-payments').innerHTML = htmlLoading;
+            document.getElementById('length-transactions').innerHTML = '';
+            document.getElementById('total-transactions').innerHTML = '';  
+        }
 
-                    let result = JSON.parse(XHR.responseText);
+        const XHR= new XMLHttpRequest();
+        XHR.open('POST',list_fee_institute.url,true);
+        XHR.setRequestHeader('Content-type','application/x-www-form-urlencoded');
+        XHR.responseType ='text';
+        XHR.send('action=invoices_institute' + '&filter=' + filter + '&custom=' + custom + "&institute_id=" + institute_id);
+        XHR.onload = function(){
 
-                    if(result.status == 'success'){
+            if(this.readyState=='4' && XHR.status === 200) {
+
+                let result = JSON.parse(XHR.responseText);
+
+                if(result.status == 'success'){
+                    document.getElementById('fee-total').innerHTML = result.current_invoice.total;
+
+                    if (document.getElementById('table-institutes-payment')) {
                         document.getElementById('table-institutes-payment').innerHTML = result.html;
-                        document.getElementById('fee-total').innerHTML = '$' + result.data.total;
+                        if (document.getElementById('length-invoices')) {
+                            document.getElementById('length-invoices').innerHTML = result.data.orders.length;
+                            document.getElementById('total-invoices').innerHTML = result.data.total;
+                        }
+                    }
+
+                    if (document.getElementById('table-institutes-payment-payments')) {
+                        document.getElementById('table-institutes-payment-payments').innerHTML = result.html_transactions;
+                        document.getElementById('length-transactions').innerHTML = result.transactions.orders.length;
+                        document.getElementById('total-transactions').innerHTML = result.transactions.total;  
+                        document.getElementById('fee-total-paid').innerHTML = result.transactions.total_paid;
+                        document.getElementById('fee-pending-payment').innerHTML = result.transactions.total_pending;
                     }
                 }
-            }   
+            }
+        }   
+    }
+
+    if(document.getElementById('update_data')){
+        loadData();
+        document.getElementById('update_data').addEventListener('click',() => {
+            loadData();
         });
     }
 
