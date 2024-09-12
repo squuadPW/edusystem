@@ -102,9 +102,10 @@ class TT_all_Payment_Institutes_List_Table extends WP_List_Table{
 
 	function prepare_items(){
 
-        if(isset($_POST['institute_id']) && !empty($_POST['institute_id'])){
-            $data_payment = get_order_institutes($_GET['institute_id']);
-        }else{
+        if (isset($_GET['institute_id']) && !empty($_GET['institute_id'])) {
+            $dates = get_dates_search('this-month', null);
+            $data_payment = get_order_institutes($dates[0], $dates[1],$_GET['institute_id']);
+        } else {
             $data_payment = get_order_institutes();
         }
 
