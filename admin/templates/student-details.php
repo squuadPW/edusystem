@@ -10,8 +10,13 @@ $countries = get_countries();
         <h2 style="margin-bottom:15px;"><?= __('Applicant details', 'aes'); ?></h2>
     <?php endif; ?>
     <div style="diplay:flex;width:100%;">
+    <?php if (in_array('institutes', $roles)): ?>
+        <a class="button button-outline-primary"
+            href="<?php echo admin_url('/admin.php?page=list_admin_institutes_student_registered_content') ?>"><?= __('Back') ?></a>
+    <?php else: ?>
         <a class="button button-outline-primary"
             href="<?php echo admin_url('/admin.php?page=add_admin_form_admission_content') ?>"><?= __('Back') ?></a>
+    <?php endif; ?>
     </div>
     <div style="display:flex;width:100%;justify-content:end;">
         <button data-id="<?= $student->id; ?>" id="button-export-xlsx"
@@ -52,7 +57,7 @@ $countries = get_countries();
                                                 for="document_type"><b><?php _e('Document Type', 'aes'); ?></b></label><br>
                                             <select name="document_type" id="document_type"
                                                 value="<?php echo get_name_type_document($student->type_document); ?>"
-                                                style="width:100%" required>
+                                                style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <option value="identification_document"
                                                     <?= ($student->type_document == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'aes'); ?></option>
                                                 <option value="passport" <?= ($student->type_document == 'passport') ? 'selected' : ''; ?>><?= __('Passport', 'aes'); ?></option>
@@ -63,7 +68,7 @@ $countries = get_countries();
                                             <label
                                                 for="id_document"><b><?php _e('ID Document', 'aes'); ?></b></label><br>
                                             <input type="text" id="id_document" name="id_document"
-                                                value="<?php echo $student->id_document; ?>" style="width:100%">
+                                                value="<?php echo $student->id_document; ?>" style="width:100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                             <input type="hidden" id="id" name="id" value="<?php echo $student->id; ?>"
                                                 style="width:100%" required>
                                         </td>
@@ -72,7 +77,7 @@ $countries = get_countries();
                                                 <label for="username"><b><?php _e('Username', 'aes'); ?></b></label><br>
                                                 <input type="text" id="username" name="username"
                                                     value="<?php echo $user_student->user_nicename; ?>" style="width:100%"
-                                                    required>
+                                                    required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                             </td>
                                         <?php } ?>
                                         <td style="width: auto !important">
@@ -80,32 +85,32 @@ $countries = get_countries();
                                             <input type="text" id="birth_date" name="birth_date"
                                                 value="<?php echo date('m/d/Y', strtotime($student->birth_date)); ?>"
                                                 required style="width:100%; background-color: white;"
-                                                class="birth_date">
+                                                class="birth_date" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td scope="row" style="width: auto !important">
                                             <label for="first_name"><b><?php _e('First name', 'aes'); ?></b></label><br>
                                             <input type="text" id="first_name" name="first_name"
-                                                value="<?php echo $student->name; ?>" style="width:100%" required>
+                                                value="<?php echo $student->name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td style="width: auto !important">
                                             <label
                                                 for="middle_name"><b><?php _e('Middle name', 'aes'); ?></b></label><br>
                                             <input type="text" id="middle_name" name="middle_name"
-                                                value="<?php echo $student->middle_name; ?>" style="width:100%" required>
+                                                value="<?php echo $student->middle_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td style="width: auto !important">
                                             <label for="last_name"><b><?php _e('Last name', 'aes'); ?></b></label><br>
                                             <input type="text" id="last_name" name="last_name"
-                                                value="<?php echo $student->last_name; ?>" style="width:100%" required>
+                                                value="<?php echo $student->last_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td style="width: auto !important">
                                             <label
                                                 for="middle_last_name"><b><?php _e('Middle last name', 'aes'); ?></b></label><br>
                                             <input type="text" id="middle_last_name" name="middle_last_name"
                                                 value="<?php echo $student->middle_last_name; ?>" style="width:100%"
-                                                required>
+                                                required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
                                     <tr>
@@ -113,7 +118,7 @@ $countries = get_countries();
                                             <label for="gender"><b><?php _e('Gender', 'aes'); ?></b></label><br>
                                             <select name="gender" id="gender"
                                                 value="<?php echo get_gender($student->gender); ?>" style="width:100%"
-                                                required>
+                                                required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <option value="male" <?= ($student->gender == 'male') ? 'selected' : ''; ?>><?= __('Male', 'aes'); ?></option>
                                                 <option value="female" <?= ($student->gender == 'female') ? 'selected' : ''; ?>><?= __('Female', 'aes'); ?></option>
                                             </select>
@@ -123,7 +128,7 @@ $countries = get_countries();
                                             <label for="country"><b><?php _e('Country', 'aes'); ?></b></label><br>
                                             <select id="country" name="country"
                                                 value="<?php echo get_name_country($student->country); ?>"
-                                                style="width:100%;" required>
+                                                style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($countries as $key => $country) { ?>
                                                     <option value="<?= $key ?>"
                                                         <?= (get_name_country($student->country == $key)) ? 'selected' : ''; ?>><?= $country; ?></option>
@@ -134,7 +139,7 @@ $countries = get_countries();
                                         <td style="width: auto !important">
                                             <label for="city"><b><?php _e('City', 'aes'); ?></b></label><br>
                                             <input type="text" id="city" name="city"
-                                                value="<?php echo $student->city; ?>" style="width:100%;" required>
+                                                value="<?php echo $student->city; ?>" style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
 
                                         <td style="width: auto !important">
@@ -142,27 +147,27 @@ $countries = get_countries();
                                                 for="postal_code"><b><?php _e('Postal Code', 'aes'); ?></b></label><br>
                                             <input type="text" id="postal_code" name="postal_code"
                                                 value="<?php echo $student->postal_code; ?>" style="width:100%;"
-                                                required>
+                                                required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="width: auto !important">
                                             <label for="email"><b><?php _e('Email', 'aes'); ?></b></label><br>
                                             <input type="text" id="email" name="email"
-                                                value="<?php echo $student->email; ?>" style="width:100%;" required>
+                                                value="<?php echo $student->email; ?>" style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                             <input type="hidden" id="old_email" name="old_email"
                                                 value="<?php echo $student->email; ?>" style="width:100%;">
                                         </td>
                                         <td style="width: auto !important">
                                             <label for="phone"><b><?php _e('Phone', 'aes'); ?></b></label><br>
                                             <input type="text" id="phone" name="phone"
-                                                value="<?php echo $student->phone; ?>" style="width:100%;" required>
+                                                value="<?php echo $student->phone; ?>" style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
 
                                         <td style="width: auto !important">
                                             <label
                                                 for="academic_period"><b><?php _e('Academic period', 'aes'); ?></b></label><br>
-                                            <select name="academic_period" required style="width:100%;">
+                                            <select name="academic_period" required style="width:100%;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($periods as $key => $period) { ?>
                                                     <option value="<?php echo $period->code; ?>"
                                                         <?= ($student->academic_period == $period->code) ? 'selected' : ''; ?>>
@@ -175,7 +180,7 @@ $countries = get_countries();
                                             <label
                                                 for="new_password"><b><?php _e('New password for student', 'aes'); ?></label><br>
                                             <input type="password" id="new_password" name="new_password"
-                                                style="width:100%; background-color: white;">
+                                                style="width:100%; background-color: white;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -190,7 +195,7 @@ $countries = get_countries();
                                                 for="parent_document_type"><b><?php _e('Document Type', 'aes'); ?></b></label><br>
                                             <select name="parent_document_type" id="parent_document_type"
                                                 value="<?php echo get_user_meta($partner->ID, 'type_document', true); ?>"
-                                                style="width:100%" required>
+                                                style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <option value="identification_document"
                                                     <?= (get_user_meta($partner->ID, 'type_document', true) == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'aes'); ?>
                                                 </option>
@@ -205,7 +210,7 @@ $countries = get_countries();
                                                 for="parent_id_document"><b><?php _e('ID Document', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_id_document" name="parent_id_document"
                                                 value="<?php echo get_user_meta($partner->ID, 'id_document', true); ?>"
-                                                style="width:100%">
+                                                style="width:100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                             <input type="hidden" id="parent_id" name="parent_id"
                                                 value="<?php echo $partner->ID; ?>" style="width:100%" required>
                                         </td>
@@ -214,7 +219,7 @@ $countries = get_countries();
                                                 for="parent_username"><b><?php _e('Username', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_username" name="parent_username"
                                                 value="<?php echo $partner->user_nicename; ?>" style="width:100%"
-                                                required>
+                                                required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
                                     <tr>
@@ -222,13 +227,13 @@ $countries = get_countries();
                                             <label
                                                 for="parent_first_name"><b><?php _e('First name', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_first_name" name="parent_first_name"
-                                                value="<?php echo $partner->first_name; ?>" style="width:100%" required>
+                                                value="<?php echo $partner->first_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </th>
                                         <td>
                                             <label
                                                 for="parent_last_name"><b><?php _e('Last name', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_last_name" name="parent_last_name"
-                                                value="<?php echo $partner->last_name; ?>" style="width:100%" required>
+                                                value="<?php echo $partner->last_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td>
                                             <label
@@ -236,7 +241,7 @@ $countries = get_countries();
                                             <input type="text" id="parent_birth_date" name="parent_birth_date"
                                                 value="<?php echo get_user_meta($partner->ID, 'birth_date', true); ?>"
                                                 style="width:100%; background-color: white;" class="birth_date"
-                                                required>
+                                                required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
                                     <tr>
@@ -244,7 +249,7 @@ $countries = get_countries();
                                             <label for="parent_gender"><b><?php _e('Gender', 'aes'); ?></b></label><br>
                                             <select name="parent_gender" id="parent_gender"
                                                 value="<?php echo get_user_meta($partner->ID, 'gender', true); ?>"
-                                                style="width:100%" required>
+                                                style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <option value="male"
                                                     <?= (get_user_meta($partner->ID, 'gender', true) == 'male') ? 'selected' : ''; ?>><?= __('Male', 'aes'); ?></option>
                                                 <option value="female"
@@ -255,7 +260,7 @@ $countries = get_countries();
                                             <label for="parent_country"><b><?php _e('Country', 'aes'); ?></b></label><br>
                                             <select id="parent_country" name="parent_country"
                                                 value="<?php echo get_name_country(get_user_meta($partner->ID, 'billing_country', true)); ?>"
-                                                style="width:100%;" required>
+                                                style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($countries as $key => $country) { ?>
                                                     <option value="<?= $key ?>"
                                                         <?= (get_name_country(get_user_meta($partner->ID, 'billing_country', true) == $key)) ? 'selected' : ''; ?>><?= $country; ?></option>
@@ -266,7 +271,7 @@ $countries = get_countries();
                                             <label for="parent_city"><b><?php _e('City', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_city" name="parent_city"
                                                 value="<?php echo get_user_meta($partner->ID, 'billing_city', true) ?>"
-                                                style="width:100%;" required>
+                                                style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
                                     <tr>
@@ -275,19 +280,19 @@ $countries = get_countries();
                                                 for="parent_postal_code"><b><?php _e('Postal Code', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_postal_code" name="parent_postal_code"
                                                 value="<?php echo get_user_meta($partner->ID, 'billing_postcode', true) ?>"
-                                                style="width:100%;" required>
+                                                style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </th>
                                         <td>
                                             <label for="parent_email"><b><?php _e('Email', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_email" name="parent_email"
                                                 value="<?php echo get_user_meta($partner->ID, 'billing_email', true) ?>"
-                                                style="width:100%;" required>
+                                                style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td>
                                             <label for="parent_phone"><b><?php _e('Phone', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_phone" name="parent_phone"
                                                 value="<?php echo get_user_meta($partner->ID, 'billing_phone', true) ?>"
-                                                style="width:100%;" required>
+                                                style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
                                     <tr>
@@ -296,15 +301,18 @@ $countries = get_countries();
                                                 for="parent_occupation"><b><?php _e('Occupation', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_occupation" name="parent_occupation"
                                                 value="<?php echo get_user_meta($partner->ID, 'occupation', true) ?>"
-                                                style="width:100%;">
+                                                style="width:100%;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </th>
                                     </tr>
                                 </tbody>
                             </table>
-                            <p style="text-align: end">
+                            <?php if (!in_array('institutes', $roles)): ?>
+                                <p style="text-align: end">
                                 <input type="submit" value="<?php _e('Save Changes', 'aes'); ?>"
                                     class="button button-primary">
                             </p>
+    <?php endif; ?>
+
                         </div>
                     </div>
                 </div>
