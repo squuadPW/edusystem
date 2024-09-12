@@ -726,3 +726,9 @@ function get_states_by_country() {
   
   add_action('wp_ajax_get_states_by_country', 'get_states_by_country');
   add_action('wp_ajax_nopriv_get_states_by_country', 'get_states_by_country');
+
+    add_action('create_invoice_instute_monthly', 'monthly_invoice_institute');
+  function monthly_invoice_institute() {
+    error_log('INSTITUTE INVOICE MONTHLY');
+    exit;
+  }
