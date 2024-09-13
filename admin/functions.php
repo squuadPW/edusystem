@@ -728,7 +728,31 @@ function get_states_by_country() {
   add_action('wp_ajax_nopriv_get_states_by_country', 'get_states_by_country');
 
     add_action('create_invoice_instute_monthly', 'monthly_invoice_institute');
-  function monthly_invoice_institute() {
-    error_log('INSTITUTE INVOICE MONTHLY');
-    exit;
-  }
+    function monthly_invoice_institute() {
+        global $wpdb;
+        $table_institutes =  $wpdb->prefix.'institutes';
+        $table_institutes_payments =  $wpdb->prefix.'institutes_payments';
+        $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status = 1");
+        $first_day_prev_month = date('Y-m-01', strtotime('first day of previous month'));
+        foreach ($institutes as $key => $institute) {
+            $exist = $wpdb->get_row("SELECT * FROM {$table_institutes_payments} WHERE institute_id={$institute->id} AND month='{$first_day_prev_month}'");
+            if (!$exist) {
+
+                $last_month_invoice = get_dates_search('last-month', null);
+                $invoice = get_invoices_institutes($last_month_invoice[0], $last_month_invoice[1], $institute->id);
+
+                $wpdb->insert(
+                    $table_institutes_payments,
+                    array(
+                        'institute_id' => $institute->id,
+                        'total_orders' => sizeof($invoice['orders']),
+                        'amount' => $invoice['total'],
+                        'status_id' => 0,
+                        'month' => $first_day_prev_month,
+                        'created_at' => current_time('mysql'),
+                    )
+                );
+            }
+        }
+        exit;
+    }

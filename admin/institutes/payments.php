@@ -287,7 +287,7 @@ function get_invoices_institutes($start, $end, $id = "")
         }
     }
 
-    return ['total' => wc_price($total), 'orders' => $data_fees];
+    return ['total' => $total, 'orders' => $data_fees];
 }
 
 function get_transactions_institutes($start, $end, $id = "", $status = 0)
@@ -437,7 +437,7 @@ function get_invoices_institute()
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
                 $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . $order['customer'] . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Fee', 'restaurant-system-app') . "'>" . get_woocommerce_currency_symbol() . number_format($order['fee'], 2, '.', ',') . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Fee', 'restaurant-system-app') . "'>" . wc_price($order['fee']) . "</td>";
                 $html .= "<td class='column' data-colname='" . __('Created', 'restaurant-system-app') . "'><b>" . $order['created_at'] . "</b></td>";
                 $html .= "<td class='column' data-colname='" . __('Action', 'restaurant-system-app') . "'>";
 
@@ -481,6 +481,7 @@ function get_invoices_institute()
             $html_transactions .= "</tr>";
         }
 
+        $current_invoice['total'] = wc_price($current_invoice['total']);
         echo json_encode(['status' => 'success', 'html' => $html, 'html_transactions' => $html_transactions, 'data' => $filtered_invices, 'current_invoice' => $current_invoice, 'transactions' => $transactions]);
         exit;
     }
