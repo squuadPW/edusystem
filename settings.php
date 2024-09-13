@@ -2,7 +2,7 @@
 
     // AWS & DREAM HOST
 	// define( 'AES_FEE_INSCRIPTION','63' );
-	// define( 'AES_LATAM_SCHOOLARSHIP','62' );
+	// define( 'AES_LATAM_SCHOLARSHIP','62' );
 	// define( 'AES_DUAL_9NO','51'); // Product Initial 9 Grade
 	// define( 'AES_DUAL_9NO_VARIABLE','54'); // Product variable
 	// define( 'AES_DUAL_10MO', '52' );// Product Initial 10mo Grade
@@ -13,7 +13,7 @@
 
 	// LOCAL JOSE MORA
 	define( 'AES_FEE_INSCRIPTION','484' );
-	define( 'AES_LATAM_SCHOOLARSHIP','481' );
+	define( 'AES_LATAM_SCHOLARSHIP','481' );
 	define( 'AES_DUAL_9NO','465'); // Product Initial 9 Grade
 	define( 'AES_DUAL_9NO_VARIABLE','468'); // Product variable
 	define( 'AES_DUAL_10MO', '466' );// Product Initial 10mo Grade

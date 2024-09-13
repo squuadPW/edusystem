@@ -114,7 +114,7 @@ function set_institute_in_order($order)
 
             // Buscar el descuento con el código "latam scholarship"
             $latam_scholarship = array_filter($discounts, function ($discount) {
-                return $discount['code'] == 'latam schoolarship';
+                return $discount['code'] == 'latam scholarship';
             });
 
             // Si se encontró el descuento, obtener el monto
