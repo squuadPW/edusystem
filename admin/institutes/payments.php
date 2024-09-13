@@ -313,7 +313,12 @@ function get_transactions_institutes($start, $end, $id = "", $status = 0)
     }
 
     $table_institutes_payments = $wpdb->prefix . 'institutes_payments';
-    $transactions = $wpdb->get_results("SELECT * FROM {$table_institutes_payments} WHERE institute_id={$institute_id} AND status_id={$status}");
+    $start_date = date('Y-m-d H:i:s', $strtotime_start);
+    $end_date = date('Y-m-d H:i:s', $strtotime_end);
+    $transactions = $wpdb->get_results("SELECT * FROM {$table_institutes_payments} 
+                                    WHERE institute_id={$institute_id} 
+                                    AND status_id={$status} 
+                                    AND created_at BETWEEN '{$start_date}' AND '{$end_date}'");
 
     foreach ($transactions as $order) {
         array_push($data_fees, [
@@ -326,7 +331,7 @@ function get_transactions_institutes($start, $end, $id = "", $status = 0)
         $total += $order->amount;
     }
 
-    return ['total' => $total, 'orders' => $data_fees];
+    return ['total' => $total, 'orders' => $data_fees, 'query' => "SELECT * FROM {$table_institutes_payments} WHERE institute_id={$institute_id} AND status_id={$status} AND created_at BETWEEN '{$start_date}' AND '{$end_date}'"];
 }
 
 function get_status_payment_institute($id) {
@@ -441,10 +446,10 @@ function get_invoices_institute()
                 $html .= "<td class='column' data-colname='" . __('Created', 'restaurant-system-app') . "'><b>" . $order['created_at'] . "</b></td>";
                 $html .= "<td class='column' data-colname='" . __('Action', 'restaurant-system-app') . "'>";
 
-                if (!empty($institute_id)) {
-                    $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=add_admin_institutes_content&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
-                } else {
+                if (!$institute_id) {
                     $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_institutes_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                } else {
+                    $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
                 }
 
 
@@ -460,6 +465,7 @@ function get_invoices_institute()
 
         $transactions['total_pending'] = wc_price($transactions_pending['total']);
         $transactions['total_paid'] = wc_price($transactions_complete['total']);
+        $transactions['query'] = $transactions_complete['query'];
         $transactions['total'] = wc_price(($transactions_complete['total'] + $transactions_pending['total']));
         $transactions['orders'] = array_merge($transactions_pending['orders'], $transactions_complete['orders']);
         if (!empty($transactions['orders'])) {
@@ -477,11 +483,12 @@ function get_invoices_institute()
 
         } else {
             $html_transactions .= "<tr>";
-            $html_transactions .= "<td colspan='5' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html_transactions .= "<td colspan='4' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
             $html_transactions .= "</tr>";
         }
 
         $current_invoice['total'] = wc_price($current_invoice['total']);
+        $filtered_invices['total'] = wc_price($filtered_invices['total']);
         echo json_encode(['status' => 'success', 'html' => $html, 'html_transactions' => $html_transactions, 'data' => $filtered_invices, 'current_invoice' => $current_invoice, 'transactions' => $transactions]);
         exit;
     }

@@ -67,8 +67,8 @@
                         <td class="column" data-colname="<?= __('Fee','restaurant-system-app'); ?>"><?= get_woocommerce_currency_symbol().number_format($order['fee'],2,'.',','); ?></td>
                         <td class="column" data-colname="<?= __('Created','restaurant-system-app'); ?>"><b><?= $order['created_at']; ?></b></td>
                         <td class="column" data-colname="<?= __('Action','restaurant-system-app'); ?>">
-                            <?php if(isset($_GET['institute_id']) && !empty($_GET['institute_id'])): ?>
-                                <a class='button button-primary' href="<?= admin_url('admin.php?page=add_admin_institutes_content&section_tab=payment-detail&payment_id='.$order['order_id']) ?>"><?= __('View details','aes'); ?></a>
+                            <?php if(isset($_GET['institute_id'])): ?>
+                                <a class='button button-primary' href="<?= admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id='.$order['order_id']) ?>"><?= __('View details','aes'); ?></a>
                             <?php else: ?>
                                 <a class='button button-primary' href="<?= admin_url('admin.php?page=list_admin_institutes_payments_content&action=payment-detail&payment_id='.$order['order_id']) ?>"><?= __('View details','aes'); ?></a>
                             <?php endif; ?>

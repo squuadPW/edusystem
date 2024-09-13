@@ -226,7 +226,13 @@ document.addEventListener('DOMContentLoaded',function(){
                 let result = JSON.parse(XHR.responseText);
 
                 if(result.status == 'success'){
-                    document.getElementById('fee-total').innerHTML = result.current_invoice.total;
+                    if (document.getElementById('fee-total')) {
+                        document.getElementById('fee-total').innerHTML = result.data.total;
+                    }
+
+                    if (document.getElementById('fee-total-balance')) {
+                        document.getElementById('fee-total-balance').innerHTML = result.current_invoice.total;
+                    }
 
                     if (document.getElementById('table-institutes-payment')) {
                         document.getElementById('table-institutes-payment').innerHTML = result.html;

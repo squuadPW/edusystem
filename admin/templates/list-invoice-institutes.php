@@ -18,7 +18,7 @@
         </div>
     <?php endif; ?>
     <div>
-        <h3><?= __('Balance', 'aes') . ': '; ?><span id="fee-total"><?= $orders['total']; ?></span></h3>
+        <h3><?= __('Balance', 'aes') . ': '; ?><span id="fee-total-balance"><?= $orders['total']; ?></span></h3>
         <h3><?= __('Total paid', 'aes') . ': '; ?><span id="fee-total-paid"><?= $orders['total']; ?></span></h3>
         <h3><?= __('Pending payment', 'aes') . ': '; ?><span id="fee-pending-payment"><?= $orders['total']; ?></span></h3>
         <div>

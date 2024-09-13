@@ -8,10 +8,10 @@
         </div>
         <div style="diplay:flex;width:100%;">
             <h3><?= __('Alliance:','aes').' '.$alliance->name.' '.$alliance->last_name; ?></h3>
-        </div>`
+        </div>
     <?php } ?>
     <div>
-        <h3><?= __('Fee Total','aes').': '; ?><span id="fee-total"><?= get_woocommerce_currency_symbol().$orders['total']; ?></span></h3>
+        <h3><?= __('Fee Total','aes').': '; ?><span id="fee-total-alliance"><?= get_woocommerce_currency_symbol().$orders['total']; ?></span></h3>
     <div>  
     <div style="width:100%;text-align:end;padding-top:10px;">
     
@@ -62,7 +62,7 @@
                         <td class="column" style="align-content:center;" data-colname="<?= __('Fee','restaurant-system-app'); ?>"><?= get_woocommerce_currency_symbol().number_format($order['fee'],2,'.',','); ?></td>
                         <td class="column" style="align-content:center;" data-colname="<?= __('Created','restaurant-system-app'); ?>"><b><?= $order['created_at']; ?></b></td>
                         <td class="column" style="align-content:center;" data-colname="<?= __('Action','restaurant-system-app'); ?>">
-                            <?php if(isset($_GET['alliance_id']) && !empty($_GET['alliance_id'])): ?>
+                            <?php if(isset($_GET['alliance_id'])): ?>
                                 <a class='button button-primary' href="<?= admin_url('admin.php?page=add_admin_partners_content&section_tab=payment-detail&payment_id='.$order['order_id']) ?>"><?= __('View details','aes'); ?></a>
                             <?php else: ?>
                                 <a class='button button-primary' href="<?= admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id='.$order['order_id']) ?>"><?= __('View details','aes'); ?></a>

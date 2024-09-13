@@ -100,9 +100,8 @@ document.addEventListener('DOMContentLoaded',function(){
     }
 
     if(document.getElementById('update_data')){
-
-        document.getElementById('update_data').addEventListener('click',() => {
-
+        function loadData() {
+            
             filter = document.getElementById('typeFilter').value;
             custom = document.getElementById('inputStartDate').value;
             alliance_id = document.getElementById('alliance_id').value;
@@ -128,10 +127,15 @@ document.addEventListener('DOMContentLoaded',function(){
 
                     if(result.status == 'success'){
                         document.getElementById('table-payment-alliance').innerHTML = result.html;
-                        document.getElementById('fee-total').innerHTML = '$' + result.data.total;
+                        document.getElementById('fee-total-alliance').innerHTML = '$' + result.data.total;
                     }
                 }
             }   
+        }
+
+        loadData();
+        document.getElementById('update_data').addEventListener('click',() => {
+            loadData();
         });
     }
 });

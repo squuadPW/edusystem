@@ -104,7 +104,11 @@ function get_list_fee_alliance(){
                 $html .= "<td class='column' data-colname='".__('Fee','restaurant-system-app')."'>".get_woocommerce_currency_symbol().number_format($order['fee'],2,'.',',')."</td>";
                 $html .= "<td class='column' data-colname='".__('Created','restaurant-system-app')."'><b>".$order['created_at']."</b></td>";
                 $html .= "<td class='column' data-colname='".__('Action','restaurant-system-app')."'>";
-                $html .= "<a class='button button-primary' href='".admin_url('admin.php?page=add_admin_partners_content&section_tab=payment-detail&payment_id='.$order['order_id'])."'>".__('View details','aes')."</a>";
+                if(isset($_GET['institute_id']) && !empty($_GET['institute_id'])) {
+                    $html .= "<a class='button button-primary' href=". admin_url('admin.php?page=add_admin_partners_content&section_tab=payment-detail&payment_id='.$order['order_id']) .">".__('View details','aes')."</a>";
+                } else {
+                    $html .= "<a class='button button-primary' href=". admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id='.$order['order_id']) .">".__('View details','aes')."</a>";
+                }
                 $html .= "</td>";
                 $html .= "</tr>";
             }
