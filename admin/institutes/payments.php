@@ -420,6 +420,8 @@ function get_invoices_institute()
 
     if (isset($_POST['filter']) && !empty($_POST['filter'])) {
 
+        global $current_user;
+        $roles = $current_user->roles;
         $filter = $_POST['filter'];
         $custom = $_POST['custom'];
         $institute_id = $_POST['institute_id'];
@@ -449,7 +451,11 @@ function get_invoices_institute()
                 if (!$institute_id) {
                     $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_institutes_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
                 } else {
-                    $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                    if (in_array('alliance', $roles)) {
+                        $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                    } else {
+                        $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=add_admin_institutes_content&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                    }
                 }
 
 
