@@ -92,7 +92,7 @@ function aes_scripts_admin(){
         ]);
     }
     
-    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_partners_content' || isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'list_admin_partner_payments_content'){
+    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_partners_content' || isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'list_admin_partner_payments_content' || $_GET['page'] == 'list_admin_partner_invoice_content'){
         wp_enqueue_script('alliance',plugins_url('aes').'/admin/assets/js/alliance.js',array('jquery'),'1.0.0',true);
 
 
@@ -197,6 +197,16 @@ function add_custom_admin_page() {
             'list_admin_partner_payments_content',
             'list_admin_partner_payments_content', 
             'dashicons-money-alt',
+            11
+        );
+
+        add_menu_page(
+            __('Invoice','aes'),
+            __('Invoice','aes'),
+            'read',
+            'list_admin_partner_invoice_content',
+            'list_admin_partner_invoice_content', 
+            'dashicons-admin-page',
             11
         );
     }
@@ -745,6 +755,37 @@ function get_states_by_country() {
                     $table_institutes_payments,
                     array(
                         'institute_id' => $institute->id,
+                        'total_orders' => sizeof($invoice['orders']),
+                        'amount' => $invoice['total'],
+                        'status_id' => 0,
+                        'month' => $first_day_prev_month,
+                        'created_at' => current_time('mysql'),
+                    )
+                );
+            }
+        }
+        exit;
+    }
+
+
+    add_action('create_invoice_alliance_monthly', 'monthly_invoice_alliance');
+    function monthly_invoice_alliance() {
+        global $wpdb;
+        $table_alliances =  $wpdb->prefix.'alliances';
+        $table_alliances_payments =  $wpdb->prefix.'alliances_payments';
+        $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 1");
+        $first_day_prev_month = date('Y-m-01', strtotime('first day of previous month'));
+        foreach ($alliances as $key => $alliance) {
+            $exist = $wpdb->get_row("SELECT * FROM {$table_alliances_payments} WHERE alliance_id={$alliance->id} AND month='{$first_day_prev_month}'");
+            if (!$exist) {
+
+                $last_month_invoice = get_dates_search('last-month', null);
+                $invoice = get_invoices_alliances($last_month_invoice[0], $last_month_invoice[1], $alliance->id);
+
+                $wpdb->insert(
+                    $table_alliances_payments,
+                    array(
+                        'alliance_id' => $alliance->id,
                         'total_orders' => sizeof($invoice['orders']),
                         'amount' => $invoice['total'],
                         'status_id' => 0,

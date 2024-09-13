@@ -331,7 +331,7 @@ function get_transactions_institutes($start, $end, $id = "", $status = 0)
         $total += $order->amount;
     }
 
-    return ['total' => $total, 'orders' => $data_fees, 'query' => "SELECT * FROM {$table_institutes_payments} WHERE institute_id={$institute_id} AND status_id={$status} AND created_at BETWEEN '{$start_date}' AND '{$end_date}'"];
+    return ['total' => $total, 'orders' => $data_fees];
 }
 
 function get_status_payment_institute($id) {
@@ -471,7 +471,6 @@ function get_invoices_institute()
 
         $transactions['total_pending'] = wc_price($transactions_pending['total']);
         $transactions['total_paid'] = wc_price($transactions_complete['total']);
-        $transactions['query'] = $transactions_complete['query'];
         $transactions['total'] = wc_price(($transactions_complete['total'] + $transactions_pending['total']));
         $transactions['orders'] = array_merge($transactions_pending['orders'], $transactions_complete['orders']);
         if (!empty($transactions['orders'])) {

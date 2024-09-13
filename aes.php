@@ -36,6 +36,20 @@ function create_tables() {
   $table_academic_periods = $wpdb->prefix.'academic_periods';
   $table_users_signatures = $wpdb->prefix.'users_signatures';
   $table_institutes_payments = $wpdb->prefix.'institutes_payments';
+  $table_alliances_payments = $wpdb->prefix.'alliances_payments';
+
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances_payments}'") != $table_alliances_payments){
+    dbDelta( "CREATE TABLE " . $table_alliances_payments . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        alliance_id INT(11) NOT NULL,
+        total_orders INT(11) NOT NULL,
+        amount DOUBLE(10, 2) NOT NULL,
+        status_id  INT(11) NOT NULL DEFAULT 0,
+        month  DATE NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_institutes_payments}'") != $table_institutes_payments){
 
