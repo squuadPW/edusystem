@@ -5,4 +5,8 @@ document.addEventListener('DOMContentLoaded',function(){
         document.getElementById('createaccount').checked = true;
     }
 
+    window.addEventListener('beforeunload', function(event) {
+        event.preventDefault();
+    });
+
 });
