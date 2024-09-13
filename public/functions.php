@@ -1009,7 +1009,7 @@ function reload_button_schoolship()
     $has_scholarship = false;
     $applied_coupons = $woocommerce->cart->get_applied_coupons();
     foreach ($applied_coupons as $key => $coupon) {
-        if ($coupon == 'latam schoolarship') {
+        if ($coupon == 'latam scholarship') {
             $has_scholarship = true;
         }
     }
@@ -1035,7 +1035,7 @@ function apply_scholarship()
     global $woocommerce;
     $cart = $woocommerce->cart;
 
-    $coupon_code = 'Latam Schoolarship';
+    $coupon_code = 'Latam Scholarship';
     $cart->apply_coupon($coupon_code);
 
     // Calculate totals
