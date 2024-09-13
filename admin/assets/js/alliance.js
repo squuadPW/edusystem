@@ -130,7 +130,13 @@ document.addEventListener('DOMContentLoaded',function(){
             htmlLoading += "<td class='column-primary id column-id' colspan='5' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
             htmlLoading += "</tr>";
                 
-            document.getElementById('table-institutes-payment').innerHTML = htmlLoading;
+            if (document.getElementById('table-institutes-payment')) {
+                document.getElementById('table-institutes-payment').innerHTML = htmlLoading;
+            }
+
+            if (document.getElementById('table-payment-alliance')) {
+                document.getElementById('table-payment-alliance').innerHTML = htmlLoading;
+            }
 
             htmlLoading = "";
             htmlLoading += "<tr>";
@@ -155,10 +161,16 @@ document.addEventListener('DOMContentLoaded',function(){
                     let result = JSON.parse(XHR.responseText);
 
                     if(result.status == 'success'){
-                        document.getElementById('table-institutes-payment').innerHTML = result.html;
+                        if (document.getElementById('table-institutes-payment')) {
+                            document.getElementById('table-institutes-payment').innerHTML = result.html;
+                        }
+
+                        if (document.getElementById('table-payment-alliance')) {
+                            document.getElementById('table-payment-alliance').innerHTML = result.html;
+                        }
                         
                         if (document.getElementById('fee-total-alliance')) {
-                            document.getElementById('fee-total-alliance').innerHTML = '$' + result.data.total;    
+                            document.getElementById('fee-total-alliance').innerHTML = result.data.total;    
                         }
 
                         if (document.getElementById('fee-total-balance')) {
