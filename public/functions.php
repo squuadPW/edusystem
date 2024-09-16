@@ -1355,6 +1355,7 @@ function verificar_contraseña()
             // Obtiene el ID del usuario actual
             global $current_user, $wpdb;
             $table_user_signatures = $wpdb->prefix . 'users_signatures';
+            $table_student_documents = $wpdb->prefix . 'student_documents';
             $table_students = $wpdb->prefix . 'students';
             $table_student_payments = $wpdb->prefix . 'student_payments';
             $roles = $current_user->roles;
@@ -1363,15 +1364,17 @@ function verificar_contraseña()
             if (in_array('student', $roles)) {
                 $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
                 $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
+                $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
             } else if (in_array('parent', $roles)) {
                 $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
                 $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
+                $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
             }
 
             if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                 // Agrega un script para levantar el modal
                 add_action('wp_footer', 'modal_create_password');
-            } else if ((!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+            } else if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                 add_action('wp_footer', 'modal_enrollment_student');
             }
         }
