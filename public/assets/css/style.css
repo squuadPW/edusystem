@@ -943,4 +943,17 @@ body.modal-open {
 .notification-urgent {
   background-color: #f17777;
   color: #fff;
+}
+
+.content-notification-card {
+  margin: auto;
+  width: 60%;
+  margin-top: 18px;
+}
+
+/* Media query para dispositivos móviles */
+@media (max-width: 768px) {
+  .content-notification-card {
+    width: 100%;
+  }
 }/*# sourceMappingURL=style.css.map */

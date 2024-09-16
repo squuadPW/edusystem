@@ -6,7 +6,7 @@
         <div style="display: flex"><div style="background-color: #ebf177; width: 24px; border-radius: 50%; margin-right: 10px"></div> Warning</div>
         <div style="display: flex"><div style="background-color: #f17777; width: 24px; border-radius: 50%; margin-right: 10px"></div> Urgent</div>
     </div>
-    <div style="margin: auto; width: 60%; margin-top: 18px">
+    <div class="content-notification-card">
         <?php if ($notices) { ?>
             <?php foreach ($notices as $key => $value) { ?>
                 <?php 
