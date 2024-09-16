@@ -835,7 +835,8 @@ function update_status_documents()
         $data = [
             'user_id' => $user_student->ID,
             'message' => $description,
-            'importance' => $status_id == 3 ? 3 : 1
+            'importance' => $status_id == 3 ? 3 : 1,
+            'type_notice' => 'documents',
         ];
 
         $wpdb->insert($table_users_notices, $data);

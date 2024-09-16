@@ -447,12 +447,14 @@ function add_loginout_link($items, $args)
         $table_users_notices = $wpdb->prefix . 'users_notices';
         $notices = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_users_notices} WHERE `read` = %d AND user_id = %d ORDER BY created_at DESC", 0, $current_user->ID));
         if (sizeof($notices) > 0) {
+            $color = '#12e354 !important';
             $count = "(" . sizeof($notices) . ")";
         } else {
+            $color = '#091c5c !important';
             $count = "";
         }
         if ($args->theme_location == 'primary') {
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications"><span style="vertical-align: baseline; font-size: 28px; width: 26px; color: #091c5c; cursor: pointer;" class="dashicons dashicons-bell"></span>' .$count . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications"><span style="vertical-align: baseline; font-size: 28px; width: 26px; color: ' .$color. '; cursor: pointer;" class="dashicons dashicons-bell"></span>' .$count . '</a></li>';
         } else {
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications">' . __('Notifications', 'form-plugin') . '</a></li>';
         }

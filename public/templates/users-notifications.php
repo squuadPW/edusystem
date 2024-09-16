@@ -26,10 +26,12 @@
                         break;
                 }
                 ?>
-                <div class="notification-card <?php echo $class ?>">
-                    <p><strong><?php echo $importance ?></strong> <span style="font-size: 12px; float: right"><?php echo $value->created_at ?></span></p>
-                    <p><?php echo $value->message ?></p>
-                </div>
+                <a href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) ?>/student-documents">
+                    <div class="notification-card <?php echo $class ?>">
+                        <p><strong><?php echo $importance ?></strong> <span style="font-size: 12px; float: right"><?php echo $value->created_at ?></span></p>
+                        <p><?php echo $value->message ?></p>
+                    </div>
+                </a>
             <?php } ?>
         <?php } else {  ?>
             <p style="text-align: center;"><?= __('No notifications available','aes'); ?></p>
