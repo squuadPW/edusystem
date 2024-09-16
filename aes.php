@@ -44,7 +44,7 @@ function create_tables() {
         id INT(11) NOT NULL AUTO_INCREMENT,
         user_id INT(11) NOT NULL,
         message LONGTEXT NOT NULL,
-        read BOOLEAN DEFAULT 0,
+        `read` BOOLEAN NOT NULL DEFAULT 0,
         type_notice TEXT NOT NULL,
         importance INT(11) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
