@@ -443,7 +443,21 @@ function add_loginout_link($items, $args)
 
     if (is_user_logged_in()) {
 
-        global $current_user;
+        global $current_user, $wpdb;
+        $table_users_notices = $wpdb->prefix . 'users_notices';
+        $notices = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_users_notices} WHERE `read` = %d AND user_id = %d ORDER BY created_at DESC", 0, $current_user->ID));
+        if (sizeof($notices) > 0) {
+            $count = "(" . sizeof($notices) . ")";
+        } else {
+            $count = "";
+        }
+        if ($args->theme_location == 'primary') {
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications"><span style="vertical-align: baseline; font-size: 28px; width: 26px; color: #091c5c; cursor: pointer;" class="dashicons dashicons-bell"></span>' .$count . '</a></li>';
+        } else {
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications">' . __('Notifications', 'form-plugin') . '</a></li>';
+        }
+
+
         $birthday = get_user_meta($current_user->ID, 'birth_date', true);
         $age = floor((time() - strtotime($birthday)) / 31556926);
         if ($age > 18) {
@@ -457,6 +471,7 @@ function add_loginout_link($items, $args)
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'form-plugin') . '</a></li>';
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account details', 'form-plugin') . '</a></li>';
         }
+
         $logout_link = wp_logout_url(get_home_url());
         $items .= '<li><a class="button-primary" style="font-size:14px;" href="' . $logout_link . '">' . __('Log out', 'form-plugin') . '</a></li>';
     } elseif (!is_user_logged_in()) {
@@ -1710,6 +1725,22 @@ function assign_documents_students()
 
     wp_send_json(array('studens_affected' => $users_affected));
 }
+
+function users_notifications(){
+    global $wpdb, $current_user;
+    $table_users_notices = $wpdb->prefix . 'users_notices';
+        // Update all notifications to mark them as read
+        $wpdb->update(
+            $table_users_notices,
+            array('read' => 1),
+            array('user_id' => $current_user->ID)
+        );
+        
+    $notices = $wpdb->get_results("SELECT * FROM {$table_users_notices} WHERE user_id = {$current_user->ID} ORDER BY created_at DESC");
+    include(plugin_dir_path(__FILE__).'templates/users-notifications.php');
+}
+
+add_shortcode('users_notifications','users_notifications');
 
 // function other_endpoint_callback()
 // {

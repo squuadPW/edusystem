@@ -924,4 +924,23 @@ body.modal-open {
   overflow: hidden;
   top: 0 !important;
   position: absolute;
+}
+
+.notification-card {
+  padding: 10px;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+.notification-notice {
+  background-color: #dadde7;
+}
+
+.notification-warning {
+  background-color: #ebf177;
+}
+
+.notification-urgent {
+  background-color: #f17777;
+  color: #fff;
 }/*# sourceMappingURL=style.css.map */

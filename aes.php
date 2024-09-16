@@ -37,7 +37,20 @@ function create_tables() {
   $table_users_signatures = $wpdb->prefix.'users_signatures';
   $table_institutes_payments = $wpdb->prefix.'institutes_payments';
   $table_alliances_payments = $wpdb->prefix.'alliances_payments';
+  $table_user_notices = $wpdb->prefix.'users_notices';
 
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_user_notices}'") != $table_user_notices){
+    dbDelta( "CREATE TABLE " . $table_user_notices . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        user_id INT(11) NOT NULL,
+        message LONGTEXT NOT NULL,
+        read BOOLEAN DEFAULT 0,
+        importance INT(11) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+  
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances_payments}'") != $table_alliances_payments){
     dbDelta( "CREATE TABLE " . $table_alliances_payments . " (
         id INT(11) NOT NULL AUTO_INCREMENT,

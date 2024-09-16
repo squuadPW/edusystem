@@ -818,6 +818,28 @@ function update_status_documents()
         $document_id = $_POST['document_id'];
         $description = (!$_POST['description'] || $_POST['description'] == 'null') ? null : $_POST['description'];
 
+        $student = get_student_detail($_POST['student_id']);
+        $user_student = get_user_by('email', $student->email);
+        $table_users_notices =  $wpdb->prefix.'users_notices';
+        switch ($status_id) {
+            case 3:
+                $description = $description;
+                break;
+            case 5:
+                $description = "Document approved";
+                break;
+            default:
+                $description = "Status of document changed";
+                break;
+        }
+        $data = [
+            'user_id' => $user_student->ID,
+            'message' => $description,
+            'importance' => $status_id == 3 ? 3 : 1
+        ];
+
+        $wpdb->insert($table_users_notices, $data);
+
         $wpdb->update($table_student_documents, ['approved_by' => $current_user->ID, 'status' => $status_id, 'updated_at' => date('Y-m-d H:i:s'), 'description' => $description], ['id' => $document_id, 'student_id' => $student_id]);
 
         if ($status_id == 3) {

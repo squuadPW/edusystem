@@ -380,6 +380,9 @@ $countries = get_countries();
 		</div>
 		<div class="modal-body" style="margin-top:10px;padding:0px;">
             <div>
+                <span>This same text will be shown to the user in their notifications section, please create a message addressed to the user</span>
+            </div>
+            <div>
                 <label for="decline-description"><b><?= __('Reason why it is declined','aes'); ?></b><span class="text-danger">*</span></label><br>
                 <textarea name="decline-description" type="text" style="width: 100%;"></textarea>
             </div>
