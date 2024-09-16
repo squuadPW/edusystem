@@ -304,15 +304,17 @@ function save_document(){
         $roles = $current_user->roles;
         $table_students = $wpdb->prefix.'students';
         $table_users_signatures = $wpdb->prefix.'users_signatures';
+        $table_student_documents = $wpdb->prefix . 'student_documents';
         $user_signature = null;
 
         foreach (json_decode($_GET['missing']) as $key => $student_id) {
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
             $user_student = get_user_by('email', $student->email);
             $user_signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id = {$user_student->ID} AND document_id='MISSING DOCUMENTS'");
+            $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'MISSING DOCUMENTS' ORDER BY id DESC");
         }
 
-        if ($user_signature) {
+        if ($user_signature || !$document_was_created) {
             $url = wc_get_endpoint_url('student-documents', '', get_permalink(get_option('woocommerce_myaccount_page_id')));
             wp_redirect($url);
             exit;
