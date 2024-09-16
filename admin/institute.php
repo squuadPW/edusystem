@@ -316,6 +316,8 @@ class TT_institutes_review_List_Table extends WP_List_Table
                 return $name;
             case 'name_rector':
                 return ucwords($item['name_rector']) . ' ' . ucwords($item['lastname_rector']);
+            case 'name_contact':
+                return ucwords($item['name_contact']) . ' ' . ucwords($item['lastname_contact']);
             case 'view_details':
                 return "<a href='" . admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-visibility'></span>" . __('View', 'form-plugin') . "</a>";
             default:
