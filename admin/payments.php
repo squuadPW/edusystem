@@ -465,9 +465,10 @@ class TT_Invoices_Alliances_List_Table extends WP_List_Table
         $offset = (($pagenum - 1) * $per_page);
 
         $table_alliances_payments = $wpdb->prefix . 'alliances_payments';
-        $transactions = $wpdb->get_results("SELECT * FROM {$table_alliances_payments}");
+        $transactions = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_alliances_payments} LIMIT {$per_page} OFFSET {$offset}");
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
-        return ['data' => $transactions, 'total_count' => sizeof($transactions)];
+        return ['data' => $transactions, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -605,9 +606,10 @@ class TT_Invoices_Institutes_List_Table extends WP_List_Table
         $offset = (($pagenum - 1) * $per_page);
 
         $table_institutes_payments = $wpdb->prefix . 'institutes_payments';
-        $transactions = $wpdb->get_results("SELECT * FROM {$table_institutes_payments}");
+        $transactions = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes_payments} LIMIT {$per_page} OFFSET {$offset}");
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
-        return ['data' => $transactions, 'total_count' => sizeof($transactions)];
+        return ['data' => $transactions, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
