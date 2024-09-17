@@ -46,8 +46,8 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td><span style="margin-top: -6px;" class='dashicons dashicons-businessperson'></span> <?php echo $student->name ?>
-									<?php echo $student->middle_name ?>Name: <?php echo $student->last_name ?>
+								<td><span style="margin-top: -6px;" class='dashicons dashicons-businessperson'></span> <?php echo $student->middle_name ?>Name: <?php echo $student->name ?>
+									<?php echo $student->last_name ?>
 									<?php echo $student->middle_last_name ?></td>
 							</tr>
 							<tr>
