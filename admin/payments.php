@@ -20,6 +20,54 @@ function add_admin_form_payments_content()
 
             wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
             exit;
+        } else if ($_GET['action'] == 'generate_payment') {
+            $cancel = $_POST['cancel'];
+            if (isset($cancel) && $cancel == 1) {
+                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment'));
+                exit;
+            }
+
+            global $wpdb;
+            $id_document = $_POST['id_document'];
+            $generate = $_POST['generate'];
+            $table_students = $wpdb->prefix.'students';
+            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}'");
+
+            if ($generate) {
+                $amount = $_POST['amount'];
+                $product_id = $_POST['product_id'];
+                $partner_id = $student->partner_id;
+            
+                $order_data = array(
+                    'user_id' => $partner_id,
+                    'product_id' => $product_id,
+                    'amount' => $amount
+                );
+            
+                $quantity = 1;
+                $product = wc_get_product($product_id);
+            
+                // Crea el pedido
+                $order_args = array(
+                    'customer_id' => $partner_id,
+                    'status' => 'pending-payment',
+                );
+
+                $order = wc_create_order($order_args);
+                $order->add_product($product, $quantity);
+                $order->set_total($amount);
+                $order->update_meta_data('student_id', $student->id);
+                $order->save();
+            
+                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&success_advance_payment=true'));
+                exit;
+            }
+
+            if ($student) {
+                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document='.$id_document));
+            } else {
+                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=0&id_document='.$id_document));
+            }
         }
     }
 
@@ -60,7 +108,19 @@ function add_admin_form_payments_content()
             $list_payments = new TT_Invoices_Institutes_List_Table();
             $list_payments->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-invoices-institutes.php');
+        } else if ($_GET['section_tab'] == 'generate_advance_payment') {
+            global $wpdb;
+            $id_document = $_GET['id_document'];
+            $generate = $_GET['generate'];
+            $table_students = $wpdb->prefix.'students';
+            $table_student_payments = $wpdb->prefix.'student_payments';
+            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}'");
+            if ($student) {
+                $payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' AND status_id = 0 ORDER BY cuote ASC");
+            }
+            include(plugin_dir_path(__FILE__) . 'templates/generate-advance-payment.php');
         }
+
 
     } else {
         $list_payments = new TT_payment_pending_List_Table;
@@ -68,6 +128,19 @@ function add_admin_form_payments_content()
         include(plugin_dir_path(__FILE__) . 'templates/list-payments.php');
     }
 }
+
+function success_advance_payment() {
+    if (isset($_GET['success_advance_payment']) && $_GET['success_advance_payment'] == 'true') {
+      ?>
+      <div class="notice notice-success is-dismissible">
+        <p>Payment generated successfully</p>
+      </div>
+      <?php
+    }
+  }
+  
+  // Add the success message to the admin_notices action
+  add_action('admin_notices', 'success_advance_payment');
 
 
 class TT_payment_pending_List_Table extends WP_List_Table
