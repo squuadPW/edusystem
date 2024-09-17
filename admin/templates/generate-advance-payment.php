@@ -26,11 +26,7 @@
 					value="<?php echo $_GET['student_available'] == 1 && isset($payment) ? true : false ?>" required>
 
 					<?php if($_GET['student_available']) { ?>
-						<?php if($_GET['student_available'] && isset($payment)) { ?>
-						<button type="submit" class="button button-primary" style="margin: 10px"><?php echo $_GET['student_available'] && isset($payment) ? 'Generate order' : 'Search student' ?></button>
-						<?php } ?>
-						<br>
-						<button type="submit" class="button button-primary-outline" name="cancel" value="1">Cancel</button>
+						<button type="submit" class="button button-primary-outline" name="cancel" value="1" style="margin: 10px">Cancel</button>
 					<?php } else { ?>
 						<button type="submit" class="button button-primary" style="margin: 10px"><?php echo $_GET['student_available'] && isset($payment) ? 'Generate order' : 'Search student' ?></button>
 					<?php } ?>
@@ -85,6 +81,13 @@
 								<td><span style="margin-top: -6px;" class='dashicons dashicons-money-alt'></span> Amount: <?php echo wc_price($payment->amount) ?>
 								</td>
 							</tr>
+							<tr>
+								<td style="text-align: center">
+								<?php if($_GET['student_available'] && isset($payment)) { ?>
+									<button type="submit" class="button button-primary" style="margin: 10px"><?php echo $_GET['student_available'] && isset($payment) ? 'Generate order' : 'Search student' ?></button>
+								<?php } ?>
+								</td>
+							</tr>
 						</table>
 						<input type="hidden" id="amount" name="amount" value="<?php echo $payment->amount ?>" required>
 						<input type="hidden" id="product_id" name="product_id"
@@ -103,6 +106,17 @@
 						</table>
 					</div>
 				<?php } ?>
+			<?php } else if(!$_GET['student_available'] && $_GET['id_document']) { ?>
+				<div style="padding: 10px">
+						<table class="wp-list-table widefat fixed posts striped">
+							<tr>
+								<th>Student details</th>
+							</tr>
+							<tr>
+								<td style="text-align: center">This student not exist</td>
+							</tr>
+						</table>
+					</div>
 			<?php } ?>
 		</form>
 	</div>
