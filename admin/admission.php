@@ -412,7 +412,7 @@ class TT_document_review_List_Table extends WP_List_Table
                     $time_now = Datetime::createFromFormat('Y-m-d H:i:s', wp_date('Y-m-d H:i:s'));
                     $diff = $updated_at->diff($time_now);
 
-                    if ($diff->days < 15) {
+                    if ($diff->days < (int)get_option('documents_ok')) {
 
                         if ($diff->days == 1) {
 
@@ -431,13 +431,13 @@ class TT_document_review_List_Table extends WP_List_Table
                             ';
                         }
 
-                    } else if ($diff->days < 35) {
+                    } else if ($diff->days < (int)get_option('documents_warning')) {
                         $html .= '
                             <a href="javascript:void(0)" class="button button-warning" style="border-radius:9px;">
                                 <span>' . $diff->days . ' ' . __('Days', 'aes') . '</span>
                             </a>
                         ';
-                    } else if ($diff->days >= 35) {
+                    } else if ($diff->days >= (int)get_option('documents_red')) {
                         $html .= '
                             <a href="javascript:void(0)" class="button button-danger" style="border-radius:9px;">
                                 <span>' . $diff->days . ' ' . __('Days', 'aes') . '</span>
