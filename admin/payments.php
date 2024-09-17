@@ -54,7 +54,7 @@ function add_admin_form_payments_content()
                 );
 
                 $order = wc_create_order($order_args);
-                $order->add_product($product, $quantity);
+                $order->add_product($product, $quantity, array('subtotal' => $amount, 'total' => $amount));
                 $order->set_total($amount);
                 $order->update_meta_data('student_id', $student->id);
                 $order->save();

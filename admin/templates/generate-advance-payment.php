@@ -46,22 +46,22 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td><span class='dashicons dashicons-businessperson'></span> <?php echo $student->name ?>
+								<td><span style="margin-top: -6px;" class='dashicons dashicons-businessperson'></span> <?php echo $student->name ?>
 									<?php echo $student->middle_name ?>Name: <?php echo $student->last_name ?>
 									<?php echo $student->middle_last_name ?></td>
 							</tr>
 							<tr>
-								<td><span class='dashicons dashicons-email'></span> Email: <?php echo $student->email ?></td>
+								<td><span style="margin-top: -6px;" class='dashicons dashicons-email'></span> Email: <?php echo $student->email ?></td>
 							</tr>
 							<tr>
-								<td><span class='dashicons dashicons-phone'></span> Phone: <?php echo $student->phone ?></td>
+								<td><span style="margin-top: -6px;" class='dashicons dashicons-phone'></span> Phone: <?php echo $student->phone ?></td>
 							</tr>
 							<tr>
-								<td><span class='dashicons dashicons-location-alt'></span> Country: <?php echo $student->country ?>
+								<td><span style="margin-top: -6px;" class='dashicons dashicons-location-alt'></span> Country: <?php echo $student->country ?>
 								</td>
 							</tr>
 							<tr>
-								<td><span class='dashicons dashicons-text-page'></span>
+								<td><span style="margin-top: -6px;" class='dashicons dashicons-text-page'></span>
 									Academic period: <?php echo $student->academic_period ?></td>
 							</tr>
 						</tbody>
@@ -75,14 +75,14 @@
 								<th>Payment info</th>
 							</tr>
 							<tr>
-								<td><span class='dashicons dashicons-businessperson'></span> Cuote:<?php echo $payment->cuote ?></td>
+								<td><span style="margin-top: -6px;" class='dashicons dashicons-saved'></span> Cuote: <?php echo $payment->cuote ?></td>
 							</tr>
 							<tr>
-								<td><span class='dashicons dashicons-email'></span> Date of payment: <?php echo $payment->date_next_payment ?>
+								<td><span style="margin-top: -6px;" class='dashicons dashicons-clock'></span> Date of payment: <?php echo $payment->date_next_payment ?>
 								</td>
 							</tr>
 							<tr>
-								<td><span class='dashicons dashicons-email'></span> Amount: <?php echo wc_price($payment->amount) ?>
+								<td><span style="margin-top: -6px;" class='dashicons dashicons-money-alt'></span> Amount: <?php echo wc_price($payment->amount) ?>
 								</td>
 							</tr>
 						</table>
