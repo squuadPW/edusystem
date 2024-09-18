@@ -113,6 +113,8 @@ function create_tables() {
         last_name TEXT NOT NULL,
         middle_last_name TEXT NULL,
         birth_date DATE NULL,
+        gender TEXT NULL,
+        ethnicity TEXT NULL,
         partner_id INT(11) NULL,
         email TEXT NOT NULL,
         phone TEXT NOT NULL,

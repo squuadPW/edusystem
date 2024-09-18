@@ -23,6 +23,19 @@ function add_admin_form_scholarships_content(){
                         $user_partner = new WP_User($user_partner_id);
                         $user_partner->set_role( 'parent' );
                     }
+
+                    
+                    update_user_meta($user_partner_id, 'first_name', $partner->name);
+                    update_user_meta($user_partner_id, 'billing_first_name', $partner->name);
+                    update_user_meta($user_partner_id, 'last_name', $partner->last_name);
+                    update_user_meta($user_partner_id, 'billing_last_name', $partner->last_name);
+                    update_user_meta($user_partner_id, 'nickname', $username);
+                    update_user_meta($user_partner_id, 'birth_date', $partner->birth_date);
+                    update_user_meta($user_partner_id, 'gender', $partner->gender);
+                    update_user_meta($user_partner_id, 'billing_email', $partner->email);
+                    update_user_meta($user_partner_id, 'billing_phone', $partner->phone);
+                    update_user_meta($user_partner_id, 'document_type', $partner->type_document);
+                    update_user_meta($user_partner_id, 'id_document', $partner->id_document);
                     // GENERAMOS USUARIO PARA EL PARTNER
 
                     // CREAMOS REGISTRO EN TABLA STUDENTS
@@ -39,6 +52,8 @@ function add_admin_form_scholarships_content(){
                             'last_name' => $pre_student_row->last_name,
                             'middle_last_name' => $pre_student_row->middle_last_name,
                             'birth_date' => $pre_student_row->birth_date,
+                            'ethnicity' => $pre_student_row->ethnicity,
+                            'academic_period' => $pre_student_row->academic_period,
                             'phone' => $pre_student_row->phone,
                             'email' => $pre_student_row->email,
                             'gender' => $pre_student_row->gender,
@@ -50,7 +65,7 @@ function add_admin_form_scholarships_content(){
                             'institute_id' => $pre_student_row->institute_id,
                             'program_id' => $pre_student_row->program_id,
                             'partner_id' => $user_partner_id,
-                            'status_id' => $pre_student_row->status_id,
+                            'status_id' => 1,
                             'moodle_student_id' => $pre_student_row->moodle_student_id,
                             'moodle_password' => $pre_student_row->moodle_password,
                         )
@@ -70,6 +85,16 @@ function add_admin_form_scholarships_content(){
                         $user_student = new WP_User($user_student_id);
                         $user_student->set_role( 'student' );
                     }
+
+                    update_user_meta($user_student_id, 'first_name', $pre_student_row->name);
+                    update_user_meta($user_student_id, 'last_name', $pre_student_row->last_name);
+                    update_user_meta($user_student_id, 'billing_phone', $pre_student_row->phone);
+                    update_user_meta($user_student_id, 'billing_email', $pre_student_row->email);
+                    update_user_meta($user_student_id, 'birth_date', $pre_student_row->birth_date);
+                    update_user_meta($user_student_id, 'student_id', $student_id);
+
+                    update_user_meta($user_partner_id, 'billing_country', $pre_student_row->country);
+                    update_user_meta($user_partner_id, 'billing_city', $pre_student_row->city);
 
                     insert_register_documents($student_id, $pre_student_row->grade_id);
                     // GENERAMOS USUARIO PARA EL ESTUDIANTE
@@ -101,29 +126,6 @@ function add_admin_form_scholarships_content(){
                         )
                     );
                     // GUARDAMOS EL STATUS
-
-                    //ACTUALIZAMOS EL META DATA
-                    // PADRE
-                    update_user_meta($user_partner_id, 'billing_first_name', $partner->name);
-                    update_user_meta($user_partner_id, 'first_name', $partner->name);
-                    update_user_meta($user_partner_id, 'shipping_first_name', $partner->name);
-                    update_user_meta($user_partner_id, 'billing_last_name', $partner->last_name);
-                    update_user_meta($user_partner_id, 'last_name', $partner->last_name);
-                    update_user_meta($user_partner_id, 'shipping_last_name', $partner->last_name);
-                    update_user_meta($user_partner_id, 'billing_phone', $partner->phone);
-                    update_user_meta($user_partner_id, 'shipping_phone', $partner->phone);
-                    update_user_meta($user_partner_id, 'billing_email', $partner->email);
-                    update_user_meta($user_partner_id, 'billing_city', $pre_student_row->city);
-                    update_user_meta($user_partner_id, 'billing_country', $pre_student_row->country);
-
-                    // HIJO
-                    update_user_meta($user_student_id, 'first_name', $pre_student_row->name);
-                    update_user_meta($user_student_id, 'last_name', $pre_student_row->last_name);
-                    update_user_meta($user_student_id, 'billing_phone', $pre_student_row->phone);
-                    update_user_meta($user_student_id, 'billing_email', $pre_student_row->email);
-                    update_user_meta($user_student_id, 'birth_date', $pre_student_row->birth_date);
-                    update_user_meta($user_student_id, 'student_id', $student_id);
-                    //ACTUALIZAMOS EL META DATA
 
                     wp_new_user_notification($user_partner_id, null, 'both' );
                     wp_redirect(admin_url('admin.php?page=add_admin_form_scholarships_content'));

@@ -5,90 +5,77 @@ function save_scholarship(){
         isset($_GET['action']) && !empty($_GET['action'])
     ){
         if($_GET['action'] == 'save_scholarship'){
-            
-            $name = strtolower($_POST['name_student']);
-            $middle_name_student = strtolower($_POST['middle_name_student']);
-            $last_name = strtolower($_POST['lastname_student']);
-            $middle_last_name_student = strtolower($_POST['middle_last_name_student']);
-            $number_phone = $_POST['number_phone_hidden'];
-            $number_partner = $_POST['number_partner_hidden']; 
-            $email_student = strtolower($_POST['email_student']);
-            $email_partner = strtolower($_POST['email_partner']);
-            $country = $_POST['country'];
-            $city = strtolower($_POST['city']);
-            $birth_date = $_POST['birth_date_student'];
-            $agent_name = strtolower($_POST['agent_name']);
-            $agent_last_name = strtolower($_POST['agent_last_name']);
-            $program = $_POST['program'];
-            $grade = $_POST['grade'];
-            $name_institute = strtolower($_POST['name_institute']);
-            $institute_id = $_POST['institute_id'];
-            $type_document = $_POST['document_type'];
-            $id_document = $_POST['id_document'];
-
-            setcookie('is_older','',time());
-
-            if(!empty($institute_id) && $institute_id != 'other'){
-
-                $institute = get_institute_details($institute_id);
-                $name_institute = strtolower($institute->name);
-
-                setcookie('institute_id',ucwords($institute_id),time() + 3600);
-            }
-
-            if(!empty($agent_name) && !empty($agent_last_name) && !empty($email_partner) && !empty($number_partner)){
-
-                setcookie('agent_name',ucwords($agent_name),time() + 3600);
-                setcookie('agent_last_name',ucwords($agent_last_name),time() + 3600);
-                setcookie('email_partner',$email_partner,time() + 3600);
-                setcookie('number_partner',$number_partner,time() + 3600);
-            }else{
-
-                setcookie('agent_name',ucwords($name),time() + 3600);
-                setcookie('agent_last_name',ucwords($last_name),time() + 3600);
-                setcookie('email_partner',$email_student,time() + 3600);
-                setcookie('number_partner',$number_phone,time() + 3600);
-                setcookie('is_older',true,time() + 3600);
-            }
-
-            /* set cookie */
-            setcookie('phone_student',$number_phone,time() + 3600);
-            setcookie('id_document',$id_document,time() + 3600);
-            setcookie('document_type',$type_document,time() + 3600);
-            setcookie('email_student',$email_student,time() + 3600);
-            setcookie('name_student',ucwords($name),time() + 3600);
-            setcookie('middle_name_student',ucwords($middle_name_student),time() + 3600);
-            setcookie('last_name_student',ucwords($last_name),time() + 3600);
-            setcookie('middle_last_name_student',ucwords($middle_last_name_student),time() + 3600);
-            setcookie('billing_city',ucwords($city),time() + 3600);
-            setcookie('billing_country',$country,time() + 3600);
-            setcookie('name_institute',ucwords($name_institute),time() + 3600);
-            setcookie('birth_date',$birth_date,time() + 3600);
-            setcookie('initial_grade',$grade,time() + 3600);
-            setcookie('program_id',$program,time() + 3600);
-
             global $wpdb;
             $table_pre_users = $wpdb->prefix.'pre_users';
-            $wpdb->insert($table_pre_users,[
-                'name' => $agent_name,
-                'middle_name' => null,
-                'last_name' => $agent_last_name,
-                'middle_last_name' => null,
-                'birth_date' => null,
-                'partner_id' => null, 
-                'phone' => $number_partner,
-                'email' => $email_partner,
-                'type' => 'partner',
-            ]);
 
-            $partner_id = $wpdb->insert_id; 
+            // Datos del estudiante
+            $birth_date = isset($_POST['birth_date_student']) ? $_POST['birth_date_student'] : null;
+            $document_type = isset($_POST['document_type']) ? $_POST['document_type'] : null;
+            $id_document = isset($_POST['id_document']) ? $_POST['id_document'] : null;
+            $gender = isset($_POST['gender']) ? $_POST['gender'] : null;
+            $name = isset($_POST['name_student']) ? strtolower($_POST['name_student']) : null;
+            $middle_name_student = isset($_POST['middle_name_student']) ? strtolower($_POST['middle_name_student']) : null;
+            $last_name = isset($_POST['lastname_student']) ? strtolower($_POST['lastname_student']) : null;
+            $middle_last_name_student = isset($_POST['middle_last_name_student']) ? strtolower($_POST['middle_last_name_student']) : null;
+            $number_phone = isset($_POST['number_phone']) ? $_POST['number_phone'] : (isset($_POST['number_phone_hidden']) ? $_POST['number_phone_hidden'] : null);
+            $email_student = isset($_POST['email_student']) ? strtolower($_POST['email_student']) : null;
+            $ethnicity = isset($_POST['etnia']) ? $_POST['etnia'] : null;
+
+            // Datos del padre
+            $birth_date_parent = isset($_POST['birth_date_parent']) ? $_POST['birth_date_parent'] : null;
+            $parent_document_type = isset($_POST['parent_document_type']) ? $_POST['parent_document_type'] : null;
+            $id_document_parent = isset($_POST['id_document_parent']) ? $_POST['id_document_parent'] : null;
+            $gender_parent = isset($_POST['gender_parent']) ? $_POST['gender_parent'] : null;
+            $agent_name = isset($_POST['agent_name']) ? strtolower($_POST['agent_name']) : null;
+            $agent_last_name = isset($_POST['agent_last_name']) ? strtolower($_POST['agent_last_name']) : null;
+            $number_partner = isset($_POST['number_partner_hidden']) ? $_POST['number_partner_hidden'] : null;
+            $email_partner = isset($_POST['email_partner']) ? strtolower($_POST['email_partner']) : null;
+
+            // DATOS EXTRAS
+            $country = isset($_POST['country']) ? $_POST['country'] : null;
+            $city = isset($_POST['city']) ? strtolower($_POST['city']) : null;
+            $program = isset($_POST['program']) ? $_POST['program'] : null;
+            $grade = isset($_POST['grade']) ? $_POST['grade'] : null;
+            $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
+
+            if (!empty($institute_id) && $institute_id != 'other') {
+                $institute = get_institute_details($institute_id);
+                $name_institute = strtolower($institute->name);
+                setcookie('institute_id', $institute_id, time() + 3600);
+            } else {
+                $name_institute = isset($_POST['name_institute']) ? strtolower($_POST['name_institute']) : null;
+            }
+
+            $partner_id = null;
+            if (!empty($agent_name) && !empty($agent_last_name) && !empty($email_partner) && !empty($number_partner) && !empty($birth_date_parent) && !empty($parent_document_type) && !empty($id_document_parent)) {
+                $wpdb->insert($table_pre_users,[
+                    'type_document' => $parent_document_type,
+                    'id_document' => $id_document_parent,
+                    'name' => $agent_name,
+                    'middle_name' => null,
+                    'last_name' => $agent_last_name,
+                    'middle_last_name' => null,
+                    'birth_date' => date_i18n('Y-m-d',strtotime($birth_date_parent)),
+                    'gender' => $gender_parent,
+                    'ethnicity' => null, 
+                    'partner_id' => null, 
+                    'phone' => $number_partner,
+                    'email' => $email_partner,
+                    'type' => 'partner',
+                ]);
+                $partner_id = $wpdb->insert_id; 
+            }
 
             $wpdb->insert($table_pre_users,[
+                'type_document' => $document_type,
+                'id_document' => $id_document,
                 'name' => $name,
                 'middle_name' => $middle_name_student,
                 'last_name' => $last_name,
                 'middle_last_name' => $middle_last_name_student,
                 'birth_date' => date_i18n('Y-m-d',strtotime($birth_date)),
+                'gender' => $gender,
+                'ethnicity' => $ethnicity,
                 'partner_id' => $partner_id, 
                 'phone' => $number_phone,
                 'email' => $email_student,
@@ -96,24 +83,31 @@ function save_scholarship(){
             ]);
 
             $table_pre_students = $wpdb->prefix.'pre_students';
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
+            $query = $wpdb->prepare("SELECT code FROM " . $table_academic_periods . "WHERE status_id = %d ORDER BY created_at DESC LIMIT 1", 1);
+            $result = $wpdb->get_var($query);
+            $code = $result ? $result : AES_PERIOD;
             $wpdb->insert($table_pre_students,[
-                'type_document' => $type_document,
+                'type_document' => $document_type,
                 'id_document' => $id_document,
+                'ethnicity' => $ethnicity,
+                'academic_period' => $code,
                 'name' => $name,
                 'middle_name' => $middle_name_student,
                 'last_name' => $last_name,
                 'middle_last_name' => $middle_last_name_student,
                 'birth_date' => date_i18n('Y-m-d',strtotime($birth_date)),
+                'phone' => $number_phone,
+                'email' => $email_student,
+                'gender' => $gender,
+                'country' => $country,
+                'city' => $city,
                 'grade_id' => $grade,
                 'name_institute' => $name_institute,
                 'institute_id' => $institute_id,
                 'program_id' => $program,
                 'partner_id' => $partner_id, 
-                'phone' => $number_phone,
-                'email' => $email_student,
                 'status_id' => 0,
-                'country' => $country,
-                'city' => $city,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
