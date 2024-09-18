@@ -299,7 +299,7 @@ function save_document(){
         }
     }
 
-    if($_GET['missing']) {
+    if(isset($_GET['missing'])) {
         global $wpdb,$current_user;
         $roles = $current_user->roles;
         $table_students = $wpdb->prefix.'students';

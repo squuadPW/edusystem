@@ -287,16 +287,20 @@ function custom_override_value_checkout_fields($fields)
     return $fields;
 }
 
-function change_billing_phone_checkout_field_value($order, $data)
+function change_billing_phone_checkout_field_value($order)
 {
+
+    $order->add_meta_data( 'split_payment', ($_POST['aes_split_payment'] == 'on' ? 1 : 0));
 
     if (isset($_POST['billing_phone_hidden']) && !empty($_POST['billing_phone_hidden'])) {
         $order->set_billing_phone($_POST['billing_phone_hidden']);
         update_user_meta($order->get_customer_id(), 'billing_phone', $_POST['billing_phone_hidden']);
     }
+
+    $order->save();
 }
 
-add_action('woocommerce_checkout_create_order', 'change_billing_phone_checkout_field_value', 10, 2);
+add_action('woocommerce_checkout_create_order', 'change_billing_phone_checkout_field_value', 10);
 
 add_filter('woocommerce_account_menu_items', 'remove_my_account_links');
 
@@ -855,6 +859,13 @@ function insert_data_student($order)
 }
 
 add_action('woocommerce_after_checkout_billing_form', 'payments_parts');
+
+function split_payment()
+{
+    include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
+}
+add_action('woocommerce_review_order_before_payment','split_payment');
+
 function payments_parts()
 {
     include(plugin_dir_path(__FILE__) . 'templates/payment-parts.php');
