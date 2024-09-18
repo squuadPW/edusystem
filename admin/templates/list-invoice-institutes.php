@@ -17,10 +17,29 @@
             <h3><?= __('Institute:', 'aes') . ' ' . $institute->name; ?></h3>
         </div>
     <?php endif; ?>
-    <div>
-        <h3><?= __('Balance', 'aes') . ': '; ?><span id="fee-total-balance"><?= $orders['total']; ?></span></h3>
-        <h3><?= __('Total paid', 'aes') . ': '; ?><span id="fee-total-paid"><?= $orders['total']; ?></span></h3>
-        <h3><?= __('Pending payment', 'aes') . ': '; ?><span id="fee-pending-payment"><?= $orders['total']; ?></span></h3>
+    <div class="wrap">
+        <div class="grid-container-report-4" id="card-totals-sales">
+            <div class="card-report-sales tooltip" title="All orders" style="background-color: #97ffacb0;">
+                <div><?= __('Balance', 'aes') . ': '; ?></div>
+                <div style="margin-top: 10px"><strong id="fee-total-balance"><?= $orders['total']; ?></strong></div>
+            </div>
+            <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
+                <div><?= __('Total paid', 'aes') . ': '; ?></div>
+                <div style="margin-top: 10px"><strong id="fee-total-paid"><?= $orders['total']; ?></strong></div>
+            </div>
+            <div class="card-report-sales tooltip" title="All orders" style="background-color: #ffe797;">
+                <div><?= __('Pending payment', 'aes') . ': '; ?></div>
+                <div style="margin-top: 10px"><strong id="fee-pending-payment"><?= $orders['total']; ?></strong></div>
+            </div>
+            <div class="card-report-sales tooltip" title="All orders" style="background-color: rgb(195 151 255 / 53%);" id="card-invoices">
+                <div><span id="length-invoices"><?= $orders['total']; ?></span> <?= __('Orders', 'aes'); ?></div>
+                <div style="margin-top: 10px"><strong id="total-invoices"><?= $orders['total']; ?></strong></div>
+            </div>
+            <div class="card-report-sales tooltip" title="All orders" style="background-color: rgb(195 151 255 / 53%); display: none" id="card-transactions">
+                <div><span id="length-transactions"><?= $orders['total']; ?></span> <?= __('Transactions', 'aes'); ?></div>
+                <div style="margin-top: 10px"><strong id="total-transactions"><?= $orders['total']; ?></strong></div>
+            </div>
+        </div>
         <div>
             <div style="width:100%;text-align:end;padding-top:10px;">
 
@@ -54,34 +73,22 @@
             </div>
             <input type="hidden" id="institute_id"
                 value="<?= (isset($_GET['institute_id']) && !empty($_GET['institute_id'])) ? $_GET['institute_id'] : ''; ?>">
-                <button type="button" id="toggle-table" class="button button-primary">Show payments</button>
+            <button type="button" id="toggle-table" class="button button-primary">Show payments</button>
             <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;" id="tab-orders">
                 <thead>
                     <tr>
-                    <th colspan="3" scope="col" class=" manage-column column-primary"></th>
                         <th scope="col" class=" manage-column column-primary">
-                            <?= __('Payments', 'restaurant-system-app'); ?></th>
-                        <th scope="col" class=" manage-column column-primary">
-                            <?= __('Total', 'restaurant-system-app'); ?></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="3"></td>
-                        <td id="length-invoices"></td>
-                        <td id="total-invoices"></td>
-                    </tr>
-                </tbody>
-                <thead>
-                    <tr>
-                        <th scope="col" class=" manage-column column-primary">
-                            <?= __('Payment ID', 'restaurant-system-app'); ?></th>
+                            <?= __('Payment ID', 'restaurant-system-app'); ?>
+                        </th>
                         <th scope="col" class=" manage-column column-email">
-                            <?= __('Customer', 'restaurant-system-app'); ?></th>
+                            <?= __('Customer', 'restaurant-system-app'); ?>
+                        </th>
                         <th scope="col" class=" manage-column column-phone"><?= __('Fee', 'restaurant-system-app'); ?>
                         </th>
-                        <th scope="col" class=" manage-column column"><?= __('Created', 'restaurant-system-app'); ?></th>
-                        <th scope="col" class=" manage-column column"><?= __('Actions', 'restaurant-system-app'); ?></th>
+                        <th scope="col" class=" manage-column column"><?= __('Created', 'restaurant-system-app'); ?>
+                        </th>
+                        <th scope="col" class=" manage-column column"><?= __('Actions', 'restaurant-system-app'); ?>
+                        </th>
                     </tr>
                 </thead>
                 <tbody id="table-institutes-payment">
@@ -94,17 +101,22 @@
                                     <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                                 </td>
                                 <td class="column" data-colname="<?= __('Customer', 'restaurant-system-app'); ?>">
-                                    <?= $order['customer']; ?></td>
+                                    <?= $order['customer']; ?>
+                                </td>
                                 <td class="column" data-colname="<?= __('Fee', 'restaurant-system-app'); ?>">
-                                    <?= get_woocommerce_currency_symbol() . number_format($order['fee'], 2, '.', ','); ?></td>
+                                    <?= get_woocommerce_currency_symbol() . number_format($order['fee'], 2, '.', ','); ?>
+                                </td>
                                 <td class="column" data-colname="<?= __('Created', 'restaurant-system-app'); ?>">
-                                    <b><?= $order['created_at']; ?></b></td>
+                                    <b><?= $order['created_at']; ?></b>
+                                </td>
                                 <td class="column" data-colname="<?= __('Action', 'restaurant-system-app'); ?>">
-                                <?php if($_GET['institute_id']): ?>
-                                <a class='button button-primary' href="<?= admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id='.$order['order_id']) ?>"><?= __('View details','aes'); ?></a>
-                            <?php else: ?>
-                                <a class='button button-primary' href="<?= admin_url('admin.php?page=list_admin_institutes_invoice_content&action=payment-detail&payment_id='.$order['order_id']) ?>"><?= __('View details','aes'); ?></a>
-                            <?php endif; ?>
+                                    <?php if ($_GET['institute_id']): ?>
+                                        <a class='button button-primary'
+                                            href="<?= admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id=' . $order['order_id']) ?>"><?= __('View details', 'aes'); ?></a>
+                                    <?php else: ?>
+                                        <a class='button button-primary'
+                                            href="<?= admin_url('admin.php?page=list_admin_institutes_invoice_content&action=payment-detail&payment_id=' . $order['order_id']) ?>"><?= __('View details', 'aes'); ?></a>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -116,32 +128,21 @@
                 </tbody>
             </table>
 
-            <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px; display: none" id="tab-payments">
-                <thead>
-                    <tr>
-                    <th colspan="2" scope="col" class=" manage-column column-primary"></th>
-                        <th scope="col" class=" manage-column column-primary">
-                            <?= __('Payments', 'restaurant-system-app'); ?></th>
-                        <th scope="col" class=" manage-column column-primary">
-                            <?= __('Total', 'restaurant-system-app'); ?></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="2"></td>
-                        <td id="length-transactions"></td>
-                        <td id="total-transactions"></td>
-                    </tr>
-                </tbody>
+            <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px; display: none"
+                id="tab-payments">
                 <thead>
                     <tr>
                         <th scope="col" class=" manage-column column-primary">
-                            <?= __('Status', 'restaurant-system-app'); ?></th>
-                        <th scope="col" class=" manage-column column-email">
-                            <?= __('Month', 'restaurant-system-app'); ?></th>
-                        <th scope="col" class=" manage-column column-phone"><?= __('Amount', 'restaurant-system-app'); ?>
+                            <?= __('Status', 'restaurant-system-app'); ?>
                         </th>
-                        <th scope="col" class=" manage-column column"><?= __('Total orders', 'restaurant-system-app'); ?></th>
+                        <th scope="col" class=" manage-column column-email">
+                            <?= __('Month', 'restaurant-system-app'); ?>
+                        </th>
+                        <th scope="col" class=" manage-column column-phone">
+                            <?= __('Amount', 'restaurant-system-app'); ?>
+                        </th>
+                        <th scope="col" class=" manage-column column">
+                            <?= __('Total orders', 'restaurant-system-app'); ?></th>
                     </tr>
                 </thead>
                 <tbody id="table-institutes-payment-payments">
@@ -154,11 +155,14 @@
                                     <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                                 </td>
                                 <td class="column" data-colname="<?= __('Customer', 'restaurant-system-app'); ?>">
-                                    <?= $order['customer']; ?></td>
+                                    <?= $order['customer']; ?>
+                                </td>
                                 <td class="column" data-colname="<?= __('Fee', 'restaurant-system-app'); ?>">
-                                    <?= get_woocommerce_currency_symbol() . number_format($order['fee'], 2, '.', ','); ?></td>
+                                    <?= get_woocommerce_currency_symbol() . number_format($order['fee'], 2, '.', ','); ?>
+                                </td>
                                 <td class="column" data-colname="<?= __('Created', 'restaurant-system-app'); ?>">
-                                    <b><?= $order['created_at']; ?></b></td>
+                                    <b><?= $order['created_at']; ?></b>
+                                </td>
                                 <td class="column" data-colname="<?= __('Action', 'restaurant-system-app'); ?>">
                                     <?php if (isset($_GET['institute_id']) && !empty($_GET['institute_id'])): ?>
                                         <a class='button button-primary'
@@ -178,6 +182,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
 

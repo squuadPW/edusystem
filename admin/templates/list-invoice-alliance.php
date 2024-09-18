@@ -1,9 +1,28 @@
 <div class="wrap">
     <h2 style="margin-bottom:15px;"><?= __('Monthly invoice', 'aes'); ?></h2>
-    <div>
-        <h3><?= __('Balance', 'aes') . ': '; ?><span id="fee-total-balance"><?= $orders['total']; ?></span></h3>
-        <h3><?= __('Total paid', 'aes') . ': '; ?><span id="fee-total-paid"><?= $orders['total']; ?></span></h3>
-        <h3><?= __('Pending payment', 'aes') . ': '; ?><span id="fee-pending-payment"><?= $orders['total']; ?></span></h3>
+    <div class="wrap">
+        <div class="grid-container-report-4" id="card-totals-sales">
+            <div class="card-report-sales tooltip" title="All orders" style="background-color: #97ffacb0;">
+                <div><?= __('Balance', 'aes') . ': '; ?></div>
+                <div style="margin-top: 10px"><strong id="fee-total-balance"><?= $orders['total']; ?></strong></div>
+            </div>
+            <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
+                <div><?= __('Total paid', 'aes') . ': '; ?></div>
+                <div style="margin-top: 10px"><strong id="fee-total-paid"><?= $orders['total']; ?></strong></div>
+            </div>
+            <div class="card-report-sales tooltip" title="All orders" style="background-color: #ffe797;">
+                <div><?= __('Pending payment', 'aes') . ': '; ?></div>
+                <div style="margin-top: 10px"><strong id="fee-pending-payment"><?= $orders['total']; ?></strong></div>
+            </div>
+            <div class="card-report-sales tooltip" title="All orders" style="background-color: rgb(195 151 255 / 53%);" id="card-invoices">
+                <div><span id="length-invoices"><?= $orders['total']; ?></span> <?= __('Orders', 'aes'); ?></div>
+                <div style="margin-top: 10px"><strong id="total-invoices"><?= $orders['total']; ?></strong></div>
+            </div>
+            <div class="card-report-sales tooltip" title="All orders" style="background-color: rgb(195 151 255 / 53%); display: none" id="card-transactions">
+                <div><span id="length-transactions"><?= $orders['total']; ?></span> <?= __('Transactions', 'aes'); ?></div>
+                <div style="margin-top: 10px"><strong id="total-transactions"><?= $orders['total']; ?></strong></div>
+            </div>
+        </div>
         <div>
             <div style="width:100%;text-align:end;padding-top:10px;">
 
@@ -39,22 +58,6 @@
                 value="<?= (isset($_GET['alliance_id']) && !empty($_GET['alliance_id'])) ? $_GET['alliance_id'] : ''; ?>">
                 <button type="button" id="toggle-table" class="button button-primary">Show payments</button>
             <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;" id="tab-orders">
-                <thead>
-                    <tr>
-                    <th colspan="3" scope="col" class=" manage-column column-primary"></th>
-                        <th scope="col" class=" manage-column column-primary">
-                            <?= __('Payments', 'restaurant-system-app'); ?></th>
-                        <th scope="col" class=" manage-column column-primary">
-                            <?= __('Total', 'restaurant-system-app'); ?></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="3"></td>
-                        <td id="length-invoices"></td>
-                        <td id="total-invoices"></td>
-                    </tr>
-                </tbody>
                 <thead>
                     <tr>
                         <th scope="col" class=" manage-column column-primary">
@@ -100,22 +103,6 @@
             </table>
 
             <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px; display: none" id="tab-payments">
-                <thead>
-                    <tr>
-                    <th colspan="2" scope="col" class=" manage-column column-primary"></th>
-                        <th scope="col" class=" manage-column column-primary">
-                            <?= __('Payments', 'restaurant-system-app'); ?></th>
-                        <th scope="col" class=" manage-column column-primary">
-                            <?= __('Total', 'restaurant-system-app'); ?></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="2"></td>
-                        <td id="length-transactions"></td>
-                        <td id="total-transactions"></td>
-                    </tr>
-                </tbody>
                 <thead>
                     <tr>
                         <th scope="col" class=" manage-column column-primary">

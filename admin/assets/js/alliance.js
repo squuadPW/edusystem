@@ -7,17 +7,23 @@ document.addEventListener('DOMContentLoaded',function(){
     toggleButton = document.getElementById('toggle-table');
     tabOrders = document.getElementById('tab-orders');
     tabPayments = document.getElementById('tab-payments');
+    cardInvoices = document.getElementById('card-invoices');
+    cardTransactions = document.getElementById('card-transactions');
 
      if (toggleButton) {
         
         toggleButton.addEventListener('click', function () {
             if (tabOrders.style.display === 'none') {
                 tabOrders.style.display = 'table';
+                cardInvoices.style.display = 'block';
                 tabPayments.style.display = 'none';
+                cardTransactions.style.display = 'none';
                 toggleButton.textContent = 'Show payments'
             } else {
                 tabOrders.style.display = 'none';
+                cardInvoices.style.display = 'none';
                 tabPayments.style.display = 'table';
+                cardTransactions.style.display = 'block';
                 toggleButton.textContent = 'Show orders';
             }
         });
