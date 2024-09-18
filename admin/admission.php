@@ -532,10 +532,12 @@ class TT_document_review_List_Table extends WP_List_Table
         (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
         FROM {$table_students} as a 
         JOIN {$table_student_documents} b on b.student_id = a.id 
-        WHERE (b.status != 5)
-        " . ($search ? " AND a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%'" : "") . "
-        " . ($date_selected ? " AND a.created_at >= '$filter_date'" : "") . "
-        " . ($period ? " AND a.academic_period = '$period'" : "") . "
+        WHERE (b.status != 5) 
+        AND (
+            (" . ($search ? "a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR a.email LIKE '{$search}%' OR a.id_document LIKE '{$search}%'" : "1=1") . ")
+            AND (" . ($date_selected ? "a.created_at >= '$filter_date'" : "1=1") . ")
+            AND (" . ($period ? "a.academic_period = '$period'" : "1=1") . ")
+        )
         GROUP BY a.id
         ORDER BY a.updated_at DESC
         LIMIT {$per_page} OFFSET {$offset}
