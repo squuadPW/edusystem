@@ -108,6 +108,8 @@ function create_tables() {
 
     dbDelta( "CREATE TABLE " . $table_pre_users . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
+        type_document TEXT NULL,
+        id_document TEXT NULL,
         name TEXT NOT NULL,
         middle_name TEXT NULL,
         last_name TEXT NOT NULL,
@@ -130,6 +132,8 @@ function create_tables() {
         id INT(11) NOT NULL AUTO_INCREMENT,
         type_document TEXT NULL,
         id_document TEXT NULL,
+        ethnicity TEXT NULL,
+        academic_period TEXT NULL,
         name TEXT NOT NULL,
         middle_name TEXT NULL,
         last_name TEXT NOT NULL,
