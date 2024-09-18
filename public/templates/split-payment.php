@@ -8,8 +8,8 @@
     <div class="input-container" style="display: none">
         <!-- The input for entering the amount -->
         <div>
-            <label for="amount">Amount:</label><br>
-            <input type="number" id="amount" name="amount" style="width: 100%"><br><br>
+            <label for="aes_amount_split">Amount:</label><br>
+            <input type="number" id="aes_amount_split" name="aes_amount_split" style="width: 100%"><br><br>
         </div>
 
         <!-- The button to generate parts -->
