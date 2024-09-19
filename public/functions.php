@@ -291,6 +291,7 @@ function change_billing_phone_checkout_field_value($order)
 {
 
     $order->add_meta_data( 'split_payment', ($_POST['aes_split_payment'] == 'on' ? 1 : 0));
+    $order->add_meta_data('pending_payment', $order->get_total());
 
     if (isset($_POST['billing_phone_hidden']) && !empty($_POST['billing_phone_hidden'])) {
         $order->set_billing_phone($_POST['billing_phone_hidden']);
@@ -860,11 +861,16 @@ function insert_data_student($order)
 
 add_action('woocommerce_after_checkout_billing_form', 'payments_parts');
 
-function split_payment()
-{
+function split_payment() {
     include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
 }
 add_action('woocommerce_review_order_before_payment','split_payment');
+add_action('woocommerce_pay_order_before_payment','split_payment');
+
+function totals_split($order_id) {
+    echo '1uiasdi0;';
+}
+add_action('woocommerce_pay_order_after_totals', 'totals_split');
 
 function payments_parts()
 {
@@ -1363,31 +1369,89 @@ function verificar_contraseña()
     if (is_account_page()) {
         // Verifica si el usuario está conectado
         if (is_user_logged_in()) {
-            // Obtiene el ID del usuario actual
             global $current_user, $wpdb;
-            $table_user_signatures = $wpdb->prefix . 'users_signatures';
-            $table_student_documents = $wpdb->prefix . 'student_documents';
-            $table_students = $wpdb->prefix . 'students';
-            $table_student_payments = $wpdb->prefix . 'student_payments';
-            $roles = $current_user->roles;
-            $user_enrollment_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'ENROLLMENT' ORDER BY id DESC");
 
-            if (in_array('student', $roles)) {
-                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
-                $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
-                $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
-            } else if (in_array('parent', $roles)) {
-                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
-                $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
-                $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+            // Obtiene las órdenes con estado "pending payment" del usuario actual
+            $orders = wc_get_orders(array(
+                'status' => 'pending',
+                'customer_id' => $current_user->ID,
+            ));
+            
+            if (!empty($orders)) {
+                // Redirige al checkout con la orden pendiente de pago
+                $order_id = $orders[0]->get_id(); // Get the first pending order ID
+                $checkout_url = wc_get_checkout_url() . 'order-pay/' . $order_id . '/?pay_for_order=true&key=' . $orders[0]->get_order_key();
+                
+                // Set the payment method to "Split payment"
+                $order = wc_get_order($order_id);
+
+                $fees = $order->get_fees();
+                foreach ($fees as $fee) {
+                    $order->remove_item($fee->get_id());
+                }
+
+                $order->calculate_totals();
+
+                $order->set_payment_method(''); // This will remove the payment method
+
+                $split_method = json_decode($order->get_meta('split_method'));
+                $total = 0.00;
+                foreach ($split_method as $key => $split) {
+                    $total += $split->amount;
+                }
+
+                $total_paid_meta = $order->get_meta('total_paid');
+                if ($total_paid_meta) {
+                    $order->update_meta_data('total_paid', $total);
+                } else {
+                    $order->add_meta_data('total_paid', $total);
+                }
+                
+                $pending_payment_meta = $order->get_meta('pending_payment');
+                if ($pending_payment_meta) {
+                    $order->update_meta_data('pending_payment', ($order->get_total() - $total));
+                } else {
+                    $order->add_meta_data('pending_payment', ($order->get_total() - $total));
+                }
+    
+                // $order->set_total($order->get_total() - $total); // Set the total amount of the order
+                $complete = false;
+                if ($order->get_total() - $total == 0) {
+                    $order->update_status('completed');
+                    $complete = true;
+                }
+                $order->save();
+                
+                if (!$complete) {
+                    wp_redirect($checkout_url);
+                    exit;
+                }
             }
 
-            if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
-                // Agrega un script para levantar el modal
-                add_action('wp_footer', 'modal_create_password');
-            } else if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
-                add_action('wp_footer', 'modal_enrollment_student');
-            }
+            // Obtiene el ID del usuario actual y creamos la contrasena
+            // $table_user_signatures = $wpdb->prefix . 'users_signatures';
+            // $table_student_documents = $wpdb->prefix . 'student_documents';
+            // $table_students = $wpdb->prefix . 'students';
+            // $table_student_payments = $wpdb->prefix . 'student_payments';
+            // $roles = $current_user->roles;
+            // $user_enrollment_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+
+            // if (in_array('student', $roles)) {
+            //     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+            //     $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
+            //     $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+            // } else if (in_array('parent', $roles)) {
+            //     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+            //     $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
+            //     $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+            // }
+
+            // if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+            //     // Agrega un script para levantar el modal
+            //     add_action('wp_footer', 'modal_create_password');
+            // } else if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+            //     add_action('wp_footer', 'modal_enrollment_student');
+            // }
         }
     }
 }
