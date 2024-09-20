@@ -1736,7 +1736,7 @@ function loadFeesSplit() {
 
     if ($chosen_gateway == 'aes_payment') {
         $fee = 35;
-        if ($cart) {
+        if (!$order) {
             WC()->cart->add_fee('Bank transfer Fee', 35);
         } else {
             $order->add_fee( 'Bank transfer Fee', $fee );
@@ -1744,7 +1744,7 @@ function loadFeesSplit() {
     }
 
     if ($chosen_gateway == 'woo_squuad_stripe') {
-        if ($cart) {
+        if (!$order) {
             $stripe_fee_percentage = 4.5; // 4.5% fee
             $cart_subtotal = WC()->cart->get_subtotal();
             $discount = WC()->cart->get_cart_discount_total();
