@@ -1416,7 +1416,7 @@ function verificar_contraseña()
     
                 // $order->set_total($order->get_total() - $total); // Set the total amount of the order
                 $complete = false;
-                if ($order->get_total() - $total == 0) {
+                if ($order->get_total() - $total <= 0) {
                     $order->update_status('completed');
                     $complete = true;
                 }
@@ -1721,6 +1721,67 @@ function yaycommerce_refresh_checkout_on_payment_methods_change()
         });
    ");
 }
+
+function loadFeesSplit() {
+    global $current_user, $wpdb;
+    $orders = wc_get_orders(array(
+        'status' => 'pending',
+        'customer_id' => $current_user->ID,
+    ));
+    $order_id = $orders[0]->get_id(); // Get the first pending order ID
+    $order = wc_get_order($order_id);
+    $chosen_gateway = $_POST['option'];
+    $fee = 0;
+    $cart = WC()->cart;
+
+    if ($chosen_gateway == 'aes_payment') {
+        $fee = 35;
+        if ($cart) {
+            WC()->cart->add_fee('Bank transfer Fee', 35);
+        } else {
+            $order->add_fee( 'Bank transfer Fee', $fee );
+        }
+    }
+
+    if ($chosen_gateway == 'woo_squuad_stripe') {
+        if ($cart) {
+            $stripe_fee_percentage = 4.5; // 4.5% fee
+            $cart_subtotal = WC()->cart->get_subtotal();
+            $discount = WC()->cart->get_cart_discount_total();
+            $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
+            $fee = $stripe_fee_amount;
+            WC()->cart->add_fee('Credit card fee', $stripe_fee_amount);
+        } else {
+            $stripe_fee_percentage = 4.5; // 4.5% fee
+            $cart_subtotal = $order->get_subtotal();
+            $discount = $order->get_total_discount() ? $order->get_total_discount() : 0;
+            $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
+            $fee = $stripe_fee_amount;
+            $order->add_fee( 'Credit card fee', $fee );
+        }
+    }
+
+    wp_send_json(array('fee' => $fee));
+}
+
+add_action('wp_ajax_nopriv_load_cart_for_split', 'loadFeesSplit');
+add_action('wp_ajax_load_cart_for_split', 'loadFeesSplit');
+
+
+function loadPendingPayment() {
+    global $current_user, $wpdb;
+    $orders = wc_get_orders(array(
+        'status' => 'pending',
+        'customer_id' => $current_user->ID,
+    ));
+    $order_id = $orders[0]->get_id(); // Get the first pending order ID
+    $order = wc_get_order($order_id);
+    
+    wp_send_json(array('pending' => (float)$order->get_meta('pending_payment')));
+}
+
+add_action('wp_ajax_nopriv_load_total_amount_for_split', 'loadPendingPayment');
+add_action('wp_ajax_load_total_amount_for_split', 'loadPendingPayment');
 
 function student_password_Reset($user)
 {
