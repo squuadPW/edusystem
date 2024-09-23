@@ -92,10 +92,11 @@ if (document.getElementById("signature-student")) {
       if (!gradeSelected) {
         save_signatures.disabled = false;
         alert(
-          "You must select a last degree completed to generate the enrollment"
+          "To proceed with your enrollment, please select the last grade you completed"
         );
         return;
       }
+      document.getElementById("please_select_grade").style.display = 'none';
       document.getElementById("clear-student").style.display = 'none';
       document.getElementById("clear-parent").style.display = 'none';
       var element = document.getElementById("content-pdf");
@@ -125,6 +126,14 @@ if (document.getElementById("signature-student")) {
       !signaturePadStudent.isEmpty() ||
       !signaturePadParent.isEmpty()
     ) {
+      if (!gradeSelected) {
+        save_signatures.disabled = false;
+        alert(
+          "To proceed with your enrollment, please select the last grade you completed"
+        );
+        return;
+      }
+
       document.getElementById("modal-contraseña").style.display = "none";
       document.getElementById("modal-content").style.display = "none";
       // When the modal is closed, remove the `modal-open` class from the body element
@@ -134,7 +143,7 @@ if (document.getElementById("signature-student")) {
       if (!gradeSelected) {
         save_signatures.disabled = false;
         alert(
-          "You must select a last degree completed to generate the enrollment"
+          "To proceed with your enrollment, please select the last grade you completed"
         );
         return;
       }
@@ -194,6 +203,8 @@ function updateGrade(id) {
   const selectedSpan = document.getElementById(id);
   selectedSpan.textContent = "(✓)"; // set the selected span to "✓"
   gradeSelected = id;
+  document.getElementById("please_select_grade").style.display = 'none';
+  document.getElementById("select_grade").style.color = '#000';
 }
 
 function loadSignatures() {
