@@ -290,8 +290,13 @@ function custom_override_value_checkout_fields($fields)
 function change_billing_phone_checkout_field_value($order)
 {
 
+    if ($_POST['aes_split_payment'] == 'on' && (!$_POST['aes_amount_split'] || $_POST['aes_amount_split'] == 0)) {
+        wc_add_notice(__('You must specify a split payment amount', 'woocommerce'), 'error');
+        exit; // o exit; si deseas detener la ejecución del código
+    }
+
     $order->add_meta_data( 'split_payment', ($_POST['aes_split_payment'] == 'on' ? 1 : 0));
-    $order->add_meta_data('pending_payment', $order->get_total());
+    $order->add_meta_data('pending_payment', ($order->get_subtotal() - $order->get_total_discount()));
 
     if (isset($_POST['billing_phone_hidden']) && !empty($_POST['billing_phone_hidden'])) {
         $order->set_billing_phone($_POST['billing_phone_hidden']);
@@ -1396,8 +1401,10 @@ function verificar_contraseña()
 
                 $split_method = json_decode($order->get_meta('split_method'));
                 $total = 0.00;
+                $total_gross = 0.00;
                 foreach ($split_method as $key => $split) {
                     $total += $split->amount;
+                    $total_gross += $split->gross_total;
                 }
 
                 $total_paid_meta = $order->get_meta('total_paid');
@@ -1409,14 +1416,14 @@ function verificar_contraseña()
                 
                 $pending_payment_meta = $order->get_meta('pending_payment');
                 if ($pending_payment_meta) {
-                    $order->update_meta_data('pending_payment', ($order->get_total() - $total));
+                    $order->update_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
                 } else {
-                    $order->add_meta_data('pending_payment', ($order->get_total() - $total));
+                    $order->add_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
                 }
     
                 // $order->set_total($order->get_total() - $total); // Set the total amount of the order
                 $complete = false;
-                if ($order->get_total() - $total <= 0) {
+                if (($order->get_subtotal() - $order->get_total_discount()) - $total <= 0) {
                     $order->update_status('completed');
                     $complete = true;
                 }
@@ -1429,29 +1436,29 @@ function verificar_contraseña()
             }
 
             // Obtiene el ID del usuario actual y creamos la contrasena
-            // $table_user_signatures = $wpdb->prefix . 'users_signatures';
-            // $table_student_documents = $wpdb->prefix . 'student_documents';
-            // $table_students = $wpdb->prefix . 'students';
-            // $table_student_payments = $wpdb->prefix . 'student_payments';
-            // $roles = $current_user->roles;
-            // $user_enrollment_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+            $table_user_signatures = $wpdb->prefix . 'users_signatures';
+            $table_student_documents = $wpdb->prefix . 'student_documents';
+            $table_students = $wpdb->prefix . 'students';
+            $table_student_payments = $wpdb->prefix . 'student_payments';
+            $roles = $current_user->roles;
+            $user_enrollment_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'ENROLLMENT' ORDER BY id DESC");
 
-            // if (in_array('student', $roles)) {
-            //     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
-            //     $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
-            //     $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
-            // } else if (in_array('parent', $roles)) {
-            //     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
-            //     $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
-            //     $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
-            // }
+            if (in_array('student', $roles)) {
+                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+                $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
+                $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+            } else if (in_array('parent', $roles)) {
+                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+                $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
+                $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+            }
 
-            // if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
-            //     // Agrega un script para levantar el modal
-            //     add_action('wp_footer', 'modal_create_password');
-            // } else if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
-            //     add_action('wp_footer', 'modal_enrollment_student');
-            // }
+            if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+                // Agrega un script para levantar el modal
+                add_action('wp_footer', 'modal_create_password');
+            } else if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+                add_action('wp_footer', 'modal_enrollment_student');
+            }
         }
     }
 }
@@ -1728,32 +1735,37 @@ function loadFeesSplit() {
         'status' => 'pending',
         'customer_id' => $current_user->ID,
     ));
-    $order_id = $orders[0]->get_id(); // Get the first pending order ID
-    $order = wc_get_order($order_id);
-    $chosen_gateway = $_POST['option'];
-    $fee = 0;
+
+    if (count($orders) > 0) {
+        $order_id = $orders[0]->get_id(); // Get the first pending order ID
+        $order = wc_get_order($order_id);
+    }
+
     $cart = WC()->cart;
+    $chosen_gateway = $_POST['option'];
+    $payment_page = $_POST['payment_page'];
+    $fee = 0;
 
     if ($chosen_gateway == 'aes_payment') {
         $fee = 35;
-        if (!$order) {
-            WC()->cart->add_fee('Bank transfer Fee', 35);
+        if ($payment_page == 0) {
+            $cart->add_fee('Bank transfer Fee', $fee);
         } else {
             $order->add_fee( 'Bank transfer Fee', $fee );
         }
     }
 
     if ($chosen_gateway == 'woo_squuad_stripe') {
-        if (!$order) {
+        if ($payment_page == 0) {
             $stripe_fee_percentage = 4.5; // 4.5% fee
-            $cart_subtotal = WC()->cart->get_subtotal();
-            $discount = WC()->cart->get_cart_discount_total();
+            $cart_subtotal = $cart->get_subtotal();
+            $discount = $cart->get_cart_discount_total();
             $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
             $fee = $stripe_fee_amount;
-            WC()->cart->add_fee('Credit card fee', $stripe_fee_amount);
+            $cart->add_fee('Credit card fee', $stripe_fee_amount);
         } else {
             $stripe_fee_percentage = 4.5; // 4.5% fee
-            $cart_subtotal = $order->get_subtotal();
+            $cart_subtotal = (float)$order->get_meta('pending_payment');
             $discount = $order->get_total_discount() ? $order->get_total_discount() : 0;
             $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
             $fee = $stripe_fee_amount;
@@ -1761,27 +1773,11 @@ function loadFeesSplit() {
         }
     }
 
-    wp_send_json(array('fee' => $fee));
+    wp_send_json(array('fee' => (float)number_format($fee, 2), 'pending' => isset($order) ? (float)$order->get_meta('pending_payment') : 0));
 }
 
 add_action('wp_ajax_nopriv_load_cart_for_split', 'loadFeesSplit');
 add_action('wp_ajax_load_cart_for_split', 'loadFeesSplit');
-
-
-function loadPendingPayment() {
-    global $current_user, $wpdb;
-    $orders = wc_get_orders(array(
-        'status' => 'pending',
-        'customer_id' => $current_user->ID,
-    ));
-    $order_id = $orders[0]->get_id(); // Get the first pending order ID
-    $order = wc_get_order($order_id);
-    
-    wp_send_json(array('pending' => (float)$order->get_meta('pending_payment')));
-}
-
-add_action('wp_ajax_nopriv_load_total_amount_for_split', 'loadPendingPayment');
-add_action('wp_ajax_load_total_amount_for_split', 'loadPendingPayment');
 
 function student_password_Reset($user)
 {
