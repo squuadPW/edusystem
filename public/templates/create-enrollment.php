@@ -91,7 +91,7 @@
                                 <strong>Phone:</strong> <?php echo isset($institute) ? $institute->phone : '' ?>
                                 <br><br>
                                 <strong>Last date Attended:</strong> <br><br>
-                                <strong>Last completed grade:</strong> <br>
+                                <strong id="select_grade" style="color: red">Last completed grade:</strong> <br>
                                 <span onclick="updateGrade('grade5')" style="cursor: pointer"><span id="grade5">(
                                         )</span>
                                     5th Grade</span>
@@ -116,6 +116,8 @@
                                 <span onclick="updateGrade('grade12')" style="cursor: pointer"><span id="grade12">(
                                         )</span>
                                     12th Grade</span>
+                                    <br><br>
+                                    <strong id="please_select_grade" style="color: red">Please select a grade to continue</strong>
                             </div>
                         </div>
                     </div>
