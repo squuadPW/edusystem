@@ -1386,6 +1386,7 @@ function modal_enrollment_student()
     // Imprime el contenido del archivo modal-reset-password.php
     global $wpdb, $current_user;
     $roles = $current_user->roles;
+    $show_parent_info = 1;
     if (in_array('student', $roles)) {
         $table_students = $wpdb->prefix . 'students';
         $table_student_payments = $wpdb->prefix . 'student_payments';
@@ -1394,6 +1395,13 @@ function modal_enrollment_student()
         $partner_id = $student->partner_id;
         $student_id = $current_user->ID;
         $institute_id = $student->institute_id;
+        $birth_date = get_user_meta($student_id, 'birth_date', true);
+        $birth_date_timestamp = strtotime($birth_date);
+        $current_timestamp = time();
+        $age = floor(($current_timestamp - $birth_date_timestamp) / 31536000); // 31536000 es el número de segundos en un año
+        if ($age >= 18) {
+            $show_parent_info = 0;
+        }
     } else if (in_array('parent', $roles)) {
         $table_students = $wpdb->prefix . 'students';
         $table_student_payments = $wpdb->prefix . 'student_payments';
