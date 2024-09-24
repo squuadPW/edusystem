@@ -1385,53 +1385,54 @@ function verificar_contraseña()
             if (!empty($orders)) {
                 // Redirige al checkout con la orden pendiente de pago
                 $order_id = $orders[0]->get_id(); // Get the first pending order ID
-                $checkout_url = wc_get_checkout_url() . 'order-pay/' . $order_id . '/?pay_for_order=true&key=' . $orders[0]->get_order_key();
-                
-                // Set the payment method to "Split payment"
                 $order = wc_get_order($order_id);
+                if ($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) {
+                    $checkout_url = wc_get_checkout_url() . 'order-pay/' . $order_id . '/?pay_for_order=true&key=' . $orders[0]->get_order_key();
+                        # code...
 
-                $fees = $order->get_fees();
-                foreach ($fees as $fee) {
-                    $order->remove_item($fee->get_id());
-                }
+                    $fees = $order->get_fees();
+                    foreach ($fees as $fee) {
+                        $order->remove_item($fee->get_id());
+                    }
 
-                $order->calculate_totals();
+                    $order->calculate_totals();
 
-                $order->set_payment_method(''); // This will remove the payment method
+                    $order->set_payment_method(''); // This will remove the payment method
 
-                $split_method = json_decode($order->get_meta('split_method'));
-                $total = 0.00;
-                $total_gross = 0.00;
-                foreach ($split_method as $key => $split) {
-                    $total += $split->amount;
-                    $total_gross += $split->gross_total;
-                }
+                    $split_method = json_decode($order->get_meta('split_method'));
+                    $total = 0.00;
+                    $total_gross = 0.00;
+                    foreach ($split_method as $key => $split) {
+                        $total += $split->amount;
+                        $total_gross += $split->gross_total;
+                    }
 
-                $total_paid_meta = $order->get_meta('total_paid');
-                if ($total_paid_meta) {
-                    $order->update_meta_data('total_paid', $total);
-                } else {
-                    $order->add_meta_data('total_paid', $total);
-                }
-                
-                $pending_payment_meta = $order->get_meta('pending_payment');
-                if ($pending_payment_meta) {
-                    $order->update_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
-                } else {
-                    $order->add_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
-                }
-    
-                // $order->set_total($order->get_total() - $total); // Set the total amount of the order
-                $complete = false;
-                if (($order->get_subtotal() - $order->get_total_discount()) - $total <= 0) {
-                    $order->update_status('completed');
-                    $complete = true;
-                }
-                $order->save();
-                
-                if (!$complete) {
-                    wp_redirect($checkout_url);
-                    exit;
+                    $total_paid_meta = $order->get_meta('total_paid');
+                    if ($total_paid_meta) {
+                        $order->update_meta_data('total_paid', $total);
+                    } else {
+                        $order->add_meta_data('total_paid', $total);
+                    }
+                    
+                    $pending_payment_meta = $order->get_meta('pending_payment');
+                    if ($pending_payment_meta) {
+                        $order->update_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
+                    } else {
+                        $order->add_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
+                    }
+        
+                    // $order->set_total($order->get_total() - $total); // Set the total amount of the order
+                    $complete = false;
+                    if (($order->get_subtotal() - $order->get_total_discount()) - $total <= 0) {
+                        $order->update_status('completed');
+                        $complete = true;
+                    }
+                    $order->save();
+                    
+                    if (!$complete) {
+                        wp_redirect($checkout_url);
+                        exit;
+                    }
                 }
             }
 
