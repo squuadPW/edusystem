@@ -1,3 +1,9 @@
+<style>
+    .form-table th {
+        width: auto !important;
+    }
+</style>
+
 <div class="wrap">
     <h2 style="margin-bottom:15px;"><?= __('Payment details','aes'); ?></h2>
 
@@ -67,33 +73,80 @@
                                         </tr>
                                     <?php endif; ?>
                                 <?php endif; ?>
-                                <tr>
-                                    <th scope="row"><label for="input_id"><?= __('Payment Method selected','aes').':'; ?></label></th>
-                                    <td><?= $order->get_payment_method_title(); ?></td>
-                                </tr>
-                                <?php if($order->get_meta('_stripe_intent_id')){ ?>
-                                    <?php if(!in_array('institute',$roles) && !in_array('alliance',$roles)): ?>
-                                        <tr>
-                                            <th scope="row"><label for="input_id"><?= __('Transaction ID','aes').':'; ?></label></th>
-                                            <td><?= $order->get_meta('_stripe_intent_id'); ?></td>
+                                <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) { ?>
+                                    <?php 
+                                    $payments = json_decode($order->get_meta('split_method'));
+                                    foreach ($payments as $key => $pay) {                                    
+                                    ?>
+                                        <tr style="border-top: 1px dashed gray;">
+                                            <th><?= __('Payment Method N°','aes') . ($key + 1); ?></th>
                                         </tr>
-                                    <?php endif; ?>
-                                <?php } ?>
-                                <?php if($order->get_meta('payment_method')){ ?>
-                                    <?php if(!in_array('institute',$roles) && !in_array('alliance',$roles)): ?>
                                         <tr>
-                                            <th scope="row"><label for="input_id"><?= __('Payment method used','aes').':'; ?></label></th>
-                                            <td><?= $order->get_meta('payment_method'); ?></td>
+                                            <th scope="row"><label for="input_id"><?= __('Payment Method','aes'); ?></label></th>
+                                            <td><?= $pay->method; ?></td>
                                         </tr>
-                                    <?php endif; ?>
-                                <?php } ?>
-                                <?php if($order->get_meta('transaction_id')){ ?>
-                                    <?php if(!in_array('institute',$roles) && !in_array('alliance',$roles)): ?>
+                                        <?php if($pay->payment_method) { ?>
+                                            <tr>
+                                                <th scope="row"><label for="input_id"><?= __('Method','aes'); ?></label></th>
+                                                <td><?= $pay->payment_method; ?></td>
+                                            </tr>
+                                        <?php } ?>
+                                        <?php if($pay->transaction_id) { ?>
+                                            <tr>
+                                                <th scope="row"><label for="input_id"><?= __('Transaction ID','aes'); ?></label></th>
+                                                <td><?= $pay->transaction_id; ?></td>
+                                            </tr>
+                                        <?php } ?>
                                         <tr>
-                                            <th scope="row"><label for="input_id"><?= __('Transaction ID','aes').':'; ?></label></th>
-                                            <td><?= $order->get_meta('transaction_id'); ?></td>
+                                            <th scope="row"><label for="input_id"><?= __('Gross amount','aes'); ?></label></th>
+                                            <td><?= wc_price($pay->gross_total); ?></td>
                                         </tr>
-                                    <?php endif; ?>
+                                        <tr>
+                                            <th scope="row"><label for="input_id"><?= __('Net mount','aes'); ?></label></th>
+                                            <td><?= wc_price($pay->amount); ?></td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px dashed gray;">
+                                            <th scope="row"><label for="input_id"><?= __('Fee payment method','aes'); ?></label></th>
+                                            <td><?= wc_price($pay->fee); ?></td>
+                                        </tr>
+                                    <?php } ?>
+                                        <tr>
+                                            <th scope="row"><label for="input_id"><?= __('Total paid net','aes'); ?></label></th>
+                                            <td><?= wc_price($order->get_meta('total_paid')); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><label for="input_id"><?= __('Total paid gross','aes'); ?></label></th>
+                                            <td><?= wc_price($order->get_meta('total_paid_gross')); ?></td>
+                                        </tr>
+                                <?php } else { ?>
+                                    <tr>
+                                        <th scope="row"><label for="input_id"><?= __('Payment Method selected','aes').':'; ?></label></th>
+                                        <td><?= $order->get_payment_method_title(); ?></td>
+                                    </tr>
+                                    <?php if($order->get_meta('_stripe_intent_id')){ ?>
+                                        <?php if(!in_array('institute',$roles) && !in_array('alliance',$roles)): ?>
+                                            <tr>
+                                                <th scope="row"><label for="input_id"><?= __('Transaction ID','aes').':'; ?></label></th>
+                                                <td><?= $order->get_meta('_stripe_intent_id'); ?></td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    <?php } ?>
+                                    <?php if($order->get_meta('payment_method')){ ?>
+                                        <?php if(!in_array('institute',$roles) && !in_array('alliance',$roles)): ?>
+                                            <tr>
+                                                <th scope="row"><label for="input_id"><?= __('Payment method used','aes').':'; ?></label></th>
+                                                <td><?= $order->get_meta('payment_method'); ?></td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    <?php } ?>
+                                    <?php if($order->get_meta('transaction_id')){ ?>
+                                        <?php if(!in_array('institute',$roles) && !in_array('alliance',$roles)): ?>
+                                            <tr>
+                                                <th scope="row"><label for="input_id"><?= __('Transaction ID','aes').':'; ?></label></th>
+                                                <td><?= $order->get_meta('transaction_id'); ?></td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    <?php } ?>
                                 <?php } ?>
                             </tbody>
                         </table>
