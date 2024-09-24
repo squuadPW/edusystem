@@ -1413,6 +1413,13 @@ function verificar_contraseña()
                     } else {
                         $order->add_meta_data('total_paid', $total);
                     }
+
+                    $total_paid_meta = $order->get_meta('total_paid_gross');
+                    if ($total_paid_meta) {
+                        $order->update_meta_data('total_paid_gross', $total_gross);
+                    } else {
+                        $order->add_meta_data('total_paid_gross', $total_gross);
+                    }
                     
                     $pending_payment_meta = $order->get_meta('pending_payment');
                     if ($pending_payment_meta) {
