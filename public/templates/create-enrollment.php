@@ -116,8 +116,9 @@
                                 <span onclick="updateGrade('grade12')" style="cursor: pointer"><span id="grade12">(
                                         )</span>
                                     12th Grade</span>
-                                    <br><br>
-                                    <strong id="please_select_grade" style="color: red">Please select a grade to continue</strong>
+                                <br><br>
+                                <strong id="please_select_grade" style="color: red">Please select a grade to
+                                    continue</strong>
                             </div>
                         </div>
                     </div>
@@ -174,11 +175,15 @@
                                                     <br> <?php echo $user['student_full_name'] ?>
                                                 </div>
                                             </div>
-                                            <div style="padding: 8px;">
+                                            <div style="position: relative; padding: 8px;">
                                                 <canvas id="signature-student" width="100%" height="200"
-                                                    style="border-bottom: 1px solid gray"></canvas>
-                                                <button id="clear-student">Clear</button>
+                                                    style="border: 1px solid gray"></canvas>
+                                                <div id="sign-here-student"
+                                                    style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
+                                                    <span>SIGN HERE</span>
+                                                </div>
                                             </div>
+                                            <button id="clear-student" style="margin-bottom: 10px; margin-left: 10px">Clear</button>
                                         </div>
                                         <div style="flex: 50%">
                                             <div>
@@ -186,11 +191,15 @@
                                                     <br> <?php echo $user['parent_full_name'] ?>
                                                 </div>
                                             </div>
-                                            <div style="padding: 8px;">
+                                            <div style="position: relative; padding: 8px;">
                                                 <canvas id="signature-parent" width="100%" height="200"
-                                                    style="border-bottom: 1px solid gray"></canvas>
-                                                <button id="clear-parent" style="margin-bottom: 10px;">Clear</button>
+                                                    style="border: 1px solid gray"></canvas>
+                                                <div id="sign-here-parent"
+                                                    style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
+                                                    <span>SIGN HERE</span>
+                                                </div>
                                             </div>
+                                            <button id="clear-parent" style="margin-bottom: 10px; margin-left: 10px">Clear</button>
                                         </div>
                                     </div>
                                 <?php } else { ?>
@@ -201,11 +210,15 @@
                                                     <br> <?php echo $user['student_full_name'] ?>
                                                 </div>
                                             </div>
-                                            <div style="padding: 8px;">
+                                            <div style="position: relative; padding: 8px;">
                                                 <canvas id="signature-student" width="100%" height="200"
                                                     style="border-bottom: 1px solid gray"></canvas>
-                                                <button id="clear-student">Clear</button>
+                                                <div id="sign-here-student"
+                                                    style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
+                                                    <span>SIGN HERE</span>
+                                                </div>
                                             </div>
+                                            <button id="clear-student" style="margin-bottom: 10px; margin-left: 10px">Clear</button>
                                         </div>
                                         <div style="flex: auto">
                                             <div>
@@ -213,11 +226,16 @@
                                                     <br> <?php echo $user['parent_full_name'] ?>
                                                 </div>
                                             </div>
-                                            <div style="padding: 8px;">
+                                            <div style="position: relative; padding: 8px;">
                                                 <canvas id="signature-parent" width="100%" height="200"
                                                     style="border-bottom: 1px solid gray"></canvas>
-                                                <button id="clear-parent" style="margin-bottom: 10px;">Clear</button>
+                                                <div id="sign-here-parent"
+                                                    style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
+                                                    <span>SIGN HERE</span>
+                                                </div>
                                             </div>
+                                            <button id="clear-parent" style="margin-bottom: 10px; margin-left: 10px">Clear</button>
+
                                         </div>
                                     </div>
                                 <?php } ?>

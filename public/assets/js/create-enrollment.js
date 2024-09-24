@@ -12,16 +12,16 @@ function resizeCanvas(canvasId) {
     if (window.matchMedia("(max-width: 768px)").matches) {
       // mobile
       width = 250;
-      height = 100;
+      height = 126;
     } else {
       // laptop
-      width = 324;
-      height = 100;
+      width = 400;
+      height = 126;
     }
 
     canvas.width = width * ratio;
     canvas.height = height * ratio;
-    canvas.style.width = width + "px";
+    canvas.style.width = '100%';
     canvas.style.height = height + "px";
     canvas.getContext("2d").scale(ratio, ratio);
   }
@@ -50,9 +50,13 @@ if (document.getElementById("signature-student")) {
     document.getElementById("signature-parent")
   );
   save_signatures = document.getElementById("saveSignatures");
+  sign_here_parent = document.getElementById("sign-here-parent");
+  sign_here_student = document.getElementById("sign-here-student");
 
   document.getElementById("clear-student").addEventListener("click", () => {
     signaturePadStudent.clear();
+    sign_here_student.style.display = 'block';
+    document.getElementById("signature-student").style.border = '1px solid gray';
     if (!signaturePadStudent.isEmpty() && !signaturePadParent.isEmpty()) {
       save_signatures.innerHTML = "Generate enrollment";
     } else {
@@ -62,6 +66,8 @@ if (document.getElementById("signature-student")) {
 
   document.getElementById("clear-parent").addEventListener("click", () => {
     signaturePadParent.clear();
+    sign_here_parent.style.display = 'block';
+    document.getElementById("signature-parent").style.border = '1px solid gray';
     if (!signaturePadStudent.isEmpty() && !signaturePadParent.isEmpty()) {
       save_signatures.innerHTML = "Generate enrollment";
     } else {
@@ -75,6 +81,15 @@ if (document.getElementById("signature-student")) {
     } else {
       save_signatures.innerHTML = "Save";
     }
+
+    if (!signaturePadParent.isEmpty()) {
+      sign_here_parent.style.display = 'none';
+      document.getElementById("signature-parent").style.border = 'none';
+      document.getElementById("signature-parent").style.borderBottom = '1px solid gray';
+    } else {
+      sign_here_parent.style.display = 'block';
+      document.getElementById("signature-parent").style.border = '1px solid gray';
+    }
   });
 
   signaturePadStudent.addEventListener("afterUpdateStroke", () => {
@@ -82,6 +97,15 @@ if (document.getElementById("signature-student")) {
       save_signatures.innerHTML = "Generate enrollment";
     } else {
       save_signatures.innerHTML = "Save";
+    }
+
+    if (!signaturePadStudent.isEmpty()) {
+      sign_here_student.style.display = 'none';
+      document.getElementById("signature-student").style.border = 'none';
+      document.getElementById("signature-student").style.borderBottom = '1px solid gray';
+    } else {
+      sign_here_student.style.display = 'block';
+      document.getElementById("signature-student").style.border = '1px solid gray';
     }
   });
 
