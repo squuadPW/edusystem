@@ -15,6 +15,7 @@
                     <div>
                         <input type="hidden" name="student_user_id" value="<?php echo $student_id ?>">
                         <input type="hidden" name="parent_user_id" value="<?php echo $partner_id ?>">
+                        <input type="hidden" name="show_parent_info" value="<?php echo $show_parent_info ?>">
                         <h4
                             style="background-color: #091c5c; color: white; padding: 4px; text-align: center; font-weight: 600;">
                             STUDENT PERSONAL INFORMATION</h4>
@@ -53,27 +54,36 @@
                             <div style="flex: auto; border: 1px solid gray; padding: 8px;"><strong>Cell:</strong>
                                 <br> <?php echo $user['student_phone'] ?>
                             </div>
-                            <div style="flex: auto; border: 1px solid gray; padding: 8px;"><strong>Parent cell:</strong>
-                                <br> <?php echo $user['parent_cell'] ?>
-                            </div>
+                            <?php if($show_parent_info == 1) { ?> 
+                                <div style="flex: auto; border: 1px solid gray; padding: 8px;"><strong>Parent cell:</strong>
+                                    <br> <?php echo $user['parent_cell'] ?>
+                                </div>
+                            <?php } ?>
                         </div>
                         <div style="display: flex">
-                            <div style="flex: auto; border: 1px solid gray; padding: 8px;"><strong>Identification # or
-                                    Passport # of parent:</strong>
-                                <br> <?php echo $user['parent_identification'] ?>
+                            <div style="flex: auto; border: 1px solid gray; padding: 8px;">
+                                <?php if($show_parent_info == 1) { ?> 
+                                    <strong>Identification # or
+                                        Passport # of parent:</strong>
+                                    <br> <?php echo $user['parent_identification'] ?>
+                                    <br><br>
+                                <?php } ?>
 
-                                <br><br><strong>Identification or Passport # if child is above 16:</strong>
+                                <strong>Identification or Passport # if child is above 16:</strong>
                                 <br> <?php echo $user['student_identification'] ?>
                             </div>
                         </div>
-                        <div style="display: flex">
-                            <div style="flex: auto; border: 1px solid gray; padding: 8px;"><strong>Parent/Legal Guardian
-                                    Full Name:</strong>
-                                <br> <?php echo $user['parent_full_name'] ?>
-                                <br><br><strong>Email (Required to access parent portal):</strong>
-                                <br> <?php echo $user['parent_email'] ?>
+                        <?php if($show_parent_info == 1) { ?> 
+                            <div style="display: flex">
+                                <div style="flex: auto; border: 1px solid gray; padding: 8px;"><strong>Parent/Legal Guardian
+                                        Full Name:</strong>
+                                    <br> <?php echo $user['parent_full_name'] ?>
+                                    <br><br><strong>Email (Required to access parent portal):</strong>
+                                    <br> <?php echo $user['parent_email'] ?>
+                                </div>
                             </div>
-                        </div>
+                        <?php } ?>
+
                     </div>
                 </div>
                 <div id="part2" style="font-size: 12px; color: #000">
@@ -185,22 +195,24 @@
                                             </div>
                                             <button id="clear-student" style="margin-bottom: 10px; margin-left: 10px">Clear</button>
                                         </div>
-                                        <div style="flex: 50%">
-                                            <div>
-                                                <div style="padding: 8px;"><strong>Parent/Legal Guardian Full Name:</strong>
-                                                    <br> <?php echo $user['parent_full_name'] ?>
+                                        <?php if($show_parent_info == 1) { ?> 
+                                            <div style="flex: 50%">
+                                                <div>
+                                                    <div style="padding: 8px;"><strong>Parent/Legal Guardian Full Name:</strong>
+                                                        <br> <?php echo $user['parent_full_name'] ?>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div style="position: relative; padding: 8px;">
-                                                <canvas id="signature-parent" width="100%" height="200"
-                                                    style="border: 1px solid gray"></canvas>
-                                                <div id="sign-here-parent"
-                                                    style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
-                                                    <span>SIGN HERE</span>
+                                                <div style="position: relative; padding: 8px;">
+                                                    <canvas id="signature-parent" width="100%" height="200"
+                                                        style="border: 1px solid gray"></canvas>
+                                                    <div id="sign-here-parent"
+                                                        style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
+                                                        <span>SIGN HERE</span>
+                                                    </div>
                                                 </div>
+                                                <button id="clear-parent" style="margin-bottom: 10px; margin-left: 10px">Clear</button>
                                             </div>
-                                            <button id="clear-parent" style="margin-bottom: 10px; margin-left: 10px">Clear</button>
-                                        </div>
+                                        <?php } ?>
                                     </div>
                                 <?php } else { ?>
                                     <div style="display: block">
@@ -220,23 +232,26 @@
                                             </div>
                                             <button id="clear-student" style="margin-bottom: 10px; margin-left: 10px">Clear</button>
                                         </div>
-                                        <div style="flex: auto">
-                                            <div>
-                                                <div style="padding: 8px;"><strong>Parent/Legal Guardian Full Name:</strong>
-                                                    <br> <?php echo $user['parent_full_name'] ?>
+                                        <?php if($show_parent_info == 1) { ?> 
+                                            <div style="flex: auto">
+                                                <div>
+                                                    <div style="padding: 8px;"><strong>Parent/Legal Guardian Full Name:</strong>
+                                                        <br> <?php echo $user['parent_full_name'] ?>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div style="position: relative; padding: 8px;">
-                                                <canvas id="signature-parent" width="100%" height="200"
-                                                    style="border-bottom: 1px solid gray"></canvas>
-                                                <div id="sign-here-parent"
-                                                    style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
-                                                    <span>SIGN HERE</span>
+                                                <div style="position: relative; padding: 8px;">
+                                                    <canvas id="signature-parent" width="100%" height="200"
+                                                        style="border-bottom: 1px solid gray"></canvas>
+                                                    <div id="sign-here-parent"
+                                                        style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
+                                                        <span>SIGN HERE</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <button id="clear-parent" style="margin-bottom: 10px; margin-left: 10px">Clear</button>
+                                                <button id="clear-parent" style="margin-bottom: 10px; margin-left: 10px">Clear</button>
 
-                                        </div>
+                                            </div>
+                                        <?php  } ?>
+
                                     </div>
                                 <?php } ?>
                                 <div style="display: flex">
