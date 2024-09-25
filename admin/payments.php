@@ -127,6 +127,7 @@ function add_admin_form_payments_content()
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=0&id_document='.$id_document));
             }
         } else if ($_GET['action'] == 'generate_order') {
+            global $wpdb;
             $amount_order = $_POST['amount_order'];
             $date_order = $_POST['date_order'];
             $order_id = $_POST['order_id_old'];
@@ -136,10 +137,37 @@ function add_admin_form_payments_content()
             $order->update_status('completed'); 
             $order->save();
 
+            if ($order->get_meta('student_id')) {
+                $student_id = $order->get_meta('student_id');
+                create_user_student($student_id);
+                $table_student_payment = $wpdb->prefix . 'student_payments';
+    
+                $query = $wpdb->prepare("
+                    UPDATE {$table_student_payment} AS a
+                    INNER JOIN (
+                        SELECT MIN(id) AS min_id
+                        FROM {$table_student_payment}
+                        WHERE student_id = %d
+                        AND status_id = 0
+                        GROUP BY product_id
+                    ) AS b ON a.id = b.min_id
+                    SET a.status_id = 1
+                ", $student_id);
+    
+                $wpdb->query($query);
+            }
+
+            // Obtener el primer item de la orden vieja
+            $old_order_items = $order->get_items();
+            $first_item = reset($old_order_items);
             $customer_id = $order->get_customer_id();
-            $new_order = wc_create_order(array('customer_id' => $customer_id));
-            $new_order->set_total($amount_order);
+
+            $new_order = wc_create_order(array('customer_id' => $customer_id, 'status' => 'pending-payment'));
             $new_order->set_date_created($date_order);
+            $product = $first_item->get_product();
+            $product->set_price($amount_order);
+            $new_order->add_product($product, $first_item->get_quantity());
+            $new_order->calculate_totals();
             $new_order->save();
 
         }
