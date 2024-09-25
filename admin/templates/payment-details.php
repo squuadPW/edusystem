@@ -177,15 +177,27 @@
                             </tobdy>
                             </table>
 
-                            <?php if($order->get_status() != 'completed'){ ?>
-                                <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
-                                    <?php if(wp_is_mobile()){ ?>
-                                        <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-primary"><?= __('Approve','aes'); ?></button>
-                                    <?php }else{ ?>
-                                        <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" class="button button-primary"><?= __('Approve','aes'); ?></button>
-                                    <?php } ?>
-                                </div>
-                            <?php } ?>
+                            <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
+                                <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1){ ?>
+                                    <div style="margin-right: 10px">
+                                        <?php if(wp_is_mobile()){ ?>
+                                            <button data-total="<?= $order->get_meta('pending_payment') ?>" data-message="<?= __('Do you want to generate the order for the next payment?','aes'); ?>" data-title="<?= __('Generate order','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="generate_order_split" style="width:100%;" class="button button-primary"><?= __('Approve and generate order','aes'); ?></button>
+                                        <?php }else{ ?>
+                                            <button data-total="<?= $order->get_meta('pending_payment') ?>" data-message="<?= __('Do you want to generate the order for the next payment?','aes'); ?>" data-title="<?= __('Generate order','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="generate_order_split" class="button button-primary"><?= __('Approve and generate order','aes'); ?></button>
+                                        <?php } ?>
+                                    </div>
+                                <?php } ?>
+
+                                <?php if($order->get_status() != 'completed'){ ?>
+                                    <div>
+                                        <?php if(wp_is_mobile()){ ?>
+                                            <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-success"><?= __('Approve','aes'); ?></button>
+                                        <?php }else{ ?>
+                                            <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" class="button button-success"><?= __('Approve','aes'); ?></button>
+                                        <?php } ?>
+                                    </div>
+                                <?php } ?>
+                            </div>
 
                         <?php endif; ?>
                     </div>
@@ -198,4 +210,5 @@
     $split_payment = $order->get_meta('split_payment');
     $payments = json_decode($order->get_meta('split_method'));
     include(plugin_dir_path(__FILE__).'modal-status-payment.php');
+    include(plugin_dir_path(__FILE__).'modal-generate-order.php');
 ?>

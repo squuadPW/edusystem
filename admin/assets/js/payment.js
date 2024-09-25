@@ -17,9 +17,28 @@ document.addEventListener('DOMContentLoaded',function(){
         });
     }
 
+    
+    generate_order_split = document.getElementById('generate_order_split');
+
+    if(generate_order_split){
+        generate_order_split.addEventListener('click',(e) => {
+            let order_id = generate_order_split.getAttribute('data-id');
+            let title = generate_order_split.getAttribute('data-title');
+            let message = generate_order_split.getAttribute('data-message');
+            let total = generate_order_split.getAttribute('data-total');
+
+            document.getElementById('title-modal-generate-order-split').textContent = title;
+            document.getElementById('message-modal-generate-order-split').textContent = message;
+            document.getElementById('amount-order').value = total;
+            document.getElementById('order_id_old').value = order_id;
+            document.getElementById('modalGenerateOrder').style.display = "block";
+        });
+    }
+
     document.querySelectorAll('.modal-close').forEach((close) => {
         close.addEventListener('click',(e) => {
             document.getElementById('modalStatusPayment').style.display = "none";
+            document.getElementById('modalGenerateOrder').style.display = "none";
         });
     });
 });

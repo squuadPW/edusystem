@@ -126,6 +126,22 @@ function add_admin_form_payments_content()
             } else {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=0&id_document='.$id_document));
             }
+        } else if ($_GET['action'] == 'generate_order') {
+            $amount_order = $_POST['amount_order'];
+            $date_order = $_POST['date_order'];
+            $order_id = $_POST['order_id_old'];
+
+            $order = wc_get_order($order_id);
+            $order->add_meta_data('split_complete', 1);
+            $order->update_status('completed'); 
+            $order->save();
+
+            $customer_id = $order->get_customer_id();
+            $new_order = wc_create_order(array('customer_id' => $customer_id));
+            $new_order->set_total($amount_order);
+            $new_order->set_date_created($date_order);
+            $new_order->save();
+
         }
     }
 
