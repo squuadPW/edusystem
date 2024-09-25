@@ -210,10 +210,12 @@ function sendSignatures(doc = null) {
   ).value;
   const formData = new FormData();
   formData.append("action", "create_enrollment_document");
-  formData.append(
-    "signature_parent",
-    JSON.stringify(signaturePadParent.toData())
-  );
+  if (signaturePadParent) {
+    formData.append(
+      "signature_parent",
+      JSON.stringify(signaturePadParent.toData())
+    );
+  }
   formData.append(
     "signature_student",
     JSON.stringify(signaturePadStudent.toData())
