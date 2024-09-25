@@ -1386,7 +1386,7 @@ function verificar_contraseña()
                 // Redirige al checkout con la orden pendiente de pago
                 $order_id = $orders[0]->get_id(); // Get the first pending order ID
                 $order = wc_get_order($order_id);
-                if ($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) {
+                if ($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1 && !$order->get_meta('split_complete')) {
                     $checkout_url = wc_get_checkout_url() . 'order-pay/' . $order_id . '/?pay_for_order=true&key=' . $orders[0]->get_order_key();
                         # code...
 
@@ -1430,13 +1430,29 @@ function verificar_contraseña()
         
                     // $order->set_total($order->get_total() - $total); // Set the total amount of the order
                     $complete = false;
-                    if (($order->get_subtotal() - $order->get_total_discount()) - $total <= 0) {
-                        $order->update_status('completed');
+                    $pending_payment = $order->get_meta('pending_payment');
+                    if ($pending_payment <= 0) {
+                        $split_method_updated = $order->get_meta('split_method');
+                        $split_method_updated = json_decode($split_method_updated);
+                        $on_hold_found = false;
+                        foreach ($split_method_updated as $method) {
+                            if ($method->status === 'on-hold') {
+                                $on_hold_found = true;
+                                break;
+                            }
+                        }
+        
+                        if (!$on_hold_found) {
+                           $order->update_status('completed');
+                        } else {
+                            $order->update_status('on-hold');
+                        }
                         $complete = true;
                     }
                     $order->save();
                     
                     if (!$complete) {
+                        wc_add_notice(__('Your payment has been received. Please continue with the remaining amount.', 'your-text-domain'), 'success');
                         wp_redirect($checkout_url);
                         exit;
                     }

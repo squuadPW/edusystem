@@ -105,9 +105,13 @@
                                             <th scope="row"><label for="input_id"><?= __('Net mount','aes'); ?></label></th>
                                             <td><?= wc_price($pay->amount); ?></td>
                                         </tr>
-                                        <tr style="border-bottom: 1px dashed gray;">
+                                        <tr>
                                             <th scope="row"><label for="input_id"><?= __('Fee payment method','aes'); ?></label></th>
                                             <td><?= wc_price($pay->fee); ?></td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px dashed gray;">
+                                            <th scope="row"><label for="input_id"><?= __('Status','aes'); ?></label></th>
+                                            <td><?= $pay->status == 'completed' || $pay->status == 'complete' ? 'Completed' : 'On hold'; ?></td>
                                         </tr>
                                     <?php } ?>
                                         <tr>
@@ -191,5 +195,7 @@
     </div>
 </div>
 <?php 
+    $split_payment = $order->get_meta('split_payment');
+    $payments = json_decode($order->get_meta('split_method'));
     include(plugin_dir_path(__FILE__).'modal-status-payment.php');
 ?>

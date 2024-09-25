@@ -11,11 +11,69 @@ function add_admin_form_payments_content()
             $name = get_user_meta($current_user->ID, 'first_name', true) . ' ' . get_user_meta($current_user->ID, 'last_name', true);
             $order_id = $_POST['order_id'];
             $description = $_POST['description'];
+            $split_payment = $_POST['split_payment'] ?? null;
+            $payment_confirm = $_POST['payment_confirm'] ?? null;
 
             $order = wc_get_order($order_id);
-            $order->update_status('completed');
-            $order->add_order_note('Payment approved by '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
-            $order->update_meta_data('payment_approved_by', $current_user->ID);
+
+            if ($split_payment) {
+                $split_method = $order->get_meta('split_method');
+                $split_method = json_decode($split_method);
+                $index = array_search($payment_confirm, array_column($split_method, 'id'));
+                if ($index !== false) {
+                    $split_method[$index]->status = 'completed';
+                    $order->update_meta_data('split_method', json_encode($split_method));
+                }
+
+                $order->add_order_note('Payment approved by '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
+
+                $split_method_updated = $order->get_meta('split_method');
+                $split_method_updated = json_decode($split_method_updated);
+                $on_hold_found = false;
+                foreach ($split_method_updated as $method) {
+                    if ($method->status === 'on-hold') {
+                        $on_hold_found = true;
+                        break;
+                    }
+                }
+
+                if (!$on_hold_found) {
+                    $total = 0.00;
+                    $total_gross = 0.00;
+                    foreach ($split_method_updated as $key => $split) {
+                        $total += $split->amount;
+                        $total_gross += $split->gross_total;
+                    }
+
+                    $total_paid_meta = $order->get_meta('total_paid');
+                    if ($total_paid_meta) {
+                        $order->update_meta_data('total_paid', $total);
+                    } else {
+                        $order->add_meta_data('total_paid', $total);
+                    }
+
+                    $total_paid_meta = $order->get_meta('total_paid_gross');
+                    if ($total_paid_meta) {
+                        $order->update_meta_data('total_paid_gross', $total_gross);
+                    } else {
+                        $order->add_meta_data('total_paid_gross', $total_gross);
+                    }
+                    
+                    $pending_payment_meta = $order->get_meta('pending_payment');
+                    if ($pending_payment_meta) {
+                        $order->update_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
+                    } else {
+                        $order->add_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
+                    }
+
+                    $order->update_status('completed');
+                }
+            } else {
+                $order->update_status('completed');
+                $order->add_order_note('Payment approved by '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
+                $order->update_meta_data('payment_approved_by', $current_user->ID);
+            }
+
             $order->save();
 
             wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
