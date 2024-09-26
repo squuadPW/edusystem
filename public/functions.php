@@ -1521,6 +1521,7 @@ function modal_enrollment_student()
     $institute_name = $student->institute_name;
     $user = [
         'student_full_name' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
+        'student_signature' => $student->name . ' ' . $student->last_name,
         'student_created_at' => $student->created_at,
         'student_grade' => $student->grade_id,
         'student_payment' => $payment->type_payment,
