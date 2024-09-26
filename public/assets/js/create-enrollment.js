@@ -8,25 +8,16 @@ function resizeCanvas(canvasId) {
     const ratio = Math.max(window.devicePixelRatio || 1, 1);
     let width, height;
 
-    // Set different canvas sizes based on screen sizes
-    multiplicator = document.querySelector(
-      'input[name="show_parent_info"]'
-    ).value;
-    if (window.matchMedia("(max-width: 768px)").matches) {
-      // mobile
-      width = 250;
-      height = 126;
-    } else {
-      // laptop
-      width = (400 * (multiplicator == 0 ? 2 : 1));
-      height = 126;
-    }
-
-    canvas.width = width * ratio;
-    canvas.height = height * ratio;
-    canvas.style.width = "100%";
-    canvas.style.height = height + "px";
-    canvas.getContext("2d").scale(ratio, ratio);
+    setTimeout(() => {
+      width = canvas.parentNode ? (canvas.parentNode.offsetWidth - 20) : window.innerWidth;
+      height = 120;
+  
+      canvas.width = width * ratio;
+      canvas.height = height * ratio;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      canvas.getContext("2d").scale(ratio, ratio);
+    }, 1000);
   }
 }
 
