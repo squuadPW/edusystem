@@ -1796,8 +1796,8 @@ function loadFeesSplit() {
         } else {
             $stripe_fee_percentage = 4.5; // 4.5% fee
             $cart_subtotal = (float)$order->get_meta('pending_payment');
-            $discount = $order->get_total_discount() ? $order->get_total_discount() : 0;
-            $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
+            // $discount = $order->get_total_discount() ? $order->get_total_discount() : 0;
+            $stripe_fee_amount = ($cart_subtotal / 100) * $stripe_fee_percentage;
             $fee = $stripe_fee_amount;
             $order->add_fee( 'Credit card fee', $fee );
         }
