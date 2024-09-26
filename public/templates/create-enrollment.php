@@ -187,7 +187,7 @@
                                             </div>
                                             <div style="position: relative; padding: 8px;">
                                                 <canvas id="signature-student" width="100%" height="200"
-                                                    style="border: 1px solid gray"></canvas>
+                                                    style="border: 1px solid gray; margin: auto !important"></canvas>
                                                 <div id="sign-here-student"
                                                     style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
                                                     <span>SIGN HERE</span>
@@ -204,7 +204,7 @@
                                                 </div>
                                                 <div style="position: relative; padding: 8px;">
                                                     <canvas id="signature-parent" width="100%" height="200"
-                                                        style="border: 1px solid gray"></canvas>
+                                                        style="border: 1px solid gray; margin: auto !important"></canvas>
                                                     <div id="sign-here-parent"
                                                         style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
                                                         <span>SIGN HERE</span>
@@ -224,7 +224,7 @@
                                             </div>
                                             <div style="position: relative; padding: 8px;">
                                                 <canvas id="signature-student" width="100%" height="200"
-                                                    style="border: 1px solid gray"></canvas>
+                                                    style="border: 1px solid gray; margin: auto !important"></canvas>
                                                 <div id="sign-here-student"
                                                     style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
                                                     <span>SIGN HERE</span>
@@ -241,7 +241,7 @@
                                                 </div>
                                                 <div style="position: relative; padding: 8px;">
                                                     <canvas id="signature-parent" width="100%" height="200"
-                                                        style="border: 1px solid gray"></canvas>
+                                                        style="border: 1px solid gray; margin: auto !important"></canvas>
                                                     <div id="sign-here-parent"
                                                         style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
                                                         <span>SIGN HERE</span>

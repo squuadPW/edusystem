@@ -1,15 +1,16 @@
 let signaturePadStudent;
 let signaturePadParent;
 let gradeSelected;
+let downloading = false;
 
 function resizeCanvas(canvasId) {
   const canvas = document.getElementById(canvasId);
-  if (canvas) {
+  if (canvas && !downloading) {
     const ratio = Math.max(window.devicePixelRatio || 1, 1);
     let width, height;
 
     setTimeout(() => {
-      width = canvas.parentNode ? (canvas.parentNode.offsetWidth - 20) : window.innerWidth;
+      width = canvas.parentNode ? (canvas.parentNode.offsetWidth * 0.70) : window.innerWidth;
       height = 120;
   
       canvas.width = width * ratio;
@@ -136,6 +137,7 @@ if (document.getElementById("signature-student")) {
       if (clearParentElement) {
         clearParentElement.style.display = "none";
       }
+      downloading = true;
       var element = document.getElementById("content-pdf");
       var opt = {
         margin: [0.2, 0, 0, 0],
