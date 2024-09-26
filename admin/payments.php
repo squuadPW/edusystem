@@ -145,7 +145,12 @@ function add_admin_form_payments_content()
             $first_item = reset($old_order_items);
             $customer_id = $order->get_customer_id();
 
-            $new_order = wc_create_order(array('customer_id' => $customer_id, 'status' => 'pending-payment'));
+            $order_args = array(
+                'customer_id' => $customer_id,
+                'status' => 'pending-payment',
+            );
+            
+            $new_order = wc_create_order($order_args);
             $new_order->set_date_created($date_order);
             $product = $first_item->get_product();
             $product->set_price($amount_order);
