@@ -69,6 +69,7 @@ if (document.getElementById("signature-student")) {
     sign_here_student.style.display = "block";
     document.getElementById("signature-student").style.border =
       "1px solid gray";
+    document.getElementById("signature-student").style.backgroundColor = '#ffff005c';
     if (!signaturePadStudent.isEmpty() && !signaturePadParent.isEmpty()) {
       save_signatures.innerHTML = "Generate enrollment";
     } else {
@@ -83,6 +84,7 @@ if (document.getElementById("signature-student")) {
       sign_here_parent.style.display = "block";
       document.getElementById("signature-parent").style.border =
         "1px solid gray";
+    document.getElementById("signature-parent").style.backgroundColor = '#ffff005c';
       if (!signaturePadStudent.isEmpty() && !signaturePadParent.isEmpty()) {
         save_signatures.innerHTML = "Generate enrollment";
       } else {
@@ -108,10 +110,12 @@ if (document.getElementById("signature-student")) {
         document.getElementById("signature-parent").style.border = "none";
         document.getElementById("signature-parent").style.borderBottom =
           "1px solid gray";
+        document.getElementById("signature-parent").style.backgroundColor = '#fff';
       } else {
         sign_here_parent.style.display = "block";
         document.getElementById("signature-parent").style.border =
           "1px solid gray";
+        document.getElementById("signature-parent").style.backgroundColor = '#ffff005c';
       }
     });
   }
@@ -134,10 +138,12 @@ if (document.getElementById("signature-student")) {
       document.getElementById("signature-student").style.border = "none";
       document.getElementById("signature-student").style.borderBottom =
         "1px solid gray";
+      document.getElementById("signature-student").style.backgroundColor = '#fff';
     } else {
       sign_here_student.style.display = "block";
       document.getElementById("signature-student").style.border =
         "1px solid gray";
+      document.getElementById("signature-student").style.backgroundColor = '#ffff005c';
     }
   });
 
@@ -155,6 +161,8 @@ if (document.getElementById("signature-student")) {
 
     if (!gradeSelected) {
       save_signatures.disabled = false;
+      document.getElementById("please_select_grade").style.display = "block";
+      document.getElementById("select_grade").style.color = "red";
       alert(
         "To proceed with your enrollment, please select the last grade you completed"
       );

@@ -1,4 +1,8 @@
 <!-- Your modal content here -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
 <div class="modal-content modal-enrollment" id="modal-content">
     <div id="modal-contraseña" class="modal" style="overflow: auto; padding: 0 !important">
         <div class="modal-content modal-enrollment">
@@ -101,7 +105,7 @@
                                 <strong>Phone:</strong> <?php echo isset($institute) ? $institute->phone : '' ?>
                                 <br><br>
                                 <strong>Last date Attended:</strong> <br><br>
-                                <strong id="select_grade" style="color: red">Last completed grade:</strong> <br>
+                                <strong id="select_grade">Last completed grade:</strong> <br>
                                 <span onclick="updateGrade('grade5')" style="cursor: pointer"><span id="grade5">(
                                         )</span>
                                     5th Grade</span>
@@ -127,7 +131,7 @@
                                         )</span>
                                     12th Grade</span>
                                 <br><br>
-                                <strong id="please_select_grade" style="color: red">Please select a grade to
+                                <strong id="please_select_grade" style="color: red; display: none">Please select a grade to
                                     continue</strong>
                             </div>
                         </div>
@@ -196,8 +200,8 @@
                                             </div>
                                             <button id="clear-student" style="width: 100%;">Clear</button>
                                             <button id="generate-signature-student" style="width: 100%;" onclick="autoSignature('signature-pad-student', 'signature-text-student', 'generate-signature-student', 'clear-student')">Generate signature automatically</button>
-                                            <div style="position: relative; padding: 8px; display: block; text-align: center; width: 70%; margin: 10px auto; border-bottom: 1px solid gray; font-family: vivaldi; font-size: 28px; display: none" id="signature-text-student">
-                                                <?php echo $user['student_signature'] ?>
+                                            <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none" id="signature-text-student">
+                                                <div style="bottom: 0; position: absolute; text-align: center; width: 100%;"><?php echo $user['student_signature'] ?></div>
                                             </div>
                                         </div>
                                         <?php if($show_parent_info == 1) { ?> 
@@ -218,8 +222,8 @@
                                                 </div>
                                                 <button id="clear-parent" style="width: 100%;">Clear</button>
                                                 <button id="generate-signature-parent" style="width: 100%;" onclick="autoSignature('signature-pad-parent', 'signature-text-parent', 'generate-signature-parent', 'clear-parent')">Generate signature automatically</button>
-                                                <div style="position: relative; padding: 8px; display: block; text-align: center; width: 70%; margin: 10px auto; border-bottom: 1px solid gray; font-family: vivaldi; font-size: 28px; display: none" id="signature-text-parent">
-                                                    <?php echo $user['parent_full_name'] ?>
+                                                <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none" id="signature-text-parent">
+                                                    <div style="bottom: 0; position: absolute; text-align: center; width: 100%;"><?php echo $user['parent_full_name'] ?></div>
                                                 </div>
                                             </div>
                                         <?php } ?>
@@ -243,8 +247,8 @@
                                             </div>
                                             <button id="clear-student" style="width: 100%;">Clear</button>
                                             <button id="generate-signature-student" style="width: 100%;" onclick="autoSignature('signature-pad-student', 'signature-text-student', 'generate-signature-student', 'clear-student')">Generate signature automatically</button>
-                                            <div style="position: relative; padding: 8px; display: block; text-align: center; width: 70%; margin: 10px auto; border-bottom: 1px solid gray; font-family: vivaldi; font-size: 28px; display: none" id="signature-text-student">
-                                                <?php echo $user['student_signature'] ?>
+                                            <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none" id="signature-text-student">
+                                                <div style="bottom: 0; position: absolute; text-align: center; width: 100%;"><?php echo $user['student_signature'] ?></div>
                                             </div>
                                         </div>
                                         <?php if($show_parent_info == 1) { ?> 
@@ -265,8 +269,8 @@
                                                 </div>
                                                 <button id="clear-parent" style="width: 100%;">Clear</button>
                                                 <button id="generate-signature-parent" style="width: 100%;" onclick="autoSignature('signature-pad-parent', 'signature-text-parent', 'generate-signature-parent', 'clear-parent')">Generate signature automatically</button>
-                                                <div style="position: relative; padding: 8px; display: block; text-align: center; width: 70%; margin: 10px auto; border-bottom: 1px solid gray; display: none; font-family: vivaldi; font-size: 28px;" id="signature-text-parent">
-                                                    <?php echo $user['parent_full_name'] ?>
+                                                <div style="position: relative; padding: 8px; display: block; text-align: center; width: 70%; margin: 10px auto; border-bottom: 1px solid gray; display: none; font-family: 'Great Vibes', cursive; font-size: 28px;" id="signature-text-parent">
+                                                    <div style="bottom: 0; position: absolute; text-align: center; width: 100%;"><?php echo $user['parent_full_name'] ?></div>
                                                 </div>
                                             </div>
                                         <?php  } ?>
