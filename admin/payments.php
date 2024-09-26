@@ -134,28 +134,11 @@ function add_admin_form_payments_content()
 
             $order = wc_get_order($order_id);
             $order->add_meta_data('split_complete', 1);
-            $order->update_status('completed'); 
+            $order->update_status('on-hold'); 
             $order->save();
 
-            if ($order->get_meta('student_id')) {
-                $student_id = $order->get_meta('student_id');
-                create_user_student($student_id);
-                $table_student_payment = $wpdb->prefix . 'student_payments';
-    
-                $query = $wpdb->prepare("
-                    UPDATE {$table_student_payment} AS a
-                    INNER JOIN (
-                        SELECT MIN(id) AS min_id
-                        FROM {$table_student_payment}
-                        WHERE student_id = %d
-                        AND status_id = 0
-                        GROUP BY product_id
-                    ) AS b ON a.id = b.min_id
-                    SET a.status_id = 1
-                ", $student_id);
-    
-                $wpdb->query($query);
-            }
+            $order->update_status('completed'); 
+            $order->save();
 
             // Obtener el primer item de la orden vieja
             $old_order_items = $order->get_items();
