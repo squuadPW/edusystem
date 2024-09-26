@@ -132,18 +132,23 @@ function add_admin_form_payments_content()
             $date_order = $_POST['date_order'];
             $order_id = $_POST['order_id_old'];
 
-            $order = wc_get_order($order_id);
-            $order->add_meta_data('split_complete', 1);
-            $order->update_status('on-hold'); 
-            $order->save();
+            if (!isset($order_id)) {    
+                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
+                exit;
+            }
 
-            $order->update_status('completed'); 
-            $order->save();
+            $order_old = wc_get_order($order_id);
+            $order_old->add_meta_data('split_complete', 1);
+            $order_old->update_status('on-hold'); 
+            $order_old->save();
+
+            $order_old->update_status('completed'); 
+            $order_old->save();
 
             // Obtener el primer item de la orden vieja
-            $old_order_items = $order->get_items();
+            $old_order_items = $order_old->get_items();
             $first_item = reset($old_order_items);
-            $customer_id = $order->get_customer_id();
+            $customer_id = $order_old->get_customer_id();
 
             $order_args = array(
                 'customer_id' => $customer_id,
@@ -151,11 +156,30 @@ function add_admin_form_payments_content()
             );
             
             $new_order = wc_create_order($order_args);
+            $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
+            $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
+            $new_order->add_meta_data('is_vat_exempt', $order_old->get_meta('is_vat_exempt'));
+            $new_order->add_meta_data('pending_payment', $order_old->get_meta('pending_payment'));
+            $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
             $new_order->set_date_created($date_order);
             $product = $first_item->get_product();
             $product->set_price($amount_order);
             $new_order->add_product($product, $first_item->get_quantity());
             $new_order->calculate_totals();
+            if ($order_old->get_address('billing')) {
+                $billing_address = $order_old->get_address('billing');
+                $new_order->set_billing_first_name($billing_address['first_name']);
+                $new_order->set_billing_last_name($billing_address['last_name']);
+                $new_order->set_billing_company($billing_address['company']);
+                $new_order->set_billing_address_1($billing_address['address_1']);
+                $new_order->set_billing_address_2($billing_address['address_2']);
+                $new_order->set_billing_city($billing_address['city']);
+                $new_order->set_billing_state($billing_address['state']);
+                $new_order->set_billing_postcode($billing_address['postcode']);
+                $new_order->set_billing_country($billing_address['country']);
+                $new_order->set_billing_email($billing_address['email']);
+                $new_order->set_billing_phone($billing_address['phone']);
+            }
             $new_order->save();
 
         }
