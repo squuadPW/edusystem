@@ -79,7 +79,7 @@
                                     foreach ($payments as $key => $pay) {                                    
                                     ?>
                                         <tr style="border-top: 1px dashed gray;">
-                                            <th><?= __('Payment Method N°','aes') . ($key + 1); ?></th>
+                                            <th style="text-align: center;"><?= __('Payment Method N°','aes') . ($key + 1); ?></th>
                                         </tr>
                                         <tr>
                                             <th scope="row"><label for="input_id"><?= __('Payment Method','aes'); ?></label></th>
@@ -121,6 +121,10 @@
                                         <tr>
                                             <th scope="row"><label for="input_id"><?= __('Total paid gross','aes'); ?></label></th>
                                             <td><?= wc_price($order->get_meta('total_paid_gross')); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><label for="input_id"><?= __('Pending payment','aes'); ?></label></th>
+                                            <td><?= wc_price($order->get_meta('pending_payment')); ?></td>
                                         </tr>
                                 <?php } else { ?>
                                     <tr>
@@ -181,9 +185,9 @@
                                 <?php if(($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) && ($order->get_meta('pending_payment') && $order->get_meta('pending_payment') > 0)){ ?>
                                     <div style="margin-right: 10px">
                                         <?php if(wp_is_mobile()){ ?>
-                                            <button data-total="<?= $order->get_meta('pending_payment') ?>" data-message="<?= __('Do you want to generate the order for the next payment?','aes'); ?>" data-title="<?= __('Generate order','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="generate_order_split" style="width:100%;" class="button button-primary"><?= __('Enable dashboard for user and generate next payment','aes'); ?></button>
+                                            <button data-total="<?= $order->get_meta('pending_payment') ?>" data-message="<?= __('Do you want to set the date of the next payment?','aes'); ?>" data-title="<?= __('Generate next payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="generate_order_split" style="width:100%;" class="button button-primary"><?= __('Enable dashboard for user and generate next payment','aes'); ?></button>
                                         <?php }else{ ?>
-                                            <button data-total="<?= $order->get_meta('pending_payment') ?>" data-message="<?= __('Do you want to generate the order for the next payment?','aes'); ?>" data-title="<?= __('Generate order','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="generate_order_split" class="button button-primary"><?= __('Enable dashboard for user and generate next payment','aes'); ?></button>
+                                            <button data-total="<?= $order->get_meta('pending_payment') ?>" data-message="<?= __('Do you want to set the date of the next payment?','aes'); ?>" data-title="<?= __('Generate next payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="generate_order_split" class="button button-primary"><?= __('Enable dashboard for user and generate next payment','aes'); ?></button>
                                         <?php } ?>
                                     </div>
                                 <?php } ?>

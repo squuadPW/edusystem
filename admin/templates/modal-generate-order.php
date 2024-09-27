@@ -16,7 +16,7 @@
 				</div>
 
 				<div>
-					<label for="date_order">Date of order</label><br>
+					<label for="date_order">Date of next payment</label><br>
 					<input type="date" name="date_order" id="date-order" value="" required>
 				</div>
 			</div>
