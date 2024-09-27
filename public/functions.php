@@ -57,7 +57,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('create-password');
 
-    wp_register_script('create-enrollment', plugins_url('aes') . '/public/assets/js/create-enrollment.js', array('jquery'), '1.0.1', true);
+    wp_register_script('create-enrollment', plugins_url('aes') . '/public/assets/js/create-enrollment.js', array('jquery'), '1.0.2', true);
     wp_localize_script(
         'create-enrollment',
         'ajax_object',
