@@ -10,8 +10,8 @@
 				<p id="message-modal-generate-order-split"></p>
 
 				<div>
-					<label for="amount_order">Amount of order</label><br>
-					<input type="number" name="amount_order" id="amount-order" required step="0.01">
+					<!-- <label for="amount_order">Amount of order</label><br> -->
+					<input type="hidden" name="amount_order" id="amount-order" required step="0.01">
 					<input type="hidden" name="order_id_old" id="order_id_old" value="">
 				</div>
 
