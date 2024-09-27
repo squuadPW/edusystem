@@ -37,36 +37,40 @@ function add_admin_form_payments_content()
                     }
                 }
 
+                $total = 0.00;
+                $total_gross = 0.00;
+                foreach ($split_method_updated as $key => $split) {
+                    $total += $split->amount;
+                    $total_gross += $split->gross_total;
+                }
+
+                $total_paid_meta = $order->get_meta('total_paid');
+                if ($total_paid_meta) {
+                    $order->update_meta_data('total_paid', $total);
+                } else {
+                    $order->add_meta_data('total_paid', $total);
+                }
+
+                $total_paid_meta = $order->get_meta('total_paid_gross');
+                if ($total_paid_meta) {
+                    $order->update_meta_data('total_paid_gross', $total_gross);
+                } else {
+                    $order->add_meta_data('total_paid_gross', $total_gross);
+                }
+                
+                $pending_payment_meta = $order->get_meta('pending_payment');
+                if ($pending_payment_meta) {
+                    $order->update_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
+                } else {
+                    $order->add_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
+                }
+
                 if (!$on_hold_found) {
-                    $total = 0.00;
-                    $total_gross = 0.00;
-                    foreach ($split_method_updated as $key => $split) {
-                        $total += $split->amount;
-                        $total_gross += $split->gross_total;
-                    }
-
-                    $total_paid_meta = $order->get_meta('total_paid');
-                    if ($total_paid_meta) {
-                        $order->update_meta_data('total_paid', $total);
+                    if ((float)$order->get_meta('pending_payment') <= 0) {
+                        $order->update_status('completed');
                     } else {
-                        $order->add_meta_data('total_paid', $total);
+                        $order->update_status('pending-payment');
                     }
-
-                    $total_paid_meta = $order->get_meta('total_paid_gross');
-                    if ($total_paid_meta) {
-                        $order->update_meta_data('total_paid_gross', $total_gross);
-                    } else {
-                        $order->add_meta_data('total_paid_gross', $total_gross);
-                    }
-                    
-                    $pending_payment_meta = $order->get_meta('pending_payment');
-                    if ($pending_payment_meta) {
-                        $order->update_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
-                    } else {
-                        $order->add_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
-                    }
-
-                    $order->update_status('completed');
                 }
             } else {
                 $order->update_status('completed');
@@ -131,6 +135,7 @@ function add_admin_form_payments_content()
             $amount_order = $_POST['amount_order'];
             $date_order = $_POST['date_order'];
             $order_id = $_POST['order_id_old'];
+            $name = get_user_meta($current_user->ID, 'first_name', true) . ' ' . get_user_meta($current_user->ID, 'last_name', true);
 
             if (!isset($order_id)) {    
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
@@ -145,43 +150,101 @@ function add_admin_form_payments_content()
             $order_old->update_status('completed'); 
             $order_old->save();
 
-            // Obtener el primer item de la orden vieja
-            $old_order_items = $order_old->get_items();
-            $first_item = reset($old_order_items);
-            $customer_id = $order_old->get_customer_id();
+            $order_old->update_status('pending-payment');
+            $order_old->update_meta_data('pending_payment', $amount_order);
+            $order_old->set_date_created($date_order);
 
-            $order_args = array(
-                'customer_id' => $customer_id,
-                'status' => 'pending-payment',
-            );
-            
-            $new_order = wc_create_order($order_args);
-            $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
-            $new_order->add_meta_data('old_order_primary', $order_id);
-            $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
-            $new_order->add_meta_data('is_vat_exempt', $order_old->get_meta('is_vat_exempt'));
-            $new_order->add_meta_data('pending_payment', $order_old->get_meta('pending_payment'));
-            $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
-            $new_order->set_date_created($date_order);
-            $product = $first_item->get_product();
-            $product->set_price($amount_order);
-            $new_order->add_product($product, $first_item->get_quantity());
-            $new_order->calculate_totals();
-            if ($order_old->get_address('billing')) {
-                $billing_address = $order_old->get_address('billing');
-                $new_order->set_billing_first_name($billing_address['first_name']);
-                $new_order->set_billing_last_name($billing_address['last_name']);
-                $new_order->set_billing_company($billing_address['company']);
-                $new_order->set_billing_address_1($billing_address['address_1']);
-                $new_order->set_billing_address_2($billing_address['address_2']);
-                $new_order->set_billing_city($billing_address['city']);
-                $new_order->set_billing_state($billing_address['state']);
-                $new_order->set_billing_postcode($billing_address['postcode']);
-                $new_order->set_billing_country($billing_address['country']);
-                $new_order->set_billing_email($billing_address['email']);
-                $new_order->set_billing_phone($billing_address['phone']);
+            $split_method = $order_old->get_meta('split_method');
+            $split_method = json_decode($split_method);
+            $index = array_search('on-hold', array_column($split_method, 'status'));
+            if ($index !== false) {
+                $split_method[$index]->status = 'completed';
+                $order_old->update_meta_data('split_method', json_encode($split_method));
             }
-            $new_order->save();
+
+            $order_old->add_order_note('Payment approved by '. $name . '. Description: N/A', 2); // 2 = admin note
+
+            $split_method_updated = $order_old->get_meta('split_method');
+            $split_method_updated = json_decode($split_method_updated);
+            $on_hold_found = false;
+            foreach ($split_method_updated as $method) {
+                if ($method->status === 'on-hold') {
+                    $on_hold_found = true;
+                    break;
+                }
+            }
+
+            if (!$on_hold_found) {
+                $total = 0.00;
+                $total_gross = 0.00;
+                foreach ($split_method_updated as $key => $split) {
+                    $total += $split->amount;
+                    $total_gross += $split->gross_total;
+                }
+
+                $total_paid_meta = $order_old->get_meta('total_paid');
+                if ($total_paid_meta) {
+                    $order_old->update_meta_data('total_paid', $total);
+                } else {
+                    $order_old->add_meta_data('total_paid', $total);
+                }
+
+                $total_paid_meta = $order_old->get_meta('total_paid_gross');
+                if ($total_paid_meta) {
+                    $order_old->update_meta_data('total_paid_gross', $total_gross);
+                } else {
+                    $order_old->add_meta_data('total_paid_gross', $total_gross);
+                }
+                
+                // $pending_payment_meta = $order_old->get_meta('pending_payment');
+                // if ($pending_payment_meta) {
+                //     $order_old->update_meta_data('pending_payment', (($order_old->get_subtotal() - $order_old->get_total_discount()) - $total));
+                // } else {
+                //     $order_old->add_meta_data('pending_payment', (($order_old->get_subtotal() - $order_old->get_total_discount()) - $total));
+                // }
+
+                // $order_old->update_status('completed');
+            }
+
+            $order_old->save();
+
+            // Obtener el primer item de la orden vieja
+            // $old_order_items = $order_old->get_items();
+            // $first_item = reset($old_order_items);
+            // $customer_id = $order_old->get_customer_id();
+
+            // $order_args = array(
+            //     'customer_id' => $customer_id,
+            //     'status' => 'pending-payment',
+            // );
+            
+            // $new_order = wc_create_order($order_args);
+            // $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
+            // $new_order->add_meta_data('old_order_primary', $order_id);
+            // $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
+            // $new_order->add_meta_data('is_vat_exempt', $order_old->get_meta('is_vat_exempt'));
+            // $new_order->add_meta_data('pending_payment', $order_old->get_meta('pending_payment'));
+            // $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
+            // $new_order->set_date_created($date_order);
+            // $product = $first_item->get_product();
+            // $product->set_price($amount_order);
+            // $new_order->add_product($product, $first_item->get_quantity());
+            // $new_order->calculate_totals();
+            // if ($order_old->get_address('billing')) {
+            //     $billing_address = $order_old->get_address('billing');
+            //     $new_order->set_billing_first_name($billing_address['first_name']);
+            //     $new_order->set_billing_last_name($billing_address['last_name']);
+            //     $new_order->set_billing_company($billing_address['company']);
+            //     $new_order->set_billing_address_1($billing_address['address_1']);
+            //     $new_order->set_billing_address_2($billing_address['address_2']);
+            //     $new_order->set_billing_city($billing_address['city']);
+            //     $new_order->set_billing_state($billing_address['state']);
+            //     $new_order->set_billing_postcode($billing_address['postcode']);
+            //     $new_order->set_billing_country($billing_address['country']);
+            //     $new_order->set_billing_email($billing_address['email']);
+            //     $new_order->set_billing_phone($billing_address['phone']);
+            // }
+            // $new_order->save();
 
         }
     }
