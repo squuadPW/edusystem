@@ -163,6 +163,7 @@ if (document.getElementById("signature-student")) {
       save_signatures.disabled = false;
       document.getElementById("please_select_grade").style.display = "block";
       document.getElementById("select_grade").style.color = "red";
+      document.getElementById("select_grade").scrollIntoView({ behavior: "smooth" });
       alert(
         "To proceed with your enrollment, please select the last grade you completed"
       );
