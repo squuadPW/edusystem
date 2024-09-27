@@ -152,7 +152,26 @@ function add_admin_form_payments_content()
 
             $order_old->update_status('pending-payment');
             $order_old->update_meta_data('pending_payment', $amount_order);
-            $order_old->set_date_created($date_order);
+            // $order_old->set_date_created($date_order);
+
+            if ($order_old->get_meta('dates_next_orders')) {
+				$dates = json_decode($order_old->get_meta('dates_next_orders'));
+				array_push($dates, [
+					'id' => (count($dates) + 1),
+                    'date' => $date_order,
+                    'pending_payment' => $amount_order
+				]);
+				$order_old->update_meta_data( 'dates_next_orders', json_encode($dates));
+			} else {
+				$dates = [
+					[
+						'id' => 1,
+                        'date' => $date_order,
+                        'pending_payment' => $amount_order
+					]
+				];
+				$order_old->add_meta_data( 'dates_next_orders', json_encode($dates));
+			}
 
             $split_method = $order_old->get_meta('split_method');
             $split_method = json_decode($split_method);
