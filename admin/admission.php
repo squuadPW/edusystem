@@ -843,6 +843,19 @@ function update_status_documents()
 
         $wpdb->insert($table_users_notices, $data);
 
+        $table_student_documents =  $wpdb->prefix.'student_documents';
+        $document_loaded = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id={$document_id}");
+        if ($document_loaded->document_id == 'ENROLLMENT') {
+            $table_users_signatures =  $wpdb->prefix.'users_signatures';
+            $data_alliance = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$user_student->ID}");
+            $wpdb->delete($table_users_signatures,['id' => $data_alliance->id]);
+
+            $table_students = $wpdb->prefix . 'students';
+            $student_get = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_students WHERE id = %d", $student_id));
+            $data_alliance = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$student_get->partner_id}");
+            $wpdb->delete($table_users_signatures,['id' => $data_alliance->id]);
+        }
+
         $wpdb->update($table_student_documents, ['approved_by' => $current_user->ID, 'status' => $status_id, 'updated_at' => date('Y-m-d H:i:s'), 'description' => $description], ['id' => $document_id, 'student_id' => $student_id]);
 
         if ($status_id == 3) {
