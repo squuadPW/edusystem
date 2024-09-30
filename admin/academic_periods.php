@@ -34,6 +34,23 @@ function add_admin_form_academic_periods_content()
             $period_id = $_POST['period_id'];
             $name = $_POST['name'];
             $code = $_POST['code'];
+            $year = $_POST['year'];
+            $start_date = $_POST['start_date'];
+            $end_date = $_POST['end_date'];
+            $start_date_A = $_POST['start_date_A'];
+            $end_date_A = $_POST['end_date_A'];
+            $start_date_B = $_POST['start_date_B'];
+            $end_date_B = $_POST['end_date_B'];
+            $start_date_C = $_POST['start_date_C'];
+            $end_date_C = $_POST['end_date_C'];
+            $start_date_D = $_POST['start_date_D'];
+            $end_date_D = $_POST['end_date_D'];
+            $start_date_E = $_POST['start_date_E'];
+            $end_date_E = $_POST['end_date_E'];
+            $start_date_inscriptions = $_POST['start_date_inscriptions'];
+            $end_date_inscriptions = $_POST['end_date_inscriptions'];
+            $start_date_pre_inscriptions = $_POST['start_date_pre_inscriptions'];
+            $end_date_pre_inscriptions = $_POST['end_date_pre_inscriptions'];
             $status_id = $_POST['status_id'] ?? 0;
 
             //update
@@ -42,7 +59,24 @@ function add_admin_form_academic_periods_content()
                 $wpdb->update($table_periods, [
                     'name' => $name,
                     'code' => $code,
+                    'year' => $year,
+                    'start_date' => $start_date,
+                    'end_date' => $end_date,
+                    'start_date_A' => $start_date_A,
+                    'end_date_A' => $end_date_A,
+                    'start_date_B' => $start_date_B,
+                    'end_date_B' => $end_date_B,
+                    'start_date_C' => $start_date_C,
+                    'end_date_C' => $end_date_C,
+                    'start_date_D' => $start_date_D,
+                    'end_date_D' => $end_date_D,
+                    'start_date_E' => $start_date_E,
+                    'end_date_E' => $end_date_E,
                     'status_id' => $status_id,
+                    'start_date_inscription' => $start_date_inscriptions,
+                    'end_date_inscription' => $end_date_inscriptions,
+                    'start_date_pre_inscription' => $start_date_pre_inscriptions,
+                    'end_date_pre_inscription' => $end_date_pre_inscriptions,
                 ], ['id' => $period_id]);
 
                 // if ($status_id == 1) {
@@ -102,6 +136,23 @@ function add_admin_form_academic_periods_content()
                 $wpdb->insert($table_periods, [
                     'name' => $name,
                     'code' => $code,
+                    'year' => $year,
+                    'start_date' => $start_date,
+                    'end_date' => $end_date,
+                    'start_date_A' => $start_date_A,
+                    'end_date_A' => $end_date_A,
+                    'start_date_B' => $start_date_B,
+                    'end_date_B' => $end_date_B,
+                    'start_date_C' => $start_date_C,
+                    'end_date_C' => $end_date_C,
+                    'start_date_D' => $start_date_D,
+                    'end_date_D' => $end_date_D,
+                    'start_date_E' => $start_date_E,
+                    'end_date_E' => $end_date_E,
+                    'start_date_inscription' => $start_date_inscriptions,
+                    'end_date_inscription' => $end_date_inscriptions,
+                    'start_date_pre_inscription' => $start_date_pre_inscriptions,
+                    'end_date_pre_inscription' => $end_date_pre_inscriptions,
                     'status_id' => $status_id,
                     'created_at' => date('Y-m-d H:i:s')
                 ]);
@@ -225,8 +276,8 @@ class TT_academic_period_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'academic_period_code' => __('Code', 'aes'),
-            'name' => __('Name', 'aes'),
+            'academic_period_code' => __('Period', 'aes'),
+            'name' => __('Description', 'aes'),
             'status_id' => __('Status', 'aes'),
             'date' => __('Created at', 'aes'),
             'view_details' => __('Actions', 'aes'),
