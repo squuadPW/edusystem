@@ -8,6 +8,7 @@ function add_admin_form_scholarships_content(){
             try {
                     global $wpdb;
                     $scholarship_id = $_POST['scholarship_id'];
+                    $type = $_POST['type'];
                     $scholarship = $wpdb->get_row("SELECT * FROM wp_student_scholarship_application WHERE id = {$scholarship_id}");
 
                     // GENERAMOS USUARIO PARA EL PARTNER

@@ -11,6 +11,14 @@
 					<p id="message-modal-status-scholarship"></p>
 					<input type="hidden" id="scholarship_id" name="scholarship_id" value="">
 				</div>
+				<div>
+					<label for="type">Type of scholarship</label><br>
+					<select name="type" id="type">
+						<option value="1">Complete</option>
+						<option value="2">Only fee inscription</option>
+						<option value="3">Only fee graduation</option>
+					</select>
+				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="submit" class="button button-primary"><?= __('Yes', 'restaurant-system-app'); ?></button>
