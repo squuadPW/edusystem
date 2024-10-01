@@ -357,6 +357,72 @@ function insert_register_documents($student_id, $grade_id)
     }
 }
 
+function insert_period_inscriptions($student_id)
+{
+    global $wpdb;
+
+    // Definir las tablas y columnas
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_academic_periods = $wpdb->prefix . 'academic_periods';
+    $periods = ['A', 'B', 'C', 'D', 'E'];
+
+    // Obtener la fecha actual en formato MySQL
+    $current_time = current_time('mysql');
+    $valid_period = false;
+
+    // Iterar sobre los periodos
+    foreach ($periods as $period) {
+        // Preparar la consulta SQL
+        $query = $wpdb->prepare(
+            "SELECT * FROM {$table_academic_periods} WHERE start_date_{$period} <= %s AND end_date_{$period} >= %s",
+            array($current_time, $current_time)
+        );
+
+        // Ejecutar la consulta y obtener el resultado
+        $period_data = $wpdb->get_row($query);
+
+        // Verificar si se encontró un resultado
+        if ($period_data) {
+            $valid_period = true;
+
+            // Insertar el registro en la tabla de inscripciones
+            $wpdb->insert($table_student_period_inscriptions, [
+                'student_id' => $student_id,
+                'code_period' => $period_data->code,
+                'cut_period' => $period,
+            ]);
+            break;
+        }
+    }
+
+    if (!$valid_period) {
+        // Iterar sobre los periodos
+        foreach ($periods as $period) {
+            // Preparar la consulta SQL
+            $query = $wpdb->prepare(
+                "SELECT * FROM {$table_academic_periods} WHERE start_date_{$period} >= %s AND end_date_{$period} >= %s",
+                array($current_time, $current_time)
+            );
+
+            // Ejecutar la consulta y obtener el resultado
+            $period_data = $wpdb->get_row($query);
+
+            // Verificar si se encontró un resultado
+            if ($period_data) {
+                $valid_period = true;
+
+                // Insertar el registro en la tabla de inscripciones
+                $wpdb->insert($table_student_period_inscriptions, [
+                    'student_id' => $student_id,
+                    'code_period' => $period_data->code,
+                    'cut_period' => $period,
+                ]);
+                break;
+            }
+        }
+    }
+}
+
 function get_documents($student_id)
 {
 

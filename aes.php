@@ -26,6 +26,7 @@ function create_tables() {
   $table_student_payments = $wpdb->prefix.'student_payments';
   $table_students = $wpdb->prefix.'students';
   $table_student_documents = $wpdb->prefix.'student_documents';
+  $table_student_period_inscriptions = $wpdb->prefix.'student_period_inscriptions';
   $table_institutes =  $wpdb->prefix.'institutes';
   $table_alliances =  $wpdb->prefix.'alliances';
   $table_grades = $wpdb->prefix.'grades';
@@ -38,6 +39,17 @@ function create_tables() {
   $table_institutes_payments = $wpdb->prefix.'institutes_payments';
   $table_alliances_payments = $wpdb->prefix.'alliances_payments';
   $table_user_notices = $wpdb->prefix.'users_notices';
+
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_period_inscriptions}'") != $table_student_period_inscriptions){
+    dbDelta( "CREATE TABLE " . $table_student_period_inscriptions . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        student_id INT(11) NOT NULL,
+        code_period INT(11) NOT NULL,
+        cut_period TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_user_notices}'") != $table_user_notices){
     dbDelta( "CREATE TABLE " . $table_user_notices . " (

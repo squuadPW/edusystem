@@ -179,6 +179,7 @@ function woocommerce_checkout_order_created_action($order)
 
         $student_id = insert_student($customer_id);
         insert_register_documents($student_id, $_COOKIE['initial_grade']);
+        insert_period_inscriptions($student_id);
 
         $order->update_meta_data('student_id', $student_id);
         $order->update_meta_data('id_bitrix', $_COOKIE['id_bitrix']);
