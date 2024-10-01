@@ -8,7 +8,7 @@
     <div style="width:100%;text-align:center;padding-top:10px;">
 
             <select id="academic_period">
-            <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+            <option value="" selected="selected"><?= __('Select an academic period', 'aes'); ?></option>
                 <?php foreach ($periods as $key => $period) { ?>
                     <option value="<?php echo $period->code; ?>" <?= ($student->academic_period == $period->code) ? 'selected' : ''; ?>>
                         <?php echo $period->name; ?>
@@ -16,7 +16,7 @@
                 <?php } ?>
             </select>
             <select id="grade">
-                    <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                    <option value="" selected="selected"><?= __('Select a grade', 'aes'); ?></option>
                     <?php foreach ($grades as $grade): ?>
                         <option value="<?= $grade->id; ?>"><?= $grade->name; ?></option>
                     <?php endforeach; ?>

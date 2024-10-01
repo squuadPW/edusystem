@@ -21,6 +21,15 @@ $countries = get_countries();
     <div style="display:flex;width:100%;justify-content:end;">
         <button data-id="<?= $student->id; ?>" id="button-export-xlsx"
             class="button button-primary"><?= __('Export Excel', 'aes'); ?></button>
+        <?php 
+            global $current_user;
+            $roles = $current_user->roles;
+            if (in_array('administrator', $roles)) {
+        ?>
+            <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>" target="_blank">
+                <button class="button button-success" style="margin-left: 10px"><?= __('View user', 'aes'); ?></button>
+            </a>
+        <?php } ?>
     </div>
     <form id="student-form" method="post"
         action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=save_users_details'); ?>">
@@ -42,6 +51,12 @@ $countries = get_countries();
                                             <label for="grade"><b><?php _e('Grade', 'aes'); ?></b></label><br>
                                             <input readonly type="text" id="grade" name="grade"
                                                 value="<?php echo get_name_grade($student->grade_id); ?>"
+                                                style="width:100%">
+                                        </td>
+                                        <td>
+                                            <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
+                                            <input readonly type="text" id="name_institute" name="name_institute"
+                                                value="<?php echo $student->name_institute; ?>"
                                                 style="width:100%">
                                         </td>
                                     </tr>
@@ -150,7 +165,6 @@ $countries = get_countries();
                                                 required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
-                                    <tr>
                                         <td style="width: auto !important">
                                             <label for="email"><b><?php _e('Email', 'aes'); ?></b></label><br>
                                             <input type="text" id="email" name="email"
