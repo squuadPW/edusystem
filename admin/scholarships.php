@@ -8,7 +8,9 @@ function add_admin_form_scholarships_content(){
             try {
                     global $wpdb;
                     $scholarship_id = $_POST['scholarship_id'];
-                    $type = $_POST['type'];
+                    $fee_inscription = $_POST['fee_inscription'];
+                    $program = $_POST['program'];
+                    $fee_graduation = $_POST['fee_graduation'];
                     $scholarship = $wpdb->get_row("SELECT * FROM wp_student_scholarship_application WHERE id = {$scholarship_id}");
 
                     // GENERAMOS USUARIO PARA EL PARTNER
@@ -101,19 +103,45 @@ function add_admin_form_scholarships_content(){
                     // GENERAMOS USUARIO PARA EL ESTUDIANTE
 
                     // CREAMOS REGISTRO EN TABLA STUDENT_PAYMENTS
-                    $data = array(
-                        'status_id' => 1, // Replace with the actual status ID
-                        'student_id' => $student_id, // Replace with the actual student ID
-                        'product_id' => $scholarship_id, // Replace with the actual product ID
-                        'amount' => 0, // Replace with the actual amount
-                        'type_payment' => 1, // Replace with the actual payment type
-                        'cuote' => 1, // Replace with the actual num coute
-                        'num_cuotes' => 1, // Replace with the num total of coutes
-                        'date_payment' => date('Y-m-d'), // Replace with the date of first payment
-                        'date_next_payment' => date('Y-m-d'), // Replace with the date of next payment
-                    );
+                    if ($fee_inscription == 1) {
+                        $product_id = 63;
+                        $product = wc_get_product($product_id);
+                        $amount = $product->get_price();
 
-                    $wpdb->insert($wpdb->prefix.'student_payments', $data);
+                        $data = array(
+                            'status_id' => 1, // Replace with the actual status ID
+                            'student_id' => $student_id, // Replace with the actual student ID
+                            'product_id' => $product_id, // Replace with the actual product ID
+                            'amount' => $amount, // Replace with the actual amount
+                            'type_payment' => 1, // Replace with the actual payment type
+                            'cuote' => 1, // Replace with the actual num coute
+                            'num_cuotes' => 1, // Replace with the num total of coutes
+                            'date_payment' => date('Y-m-d'), // Replace with the date of first payment
+                            'date_next_payment' => date('Y-m-d'), // Replace with the date of next payment
+                        );
+    
+                        $wpdb->insert($wpdb->prefix.'student_payments', $data);
+                    }
+
+                    if ($program == 1) {
+                        $product_id = 51;
+                        $product = wc_get_product($product_id);
+                        $amount = $product->get_price();
+
+                        $data = array(
+                            'status_id' => 1, // Replace with the actual status ID
+                            'student_id' => $student_id, // Replace with the actual student ID
+                            'product_id' => $product_id, // Replace with the actual product ID
+                            'amount' => $amount, // Replace with the actual amount
+                            'type_payment' => 1, // Replace with the actual payment type
+                            'cuote' => 1, // Replace with the actual num coute
+                            'num_cuotes' => 1, // Replace with the num total of coutes
+                            'date_payment' => date('Y-m-d'), // Replace with the date of first payment
+                            'date_next_payment' => date('Y-m-d'), // Replace with the date of next payment
+                        );
+    
+                        $wpdb->insert($wpdb->prefix.'student_payments', $data);
+                    }
                     // CREAMOS REGISTRO EN TABLA STUDENT_PAYMENTS
 
                     // GUARDAMOS EL STATUS
@@ -127,6 +155,11 @@ function add_admin_form_scholarships_content(){
                         )
                     );
                     // GUARDAMOS EL STATUS
+
+                    update_status_student($student_id, 1);
+
+                    $email_request_documents = WC()->mailer()->get_emails()['WC_Request_Documents_Email'];
+                    $email_request_documents->trigger($student_id);
 
                     wp_new_user_notification($user_partner_id, null, 'both' );
                     wp_redirect(admin_url('admin.php?page=add_admin_form_scholarships_content'));

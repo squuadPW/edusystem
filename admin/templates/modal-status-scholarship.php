@@ -12,12 +12,10 @@
 					<input type="hidden" id="scholarship_id" name="scholarship_id" value="">
 				</div>
 				<div>
-					<label for="type">Type of scholarship</label><br>
-					<select name="type" id="type">
-						<option value="1">Complete</option>
-						<option value="2">Only fee inscription</option>
-						<option value="3">Only fee graduation</option>
-					</select>
+					<label for="type">Please indicate what the scholarship covers for the student</label><br><br>
+					<input type="checkbox" name="fee_inscription" value="1"> Fee inscription<br>
+					<input type="checkbox" name="program" value="1"> Program<br>
+					<input type="checkbox" name="fee_graduation" value="1"> Fee graduation<br>
 				</div>
 			</div>
 			<div class="modal-footer">
