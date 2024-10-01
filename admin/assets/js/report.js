@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
             newElement.id = "payment-options";
             newElement.title = `Payments made with ${element[0]}`;
             newElement.innerHTML = `
-                          <div>${element[0]}</div>
+                          <div>${element[0] ? element[0] : 'Payments made with split'}</div>
                           <div style="margin-top: 10px;"><strong id="${element[0]}">${element[1]}</strong></div>
                         `;
             cardTotalsSales.appendChild(newElement);

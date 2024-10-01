@@ -122,7 +122,7 @@ function get_orders($start, $end)
         $discount += ($order->get_total_discount() ? $order->get_total_discount() : 0);
         if ($order->get_fees()) {
             foreach ($order->get_fees() as $fee) {
-                $fee_payment += $fee->get_amount();
+                $fee_payment += (float)$fee->get_amount();
             }
         }
 
