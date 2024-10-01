@@ -82,6 +82,10 @@ function save_scholarship(){
                 'type' => 'student',
             ]);
 
+            if (!$partner_id) {
+                $partner_id = $wpdb->insert_id;
+            }
+
             $table_pre_students = $wpdb->prefix.'pre_students';
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $query = $wpdb->prepare("SELECT code FROM " . $table_academic_periods . "WHERE status_id = %d ORDER BY created_at DESC LIMIT 1", 1);

@@ -22,6 +22,12 @@
                                     <td><?= $scholarship->created_at ?></td>
                                 </tr>
                                 <tr>
+                                    <th scope="row"><label for="input_id"><?= __('Type Document','aes').':'; ?></label></th>
+                                    <td><?= ucwords($student->type_document) ?></td>
+                                    <th scope="row"><label for="input_id"><?= __('ID Document','aes').':'; ?></label></th>
+                                    <td><?= $student->id_document ?></td>
+                                </tr>
+                                <tr>
                                     <th scope="row"><label for="input_id"><?= __('Student','aes').':'; ?></label></th>
                                     <td><?= $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name ?></td>
 
@@ -29,12 +35,35 @@
                                     <td><?= $student->email . ' - ' . $student->phone ?></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row"><label for="input_id"><?= __('Partner','aes').':'; ?></label></th>
-                                    <td><?= $partner->name . ' ' . $partner->middle_name . ' ' . $partner->last_name . ' ' . $partner->middle_last_name ?></td>
-
-                                    <th scope="row"><label for="input_id"><?= __('Partner contact','aes').':'; ?></label></th>
-                                    <td><?= $partner->email . ' - ' . $partner->phone ?></td>
+                                    <th scope="row"><label for="input_id"><?= __('Birth date','aes').':'; ?></label></th>
+                                    <td><?= $student->birth_date ?></td>
+                                    <th scope="row"><label for="input_id"><?= __('Gender','aes').':'; ?></label></th>
+                                    <td><?= $student->gender ?></td>
                                 </tr>
+                                
+                                <tr>
+                                    <th scope="row"><label for="input_id"><?= __('Country','aes').':'; ?></label></th>
+                                    <td><?= $student->country ?></td>
+                                    <th scope="row"><label for="input_id"><?= __('City','aes').':'; ?></label></th>
+                                    <td><?= $student->city ?></td>
+                                </tr>
+                                <?php
+                                $birth_date = $student->birth_date;
+                                $today = new DateTime();
+                                $age = $today->diff(new DateTime($birth_date))->y;
+
+                                if ($age < 18) {
+                                    ?>
+                                    <tr>
+                                        <th scope="row"><label for="input_id"><?= __('Partner','aes').':'; ?></label></th>
+                                        <td><?= $partner->name . ' ' . $partner->middle_name . ' ' . $partner->last_name . ' ' . $partner->middle_last_name ?></td>
+
+                                        <th scope="row"><label for="input_id"><?= __('Partner contact','aes').':'; ?></label></th>
+                                        <td><?= $partner->email . ' - ' . $partner->phone ?></td>
+                                    </tr>
+                                    <?php
+                                }
+                                ?>
                                 <tr>
                                     <th scope="row"><label for="input_id"><?= __('Grade','aes').':'; ?></label></th>
                                     <td><?= $grade ? $grade->name : '' ?></td>
