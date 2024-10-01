@@ -218,7 +218,7 @@ function add_custom_admin_page() {
         'manage_administrator_aes',
         'list_admin_form_administrations_content',
         'list_admin_form_administrations_content', 
-        'dashicons-admin-settings',
+        'dashicons-admin-multisite',
         10
     );
 
@@ -268,7 +268,7 @@ function add_custom_admin_page() {
         'manager_scholarship_aes', 
         'add_admin_form_scholarships_content',
         'add_admin_form_scholarships_content', 
-        'dashicons-media-document', 
+        'dashicons-star-empty', 
         7
     );
 
