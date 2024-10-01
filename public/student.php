@@ -248,20 +248,59 @@ function insert_student($customer_id)
 
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
-
-    global $wpdb;
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
-    $query = $wpdb->prepare("SELECT code FROM " . $table_academic_periods . "
-                             WHERE status_id = %d 
-                             ORDER BY created_at DESC LIMIT 1", 1);
-    $result = $wpdb->get_var($query);
+    $periods = ['A', 'B', 'C', 'D', 'E'];
 
-    $code = $result ? $result : AES_PERIOD;
+    // Obtener la fecha actual en formato MySQL
+    $current_time = current_time('mysql');
+    $valid_period = false;
+    $code = null;
+
+    // Iterar sobre los periodos
+    foreach ($periods as $period) {
+        // Preparar la consulta SQL
+        $query = $wpdb->prepare(
+            "SELECT * FROM {$table_academic_periods} WHERE start_date_{$period} <= %s AND end_date_{$period} >= %s",
+            array($current_time, $current_time)
+        );
+
+        // Ejecutar la consulta y obtener el resultado
+        $period_data = $wpdb->get_row($query);
+
+        // Verificar si se encontró un resultado
+        if ($period_data) {
+            $valid_period = true;
+            $code = $period_data->code;
+            break;
+        }
+    }
+
+    if (!$valid_period) {
+        // Iterar sobre los periodos
+        foreach ($periods as $period) {
+            // Preparar la consulta SQL
+            $query = $wpdb->prepare(
+                "SELECT * FROM {$table_academic_periods} WHERE start_date_{$period} >= %s AND end_date_{$period} >= %s",
+                array($current_time, $current_time)
+            );
+
+            // Ejecutar la consulta y obtener el resultado
+            $period_data = $wpdb->get_row($query);
+
+            // Verificar si se encontró un resultado
+            if ($period_data) {
+                $valid_period = true;
+                $code = $period_data->code;
+                break;
+            }
+        }
+    }
+
     $wpdb->insert($table_students, [
         'name' => $_COOKIE['name_student'],
         'type_document' => $_COOKIE['document_type'],
         'id_document' => $_COOKIE['id_document'],
-        'academic_period' => $code,
+        'academic_period' => $code ? $code : AES_PERIOD,
         'middle_name' => $_COOKIE['middle_name_student'],
         'last_name' => $_COOKIE['last_name_student'],
         'middle_last_name' => $_COOKIE['middle_last_name_student'],
