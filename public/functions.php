@@ -160,7 +160,6 @@ add_filter('default_checkout_billing_country', 'change_default_checkout_country'
 
 function woocommerce_checkout_order_created_action($order)
 {
-
     $customer_id = $order->get_customer_id();
 
     if (!get_user_meta($customer_id, 'status_register', true)) {
@@ -215,6 +214,18 @@ function woocommerce_checkout_order_created_action($order)
         update_user_meta($customer_id, 'ethnicity', $_COOKIE['ethnicity_parent']);
     }
 
+    if (isset($_COOKIE['password']) && !empty($_COOKIE['password'])) {
+        global $wpdb;
+
+        $user_data = array(
+            'ID' => $customer_id,
+            'user_pass' => $_COOKIE['password'],
+            'user_pass_reset' => 1
+        );
+
+        wp_update_user($user_data);
+    }
+
     //validate cookie and set metadata
     if (isset($_COOKIE['fee_student_id']) && !empty($_COOKIE['fee_student_id'])) {
         $order->update_meta_data('student_id', $_COOKIE['fee_student_id']);
@@ -251,6 +262,7 @@ function woocommerce_checkout_order_created_action($order)
     setcookie('id_bitrix', '', time());
     setcookie('institute_id', '', time());
     setcookie('gender', '', time());
+    setcookie('password', '', time());
 }
 
 add_action('woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action');
@@ -486,7 +498,8 @@ function add_loginout_link($items, $args)
         }
 
         $logout_link = wp_logout_url(get_home_url());
-        $items .= '<li><a class="button-primary" style="font-size:14px;" href="' . $logout_link . '">' . __('Log out', 'form-plugin') . '</a></li>';
+        $items .= '<li><div style="background-color: #091c5c87; border-radius: 16px; display: flex;" ><div style="color: white; padding: 5px 20px !important; text-align: center; border-radius: 20px; color: white !important; font-size: 14px;">' . $current_user->first_name . ' ' . $current_user->last_name . ' 
+        </div><div><a class="button-primary" style="font-size:14px;" href="' . $logout_link . '">' . __('Log out', 'form-plugin') . '</a></div></div></li>';
     } elseif (!is_user_logged_in()) {
         $items .= '<li><a class="button-primary" style="font-size:14px;" href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '">' . __('Log in', 'form-plugin') . '</a></li>';
     }
@@ -1451,7 +1464,7 @@ function verificar_contraseña()
                     $order->save();
                     
                     if (!$complete) {
-                        wc_add_notice(__('Your payment has been received. Please continue with the remaining amount.', 'your-text-domain'), 'success');
+                        // wc_add_notice(__('Your payment has been received. Please continue with the remaining amount.', 'your-text-domain'), 'success');
                         wp_redirect($checkout_url);
                         exit;
                     }
@@ -1478,7 +1491,7 @@ function verificar_contraseña()
 
             if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                 // Agrega un script para levantar el modal
-                add_action('wp_footer', 'modal_create_password');
+                // add_action('wp_footer', 'modal_create_password');
             } else if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                 add_action('wp_footer', 'modal_enrollment_student');
             }

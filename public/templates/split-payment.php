@@ -23,45 +23,96 @@ $style = ($split_payment_metadata !== '') ? 'block' : 'none';
 $style_checkbox = ($split_payment_metadata !== '') ? 'none' : 'block';
 ?>
 
-<div style="margin: 10px">
-    <!-- The checkbox -->
-    <div style="margin-bottom: 20px; margin-top: -10px; display: <?php echo $style_checkbox ?>">
-        <input type="checkbox" id="aes_split_payment" name="aes_split_payment" onchange="showInput(this.checked)" <?php echo $aes_split_payment_checked; ?>> Use split payment
+<div>
+    <div style="padding: 22.652px; text-align: center; background-color: #f5f5f5; font-weight: 600; margin-top: -18px;">
+        Payment methods
     </div>
 
-    <!-- The input and button container -->
-    <div class="input-container" style="display: <?php echo $style ?>">
-        <!-- The input for entering the amount -->
-        <div>
-            <div>
-                <div>
-                    <label for="aes_amount_split">Amount to pay</label>
-                    <input type="number" id="aes_amount_split" name="aes_amount_split" style="width: 100%">
-                    <label for="aes_amount_split">Payment method commission <strong
-                            id="payment_method_comission"></strong> + amount: <strong id="total_entered"
-                            style="color: green; font-size: 18px"></strong></label><br>
-                </div>
-                <div style="text-align: center; display: <?php echo $style_button_total_payment ?>">
-                    <button id="total_payment_button" type="button" class="submit" style="margin: 10px; font-size: 16px"
-                        onclick="clickLoadInfoFee()">Total payment</button>
-                </div>
-            </div>
-            <input type="hidden" id="aes_amount_split_fee" name="aes_amount_split_fee" style="width: 100%">
-            <input type="hidden" id="aes_payment_page" name="aes_payment_page" value="<?php echo $split_payment_page ?>"
-                style="width: 100%">
+    <div style="padding: 18px">
+        <!-- The checkbox -->
+        <div style="padding: 10px; font-weight: 600; display: <?php echo $style_checkbox ?>">
+            <label class="fee-container" style="margin-bottom: 0px !important">
+                <strong>Split payment</strong>
+                <input type="checkbox" id="aes_split_payment" name="aes_split_payment" onchange="showInput(this.checked)" <?php echo $aes_split_payment_checked; ?>>
+                <span class="checkmark"></span>
+            </label>
         </div>
 
-        <!-- The button to generate parts -->
-        <!-- <div style="text-align: center; display: flex; justify-content: space-evenly;">
+        <!-- The input and button container -->
+        <div class="input-container" style="margin-top: 10px; display: <?php echo $style ?>">
+            <!-- The input for entering the amount -->
+            <div>
+                <p style="font-style: italic; font-size: 14px">A split payment is a payment method that allows you to divide a single transaction into multiple payments. This means that instead of paying the full amount upfront, you can split it into two or more installments, making it more manageable and convenient for your budget.</p>
+                <div style="margin-top: 10px;">
+                    <div>
+                        <label for="aes_amount_split">Amount to pay</label>
+                        <div style="position: relative; display: inline-block; width: 100%;">
+                            <input type="number" id="aes_amount_split" name="aes_amount_split" style="width: 100%; padding-right: <?php echo $style_button_total_payment == 'none' ? '10px' : '150px' ?>; box-sizing: border-box; -webkit-appearance: none; -moz-appearance: textfield;">
+                            <button id="total_payment_button" type="button" class="submit" style="font-size: 14px; padding: 10px 10px !important; border-radius: 9px !important; position: absolute; top: 50%; right: 8px; height: 36px; transform: translateY(-50%); width: auto; display: <?php echo $style_button_total_payment ?>" onclick="clickLoadInfoFee()">Pending amount</button>
+                        </div>
+                        <label for="aes_amount_split" style="font-size: 14px">Payment method commission <strong id="payment_method_comission"></strong> + amount: <strong id="total_entered" style="color: green;"></strong></label><br>
+                    </div>
+                </div>
+                <input type="hidden" id="aes_amount_split_fee" name="aes_amount_split_fee" style="width: 100%">
+                <input type="hidden" id="aes_payment_page" name="aes_payment_page" value="<?php echo $split_payment_page ?>" style="width: 100%">
+            </div>
+
+            <!-- The button to generate parts -->
+            <!-- <div style="text-align: center; display: flex; justify-content: space-evenly;">
             <div style="width: 45%; border-top: 1px solid gray;"></div><span style="margin-top: -10px;">Or</span><div style="width: 45%; border-top: 1px solid gray;"></div>
          </div>
         <button id="generate-button" class="button button-primary" style="margin: 10px 0px !important;">Generate payment splits</button> -->
+        </div>
     </div>
 </div>
+
+<?php 
+if ($order) {
+    global $current_user;
+    $payments = json_decode($order->get_meta('split_method'));
+    if($order->get_meta('pending_payment') && $order->get_meta('pending_payment') > 0) { ?>
+        <div id='modalNextPayment' class='modal' style="display: block">
+            <div class='modal-content'>
+                <div class="modal-header">
+                    <h3 style="font-size:20px;">Payment received</h3>
+                    <span class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+                </div>
+                <div class="modal-body" style="margin: 10px; padding: 0px">
+                    <p>Dear <?php echo $current_user->first_name . ' ' . $current_user->last_name ?>,</p>
+    
+                    <p>We are pleased to inform you that we have successfully received your last payment <?php echo $payments[count($payments) - 1]->method ?>, in the amount of <strong><?php echo wc_price($payments[count($payments) - 1]->amount) ?></strong>.</p>
+    
+                    <p>Please proceed to the next payment step to complete your transaction.</p>
+    
+                    <p>Best regards, American Elite School</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="continue-payment" class="button button-primary"><?= __('Continue', 'restaurant-system-app'); ?></button>
+                    </div>
+            </div>
+        </div>
+<?php  }
+    }
+?>
+
 
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
 <script>
+
+    let button_continue = document.getElementById('continue-payment');
+    if (button_continue) {
+        button_continue.addEventListener('click',(e) => {
+            document.getElementById('modalNextPayment').style.display = "none";
+        });
+    }
+
+    document.querySelectorAll('.modal-close').forEach((close) => {
+        close.addEventListener('click',(e) => {
+            document.getElementById('modalNextPayment').style.display = "none";
+        });
+    });
+
     let current_fee = 0;
     let current_payment_method_text = '';
     document.getElementById('total_entered').innerText = `Loading...`;

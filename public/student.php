@@ -38,6 +38,7 @@ function save_student()
         $program = isset($_POST['program']) ? $_POST['program'] : null;
         $grade = isset($_POST['grade']) ? $_POST['grade'] : null;
         $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
+        $password = isset($_POST['password']) ? $_POST['password'] : null;
 
         setcookie('is_older', '', time() + 3600);
         setcookie('ethnicity', $ethnicity, time() + 3600);
@@ -55,6 +56,7 @@ function save_student()
         setcookie('middle_last_name_student', ucwords($middle_last_name_student), time() + 3600);
         setcookie('birth_date', $birth_date, time() + 3600);
         setcookie('gender', $gender, time() + 3600);
+        setcookie('password', $password, time() + 3600);
 
         $id_bitrix = $_GET['idbitrix'];
         if (isset($id_bitrix)) {

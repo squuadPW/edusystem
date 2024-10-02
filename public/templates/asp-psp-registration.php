@@ -472,15 +472,6 @@ if (is_user_logged_in()) {
                 <input class="formdata" type="tel" id="number_phone" name="number_phone" autocomplete="off" required>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="email"><?= __('Student email address', 'aes'); ?><span class="required">*</span></label>
-                <input class="formdata" type="email" name="email_student" autocomplete="off"
-                    oninput="sendAjaxStudentEmailDocument()" required>
-                <span id="existstudentemail"
-                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
-                <span id="sameemailstudent"
-                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The student cannot share the same email as the representative', 'aes'); ?></span>
-            </div>
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="gender"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
                 <select class="form-control" id="gender" required name="gender">
                     <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
@@ -540,15 +531,6 @@ if (is_user_logged_in()) {
                 <input class="formdata" type="tel" id="number_partner" autocomplete="off" id="number_partner"
                     name="number_partner" required>
             </div>
-            <div id="parent-email-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="email"><?= __('Parent\'s email address', 'aes'); ?><span class="required">*</span></label>
-                <input class="formdata" type="email" name="email_partner" autocomplete="off" id="email_partner"
-                    oninput="sendAjaxPartnerEmailDocument()" required>
-                <span id="existparentemail"
-                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
-                <span id="sameemailparent"
-                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student', 'aes'); ?></span>
-            </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="parent-gender-field">
                 <label for="gender_parent"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
                 <select class="form-control" id="gender_parent" required name="gender_parent">
@@ -569,6 +551,36 @@ if (is_user_logged_in()) {
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="city"><?= __('City', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata" type="text" name="city" autocomplete="off" required>
+            </div>
+
+            <!-- DATOS DE ACCESO -->
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
+                <div class="subtitle text-align-center"><?= __('Platform access data', 'aes'); ?></div>
+
+                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="margin-bottom: 10px;">
+                    <label for="email"><?= __('Student email address', 'aes'); ?><span class="required">*</span></label>
+                    <input class="formdata" type="email" name="email_student" autocomplete="off"
+                        oninput="sendAjaxStudentEmailDocument()" required>
+                    <span id="existstudentemail"
+                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
+                    <span id="sameemailstudent"
+                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The student cannot share the same email as the representative', 'aes'); ?></span>
+                </div>
+
+                <div id="parent-email-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="margin-bottom: 10px;">
+                    <label for="email"><?= __('Parent\'s email address', 'aes'); ?><span class="required">*</span></label>
+                    <input class="formdata" type="email" name="email_partner" autocomplete="off" id="email_partner"
+                        oninput="sendAjaxPartnerEmailDocument()" required>
+                    <span id="existparentemail"
+                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
+                    <span id="sameemailparent"
+                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student', 'aes'); ?></span>
+                </div>
+
+                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="margin-bottom: 10px;">
+                    <label for="password"><?= __('Password of access', 'aes'); ?><span class="required">*</span></label>
+                    <input class="formdata" type="password" name="password" autocomplete="off" required>
+                </div>
             </div>
 
             <!-- DATOS DEL GRADO -->
