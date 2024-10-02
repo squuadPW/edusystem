@@ -29,12 +29,14 @@ document.addEventListener("DOMContentLoaded", function () {
   if (not_institute_others) {
     not_institute_others.addEventListener("change", (e) => {
       if (e.target.value == "other") {
-        document.getElementById("name-institute-field-others").style.display = "block";
+        document.getElementById("name-institute-field-others").style.display =
+          "block";
         document.getElementById("name_institute_others").required = true;
         document.getElementById("institute_id_others").required = false;
         document.getElementById("institute_id_required").textContent = "";
       } else {
-        document.getElementById("name-institute-field-others").style.display = "none";
+        document.getElementById("name-institute-field-others").style.display =
+          "none";
         document.getElementById("name_institute_others").required = false;
         document.getElementById("institute_id_required_others").required = true;
         document.getElementById("institute_id_required").textContent = "*";
@@ -145,10 +147,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   fileInputs.forEach((fileInput, index) => {
     fileInput.addEventListener("change", () => {
-      if (fileInput.files[0].type != 'application/pdf') {
-        alert('Only PDF files allowed');
-        fileInput.value = '';
-        fileLabels[index].textContent = 'Select file';
+      if (fileInput.files[0].type != "application/pdf") {
+        alert("Only PDF files allowed");
+        fileInput.value = "";
+        fileLabels[index].textContent = "Select file";
       } else {
         const fileName = fileInput.files[0].name;
         fileLabels[index].textContent = fileName ? fileName : "Select file";
@@ -156,41 +158,44 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  const countrySelect = document.getElementById('country-select');
-  const instituteSelect = document.getElementById('institute_id');
+  const countrySelect = document.getElementById("country-select");
+  const instituteSelect = document.getElementById("institute_id");
 
   if (countrySelect) {
     countrySelect.addEventListener("change", function () {
       if (document.getElementById("institute_id")) {
-        document.getElementById("institute_id").value = ""; 
+        document.getElementById("institute_id").value = "";
       }
       if (document.getElementById("name_institute")) {
-        document.getElementById("name_institute").value = ""; 
+        document.getElementById("name_institute").value = "";
       }
       if (document.getElementById("name-institute-field")) {
-        document.getElementById("name-institute-field").style.display = "none"; 
+        document.getElementById("name-institute-field").style.display = "none";
       }
       if (document.getElementById("name_institute")) {
-        document.getElementById("name_institute").required = false; 
+        document.getElementById("name_institute").required = false;
       }
       if (document.getElementById("institute_id")) {
-        document.getElementById("institute_id").required = true; 
+        document.getElementById("institute_id").required = true;
       }
       if (document.getElementById("institute_id_required")) {
-        document.getElementById("institute_id_required").textContent = "*"; 
+        document.getElementById("institute_id_required").textContent = "*";
       }
-  
+
       const selectedCountry = countrySelect.value;
       const options = instituteSelect.options;
       for (let i = 0; i < options.length; i++) {
-          const option = options[i];
-          if (option.dataset.others == '0') {
-            if (option.dataset.country === selectedCountry || option.value === '') {
-              option.style.display = 'block';
-            } else {
-              option.style.display = 'none';
-            }
+        const option = options[i];
+        if (option.dataset.others == "0") {
+          if (
+            option.dataset.country === selectedCountry ||
+            option.value === ""
+          ) {
+            option.style.display = "block";
+          } else {
+            option.style.display = "none";
           }
+        }
       }
     });
   }
@@ -461,31 +466,39 @@ if (document.getElementById("birth_date_student")) {
           }
 
           // Obtén el elemento div que contiene el input
-          const studentEmailDiv = document.getElementById('student-email');
+          const studentEmailDiv = document.getElementById("student-email");
 
           // Crea una copia del elemento div
           const studentEmailDivClone = studentEmailDiv.cloneNode(true);
-          document.getElementById('student-email-access').innerHTML = '';
-          document.getElementById('student-email-detail').innerHTML = '';
+          document.getElementById("student-email-access").innerHTML = "";
+          document.getElementById("student-email-detail").innerHTML = "";
 
-          document.getElementById('student-email-access').appendChild(studentEmailDivClone);
+          document
+            .getElementById("student-email-access")
+            .appendChild(studentEmailDivClone);
 
           var parentTitle = document.getElementById("parent-title");
           if (parentTitle) {
             parentTitle.style.display = "none";
           }
 
-          var parentBirthDateField = document.getElementById("parent_birth_date_field");
+          var parentBirthDateField = document.getElementById(
+            "parent_birth_date_field"
+          );
           if (parentBirthDateField) {
             parentBirthDateField.style.display = "none";
           }
 
-          var parentDocumentTypeField = document.getElementById("parent_document_type_field");
+          var parentDocumentTypeField = document.getElementById(
+            "parent_document_type_field"
+          );
           if (parentDocumentTypeField) {
             parentDocumentTypeField.style.display = "none";
           }
 
-          var parentIdDocumentField = document.getElementById("parent_id_document_field");
+          var parentIdDocumentField = document.getElementById(
+            "parent_id_document_field"
+          );
           if (parentIdDocumentField) {
             parentIdDocumentField.style.display = "none";
           }
@@ -502,9 +515,7 @@ if (document.getElementById("birth_date_student")) {
             parentLastNameField.style.display = "none";
           }
 
-          var parentPhoneField = document.getElementById(
-            "parent-phone-field"
-          );
+          var parentPhoneField = document.getElementById("parent-phone-field");
           if (parentPhoneField) {
             parentPhoneField.style.display = "none";
           }
@@ -514,12 +525,16 @@ if (document.getElementById("birth_date_student")) {
             parentEmailField.style.display = "none";
           }
 
-          var parentGenderField = document.getElementById("parent-gender-field");
+          var parentGenderField = document.getElementById(
+            "parent-gender-field"
+          );
           if (parentGenderField) {
             parentGenderField.style.display = "none";
           }
 
-          var parentDocumentType = document.getElementById("parent_document_type");
+          var parentDocumentType = document.getElementById(
+            "parent_document_type"
+          );
           if (parentDocumentType) {
             parentDocumentType.required = false;
           }
@@ -554,9 +569,7 @@ if (document.getElementById("birth_date_student")) {
             emailPartner.required = false;
           }
 
-          var parentGenderField = document.getElementById(
-            "gender_parent"
-          );
+          var parentGenderField = document.getElementById("gender_parent");
           if (parentGenderField) {
             parentGenderField.required = false;
           }
@@ -587,107 +600,110 @@ if (document.getElementById("birth_date_student")) {
         }
 
         // Obtén el elemento div que contiene el input
-        const studentEmailDiv = document.getElementById('student-email');
+        const studentEmailDiv = document.getElementById("student-email");
 
         // Crea una copia del elemento div
         const studentEmailDivClone = studentEmailDiv.cloneNode(true);
-        document.getElementById('student-email-access').innerHTML = '';
-        document.getElementById('student-email-detail').innerHTML = '';
-        document.getElementById('student-email-detail').appendChild(studentEmailDivClone);
+        document.getElementById("student-email-access").innerHTML = "";
+        document.getElementById("student-email-detail").innerHTML = "";
+        document
+          .getElementById("student-email-detail")
+          .appendChild(studentEmailDivClone);
 
         var parentTitle = document.getElementById("parent-title");
-          if (parentTitle) {
-            parentTitle.style.display = "block";
-          }
+        if (parentTitle) {
+          parentTitle.style.display = "block";
+        }
 
-          var parentBirthDateField = document.getElementById("parent_birth_date_field");
-          if (parentBirthDateField) {
-            parentBirthDateField.style.display = "block";
-          }
+        var parentBirthDateField = document.getElementById(
+          "parent_birth_date_field"
+        );
+        if (parentBirthDateField) {
+          parentBirthDateField.style.display = "block";
+        }
 
-          var parentDocumentTypeField = document.getElementById("parent_document_type_field");
-          if (parentDocumentTypeField) {
-            parentDocumentTypeField.style.display = "block";
-          }
+        var parentDocumentTypeField = document.getElementById(
+          "parent_document_type_field"
+        );
+        if (parentDocumentTypeField) {
+          parentDocumentTypeField.style.display = "block";
+        }
 
-          var parentIdDocumentField = document.getElementById("parent_id_document_field");
-          if (parentIdDocumentField) {
-            parentIdDocumentField.style.display = "block";
-          }
+        var parentIdDocumentField = document.getElementById(
+          "parent_id_document_field"
+        );
+        if (parentIdDocumentField) {
+          parentIdDocumentField.style.display = "block";
+        }
 
-          var parentNameField = document.getElementById("parent_name_field");
-          if (parentNameField) {
-            parentNameField.style.display = "block";
-          }
+        var parentNameField = document.getElementById("parent_name_field");
+        if (parentNameField) {
+          parentNameField.style.display = "block";
+        }
 
-          var parentLastNameField = document.getElementById(
-            "parent-lastname-field"
-          );
-          if (parentLastNameField) {
-            parentLastNameField.style.display = "block";
-          }
+        var parentLastNameField = document.getElementById(
+          "parent-lastname-field"
+        );
+        if (parentLastNameField) {
+          parentLastNameField.style.display = "block";
+        }
 
-          var parentPhoneField = document.getElementById(
-            "parent-phone-field"
-          );
-          if (parentPhoneField) {
-            parentPhoneField.style.display = "block";
-          }
+        var parentPhoneField = document.getElementById("parent-phone-field");
+        if (parentPhoneField) {
+          parentPhoneField.style.display = "block";
+        }
 
-          
-          var parentGenderField = document.getElementById(
-            "parent-gender-field"
-          );
-          if (parentGenderField) {
-            parentGenderField.style.display = "block";
-          }
+        var parentGenderField = document.getElementById("parent-gender-field");
+        if (parentGenderField) {
+          parentGenderField.style.display = "block";
+        }
 
-          var parentEmailField = document.getElementById("parent-email-field");
-          if (parentEmailField) {
-            parentEmailField.style.display = "block";
-          }
+        var parentEmailField = document.getElementById("parent-email-field");
+        if (parentEmailField) {
+          parentEmailField.style.display = "block";
+        }
 
-          var parentDocumentType = document.getElementById("parent_document_type");
-          if (parentDocumentType) {
-            parentDocumentType.required = true;
-          }
+        var parentDocumentType = document.getElementById(
+          "parent_document_type"
+        );
+        if (parentDocumentType) {
+          parentDocumentType.required = true;
+        }
 
-          var birthDateParent = document.getElementById("birth_date_parent");
-          if (birthDateParent) {
-            birthDateParent.required = true;
-          }
+        var birthDateParent = document.getElementById("birth_date_parent");
+        if (birthDateParent) {
+          birthDateParent.required = true;
+        }
 
-          var parentIdDocument = document.getElementById("id_document_parent");
-          if (parentIdDocument) {
-            parentIdDocument.required = true;
-          }
+        var parentIdDocument = document.getElementById("id_document_parent");
+        if (parentIdDocument) {
+          parentIdDocument.required = true;
+        }
 
-          var agentName = document.getElementById("agent_name");
-          if (agentName) {
-            agentName.required = true;
-          }
+        var agentName = document.getElementById("agent_name");
+        if (agentName) {
+          agentName.required = true;
+        }
 
-          var agentLastName = document.getElementById("agent_last_name");
-          if (agentLastName) {
-            agentLastName.required = true;
-          }
+        var agentLastName = document.getElementById("agent_last_name");
+        if (agentLastName) {
+          agentLastName.required = true;
+        }
 
-          var numberPartner = document.getElementById("number_partner");
-          if (numberPartner) {
-            numberPartner.required = true;
-          }
+        var numberPartner = document.getElementById("number_partner");
+        if (numberPartner) {
+          numberPartner.required = true;
+        }
 
-          var emailPartner = document.getElementById("email_partner");
-          if (emailPartner) {
-            emailPartner.required = true;
-          }
+        var emailPartner = document.getElementById("email_partner");
+        if (emailPartner) {
+          emailPartner.required = true;
+        }
 
-          var parentGenderField = document.getElementById(
-            "gender_parent"
-          );
-          if (parentGenderField) {
-            parentGenderField.required = true;
-          }
+        var parentGenderField = document.getElementById("gender_parent");
+        if (parentGenderField) {
+          parentGenderField.required = true;
+        }
       }
     });
 }
@@ -752,291 +768,293 @@ segmentButtons.forEach((button) => {
   });
 });
 
-
-const idBitrix = new URLSearchParams(window.location.search).get('idbitrix');
+const idBitrix = new URLSearchParams(window.location.search).get("idbitrix");
 
 if (idBitrix) {
-  document.getElementById('loading').style.display = 'block';
+  document.getElementById("loading").style.display = "block";
   const countries = {
-    "AF": "Afghanistan",
-    "AL": "Albania",
-    "DZ": "Algeria",
-    "AS": "American Samoa",
-    "AD": "Andorra",
-    "AO": "Angola",
-    "AI": "Anguilla",
-    "AQ": "Antarctica",
-    "AG": "Antigua and Barbuda",
-    "AR": "Argentina",
-    "AM": "Armenia",
-    "AW": "Aruba",
-    "AU": "Australia",
-    "AT": "Austria",
-    "AZ": "Azerbaijan",
-    "BS": "Bahamas (the)",
-    "BH": "Bahrain",
-    "BD": "Bangladesh",
-    "BB": "Barbados",
-    "BY": "Belarus",
-    "BE": "Belgium",
-    "BZ": "Belize",
-    "BJ": "Benin",
-    "BM": "Bermuda",
-    "BT": "Bhutan",
-    "BO": "Bolivia (Plurinational State of)",
-    "BQ": "Bonaire, Sint Eustatius and Saba",
-    "BA": "Bosnia and Herzegovina",
-    "BW": "Botswana",
-    "BV": "Bouvet Island",
-    "BR": "Brazil",
-    "IO": "British Indian Ocean Territory (the)",
-    "BN": "Brunei Darussalam",
-    "BG": "Bulgaria",
-    "BF": "Burkina Faso",
-    "BI": "Burundi",
-    "CV": "Cabo Verde",
-    "KH": "Cambodia",
-    "CM": "Cameroon",
-    "CA": "Canada",
-    "KY": "Cayman Islands (the)",
-    "CF": "Central African Republic (the)",
-    "TD": "Chad",
-    "CL": "Chile",
-    "CN": "China",
-    "CX": "Christmas Island",
-    "CC": "Cocos (Keeling) Islands (the)",
-    "CO": "Colombia",
-    "KM": "Comoros (the)",
-    "CD": "Congo (the Democratic Republic of the)",
-    "CG": "Congo (the)",
-    "CK": "Cook Islands (the)",
-    "CR": "Costa Rica",
-    "HR": "Croatia",
-    "CU": "Cuba",
-    "CW": "Curaçao",
-    "CY": "Cyprus",
-    "CZ": "Czechia",
-    "CI": "Côte d'Ivoire",
-    "DK": "Denmark",
-    "DJ": "Djibouti",
-    "DM": "Dominica",
-    "DO": "Dominican Republic (the)",
-    "EC": "Ecuador",
-    "EG": "Egypt",
-    "SV": "El Salvador",
-    "GQ": "Equatorial Guinea",
-    "ER": "Eritrea",
-    "EE": "Estonia",
-    "SZ": "Eswatini",
-    "ET": "Ethiopia",
-    "FK": "Falkland Islands (the) [Malvinas]",
-    "FO": "Faroe Islands (the)",
-    "FJ": "Fiji",
-    "FI": "Finland",
-    "FR": "France",
-    "GF": "French Guiana",
-    "PF": "French Polynesia",
-    "TF": "French Southern Territories (the)",
-    "GA": "Gabon",
-    "GM": "Gambia (the)",
-    "GE": "Georgia",
-    "DE": "Germany",
-    "GH": "Ghana",
-    "GI": "Gibraltar",
-    "GR": "Greece",
-    "GL": "Greenland",
-    "GD": "Grenada",
-    "GP": "Guadeloupe",
-    "GU": "Guam",
-    "GT": "Guatemala",
-    "GG": "Guernsey",
-    "GN": "Guinea",
-    "GW": "Guinea-Bissau",
-    "GY": "Guyana",
-    "HT": "Haiti",
-    "HM": "Heard Island and McDonald Islands",
-    "VA": "Holy See (the)",
-    "HN": "Honduras",
-    "HK": "Hong Kong",
-    "HU": "Hungary",
-    "IS": "Iceland",
-    "IN": "India",
-    "ID": "Indonesia",
-    "IR": "Iran (Islamic Republic of)",
-    "IQ": "Iraq",
-    "IE": "Ireland",
-    "IM": "Isle of Man",
-    "IL": "Israel",
-    "IT": "Italy",
-    "JM": "Jamaica",
-    "JP": "Japan",
-    "JE": "Jersey",
-    "JO": "Jordan",
-    "KZ": "Kazakhstan",
-    "KE": "Kenya",
-    "KI": "Kiribati",
-    "KP": "Korea (the Democratic People's Republic of)",
-    "KR": "Korea (the Republic of)",
-    "KW": "Kuwait",
-    "KG": "Kyrgyzstan",
-    "LA": "Lao People's Democratic Republic (the)",
-    "LV": "Latvia",
-    "LB": "Lebanon",
-    "LS": "Lesotho",
-    "LR": "Liberia",
-    "LY": "Libya",
-    "LI": "Liechtenstein",
-    "LT": "Lithuania",
-    "LU": "Luxembourg",
-    "MO": "Macao",
-    "MG": "Madagascar",
-    "MW": "Malawi",
-    "MY": "Malaysia",
-    "MV": "Maldives",
-    "ML": "Mali",
-    "MT": "Malta",
-    "MH": "Marshall Islands (the)",
-    "MQ": "Martinique",
-    "MR": "Mauritania",
-    "MU": "Mauritius",
-    "YT": "Mayotte",
-    "MX": "Mexico",
-    "FM": "Micronesia (Federated States of)",
-    "MD": "Moldova (the Republic of)",
-    "MC": "Monaco",
-    "MN": "Mongolia",
-    "ME": "Montenegro",
-    "MS": "Montserrat",
-    "MA": "Morocco",
-    "MZ": "Mozambique",
-    "MM": "Myanmar",
-    "NA": "Namibia",
-    "NR": "Nauru",
-    "NP": "Nepal",
-    "NL": "Netherlands (the)",
-    "NC": "New Caledonia",
-    "NZ": "New Zealand",
-    "NI": "Nicaragua",
-    "NE": "Niger (the)",
-    "NG": "Nigeria",
-    "NU": "Niue",
-    "NF": "Norfolk Island",
-    "MP": "Northern Mariana Islands (the)",
-    "NO": "Norway",
-    "OM": "Oman",
-    "PK": "Pakistan",
-    "PW": "Palau",
-    "PS": "Palestine, State of",
-    "PA": "Panama",
-    "PG": "Papua New Guinea",
-    "PY": "Paraguay",
-    "PE": "Peru",
-    "PH": "Philippines (the)",
-    "PN": "Pitcairn",
-    "PL": "Poland",
-    "PT": "Portugal",
-    "PR": "Puerto Rico",
-    "QA": "Qatar",
-    "MK": "Republic of North Macedonia",
-    "RO": "Romania",
-    "RU": "Russian Federation (the)",
-    "RW": "Rwanda",
-    "RE": "Réunion",
-    "BL": "Saint Barthélemy",
-    "SH": "Saint Helena, Ascension and Tristan da Cunha",
-    "KN": "Saint Kitts and Nevis",
-    "LC": "Saint Lucia",
-    "MF": "Saint Martin (French part)",
-    "PM": "Saint Pierre and Miquelon",
-    "VC": "Saint Vincent and the Grenadines",
-    "WS": "Samoa",
-    "SM": "San Marino",
-    "ST": "Sao Tome and Principe",
-    "SA": "Saudi Arabia",
-    "SN": "Senegal",
-    "RS": "Serbia",
-    "SC": "Seychelles",
-    "SL": "Sierra Leone",
-    "SG": "Singapore",
-    "SX": "Sint Maarten (Dutch part)",
-    "SK": "Slovakia",
-    "SI": "Slovenia",
-    "SB": "Solomon Islands",
-    "SO": "Somalia",
-    "ZA": "South Africa",
-    "GS": "South Georgia and the South Sandwich Islands",
-    "SS": "South Sudan",
-    "ES": "Spain",
-    "LK": "Sri Lanka",
-    "SD": "Sudan (the)",
-    "SR": "Suriname",
-    "SJ": "Svalbard and Jan Mayen",
-    "SE": "Sweden",
-    "CH": "Switzerland",
-    "SY": "Syrian Arab Republic",
-    "TW": "Taiwan",
-    "TJ": "Tajikistan",
-    "TZ": "Tanzania, United Republic of",
-    "TH": "Thailand",
-    "TL": "Timor-Leste",
-    "TG": "Togo",
-    "TK": "Tokelau",
-    "TO": "Tonga",
-    "TT": "Trinidad and Tobago",
-    "TN": "Tunisia",
-    "TR": "Turkey",
-    "TM": "Turkmenistan",
-    "TC": "Turks and Caicos Islands (the)",
-    "TV": "Tuvalu",
-    "UG": "Uganda",
-    "UA": "Ukraine",
-    "AE": "United Arab Emirates (the)",
-    "GB": "United Kingdom of Great Britain and Northern Ireland (the)",
-    "UM": "United States Minor Outlying Islands (the)",
-    "US": "United States of America (the)",
-    "UY": "Uruguay",
-    "UZ": "Uzbekistan",
-    "VU": "Vanuatu",
-    "VE": "Venezuela (Bolivarian Republic of)",
-    "VN": "Viet Nam",
-    "VG": "Virgin Islands (British)",
-    "VI": "Virgin Islands (U.S.)",
-    "WF": "Wallis and Futuna",
-    "EH": "Western Sahara",
-    "YE": "Yemen",
-    "ZM": "Zambia",
-    "ZW": "Zimbabwe",
-    "AX": "Åland Islands"
+    AF: "Afghanistan",
+    AL: "Albania",
+    DZ: "Algeria",
+    AS: "American Samoa",
+    AD: "Andorra",
+    AO: "Angola",
+    AI: "Anguilla",
+    AQ: "Antarctica",
+    AG: "Antigua and Barbuda",
+    AR: "Argentina",
+    AM: "Armenia",
+    AW: "Aruba",
+    AU: "Australia",
+    AT: "Austria",
+    AZ: "Azerbaijan",
+    BS: "Bahamas (the)",
+    BH: "Bahrain",
+    BD: "Bangladesh",
+    BB: "Barbados",
+    BY: "Belarus",
+    BE: "Belgium",
+    BZ: "Belize",
+    BJ: "Benin",
+    BM: "Bermuda",
+    BT: "Bhutan",
+    BO: "Bolivia (Plurinational State of)",
+    BQ: "Bonaire, Sint Eustatius and Saba",
+    BA: "Bosnia and Herzegovina",
+    BW: "Botswana",
+    BV: "Bouvet Island",
+    BR: "Brazil",
+    IO: "British Indian Ocean Territory (the)",
+    BN: "Brunei Darussalam",
+    BG: "Bulgaria",
+    BF: "Burkina Faso",
+    BI: "Burundi",
+    CV: "Cabo Verde",
+    KH: "Cambodia",
+    CM: "Cameroon",
+    CA: "Canada",
+    KY: "Cayman Islands (the)",
+    CF: "Central African Republic (the)",
+    TD: "Chad",
+    CL: "Chile",
+    CN: "China",
+    CX: "Christmas Island",
+    CC: "Cocos (Keeling) Islands (the)",
+    CO: "Colombia",
+    KM: "Comoros (the)",
+    CD: "Congo (the Democratic Republic of the)",
+    CG: "Congo (the)",
+    CK: "Cook Islands (the)",
+    CR: "Costa Rica",
+    HR: "Croatia",
+    CU: "Cuba",
+    CW: "Curaçao",
+    CY: "Cyprus",
+    CZ: "Czechia",
+    CI: "Côte d'Ivoire",
+    DK: "Denmark",
+    DJ: "Djibouti",
+    DM: "Dominica",
+    DO: "Dominican Republic (the)",
+    EC: "Ecuador",
+    EG: "Egypt",
+    SV: "El Salvador",
+    GQ: "Equatorial Guinea",
+    ER: "Eritrea",
+    EE: "Estonia",
+    SZ: "Eswatini",
+    ET: "Ethiopia",
+    FK: "Falkland Islands (the) [Malvinas]",
+    FO: "Faroe Islands (the)",
+    FJ: "Fiji",
+    FI: "Finland",
+    FR: "France",
+    GF: "French Guiana",
+    PF: "French Polynesia",
+    TF: "French Southern Territories (the)",
+    GA: "Gabon",
+    GM: "Gambia (the)",
+    GE: "Georgia",
+    DE: "Germany",
+    GH: "Ghana",
+    GI: "Gibraltar",
+    GR: "Greece",
+    GL: "Greenland",
+    GD: "Grenada",
+    GP: "Guadeloupe",
+    GU: "Guam",
+    GT: "Guatemala",
+    GG: "Guernsey",
+    GN: "Guinea",
+    GW: "Guinea-Bissau",
+    GY: "Guyana",
+    HT: "Haiti",
+    HM: "Heard Island and McDonald Islands",
+    VA: "Holy See (the)",
+    HN: "Honduras",
+    HK: "Hong Kong",
+    HU: "Hungary",
+    IS: "Iceland",
+    IN: "India",
+    ID: "Indonesia",
+    IR: "Iran (Islamic Republic of)",
+    IQ: "Iraq",
+    IE: "Ireland",
+    IM: "Isle of Man",
+    IL: "Israel",
+    IT: "Italy",
+    JM: "Jamaica",
+    JP: "Japan",
+    JE: "Jersey",
+    JO: "Jordan",
+    KZ: "Kazakhstan",
+    KE: "Kenya",
+    KI: "Kiribati",
+    KP: "Korea (the Democratic People's Republic of)",
+    KR: "Korea (the Republic of)",
+    KW: "Kuwait",
+    KG: "Kyrgyzstan",
+    LA: "Lao People's Democratic Republic (the)",
+    LV: "Latvia",
+    LB: "Lebanon",
+    LS: "Lesotho",
+    LR: "Liberia",
+    LY: "Libya",
+    LI: "Liechtenstein",
+    LT: "Lithuania",
+    LU: "Luxembourg",
+    MO: "Macao",
+    MG: "Madagascar",
+    MW: "Malawi",
+    MY: "Malaysia",
+    MV: "Maldives",
+    ML: "Mali",
+    MT: "Malta",
+    MH: "Marshall Islands (the)",
+    MQ: "Martinique",
+    MR: "Mauritania",
+    MU: "Mauritius",
+    YT: "Mayotte",
+    MX: "Mexico",
+    FM: "Micronesia (Federated States of)",
+    MD: "Moldova (the Republic of)",
+    MC: "Monaco",
+    MN: "Mongolia",
+    ME: "Montenegro",
+    MS: "Montserrat",
+    MA: "Morocco",
+    MZ: "Mozambique",
+    MM: "Myanmar",
+    NA: "Namibia",
+    NR: "Nauru",
+    NP: "Nepal",
+    NL: "Netherlands (the)",
+    NC: "New Caledonia",
+    NZ: "New Zealand",
+    NI: "Nicaragua",
+    NE: "Niger (the)",
+    NG: "Nigeria",
+    NU: "Niue",
+    NF: "Norfolk Island",
+    MP: "Northern Mariana Islands (the)",
+    NO: "Norway",
+    OM: "Oman",
+    PK: "Pakistan",
+    PW: "Palau",
+    PS: "Palestine, State of",
+    PA: "Panama",
+    PG: "Papua New Guinea",
+    PY: "Paraguay",
+    PE: "Peru",
+    PH: "Philippines (the)",
+    PN: "Pitcairn",
+    PL: "Poland",
+    PT: "Portugal",
+    PR: "Puerto Rico",
+    QA: "Qatar",
+    MK: "Republic of North Macedonia",
+    RO: "Romania",
+    RU: "Russian Federation (the)",
+    RW: "Rwanda",
+    RE: "Réunion",
+    BL: "Saint Barthélemy",
+    SH: "Saint Helena, Ascension and Tristan da Cunha",
+    KN: "Saint Kitts and Nevis",
+    LC: "Saint Lucia",
+    MF: "Saint Martin (French part)",
+    PM: "Saint Pierre and Miquelon",
+    VC: "Saint Vincent and the Grenadines",
+    WS: "Samoa",
+    SM: "San Marino",
+    ST: "Sao Tome and Principe",
+    SA: "Saudi Arabia",
+    SN: "Senegal",
+    RS: "Serbia",
+    SC: "Seychelles",
+    SL: "Sierra Leone",
+    SG: "Singapore",
+    SX: "Sint Maarten (Dutch part)",
+    SK: "Slovakia",
+    SI: "Slovenia",
+    SB: "Solomon Islands",
+    SO: "Somalia",
+    ZA: "South Africa",
+    GS: "South Georgia and the South Sandwich Islands",
+    SS: "South Sudan",
+    ES: "Spain",
+    LK: "Sri Lanka",
+    SD: "Sudan (the)",
+    SR: "Suriname",
+    SJ: "Svalbard and Jan Mayen",
+    SE: "Sweden",
+    CH: "Switzerland",
+    SY: "Syrian Arab Republic",
+    TW: "Taiwan",
+    TJ: "Tajikistan",
+    TZ: "Tanzania, United Republic of",
+    TH: "Thailand",
+    TL: "Timor-Leste",
+    TG: "Togo",
+    TK: "Tokelau",
+    TO: "Tonga",
+    TT: "Trinidad and Tobago",
+    TN: "Tunisia",
+    TR: "Turkey",
+    TM: "Turkmenistan",
+    TC: "Turks and Caicos Islands (the)",
+    TV: "Tuvalu",
+    UG: "Uganda",
+    UA: "Ukraine",
+    AE: "United Arab Emirates (the)",
+    GB: "United Kingdom of Great Britain and Northern Ireland (the)",
+    UM: "United States Minor Outlying Islands (the)",
+    US: "United States of America (the)",
+    UY: "Uruguay",
+    UZ: "Uzbekistan",
+    VU: "Vanuatu",
+    VE: "Venezuela (Bolivarian Republic of)",
+    VN: "Viet Nam",
+    VG: "Virgin Islands (British)",
+    VI: "Virgin Islands (U.S.)",
+    WF: "Wallis and Futuna",
+    EH: "Western Sahara",
+    YE: "Yemen",
+    ZM: "Zambia",
+    ZW: "Zimbabwe",
+    AX: "Åland Islands",
   };
 
   const url = `https://api.luannerkerton.com/api/getLeadFromAes?id_bitrix=${idBitrix}`;
   const data = { id_bitrix: idBitrix };
 
   fetch(url, {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json'
-    }
+      "Content-Type": "application/json",
+    },
   })
-    .then(response => response.json())
-    .then(data => {
-      let name = data.name.split(' ');
-      let last_name = data.last_name.split(' ');
-      let tutor = data.tutor.split(' ');
+    .then((response) => response.json())
+    .then((data) => {
+      let name = data.name.split(" ");
+      let last_name = data.last_name.split(" ");
+      let tutor = data.tutor.split(" ");
 
       var fecha = new Date(data.birthdate);
       fecha.setDate(fecha.getDate() + 1);
-      var fechaIso = fecha.toISOString().split('T')[0];
+      var fechaIso = fecha.toISOString().split("T")[0];
       flatpickr("#birth_date_student", {
         defaultDate: fechaIso,
-        altFormat: 'm/d/Y'
+        altFormat: "m/d/Y",
       });
 
       // Refresh the intlTelInput library
       document.querySelector('input[name="name_student"]').value = name[0];
-      document.querySelector('input[name="middle_name_student"]').value = name[1] ?? '';
-      document.querySelector('input[name="lastname_student"]').value = last_name[0];
-      document.querySelector('input[name="middle_last_name_student"]').value = last_name[1] ?? '';
+      document.querySelector('input[name="middle_name_student"]').value =
+        name[1] ?? "";
+      document.querySelector('input[name="lastname_student"]').value =
+        last_name[0];
+      document.querySelector('input[name="middle_last_name_student"]').value =
+        last_name[1] ?? "";
       document.querySelector('input[name="agent_name"]').value = tutor[0];
       document.querySelector('input[name="agent_last_name"]').value = tutor[1];
       const input = document.querySelector('input[name="number_phone"]');
@@ -1045,30 +1063,33 @@ if (idBitrix) {
         autoFormat: true, // disable auto formatting
         separateDialCode: true, // separate dial code from the number
       });
-      
+
       iti.setNumber(data.contact_phone);
-      document.querySelector('input[name="email_student"]').value = data.contact_email;
+      document.querySelector('input[name="email_student"]').value =
+        data.contact_email;
       switch (data.degree) {
-        case '9no (antepenúltimo)':
+        case "9no (antepenúltimo)":
           document.querySelector('select[name="grade"]').value = 1;
           break;
-        case '10mo (penúltimo)':
+        case "10mo (penúltimo)":
           document.querySelector('select[name="grade"]').value = 2;
           break;
-        case '11vo (último)':
+        case "11vo (último)":
           document.querySelector('select[name="grade"]').value = 3;
           break;
-        case 'Bachiller (Graduado)':
+        case "Bachiller (Graduado)":
           document.querySelector('select[name="grade"]').value = 4;
           break;
       }
-      const countryCode = Object.keys(countries).find(key => countries[key].toLowerCase() === data.country.toLowerCase());
+      const countryCode = Object.keys(countries).find(
+        (key) => countries[key].toLowerCase() === data.country.toLowerCase()
+      );
       document.querySelector('select[name="country"]').value = countryCode;
       document.querySelector('input[name="city"]').value = data.city;
 
-      document.getElementById('loading').style.display = 'none';
+      document.getElementById("loading").style.display = "none";
     })
-    .catch(error => {
-      document.getElementById('loading').style.display = 'none';
+    .catch((error) => {
+      document.getElementById("loading").style.display = "none";
     });
 }

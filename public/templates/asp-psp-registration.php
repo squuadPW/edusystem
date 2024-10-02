@@ -428,7 +428,8 @@ if (is_user_logged_in()) {
 
         <!-- DATOS DEL ESTUDIANTE -->
         <div class="grid grid-cols-12 gap-4">
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
+                style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
                 <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -474,7 +475,7 @@ if (is_user_logged_in()) {
                 <label for="phone"><?= __('Contact number', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata" type="tel" id="number_phone" name="number_phone" autocomplete="off" required>
             </div>
-            <div  class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-detail">
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-detail">
                 <div id="student-email">
                     <label for="email"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
                     <input class="formdata" type="email" name="email_student" autocomplete="off"
@@ -508,7 +509,8 @@ if (is_user_logged_in()) {
 
 
             <!-- DATOS DEL PADRE -->
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title" style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title"
+                style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
                 <div class="subtitle text-align-center"><?= __('Parent details', 'aes'); ?></div>
             </div>
             <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -568,11 +570,12 @@ if (is_user_logged_in()) {
             </div>
 
             <!-- DATOS DE ACCESO -->
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"  style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
+                style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
                 <div class="subtitle text-align-center"><?= __('Platform access data', 'aes'); ?></div>
             </div>
 
-            <div  class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-access"></div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-access"></div>
 
             <div id="parent-email-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="email"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
@@ -590,7 +593,8 @@ if (is_user_logged_in()) {
             </div>
 
             <!-- DATOS DEL GRADO -->
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
+                style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
                 <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -615,7 +619,8 @@ if (is_user_logged_in()) {
                 <select name="institute_id" autocomplete="off" id="institute_id" required>
                     <option value="" selected="selected" data-others="1"><?= __('Select an option', 'aes'); ?></option>
                     <?php foreach ($institutes as $institute): ?>
-                        <option value="<?= $institute->id; ?>" data-others="0" data-country="<?= $institute->country; ?>"><?= $institute->name; ?></option>
+                        <option value="<?= $institute->id; ?>" data-others="0" data-country="<?= $institute->country; ?>">
+                            <?= $institute->name; ?></option>
                     <?php endforeach; ?>
                     <option value="other"><?= __('Other', 'aes'); ?></option>
                 </select>
