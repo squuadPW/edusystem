@@ -303,7 +303,7 @@ if (is_user_logged_in()) {
             </div>
         </form>
 
-        <form method="POST" action="<?= the_permalink() . '?action=new_applicant_others'; ?>" class="form-aes form-aes-others" id="form-others">
+        <form method="POST" action="<?= the_permalink() . '?action=new_applicant_others'; ?>" class="form-aes form-aes-others" id="form-others" style="display: none">
             <div class="grid grid-cols-12 gap-4">
                 <!-- DATOS DEL ESTUDIANTE -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
