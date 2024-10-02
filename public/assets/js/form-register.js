@@ -474,8 +474,8 @@ if (document.getElementById("birth_date_student")) {
             document.getElementById("student-email-access").innerHTML = "";
             document.getElementById("student-email-detail").innerHTML = "";
             document
-            .getElementById("student-email-access")
-            .appendChild(studentEmailDivClone);
+              .getElementById("student-email-access")
+              .appendChild(studentEmailDivClone);
           }
 
           var parentTitle = document.getElementById("parent-title");
@@ -604,7 +604,7 @@ if (document.getElementById("birth_date_student")) {
         const studentEmailDiv = document.getElementById("student-email");
 
         if (studentEmailDiv) {
-            // Crea una copia del elemento div
+          // Crea una copia del elemento div
           const studentEmailDivClone = studentEmailDiv.cloneNode(true);
           document.getElementById("student-email-access").innerHTML = "";
           document.getElementById("student-email-detail").innerHTML = "";

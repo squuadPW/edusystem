@@ -303,7 +303,8 @@ if (is_user_logged_in()) {
             </div>
         </form>
 
-        <form method="POST" action="<?= the_permalink() . '?action=new_applicant_others'; ?>" class="form-aes form-aes-others" id="form-others" style="display: none">
+        <form method="POST" action="<?= the_permalink() . '?action=new_applicant_others'; ?>" class="form-aes form-aes-others"
+            id="form-others" style="display: none">
             <div class="grid grid-cols-12 gap-4">
                 <!-- DATOS DEL ESTUDIANTE -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
@@ -429,7 +430,8 @@ if (is_user_logged_in()) {
                 </div>
                 <div id="name-institute-field-others" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
                     style="display:none;">
-                    <label for="name_institute_others"><?= __('Name Institute', 'aes'); ?><span class="required">*</span></label>
+                    <label for="name_institute_others"><?= __('Name Institute', 'aes'); ?><span
+                            class="required">*</span></label>
                     <input class="formdata" autocomplete="off" type="text" id="name_institute_others" name="name_institute">
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -653,7 +655,8 @@ if (is_user_logged_in()) {
                     <option value="" selected="selected" data-others="1"><?= __('Select an option', 'aes'); ?></option>
                     <?php foreach ($institutes as $institute): ?>
                         <option value="<?= $institute->id; ?>" data-others="0" data-country="<?= $institute->country; ?>">
-                            <?= $institute->name; ?></option>
+                            <?= $institute->name; ?>
+                        </option>
                     <?php endforeach; ?>
                     <option value="other"><?= __('Other', 'aes'); ?></option>
                 </select>
