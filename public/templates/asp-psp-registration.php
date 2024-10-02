@@ -19,7 +19,7 @@ if (is_user_logged_in()) {
             <div class="grid grid-cols-12 gap-4">
                 <!-- DATOS DEL ESTUDIANTE -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
-                    style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                    style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                     <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -90,7 +90,7 @@ if (is_user_logged_in()) {
 
                 <!-- DATOS DE ACCESO -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-                    style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                    style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                     <div class="subtitle text-align-center"><?= __('Platform access data', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -109,7 +109,7 @@ if (is_user_logged_in()) {
 
                 <!-- DATOS DEL GRADO -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-                    style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                    style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                     <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -171,7 +171,7 @@ if (is_user_logged_in()) {
 
                 <!-- DATOS DEL ESTUDIANTE -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
-                    style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                    style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                     <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
                 </div>
                 <?php if (!get_user_meta(get_current_user_id(), 'birth_date', true)) { ?>
@@ -254,7 +254,7 @@ if (is_user_logged_in()) {
 
                 <!-- DATOS DEL GRADO -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-                    style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                    style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                     <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -308,7 +308,7 @@ if (is_user_logged_in()) {
             <div class="grid grid-cols-12 gap-4">
                 <!-- DATOS DEL ESTUDIANTE -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
-                    style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                    style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                     <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -379,7 +379,7 @@ if (is_user_logged_in()) {
 
                 <!-- DATOS DE ACCESO -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-                    style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                    style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                     <div class="subtitle text-align-center"><?= __('Platform access data', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -398,7 +398,7 @@ if (is_user_logged_in()) {
 
                 <!-- DATOS DEL GRADO -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-                    style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                    style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                     <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -468,7 +468,7 @@ if (is_user_logged_in()) {
         <!-- DATOS DEL ESTUDIANTE -->
         <div class="grid grid-cols-12 gap-4">
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
-                style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                 <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -548,7 +548,7 @@ if (is_user_logged_in()) {
 
             <!-- DATOS DEL PADRE -->
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title"
-                style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                 <div class="subtitle text-align-center"><?= __('Parent details', 'aes'); ?></div>
             </div>
             <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -609,7 +609,7 @@ if (is_user_logged_in()) {
 
             <!-- DATOS DE ACCESO -->
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-                style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                 <div class="subtitle text-align-center"><?= __('Platform access data', 'aes'); ?></div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-access"></div>
@@ -629,7 +629,7 @@ if (is_user_logged_in()) {
 
             <!-- DATOS DEL GRADO -->
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-                style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                 <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
