@@ -265,9 +265,11 @@ function generateDocEnrollment() {
   document.getElementById("please_select_grade").style.display = "none";
   document.getElementById("clear-student").style.display = "none";
   document.getElementById("generate-signature-student").style.display = "none";
+  document.getElementById("clear-student-signature").style.display = "none";
   let clearParentElement = document.getElementById("clear-parent");
   if (clearParentElement) {
     clearParentElement.style.display = "none";
+    document.getElementById("clear-parent-signature").style.display = "none";
   }
   let generateSignatureParentElement = document.getElementById("generate-signature-parent");
   if (generateSignatureParentElement) {
