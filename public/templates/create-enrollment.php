@@ -203,6 +203,7 @@
                                             <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none" id="signature-text-student">
                                                 <div style="bottom: 0; position: absolute; text-align: center; width: 100%;"><?php echo $user['student_signature'] ?></div>
                                             </div>
+                                            <button id="clear-student-signature" style="width: 100%; display: none">Cancel</button>
                                         </div>
                                         <?php if($show_parent_info == 1) { ?> 
                                             <input type="hidden" name="auto_signature_parent" value="0">
@@ -225,6 +226,7 @@
                                                 <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none" id="signature-text-parent">
                                                     <div style="bottom: 0; position: absolute; text-align: center; width: 100%;"><?php echo $user['parent_full_name'] ?></div>
                                                 </div>
+                                                <button id="clear-parent-signature" style="width: 100%; display: none">Cancel</button>
                                             </div>
                                         <?php } ?>
                                     </div>

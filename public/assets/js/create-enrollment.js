@@ -77,6 +77,25 @@ if (document.getElementById("signature-student")) {
     }
   });
 
+  document.getElementById("clear-student-signature").addEventListener("click", () => {
+    signaturePadStudent.clear();
+    sign_here_student.style.display = "block";
+    document.getElementById("signature-student").style.border =
+      "1px solid gray";
+    document.getElementById("signature-student").style.backgroundColor = '#ffff005c';
+    if (!signaturePadStudent.isEmpty() && !signaturePadParent.isEmpty()) {
+      save_signatures.innerHTML = "Generate enrollment";
+    } else {
+      save_signatures.innerHTML = "Save";
+    }
+
+    document.getElementById("clear-student-signature").style.display = 'none';
+    document.getElementById("signature-text-student").style.display = 'none';
+    document.getElementById("signature-pad-student").style.display = 'block';
+    document.getElementById("clear-student").style.display = 'block';
+    document.getElementById("generate-signature-student").style.display = 'block';
+  });
+
   let clearParentElement = document.getElementById("clear-parent");
   if (clearParentElement) {
     clearParentElement.addEventListener("click", () => {
@@ -90,6 +109,25 @@ if (document.getElementById("signature-student")) {
       } else {
         save_signatures.innerHTML = "Save";
       }
+    });
+
+    document.getElementById("clear-parent-signature").addEventListener("click", () => {
+      signaturePadParent.clear();
+      sign_here_parent.style.display = "block";
+      document.getElementById("signature-parent").style.border =
+        "1px solid gray";
+    document.getElementById("signature-parent").style.backgroundColor = '#ffff005c';
+      if (!signaturePadStudent.isEmpty() && !signaturePadParent.isEmpty()) {
+        save_signatures.innerHTML = "Generate enrollment";
+      } else {
+        save_signatures.innerHTML = "Save";
+      }
+  
+      document.getElementById("clear-parent-signature").style.display = 'none';
+      document.getElementById("signature-text-parent").style.display = 'none';
+      document.getElementById("signature-pad-parent").style.display = 'block';
+      document.getElementById("clear-parent").style.display = 'block';
+      document.getElementById("generate-signature-parent").style.display = 'block';
     });
   }
 
@@ -391,8 +429,10 @@ function autoSignature(hide, show, button_hide, clear_hide = null) {
 
   if (button_hide == "generate-signature-student") {
     document.querySelector('input[name="auto_signature_student"]').value = 1;
+    document.getElementById('clear-student-signature').style.display = "block";
   } else {
     document.querySelector('input[name="auto_signature_parent"]').value = 1;
+    document.getElementById('clear-parent-signature').style.display = "block";
   }
 
   if (clear_hide) {
