@@ -1,9 +1,13 @@
 <div class="title">
-    <?= __('Student scholarship','aes'); ?>
+    <?= __('Scholarship application', 'aes'); ?>
 </div>
-<form method="POST" action="<?= the_permalink().'?action=save_scholarship'; ?>" class="form-aes">
+<form method="POST" action="<?= the_permalink() . '?action=save_scholarship'; ?>" class="form-aes">
+    <!-- DATOS DEL ESTUDIANTE -->
     <div class="grid grid-cols-12 gap-4">
-        <!-- DATOS DEL ESTUDIANTE -->
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
+            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
+            <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
+        </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
@@ -28,33 +32,35 @@
                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Student name', 'aes'); ?><span class="required">*</span></label>
+            <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Student second name', 'aes'); ?><span class="required">*</span></label>
+            <label for="lastname"><?= __('Second name', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Student last name', 'aes'); ?><span class="required">*</span></label>
+            <label for="lastname"><?= __('Last name', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Student second last name', 'aes'); ?><span class="required">*</span></label>
+            <label for="lastname"><?= __('Second last name', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="phone"><?= __('Student contact number', 'aes'); ?><span class="required">*</span></label>
+            <label for="phone"><?= __('Contact number', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="tel" id="number_phone" name="number_phone" autocomplete="off" required>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="email"><?= __('Student email address', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata" type="email" name="email_student" autocomplete="off"
-                oninput="sendAjaxStudentEmailDocument()" required>
-            <span id="existstudentemail"
-                style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
-            <span id="sameemailstudent"
-                style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The student cannot share the same email as the representative', 'aes'); ?></span>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-detail">
+            <div id="student-email">
+                <label for="email"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
+                <input class="formdata" type="email" name="email_student" autocomplete="off"
+                    oninput="sendAjaxStudentEmailDocument()" required>
+                <span id="existstudentemail"
+                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
+                <span id="sameemailstudent"
+                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The student cannot share the same email as the representative', 'aes'); ?></span>
+            </div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="gender"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
@@ -77,9 +83,9 @@
             </select>
         </div>
 
-
         <!-- DATOS DEL PADRE -->
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title">
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title"
+            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
             <div class="subtitle text-align-center"><?= __('Parent details', 'aes'); ?></div>
         </div>
         <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -102,28 +108,19 @@
                 name="id_document_parent" required>
         </div>
         <div id="parent_name_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="agent_name"><?= __('Parent\'s name', 'aes'); ?><span class="required">*</span></label>
+            <label for="agent_name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="agent_name" autocomplete="off" id="agent_name"
                 required>
         </div>
         <div id="parent-lastname-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="agent_name"><?= __('Parent\'s last name', 'aes'); ?><span class="required">*</span></label>
+            <label for="agent_name"><?= __('Last name', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="agent_last_name" autocomplete="off"
                 id="agent_last_name" required>
         </div>
         <div id="parent-phone-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="phone"><?= __('Parent\'s contact number', 'aes'); ?><span class="required">*</span></label>
+            <label for="phone"><?= __('Contact number', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="tel" id="number_partner" autocomplete="off" id="number_partner"
                 name="number_partner" required>
-        </div>
-        <div id="parent-email-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="email"><?= __('Parent\'s email address', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata" type="email" name="email_partner" autocomplete="off" id="email_partner"
-                oninput="sendAjaxPartnerEmailDocument()" required>
-            <span id="existparentemail"
-                style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
-            <span id="sameemailparent"
-                style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student', 'aes'); ?></span>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="parent-gender-field">
             <label for="gender_parent"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
@@ -147,12 +144,33 @@
             <input class="formdata" type="text" name="city" autocomplete="off" required>
         </div>
 
+        <!-- DATOS DE ACCESO -->
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
+            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
+            <div class="subtitle text-align-center"><?= __('Platform access data', 'aes'); ?></div>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-access"></div>
+        <div id="parent-email-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="email"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
+            <input class="formdata" type="email" name="email_partner" autocomplete="off" id="email_partner"
+                oninput="sendAjaxPartnerEmailDocument()" required>
+            <span id="existparentemail"
+                style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
+            <span id="sameemailparent"
+                style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student', 'aes'); ?></span>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="password"><?= __('Password of access', 'aes'); ?><span class="required">*</span></label>
+            <input class="formdata" type="password" name="password" autocomplete="off" required>
+        </div>
+
         <!-- DATOS DEL GRADO -->
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
+            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
             <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="grade"><?= __('Student grade', 'aes'); ?><span class="required">*</span></label>
+            <label for="grade"><?= __('Grade', 'aes'); ?><span class="required">*</span></label>
             <select name="grade" autocomplete="off" required>
                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                 <?php foreach ($grades as $grade): ?>
@@ -173,7 +191,9 @@
             <select name="institute_id" autocomplete="off" id="institute_id" required>
                 <option value="" selected="selected" data-others="1"><?= __('Select an option', 'aes'); ?></option>
                 <?php foreach ($institutes as $institute): ?>
-                    <option value="<?= $institute->id; ?>" data-others="0" data-country="<?= $institute->country; ?>"><?= $institute->name; ?></option>
+                    <option value="<?= $institute->id; ?>" data-others="0" data-country="<?= $institute->country; ?>">
+                        <?= $institute->name; ?>
+                    </option>
                 <?php endforeach; ?>
                 <option value="other"><?= __('Other', 'aes'); ?></option>
             </select>
@@ -196,4 +216,3 @@
         </div>
     </div>
 </form>
-    

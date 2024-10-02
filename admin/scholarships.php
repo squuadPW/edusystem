@@ -17,12 +17,13 @@ function add_admin_form_scholarships_content(){
                     $partner = $wpdb->get_row("SELECT * FROM wp_pre_users WHERE id = {$scholarship->partner_id}");
                     $username = $partner->email;
                     $user_email = $partner->email;
+                    $password = $partner->password;
                     if ( username_exists( $username ) ) {
                         $user_partner_id = username_exists( $username );
                         $user_partner = new WP_User($user_partner_id);
                         $user_partner->set_role( 'parent' );
                     } else {
-                        $user_partner_id = wp_create_user($username, generate_password_user(), $user_email);
+                        $user_partner_id = wp_create_user($username, $password, $user_email);
                         $user_partner = new WP_User($user_partner_id);
                         $user_partner->set_role( 'parent' );
                     }

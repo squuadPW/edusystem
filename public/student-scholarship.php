@@ -37,6 +37,7 @@ function save_scholarship(){
             $program = isset($_POST['program']) ? $_POST['program'] : null;
             $grade = isset($_POST['grade']) ? $_POST['grade'] : null;
             $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
+            $password = isset($_POST['password']) ? $_POST['password'] : null;
 
             if (!empty($institute_id) && $institute_id != 'other') {
                 $institute = get_institute_details($institute_id);
@@ -61,6 +62,7 @@ function save_scholarship(){
                     'partner_id' => null, 
                     'phone' => $number_partner,
                     'email' => $email_partner,
+                    'password' => $password,
                     'type' => 'partner',
                 ]);
                 $partner_id = $wpdb->insert_id; 
@@ -79,6 +81,7 @@ function save_scholarship(){
                 'partner_id' => $partner_id, 
                 'phone' => $number_phone,
                 'email' => $email_student,
+                'password' => $partner_id ? null : $password, 
                 'type' => 'student',
             ]);
 
