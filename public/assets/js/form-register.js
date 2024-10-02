@@ -468,14 +468,15 @@ if (document.getElementById("birth_date_student")) {
           // Obtén el elemento div que contiene el input
           const studentEmailDiv = document.getElementById("student-email");
 
-          // Crea una copia del elemento div
-          const studentEmailDivClone = studentEmailDiv.cloneNode(true);
-          document.getElementById("student-email-access").innerHTML = "";
-          document.getElementById("student-email-detail").innerHTML = "";
-
-          document
+          if (studentEmailDiv) {
+            // Crea una copia del elemento div
+            const studentEmailDivClone = studentEmailDiv.cloneNode(true);
+            document.getElementById("student-email-access").innerHTML = "";
+            document.getElementById("student-email-detail").innerHTML = "";
+            document
             .getElementById("student-email-access")
             .appendChild(studentEmailDivClone);
+          }
 
           var parentTitle = document.getElementById("parent-title");
           if (parentTitle) {
@@ -602,13 +603,15 @@ if (document.getElementById("birth_date_student")) {
         // Obtén el elemento div que contiene el input
         const studentEmailDiv = document.getElementById("student-email");
 
-        // Crea una copia del elemento div
-        const studentEmailDivClone = studentEmailDiv.cloneNode(true);
-        document.getElementById("student-email-access").innerHTML = "";
-        document.getElementById("student-email-detail").innerHTML = "";
-        document
-          .getElementById("student-email-detail")
-          .appendChild(studentEmailDivClone);
+        if (studentEmailDiv) {
+            // Crea una copia del elemento div
+          const studentEmailDivClone = studentEmailDiv.cloneNode(true);
+          document.getElementById("student-email-access").innerHTML = "";
+          document.getElementById("student-email-detail").innerHTML = "";
+          document
+            .getElementById("student-email-detail")
+            .appendChild(studentEmailDivClone);
+        }
 
         var parentTitle = document.getElementById("parent-title");
         if (parentTitle) {

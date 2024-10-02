@@ -1489,10 +1489,11 @@ function verificar_contraseña()
                 $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
             }
 
-            if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
-                // Agrega un script para levantar el modal
-                // add_action('wp_footer', 'modal_create_password');
-            } else if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+            // if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+            //     // Agrega un script para levantar el modal
+            //     add_action('wp_footer', 'modal_create_password');
+            // } else 
+            if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                 add_action('wp_footer', 'modal_enrollment_student');
             }
         }
