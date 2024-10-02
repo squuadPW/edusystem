@@ -769,7 +769,7 @@ function get_states_by_country() {
                         'institute_id' => $institute->id,
                         'total_orders' => sizeof($invoice['orders']),
                         'amount' => $invoice['total'],
-                        'status_id' => 0,
+                        'status_id' => $invoice['total'] > 0 ? 0 : 1,
                         'month' => $first_day_prev_month,
                         'created_at' => current_time('mysql'),
                     )
@@ -800,7 +800,7 @@ function get_states_by_country() {
                         'alliance_id' => $alliance->id,
                         'total_orders' => sizeof($invoice['orders']),
                         'amount' => $invoice['total'],
-                        'status_id' => 0,
+                        'status_id' => $invoice['total'] > 0 ? 0 : 1,
                         'month' => $first_day_prev_month,
                         'created_at' => current_time('mysql'),
                     )
