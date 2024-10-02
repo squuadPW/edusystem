@@ -305,8 +305,8 @@ if (is_user_logged_in()) {
 
         <form method="POST" action="<?= the_permalink() . '?action=new_applicant_others'; ?>" class="form-aes" id="form-others"
             style="display:none">
-            <!-- DATOS DEL ESTUDIANTE -->
             <div class="grid grid-cols-12 gap-4">
+                <!-- DATOS DEL ESTUDIANTE -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
                     style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
                     <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
@@ -351,7 +351,7 @@ if (is_user_logged_in()) {
                     <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                    <label for="phone"><?= __('Student contact number', 'aes'); ?><span class="required">*</span></label>
+                    <label for="phone"><?= __('Contact number', 'aes'); ?><span class="required">*</span></label>
                     <input class="formdata" type="tel" id="number_phone" name="number_phone" autocomplete="off" required>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -417,19 +417,19 @@ if (is_user_logged_in()) {
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="name_institute"><?= __('Name of School or Institution with Agreement', 'aes'); ?><span
-                            id="institute_id_required_others" class="required">*</span></label>
-                    <select name="institute_id" autocomplete="off" id="institute_id_others" required>
-                        <option value=""><?= __('Select an option', 'aes'); ?></option>
+                            id="institute_id_required" class="required">*</span></label>
+                    <select name="institute_id" autocomplete="off" id="institute_id" required>
+                        <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <?php foreach ($institutes as $institute): ?>
                             <option value="<?= $institute->id; ?>"><?= $institute->name; ?></option>
                         <?php endforeach; ?>
                         <option value="other"><?= __('Other', 'aes'); ?></option>
                     </select>
                 </div>
-                <div id="name-institute-field-others" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
+                <div id="name-institute-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
                     style="display:none;">
                     <label for="name_institute"><?= __('Name Institute', 'aes'); ?><span class="required">*</span></label>
-                    <input class="formdata" autocomplete="off" type="text" id="name_institute_others" name="name_institute">
+                    <input class="formdata" autocomplete="off" type="text" id="name_institute" name="name_institute">
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <input type="checkbox" id="terms" name="terms" required>
