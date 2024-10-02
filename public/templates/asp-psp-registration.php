@@ -303,8 +303,7 @@ if (is_user_logged_in()) {
             </div>
         </form>
 
-        <form method="POST" action="<?= the_permalink() . '?action=new_applicant_others'; ?>" class="form-aes" id="form-others"
-            style="display:none">
+        <form method="POST" action="<?= the_permalink() . '?action=new_applicant_others'; ?>" class="form-aes form-aes-others" id="form-others">
             <div class="grid grid-cols-12 gap-4">
                 <!-- DATOS DEL ESTUDIANTE -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
@@ -316,7 +315,9 @@ if (is_user_logged_in()) {
                     <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
                         required>
                     <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
-                        value="0">
+                        value="1">
+                    <span id="dontBeAdult"
+                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('Another student of legal age cannot register', 'aes'); ?></span>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
@@ -418,7 +419,7 @@ if (is_user_logged_in()) {
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="name_institute"><?= __('Name of School or Institution with Agreement', 'aes'); ?><span
                             id="institute_id_required" class="required">*</span></label>
-                    <select name="institute_id" autocomplete="off" id="institute_id" required>
+                    <select name="institute_id" autocomplete="off" id="institute_id_others" required>
                         <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <?php foreach ($institutes as $institute): ?>
                             <option value="<?= $institute->id; ?>"><?= $institute->name; ?></option>
@@ -426,10 +427,10 @@ if (is_user_logged_in()) {
                         <option value="other"><?= __('Other', 'aes'); ?></option>
                     </select>
                 </div>
-                <div id="name-institute-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
+                <div id="name-institute-field-others" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
                     style="display:none;">
-                    <label for="name_institute"><?= __('Name Institute', 'aes'); ?><span class="required">*</span></label>
-                    <input class="formdata" autocomplete="off" type="text" id="name_institute" name="name_institute">
+                    <label for="name_institute_others"><?= __('Name Institute', 'aes'); ?><span class="required">*</span></label>
+                    <input class="formdata" autocomplete="off" type="text" id="name_institute_others" name="name_institute">
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <input type="checkbox" id="terms" name="terms" required>
@@ -440,7 +441,7 @@ if (is_user_logged_in()) {
                     </a>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-3" style="text-align:center;">
-                    <button class="submit" id="buttonsave"><?= __('Send', 'aes'); ?></button>
+                    <button class="submit" id="buttonsave_others"><?= __('Send', 'aes'); ?></button>
                 </div>
             </div>
         </form>

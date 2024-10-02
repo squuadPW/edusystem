@@ -202,19 +202,19 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 let timer = null;
-const form = document.querySelector(".form-aes");
-const buttonSave = document.querySelector("#buttonsave");
-const sameEmailStudent = document.querySelector("#sameemailstudent");
-const sameEmailParent = document.querySelector("#sameemailparent");
-const existStudentEmail = document.querySelector("#existstudentemail");
-const existParentEmail = document.querySelector("#existparentemail");
-const existStudentId = document.querySelector("#exisstudentid");
-const emailStudentInput = form?.querySelector('input[name="email_student"]');
-const emailPartnerInput = form?.querySelector('input[name="email_partner"]');
-const idDocument = form?.querySelector('input[name="id_document"]');
-const typeDocument = form?.querySelector('select[name="document_type"]');
-const dont_allow_adult = document.getElementById("dont_allow_adult");
-const dontBeAdult = document.querySelector("#dontBeAdult");
+let form = document.querySelector(".form-aes");
+let buttonSave = document.querySelector("#buttonsave");
+let sameEmailStudent = document.querySelector("#sameemailstudent");
+let sameEmailParent = document.querySelector("#sameemailparent");
+let existStudentEmail = document.querySelector("#existstudentemail");
+let existParentEmail = document.querySelector("#existparentemail");
+let existStudentId = document.querySelector("#exisstudentid");
+let emailStudentInput = form?.querySelector('input[name="email_student"]');
+let emailPartnerInput = form?.querySelector('input[name="email_partner"]');
+let idDocument = form?.querySelector('input[name="id_document"]');
+let typeDocument = form?.querySelector('select[name="document_type"]');
+let dont_allow_adult = document.getElementById("dont_allow_adult");
+let dontBeAdult = document.querySelector("#dontBeAdult");
 
 emailStudentInput?.addEventListener("input", checkEmails);
 emailPartnerInput?.addEventListener("input", checkEmails);
@@ -761,12 +761,40 @@ segmentButtons.forEach((button) => {
 
       const formOthers = document.getElementById("form-others");
       formOthers.style.display = "block";
+
+      form = document.querySelector(".form-aes-others");
+      buttonSave = document.querySelector("#buttonsave_others");
+      sameEmailStudent = document.querySelector("#sameemailstudent");
+      sameEmailParent = document.querySelector("#sameemailparent");
+      existStudentEmail = document.querySelector("#existstudentemail");
+      existParentEmail = document.querySelector("#existparentemail");
+      existStudentId = document.querySelector("#exisstudentid");
+      emailStudentInput = form?.querySelector('input[name="email_student"]');
+      emailPartnerInput = form?.querySelector('input[name="email_partner"]');
+      idDocument = form?.querySelector('input[name="id_document"]');
+      typeDocument = form?.querySelector('select[name="document_type"]');
+      dont_allow_adult = document.getElementById("dont_allow_adult");
+      dontBeAdult = document.querySelector("#dontBeAdult");
     } else {
       const formOthers = document.getElementById("form-others");
       formOthers.style.display = "none";
 
       const formMe = document.getElementById("form-me");
       formMe.style.display = "block";
+
+      form = document.querySelector(".form-aes");
+      buttonSave = document.querySelector("#buttonsave");
+      sameEmailStudent = document.querySelector("#sameemailstudent");
+      sameEmailParent = document.querySelector("#sameemailparent");
+      existStudentEmail = document.querySelector("#existstudentemail");
+      existParentEmail = document.querySelector("#existparentemail");
+      existStudentId = document.querySelector("#exisstudentid");
+      emailStudentInput = form?.querySelector('input[name="email_student"]');
+      emailPartnerInput = form?.querySelector('input[name="email_partner"]');
+      idDocument = form?.querySelector('input[name="id_document"]');
+      typeDocument = form?.querySelector('select[name="document_type"]');
+      dont_allow_adult = document.getElementById("dont_allow_adult");
+      dontBeAdult = document.querySelector("#dontBeAdult");
     }
   });
 });
