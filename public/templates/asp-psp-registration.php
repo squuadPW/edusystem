@@ -414,7 +414,7 @@ if (is_user_logged_in()) {
 ?>
 <?php } else { ?>
     <div class="title">
-        <?= __('Student applicant', 'aes'); ?>
+        <?= __('Applicant', 'aes'); ?>
     </div>
     <form method="POST"
         action="<?php the_permalink(); ?>?action=save_student&idbitrix=<?php echo $_GET['idbitrix'] ?? null ?>"
@@ -428,6 +428,9 @@ if (is_user_logged_in()) {
 
         <!-- DATOS DEL ESTUDIANTE -->
         <div class="grid grid-cols-12 gap-4">
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
+                <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
+            </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
@@ -452,24 +455,35 @@ if (is_user_logged_in()) {
                     style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="name"><?= __('Student name', 'aes'); ?><span class="required">*</span></label>
+                <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="lastname"><?= __('Student second name', 'aes'); ?><span class="required">*</span></label>
+                <label for="lastname"><?= __('Second name', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off" required>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="lastname"><?= __('Student last name', 'aes'); ?><span class="required">*</span></label>
+                <label for="lastname"><?= __('Last name', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="lastname"><?= __('Student second last name', 'aes'); ?><span class="required">*</span></label>
+                <label for="lastname"><?= __('Second last name', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="phone"><?= __('Student contact number', 'aes'); ?><span class="required">*</span></label>
+                <label for="phone"><?= __('Contact number', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata" type="tel" id="number_phone" name="number_phone" autocomplete="off" required>
+            </div>
+            <div  class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-detail">
+                <div id="student-email">
+                    <label for="email"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
+                    <input class="formdata" type="email" name="email_student" autocomplete="off"
+                        oninput="sendAjaxStudentEmailDocument()" required>
+                    <span id="existstudentemail"
+                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
+                    <span id="sameemailstudent"
+                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The student cannot share the same email as the representative', 'aes'); ?></span>
+                </div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="gender"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
@@ -494,7 +508,7 @@ if (is_user_logged_in()) {
 
 
             <!-- DATOS DEL PADRE -->
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title">
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title" style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
                 <div class="subtitle text-align-center"><?= __('Parent details', 'aes'); ?></div>
             </div>
             <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -517,17 +531,17 @@ if (is_user_logged_in()) {
                     name="id_document_parent" required>
             </div>
             <div id="parent_name_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="agent_name"><?= __('Parent\'s name', 'aes'); ?><span class="required">*</span></label>
+                <label for="agent_name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata capitalize" type="text" name="agent_name" autocomplete="off" id="agent_name"
                     required>
             </div>
             <div id="parent-lastname-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="agent_name"><?= __('Parent\'s last name', 'aes'); ?><span class="required">*</span></label>
+                <label for="agent_name"><?= __('Last name', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata capitalize" type="text" name="agent_last_name" autocomplete="off"
                     id="agent_last_name" required>
             </div>
             <div id="parent-phone-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="phone"><?= __('Parent\'s contact number', 'aes'); ?><span class="required">*</span></label>
+                <label for="phone"><?= __('Contact number', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata" type="tel" id="number_partner" autocomplete="off" id="number_partner"
                     name="number_partner" required>
             </div>
@@ -554,37 +568,29 @@ if (is_user_logged_in()) {
             </div>
 
             <!-- DATOS DE ACCESO -->
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"  style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
                 <div class="subtitle text-align-center"><?= __('Platform access data', 'aes'); ?></div>
+            </div>
 
-                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="margin-bottom: 10px;">
-                    <label for="email"><?= __('Student email address', 'aes'); ?><span class="required">*</span></label>
-                    <input class="formdata" type="email" name="email_student" autocomplete="off"
-                        oninput="sendAjaxStudentEmailDocument()" required>
-                    <span id="existstudentemail"
-                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
-                    <span id="sameemailstudent"
-                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The student cannot share the same email as the representative', 'aes'); ?></span>
-                </div>
+            <div  class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-access"></div>
 
-                <div id="parent-email-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="margin-bottom: 10px;">
-                    <label for="email"><?= __('Parent\'s email address', 'aes'); ?><span class="required">*</span></label>
-                    <input class="formdata" type="email" name="email_partner" autocomplete="off" id="email_partner"
-                        oninput="sendAjaxPartnerEmailDocument()" required>
-                    <span id="existparentemail"
-                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
-                    <span id="sameemailparent"
-                        style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student', 'aes'); ?></span>
-                </div>
+            <div id="parent-email-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="email"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
+                <input class="formdata" type="email" name="email_partner" autocomplete="off" id="email_partner"
+                    oninput="sendAjaxPartnerEmailDocument()" required>
+                <span id="existparentemail"
+                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
+                <span id="sameemailparent"
+                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student', 'aes'); ?></span>
+            </div>
 
-                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="margin-bottom: 10px;">
-                    <label for="password"><?= __('Password of access', 'aes'); ?><span class="required">*</span></label>
-                    <input class="formdata" type="password" name="password" autocomplete="off" required>
-                </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="password"><?= __('Password of access', 'aes'); ?><span class="required">*</span></label>
+                <input class="formdata" type="password" name="password" autocomplete="off" required>
             </div>
 
             <!-- DATOS DEL GRADO -->
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" style="margin-top: 30px !important; background: rgb(9,28,92); background: radial-gradient(circle, rgba(9,28,92,1) 0%, rgba(255,255,255,1) 100%); color: white">
                 <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
