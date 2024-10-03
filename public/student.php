@@ -431,6 +431,7 @@ function insert_period_inscriptions($student_id)
                 'student_id' => $student_id,
                 'code_period' => $period_data->code,
                 'cut_period' => $period,
+                'status_id' => 1,
             ]);
             break;
         }
@@ -457,6 +458,7 @@ function insert_period_inscriptions($student_id)
                     'student_id' => $student_id,
                     'code_period' => $period_data->code,
                     'cut_period' => $period,
+                    'status_id' => 1,
                 ]);
                 break;
             }
