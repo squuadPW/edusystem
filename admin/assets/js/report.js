@@ -269,6 +269,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function load_report_students() {
     let academic_period = document.getElementById("academic_period").value;
+    let academic_period_cut = document.getElementById("academic_period_cut").value;
     let grade = document.getElementById("grade").value;
 
     let htmlLoading = "";
@@ -290,7 +291,9 @@ document.addEventListener("DOMContentLoaded", function () {
         "&academic_period=" +
         academic_period +
         "&period=" +
-        grade
+        grade +
+        "&academic_period_cut=" +
+        academic_period_cut
     );
     XHR.onload = function () {
       if (this.readyState == "4" && XHR.status === 200) {

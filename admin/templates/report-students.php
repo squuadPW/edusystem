@@ -6,7 +6,6 @@
         </div>
     </div>
     <div style="width:100%;text-align:center;padding-top:10px;">
-
             <select id="academic_period">
             <option value="" selected="selected"><?= __('Select an academic period', 'aes'); ?></option>
                 <?php foreach ($periods as $key => $period) { ?>
@@ -14,6 +13,14 @@
                         <?php echo $period->name; ?>
                     </option>
                 <?php } ?>
+            </select>
+            <select name="academic_period_cut" id="academic_period_cut">
+                <option value="">Select academic period cut</option>
+                <option value="A" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'A') ? 'selected' : '') : ''; ?>>A</option>
+                <option value="B" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'B') ? 'selected' : '') : ''; ?>>B</option>
+                <option value="C" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'C') ? 'selected' : '') : ''; ?>>C</option>
+                <option value="D" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'D') ? 'selected' : '') : ''; ?>>D</option>
+                <option value="E" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'E') ? 'selected' : '') : ''; ?>>E</option>
             </select>
             <select id="grade">
                     <option value="" selected="selected"><?= __('Select a grade', 'aes'); ?></option>
