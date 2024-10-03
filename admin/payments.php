@@ -690,7 +690,7 @@ class TT_Invoices_Alliances_List_Table extends WP_List_Table
                 if ($item->status_id == 0) {
                     return "<a href='" . admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=invoices_alliances&id_payment=' . $item->id) . "' class='button button-primary'>" . __('Pay', 'form-plugin') . "</a>";
                 } else {
-                    return "N/A";
+                    return "Paid";
                 }
             default:
                 return print_r($item, true);
@@ -831,7 +831,7 @@ class TT_Invoices_Institutes_List_Table extends WP_List_Table
                 if ($item->status_id == 0) {
                     return "<a href='" . admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=invoices_institutes&id_payment=' . $item->id) . "' class='button button-primary'>" . __('Pay', 'form-plugin') . "</a>";
                 } else {
-                    return "N/A";
+                    return "Paid";
                 }
             default:
                 return print_r($item, true);
