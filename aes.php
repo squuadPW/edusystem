@@ -149,6 +149,7 @@ function create_tables() {
         partner_id INT(11) NULL,
         email TEXT NOT NULL,
         password TEXT NULL,
+        is_parent BOOLEAN DEFAULT FALSE,
         phone TEXT NOT NULL,
         type TEXT NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

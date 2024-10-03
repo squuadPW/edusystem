@@ -48,6 +48,7 @@ function save_scholarship(){
             }
 
             $partner_id = null;
+            $is_parent = false;
             if (!empty($agent_name) && !empty($agent_last_name) && !empty($email_partner) && !empty($number_partner) && !empty($birth_date_parent) && !empty($parent_document_type) && !empty($id_document_parent)) {
                 $wpdb->insert($table_pre_users,[
                     'type_document' => $parent_document_type,
@@ -62,10 +63,15 @@ function save_scholarship(){
                     'partner_id' => null, 
                     'phone' => $number_partner,
                     'email' => $email_partner,
+                    'is_parent' => true,
                     'password' => $password,
                     'type' => 'partner',
                 ]);
                 $partner_id = $wpdb->insert_id; 
+            }
+
+            if (!$partner_id) {
+                $is_parent = true;
             }
 
             $wpdb->insert($table_pre_users,[
@@ -81,7 +87,8 @@ function save_scholarship(){
                 'partner_id' => $partner_id, 
                 'phone' => $number_phone,
                 'email' => $email_student,
-                'password' => $partner_id ? null : $password, 
+                'is_parent' => $is_parent,
+                'password' => $is_parent ? $password : null, 
                 'type' => 'student',
             ]);
 

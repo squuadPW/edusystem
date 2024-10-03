@@ -41,12 +41,17 @@ function add_admin_form_scholarships_content(){
                     update_user_meta($user_partner_id, 'document_type', $partner->type_document);
                     update_user_meta($user_partner_id, 'id_document', $partner->id_document);
                     update_user_meta($user_partner_id, 'status_register', 1);
+                    update_user_meta($user_partner_id, 'is_scholarship', 1);
                     // GENERAMOS USUARIO PARA EL PARTNER
 
                     // CREAMOS REGISTRO EN TABLA STUDENTS
+                    $is_parent = false;
                     $pre_students_table = $wpdb->prefix . 'pre_students';
                     $students_table = $wpdb->prefix . 'students';
                     $pre_student_row = $wpdb->get_row("SELECT * FROM $pre_students_table WHERE id = {$scholarship->student_id}");                   
+                    if ($user_email == $pre_student_row->email) {
+                        $is_parent = true;
+                    }
                     $wpdb->insert(
                         $students_table,
                         array(
@@ -82,13 +87,19 @@ function add_admin_form_scholarships_content(){
                     $username = $pre_student_row->email;
                     $user_email = $pre_student_row->email;
                     if ( username_exists( $username ) ) {
-                        $user_id = username_exists( $username );
-                        $user = new WP_User($user_id);
-                        $user->set_role( 'student' );
+                        $user_student_id = username_exists( $username );
+                        $user_student = new WP_User($user_id);
+                        $user_student->set_role( 'student' );
+                        if ($is_parent) {
+                            $user_student->set_role( 'parent' );
+                        }
                     } else {
-                        $user_student_id = wp_create_user($username, generate_password_user(), $user_email);
+                        $user_student_id = wp_create_user($username, $is_parent ? $password : generate_password_user(), $user_email);
                         $user_student = new WP_User($user_student_id);
                         $user_student->set_role( 'student' );
+                        if ($is_parent) {
+                            $user_student->set_role( 'parent' );
+                        }
                     }
 
                     update_user_meta($user_student_id, 'first_name', $pre_student_row->name);
@@ -97,6 +108,7 @@ function add_admin_form_scholarships_content(){
                     update_user_meta($user_student_id, 'billing_email', $pre_student_row->email);
                     update_user_meta($user_student_id, 'birth_date', $pre_student_row->birth_date);
                     update_user_meta($user_student_id, 'student_id', $student_id);
+                    update_user_meta($user_student_id, 'is_scholarship', 1);
 
                     update_user_meta($user_partner_id, 'billing_country', $pre_student_row->country);
                     update_user_meta($user_partner_id, 'billing_city', $pre_student_row->city);
