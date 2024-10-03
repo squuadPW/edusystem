@@ -535,7 +535,7 @@ class TT_document_review_List_Table extends WP_List_Table
             FROM {$table_students} as a 
             JOIN {$table_student_documents} b on b.student_id = a.id 
             WHERE (b.status != 5) 
-            AND a.id IN (" . implode(',', $cut_student_ids) . ")
+            AND (" . (isset($cut) && $cut != '' ? "a.id IN (" . implode(',', $cut_student_ids) . ")" : "1=1") . ")
             AND (
                 (" . ($search ? "a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR a.email LIKE '{$search}%' OR a.id_document LIKE '{$search}%'" : "1=1") . ")
                 AND (" . ($date_selected ? "a.created_at >= '$filter_date'" : "1=1") . ")
