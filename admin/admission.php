@@ -497,52 +497,55 @@ class TT_document_review_List_Table extends WP_List_Table
 
     function get_pending_students()
     {
-
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $table_student_documents = $wpdb->prefix . 'student_documents';
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
-
+    
         $search = sanitize_text_field($_GET['s']);
         $period = sanitize_text_field($_GET['academic_period']);
         $date_selected = sanitize_text_field($_GET['date_selected']);
-
-        if ($date_selected) {
-            $today = date('Y-m-d'); // get today's date
-            $filter_date = '';
-            switch ($date_selected) {
-                case '1':
-                    $filter_date = date('Y-m-d', strtotime('-15 days', strtotime($today))); // 15 days ago
-                    break;
-                case '2':
-                    $filter_date = date('Y-m-d', strtotime('-35 days', strtotime($today))); // 35 days ago
-                    break;
-                case '3':
-                    $filter_date = date('Y-m-d', strtotime('-365 days', strtotime($today))); // more than 35 days ago
-                    break;
-            }
+        $cut = sanitize_text_field($_GET['academic_period_cut']);
+    
+        // Obtener los student_id que coinciden con el cut_period
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE cut_period = '$cut'");
+    
+        $today = date('Y-m-d'); // get today's date
+        $filter_date = '';
+        switch ($date_selected) {
+            case '1':
+                $filter_date = date('Y-m-d', strtotime('-15 days', strtotime($today))); // 15 days ago
+                break;
+            case '2':
+                $filter_date = date('Y-m-d', strtotime('-35 days', strtotime($today))); // 35 days ago
+                break;
+            case '3':
+                $filter_date = date('Y-m-d', strtotime('-365 days', strtotime($today))); // more than 35 days ago
+                break;
         }
-
+    
         $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*,
-        (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
-        (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
-        (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
-        (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
-        FROM {$table_students} as a 
-        JOIN {$table_student_documents} b on b.student_id = a.id 
-        WHERE (b.status != 5) 
-        AND (
-            (" . ($search ? "a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR a.email LIKE '{$search}%' OR a.id_document LIKE '{$search}%'" : "1=1") . ")
-            AND (" . ($date_selected ? "a.created_at >= '$filter_date'" : "1=1") . ")
-            AND (" . ($period ? "a.academic_period = '$period'" : "1=1") . ")
-        )
-        GROUP BY a.id
-        ORDER BY a.updated_at DESC
-        LIMIT {$per_page} OFFSET {$offset}
-        ", "ARRAY_A");
-
+            (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
+            (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
+            (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
+            (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
+            FROM {$table_students} as a 
+            JOIN {$table_student_documents} b on b.student_id = a.id 
+            WHERE (b.status != 5) 
+            AND a.id IN (" . implode(',', $cut_student_ids) . ")
+            AND (
+                (" . ($search ? "a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR a.email LIKE '{$search}%' OR a.id_document LIKE '{$search}%'" : "1=1") . ")
+                AND (" . ($date_selected ? "a.created_at >= '$filter_date'" : "1=1") . ")
+                AND (" . ($period ? "a.academic_period = '$period'" : "1=1") . ")
+            )
+            GROUP BY a.id
+            ORDER BY a.updated_at DESC
+            LIMIT {$per_page} OFFSET {$offset}
+            ", "ARRAY_A");
+    
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
         return ['data' => $data, 'total_count' => $total_count];
     }
