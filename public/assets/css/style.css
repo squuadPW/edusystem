@@ -305,7 +305,7 @@ input, textarea {
 }
 
 #number_phone, #number_partner, #rector_phone, #number_phone_account, #billing_phone {
-  padding-left: 85px !important;
+  padding-left: 100px !important;
 }
 
 .text-align-center {
