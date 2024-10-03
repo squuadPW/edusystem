@@ -43,6 +43,7 @@ function create_tables() {
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_period_inscriptions}'") != $table_student_period_inscriptions){
     dbDelta( "CREATE TABLE " . $table_student_period_inscriptions . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
+        status_id INT(11) NOT NULL,
         student_id INT(11) NOT NULL,
         code_period INT(11) NOT NULL,
         cut_period TEXT NOT NULL,
