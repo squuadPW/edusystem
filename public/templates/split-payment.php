@@ -50,7 +50,7 @@ $style_checkbox = ($split_payment_metadata !== '') ? 'none' : 'block';
                             <input type="number" id="aes_amount_split" name="aes_amount_split" style="width: 100%; padding-right: <?php echo $style_button_total_payment == 'none' ? '10px' : '150px' ?>; box-sizing: border-box; -webkit-appearance: none; -moz-appearance: textfield;">
                             <button id="total_payment_button" type="button" class="submit" style="font-size: 14px; padding: 10px 10px !important; border-radius: 9px !important; position: absolute; top: 50%; right: 8px; height: 36px; transform: translateY(-50%); width: auto; display: <?php echo $style_button_total_payment ?>" onclick="clickLoadInfoFee()">Pending amount</button>
                         </div>
-                        <label for="aes_amount_split" style="font-size: 14px">Payment method commission <strong id="payment_method_comission"></strong> + amount: <strong id="total_entered" style="color: green;"></strong></label><br>
+                        <label for="aes_amount_split" style="font-size: 14px">Payment method commission <strong id="payment_method_comission"></strong> <br> Total paid: <strong id="total_entered" style="color: green;"></strong></label><br>
                     </div>
                 </div>
                 <input type="hidden" id="aes_amount_split_fee" name="aes_amount_split_fee" style="width: 100%">

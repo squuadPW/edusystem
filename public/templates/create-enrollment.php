@@ -6,6 +6,7 @@
 <div class="modal-content modal-enrollment" id="modal-content">
     <div id="modal-contraseña" class="modal" style="overflow: auto; padding: 0 !important">
         <div class="modal-content modal-enrollment">
+            <span id="close-modal-enrollment" style="float: right; cursor: pointer"><span class='dashicons dashicons-no-alt'></span></span>
             <div class="modal-body" id="content-pdf">
                 <div id="part1" style="font-size: 12px; color: #000">
                     <div style="padding: 0 !important; text-align: center; border: 1px solid gray;">

@@ -96,6 +96,12 @@ if (document.getElementById("signature-student")) {
     document.getElementById("generate-signature-student").style.display = 'block';
   });
 
+  document.getElementById("close-modal-enrollment").addEventListener("click", () => {
+    document.getElementById("modal-contraseña").style.display = "none";
+    document.getElementById("modal-content").style.display = "none";
+    document.body.classList.remove("modal-open");
+  });
+
   let clearParentElement = document.getElementById("clear-parent");
   if (clearParentElement) {
     clearParentElement.addEventListener("click", () => {
