@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: AES
-Plugin URI: https://online.american-elite.us//wp-admin/plugins.php
-Description: Plugin for AES
-Version:01
-Author: AES
-Author URI: https://online.american-elite.us//wp-admin/plugins.php
+Plugin URI: https://online.american-elite.us/wp-admin/plugins.php
+Description: The WordPress plugin for American Elite School is a customized tool that offers a range of functionalities for the proper functioning of the school's website
+Version: 1
+Author: Squuad
+Author URI: https://online.american-elite.us/wp-admin/plugins.php
 License:      GPL2
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain:  form-plugin
