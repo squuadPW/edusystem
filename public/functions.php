@@ -1401,17 +1401,6 @@ function verificar_contraseña()
                 $order = wc_get_order($order_id);
                 if ($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1 && !$order->get_meta('split_complete')) {
                     $checkout_url = wc_get_checkout_url() . 'order-pay/' . $order_id . '/?pay_for_order=true&key=' . $orders[0]->get_order_key();
-                        # code...
-
-                    $fees = $order->get_fees();
-                    foreach ($fees as $fee) {
-                        $order->remove_item($fee->get_id());
-                    }
-
-                    $order->calculate_totals();
-
-                    $order->set_payment_method(''); // This will remove the payment method
-
                     $split_method = json_decode($order->get_meta('split_method'));
                     $total = 0.00;
                     $total_gross = 0.00;
@@ -1436,9 +1425,9 @@ function verificar_contraseña()
                     
                     $pending_payment_meta = $order->get_meta('pending_payment');
                     if ($pending_payment_meta) {
-                        $order->update_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
+                        $order->update_meta_data('pending_payment', ($order->get_total() - $total));
                     } else {
-                        $order->add_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
+                        $order->add_meta_data('pending_payment', ($order->get_total() - $total));
                     }
         
                     // $order->set_total($order->get_total() - $total); // Set the total amount of the order

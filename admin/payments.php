@@ -60,9 +60,9 @@ function add_admin_form_payments_content()
                 
                 $pending_payment_meta = $order->get_meta('pending_payment');
                 if ($pending_payment_meta) {
-                    $order->update_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
+                    $order->update_meta_data('pending_payment', ($order->get_total() - $total));
                 } else {
-                    $order->add_meta_data('pending_payment', (($order->get_subtotal() - $order->get_total_discount()) - $total));
+                    $order->add_meta_data('pending_payment', ($order->get_total() - $total));
                 }
 
                 if (!$on_hold_found) {
