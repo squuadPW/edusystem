@@ -10,6 +10,7 @@ require plugin_dir_path(__FILE__) . 'user.php';
 require plugin_dir_path(__FILE__) . 'notes.php';
 require plugin_dir_path(__FILE__) . 'academic_services.php';
 require plugin_dir_path(__FILE__) . 'endpoint.php';
+require plugin_dir_path(__FILE__) . 'moodle.php';
 
 function form_plugin_scripts()
 {
