@@ -305,6 +305,11 @@ function custom_override_value_checkout_fields($fields)
 function change_billing_phone_checkout_field_value($order)
 {
 
+    if (!isset($_COOKIE['email-student']) || empty($_COOKIE['email-student'])) {
+        wp_redirect(wp_get_referer()); // o cualquier otra función de redireccionamiento que desees
+        exit;
+    }
+    
     if ($_POST['aes_split_payment'] == 'on' && (!$_POST['aes_amount_split'] || $_POST['aes_amount_split'] == 0)) {
         wc_add_notice(__('You must specify a split payment amount', 'woocommerce'), 'error');
         exit; // o exit; si deseas detener la ejecución del código
