@@ -111,7 +111,7 @@
                                         </tr>
                                         <tr style="border-bottom: 1px dashed gray;">
                                             <th scope="row"><label for="input_id"><?= __('Status','aes'); ?></label></th>
-                                            <td><?= $pay->status == 'completed' || $pay->status == 'complete' ? 'Completed' : 'On hold'; ?></td>
+                                            <td><?= $pay->status == 'completed' || $pay->status == 'complete' ? 'Completed' : ($pay->status == 'refunded' ? 'Refunded' : 'On hold'); ?></td>
                                         </tr>
                                     <?php } ?>
                                         <tr>
