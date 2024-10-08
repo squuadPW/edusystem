@@ -1047,7 +1047,7 @@ function update_status_documents()
                     'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
                     'country' => get_user_meta($student->partner_id, 'billing_country', true),
                     'city' => get_user_meta($student->partner_id, 'billing_city', true),
-                    'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true),
+                    'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true) ? get_user_meta($student->partner_id, 'billing_postcode', true) : '-',
                 );
 
                 $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
@@ -1203,7 +1203,7 @@ function get_data_student()
             'email_parent' => $partner->user_email,
             'country_parent' => get_user_meta($partner->ID, 'billing_country', true),
             'city_parent' => get_user_meta($partner->ID, 'billing_city', true),
-            'post_code_parent' => get_user_meta($partner->ID, 'billing_postcode', true),
+            'post_code_parent' => get_user_meta($partner->ID, 'billing_postcode', true) ? get_user_meta($partner->ID, 'billing_postcode', true) : '-',
             'phone_parent' => get_user_meta($partner->ID, 'billing_phone', true),
             'birth_date_parent' => get_user_meta($partner->ID, 'birth_date', true),
             'gender_parent' => get_user_meta($partner->ID, 'gender', true),

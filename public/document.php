@@ -227,7 +227,7 @@ function save_document(){
                                     'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
                                     'country' => get_user_meta($student->partner_id, 'billing_country', true),
                                     'city' => get_user_meta($student->partner_id, 'billing_city', true),
-                                    'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true),
+                                    'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true) ? get_user_meta($student->partner_id, 'billing_postcode', true) : '-',
                                 );
                 
                                 $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
