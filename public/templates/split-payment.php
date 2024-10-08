@@ -115,6 +115,7 @@ if ($order) {
 
     let current_fee = 0;
     let current_payment_method_text = '';
+    let pending_amount = 0;
     document.getElementById('total_entered').innerText = `Loading...`;
     document.getElementById('payment_method_comission').innerText = `Loading...`;
 
@@ -158,7 +159,9 @@ if ($order) {
             success: function (response) {
                 loadFee(response.fee); // Output: The subtotal of the cart
 
+                pending_amount = response.pending;
                 document.querySelector('input[name="aes_amount_split"]').value = response.pending;
+                document.getElementById('place_order').disabled = false;
                 let value = document.getElementById('aes_amount_split').value ? document.getElementById('aes_amount_split').value : 0;
                 document.getElementById('total_entered').innerText = `$${(parseFloat(value) + parseFloat(current_fee)).toFixed(2)}`
                 document.getElementById('payment_method_comission').innerText = `($${current_fee})`;
@@ -205,5 +208,10 @@ if ($order) {
         document.getElementById('payment_method_comission').innerText = `($${current_fee})`;
         document.querySelector('input[name="aes_amount_split_fee"]').value = current_fee;
         document.getElementById('total_entered').innerText = `$${(parseFloat(value) + parseFloat(current_fee)).toFixed(2)}`
+        if (value > pending_amount) {
+            document.getElementById('place_order').disabled = true;
+        } else {
+            document.getElementById('place_order').disabled = false;
+        }
     });
 </script>
