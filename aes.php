@@ -384,7 +384,7 @@ function create_tables() {
       grade_id INT(11) NOT NULL,
       is_required INT(11) NOT NULL,
       is_visible BOOLEAN NOT NULL DEFAULT 1,
-      id_requisito INT(11) NOT NULL,
+      id_requisito TEXT NOT NULL,
       updated_at DATETIME NULL,
       created_at DATETIME NOT NULL,
       PRIMARY KEY (id))$charset_collate;"
@@ -465,7 +465,7 @@ function create_tables() {
               'grade_id' => $grade->id,
               'is_required' => 1,
               'is_visible' => 0,
-              'id_requisito' => 'EN',
+              'id_requisito' => 'ENROLLMENT',
               'created_at' => date('Y-m-d H:i:s')
             ]);
 
@@ -474,7 +474,7 @@ function create_tables() {
               'grade_id' => $grade->id,
               'is_required' => 0,
               'is_visible' => 0,
-              'id_requisito' => 'MD',
+              'id_requisito' => 'CC',
               'created_at' => date('Y-m-d H:i:s') 
             ]);
         } 
