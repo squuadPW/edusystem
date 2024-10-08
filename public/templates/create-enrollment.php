@@ -292,7 +292,7 @@
                 </div>
             </div>
             <div class="modal-footer" style="text-align: center; display: block">
-                <button type="button" class="submit" id="saveSignatures">Save</button>
+                <button type="button" class="submit button-create-enrollment" id="saveSignatures">Save</button>
             </div>
         </div>
     </div>

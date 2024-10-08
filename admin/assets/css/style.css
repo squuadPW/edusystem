@@ -115,7 +115,7 @@ div#application-passwords-section {
 
 .modal-content {
   background-color: #fff;
-  margin: 40px auto;
+  margin: 50px auto 150px auto;
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -163,6 +163,12 @@ div#application-passwords-section {
 }
 .modal-footer button {
   margin-right: 5px !important;
+}
+
+@media screen and (max-width: 782px) {
+  .button-create-enrollment {
+    margin-bottom: 150px !important;
+  }
 }
 
 .button {
