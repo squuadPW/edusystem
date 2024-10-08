@@ -304,11 +304,6 @@ function custom_override_value_checkout_fields($fields)
 
 function change_billing_phone_checkout_field_value($order)
 {
-
-    if (!isset($_COOKIE['email-student']) || empty($_COOKIE['email-student'])) {
-        wp_redirect(wp_get_referer()); // o cualquier otra función de redireccionamiento que desees
-        exit;
-    }
     
     if ($_POST['aes_split_payment'] == 'on' && (!$_POST['aes_amount_split'] || $_POST['aes_amount_split'] == 0)) {
         wc_add_notice(__('You must specify a split payment amount', 'woocommerce'), 'error');
@@ -341,9 +336,9 @@ function remove_my_account_links($menu_links)
 
         $birthday = get_user_meta($current_user->ID, 'birth_date', true);
         $age = floor((time() - strtotime($birthday)) / 31556926);
-        if ($age >= 18) {
+        // if ($age >= 18) {
             $menu_links['dashboard'] = __('Dashboard', 'form-plugin');
-        }
+        // }
 
         if (in_array('parent', $roles)) {
             $menu_links['orders'] = __('Payments', 'form-plugin');
@@ -493,7 +488,7 @@ function add_loginout_link($items, $args)
         $birthday = get_user_meta($current_user->ID, 'birth_date', true);
         $age = floor((time() - strtotime($birthday)) / 31556926);
         if ($age > 18) {
-            $items .= '<li><a href="' . home_url() . '">' . __('Home', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . home_url() . '">' . __('New applicant', 'form-plugin') . '</a></li>';
         }
 
         $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '">' . __('Dashboard', 'form-plugin') . '</a></li>';
