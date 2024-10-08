@@ -273,7 +273,7 @@
                                                 </div>
                                                 <button id="clear-parent" style="width: 100%;">Clear</button>
                                                 <button id="generate-signature-parent" style="width: 100%;" onclick="autoSignature('signature-pad-parent', 'signature-text-parent', 'generate-signature-parent', 'clear-parent')">Generate signature automatically</button>
-                                                <div style="position: relative; padding: 8px; display: block; text-align: center; width: 70%; margin: 10px auto; border-bottom: 1px solid gray; display: none; font-family: 'Great Vibes', cursive; font-size: 28px;" id="signature-text-parent">
+                                                <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none" id="signature-text-parent">
                                                     <div style="bottom: 0; position: absolute; text-align: center; width: 100%;"><?php echo $user['parent_full_name'] ?></div>
                                                 </div>
                                                 <button id="clear-parent-signature" style="width: 100%; display: none">Cancel</button>
