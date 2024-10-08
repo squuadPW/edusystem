@@ -21,4 +21,9 @@ document.addEventListener('DOMContentLoaded',function(){
       });
     }   
 
+    let input_billing_email = document.getElementById('billing_email_field');
+    if (input_billing_email) {
+        input_billing_email.style.display = 'none';
+    }
+
 });

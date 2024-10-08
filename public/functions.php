@@ -136,6 +136,7 @@ function removed_custom_checkout_fields($fields)
     // unset( $fields['billing']['billing_address_2']);
     // unset( $fields['billing']['billing_state']);
     // unset( $fields['billing']['billing_postcode']);
+    unset($fields['billing']['billing_email']);
     unset($fields['shipping']['shipping_first_name']);
     unset($fields['shipping']['shipping_last_name']);
     unset($fields['shipping']['shipping_address_1']);

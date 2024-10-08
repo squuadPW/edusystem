@@ -40,6 +40,11 @@ function save_student()
         $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
         $password = isset($_POST['password']) ? $_POST['password'] : null;
 
+        if (isset($email_partner) && ($email_partner === $email_student)) {
+            wc_add_notice(__( 'Emails can\'t be the same', 'aes' ), 'error' );
+            return;
+        }
+
         setcookie('is_older', '', time() + 3600);
         setcookie('ethnicity', $ethnicity, time() + 3600);
         setcookie('billing_city', ucwords($city), time() + 3600);
