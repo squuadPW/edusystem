@@ -254,6 +254,8 @@ function save_student()
                 $status_register = get_user_meta($customer_id, 'status_register', true);
 
                 woocommerce_checkout_order_created_action($order);
+                wp_redirect(wp_get_referer());
+                exit;
 
                 status_order_not_completed($order, $order_id, $customer_id, $status_register);
 

@@ -21,6 +21,18 @@
 
                     <!-- DATOS DEL ESTUDIANTE -->
                     <div class="grid grid-cols-12 gap-4">
+                        <!-- <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
+                            style="margin-top: 30px !important;">
+                            <h4>Welcome!</h4>
+                            <p>Here are the details of your account:</p>
+
+                            <ul>
+                                <li>Email: <?php echo $current_user->user_email ?></li>
+                                <li>Password: <?php echo $current_user->password ?></li>
+                            </ul>
+                            <br>
+                            <p>Please note that the same password we provided earlier has been sent to your email for you to verify and access your account securely.</p>
+                        </div> -->
                         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
                             style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                             <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>

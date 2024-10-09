@@ -194,6 +194,8 @@ function woocommerce_checkout_order_created_action($order)
         $order->update_meta_data('id_bitrix', $_COOKIE['id_bitrix']);
         $order->save();
 
+        echo $student_id;
+        exit;
         $email_new_student = WC()->mailer()->get_emails()['WC_New_Applicant_Email'];
         $email_new_student->trigger($student_id);
 
