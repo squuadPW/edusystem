@@ -247,19 +247,15 @@ function save_student()
                 $orders = wc_get_orders(array(
                     'customer_id' => $current_user->ID,
                 ));
-                usleep(2000000); // wait for 2 seconds
 
                 $order_id = $orders[0]->get_id();
                 $order = wc_get_order($order_id);
                 $customer_id = $order->get_customer_id();
                 $status_register = get_user_meta($customer_id, 'status_register', true);
-                usleep(2000000); // wait for 2 seconds
 
                 woocommerce_checkout_order_created_action($order);
-                usleep(2000000); // wait for 2 seconds
 
                 status_order_not_completed($order, $order_id, $customer_id, $status_register);
-                usleep(2000000); // wait for 2 seconds
 
                 status_order_completed($order, $order_id, $customer_id, $status_register);
                 break;
@@ -293,19 +289,15 @@ function save_student()
                 $orders = wc_get_orders(array(
                     'customer_id' => $current_user->ID,
                 ));
-                usleep(2000000); // wait for 2 seconds
 
                 $order_id = $orders[0]->get_id();
                 $order = wc_get_order($order_id);
                 $customer_id = $order->get_customer_id();
                 $status_register = get_user_meta($customer_id, 'status_register', true);
-                usleep(2000000); // wait for 2 seconds
 
                 woocommerce_checkout_order_created_action($order);
-                usleep(2000000); // wait for 2 seconds
 
                 status_order_not_completed($order, $order_id, $customer_id, $status_register);
-                usleep(2000000); // wait for 2 seconds
 
                 status_order_completed($order, $order_id, $customer_id, $status_register);
                 break;
@@ -323,23 +315,18 @@ function save_student()
                 $orders = wc_get_orders(array(
                     'customer_id' => $current_user->ID,
                 ));
-                usleep(2000000); // wait for 2 seconds
                 $order_id = $orders[0]->get_id();
                 $order = wc_get_order($order_id);
                 $customer_id = $order->get_customer_id();
                 $status_register = get_user_meta($customer_id, 'status_register', true);
-                usleep(2000000); // wait for 2 seconds
 
                 woocommerce_checkout_order_created_action($order);
-                usleep(2000000); // wait for 2 seconds
 
                 status_order_not_completed($order, $order_id, $customer_id, $status_register);
-                usleep(2000000); // wait for 2 seconds
 
                 status_order_completed($order, $order_id, $customer_id, $status_register);
                 break;
         }
-
     }
 }
 
