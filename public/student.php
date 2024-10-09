@@ -146,6 +146,201 @@ function save_student()
         }
 
     }
+
+    if (
+        isset($_GET['action']) && !empty($_GET['action']) && ($_GET['action'] == 'save_student_custom')
+    ) {
+
+        $action = $_GET['action'];
+        global $woocommerce, $current_user;
+
+        // Datos del estudiante
+        $birth_date = isset($_POST['birth_date_student']) ? $_POST['birth_date_student'] : null;
+        $document_type = isset($_POST['document_type']) ? $_POST['document_type'] : null;
+        $id_document = isset($_POST['id_document']) ? $_POST['id_document'] : null;
+        $gender = isset($_POST['gender']) ? $_POST['gender'] : null;
+        $name = isset($_POST['name_student']) ? strtolower($_POST['name_student']) : null;
+        $middle_name_student = isset($_POST['middle_name_student']) ? strtolower($_POST['middle_name_student']) : null;
+        $last_name = isset($_POST['lastname_student']) ? strtolower($_POST['lastname_student']) : null;
+        $middle_last_name_student = isset($_POST['middle_last_name_student']) ? strtolower($_POST['middle_last_name_student']) : null;
+        $number_phone = isset($_POST['number_phone']) ? $_POST['number_phone'] : (isset($_POST['number_phone_hidden']) ? $_POST['number_phone_hidden'] : null);
+        $email_student = isset($_POST['email_student']) ? strtolower($_POST['email_student']) : null;
+        $ethnicity = isset($_POST['etnia']) ? $_POST['etnia'] : null;
+
+        // Datos del padre
+        $birth_date_parent = isset($_POST['birth_date_parent']) ? $_POST['birth_date_parent'] : null;
+        $parent_document_type = isset($_POST['parent_document_type']) ? $_POST['parent_document_type'] : null;
+        $id_document_parent = isset($_POST['id_document_parent']) ? $_POST['id_document_parent'] : null;
+        $gender_parent = isset($_POST['gender_parent']) ? $_POST['gender_parent'] : null;
+        $agent_name = isset($_POST['agent_name']) ? strtolower($_POST['agent_name']) : null;
+        $agent_last_name = isset($_POST['agent_last_name']) ? strtolower($_POST['agent_last_name']) : null;
+        $number_partner = isset($_POST['number_partner_hidden']) ? $_POST['number_partner_hidden'] : null;
+        $email_partner = isset($_POST['email_partner']) ? strtolower($_POST['email_partner']) : null;
+
+        // DATOS EXTRAS
+        $country = isset($_POST['country']) ? $_POST['country'] : null;
+        $city = isset($_POST['city']) ? strtolower($_POST['city']) : null;
+        $program = isset($_POST['program']) ? $_POST['program'] : null;
+        $grade = isset($_POST['grade']) ? $_POST['grade'] : null;
+        $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
+        $password = isset($_POST['password']) ? $_POST['password'] : null;
+
+        if (isset($email_partner) && ($email_partner === $email_student)) {
+            wc_add_notice(__( 'Emails can\'t be the same', 'aes' ), 'error' );
+            return;
+        }
+
+        setcookie('is_older', '', time() + 3600);
+        setcookie('ethnicity', $ethnicity, time() + 3600);
+        setcookie('billing_city', ucwords($city), time() + 3600);
+        setcookie('billing_country', $country, time() + 3600);
+        setcookie('initial_grade', $grade, time() + 3600);
+        setcookie('program_id', $program, time() + 3600);
+        setcookie('phone_student', $number_phone, time() + 3600);
+        setcookie('id_document', $id_document, time() + 3600);
+        setcookie('document_type', $document_type, time() + 3600);
+        setcookie('email_student', $email_student, time() + 3600);
+        setcookie('name_student', ucwords($name), time() + 3600);
+        setcookie('middle_name_student', ucwords($middle_name_student), time() + 3600);
+        setcookie('last_name_student', ucwords($last_name), time() + 3600);
+        setcookie('middle_last_name_student', ucwords($middle_last_name_student), time() + 3600);
+        setcookie('birth_date', $birth_date, time() + 3600);
+        setcookie('gender', $gender, time() + 3600);
+        setcookie('password', $password, time() + 3600);
+
+        $id_bitrix = $_GET['idbitrix'];
+        if (isset($id_bitrix)) {
+            setcookie('id_bitrix', $id_bitrix, time() + 3600);
+        }
+
+        if (!empty($institute_id) && $institute_id != 'other') {
+            $institute = get_institute_details($institute_id);
+            $name_institute = strtolower($institute->name);
+            setcookie('institute_id', $institute_id, time() + 3600);
+        } else {
+            $name_institute = isset($_POST['name_institute']) ? strtolower($_POST['name_institute']) : null;
+        }
+
+        setcookie('name_institute', ucwords($name_institute), time() + 3600);
+        switch ($action) {
+            case 'save_student_custom':
+                if (!empty($agent_name) && !empty($agent_last_name) && !empty($email_partner) && !empty($number_partner) && !empty($birth_date_parent) && !empty($parent_document_type) && !empty($id_document_parent)) {
+                    setcookie('agent_name', ucwords($agent_name), time() + 3600);
+                    setcookie('agent_last_name', ucwords($agent_last_name), time() + 3600);
+                    setcookie('email_partner', $email_partner, time() + 3600);
+                    setcookie('number_partner', $number_partner, time() + 3600);
+                    setcookie('birth_date_parent', $birth_date_parent, time() + 3600);
+                    setcookie('parent_document_type', $parent_document_type, time() + 3600);
+                    setcookie('id_document_parent', $id_document_parent, time() + 3600);
+                    setcookie('gender_parent', $gender_parent, time() + 3600);
+                } else {
+                    setcookie('agent_name', ucwords($name), time() + 3600);
+                    setcookie('agent_last_name', ucwords($last_name), time() + 3600);
+                    setcookie('email_partner', $email_student, time() + 3600);
+                    setcookie('number_partner', $number_phone, time() + 3600);
+                    setcookie('birth_date_parent', $birth_date, time() + 3600);
+                    setcookie('parent_document_type', $document_type, time() + 3600);
+                    setcookie('id_document_parent', $id_document, time() + 3600);
+                    setcookie('gender_parent', $gender, time() + 3600);
+                }
+
+                $orders = wc_get_orders(array(
+                    'customer_id' => $current_user->ID,
+                ));
+                usleep(2000000); // wait for 2 seconds
+
+                $order_id = $orders[0]->get_id();
+                $order = wc_get_order($order_id);
+                $customer_id = $order->get_customer_id();
+                $status_register = get_user_meta($customer_id, 'status_register', true);
+                usleep(2000000); // wait for 2 seconds
+
+                woocommerce_checkout_order_created_action($order);
+                usleep(2000000); // wait for 2 seconds
+
+                status_order_not_completed($order, $order_id, $customer_id, $status_register);
+                usleep(2000000); // wait for 2 seconds
+
+                status_order_completed($order, $order_id, $customer_id, $status_register);
+                break;
+
+            case 'new_applicant_me':
+
+                $document_type = $parent_document_type ? $parent_document_type : strtolower(get_user_meta(get_current_user_id(), 'type_document', true));
+                $id_document = $id_document_parent ? $id_document_parent : strtolower(get_user_meta(get_current_user_id(), 'id_document', true));
+                $number_phone = get_user_meta(get_current_user_id(), 'billing_phone', true);
+                $email_student = strtolower(get_user_meta(get_current_user_id(), 'billing_email', true));
+                $birth_date = $birth_date_parent ? $birth_date_parent : strtolower(get_user_meta(get_current_user_id(), 'birth_date', true));
+                $gender = $gender_parent ? $gender_parent : strtolower(get_user_meta(get_current_user_id(), 'gender', true));
+                $ethnicity = $ethnicity ? $ethnicity : strtolower(get_user_meta(get_current_user_id(), 'ethnicity', true));
+
+                setcookie('ethnicity_parent', $ethnicity, time() + 3600);
+                setcookie('phone_student', $number_phone, time() + 3600);
+                setcookie('id_document', $id_document, time() + 3600);
+                setcookie('document_type', $document_type, time() + 3600);
+                setcookie('email_student', $email_student, time() + 3600);
+                setcookie('birth_date', $birth_date, time() + 3600);
+                setcookie('gender', $gender, time() + 3600);
+                setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 3600);
+                setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 3600);
+                setcookie('email_partner', ucwords(get_user_meta(get_current_user_id(), 'billing_email', true)), time() + 3600);
+                setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 3600);
+                setcookie('birth_date_parent', get_user_meta(get_current_user_id(), 'birth_date', true), time() + 3600);
+                setcookie('parent_document_type', get_user_meta(get_current_user_id(), 'type_document', true), time() + 3600);
+                setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 3600);
+                setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 3600);
+
+                $orders = wc_get_orders(array(
+                    'customer_id' => $current_user->ID,
+                ));
+                usleep(2000000); // wait for 2 seconds
+
+                $order_id = $orders[0]->get_id();
+                $order = wc_get_order($order_id);
+                $customer_id = $order->get_customer_id();
+                $status_register = get_user_meta($customer_id, 'status_register', true);
+                usleep(2000000); // wait for 2 seconds
+
+                woocommerce_checkout_order_created_action($order);
+                usleep(2000000); // wait for 2 seconds
+
+                status_order_not_completed($order, $order_id, $customer_id, $status_register);
+                usleep(2000000); // wait for 2 seconds
+
+                status_order_completed($order, $order_id, $customer_id, $status_register);
+                break;
+
+            default:
+                setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 3600);
+                setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 3600);
+                setcookie('email_partner', ucwords(get_user_meta(get_current_user_id(), 'billing_email', true)), time() + 3600);
+                setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 3600);
+                setcookie('birth_date_parent', get_user_meta(get_current_user_id(), 'birth_date', true), time() + 3600);
+                setcookie('parent_document_type', get_user_meta(get_current_user_id(), 'type_document', true), time() + 3600);
+                setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 3600);
+                setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 3600);
+
+                $orders = wc_get_orders(array(
+                    'customer_id' => $current_user->ID,
+                ));
+                usleep(2000000); // wait for 2 seconds
+                $order_id = $orders[0]->get_id();
+                $order = wc_get_order($order_id);
+                $customer_id = $order->get_customer_id();
+                $status_register = get_user_meta($customer_id, 'status_register', true);
+                usleep(2000000); // wait for 2 seconds
+
+                woocommerce_checkout_order_created_action($order);
+                usleep(2000000); // wait for 2 seconds
+
+                status_order_not_completed($order, $order_id, $customer_id, $status_register);
+                usleep(2000000); // wait for 2 seconds
+
+                status_order_completed($order, $order_id, $customer_id, $status_register);
+                break;
+        }
+
+    }
 }
 
 function redirect_to_checkout($program, $grade)

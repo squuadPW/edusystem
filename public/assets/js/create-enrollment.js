@@ -43,6 +43,10 @@ window.addEventListener("orientationchange", function () {
 resizeCanvas("signature-student");
 resizeCanvas("signature-parent");
 
+if (document.getElementById("modal_open")) {
+  document.body.classList.add("modal-open");
+}
+
 // Create the SignaturePad objects after the canvas elements have been resized
 if (document.getElementById("signature-student")) {
   document.body.classList.add("modal-open");
