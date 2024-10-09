@@ -208,8 +208,12 @@ if ($order) {
         document.getElementById('payment_method_comission').innerText = `($${current_fee})`;
         document.querySelector('input[name="aes_amount_split_fee"]').value = current_fee;
         document.getElementById('total_entered').innerText = `$${(parseFloat(value) + parseFloat(current_fee)).toFixed(2)}`
-        if (value > pending_amount) {
-            document.getElementById('place_order').disabled = true;
+        if (pending_amount > 0) {
+            if (value > pending_amount) {
+                document.getElementById('place_order').disabled = true;
+            } else {
+                document.getElementById('place_order').disabled = false;
+            }
         } else {
             document.getElementById('place_order').disabled = false;
         }

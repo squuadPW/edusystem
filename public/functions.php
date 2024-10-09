@@ -1419,7 +1419,7 @@ function verificar_contraseña()
             }
 
             if (count($students) == 0) {
-                add_action('wp_footer', 'modal_fill_info');
+                // add_action('wp_footer', 'modal_fill_info');
             } else {
                 // Obtiene las órdenes con estado "pending payment" del usuario actual
                 $orders = wc_get_orders(array(
