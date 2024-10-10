@@ -1,9 +1,16 @@
 <?php
 
-global $wpdb;
-$current_user = wp_get_current_user();
+global $wpdb, $current_user;
+$roles = $current_user->roles;
 $table_students = $wpdb->prefix . 'students';
 $student_logged = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+
+$students = [];
+if (in_array('student', $roles)) {
+    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+} else if (in_array('parent', $roles)) {
+    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+}
 ?>
 
 <?php if (!$student_logged->moodle_password) { ?>
@@ -37,6 +44,11 @@ $student_logged = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{
     <?php elseif (in_array('parent', $roles)): ?>
         <h2 style="font-size:24px;text-align:center;"><?= __('Students Information', 'form-plugin'); ?></h2>
     <?php endif; ?>
+<?php } ?>
+<?php if(count($students) == 0) { ?>
+    <div style="text-align: end; margin: 10px;">
+        <span><button type="button" class="submit" style="width: 150px !important" id="add_new_student">Add new</button></span>
+    </div>
 <?php } ?>
 <table
     class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
@@ -94,3 +106,19 @@ $student_logged = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{
         <?php endif; ?>
     </tbody>
 </table>
+
+<?php if(count($students) == 0) { 
+include('fill-info-student.php'); 
+} ?>
+
+<script>
+    document.body.classList.remove("modal-open");
+    let add_new_student = document.getElementById('add_new_student');
+    if (add_new_student) {
+        add_new_student.addEventListener('click', function() {
+            document.getElementById('modal-content-fill-student').style.display = 'block';
+            document.getElementById('modal-fill').style.display = 'block';
+            document.body.classList.add("modal-open");
+        })
+    }
+</script>
