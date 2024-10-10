@@ -13,7 +13,7 @@ if (in_array('student', $roles)) {
 }
 ?>
 
-<?php if (!$student_logged->moodle_password) { ?>
+<?php if (!$student_logged->moodle_password && count($students) > 0) { ?>
     <div class="text-center info-box">
         <?php if (in_array('student', $roles)): ?>
             <h2 style="font-size:24px;text-align:center;"><?= __('Student Information', 'form-plugin'); ?></h2>
@@ -46,8 +46,8 @@ if (in_array('student', $roles)) {
     <?php endif; ?>
 <?php } ?>
 <?php if(count($students) == 0) { ?>
-    <div style="text-align: end; margin: 10px;">
-        <span><button type="button" class="submit" style="width: 150px !important" id="add_new_student">Add new</button></span>
+    <div style="text-align: center; margin: 30px;">
+        <span><button type="button" class="submit" style="width: 180px !important" id="add_new_student">Add student</button></span>
     </div>
 <?php } ?>
 <table
