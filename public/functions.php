@@ -194,8 +194,6 @@ function woocommerce_checkout_order_created_action($order)
         $order->update_meta_data('id_bitrix', $_COOKIE['id_bitrix']);
         $order->save();
 
-        echo $student_id;
-        exit;
         $email_new_student = WC()->mailer()->get_emails()['WC_New_Applicant_Email'];
         $email_new_student->trigger($student_id);
 
@@ -1419,7 +1417,7 @@ function verificar_contraseña()
             }
 
             if (count($students) == 0) {
-                // add_action('wp_footer', 'modal_fill_info');
+                add_action('wp_footer', 'modal_fill_info');
             } else {
                 // Obtiene las órdenes con estado "pending payment" del usuario actual
                 $orders = wc_get_orders(array(
