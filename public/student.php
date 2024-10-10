@@ -233,7 +233,8 @@ function redirect_to_checkout($program, $grade)
         $woocommerce->cart->add_to_cart(102, 1);
     }
 
-    $woocommerce->cart->apply_coupon('Registration fee discount');
+    // $woocommerce->cart->apply_coupon('Registration fee discount');
+    $woocommerce->cart->apply_coupon('100% Registration fee');
 
     if (is_user_logged_in()) {
         global $wpdb;
