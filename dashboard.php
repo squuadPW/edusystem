@@ -108,10 +108,6 @@ $orders = wc_get_orders(array(
 			<p>Don't Forget to Schedule <strong>Your Onboarding Meeting</strong></p> <br>
 
 			<p>
-				If you haven't already, please take a moment to schedule your onboarding meeting with us. This meeting is crucial to getting you started with our program, and we want to ensure you have all the necessary information to succeed.
-			</p><br>
-
-			<p>
 				<div style="text-align:center;">
 				<a target="_blank" href="https://calendly.com/americaneliteschooleu/reunion-de-onboarding-despues-de-la-compra?back=1&month=2024-10"><button type="button" class="submit"><?= __('Schedule Your Meeting Now', 'aes'); ?></button></a>
 				</div>

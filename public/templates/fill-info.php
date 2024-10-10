@@ -18,16 +18,11 @@
                                 <p>Welcome to <strong>American Elite School!</strong></p>
 
                                 <p>We're thrilled to have you on board! To ensure the security of your account, we require you to set a password before accessing your account.</p>
-
-                                <p>Set Your Password:</p>
                             </div>
                             <div>
                                 <label for="password"><?= __('Password of access', 'aes'); ?><span
                                         class="required">*</span></label>
                                 <input class="formdata" type="password" name="password" autocomplete="off" required>
-                            </div>
-                            <div style="margin-top: 10px">
-                                Once you've set your password, you'll have full access to your account and can start exploring our features.
                             </div>
                         </div>
 

@@ -1418,7 +1418,7 @@ function verificar_contraseña()
 
             if (count($students) == 0 && !get_user_meta($current_user->ID, 'pay_application_password')) {
                 add_action('wp_footer', 'modal_fill_info');
-            } else {
+            } else if(count($students) > 0) {
                 update_user_meta($current_user->ID, 'pay_application_password', 0);
                 // Obtiene las órdenes con estado "pending payment" del usuario actual
                 $orders = wc_get_orders(array(
