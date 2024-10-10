@@ -1416,9 +1416,10 @@ function verificar_contraseña()
                 $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
             }
 
-            if (count($students) == 0) {
+            if (count($students) == 0 && !get_user_meta($current_user->ID, 'pay_application_password')) {
                 add_action('wp_footer', 'modal_fill_info');
             } else {
+                update_user_meta($current_user->ID, 'pay_application_password', 0);
                 // Obtiene las órdenes con estado "pending payment" del usuario actual
                 $orders = wc_get_orders(array(
                     'status' => 'pending',
@@ -1521,9 +1522,6 @@ function verificar_contraseña()
 
 function modal_fill_info() 
 {
-    $countries = get_countries();
-    $institutes = get_list_institutes_active();
-    $grades = get_grades();
     include plugin_dir_path(__FILE__) . 'templates/fill-info.php';
 }
 

@@ -103,27 +103,11 @@ function save_student()
                 break;
 
             case 'save_student_custom':
-                if (!empty($agent_name) && !empty($agent_last_name) && !empty($email_partner) && !empty($number_partner) && !empty($birth_date_parent) && !empty($parent_document_type) && !empty($id_document_parent)) {
-                    setcookie('agent_name', ucwords($agent_name), time() + 3600);
-                    setcookie('agent_last_name', ucwords($agent_last_name), time() + 3600);
-                    setcookie('email_partner', $email_partner, time() + 3600);
-                    setcookie('number_partner', $number_partner, time() + 3600);
-                    setcookie('birth_date_parent', $birth_date_parent, time() + 3600);
-                    setcookie('parent_document_type', $parent_document_type, time() + 3600);
-                    setcookie('id_document_parent', $id_document_parent, time() + 3600);
-                    setcookie('gender_parent', $gender_parent, time() + 3600);
-                } else {
-                    setcookie('agent_name', ucwords($name), time() + 3600);
-                    setcookie('agent_last_name', ucwords($last_name), time() + 3600);
-                    setcookie('email_partner', $email_student, time() + 3600);
-                    setcookie('number_partner', $number_phone, time() + 3600);
-                    setcookie('birth_date_parent', $birth_date, time() + 3600);
-                    setcookie('parent_document_type', $document_type, time() + 3600);
-                    setcookie('id_document_parent', $id_document, time() + 3600);
-                    setcookie('gender_parent', $gender, time() + 3600);
-                }
+                $current_user = wp_get_current_user();
+                wp_update_user(array('ID' => $current_user->ID, 'user_pass' => $password));
+                update_user_meta($current_user->ID, 'pay_application_password', 1);
 
-                wp_redirect(wp_get_referer() . '?action=fill_data');
+                wp_redirect(get_permalink(wc_get_page_id('myaccount')));
                 exit;
                 break;
 
@@ -171,21 +155,21 @@ function save_student()
         }
     }
 
-    if (isset($_GET['action']) && !empty($_GET['action']) && $_GET['action'] == 'fill_data') {
-        $orders = wc_get_orders(array(
-            'customer_id' => $current_user->ID,
-        ));
+    // if (isset($_GET['action']) && !empty($_GET['action']) && $_GET['action'] == 'fill_data') {
+    //     $orders = wc_get_orders(array(
+    //         'customer_id' => $current_user->ID,
+    //     ));
 
-        $order_id = $orders[0]->get_id();
-        $order = wc_get_order($order_id);
-        $customer_id = $order->get_customer_id();
-        $status_register = get_user_meta($customer_id, 'status_register', true);
-        woocommerce_checkout_order_created_action($order);
+    //     $order_id = $orders[0]->get_id();
+    //     $order = wc_get_order($order_id);
+    //     $customer_id = $order->get_customer_id();
+    //     $status_register = get_user_meta($customer_id, 'status_register', true);
+    //     woocommerce_checkout_order_created_action($order);
 
-        status_order_not_completed($order, $order_id, $customer_id, $status_register);
+    //     status_order_not_completed($order, $order_id, $customer_id, $status_register);
 
-        status_order_completed($order, $order_id, $customer_id, $status_register);
-    }
+    //     status_order_completed($order, $order_id, $customer_id, $status_register);
+    // }
 }
 
 function redirect_to_checkout($program, $grade)
