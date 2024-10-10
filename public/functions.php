@@ -963,7 +963,7 @@ function woocommerce_update_cart()
         $applied_coupons = array_diff($applied_coupons, array("registration fee discount"));
     } else {
         // Agregar el cupón con la clave "fee_inscription" a la matriz $applied_coupons
-        array_push($applied_coupons, 'registration fee discount');
+        // array_push($applied_coupons, 'registration fee discount');
     }
 
     // Aplicar los cupones restantes en la matriz $applied_coupons
@@ -1002,13 +1002,13 @@ function fee_update()
         }
 
         if ($is_complete) {
-            $woocommerce->cart->apply_coupon('Registration fee discount');
+            // $woocommerce->cart->apply_coupon('Registration fee discount');
         }
 
         $woocommerce->cart->calculate_totals();
     } else {
         $woocommerce->cart->remove_cart_item($woocommerce->cart->generate_cart_id($id));
-        $woocommerce->cart->remove_coupon('Registration fee discount');
+        // $woocommerce->cart->remove_coupon('Registration fee discount');
         $woocommerce->cart->calculate_totals();
     }
 }

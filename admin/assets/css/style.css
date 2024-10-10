@@ -277,4 +277,8 @@ div#application-passwords-section {
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin: 18px;
+}
+
+.woocommerce-site-status-badge-live {
+  display: none !important;
 }/*# sourceMappingURL=style.css.map */
