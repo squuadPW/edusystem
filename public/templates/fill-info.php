@@ -16,7 +16,7 @@
                         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                             <div>
                                 <p>Welcome to <strong>American Elite School!</strong></p>
-
+                                <p class="color-success">Payment successfully</p>
                                 <p>We're thrilled to have you on board! To ensure the security of your account, we require you to set a password before accessing your account.</p>
                             </div>
                             <div>
