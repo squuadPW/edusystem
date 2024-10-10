@@ -16,7 +16,7 @@
   if (isset($product) && $product->is_type('variable')) {
     ?>
 
-    <div >
+    <!-- <div >
       <div style="margin-bottom: 10px !important;">
       <?php
         $product_fee = wc_get_product(AES_FEE_INSCRIPTION);
@@ -27,10 +27,10 @@
           <span class="checkmark"></span>
         </label>
       </div>
-    </div>
+    </div> -->
 
     <div class="text-center" style="padding: 18px 0px;">
-      <label>Apply your scholarship to get the discount</label>
+      <label>Apply to get the discount</label>
       <div id="button-schoolship"></div>
     </div>
 

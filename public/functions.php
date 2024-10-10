@@ -1140,9 +1140,9 @@ function reload_button_schoolship()
     ?>
     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
         <?php if ($has_scholarship): ?>
-            <button id="apply-scholarship-btn" type="button" disabled>Scholarship already applied</button>
+            <button id="apply-scholarship-btn" type="button" disabled>Special webinar offer already applied</button>
         <?php else: ?>
-            <button id="apply-scholarship-btn" type="button">Activate scholarship</button>
+            <button id="apply-scholarship-btn" type="button">Special webinar offer</button>
         <?php endif; ?>
     </div>
     <?php
