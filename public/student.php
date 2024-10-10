@@ -106,6 +106,7 @@ function save_student()
                 $current_user = wp_get_current_user();
                 wp_update_user(array('ID' => $current_user->ID, 'user_pass' => $password));
                 update_user_meta($current_user->ID, 'pay_application_password', 1);
+                update_user_meta($current_user->ID, 'from_webinar', 1);
 
                 wp_redirect(get_permalink(wc_get_page_id('myaccount')));
                 exit;
