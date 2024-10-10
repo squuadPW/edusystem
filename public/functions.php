@@ -1416,7 +1416,7 @@ function verificar_contraseña()
                 $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
             }
 
-            if (count($students) == 0 && !get_user_meta($current_user->ID, 'pay_application_password')) {
+            if ((count($students) == 0 && !get_user_meta($current_user->ID, 'pay_application_password')) && (in_array('student', $roles) || in_array('parent', $roles))) {
                 add_action('wp_footer', 'modal_fill_info');
             } else if(count($students) > 0) {
                 update_user_meta($current_user->ID, 'pay_application_password', 0);
