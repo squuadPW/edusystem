@@ -327,6 +327,10 @@ function change_billing_phone_checkout_field_value($order)
         update_user_meta($order->get_customer_id(), 'billing_phone', $_POST['billing_phone_hidden']);
     }
 
+    if(isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) {
+        $order->add_meta_data('from_webinar', 1);
+    }
+
     $order->save();
 }
 
