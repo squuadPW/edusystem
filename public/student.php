@@ -9,6 +9,8 @@ function save_student()
         $action = $_GET['action'];
         global $woocommerce;
 
+        setcookie('from_webinar', '', time());
+
         // Datos del estudiante
         $birth_date = isset($_POST['birth_date_student']) ? $_POST['birth_date_student'] : null;
         $document_type = isset($_POST['document_type']) ? $_POST['document_type'] : null;
