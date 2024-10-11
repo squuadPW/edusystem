@@ -273,6 +273,7 @@ function woocommerce_checkout_order_created_action($order)
     setcookie('institute_id', '', time());
     setcookie('gender', '', time());
     setcookie('password', '', time());
+    setcookie('from_webinar', '', time());
 }
 
 add_action('woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action');
@@ -963,7 +964,9 @@ function woocommerce_update_cart()
         $applied_coupons = array_diff($applied_coupons, array("registration fee discount"));
     } else {
         // Agregar el cupón con la clave "fee_inscription" a la matriz $applied_coupons
-        // array_push($applied_coupons, 'registration fee discount');
+        if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
+            array_push($applied_coupons, 'registration fee discount');
+        }
     }
 
     // Aplicar los cupones restantes en la matriz $applied_coupons
@@ -1002,13 +1005,17 @@ function fee_update()
         }
 
         if ($is_complete) {
-            // $woocommerce->cart->apply_coupon('Registration fee discount');
+            if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
+                $woocommerce->cart->apply_coupon('Registration fee discount');
+            }
         }
 
         $woocommerce->cart->calculate_totals();
     } else {
         $woocommerce->cart->remove_cart_item($woocommerce->cart->generate_cart_id($id));
-        // $woocommerce->cart->remove_coupon('Registration fee discount');
+        if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
+            $woocommerce->cart->remove_coupon('Registration fee discount');
+        }
         $woocommerce->cart->calculate_totals();
     }
 }
@@ -1140,9 +1147,9 @@ function reload_button_schoolship()
     ?>
     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
         <?php if ($has_scholarship): ?>
-            <button id="apply-scholarship-btn" type="button" disabled>Special webinar offer already applied</button>
+            <button id="apply-scholarship-btn" type="button" disabled><?php echo (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?></button>
         <?php else: ?>
-            <button id="apply-scholarship-btn" type="button">Special webinar offer</button>
+            <button id="apply-scholarship-btn" type="button"><?php echo (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?></button>
         <?php endif; ?>
     </div>
     <?php

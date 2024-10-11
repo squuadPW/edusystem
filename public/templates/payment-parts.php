@@ -16,18 +16,20 @@
   if (isset($product) && $product->is_type('variable')) {
     ?>
 
-    <!-- <div >
-      <div style="margin-bottom: 10px !important;">
-      <?php
-        $product_fee = wc_get_product(AES_FEE_INSCRIPTION);
-        $product_price = $product_fee->get_price();
-      ?>
-          <label class="fee-container"><strong>Registration fee</strong> <br><span>(You can pay it before starting classes in your account)</span>
-          <input name="fee" type="checkbox" checked="checked">
-          <span class="checkmark"></span>
-        </label>
+    <?php if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) { ?>
+      <div >
+        <div style="margin-bottom: 10px !important;">
+        <?php
+          $product_fee = wc_get_product(AES_FEE_INSCRIPTION);
+          $product_price = $product_fee->get_price();
+        ?>
+            <label class="fee-container"><strong>Registration fee</strong> <br><span>(You can pay it before starting classes in your account)</span>
+            <input name="fee" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label>
+        </div>
       </div>
-    </div> -->
+    <?php } ?>
 
     <div class="text-center" style="padding: 18px 0px;">
       <label>Apply to get the discount</label>

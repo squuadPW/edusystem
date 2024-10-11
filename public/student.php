@@ -39,6 +39,7 @@ function save_student()
         $grade = isset($_POST['grade']) ? $_POST['grade'] : null;
         $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
         $password = isset($_POST['password']) ? $_POST['password'] : null;
+        $from_webinar = isset($_POST['from_webinar']) ? true : false;
 
         if (isset($email_partner) && ($email_partner === $email_student)) {
             wc_add_notice(__( 'Emails can\'t be the same', 'aes' ), 'error' );
@@ -49,8 +50,8 @@ function save_student()
         setcookie('ethnicity', $ethnicity, time() + 3600);
         setcookie('billing_city', ucwords($city), time() + 3600);
         setcookie('billing_country', $country, time() + 3600);
-        setcookie('initial_grade', $grade, time() + 3600);
-        setcookie('program_id', $program, time() + 3600);
+        setcookie('initial_grade', $grade, time() + 3600, '/');
+        setcookie('program_id', $program, time() + 3600, '/');
         setcookie('phone_student', $number_phone, time() + 3600);
         setcookie('id_document', $id_document, time() + 3600);
         setcookie('document_type', $document_type, time() + 3600);
@@ -99,7 +100,7 @@ function save_student()
                     setcookie('gender_parent', $gender, time() + 3600);
                 }
 
-                redirect_to_checkout($program, $grade);
+                redirect_to_checkout($program, $grade, $from_webinar);
                 break;
 
             case 'save_student_custom':
@@ -163,7 +164,7 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 3600);
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 3600);
 
-                redirect_to_checkout($program, $grade);
+                redirect_to_checkout($program, $grade, $from_webinar);
                 break;
 
             default:
@@ -176,7 +177,7 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 3600);
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 3600);
 
-                redirect_to_checkout($program, $grade);
+                redirect_to_checkout($program, $grade, $from_webinar);
                 break;
         }
     }
@@ -198,10 +199,11 @@ function save_student()
     }
 }
 
-function redirect_to_checkout($program, $grade)
+function redirect_to_checkout($program, $grade, $from_webinar = false)
 {
     global $woocommerce;
     $woocommerce->cart->empty_cart();
+
     if ($program == 'aes') {
         switch ($grade) {
             case '1':
@@ -233,8 +235,12 @@ function redirect_to_checkout($program, $grade)
         $woocommerce->cart->add_to_cart(102, 1);
     }
 
-    // $woocommerce->cart->apply_coupon('Registration fee discount');
-    $woocommerce->cart->apply_coupon('100% Registration fee');
+    if (!$from_webinar) {
+        $woocommerce->cart->apply_coupon('Registration fee discount');
+    } else {
+        $woocommerce->cart->apply_coupon('100% Registration fee');
+        setcookie('from_webinar', 1, time() + 3600, '/');
+    }
 
     if (is_user_logged_in()) {
         global $wpdb;
