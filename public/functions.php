@@ -1780,26 +1780,20 @@ function custom_content_after_orders()
 add_action('woocommerce_cart_calculate_fees', 'yaycommerce_add_checkout_fee_for_gateway');
 function yaycommerce_add_checkout_fee_for_gateway()
 {
-    // $chosen_gateway = WC()->session->get('chosen_payment_method');
-    // if ($chosen_gateway == 'aes_payment') {
-    //     WC()->cart->add_fee('Bank transfer Fee', 35);
-    // }
-
-    // if ($chosen_gateway == 'woo_squuad_stripe') {
-    //     $stripe_fee_percentage = 4.5; // 4.5% fee
-    //     $cart_subtotal = WC()->cart->get_subtotal();
-    //     $discount = WC()->cart->get_cart_discount_total();
-    //     $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
-    //     WC()->cart->add_fee('Credit card fee', $stripe_fee_amount);
-    // }
-
-    // if ($chosen_gateway == 'other_payment') {
-    //     $stripe_fee_percentage = 4.5; // 4.5% fee
-    //     $cart_subtotal = WC()->cart->get_subtotal();
-    //     $discount = WC()->cart->get_cart_discount_total();
-    //     $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
-    //     WC()->cart->add_fee('Others payments fee', $stripe_fee_amount);
-    // }
+    if (!isset($_COOKIE['from_webinar']) || empty($_COOKIE['from_webinar'])) {
+        $chosen_gateway = WC()->session->get('chosen_payment_method');
+        if ($chosen_gateway == 'aes_payment') {
+            WC()->cart->add_fee('Bank transfer Fee', 35);
+        }
+    
+        if ($chosen_gateway == 'woo_squuad_stripe') {
+            $stripe_fee_percentage = 4.5; // 4.5% fee
+            $cart_subtotal = WC()->cart->get_subtotal();
+            $discount = WC()->cart->get_cart_discount_total();
+            $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
+            WC()->cart->add_fee('Credit card fee', $stripe_fee_amount);
+        }
+    }
 }
 add_action('woocommerce_after_checkout_form', 'yaycommerce_refresh_checkout_on_payment_methods_change');
 function yaycommerce_refresh_checkout_on_payment_methods_change()
@@ -1828,32 +1822,34 @@ function loadFeesSplit() {
     $payment_page = $_POST['payment_page'];
     $fee = 0;
 
-    // if ($chosen_gateway == 'aes_payment') {
-    //     $fee = 35;
-    //     if ($payment_page == 0) {
-    //         $cart->add_fee('Bank transfer Fee', $fee);
-    //     } else {
-    //         $order->add_fee( 'Bank transfer Fee', $fee );
-    //     }
-    // }
-
-    // if ($chosen_gateway == 'woo_squuad_stripe') {
-    //     if ($payment_page == 0) {
-    //         $stripe_fee_percentage = 4.5; // 4.5% fee
-    //         $cart_subtotal = $cart->get_subtotal();
-    //         $discount = $cart->get_cart_discount_total();
-    //         $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
-    //         $fee = $stripe_fee_amount;
-    //         $cart->add_fee('Credit card fee', $stripe_fee_amount);
-    //     } else {
-    //         $stripe_fee_percentage = 4.5; // 4.5% fee
-    //         $cart_subtotal = (float)$order->get_meta('pending_payment');
-    //         // $discount = $order->get_total_discount() ? $order->get_total_discount() : 0;
-    //         $stripe_fee_amount = ($cart_subtotal / 100) * $stripe_fee_percentage;
-    //         $fee = $stripe_fee_amount;
-    //         $order->add_fee( 'Credit card fee', $fee );
-    //     }
-    // }
+    if (!isset($_COOKIE['from_webinar']) || empty($_COOKIE['from_webinar'])) {
+        if ($chosen_gateway == 'aes_payment') {
+            $fee = 35;
+            if ($payment_page == 0) {
+                $cart->add_fee('Bank transfer Fee', $fee);
+            } else {
+                $order->add_fee( 'Bank transfer Fee', $fee );
+            }
+        }
+    
+        if ($chosen_gateway == 'woo_squuad_stripe') {
+            if ($payment_page == 0) {
+                $stripe_fee_percentage = 4.5; // 4.5% fee
+                $cart_subtotal = $cart->get_subtotal();
+                $discount = $cart->get_cart_discount_total();
+                $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
+                $fee = $stripe_fee_amount;
+                $cart->add_fee('Credit card fee', $stripe_fee_amount);
+            } else {
+                $stripe_fee_percentage = 4.5; // 4.5% fee
+                $cart_subtotal = (float)$order->get_meta('pending_payment');
+                // $discount = $order->get_total_discount() ? $order->get_total_discount() : 0;
+                $stripe_fee_amount = ($cart_subtotal / 100) * $stripe_fee_percentage;
+                $fee = $stripe_fee_amount;
+                $order->add_fee( 'Credit card fee', $fee );
+            }
+        }
+    }
 
     wp_send_json(array('fee' => (float)number_format($fee, 2), 'pending' => isset($order) ? (float)$order->get_meta('pending_payment') : 0));
 }

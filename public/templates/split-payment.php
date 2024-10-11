@@ -201,7 +201,13 @@ if ($order) {
     document.getElementById('aes_amount_split').addEventListener('input', (e) => {
         let value = e.target.value ? e.target.value : 0;
         if (current_payment_method_text == 'woo_squuad_stripe') {
-            const fee = 0; // 4.5% fee
+            const from_webinar = getCookie('from_webinar');
+            let fee = 0;
+            if (from_webinar !== null) {
+                fee = 0; // 0% fee
+            } else {
+                fee = 4.5; // 4.5% fee
+            }
             const cart_subtotal = value;
             current_fee = ((cart_subtotal / 100) * fee);
         }
@@ -218,4 +224,15 @@ if ($order) {
             document.getElementById('place_order').disabled = false;
         }
     });
+
+    function getCookie(name) {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith(name + '=')) {
+            return cookie.substring(name.length + 1);
+            }
+        }
+        return null;
+    }
 </script>
