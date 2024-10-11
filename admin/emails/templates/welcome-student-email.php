@@ -29,10 +29,9 @@ $email_template = '
       <li>Set password: <a href="'. $reset_url .'">'. $reset_url .'</a></li>
     </ul>
     
-    <p>Contacts:</p>
+    <p>Contact:</p>
     <ul>
-      <li>Academic Support: <a href="mailto:academic.support@american-elite.us">academic.support@american-elite.us</a></li>
-      <li>Student Services: <a href="mailto:student.services@american-elite.us">student.services@american-elite.us</a></li>
+      <li>Support: <a href="https://soporte.american-elite.us/">soporte.american-elite.us</a></li>
     </ul>
     
     <p>On behalf of the entire American Elite School community, we thank you for your trust and commitment, certain of our contribution by providing you with exceptional educational opportunities and contributing to your training, so that you achieve success in your future careers and in your professional and personal life.</p>
@@ -64,10 +63,9 @@ $email_template_es = '
       <li>Crear contraseña: <a href="'. $reset_url .'">'. $reset_url .'</a></li>
     </ul>
     
-    <p>Contactos:</p>
+    <p>Contacto:</p>
     <ul>
-      <li>Soporte Académico: <a href="mailto:academic.support@american-elite.us">academic.support@american-elite.us</a></li>
-      <li>Servicios Estudiantiles: <a href="mailto:student.services@american-elite.us">student.services@american-elite.us</a></li>
+      <li>Soporte: <a href="https://soporte.american-elite.us/">soporte.american-elite.us</a></li>
     </ul>
     
     <p>En nombre de toda la comunidad de American Elite School, le agradecemos por su confianza y compromiso, seguros de nuestra contribución al brindarles oportunidades educativas excepcionales y aportando en su formación, para que alcancen el éxito en sus futuras carreras y en la vida profesional y personal.</p>

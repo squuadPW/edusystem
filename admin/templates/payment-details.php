@@ -180,29 +180,30 @@
                                 <?php } ?>
                             </tobdy>
                             </table>
+                            <?php $user_id = get_current_user_id();
+                            if($user_id != 288){?>
+                                <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
+                                    <?php if(($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) && ($order->get_meta('pending_payment') && $order->get_meta('pending_payment') > 0)){ ?>
+                                        <div style="margin-right: 10px">
+                                            <?php if(wp_is_mobile()){ ?>
+                                                <button data-total="<?= $order->get_meta('pending_payment') ?>" data-message="<?= __('Do you want to set the date of the next payment?','aes'); ?>" data-title="<?= __('Generate next agreed payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="generate_order_split" style="width:100%;" class="button button-primary"><?= __('Payment agreement','aes'); ?></button>
+                                            <?php }else{ ?>
+                                                <button data-total="<?= $order->get_meta('pending_payment') ?>" data-message="<?= __('Do you want to set the date of the next payment?','aes'); ?>" data-title="<?= __('Generate next agreed payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="generate_order_split" class="button button-primary"><?= __('Payment agreement','aes'); ?></button>
+                                            <?php } ?>
+                                        </div>
+                                    <?php } ?>
 
-                            <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
-                                <?php if(($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) && ($order->get_meta('pending_payment') && $order->get_meta('pending_payment') > 0)){ ?>
-                                    <div style="margin-right: 10px">
-                                        <?php if(wp_is_mobile()){ ?>
-                                            <button data-total="<?= $order->get_meta('pending_payment') ?>" data-message="<?= __('Do you want to set the date of the next payment?','aes'); ?>" data-title="<?= __('Generate next agreed payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="generate_order_split" style="width:100%;" class="button button-primary"><?= __('Payment agreement','aes'); ?></button>
-                                        <?php }else{ ?>
-                                            <button data-total="<?= $order->get_meta('pending_payment') ?>" data-message="<?= __('Do you want to set the date of the next payment?','aes'); ?>" data-title="<?= __('Generate next agreed payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="generate_order_split" class="button button-primary"><?= __('Payment agreement','aes'); ?></button>
-                                        <?php } ?>
-                                    </div>
-                                <?php } ?>
-
-                                <?php if($order->get_status() != 'completed'){ ?>
-                                    <div>
-                                        <?php if(wp_is_mobile()){ ?>
-                                            <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-success"><?= __('Approve','aes'); ?></button>
-                                        <?php }else{ ?>
-                                            <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" class="button button-success"><?= __('Approve','aes'); ?></button>
-                                        <?php } ?>
-                                    </div>
-                                <?php } ?>
-                            </div>
-
+                                    <?php if($order->get_status() != 'completed'){ ?>
+                                        <div>
+                                            <?php if(wp_is_mobile()){ ?>
+                                                <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-success"><?= __('Approve','aes'); ?></button>
+                                            <?php }else{ ?>
+                                                <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" class="button button-success"><?= __('Approve','aes'); ?></button>
+                                            <?php } ?>
+                                        </div>
+                                    <?php } ?>
+                                </div>
+                            <?php } ?>
                         <?php endif; ?>
                     </div>
                 </div>
