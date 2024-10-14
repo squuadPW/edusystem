@@ -692,6 +692,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                 )[$student->type_document];
 
                 $files_to_send = array();
+
                 $type_document = '';
                 switch ($student->type_document) {
                     case 'identification_document':
@@ -706,16 +707,20 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                 }
 
                 $type_document_re = '';
-                switch (get_user_meta($student->partner_id, 'type_document', true)) {
-                    case 'identification_document':
-                        $type_document_re = 1;
-                        break;
-                    case 'passport':
-                        $type_document_re = 2;
-                        break;
-                    case 'ssn':
-                        $type_document_re = 4;
-                        break;
+                if (get_user_meta($student->partner_id, 'type_document', true)) {
+                    switch (get_user_meta($student->partner_id, 'type_document', true)) {
+                        case 'identification_document':
+                            $type_document_re = 1;
+                            break;
+                        case 'passport':
+                            $type_document_re = 2;
+                            break;
+                        case 'ssn':
+                            $type_document_re = 4;
+                            break;
+                    }
+                } else {
+                    $type_document_re = 1;
                 }
 
 
@@ -731,13 +736,17 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
 
 
                 $gender_re = '';
-                switch (get_user_meta($student->partner_id, 'gender', true)) {
-                    case 'male':
-                        $gender_re = 'M';
-                        break;
-                    case 'female':
-                        $gender_re = 'F';
-                        break;
+                if (get_user_meta($student->partner_id, 'gender', true)) {
+                    switch (get_user_meta($student->partner_id, 'gender', true)) {
+                        case 'male':
+                            $gender_re = 'M';
+                            break;
+                        case 'female':
+                            $gender_re = 'F';
+                            break;
+                    }
+                } else {
+                    $gender_re = 'M';
                 }
 
                 $grade = '';
@@ -770,7 +779,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                     'cod_period' => $student->academic_period,
 
                     // PADRE
-                    'id_document_re' => get_user_meta($student->partner_id, 'id_document', true),
+                    'id_document_re' => get_user_meta($student->partner_id, 'id_document', true) ? get_user_meta($student->partner_id, 'id_document', true) : '000000',
                     'type_document_re' => $type_document_re,
                     'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
                     'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),

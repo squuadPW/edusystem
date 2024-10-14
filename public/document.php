@@ -135,6 +135,7 @@ function save_document(){
                                 )[$student->type_document];
                 
                                 $files_to_send = array();
+
                                 $type_document = '';
                                 switch ($student->type_document) {
                                     case 'identification_document':
@@ -149,19 +150,23 @@ function save_document(){
                                 }
                 
                                 $type_document_re = '';
-                                switch (get_user_meta($student->partner_id, 'type_document', true)) {
-                                    case 'identification_document':
-                                        $type_document_re = 1;
-                                        break;
-                                    case 'passport':
-                                        $type_document_re = 2;
-                                        break;
-                                    case 'ssn':
-                                        $type_document_re = 4;
-                                        break;
+                                if (get_user_meta($student->partner_id, 'type_document', true)) {
+                                    switch (get_user_meta($student->partner_id, 'type_document', true)) {
+                                        case 'identification_document':
+                                            $type_document_re = 1;
+                                            break;
+                                        case 'passport':
+                                            $type_document_re = 2;
+                                            break;
+                                        case 'ssn':
+                                            $type_document_re = 4;
+                                            break;
+                                    }
+                                } else {
+                                    $type_document_re = 1;
                                 }
                 
-                                
+                
                                 $gender = '';
                                 switch ($student->gender) {
                                     case 'male':
@@ -172,15 +177,19 @@ function save_document(){
                                         break;
                                 }
                 
-                                
+                
                                 $gender_re = '';
-                                switch (get_user_meta($student->partner_id, 'gender', true)) {
-                                    case 'male':
-                                        $gender_re = 'M';
-                                        break;
-                                    case 'female':
-                                        $gender_re = 'F';
-                                        break;
+                                if (get_user_meta($student->partner_id, 'gender', true)) {
+                                    switch (get_user_meta($student->partner_id, 'gender', true)) {
+                                        case 'male':
+                                            $gender_re = 'M';
+                                            break;
+                                        case 'female':
+                                            $gender_re = 'F';
+                                            break;
+                                    }
+                                } else {
+                                    $gender_re = 'M';
                                 }
                 
                                 $grade = '';
@@ -211,13 +220,13 @@ function save_document(){
                                     'grade' => $grade,
                                     'gender' => $gender,
                                     'cod_period' => $student->academic_period,
-    
+                
                                     // PADRE
-                                    'id_document_re' => get_user_meta($student->partner_id, 'id_document', true), 
+                                    'id_document_re' => get_user_meta($student->partner_id, 'id_document', true) ? get_user_meta($student->partner_id, 'id_document', true) : '000000',
                                     'type_document_re' => $type_document_re,
                                     'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
                                     'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
-                                    'birth_date_re' =>  get_user_meta($student->partner_id, 'birth_date', true),
+                                    'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
                                     'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
                                     'email_re' => get_user_meta($student->partner_id, 'billing_email', true),
                                     'gender_re' => $gender_re,
