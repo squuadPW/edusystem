@@ -9,15 +9,43 @@ function add_admin_form_send_email_content()
     if (isset($_GET['action']) && !empty($_GET['action'])) {
         if ($_GET['action'] == 'send_email') {
 
-            $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE academic_period = " . $_POST['academic_period']);
-            foreach ($students as $key => $student) {
-                $email_welcome_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
-                $email_welcome_student->trigger($student, $_POST['subject'], $_POST['message']);
+            if ($_POST['type'] == '1') {
+                $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+                $cut = $_POST['academic_period_cut'];
+                $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE cut_period = '$cut'");
+
+                $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE academic_period = " . $_POST['academic_period'] . " WHERE IN (" . $cut_student_ids . ")");
+                foreach ($students as $key => $student) {
+                    $email_welcome_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
+                    $email_welcome_student->trigger($student, $_POST['subject'], $_POST['message']);
+                }
+
+                setcookie('message', __('Email sent successfully.', 'aes'), time() + 3600, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_form_send_email_content'));
+                exit;
+            } else {
+                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '" . $_POST['email_student'] . "'");
+                if ($student) {
+                    $email_welcome_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
+                    $email_welcome_student->trigger($student, $_POST['subject'], $_POST['message']);
+
+                    if ($_POST['email_parent'] == 'on') {
+                        $parent = get_user_by('id', $student->partner_id);
+
+                        $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                        $email_user->trigger($parent, $_POST['subject'], $_POST['message']);
+                    }
+
+                    setcookie('message', __('Email sent successfully.', 'aes'), time() + 3600, '/');
+                    wp_redirect(admin_url('admin.php?page=add_admin_form_send_email_content'));
+                    exit;
+                } else {
+                    setcookie('message-error', __("This student don't exist.", 'aes'), time() + 3600, '/');
+                    wp_redirect(admin_url('admin.php?page=add_admin_form_send_email_content'));
+                    exit;
+                }
             }
 
-            setcookie('message', __('Email sent successfully.', 'aes'), time() + 3600, '/');
-            wp_redirect(admin_url('admin.php?page=add_admin_form_send_email_content'));
-            exit;
         }
     }
 

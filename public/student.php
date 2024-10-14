@@ -185,6 +185,7 @@ function save_student()
     }
 
     if (isset($_GET['action']) && !empty($_GET['action']) && $_GET['action'] == 'fill_data') {
+        global $current_user;
         $orders = wc_get_orders(array(
             'customer_id' => $current_user->ID,
         ));
