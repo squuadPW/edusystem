@@ -809,5 +809,3 @@ function get_states_by_country() {
         }
         exit;
     }
-
-    add_filter( 'woocommerce_cancel_unpaid_orders', '__return_false' );
