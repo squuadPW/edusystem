@@ -47,7 +47,8 @@ $style_checkbox = ($split_payment_metadata !== '') ? 'none' : 'block';
                     <div>
                         <label for="aes_amount_split">Amount to pay</label>
                         <div style="position: relative; display: inline-block; width: 100%;">
-                            <input type="number" id="aes_amount_split" name="aes_amount_split" style="width: 100%; padding-right: <?php echo $style_button_total_payment == 'none' ? '10px' : '150px' ?>; box-sizing: border-box; -webkit-appearance: none; -moz-appearance: textfield;">
+                            <input type="text" id="aes_amount_split_visual" name="aes_amount_split_visual" style="width: 100%; padding-right: <?php echo $style_button_total_payment == 'none' ? '10px' : '150px' ?>; box-sizing: border-box; -webkit-appearance: none; -moz-appearance: textfield;" class="money">
+                            <input type="hidden" id="aes_amount_split" name="aes_amount_split">
                             <button id="total_payment_button" type="button" class="submit" style="font-size: 14px; padding: 10px 10px !important; border-radius: 9px !important; position: absolute; top: 50%; right: 8px; height: 36px; transform: translateY(-50%); width: auto; display: <?php echo $style_button_total_payment ?>" onclick="clickLoadInfoFee()">Pending amount</button>
                         </div>
                         <label for="aes_amount_split" style="font-size: 14px">Payment method commission <strong id="payment_method_comission"></strong> <br> Total paid: <strong id="total_entered" style="color: green;"></strong></label><br>
@@ -98,7 +99,12 @@ if ($order) {
 
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.js" integrity="sha512-0XDfGxFliYJPFrideYOoxdgNIvrwGTLnmK20xZbCAvPfLGQMzHUsaqZK8ZoH+luXGRxTrS46+Aq400nCnAT0/w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
+
+    $(document).ready(function(){
+        $('.money').mask('#,##0.00', {reverse: true});
+    });
 
     let button_continue = document.getElementById('continue-payment');
     if (button_continue) {
@@ -125,6 +131,7 @@ if ($order) {
 
     function clickLoadInfoFee() {
         document.querySelector('input[name="aes_amount_split"]').value = 0;
+        document.querySelector('input[name="aes_amount_split_visual"]').value = 0;
         document.getElementById('total_entered').innerText = `Loading...`;
         document.getElementById('payment_method_comission').innerText = `Loading...`;
         document.getElementById('total_payment_button').disabled = true;
@@ -135,6 +142,7 @@ if ($order) {
 
     $(document).on('change', 'input[name="payment_method"]', function () {
         document.querySelector('input[name="aes_amount_split"]').value = 0;
+        document.querySelector('input[name="aes_amount_split_visual"]').value = 0;
         document.getElementById('total_entered').innerText = `Loading...`;
         document.getElementById('payment_method_comission').innerText = `Loading...`;
         document.getElementById('total_payment_button').disabled = true;
@@ -160,10 +168,21 @@ if ($order) {
                 loadFee(response.fee); // Output: The subtotal of the cart
 
                 pending_amount = response.pending;
-                document.querySelector('input[name="aes_amount_split"]').value = response.pending;
+                document.querySelector('input[name="aes_amount_split"]').value = pending_amount;
+
+                const $element = $('.money');
+                if (pending_amount < 1000) {
+                    $element.val(0); // apply the phone number mask
+                    $element.mask('#,##0.00'); // apply the phone number mask
+                }
+
+                $element.val(pending_amount); // set the value to 1234567890
+                $element.mask('#,##0.00'); // apply the phone number mask
+
                 document.getElementById('place_order').disabled = false;
                 let value = document.getElementById('aes_amount_split').value ? document.getElementById('aes_amount_split').value : 0;
-                document.getElementById('total_entered').innerText = `$${(parseFloat(value) + parseFloat(current_fee)).toFixed(2)}`
+                let amount_calculated = (parseFloat(value) + parseFloat(current_fee)).toFixed(2); 
+                document.getElementById('total_entered').innerText = `$${amount_calculated.toLocaleString('en-US')}`
                 document.getElementById('payment_method_comission').innerText = `($${current_fee})`;
                 document.getElementById('total_payment_button').disabled = false;
             }
@@ -198,8 +217,17 @@ if ($order) {
         document.querySelector('input[name="aes_amount_split_fee"]').value = current_fee;
     }
 
-    document.getElementById('aes_amount_split').addEventListener('input', (e) => {
-        let value = e.target.value ? e.target.value : 0;
+    document.getElementById('aes_amount_split_visual').addEventListener('input', (e) => {
+        $('.money').mask('#,##0.00', {reverse: true});
+        let value_parsed = $('.money').cleanVal();
+        let divisor = 1;
+        if (value_parsed.length > 2) {
+            divisor = 100;
+        }
+        loadAesAmountSplit(value_parsed / divisor);
+    });
+
+    function loadAesAmountSplit(value) {
         if (current_payment_method_text == 'woo_squuad_stripe') {
             const from_webinar = getCookie('from_webinar');
             let fee = 0;
@@ -209,11 +237,14 @@ if ($order) {
                 fee = 4.5; // 4.5% fee
             }
             const cart_subtotal = value;
-            current_fee = ((cart_subtotal / 100) * fee);
+            current_fee = ((cart_subtotal / 100) * fee).toFixed(2);
         }
+        current_fee = current_fee.toLocaleString('en-US');
         document.getElementById('payment_method_comission').innerText = `($${current_fee})`;
         document.querySelector('input[name="aes_amount_split_fee"]').value = current_fee;
-        document.getElementById('total_entered').innerText = `$${(parseFloat(value) + parseFloat(current_fee)).toFixed(2)}`
+        document.querySelector('input[name="aes_amount_split"]').value = value;
+        let amount_calculated = (parseFloat(value) + parseFloat(current_fee)).toFixed(2); 
+        document.getElementById('total_entered').innerText = `$${amount_calculated.toLocaleString('en-US')}`
         if (pending_amount > 0) {
             if (value > pending_amount) {
                 document.getElementById('place_order').disabled = true;
@@ -223,7 +254,7 @@ if ($order) {
         } else {
             document.getElementById('place_order').disabled = false;
         }
-    });
+    }
 
     function getCookie(name) {
         const cookies = document.cookie.split(';');
