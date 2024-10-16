@@ -410,21 +410,35 @@ class TT_payment_pending_List_Table extends WP_List_Table
 
     function get_payment_pendings()
     {
+        global $current_user;
+        $roles = $current_user->roles;
         $orders_array = [];
         $args = [];
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
-
+    
+        // Verificar si el usuario actual tiene el rol 'webinar-alliance'
+        if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
+            // Si el usuario tiene el rol, solo buscar órdenes con from_webinar = 1
+            $args['meta_query'] = [
+                [
+                    'key' => 'from_webinar',
+                    'value' => 1,
+                    'compare' => '='
+                ]
+            ];
+        }
+    
         if (isset($_POST['s']) && !empty($_POST['s'])) {
             $args['s'] = $_POST['s'];
         }
-
+    
         $args['limit'] = $per_page; // limit to 10 orders per page
         $args['offset'] = $offset; // offset to start from the first order
         $args['status'] = array('wc-pending', 'wc-cancelled', 'wc-processing', 'wc-on-hold');
         $orders = wc_get_orders($args);
-
+    
         if ($orders) {
             foreach ($orders as $order) {
                 array_push($orders_array, [
@@ -437,9 +451,20 @@ class TT_payment_pending_List_Table extends WP_List_Table
                 ]);
             }
         }
-
+    
         $args_filtered['limit'] = -1;
         $args_filtered['status'] = array('wc-pending', 'wc-cancelled', 'wc-processing', 'wc-on-hold');
+    
+        if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
+            $args_filtered['meta_query'] = [
+                [
+                    'key' => 'from_webinar',
+                    'value' => 1,
+                    'compare' => '='
+                ]
+            ];
+        }
+    
         $total_count = wc_get_orders(array_merge($args_filtered, array('return' => 'count')));
         return ['data' => $orders_array, 'total_count' => sizeof($total_count)];
     }
@@ -566,16 +591,30 @@ class TT_all_payments_List_Table extends WP_List_Table
 
     function get_payment()
     {
+        global $current_user;
+        $roles = $current_user->roles;
         $orders_array = [];
         $args = [];
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
-
+    
+        // Verificar si el usuario actual tiene el rol 'webinar-alliance'
+        if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
+            // Si el usuario tiene el rol, solo buscar órdenes con from_webinar = 1
+            $args['meta_query'] = [
+                [
+                    'key' => 'from_webinar',
+                    'value' => 1,
+                    'compare' => '='
+                ]
+            ];
+        }
+    
         if (isset($_POST['s']) && !empty($_POST['s'])) {
             $args['s'] = $_POST['s'];
         }
-
+    
         $args['limit'] = $per_page; // limit to 10 orders per page
         $args['offset'] = $offset; // offset to start from the first order
         $args['status'] = array('wc-pending', 'wc-completed', 'wc-cancelled', 'wc-processing', 'wc-on-hold');
@@ -593,9 +632,20 @@ class TT_all_payments_List_Table extends WP_List_Table
                 ]);
             }
         }
-
+    
         $args_filtered['limit'] = -1;
         $args_filtered['status'] = array('wc-pending', 'wc-completed', 'wc-cancelled', 'wc-processing', 'wc-on-hold');
+    
+        if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
+            $args_filtered['meta_query'] = [
+                [
+                    'key' => 'from_webinar',
+                    'value' => 1,
+                    'compare' => '='
+                ]
+            ];
+        }
+    
         $total_count = wc_get_orders(array_merge($args_filtered, array('return' => 'count')));
         return ['data' => $orders_array, 'total_count' => sizeof($total_count)];
     }

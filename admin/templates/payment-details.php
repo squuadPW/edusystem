@@ -18,6 +18,9 @@
                     <div class="inside">
                         <table class="form-table">
                             <tbody>
+                                <?php if($order->get_meta('from_webinar')) { ?>
+                                    <h4 style="text-align: center; font-weight: 600; font-style: italic; color: #2271b1; font-size: 18px;">From webinar</h4>
+                                <?php } ?>
                                 <tr>
                                     <th scope="row" ><label for="input_id"><?= __('Payment ID','aes').':'; ?></label></th>
                                     <td>
