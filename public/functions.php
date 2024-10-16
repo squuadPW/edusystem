@@ -69,7 +69,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('create-enrollment');
 
-    if (str_contains(home_url( $wp->request ), 'student-documents')) {
+    if (str_contains(home_url($wp->request), 'student-documents')) {
         wp_register_script('create-missing-documents', plugins_url('aes') . '/public/assets/js/create-missing-documents.js', array('jquery'), '1.0.0', true);
         wp_localize_script(
             'create-missing-documents',
@@ -101,6 +101,16 @@ function form_asp_psp()
 }
 
 add_shortcode('form_asp_psp', 'form_asp_psp');
+
+function one_time_payment()
+{
+    $countries = get_countries();
+    $institutes = get_list_institutes_active();
+    $grades = get_grades();
+    include(plugin_dir_path(__FILE__) . 'templates/one-time-payment-registration.php');
+}
+
+add_shortcode('one_time_payment', 'one_time_payment');
 
 function custom_registration_pay()
 {
@@ -272,8 +282,10 @@ function woocommerce_checkout_order_created_action($order)
     setcookie('id_bitrix', '', time());
     setcookie('institute_id', '', time());
     setcookie('gender', '', time());
+    setcookie('gender_parent', '', time());
     setcookie('password', '', time());
     setcookie('from_webinar', '', time());
+    setcookie('one_time_payment', '', time());
 }
 
 add_action('woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action');
@@ -313,22 +325,26 @@ function custom_override_value_checkout_fields($fields)
 
 function change_billing_phone_checkout_field_value($order)
 {
-    
+
     if ($_POST['aes_split_payment'] == 'on' && (!$_POST['aes_amount_split'] || $_POST['aes_amount_split'] == 0)) {
         wc_add_notice(__('You must specify a split payment amount', 'woocommerce'), 'error');
         exit; // o exit; si deseas detener la ejecución del código
     }
 
-    $order->add_meta_data( 'split_payment', ($_POST['aes_split_payment'] == 'on' ? 1 : 0));
-    $order->add_meta_data('pending_payment', ($order->get_subtotal() - $order->get_total_discount()));
+    $order->add_meta_data('split_payment', ($_POST['aes_split_payment'] == 'on' ? 1 : 0));
+    $order->add_meta_data('pending_payment', ($_POST['aes_split_payment'] == 'on' ? ($order->get_subtotal() - $order->get_total_discount()) : 0));
 
     if (isset($_POST['billing_phone_hidden']) && !empty($_POST['billing_phone_hidden'])) {
         $order->set_billing_phone($_POST['billing_phone_hidden']);
         update_user_meta($order->get_customer_id(), 'billing_phone', $_POST['billing_phone_hidden']);
     }
 
-    if(isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) {
+    if (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) {
         $order->add_meta_data('from_webinar', 1);
+    }
+
+    if (isset($_COOKIE['one_time_payment']) && !empty($_COOKIE['one_time_payment'])) {
+        $order->add_meta_data('one_time_payment', 1);
     }
 
     $order->save();
@@ -350,7 +366,7 @@ function remove_my_account_links($menu_links)
         $birthday = get_user_meta($current_user->ID, 'birth_date', true);
         $age = floor((time() - strtotime($birthday)) / 31556926);
         // if ($age >= 18) {
-            $menu_links['dashboard'] = __('Dashboard', 'form-plugin');
+        $menu_links['dashboard'] = __('Dashboard', 'form-plugin');
         // }
 
         if (in_array('parent', $roles)) {
@@ -492,7 +508,7 @@ function add_loginout_link($items, $args)
             $count = "";
         }
         if ($args->theme_location == 'primary') {
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications"><span style="vertical-align: baseline; font-size: 28px; width: 26px; color: ' .$color. '; cursor: pointer;" class="dashicons dashicons-bell"></span>' .$count . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications"><span style="vertical-align: baseline; font-size: 28px; width: 26px; color: ' . $color . '; cursor: pointer;" class="dashicons dashicons-bell"></span>' . $count . '</a></li>';
         } else {
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications">' . __('Notifications', 'form-plugin') . '</a></li>';
         }
@@ -532,14 +548,15 @@ function status_changed_payment($order_id, $old_status, $new_status)
     if ($order->get_status() == 'completed') {
         status_order_completed($order, $order_id, $customer_id, $status_register);
     } else {
-        status_order_not_completed($order,  $order_id, $customer_id, $status_register);
+        status_order_not_completed($order, $order_id, $customer_id, $status_register);
     }
 }
 
 
 add_action('woocommerce_order_status_changed', 'status_changed_payment', 10, 3);
 
-function status_order_completed($order, $order_id, $customer_id, $status_register) {
+function status_order_completed($order, $order_id, $customer_id, $status_register)
+{
     global $wpdb, $current_user;
     $table_student_payment = $wpdb->prefix . 'student_payments';
 
@@ -578,7 +595,8 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
     }
 }
 
-function status_order_not_completed($order, $order_id, $customer_id, $status_register) {
+function status_order_not_completed($order, $order_id, $customer_id, $status_register)
+{
     global $wpdb, $current_user;
     $table_student_payment = $wpdb->prefix . 'student_payments';
 
@@ -600,7 +618,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
         $variation_id = $item->get_variation_id(); // Get the variation ID
         $is_variable = $item->get_product()->is_type('variation');
         $price = $item->get_product()->get_price($variation_id); // Get the price of the selected variation
-        $discount = wc_get_order_item_meta( $item->get_id(), '_line_subtotal' ) - wc_get_order_item_meta( $item->get_id(), '_line_total' );
+        $discount = wc_get_order_item_meta($item->get_id(), '_line_subtotal') - wc_get_order_item_meta($item->get_id(), '_line_total');
         $price -= $discount;
         $exist = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = {$product_id} and order_id = {$order_id}");
         if (!$exist) {
@@ -911,13 +929,15 @@ function insert_data_student($order)
 
 add_action('woocommerce_after_checkout_billing_form', 'payments_parts');
 
-function split_payment() {
+function split_payment()
+{
     include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
 }
-add_action('woocommerce_review_order_before_payment','split_payment');
-add_action('woocommerce_pay_order_before_payment','split_payment');
+add_action('woocommerce_review_order_before_payment', 'split_payment');
+add_action('woocommerce_pay_order_before_payment', 'split_payment');
 
-function totals_split($order_id) {
+function totals_split($order_id)
+{
     echo '1uiasdi0;';
 }
 add_action('woocommerce_pay_order_after_totals', 'totals_split');
@@ -977,7 +997,7 @@ function woocommerce_update_cart()
         $applied_coupons = array_diff($applied_coupons, array("registration fee discount"));
     } else {
         // Agregar el cupón con la clave "fee_inscription" a la matriz $applied_coupons
-        if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
+        if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
             array_push($applied_coupons, 'registration fee discount');
         }
     }
@@ -1018,7 +1038,7 @@ function fee_update()
         }
 
         if ($is_complete) {
-            if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
+            if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
                 $woocommerce->cart->apply_coupon('Registration fee discount');
             }
         }
@@ -1026,7 +1046,7 @@ function fee_update()
         $woocommerce->cart->calculate_totals();
     } else {
         $woocommerce->cart->remove_cart_item($woocommerce->cart->generate_cart_id($id));
-        if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
+        if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
             $woocommerce->cart->remove_coupon('Registration fee discount');
         }
         $woocommerce->cart->calculate_totals();
@@ -1160,9 +1180,11 @@ function reload_button_schoolship()
     ?>
     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
         <?php if ($has_scholarship): ?>
-            <button id="apply-scholarship-btn" type="button" disabled><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?></button>
+            <button id="apply-scholarship-btn" type="button"
+                disabled><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?></button>
         <?php else: ?>
-            <button id="apply-scholarship-btn" type="button"><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?></button>
+            <button id="apply-scholarship-btn"
+                type="button"><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?></button>
         <?php endif; ?>
     </div>
     <?php
@@ -1438,14 +1460,14 @@ function verificar_contraseña()
 
             if ((count($students) == 0 && !get_user_meta($current_user->ID, 'pay_application_password')) && (in_array('student', $roles) || in_array('parent', $roles))) {
                 add_action('wp_footer', 'modal_fill_info');
-            } else if(count($students) > 0) {
+            } else if (count($students) > 0) {
                 update_user_meta($current_user->ID, 'pay_application_password', 0);
                 // Obtiene las órdenes con estado "pending payment" del usuario actual
                 $orders = wc_get_orders(array(
                     'status' => 'pending',
                     'customer_id' => $current_user->ID,
                 ));
-                
+
                 if (!empty($orders)) {
                     // Redirige al checkout con la orden pendiente de pago
                     $order_id = $orders[0]->get_id(); // Get the first pending order ID
@@ -1473,14 +1495,14 @@ function verificar_contraseña()
                         } else {
                             $order->add_meta_data('total_paid_gross', $total_gross);
                         }
-                        
+
                         $pending_payment_meta = $order->get_meta('pending_payment');
                         if ($pending_payment_meta) {
                             $order->update_meta_data('pending_payment', ($order->get_total() - $total));
                         } else {
                             $order->add_meta_data('pending_payment', ($order->get_total() - $total));
                         }
-            
+
                         // $order->set_total($order->get_total() - $total); // Set the total amount of the order
                         $complete = false;
                         $pending_payment = $order->get_meta('pending_payment');
@@ -1494,20 +1516,28 @@ function verificar_contraseña()
                                     break;
                                 }
                             }
-            
+
                             if (!$on_hold_found) {
-                            $order->update_status('completed');
+                                $order->update_status('completed');
                             } else {
                                 $order->update_status('on-hold');
                             }
                             $complete = true;
                         }
                         $order->save();
-                        
-                        if (!$complete) {
+
+                        if (!$complete && !$order->get_meta('one_time_payment')) {
                             // wc_add_notice(__('Your payment has been received. Please continue with the remaining amount.', 'your-text-domain'), 'success');
                             wp_redirect($checkout_url);
                             exit;
+                        }
+
+                        if ($order->get_meta('one_time_payment')) {
+                            $order->update_status('completed');
+                            $order->save();
+
+                            $order->update_status('pending-payment');
+                            $order->save();
                         }
                     }
                 }
@@ -1540,7 +1570,7 @@ function verificar_contraseña()
     }
 }
 
-function modal_fill_info() 
+function modal_fill_info()
 {
     include plugin_dir_path(__FILE__) . 'templates/fill-info.php';
 }
@@ -1605,7 +1635,7 @@ function modal_missing_documents($student_id)
 {
     global $wpdb;
     $student = get_student_detail($student_id);
-    $table_student_documents = $wpdb->prefix.'student_documents';
+    $table_student_documents = $wpdb->prefix . 'student_documents';
     $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE attachment_id=0 AND is_visible=1 AND student_id={$student_id}");
     include plugin_dir_path(__FILE__) . 'templates/create-missing-documents.php';
 }
@@ -1660,7 +1690,8 @@ function create_password()
 add_action('wp_ajax_create_enrollment_document', 'create_enrollment_document_callback');
 add_action('wp_ajax_nopriv_create_enrollment_document', 'create_enrollment_document_callback');
 
-function create_enrollment_document_callback() {
+function create_enrollment_document_callback()
+{
     // Check if the request is valid
     if (!isset($_POST['action']) || $_POST['action'] !== 'create_enrollment_document') {
         wp_send_json_error('Invalid request');
@@ -1668,12 +1699,12 @@ function create_enrollment_document_callback() {
 
     // Get the uploaded file
     global $wpdb;
-    $table_student_documents = $wpdb->prefix.'student_documents';
-    $table_users_signatures = $wpdb->prefix.'users_signatures';
-    $table_students = $wpdb->prefix.'students';
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+    $table_users_signatures = $wpdb->prefix . 'users_signatures';
+    $table_students = $wpdb->prefix . 'students';
     $file = $_FILES['document'];
-    $signature_parent = json_decode(json_decode('"'.$_POST['signature_parent'].'"', true));
-    $signature_student = json_decode(json_decode('"'.$_POST['signature_student'].'"', true));
+    $signature_parent = json_decode(json_decode('"' . $_POST['signature_parent'] . '"', true));
+    $signature_student = json_decode(json_decode('"' . $_POST['signature_student'] . '"', true));
     $partner_user_id = $_POST['partner_user_id'];
     if ($_POST['id_student_to_use']) {
         $student_id = $_POST['id_student_to_use'];
@@ -1723,26 +1754,26 @@ function create_enrollment_document_callback() {
         if ($file['type'] !== 'application/pdf') {
             wp_send_json_error('Invalid file type');
         }
-    
+
         $upload = wp_upload_bits($file['name'], null, file_get_contents($file['tmp_name']));
         if (!$upload || is_wp_error($upload)) {
             wp_send_json_error('Failed to upload file');
         }
-    
+
         $attachment = array(
             'post_mime_type' => $upload['type'],
             'post_title' => $file['name'],
             'post_content' => '',
             'post_status' => 'inherit'
         );
-    
+
         $attach_id = wp_insert_attachment($attachment, $upload['file']);
         $attach_data = wp_generate_attachment_metadata($attach_id, $upload['file']);
         wp_update_attachment_metadata($attach_id, $attach_data);
 
         $user_student = get_user_by('id', $student_user_id);
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user_student->data->user_email}'");
-        $wpdb->update($table_student_documents,['status' => 5,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $student->id,'document_id' => $document_id ]);
+        $wpdb->update($table_student_documents, ['status' => 5, 'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $student->id, 'document_id' => $document_id]);
     }
     // SAVE THE DOCUMENT
 
@@ -1753,7 +1784,8 @@ function create_enrollment_document_callback() {
 add_action('wp_ajax_get_student_missing_documents', 'get_student_missing_documents_callback');
 add_action('wp_ajax_nopriv_get_student_missing_documents', 'get_student_missing_documents_callback');
 
-function get_student_missing_documents_callback() {
+function get_student_missing_documents_callback()
+{
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $table_student_document = $wpdb->prefix . 'student_documents';
@@ -1794,7 +1826,7 @@ function yaycommerce_add_checkout_fee_for_gateway()
         if ($chosen_gateway == 'aes_payment') {
             WC()->cart->add_fee('Bank transfer Fee', 35);
         }
-    
+
         if ($chosen_gateway == 'woo_squuad_stripe') {
             $stripe_fee_percentage = 4.5; // 4.5% fee
             $cart_subtotal = WC()->cart->get_subtotal();
@@ -1814,7 +1846,8 @@ function yaycommerce_refresh_checkout_on_payment_methods_change()
    ");
 }
 
-function loadFeesSplit() {
+function loadFeesSplit()
+{
     global $current_user, $wpdb;
     $orders = wc_get_orders(array(
         'status' => 'pending',
@@ -1837,10 +1870,10 @@ function loadFeesSplit() {
             if ($payment_page == 0) {
                 $cart->add_fee('Bank transfer Fee', $fee);
             } else {
-                $order->add_fee( 'Bank transfer Fee', $fee );
+                $order->add_fee('Bank transfer Fee', $fee);
             }
         }
-    
+
         if ($chosen_gateway == 'woo_squuad_stripe') {
             if ($payment_page == 0) {
                 $stripe_fee_percentage = 4.5; // 4.5% fee
@@ -1851,16 +1884,16 @@ function loadFeesSplit() {
                 $cart->add_fee('Credit card fee', $stripe_fee_amount);
             } else {
                 $stripe_fee_percentage = 4.5; // 4.5% fee
-                $cart_subtotal = (float)$order->get_meta('pending_payment');
+                $cart_subtotal = (float) $order->get_meta('pending_payment');
                 // $discount = $order->get_total_discount() ? $order->get_total_discount() : 0;
                 $stripe_fee_amount = ($cart_subtotal / 100) * $stripe_fee_percentage;
                 $fee = $stripe_fee_amount;
-                $order->add_fee( 'Credit card fee', $fee );
+                $order->add_fee('Credit card fee', $fee);
             }
         }
     }
 
-    wp_send_json(array('fee' => (float)number_format($fee, 2), 'pending' => isset($order) ? (float)$order->get_meta('pending_payment') : 0));
+    wp_send_json(array('fee' => (float) number_format($fee, 2), 'pending' => isset($order) ? (float) $order->get_meta('pending_payment') : 0));
 }
 
 add_action('wp_ajax_nopriv_load_cart_for_split', 'loadFeesSplit');
@@ -1874,21 +1907,22 @@ function student_password_Reset($user)
 }
 add_action('password_reset', 'student_password_Reset');
 
-function users_notifications(){
+function users_notifications()
+{
     global $wpdb, $current_user;
     $table_users_notices = $wpdb->prefix . 'users_notices';
-        // Update all notifications to mark them as read
-        $wpdb->update(
-            $table_users_notices,
-            array('read' => 1),
-            array('user_id' => $current_user->ID)
-        );
-        
+    // Update all notifications to mark them as read
+    $wpdb->update(
+        $table_users_notices,
+        array('read' => 1),
+        array('user_id' => $current_user->ID)
+    );
+
     $notices = $wpdb->get_results("SELECT * FROM {$table_users_notices} WHERE user_id = {$current_user->ID} ORDER BY created_at DESC");
-    include(plugin_dir_path(__FILE__).'templates/users-notifications.php');
+    include(plugin_dir_path(__FILE__) . 'templates/users-notifications.php');
 }
 
-add_shortcode('users_notifications','users_notifications');
+add_shortcode('users_notifications', 'users_notifications');
 
 // function other_endpoint_callback()
 // {
