@@ -424,6 +424,30 @@ function get_name_document($document_id){
     return $document_id;
 }
 
+function get_help_info_document($document_id){
+    $text = '';
+
+    if ($document_id == 'CERTIFIED NOTES HIGH SCHOOL') {
+        $text = 'Provide an official transcript or report card certified by a school authority.';
+    } else if ($document_id == 'HIGH SCHOOL DIPLOMA') {
+        $text = 'Ensure you provide an official copy issued by the school of your high school diploma';
+    } else if ($document_id == 'ID OR CI OF THE PARENTS') {
+        $text = 'Please provide a clear and legible copy of the document';
+    } else if ($document_id == 'ID STUDENTS') {
+        $text = 'Please ensure you provide a clear and legible copy of the identification document';
+    } else if ($document_id == 'PHOTO OF STUDENT CARD') {
+        $text = 'Please provide a recent, clear, and high-quality photo of the student';
+    } else if ($document_id == 'PROOF OF GRADE') {
+        $text = 'Please provide an official document that clearly indicates the student\'s name, the course or subject, and the corresponding grade achieved';
+    } else if ($document_id == 'PROOF OF STUDY') {
+        $text = 'Please provide an official document that verifies the student\'s enrollment status';
+    } else if ($document_id == 'VACCUNATION CARD') {
+        $text = 'The card should clearly display the student\'s name, the type of vaccine received, the dates of vaccination, and any booster shots administered';
+    }
+
+    return $text;
+}
+
 function get_status_document($status_id){
 
     $status = match ($status_id){

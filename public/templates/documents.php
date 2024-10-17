@@ -59,12 +59,19 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <input type="hidden" name="<?= 'file_student_' . $student->id . '_id[]'; ?>"
                                         value="<?= $document->id; ?>">
                                     <?php $name = get_name_document($document->document_id); ?>
+                                    <?php if ($name == 'PHOTO OF STUDENT CARD') {
+                                        $name = 'PHOTO OF STUDENT';
+                                    }?>
 
                                     <?php if ($document->is_required): ?>
                                         <?php $name = $name . "<span class='required' style='font-size:24px;'>*</span>"; ?>
                                     <?php endif; ?>
 
                                     <?= $name; ?>
+
+                                    <span class="help-tooltip" data-tippy-content="<?php echo get_help_info_document($document->document_id) ?>">
+                                        <span style="color: #091c5c; margin-top: -5px;" class="dashicons dashicons-editor-help"></span>
+                                    </span>
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
                                     data-title="<?= __('Status', 'aes'); ?>">
@@ -104,3 +111,14 @@ if ($_GET['missing']) {
     include('create-missing-documents.php'); 
 }
 ?>
+
+
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script>
+      // With the above scripts loaded, you can call `tippy()` with a CSS
+      // selector and a `content` prop:
+      tippy('.help-tooltip', {
+        //
+      });
+</script>
