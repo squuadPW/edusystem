@@ -119,6 +119,6 @@ if ($_GET['missing']) {
       // With the above scripts loaded, you can call `tippy()` with a CSS
       // selector and a `content` prop:
       tippy('.help-tooltip', {
-        //
+        allowHTML: true
       });
 </script>

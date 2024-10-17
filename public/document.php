@@ -436,7 +436,7 @@ function get_help_info_document($document_id){
     } else if ($document_id == 'ID STUDENTS') {
         $text = 'Please ensure you provide a clear and legible copy of the identification document';
     } else if ($document_id == 'PHOTO OF STUDENT CARD') {
-        $text = 'Please provide a recent, clear, and high-quality photo of the student';
+        $text = "<div>Please provide a recent, clear, and high-quality photo of the student</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div>";
     } else if ($document_id == 'PROOF OF GRADE') {
         $text = 'Please provide an official document that clearly indicates the student\'s name, the course or subject, and the corresponding grade achieved';
     } else if ($document_id == 'PROOF OF STUDY') {
