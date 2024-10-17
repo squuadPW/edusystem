@@ -349,6 +349,7 @@ function create_tables() {
     dbDelta( "CREATE TABLE " . $table_grades . " (
       id INT(11) NOT NULL AUTO_INCREMENT,
       name TEXT NULL,
+      description TEXT NULL,
       updated_at DATETIME NULL,
       created_at DATETIME NOT NULL,
       PRIMARY KEY (id))$charset_collate;"
@@ -357,16 +358,19 @@ function create_tables() {
 
     $wpdb->insert($table_grades,[
       'name' => 'Lower',
+      'description' => '(Antepenultimate)',
       'created_at' => date('Y-m-d H:i:s') 
     ]);
 
     $wpdb->insert($table_grades,[
       'name' => 'Middle',
+      'description' => '(Penultimate)',
       'created_at' => date('Y-m-d H:i:s') 
     ]);
 
     $wpdb->insert($table_grades,[
       'name' => 'Upper',
+      'description' => '(Last)',
       'created_at' => date('Y-m-d H:i:s') 
     ]);
 
