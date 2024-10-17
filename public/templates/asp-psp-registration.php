@@ -91,7 +91,7 @@ if (is_user_logged_in()) {
                 <!-- DATOS DE ACCESO -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
                     style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
-                    <div class="subtitle text-align-center"><?= __('Platform access data', 'aes'); ?></div>
+                    <div class="subtitle text-align-center" id="access_data"><?= __('Platform access data of student', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="email"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
@@ -113,11 +113,11 @@ if (is_user_logged_in()) {
                     <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                    <label for="grade"><?= __('Grade', 'aes'); ?><span class="required">*</span></label>
+                    <label for="grade" id="grade_tooltip"><?= __('Grade', 'aes'); ?> <span style="color: #091c5c" class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
                     <select name="grade" autocomplete="off" required>
                         <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <?php foreach ($grades as $grade): ?>
-                            <option value="<?= $grade->id; ?>"><?= $grade->name; ?></option>
+                            <option value="<?= $grade->id; ?>"><?= $grade->name; ?> <?= $grade->description; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -258,11 +258,11 @@ if (is_user_logged_in()) {
                     <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                    <label for="grade"><?= __('Grade', 'aes'); ?><span class="required">*</span></label>
+                    <label for="grade" id="grade_tooltip"><?= __('Grade', 'aes'); ?> <span style="color: #091c5c" class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
                     <select name="grade" autocomplete="off" required>
                         <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <?php foreach ($grades as $grade): ?>
-                            <option value="<?= $grade->id; ?>"><?= $grade->name; ?></option>
+                            <option value="<?= $grade->id; ?>"><?= $grade->name; ?> <?= $grade->description; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -380,7 +380,7 @@ if (is_user_logged_in()) {
                 <!-- DATOS DE ACCESO -->
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
                     style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
-                    <div class="subtitle text-align-center"><?= __('Platform access data', 'aes'); ?></div>
+                    <div class="subtitle text-align-center" id="access_data"><?= __('Platform access data of student', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="email"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
@@ -402,11 +402,11 @@ if (is_user_logged_in()) {
                     <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                    <label for="grade"><?= __('Grade', 'aes'); ?><span class="required">*</span></label>
+                    <label for="grade" id="grade_tooltip"><?= __('Grade', 'aes'); ?> <span style="color: #091c5c" class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
                     <select name="grade" autocomplete="off" required>
                         <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                         <?php foreach ($grades as $grade): ?>
-                            <option value="<?= $grade->id; ?>"><?= $grade->name; ?></option>
+                            <option value="<?= $grade->id; ?>"><?= $grade->name; ?> <?= $grade->description; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -610,7 +610,7 @@ if (is_user_logged_in()) {
             <!-- DATOS DE ACCESO -->
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
                 style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
-                <div class="subtitle text-align-center"><?= __('Platform access data', 'aes'); ?></div>
+                <div class="subtitle text-align-center" id="access_data"><?= __('Platform access data of parent', 'aes'); ?></div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-access"></div>
             <div id="parent-email-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -633,11 +633,11 @@ if (is_user_logged_in()) {
                 <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                <label for="grade"><?= __('Grade', 'aes'); ?><span class="required">*</span></label>
+                <label for="grade" id="grade_tooltip"><?= __('Grade', 'aes'); ?> <span style="color: #091c5c" class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
                 <select name="grade" autocomplete="off" required>
                     <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                     <?php foreach ($grades as $grade): ?>
-                        <option value="<?= $grade->id; ?>"><?= $grade->name; ?></option>
+                        <option value="<?= $grade->id; ?>"><?= $grade->name; ?> <?= $grade->description; ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -680,3 +680,13 @@ if (is_user_logged_in()) {
         </div>
     </form>
 <?php } ?>
+
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script>
+      // With the above scripts loaded, you can call `tippy()` with a CSS
+      // selector and a `content` prop:
+      tippy('#grade_tooltip', {
+        content: 'Please select the grade you are currently studying',
+      });
+</script>

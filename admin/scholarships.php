@@ -39,6 +39,7 @@ function add_admin_form_scholarships_content(){
                     update_user_meta($user_partner_id, 'billing_email', $partner->email);
                     update_user_meta($user_partner_id, 'billing_phone', $partner->phone);
                     update_user_meta($user_partner_id, 'document_type', $partner->type_document);
+                    update_user_meta($user_partner_id, 'type_document', $partner->type_document);
                     update_user_meta($user_partner_id, 'id_document', $partner->id_document);
                     update_user_meta($user_partner_id, 'status_register', 1);
                     update_user_meta($user_partner_id, 'is_scholarship', 1);

@@ -45,7 +45,7 @@ function create_user_moodle($student_id){
         
         $users = ['users' => [
             [
-                'username' => (string)$data_student->id_document,
+                'username' => strtolower((string)$data_student->id_document),
                 'firstname' => $data_student->name,
                 'lastname' => $data_student->last_name,
                 'email' => $data_student->email,

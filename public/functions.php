@@ -782,6 +782,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                         $grade = 12;
                         break;
                 }
+                $user_partner = get_user_by('id', $student->partner_id);
                 $fields_to_send = array(
                     // DATOS DEL ESTUDIANTE
                     'id_document' => $student->id_document,
@@ -803,7 +804,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                     'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
                     'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
                     'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
-                    'email_re' => get_user_meta($student->partner_id, 'billing_email', true),
+                    'email_re' => $user_partner->user_email,
                     'gender_re' => $gender_re,
 
                     'cod_program' => AES_PROGRAM_ID,
@@ -1609,6 +1610,8 @@ function modal_enrollment_student()
 
     $institute = $institute_id ? get_institute_details($institute_id) : null;
     $institute_name = $student->institute_name;
+    $user_partner = get_user_by('id', $student->partner_id);
+
     $user = [
         'student_full_name' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
         'student_signature' => $student->name . ' ' . $student->last_name,
@@ -1624,7 +1627,7 @@ function modal_enrollment_student()
         'parent_identification' => get_user_meta($partner_id, 'id_document', true),
         'student_identification' => $student->id_document,
         'parent_full_name' => get_user_meta($student->partner_id, 'first_name', true) . ' ' . get_user_meta($student->partner_id, 'last_name', true),
-        'parent_email' => get_user_meta($student->partner_id, 'billing_email', true),
+        'parent_email' => $user_partner->user_email,
         'student_email' => $student->email,
         'today' => date('Y-m-d'),
     ];

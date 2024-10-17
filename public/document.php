@@ -207,6 +207,7 @@ function save_document(){
                                         $grade = 12;
                                         break;
                                 }
+                                $user_partner = get_user_by('id', $student->partner_id);
                                 $fields_to_send = array(
                                     // DATOS DEL ESTUDIANTE
                                     'id_document' => $student->id_document,
@@ -228,7 +229,7 @@ function save_document(){
                                     'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
                                     'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
                                     'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
-                                    'email_re' => get_user_meta($student->partner_id, 'billing_email', true),
+                                    'email_re' => $user_partner->user_email,
                                     'gender_re' => $gender_re,
                 
                                     'cod_program' => AES_PROGRAM_ID,

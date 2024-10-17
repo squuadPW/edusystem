@@ -435,6 +435,12 @@ if (document.getElementById("birth_date_student")) {
       today = new Date();
       diff = diff_years(today, start);
       if (diff >= 18) {
+
+        var accessDataTitle = document.getElementById("access_data");
+        if (accessDataTitle) {
+          accessDataTitle.innerHTML = "Platform access data of student";
+        }
+
         if (dont_allow_adult && dont_allow_adult?.value == 1) {
           if (dontBeAdult) {
             dontBeAdult.style.display = "block";
@@ -576,6 +582,12 @@ if (document.getElementById("birth_date_student")) {
           }
         }
       } else {
+
+        var accessDataTitle = document.getElementById("access_data");
+          if (accessDataTitle) {
+            accessDataTitle.innerHTML = "Platform access data of parent";
+          }
+
         if (dontBeAdult) {
           dontBeAdult.style.display = "none";
         }

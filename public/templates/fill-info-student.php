@@ -198,7 +198,7 @@
                         <div id="parent-email-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                             <label for="email"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
                             <input class="formdata" type="email" name="email_partner" autocomplete="off"
-                                id="email_partner" oninput="sendAjaxPartnerEmailDocument()" value="<?php echo get_user_meta($current_user->ID, 'billing_email', true) ?>" readonly required>
+                                id="email_partner" oninput="sendAjaxPartnerEmailDocument()" value="<?php echo $current_user->user_email ?>" readonly required>
                             <span id="existparentemail"
                                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
                             <span id="sameemailparent"
@@ -216,11 +216,11 @@
                             <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
                         </div>
                         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                            <label for="grade"><?= __('Grade', 'aes'); ?><span class="required">*</span></label>
+                            <label for="grade" id="grade_tooltip"><?= __('Grade', 'aes'); ?> <span style="color: #091c5c" class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
                             <select name="grade" autocomplete="off" required>
                                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                                 <?php foreach ($grades as $grade): ?>
-                                    <option value="<?= $grade->id; ?>"><?= $grade->name; ?></option>
+                                    <option value="<?= $grade->id; ?>"><?= $grade->name; ?> <?= $grade->description; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -274,7 +274,14 @@
     </div>
 </div>
 
+
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
 <script>
+
+    tippy('#grade_tooltip', {
+        content: 'Please select the grade you are currently studying',
+      });
     let close_modal_student_info = document.getElementById('close-modal-student-info');
     if (close_modal_student_info) {
         close_modal_student_info.addEventListener('click', function() {

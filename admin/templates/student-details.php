@@ -21,7 +21,7 @@ $countries = get_countries();
     <div style="display:flex;width:100%;justify-content:end;">
         <button data-id="<?= $student->id; ?>" id="button-export-xlsx"
             class="button button-primary"><?= __('Export Excel', 'aes'); ?></button>
-        <?php 
+        <!-- <?php 
             global $current_user;
             $roles = $current_user->roles;
             if (in_array('administrator', $roles)) {
@@ -29,7 +29,7 @@ $countries = get_countries();
             <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>" target="_blank">
                 <button class="button button-success" style="margin-left: 10px"><?= __('View user', 'aes'); ?></button>
             </a>
-        <?php } ?>
+        <?php } ?> -->
     </div>
     <form id="student-form" method="post"
         action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=save_users_details'); ?>">
@@ -40,6 +40,15 @@ $countries = get_countries();
                         <div class="inside">
                             <table class="form-table table-customize" style="margin-top:0px;">
                                 <tbody>
+                                    <tr>
+                                        <p style="text-align: center; padding: 12px !important">
+                                            <?php 
+                                                $moodleActive = isset($student->moodle_student_id) ? 'Yes' : 'No';
+                                                $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 8px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 8px; cursor: not-allowed"';
+                                            ?>
+                                            <span class="moodle-active" data-moodle="<?php echo $moodleActive ?>" data-student_id="<?php $student->id ?>" <?php echo $moodleActiveStyle ?>><?php echo $moodleActive == 'Yes' ? 'This student has access to moodle' : 'This student does not have moodle' ?></span>
+                                        </p>
+                                    </tr>
                                     <tr>
                                         <th scope="row" style="font-weight:400;">
                                             <label for="program"><b><?php _e('Program', 'aes'); ?></b></label><br>
@@ -63,7 +72,20 @@ $countries = get_countries();
                                 </tbody>
                             </table>
                             <h3 style="margin-bottom:0px;text-align:center;">
-                                <b><?php _e('Personal Information', 'aes'); ?></b></h3>
+                                <b><?php _e('Student Information', 'aes'); ?></b></h3>
+                                <div>
+                                    <?php 
+                                        global $current_user;
+                                        $roles = $current_user->roles;
+                                        if (in_array('administrator', $roles)) {
+                                    ?>
+                                        <p style="text-align: center">
+                                            <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>" target="_blank">
+                                                <button type="button" class="button button-success" style="margin-left: 10px"><?= __('View user student', 'aes'); ?></button>
+                                            </a>
+                                        </p>
+                                    <?php } ?>
+                                </div>
                             <table class="form-table" style="margin-top:0px;">
                                 <tbody>
                                     <tr>
@@ -201,6 +223,19 @@ $countries = get_countries();
                             </table>
                             <h3 style="margin-bottom:0px;text-align:center;">
                                 <b><?php _e('Parent Information', 'aes'); ?></b></h3>
+                                <div>
+                                    <?php 
+                                        global $current_user;
+                                        $roles = $current_user->roles;
+                                        if (in_array('administrator', $roles)) {
+                                    ?>
+                                        <p style="text-align: center">
+                                            <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>" target="_blank">
+                                                <button  type="button" class="button button-success" style="margin-left: 10px"><?= __('View user parent', 'aes'); ?></button>
+                                            </a>
+                                        </p>
+                                    <?php } ?>
+                                </div>
                             <table class="form-table table-customize" style="margin-top:0px;">
                                 <tbody>
                                     <tr>
@@ -299,8 +334,10 @@ $countries = get_countries();
                                         <td>
                                             <label for="parent_email"><b><?php _e('Email', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_email" name="parent_email"
-                                                value="<?php echo get_user_meta($partner->ID, 'billing_email', true) ?>"
+                                                value="<?php echo $partner->user_email ?>"
                                                 style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                            <input type="hidden" id="parent_old_email" name="parent_old_email"
+                                                value="<?php echo $partner->user_email; ?>">
                                         </td>
                                         <td>
                                             <label for="parent_phone"><b><?php _e('Phone', 'aes'); ?></b></label><br>
@@ -325,7 +362,7 @@ $countries = get_countries();
                                 <input type="submit" value="<?php _e('Save Changes', 'aes'); ?>"
                                     class="button button-primary">
                             </p>
-    <?php endif; ?>
+                            <?php endif; ?>
 
                         </div>
                     </div>

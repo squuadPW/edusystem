@@ -33,34 +33,38 @@ function add_admin_form_admission_content()
 
             //TABLE STUDENTS
             $table_students = $wpdb->prefix . 'students';
-            $wpdb->update(
-                $table_students,
-                array(
-                    'type_document' => $document_type,
-                    'id_document' => $id_document,
-                    'academic_period' => $academic_period,
-                    'name' => $first_name,
-                    'middle_name' => $middle_name,
-                    'last_name' => $last_name,
-                    'middle_last_name' => $middle_last_name,
-                    'birth_date' => date('Y-m-d', strtotime($birth_date)),
-                    'phone' => $phone,
-                    'email' => $email,
-                    'gender' => $gender,
-                    'city' => $city,
-                    'country' => $country,
-                    'postal_code' => $postal_code,
-
-                ),
-                array('ID' => $id),
-                array('%s', '%s', '%s'),
-                array('%d')
-            );
+            $student_exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='" . $email . "'");
+            if (!isset($student_exist)) {
+                $wpdb->update(
+                    $table_students,
+                    array(
+                        'type_document' => $document_type,
+                        'id_document' => $id_document,
+                        'academic_period' => $academic_period,
+                        'name' => $first_name,
+                        'middle_name' => $middle_name,
+                        'last_name' => $last_name,
+                        'middle_last_name' => $middle_last_name,
+                        'birth_date' => date('Y-m-d', strtotime($birth_date)),
+                        'phone' => $phone,
+                        'email' => $email,
+                        'gender' => $gender,
+                        'city' => $city,
+                        'country' => $country,
+                        'postal_code' => $postal_code,
+    
+                    ),
+                    array('ID' => $id),
+                    array('%s', '%s', '%s'),
+                    array('%d')
+                );
+            }
 
             //TABLE USERS
             $table_users = $wpdb->prefix . 'users';
             $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $old_email . "'");
-            if (isset($user_student)) {
+            $user_student_exist = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $email . "'");
+            if (isset($user_student) && !isset($user_student_exist)) {
                 $wpdb->update(
                     $wpdb->users,
                     array(
@@ -73,21 +77,20 @@ function add_admin_form_admission_content()
                     array('%s', '%s', '%s'),
                     array('%d')
                 );
-            }
 
-            if ($new_password && isset($user_student)) {
-                $user_id = $user_student->ID; // Replace with the ID of the user you want to update
-                wp_set_password($new_password, $user_student->ID);
+                if ($new_password && isset($user_student)) {
+                    $user_id = $user_student->ID; // Replace with the ID of the user you want to update
+                    wp_set_password($new_password, $user_student->ID);
+                }
+    
+                //METAADATA
+                update_user_meta($id, 'first_name', $first_name);
+                update_user_meta($id, 'last_name', $last_name);
+                update_user_meta($id, 'nickname', $username);
+                update_user_meta($id, 'birth_date', $birth_date);
+                update_user_meta($id, 'gender', $gender);
+                update_user_meta($id, 'billing_phone', $phone);
             }
-
-            //METAADATA
-            update_user_meta($id, 'first_name', $first_name);
-            update_user_meta($id, 'last_name', $last_name);
-            update_user_meta($id, 'nickname', $username);
-            update_user_meta($id, 'birth_date', $birth_date);
-            update_user_meta($id, 'gender', $gender);
-            update_user_meta($id, 'billing_email', $email);
-            update_user_meta($id, 'billing_phone', $phone);
 
             //PARENT
             $parent_id = $_POST['parent_id'];
@@ -102,41 +105,45 @@ function add_admin_form_admission_content()
             $parent_city = $_POST['parent_city'];
             $parent_postal_code = $_POST['parent_postal_code'];
             $parent_email = $_POST['parent_email'];
+            $parent_old_email = $_POST['parent_old_email'];
             $parent_phone = $_POST['parent_phone'];
             $parent_occupation = $_POST['parent_occupation'];
 
-            //TABLA USERS
-            $wpdb->update(
-                $wpdb->users,
-                array(
-                    'user_email' => $parent_email,
-                    'user_login' => $parent_email,
-                    'user_nicename' => $parent_username,
-                    'display_name' => $parent_first_name . ' ' . $parent_last_name,
-                ),
-                array('ID' => $parent_id),
-                array('%s', '%s', '%s'),
-                array('%d')
-            );
-
-            //METAADATA
-            update_user_meta($parent_id, 'first_name', $parent_first_name);
-            update_user_meta($parent_id, 'billing_first_name', $parent_first_name);
-            update_user_meta($parent_id, 'last_name', $parent_last_name);
-            update_user_meta($parent_id, 'billing_last_name', $parent_last_name);
-            update_user_meta($parent_id, 'nickname', $parent_username);
-            update_user_meta($parent_id, 'birth_date', $parent_birth_date);
-            update_user_meta($parent_id, 'gender', $parent_gender);
-            update_user_meta($parent_id, 'billing_country', $parent_country);
-            update_user_meta($parent_id, 'billing_city', $parent_city);
-            update_user_meta($parent_id, 'billing_postcode', $parent_postal_code);
-            update_user_meta($parent_id, 'billing_email', $parent_email);
-            update_user_meta($parent_id, 'billing_phone', $parent_phone);
-            update_user_meta($parent_id, 'occupation', $parent_occupation);
-            update_user_meta($parent_id, 'document_type', $parent_document_type);
-            update_user_meta($parent_id, 'id_document', $parent_id_document);
-
-
+            //TABLE USERS
+            $table_users = $wpdb->prefix . 'users';
+            $user_parent = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $parent_old_email . "'");
+            $user_parent_exist = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $parent_email . "'");
+            if (isset($user_parent) && !isset($user_parent_exist)) {
+                $wpdb->update(
+                    $wpdb->users,
+                    array(
+                        'user_email' => $parent_email,
+                        'user_login' => $parent_email,
+                        'user_nicename' => $parent_username,
+                        'display_name' => $parent_first_name . ' ' . $parent_last_name,
+                    ),
+                    array('ID' => $user_parent->ID),
+                    array('%s', '%s', '%s'),
+                    array('%d')
+                );    
+        
+                //METAADATA
+                update_user_meta($user_parent->ID, 'first_name', $parent_first_name);
+                update_user_meta($user_parent->ID, 'billing_first_name', $parent_first_name);
+                update_user_meta($user_parent->ID, 'last_name', $parent_last_name);
+                update_user_meta($user_parent->ID, 'billing_last_name', $parent_last_name);
+                update_user_meta($user_parent->ID, 'nickname', $parent_username);
+                update_user_meta($user_parent->ID, 'birth_date', $parent_birth_date);
+                update_user_meta($user_parent->ID, 'gender', $parent_gender);
+                update_user_meta($user_parent->ID, 'billing_country', $parent_country);
+                update_user_meta($user_parent->ID, 'billing_city', $parent_city);
+                update_user_meta($user_parent->ID, 'billing_postcode', $parent_postal_code);
+                update_user_meta($user_parent->ID, 'billing_phone', $parent_phone);
+                update_user_meta($user_parent->ID, 'occupation', $parent_occupation);
+                update_user_meta($user_parent->ID, 'document_type', $parent_document_type);
+                update_user_meta($user_parent->ID, 'type_document', $parent_document_type);
+                update_user_meta($user_parent->ID, 'id_document', $parent_id_document);
+            }
             wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
             exit;
         }
@@ -1027,6 +1034,7 @@ function update_status_documents()
                         $grade = 12;
                         break;
                 }
+                $user_partner = get_user_by('id', $student->partner_id);
                 $fields_to_send = array(
                     // DATOS DEL ESTUDIANTE
                     'id_document' => $student->id_document,
@@ -1048,7 +1056,7 @@ function update_status_documents()
                     'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
                     'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
                     'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
-                    'email_re' => get_user_meta($student->partner_id, 'billing_email', true),
+                    'email_re' => $user_partner->user_email,
                     'gender_re' => $gender_re,
 
                     'cod_program' => AES_PROGRAM_ID,
@@ -1189,7 +1197,8 @@ function get_data_student()
             ]);
         }
         $type_document = get_name_type_document($student->type_document);
-        $type_document_parent = get_name_type_document(get_user_meta($partner->ID, 'document_type', true));
+        $type = get_user_meta($partner->ID, 'document_type', true) ? get_user_meta($partner->ID, 'document_type', true) : get_user_meta($partner->ID, 'type_document', true);
+        $type_document_parent = get_name_type_document($type);
 
         array_push($data, [
             'id_document' => $student->id_document,

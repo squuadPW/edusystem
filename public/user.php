@@ -75,6 +75,7 @@ function save_account_details( $user_id ) {
 
         if(isset( $_POST['document_type']) && !empty($_POST['document_type'])){
             update_user_meta( $user_id,'document_type',sanitize_text_field( $_POST['document_type']));
+            update_user_meta( $user_id,'type_document',sanitize_text_field( $_POST['type_document']));
         }
 
         if(isset( $_POST['billing_postcode']) && !empty($_POST['billing_postcode'])){

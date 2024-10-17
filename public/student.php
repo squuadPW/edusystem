@@ -148,10 +148,11 @@ function save_student()
 
             case 'new_applicant_me':
 
+                global $current_user;
                 $document_type = $parent_document_type ? $parent_document_type : strtolower(get_user_meta(get_current_user_id(), 'type_document', true));
                 $id_document = $id_document_parent ? $id_document_parent : strtolower(get_user_meta(get_current_user_id(), 'id_document', true));
                 $number_phone = get_user_meta(get_current_user_id(), 'billing_phone', true);
-                $email_student = strtolower(get_user_meta(get_current_user_id(), 'billing_email', true));
+                $email_student = strtolower($current_user->user_email);
                 $birth_date = $birth_date_parent ? $birth_date_parent : strtolower(get_user_meta(get_current_user_id(), 'birth_date', true));
                 $gender = $gender_parent ? $gender_parent : strtolower(get_user_meta(get_current_user_id(), 'gender', true));
                 $ethnicity = $ethnicity ? $ethnicity : strtolower(get_user_meta(get_current_user_id(), 'ethnicity', true));
@@ -165,7 +166,7 @@ function save_student()
                 setcookie('gender', $gender, time() + 3600, '/');
                 setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 3600, '/');
                 setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 3600, '/');
-                setcookie('email_partner', ucwords(get_user_meta(get_current_user_id(), 'billing_email', true)), time() + 3600, '/');
+                setcookie('email_partner', $email_student, time() + 3600, '/');
                 setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 3600, '/');
                 setcookie('birth_date_parent', get_user_meta(get_current_user_id(), 'birth_date', true), time() + 3600, '/');
                 setcookie('parent_document_type', get_user_meta(get_current_user_id(), 'type_document', true), time() + 3600, '/');
@@ -176,9 +177,11 @@ function save_student()
                 break;
 
             default:
+
+                global $current_user;
                 setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 3600, '/');
                 setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 3600, '/');
-                setcookie('email_partner', ucwords(get_user_meta(get_current_user_id(), 'billing_email', true)), time() + 3600, '/');
+                setcookie('email_partner', $current_user->user_email, time() + 3600, '/');
                 setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 3600, '/');
                 setcookie('birth_date_parent', get_user_meta(get_current_user_id(), 'birth_date', true), time() + 3600, '/');
                 setcookie('parent_document_type', get_user_meta(get_current_user_id(), 'type_document', true), time() + 3600, '/');
