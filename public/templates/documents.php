@@ -85,8 +85,8 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     data-title="<?= __('Action', 'aes'); ?>">
                                     <?php if ($document->status == 0 || $document->status == 3 || $document->status == 4) { ?>
                                         <div class="custom-file">
-                                            <input type="file" class="custom-file-input"
-                                                name="<?= 'document_' . $document->id . '_student_id_' . $student->id; ?>" accept=".pdf">
+                                        <input type="file" class="custom-file-input"
+                                            name="<?= 'document_' . $document->id . '_student_id_' . $student->id; ?>" accept=".pdf, .png, .jpeg">
                                             <span class="custom-file-label">Select file</span>
                                         </div>
                                     <?php } else { ?>
