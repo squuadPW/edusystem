@@ -40,8 +40,9 @@
         <thead>
             <tr>
                 <th scope="col" class=" manage-column column"><?= __('Academic period', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Parent', 'restaurant-system-app'); ?></th>
                 <th scope="col" class=" manage-column column-primary"><?= __('Student', 'restaurant-system-app'); ?></th>
+                <th scope="col" class=" manage-column"><?= __('Student email', 'restaurant-system-app'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Parent', 'restaurant-system-app'); ?></th>
                 <th scope="col" class=" manage-column column"><?= __('Country', 'restaurant-system-app'); ?></th>
                 <th scope="col" class=" manage-column column"><?= __('Grade', 'restaurant-system-app'); ?></th>
                 <th scope="col" class=" manage-column column"><?= __('Program', 'restaurant-system-app'); ?></th>
