@@ -50,6 +50,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                 class="nobr"><?= __('action', 'aes'); ?></span></th>
                 </thead>
                 <tbody>
+                <?php print_r(get_type_file_document($document->document_id)) ?>
                     <?php $documents = get_documents($student->id); ?>
                     <?php foreach ($documents as $document): ?>
                         <?php if ($document->is_visible) { ?>
@@ -86,7 +87,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <?php if ($document->status == 0 || $document->status == 3 || $document->status == 4) { ?>
                                         <div class="custom-file">
                                         <input type="file" class="custom-file-input"
-                                            name="<?= 'document_' . $document->id . '_student_id_' . $student->id; ?>" accept=".pdf, .png, .jpeg">
+                                            name="<?= 'document_' . $document->id . '_student_id_' . $student->id; ?>" accept="<?php echo get_type_file_document($document->document_id) ?>" data-fileallowed="<?php echo get_type_file_document($document->document_id) ?>">
                                             <span class="custom-file-label">Select file</span>
                                         </div>
                                     <?php } else { ?>

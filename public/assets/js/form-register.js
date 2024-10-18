@@ -141,15 +141,27 @@ document.addEventListener("DOMContentLoaded", function () {
       setCookie("email_student", value);
     });
   }
-
   const fileInputs = document.querySelectorAll(".custom-file-input");
   const fileLabels = document.querySelectorAll(".custom-file-label");
-
+  
   fileInputs.forEach((fileInput, index) => {
     fileInput.addEventListener("change", () => {
-      const allowedTypes = ["application/pdf", "image/png", "image/jpeg"];
+      // Obtener los tipos permitidos desde el atributo data-fileallowed
+      const allowedExtensions = fileInput.getAttribute("data-fileallowed").split(",").map(ext => ext.trim());
+      
+      // Mapa de extensiones a tipos MIME
+      const extensionToMime = {
+        ".pdf": "application/pdf",
+        ".jpeg": "image/jpeg",
+        ".jpg": "image/jpeg",
+        ".png": "image/png"
+      };
+  
+      // Crear un array de tipos MIME permitidos
+      const allowedTypes = allowedExtensions.map(ext => extensionToMime[ext]).filter(Boolean);
+  
       if (!allowedTypes.includes(fileInput.files[0].type)) {
-        alert("Only PDF, PNG y JPEG allowed");
+        alert("Only allowed file types: " + allowedExtensions.join(", "));
         fileInput.value = "";
         fileLabels[index].textContent = "Select file";
       } else {

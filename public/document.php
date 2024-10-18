@@ -448,6 +448,14 @@ function get_help_info_document($document_id){
     return $text;
 }
 
+
+function get_type_file_document($document_id){
+    global $wpdb;
+    $table_documents = $wpdb->prefix.'documents';
+    $doc = $wpdb->get_row("SELECT * FROM {$table_documents} WHERE name='{$document_id}'");
+    echo $doc->type_file;
+}
+
 function get_status_document($status_id){
 
     $status = match ($status_id){

@@ -385,6 +385,7 @@ function create_tables() {
     dbDelta( "CREATE TABLE " . $table_documents . " (
       id INT(11) NOT NULL AUTO_INCREMENT,
       name TEXT NOT NULL,
+      type_file TEXT NOT NULL,
       grade_id INT(11) NOT NULL,
       is_required INT(11) NOT NULL,
       is_visible BOOLEAN NOT NULL DEFAULT 1,
@@ -402,6 +403,7 @@ function create_tables() {
 
             $wpdb->insert($table_documents,[
               'name' => 'CERTIFIED NOTES HIGH SCHOOL',
+              'type_file' => '.pdf',
               'grade_id' => $grade->id,
               'is_required' => 0,
               'id_requisito' => 'NC',
@@ -410,6 +412,7 @@ function create_tables() {
 
             $wpdb->insert($table_documents,[
               'name' => 'HIGH SCHOOL DIPLOMA',
+              'type_file' => '.pdf',
               'grade_id' => $grade->id,
               'is_required' => 0,
               'id_requisito' => 'TB',
@@ -418,6 +421,7 @@ function create_tables() {
 
             $wpdb->insert($table_documents,[
               'name' => 'ID OR CI OF THE PARENTS',
+              'type_file' => '.pdf, .png, .jpeg',
               'grade_id' => $grade->id,
               'is_required' => 1,
               'id_requisito' => 'IR',
@@ -426,6 +430,7 @@ function create_tables() {
 
             $wpdb->insert($table_documents,[
               'name' => 'ID STUDENTS',
+              'type_file' => '.pdf, .png, .jpeg',
               'grade_id' => $grade->id,
               'is_required' => 1,
               'id_requisito' => 'ID',
@@ -434,6 +439,7 @@ function create_tables() {
 
             $wpdb->insert($table_documents,[
               'name' => 'PHOTO OF STUDENT CARD',
+              'type_file' => '.pdf, .png, .jpeg',
               'grade_id' => $grade->id,
               'is_required' => 1,
               'id_requisito' => 'FP',
@@ -442,6 +448,7 @@ function create_tables() {
 
             $wpdb->insert($table_documents,[
               'name' => 'PROOF OF GRADE',
+              'type_file' => '.pdf',
               'grade_id' => $grade->id,
               'is_required' => 0,
               'id_requisito' => 'PG',
@@ -450,6 +457,7 @@ function create_tables() {
 
             $wpdb->insert($table_documents,[
               'name' => 'PROOF OF STUDY',
+              'type_file' => '.pdf',
               'grade_id' => $grade->id,
               'is_required' => 0,
               'id_requisito' => 'PS',
@@ -458,6 +466,7 @@ function create_tables() {
 
             $wpdb->insert($table_documents,[
               'name' => 'VACCUNATION CARD',
+              'type_file' => '.pdf, .png, .jpeg',
               'grade_id' => $grade->id,
               'is_required' => 0,
               'id_requisito' => 'TV',
@@ -466,6 +475,7 @@ function create_tables() {
 
             $wpdb->insert($table_documents,[
               'name' => 'ENROLLMENT',
+              'type_file' => '.pdf',
               'grade_id' => $grade->id,
               'is_required' => 1,
               'is_visible' => 0,
@@ -475,6 +485,7 @@ function create_tables() {
 
             $wpdb->insert($table_documents,[
               'name' => 'MISSING DOCUMENT',
+              'type_file' => '.pdf',
               'grade_id' => $grade->id,
               'is_required' => 0,
               'is_visible' => 0,
