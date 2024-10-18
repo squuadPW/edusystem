@@ -428,21 +428,21 @@ function get_help_info_document($document_id){
     $text = '';
 
     if ($document_id == 'CERTIFIED NOTES HIGH SCHOOL') {
-        $text = 'Provide an official transcript or report card certified by a school authority.';
+        $text = 'Provide an official transcript or report card certified by a school authority. The allowed file type is ' . get_type_file_document($document_id);
     } else if ($document_id == 'HIGH SCHOOL DIPLOMA') {
-        $text = 'Ensure you provide an official copy issued by the school of your high school diploma';
+        $text = 'Ensure you provide an official copy issued by the school of your high school diploma. The allowed file type is ' . get_type_file_document($document_id);
     } else if ($document_id == 'ID OR CI OF THE PARENTS') {
-        $text = 'Please provide a clear and legible copy of the document';
+        $text = 'Please provide a clear and legible copy of the document. The allowed file type is ' . get_type_file_document($document_id);
     } else if ($document_id == 'ID STUDENTS') {
-        $text = 'Please ensure you provide a clear and legible copy of the identification document';
+        $text = 'Please ensure you provide a clear and legible copy of the identification document. The allowed file type is ' . get_type_file_document($document_id);
     } else if ($document_id == 'PHOTO OF STUDENT CARD') {
-        $text = "<div>Please provide a recent, clear, and high-quality photo of the student</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div>";
+        $text = "<div>Please provide a recent, clear, and high-quality photo of the student</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div> <div>The allowed file type is " . get_type_file_document($document_id) . "</div>";
     } else if ($document_id == 'PROOF OF GRADE') {
-        $text = 'Please provide an official document that clearly indicates the student\'s name, the course or subject, and the corresponding grade achieved';
+        $text = 'Please provide an official document that clearly indicates the student\'s name, the course or subject, and the corresponding grade achieved. The allowed file type is ' . get_type_file_document($document_id);
     } else if ($document_id == 'PROOF OF STUDY') {
-        $text = 'Please provide an official document that verifies the student\'s enrollment status';
+        $text = 'Please provide an official document that verifies the student\'s enrollment status. The allowed file type is ' . get_type_file_document($document_id);
     } else if ($document_id == 'VACCUNATION CARD') {
-        $text = 'The card should clearly display the student\'s name, the type of vaccine received, the dates of vaccination, and any booster shots administered';
+        $text = 'The card should clearly display the student\'s name, the type of vaccine received, the dates of vaccination, and any booster shots administered. The allowed file type is ' . get_type_file_document($document_id);
     }
 
     return $text;
@@ -453,7 +453,7 @@ function get_type_file_document($document_id){
     global $wpdb;
     $table_documents = $wpdb->prefix.'documents';
     $doc = $wpdb->get_row("SELECT * FROM {$table_documents} WHERE name='{$document_id}'");
-    echo $doc->type_file;
+    return $doc->type_file;
 }
 
 function get_status_document($status_id){
