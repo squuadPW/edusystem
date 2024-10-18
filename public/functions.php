@@ -855,6 +855,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                 if (!$exist) {
                     create_user_moodle($student_id);
                 } else {
+                    $table_students = $wpdb->prefix.'students';
                     $wpdb->update($table_students, ['moodle_student_id' => $exist[0]['id']], ['id' => $student_id]);
 
                     $is_exist_password = is_password_user_moodle($student_id);

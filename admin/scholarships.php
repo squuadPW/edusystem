@@ -89,7 +89,7 @@ function add_admin_form_scholarships_content(){
                     $user_email = $pre_student_row->email;
                     if ( username_exists( $username ) ) {
                         $user_student_id = username_exists( $username );
-                        $user_student = new WP_User($user_id);
+                        $user_student = new WP_User($user_student_id);
                         $user_student->set_role( 'student' );
                         if ($is_parent) {
                             $user_student->set_role( 'parent' );
