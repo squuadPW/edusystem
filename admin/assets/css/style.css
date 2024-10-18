@@ -283,6 +283,10 @@ div#application-passwords-section {
   display: none !important;
 }
 
+#wp-admin-bar-wp-mail-smtp-menu {
+  display: none !important;
+}
+
 /* Style the segment buttons */
 .segment-button {
   flex: 1;
