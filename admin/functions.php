@@ -894,6 +894,11 @@ function get_states_by_country() {
                             $new_order->set_billing_phone($billing_address['phone']);
                         }
                         $new_order->save();
+
+                        // hacemos el envio del email al email del customer, es decir, al que paga.
+                        $user_customer = get_user_by('id', $customer_id);
+                        $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                        $email_user->trigger($user_customer, 'You have pending payments', 'We invite you to log in to our platform as soon as possible so you can see your pending payments.');
                     }
                 } else {
                     update_user_meta($customer_id, 'cuote_pending', 0);
