@@ -815,7 +815,18 @@ function get_states_by_country() {
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $table_student_payments = $wpdb->prefix . 'student_payments';
-        $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE status_id = 0 AND date_next_payment BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 7 DAY)");
+        
+        $payments = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM {$table_student_payments} 
+                 WHERE status_id = %d 
+                 AND date_next_payment BETWEEN %s AND %s",
+                0,
+                date('Y-m-d H:i:s'),
+                date('Y-m-d H:i:s', strtotime('+7 days'))
+            )
+        );
+
         foreach ($payments as $payment) {
             // validamos si tiene cuotas pendientes
             global $wpdb;
