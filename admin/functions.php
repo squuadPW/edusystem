@@ -906,6 +906,5 @@ function get_states_by_country() {
             }
         }
     
-        // Aquí puedes manejar los resultados como desees
         exit;
     }
