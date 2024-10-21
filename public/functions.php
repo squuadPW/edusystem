@@ -564,6 +564,8 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
         update_user_meta($customer_id, 'status_register', 1);
     }
 
+    update_user_meta($customer_id, 'cuote_pending', 0);
+
     if ($order->get_meta('student_id')) {
         $student_id = $order->get_meta('student_id');
         create_user_student($student_id);
