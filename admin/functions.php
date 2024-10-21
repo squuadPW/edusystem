@@ -822,8 +822,8 @@ function get_states_by_country() {
                  WHERE status_id = %d 
                  AND date_next_payment BETWEEN %s AND %s",
                 0,
-                date('Y-m-d H:i:s'),
-                date('Y-m-d H:i:s', strtotime('+7 days'))
+                date('Y-m-d'),
+                date('Y-m-d', strtotime('+7 days'))
             )
         );
 
