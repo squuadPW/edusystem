@@ -28,16 +28,26 @@ class WC_Welcome_Student_Email extends WC_Email {
      * @since 0.1
      * @param int $order_id
      */
-    public function trigger($student_id, $reset_url){
+    public function trigger($student_id, $reset_url, $copy_parent = 0){
 
         global $wpdb;
         $table_students = $wpdb->prefix.'students';
 
         $this->student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
-        $this->recipient = $this->student->email;
-        $this->reset_url = $reset_url;
-        
-        $this->send($this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+        if ($copy_parent == 1) {
+            $parent = get_user_by('id', $this->student->partner_id);
+            if($parent->user_email != $this->student->email) {
+                $this->recipient = $parent->user_email;
+                $this->reset_url = $reset_url;
+                $this->send($this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+            }
+
+            // para no duplicar su envio, si es mayor de edad
+        } else {
+            $this->recipient = $this->student->email;
+            $this->reset_url = $reset_url;
+            $this->send($this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+        }
     }
 
     public function get_content_html() {

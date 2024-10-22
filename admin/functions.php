@@ -718,15 +718,11 @@ function welcome_students($user_login) {
 
         // Get the WC_Request_Documents_Email instance
         $email_welcome_student = WC()->mailer()->get_emails()['WC_Welcome_Student_Email'];
-    
-        // Trigger the custom email with the reset URL
         $email_welcome_student->trigger($student_id, $reset_url);
 
-        // Display a success notice to the admin
-        error_log('Student welcome email sent successfully!');
-    } else {
-        // Display an error notice to the admin
-        error_log('Failed to send student welcome email.');
+        // Send a copy to the parent
+        $email_welcome_student_parent = WC()->mailer()->get_emails()['WC_Welcome_Student_Email'];
+        $email_welcome_student_parent->trigger($student_id, $reset_url, 1);
     }
 }
 
