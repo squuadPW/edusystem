@@ -31,7 +31,7 @@ $email_template = '
     
     <p>Contact:</p>
     <ul>
-      <li>Support: <a href="https://soporte.american-elite.us/">soporte.american-elite.us</a></li>
+      <li>Support: <a href="https://soporte.american-elite.us/">https://soporte.american-elite.us</a></li>
     </ul>
     
     <p>On behalf of the entire American Elite School community, we thank you for your trust and commitment, certain of our contribution by providing you with exceptional educational opportunities and contributing to your training, so that you achieve success in your future careers and in your professional and personal life.</p>
@@ -65,7 +65,7 @@ $email_template_es = '
     
     <p>Contacto:</p>
     <ul>
-      <li>Soporte: <a href="https://soporte.american-elite.us/">soporte.american-elite.us</a></li>
+      <li>Soporte: <a href="https://soporte.american-elite.us/">https://soporte.american-elite.us</a></li>
     </ul>
     
     <p>En nombre de toda la comunidad de American Elite School, le agradecemos por su confianza y compromiso, seguros de nuestra contribución al brindarles oportunidades educativas excepcionales y aportando en su formación, para que alcancen el éxito en sus futuras carreras y en la vida profesional y personal.</p>
