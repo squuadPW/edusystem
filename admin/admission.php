@@ -113,7 +113,7 @@ function add_admin_form_admission_content()
             $table_users = $wpdb->prefix . 'users';
             $user_parent = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $parent_old_email . "'");
             $user_parent_exist = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $parent_email . "'");
-            if (isset($user_parent) && (isset($user_parent_exist) && $parent_email == $old_email) || (!isset($user_parent_exist) && $parent_email != $old_email)) {
+            if (isset($user_parent) && (isset($user_parent_exist) && $parent_email == $parent_old_email) || (!isset($user_parent_exist) && $parent_email != $parent_old_email)) {
                 $wpdb->update(
                     $wpdb->users,
                     array(
@@ -156,6 +156,7 @@ function add_admin_form_admission_content()
                 'email' => $email,
                 'grade' => $grade,
                 'gender' => $gender,
+                'etnia' => $student_exist->ethnicity,
 
                 // PADRE
                 'id_document_re' => $parent_id_document,
@@ -169,11 +170,13 @@ function add_admin_form_admission_content()
 
                 'cod_program' => AES_PROGRAM_ID,
                 'cod_tip' => AES_TYPE_PROGRAM,
+                'cod_period' => $student_exist->academic_period,
                 'address' => get_user_meta($user_parent->ID, 'billing_address_1', true),
                 'country' => $parent_country,
                 'city' => $parent_city,
                 'postal_code' => $parent_postal_code,
             );
+            error_log('PAYLOAD'. json_encode($data));
             update_user_laravel($data);
 
             wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
