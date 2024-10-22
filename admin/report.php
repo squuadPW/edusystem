@@ -543,7 +543,7 @@ function list_report_students()
 
     } else {
         $html .= "<tr>";
-        $html .= "<td colspan='7' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+        $html .= "<td colspan='10' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
         $html .= "</tr>";
     }
 
