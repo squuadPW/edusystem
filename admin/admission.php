@@ -176,7 +176,7 @@ function add_admin_form_admission_content()
                 'city' => $parent_city,
                 'postal_code' => $parent_postal_code,
             );
-            error_log('PAYLOAD'. json_encode($data));
+
             update_user_laravel($data);
 
             wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
