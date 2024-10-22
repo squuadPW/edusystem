@@ -145,10 +145,82 @@ function add_admin_form_admission_content()
                 update_user_meta($user_parent->ID, 'id_document', $parent_id_document);
             }
 
+            $type_document = '';
+            switch ($student_exist->type_document) {
+                case 'identification_document':
+                    $type_document = 1;
+                    break;
+                case 'passport':
+                    $type_document = 2;
+                    break;
+                case 'ssn':
+                    $type_document = 4;
+                    break;
+            }
+
+            $type_document_re = '';
+            if (get_user_meta($user_parent->ID, 'type_document', true)) {
+                switch (get_user_meta($user_parent->ID, 'type_document', true)) {
+                    case 'identification_document':
+                        $type_document_re = 1;
+                        break;
+                    case 'passport':
+                        $type_document_re = 2;
+                        break;
+                    case 'ssn':
+                        $type_document_re = 4;
+                        break;
+                }
+            } else {
+                $type_document_re = 1;
+            }
+
+
+            $gender = '';
+            switch ($student_exist->gender) {
+                case 'male':
+                    $gender = 'M';
+                    break;
+                case 'female':
+                    $gender = 'F';
+                    break;
+            }
+
+
+            $gender_re = '';
+            if (get_user_meta($user_parent->ID, 'gender', true)) {
+                switch (get_user_meta($user_parent->ID, 'gender', true)) {
+                    case 'male':
+                        $gender_re = 'M';
+                        break;
+                    case 'female':
+                        $gender_re = 'F';
+                        break;
+                }
+            } else {
+                $gender_re = 'M';
+            }
+
+            $grade = '';
+            switch ($student_exist->grade_id) {
+                case 1:
+                    $grade = 9;
+                    break;
+                case 2:
+                    $grade = 10;
+                    break;
+                case 3:
+                    $grade = 11;
+                    break;
+                case 4:
+                    $grade = 12;
+                    break;
+            }
+
             $data = array(
                 // DATOS DEL ESTUDIANTE
                 'id_document' => $id_document,
-                'type_document' => $document_type,
+                'type_document' => $type_document,
                 'firstname' => $first_name . ' ' . $middle_name,
                 'lastname' => $last_name . ' ' . $middle_last_name,
                 'birth_date' => $birth_date,
@@ -160,7 +232,7 @@ function add_admin_form_admission_content()
 
                 // PADRE
                 'id_document_re' => $parent_id_document,
-                'type_document_re' => $parent_document_type,
+                'type_document_re' => $type_document_re,
                 'firstname_re' => $parent_first_name,
                 'lastname_re' => $parent_last_name,
                 'birth_date_re' => $parent_birth_date,
