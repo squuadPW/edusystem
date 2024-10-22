@@ -352,10 +352,10 @@ document.addEventListener("DOMContentLoaded", function () {
       // Convierte los datos a una hoja de cálculo
       const ws = XLSX.utils.aoa_to_sheet(data);
       // Agrega la hoja al libro
-      XLSX.utils.book_append_sheet(wb, ws, 'Institutes Payment');
+      XLSX.utils.book_append_sheet(wb, ws, 'Report students');
 
       // Exporta el archivo XLSX
-      XLSX.writeFile(wb, 'institutes-payment.xlsx');
+      XLSX.writeFile(wb, 'report-students.xlsx');
     });
   }
 });
