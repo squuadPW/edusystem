@@ -33,3 +33,16 @@ function create_user_laravel($data)
   
   curl_close($ch);
 }
+
+function update_user_laravel($data)
+{
+  $url = URL_LARAVEL_PPADMIN;
+  $ch = curl_init($url . 'api/public/update-student');
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_POST, true);
+  
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+  $response = curl_exec($ch);
+
+  curl_close($ch);
+}
