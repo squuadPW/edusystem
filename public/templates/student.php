@@ -3,7 +3,7 @@
 global $wpdb, $current_user;
 $roles = $current_user->roles;
 $table_students = $wpdb->prefix . 'students';
-$student_logged = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+$student_logged = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}' OR partner_id={$current_user->ID}");
 
 $students = [];
 if (in_array('student', $roles)) {

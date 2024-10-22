@@ -3,7 +3,7 @@
 global $wpdb;
 $current_user = wp_get_current_user();
 $table_students = $wpdb->prefix . 'students';
-$student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+$student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}' OR partner_id={$current_user->ID}");
 ?>
 
 <?php if (!$student->moodle_password) { ?>
