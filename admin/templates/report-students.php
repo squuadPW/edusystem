@@ -29,11 +29,15 @@
                     <?php endforeach; ?>
                 </select>
             <?php if (wp_is_mobile()): ?>
-                <button type="button" id="update_data_report_students" class="button button-primary"
+                <button type="button" id="export_excel_students" class="button button-primary"
                     style="width:100%;"></span><?= __('Update data', 'restaurant-system-app'); ?></button>
+                <button type="button" id="update_data_report_students" class="button button-success"
+                    style="width:100%;"></span><?= __('Export excel', 'restaurant-system-app'); ?></button>
             <?php else: ?>
                 <button type="button" id="update_data_report_students"
                     class="button button-primary"></span><?= __('Update data', 'restaurant-system-app'); ?></button>
+                <button type="button" id="export_excel_students"
+                    class="button button-success"></span><?= __('Export excel', 'restaurant-system-app'); ?></button>
             <?php endif; ?>
     </div>
     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">

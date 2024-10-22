@@ -276,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     htmlLoading += "<tr>";
     htmlLoading +=
-      "<td class='column-primary id column-id' colspan='7' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+      "<td class='column-primary id column-id' colspan='10' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
     htmlLoading += "</tr>";
 
     document.getElementById("table-institutes-payment").innerHTML = htmlLoading;
@@ -309,5 +309,53 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     };
+  }
+
+  export_excel_students = document.getElementById("export_excel_students");
+  if (export_excel_students) {
+    export_excel_students.addEventListener("click", () => {
+      // Selecciona la tabla por su ID
+      const table = document.querySelector('#table-institutes-payment');
+      const data = [];
+
+      // Definir los encabezados fijos
+      const headers = [
+          'Academic period',
+          'Student',
+          'Student document',
+          'Student email',
+          'Parent',
+          'Parent email',
+          'Country',
+          'Grade',
+          'Program',
+          'Institute'
+      ];
+      
+      data.push(headers); // Agrega los encabezados al array de datos
+
+      // Itera sobre las filas de la tabla (empezando desde la primera fila de datos)
+      for (let i = 0; i < table.rows.length; i++) {
+          const rowData = [];
+          const row = table.rows[i];
+
+          // Itera sobre las celdas de cada fila
+          for (let j = 0; j < row.cells.length; j++) {
+              rowData.push(row.cells[j].textContent.trim()); // Obtiene el contenido de cada celda
+          }
+
+          data.push(rowData); // Agrega los datos de la fila al array
+      }
+
+      // Crea un nuevo libro de trabajo
+      const wb = XLSX.utils.book_new();
+      // Convierte los datos a una hoja de cálculo
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      // Agrega la hoja al libro
+      XLSX.utils.book_append_sheet(wb, ws, 'Institutes Payment');
+
+      // Exporta el archivo XLSX
+      XLSX.writeFile(wb, 'institutes-payment.xlsx');
+    });
   }
 });
