@@ -353,12 +353,12 @@ function get_list_orders_sales()
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
                 if ($order['customer']) {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order['customer']->data->ID . '" target="_blank">' . get_user_meta($order['customer']->data->ID, 'first_name', true) . ' ' . get_user_meta($order['customer']->data->ID, 'last_name', true) . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order['customer']->data->ID . '" target="_blank">' . get_user_meta($order['customer']->data->ID, 'last_name', true) . ' ' . get_user_meta($order['customer']->data->ID, 'first_name', true) . "</a></td>";
                 } else {
                     $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>N/A</td>";
                 }
                 if ($order['student']) {
-                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order['student_id'] . '" target="_blank">' . $order['student']['name'] . ' ' . $order['student']['middle_name'] . ' ' . $order['student']['last_name'] . ' ' . $order['student']['middle_last_name'] . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order['student_id'] . '" target="_blank">' . $order['student']['last_name'] . ' ' . $order['student']['middle_last_name'] . ' ' . $order['student']['name'] . ' ' . $order['student']['middle_name'] . "</a></td>";
                 } else {
                     $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>N/A</td>";
                 }
@@ -479,12 +479,12 @@ function list_accounts_receivables()
             foreach ($orders['cuotes'] as $order) {
                 $html .= "<tr>";
                 if ($order->customer['data']) {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . get_user_meta($order->customer['data']->ID, 'first_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'last_name', true) . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true) . "</a></td>";
                 } else {
                     $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>N/A</td>";
                 }
                 if ($order->student) {
-                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '') . ' ' . $order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . $order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '') . "</a></td>";
                 } else {
                     $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>N/A</td>";
                 }
@@ -529,10 +529,10 @@ function list_report_students()
 
             $html .= "<tr>";
             $html .= "<td class='column' data-colname='" . __('Academic Period', 'restaurant-system-app') . "'>" . $student->academic_period . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . $student->name . ' ' . ($student->middle_name ?? '') . ' ' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . "</a></td>";
+            $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
             $html .= "<td class='column' data-colname='" . __('Student document', 'restaurant-system-app') . "'>" . $student->id_document . "</td>";
             $html .= "<td class='column' data-colname='" . __('Student email', 'restaurant-system-app') . "'>" . $student->email . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Parent', 'restaurant-system-app') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . get_user_meta($parent->ID, 'first_name', true) . ' ' . get_user_meta($parent->ID, 'last_name', true) . "</a></td>";
+            $html .= "<td class='column' data-colname='" . __('Parent', 'restaurant-system-app') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true) . "</a></td>";
             $html .= "<td class='column' data-colname='" . __('Parent email', 'restaurant-system-app') . "'>" . $parent->user_email . "</td>";
             $html .= "<td class='column' data-colname='" . __('Country', 'restaurant-system-app') . "'>" . $student->country . "</td>";
             $html .= "<td class='column' data-colname='" . __('Grade', 'restaurant-system-app') . "'>" . get_name_grade($student->grade_id) . "</td>";
