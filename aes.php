@@ -39,6 +39,20 @@ function create_tables() {
   $table_institutes_payments = $wpdb->prefix.'institutes_payments';
   $table_alliances_payments = $wpdb->prefix.'alliances_payments';
   $table_user_notices = $wpdb->prefix.'users_notices';
+  $table_tickets_created = $wpdb->prefix.'tickets_created';
+
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_tickets_created}'") != $table_tickets_created){
+    dbDelta( "CREATE TABLE " . $table_tickets_created . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        user_id INT(11) NOT NULL,
+        ticket_id INT(11) NOT NULL,
+        email TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        message TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_period_inscriptions}'") != $table_student_period_inscriptions){
     dbDelta( "CREATE TABLE " . $table_student_period_inscriptions . " (

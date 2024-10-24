@@ -428,6 +428,10 @@ function remove_my_account_links($menu_links)
             + array('student' => __('Student Information', 'aes'))
             + array_slice($menu_links, 2, NULL, true);
 
+        $menu_links = array_slice($menu_links, 0, 4, true)
+            + array('my-tickets' => __('My Tickets', 'form-plugin'))
+            + array_slice($menu_links, 4, NULL, true);
+
         /*
         if(in_array('student',$roles) && in_array('parent',$roles)){
 
@@ -464,6 +468,7 @@ add_action('init', function () {
     add_rewrite_endpoint('student-documents', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('student-details', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('student', EP_ROOT | EP_PAGES);
+    add_rewrite_endpoint('my-tickets', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('notes', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('academic-services', EP_ROOT | EP_PAGES);
 });
@@ -481,6 +486,24 @@ function redirect_to_my_account()
 }
 
 add_action('woocommerce_thankyou', 'redirect_to_my_account', 10, 1);
+
+
+function create_ticket($email, $ticket_id, $subject, $message)
+{
+    if (is_user_logged_in()) {
+        global $current_user, $wpdb;
+        $table_tickets_created =  $wpdb->prefix.'tickets_created';
+        $wpdb->insert($table_tickets_created,[
+            'user_id' => $current_user->ID,
+            'ticket_id' => $ticket_id,
+            'email' => $email,
+            'subject' => $subject,
+            'message' => $message
+        ]);
+    }   
+}
+
+add_action('ticket_created', 'create_ticket', 10, 4);
 
 function modify_columns_orders($columns = [])
 {
@@ -526,6 +549,7 @@ function add_loginout_link($items, $args)
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Students information', 'form-plugin') . '</a></li>';
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'form-plugin') . '</a></li>';
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account details', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('My tickets', 'form-plugin') . '</a></li>';
         }
 
         $logout_link = wp_logout_url(get_home_url());
