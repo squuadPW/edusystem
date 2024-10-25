@@ -1,4 +1,4 @@
-<div style="text-align: center">
+<!-- <div style="text-align: center">
     <button type="button" class="btn button-danger" id="button_tooltip">Unsubscribe student</button>
 </div>
 
@@ -10,4 +10,4 @@
       tippy('#button_tooltip', {
         content: 'By clicking here the student will be deferred to the next academic period, unassigning the courses from Moodle and removing their access from the student area.',
       });
-</script>
+</script> -->
