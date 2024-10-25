@@ -35,6 +35,7 @@ function create_tables() {
   $table_pre_students = $wpdb->prefix.'pre_students';
   $table_student_scholarship_application = $wpdb->prefix.'student_scholarship_application';
   $table_academic_periods = $wpdb->prefix.'academic_periods';
+  $table_academic_periods_cut = $wpdb->prefix.'academic_periods_cut';
   $table_users_signatures = $wpdb->prefix.'users_signatures';
   $table_institutes_payments = $wpdb->prefix.'institutes_payments';
   $table_alliances_payments = $wpdb->prefix.'alliances_payments';
@@ -128,21 +129,23 @@ function create_tables() {
         year INT(11) NULL,
         start_date DATE NULL,
         end_date DATE NULL,
-        start_date_A DATE NULL,
-        end_date_A DATE NULL,
-        start_date_B DATE NULL,
-        end_date_B DATE NULL,
-        start_date_C DATE NULL,
-        end_date_C DATE NULL,
-        start_date_D DATE NULL,
-        end_date_D DATE NULL,
-        start_date_F DATE NULL,
-        end_date_F DATE NULL,
         start_date_inscription DATE NULL,
         end_date_inscription DATE NULL,
         start_date_pre_inscription DATE NULL,
         end_date_pre_inscription DATE NULL,
         status_id INT(11) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_academic_periods_cut}'") != $table_academic_periods_cut){
+    dbDelta( "CREATE TABLE " . $table_academic_periods_cut . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        code TEXT NOT NULL,
+        cut TEXT NOT NULL,
+        start_date DATE NULL,
+        end_date DATE NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );

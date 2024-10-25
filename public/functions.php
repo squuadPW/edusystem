@@ -487,6 +487,18 @@ function redirect_to_my_account()
 
 add_action('woocommerce_thankyou', 'redirect_to_my_account', 10, 1);
 
+function student_unsubscribe()
+{
+
+    global $current_user;
+    $roles = $current_user->roles;
+    if (in_array('parent', $roles)) {
+        include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
+    }
+}
+
+add_action('woocommerce_edit_account_form_start', 'student_unsubscribe');
+
 
 function create_ticket($email, $ticket_id, $subject, $message)
 {

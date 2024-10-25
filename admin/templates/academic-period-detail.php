@@ -62,11 +62,14 @@
                                             <input type="text" name="code" value="<?= ucwords($period->code); ?>">
                                             <input type="hidden" name="period_id" id="period_id"
                                                 value="<?= $period->id; ?>">
+                                            <input type="hidden" name="old_code" id="old_code"
+                                                value="<?= $period->code; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('Period', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <input type="text" name="code" value="" required>
                                             <input type="hidden" name="period_id" id="period_id" value="">
+                                            <input type="hidden" name="old_code" id="old_code" value="">
                                         <?php endif; ?>
                                     </div>
                                     <div style="font-weight:400; text-align: center">
@@ -129,7 +132,7 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('Start Date Cut A', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="start_date_A" value="<?= $period->start_date_A; ?>">
+                                            <input type="date" name="start_date_A" value="<?= $cuts[0]->start_date; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('Start Date Cut A', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -140,7 +143,7 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('End Date Cut A', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="end_date_A" value="<?= $period->end_date_A; ?>">
+                                            <input type="date" name="end_date_A" value="<?= $cuts[0]->end_date; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('End Date Cut A', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -153,7 +156,7 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('Start Date Cut B', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="start_date_B" value="<?= $period->start_date_B; ?>">
+                                            <input type="date" name="start_date_B" value="<?= $cuts[1]->start_date; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('Start Date Cut B', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -164,9 +167,9 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('End Date Cut B', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="end_date_B" value="<?= $period->end_date_B; ?>">
+                                            <input type="date" name="end_date_B" value="<?= $cuts[1]->end_date; ?>">
                                         <?php else: ?>
-                                            <label for="input_id"><b><?= __('End Date Cut A', 'aes'); ?></b><span
+                                            <label for="input_id"><b><?= __('End Date Cut B', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <input type="date" name="end_date_B" value="" required>
                                         <?php endif; ?>
@@ -177,7 +180,7 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('Start Date Cut C', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="start_date_C" value="<?= $period->start_date_C; ?>">
+                                            <input type="date" name="start_date_C" value="<?= $cuts[2]->start_date; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('Start Date Cut C', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -188,7 +191,7 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('End Date Cut C', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="end_date_C" value="<?= $period->end_date_C; ?>">
+                                            <input type="date" name="end_date_C" value="<?= $cuts[2]->end_date; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('End Date Cut C', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -201,7 +204,7 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('Start Date Cut D', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="start_date_D" value="<?= $period->start_date_D; ?>">
+                                            <input type="date" name="start_date_D" value="<?= $cuts[3]->start_date; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('Start Date Cut D', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -212,7 +215,7 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('End Date Cut D', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="end_date_D" value="<?= $period->end_date_D; ?>">
+                                            <input type="date" name="end_date_D" value="<?= $cuts[3]->end_date; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('End Date Cut D', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -225,7 +228,7 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('Start Date Cut E', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="start_date_E" value="<?= $period->start_date_E; ?>">
+                                            <input type="date" name="start_date_E" value="<?= $cuts[4]->start_date; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('Start Date Cut E', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -236,7 +239,7 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('End Date Cut E', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="end_date_E" value="<?= $period->end_date_E; ?>">
+                                            <input type="date" name="end_date_E" value="<?= $cuts[4]->end_date; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('End Date Cut E', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>

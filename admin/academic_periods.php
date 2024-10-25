@@ -20,6 +20,7 @@ function add_admin_form_academic_periods_content()
         if ($_GET['section_tab'] == 'period_details') {
             $period = $_GET['period_id'];
             $period = get_period_details($period);
+            $cuts = get_period_details_cuts($period->code);
             include (plugin_dir_path(__FILE__) . 'templates/academic-period-detail.php');
         }
         if ($_GET['section_tab'] == 'add_period') {
@@ -31,27 +32,43 @@ function add_admin_form_academic_periods_content()
         if ($_GET['action'] == 'save_period_details') {
             global $wpdb;
             $table_periods = $wpdb->prefix . 'academic_periods';
+            $table_academic_periods_cut = $wpdb->prefix.'academic_periods_cut';
+
             $period_id = $_POST['period_id'];
             $name = $_POST['name'];
             $code = $_POST['code'];
+            $old_code = $_POST['old_code'];
             $year = $_POST['year'];
             $start_date = $_POST['start_date'];
             $end_date = $_POST['end_date'];
-            $start_date_A = $_POST['start_date_A'];
-            $end_date_A = $_POST['end_date_A'];
-            $start_date_B = $_POST['start_date_B'];
-            $end_date_B = $_POST['end_date_B'];
-            $start_date_C = $_POST['start_date_C'];
-            $end_date_C = $_POST['end_date_C'];
-            $start_date_D = $_POST['start_date_D'];
-            $end_date_D = $_POST['end_date_D'];
-            $start_date_E = $_POST['start_date_E'];
-            $end_date_E = $_POST['end_date_E'];
             $start_date_inscriptions = $_POST['start_date_inscriptions'];
             $end_date_inscriptions = $_POST['end_date_inscriptions'];
             $start_date_pre_inscriptions = $_POST['start_date_pre_inscriptions'];
             $end_date_pre_inscriptions = $_POST['end_date_pre_inscriptions'];
             $status_id = $_POST['status_id'] ?? 0;
+            $cuts = ['A', 'B', 'C', 'D', 'E'];
+            $cuts_arr = [
+                'A' => [
+                    'start_date' => $_POST['start_date_A'],
+                    'end_date' => $_POST['end_date_A'],
+                ],
+                'B' => [
+                    'start_date' => $_POST['start_date_B'],
+                    'end_date' => $_POST['end_date_B'],
+                ],
+                'C' => [
+                    'start_date' => $_POST['start_date_C'],
+                    'end_date' => $_POST['end_date_C'],
+                ],
+                'D' => [
+                    'start_date' => $_POST['start_date_D'],
+                    'end_date' => $_POST['end_date_D'],
+                ],
+                'E' => [
+                    'start_date' => $_POST['start_date_E'],
+                    'end_date' => $_POST['end_date_E'],
+                ],
+            ];
 
             //update
             if (isset($period_id) && !empty($period_id)) {
@@ -62,16 +79,6 @@ function add_admin_form_academic_periods_content()
                     'year' => $year,
                     'start_date' => $start_date,
                     'end_date' => $end_date,
-                    'start_date_A' => $start_date_A,
-                    'end_date_A' => $end_date_A,
-                    'start_date_B' => $start_date_B,
-                    'end_date_B' => $end_date_B,
-                    'start_date_C' => $start_date_C,
-                    'end_date_C' => $end_date_C,
-                    'start_date_D' => $start_date_D,
-                    'end_date_D' => $end_date_D,
-                    'start_date_E' => $start_date_E,
-                    'end_date_E' => $end_date_E,
                     'status_id' => $status_id,
                     'start_date_inscription' => $start_date_inscriptions,
                     'end_date_inscription' => $end_date_inscriptions,
@@ -79,54 +86,17 @@ function add_admin_form_academic_periods_content()
                     'end_date_pre_inscription' => $end_date_pre_inscriptions,
                 ], ['id' => $period_id]);
 
-                // if ($status_id == 1) {
-                //     $args = array(
-                //         'role' => 'parent',
-                //     );
+                foreach ($cuts as $key => $cut) {
+                    $start_date = $cuts_arr[$cut]['start_date'];
+                    $end_date = $cuts_arr[$cut]['end_date'];
 
-                //     $users = get_users($args);
-
-                //     foreach ($users as $user) {
-                //         $customer_id = $user->ID;
-
-                //         // Get student IDs from wp_students table where partner_id is customer_id
-                //         $student_ids = $wpdb->get_col("SELECT id FROM wp_students WHERE partner_id = '$customer_id'");
-
-                //         // Get payments from wp_student_payments table where student_id is in student_ids and status_id is 0
-                //         $payments = [];
-                //         if (sizeof($student_ids) > 0) {
-                //             $payments = $wpdb->get_results("
-                //                 SELECT DISTINCT product_id, variation_id, student_id, amount 
-                //                 FROM wp_student_payments 
-                //                 WHERE student_id IN (" . implode(',', $student_ids) . ") 
-                //                 AND status_id = 0
-                //             ");
-                //         }
-
-                //         foreach ($payments as $key => $payment) {
-                //             if ($payment->product_id && $payment->variation_id) {
-                //                 $product_id = $payment->product_id;
-                //                 $variation_id = $payment->variation_id;
-                //                 $total = wc_price($payment->amount);
-                //                 $quantity = 1;
-
-                //                 // Obtiene el objeto de producto variación
-                //                 $variation = wc_get_product($variation_id);
-
-                //                 // Crea el pedido
-                //                 $order_args = array(
-                //                     'customer_id' => $customer_id,
-                //                     'status' => 'pending-payment',
-                //                 );
-                //                 $order = wc_create_order($order_args);
-                //                 $order->add_product($variation, $quantity);
-                //                 $order->set_total($total);
-                //                 $order->update_meta_data('student_id', $payment->student_id);
-                //                 $order->save();
-                //             }
-                //         }
-                //     }
-                // }
+                    $wpdb->update($table_academic_periods_cut, [
+                        'code' => $code,
+                        'cut' => $cut,
+                        'start_date' => $start_date,
+                        'end_date' => $end_date,
+                    ], ['code' => $old_code, 'cut' => $cut]);
+                }
 
                 setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id=' . $period_id));
@@ -139,16 +109,6 @@ function add_admin_form_academic_periods_content()
                     'year' => $year,
                     'start_date' => $start_date,
                     'end_date' => $end_date,
-                    'start_date_A' => $start_date_A,
-                    'end_date_A' => $end_date_A,
-                    'start_date_B' => $start_date_B,
-                    'end_date_B' => $end_date_B,
-                    'start_date_C' => $start_date_C,
-                    'end_date_C' => $end_date_C,
-                    'start_date_D' => $start_date_D,
-                    'end_date_D' => $end_date_D,
-                    'start_date_E' => $start_date_E,
-                    'end_date_E' => $end_date_E,
                     'start_date_inscription' => $start_date_inscriptions,
                     'end_date_inscription' => $end_date_inscriptions,
                     'start_date_pre_inscription' => $start_date_pre_inscriptions,
@@ -157,54 +117,14 @@ function add_admin_form_academic_periods_content()
                     'created_at' => date('Y-m-d H:i:s')
                 ]);
 
-                // if ($status_id == 1) {
-                //     $args = array(
-                //         'role' => 'parent',
-                //     );
-
-                //     $users = get_users($args);
-
-                //     foreach ($users as $user) {
-                //         $customer_id = $user->ID;
-
-                //         // Get student IDs from wp_students table where partner_id is customer_id
-                //         $student_ids = $wpdb->get_col("SELECT id FROM wp_students WHERE partner_id = '$customer_id'");
-
-                //         // Get payments from wp_student_payments table where student_id is in student_ids and status_id is 0
-                //         $payments = [];
-                //         if (sizeof($student_ids) > 0) {
-                //             $payments = $wpdb->get_results("
-                //                 SELECT DISTINCT product_id, variation_id, student_id 
-                //                 FROM wp_student_payments 
-                //                 WHERE student_id IN (" . implode(',', $student_ids) . ") 
-                //                 AND status_id = 0
-                //             ");
-                //         }
-
-                //         foreach ($payments as $key => $payment) {
-                //             if ($payment->product_id && $payment->variation_id) {
-                //                 $product_id = $payment->product_id;
-                //                 $variation_id = $payment->variation_id;
-                //                 $total = wc_get_product($product_id)->get_price();
-                //                 $quantity = 1;
-
-                //                 // Obtiene el objeto de producto variación
-                //                 $variation = wc_get_product($variation_id);
-
-                //                 // Crea el pedido
-                //                 $order_args = array(
-                //                     'customer_id' => $customer_id,
-                //                     'status' => 'pending-payment',
-                //                 );
-                //                 $order = wc_create_order($order_args);
-                //                 $order->add_product($variation, $quantity);
-                //                 $order->set_total($total);
-                //                 $order->update_meta_data('student_id', $payment->student_id);
-                //                 $order->save();
-                //             }
-                //         }
-                //     }
-                // }
+                foreach ($cuts as $key => $cut) {
+                    $wpdb->insert($table_academic_periods_cut, [
+                        'code' => $code,
+                        'cut' => $cut,
+                        'start_date' => $cuts_arr[$cut]['start_date'],
+                        'end_date' => $cuts_arr[$cut]['end_date'],
+                    ]);
+                }
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
                 exit;
@@ -370,4 +290,14 @@ function get_period_details($period_id)
 
     $period = $wpdb->get_row("SELECT * FROM {$table_periods} WHERE id={$period_id}");
     return $period;
+}
+
+function get_period_details_cuts($code)
+{
+
+    global $wpdb;
+    $table_periods_cuts = $wpdb->prefix . 'academic_periods_cut';
+
+    $cuts = $wpdb->get_results("SELECT * FROM {$table_periods_cuts} WHERE code={$code} ORDER BY cut ASC");
+    return $cuts;
 }

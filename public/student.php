@@ -334,58 +334,22 @@ function insert_student($customer_id)
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
-    $periods = ['A', 'B', 'C', 'D', 'E'];
 
     // Obtener la fecha actual en formato MySQL
     $current_time = current_time('mysql');
-    $valid_period = false;
-    $code = null;
+    $code = 'noperiod';
 
-    // Iterar sobre los periodos
-    foreach ($periods as $period) {
-        // Preparar la consulta SQL
-        $query = $wpdb->prepare(
-            "SELECT * FROM {$table_academic_periods} WHERE start_date_{$period} <= %s AND end_date_{$period} >= %s",
-            array($current_time, $current_time)
-        );
-
-        // Ejecutar la consulta y obtener el resultado
-        $period_data = $wpdb->get_row($query);
-
-        // Verificar si se encontró un resultado
-        if ($period_data) {
-            $valid_period = true;
-            $code = $period_data->code;
-            break;
-        }
-    }
-
-    if (!$valid_period) {
-        // Iterar sobre los periodos
-        foreach ($periods as $period) {
-            // Preparar la consulta SQL
-            $query = $wpdb->prepare(
-                "SELECT * FROM {$table_academic_periods} WHERE start_date_{$period} >= %s AND end_date_{$period} >= %s",
-                array($current_time, $current_time)
-            );
-
-            // Ejecutar la consulta y obtener el resultado
-            $period_data = $wpdb->get_row($query);
-
-            // Verificar si se encontró un resultado
-            if ($period_data) {
-                $valid_period = true;
-                $code = $period_data->code;
-                break;
-            }
-        }
+    // Ejecutar la consulta y obtener el resultado
+    $period_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
+    if ($period_data) {
+        $code = $period_data->code;
     }
 
     $wpdb->insert($table_students, [
         'name' => $_COOKIE['name_student'],
         'type_document' => $_COOKIE['document_type'],
         'id_document' => $_COOKIE['id_document'],
-        'academic_period' => $code ? $code : AES_PERIOD,
+        'academic_period' => $code,
         'middle_name' => $_COOKIE['middle_name_student'],
         'last_name' => $_COOKIE['last_name_student'],
         'middle_last_name' => $_COOKIE['middle_last_name_student'],
@@ -484,69 +448,27 @@ function insert_register_documents($student_id, $grade_id)
 function insert_period_inscriptions($student_id)
 {
     global $wpdb;
-
-    // Definir las tablas y columnas
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
-    $periods = ['A', 'B', 'C', 'D', 'E'];
-
-    // Obtener la fecha actual en formato MySQL
+    $table_academic_periods_cut = $wpdb->prefix.'academic_periods_cut';
     $current_time = current_time('mysql');
-    $valid_period = false;
-
-    // Iterar sobre los periodos
-    foreach ($periods as $period) {
-        // Preparar la consulta SQL
-        $query = $wpdb->prepare(
-            "SELECT * FROM {$table_academic_periods} WHERE start_date_{$period} <= %s AND end_date_{$period} >= %s",
-            array($current_time, $current_time)
-        );
-
-        // Ejecutar la consulta y obtener el resultado
-        $period_data = $wpdb->get_row($query);
-
-        // Verificar si se encontró un resultado
-        if ($period_data) {
-            $valid_period = true;
-
-            // Insertar el registro en la tabla de inscripciones
-            $wpdb->insert($table_student_period_inscriptions, [
-                'student_id' => $student_id,
-                'code_period' => $period_data->code,
-                'cut_period' => $period,
-                'status_id' => 1,
-            ]);
-            break;
+    $code = 'noperiod';
+    $cut = 'nocut';
+    $period_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
+    if ($period_data) {
+        $code =  $period_data->code;
+        $period_data_cut = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods_cut} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
+        if ($period_data_cut) {
+            $cut =  $period_data_cut->cut;
         }
     }
 
-    if (!$valid_period) {
-        // Iterar sobre los periodos
-        foreach ($periods as $period) {
-            // Preparar la consulta SQL
-            $query = $wpdb->prepare(
-                "SELECT * FROM {$table_academic_periods} WHERE start_date_{$period} >= %s AND end_date_{$period} >= %s",
-                array($current_time, $current_time)
-            );
-
-            // Ejecutar la consulta y obtener el resultado
-            $period_data = $wpdb->get_row($query);
-
-            // Verificar si se encontró un resultado
-            if ($period_data) {
-                $valid_period = true;
-
-                // Insertar el registro en la tabla de inscripciones
-                $wpdb->insert($table_student_period_inscriptions, [
-                    'student_id' => $student_id,
-                    'code_period' => $period_data->code,
-                    'cut_period' => $period,
-                    'status_id' => 1,
-                ]);
-                break;
-            }
-        }
-    }
+    $wpdb->insert($table_student_period_inscriptions, [
+        'student_id' => $student_id,
+        'code_period' => $code,
+        'cut_period' => $cut,
+        'status_id' => 1,
+    ]);
 }
 
 function get_documents($student_id)

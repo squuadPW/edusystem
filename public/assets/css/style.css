@@ -299,6 +299,18 @@ input, textarea {
   opacity: 0.75;
 }
 
+.button-danger {
+  padding: 5px 20px !important;
+  text-align: center;
+  background-color: red !important;
+  border-radius: 20px;
+  color: white !important;
+  font-size: 18px;
+}
+.button-danger:hover {
+  opacity: 0.75;
+}
+
 .iti--separate-dial-code .iti__selected-flag {
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;

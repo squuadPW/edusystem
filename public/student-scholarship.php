@@ -98,9 +98,12 @@ function save_scholarship(){
 
             $table_pre_students = $wpdb->prefix.'pre_students';
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
-            $query = $wpdb->prepare("SELECT code FROM " . $table_academic_periods . "WHERE status_id = %d ORDER BY created_at DESC LIMIT 1", 1);
-            $result = $wpdb->get_var($query);
-            $code = $result ? $result : AES_PERIOD;
+            $current_time = current_time('mysql');
+            $code = 'noperiod';
+            $period_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
+            if ($period_data) {
+                $code = $period_data->code;
+            }
             $wpdb->insert($table_pre_students,[
                 'type_document' => $document_type,
                 'id_document' => $id_document,
