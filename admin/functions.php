@@ -225,15 +225,17 @@ function add_custom_admin_page() {
     add_submenu_page('list_admin_form_administrations_content',__('Departments','aes'),__('Departments','aes'),'manager_departments_aes','add_admin_department_content', 'list_admin_form_department_content',);
     remove_submenu_page('list_admin_form_administrations_content','list_admin_form_administrations_content');
 
-    add_menu_page( 
-        __('Admission','aes'),
-        __('Admission','aes'),
-        'manager_admission_aes', 
-        'add_admin_form_admission_content',
-        'add_admin_form_admission_content', 
-        'dashicons-groups', 
-        7
-    );
+    if (current_user_can('manager_admission_aes') || current_user_can('only_read_admission_aes')) {
+        add_menu_page( 
+            __('Admission','aes'),
+            __('Admission','aes'),
+            'manage_options', 
+            'add_admin_form_admission_content',
+            'add_admin_form_admission_content', 
+            'dashicons-groups', 
+            7
+        );
+    }
 
     add_submenu_page('add_admin_form_admission_content',__('Required Documents','aes'),__('Required Documents','aes'),'manager_documents_aes','admission-documents','show_admission_documents', 10);
 

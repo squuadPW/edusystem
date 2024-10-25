@@ -357,7 +357,7 @@ $countries = get_countries();
                                     </tr>
                                 </tbody>
                             </table>
-                            <?php if (!in_array('institutes', $roles)): ?>
+                            <?php if (!in_array('institutes', $roles) && !current_user_can('only_read_admission_aes')): ?>
                                 <p style="text-align: end">
                                 <input type="submit" value="<?php _e('Save Changes', 'aes'); ?>"
                                     class="button button-primary">
@@ -370,7 +370,7 @@ $countries = get_countries();
             </div>
         </div>
     </form>
-    <?php if (!in_array('institutes', $roles)): ?>
+    <?php if (!in_array('institutes', $roles) && !current_user_can('only_read_admission_aes')): ?>
         <h2 style="margin-bottom:15px;"><?= __('Documents', 'aes'); ?></h2>
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">
             <p><?= __('Status change successfully', 'aes'); ?></p>
