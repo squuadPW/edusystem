@@ -1466,16 +1466,23 @@ function student_unsubscribe_callback()
     $roles = $current_user->roles;
     $student_id = null;
     $student = null;
+    $id_document = null;
 
     if (in_array('parent', $roles) && !in_array('student', $roles)) {
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
+        $id_document = $student->id_document;
         $student_id = $student->id;
     } else if(in_array('parent', $roles) && in_array('student', $roles)) {
         $student_id = get_user_meta($current_user->ID, 'student_id', true);
+        $id_document = get_user_meta($current_user->ID, 'id_document', true);
     }
 
-    $unenroll_moodle = student_unsubscribe_moodle($student_id);
-    wp_send_json(array('unenroll_moodle' => $unenroll_moodle));
+    student_unsubscribe_moodle($student_id);
+
+    $data = array('id_document' => $id_document);
+    student_unsubscribe_admin($data);
+
+    wp_send_json(array('success' => true));
     exit;
 }
 

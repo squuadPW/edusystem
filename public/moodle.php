@@ -47,7 +47,7 @@ function student_unsubscribe_moodle($student_id) {
                 ];
             }
 
-            $unenrol_student = $MoodleRest->request('enrol_manual_unenrol_users', ['enrolments' => $enrolments ]);
+            $MoodleRest->request('enrol_manual_unenrol_users', ['enrolments' => $enrolments ]);
             return true;
         }
     }
