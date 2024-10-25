@@ -80,6 +80,18 @@ function form_plugin_scripts()
         );
         wp_enqueue_script('create-missing-documents');
     }
+
+    if (str_contains(home_url($wp->request), 'edit-account')) {
+        wp_register_script('student-unsubscribe', plugins_url('aes') . '/public/assets/js/student-unsubscribe.js', array('jquery'), '1.0.0', true);
+        wp_localize_script(
+            'student-unsubscribe',
+            'ajax_object',
+            array(
+                'ajax_url' => admin_url('admin-ajax.php')
+            )
+        );
+        wp_enqueue_script('student-unsubscribe');
+    }
 }
 
 add_action('wp_enqueue_scripts', 'form_plugin_scripts');
@@ -490,10 +502,27 @@ add_action('woocommerce_thankyou', 'redirect_to_my_account', 10, 1);
 function student_unsubscribe()
 {
 
-    global $current_user;
+    global $current_user, $wpdb;
+    $table_students = $wpdb->prefix . 'students';
     $roles = $current_user->roles;
+
     if (in_array('parent', $roles)) {
-        include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
+
+        $student_id = null;
+        $student = null;
+
+        if (in_array('parent', $roles) && !in_array('student', $roles)) {
+            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
+            $student_id = $student->id;
+        } else if(in_array('parent', $roles) && in_array('student', $roles)) {
+            $student_id = get_user_meta($current_user->ID, 'student_id', true);
+        }
+
+        $enrolled = is_enrolled_in_courses($student_id);
+
+        if (count($enrolled) > 0) {
+            include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
+        }
     }
 }
 
@@ -1426,6 +1455,28 @@ function exist_user_id()
         echo 0;
         exit;
     }
+}
+
+add_action('wp_ajax_nopriv_student_unsubscribe', 'student_unsubscribe_callback');
+add_action('wp_ajax_student_unsubscribe', 'student_unsubscribe_callback');
+function student_unsubscribe_callback()
+{
+    global $current_user, $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $roles = $current_user->roles;
+    $student_id = null;
+    $student = null;
+
+    if (in_array('parent', $roles) && !in_array('student', $roles)) {
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
+        $student_id = $student->id;
+    } else if(in_array('parent', $roles) && in_array('student', $roles)) {
+        $student_id = get_user_meta($current_user->ID, 'student_id', true);
+    }
+
+    $unenroll_moodle = student_unsubscribe_moodle($student_id);
+    wp_send_json(array('unenroll_moodle' => $unenroll_moodle));
+    exit;
 }
 
 function redirect_logged_in_users_to_my_account()
