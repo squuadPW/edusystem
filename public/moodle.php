@@ -36,6 +36,8 @@ function student_unsubscribe_moodle($student_id) {
     $moodle_url = get_option('moodle_url');
     $moodle_token = get_option('moodle_token');
 
+    return $courses;
+
     if (!empty($data_student)) {
         if (!empty($moodle_url) && !empty($moodle_token)) {
             $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);

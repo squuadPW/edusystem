@@ -1482,7 +1482,7 @@ function student_unsubscribe_callback()
     $data = array('id_document' => $id_document);
     student_unsubscribe_admin($data);
 
-    wp_send_json(array('success' => true));
+    wp_send_json(array('success' => true, 'moodle' => student_unsubscribe_moodle($student_id)));
     exit;
 }
 
