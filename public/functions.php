@@ -518,9 +518,15 @@ function student_unsubscribe()
             $student_id = get_user_meta($current_user->ID, 'student_id', true);
         }
 
+        $started_course = false;
         $enrolled = is_enrolled_in_courses($student_id);
+        foreach ($enrolled as $key => $enroll) {
+            if ($enroll->progress != '') {
+                $started_course = true;
+            }
+        }
 
-        if (count($enrolled) > 0) {
+        if (count($enrolled) > 0 && !$started_course) {
             include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
         }
     }
