@@ -1504,7 +1504,6 @@ function student_unsubscribe_callback()
 
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $period = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id={$student_id} ORDER BY id DESC");
-
     $courses = student_unsubscribe_moodle($student_id);
 
     $data = array(
@@ -1523,8 +1522,11 @@ function student_unsubscribe_callback()
         'importance' => 3,
         'type_notice' => 'unsubscribe',
     ];
-
     $wpdb->insert($table_users_notices, $data);
+
+    $wpdb->update($table_student_period_inscriptions, [
+        'status_id' => 0,
+    ], ['id' => $period->id]);
 
     wp_send_json(array('success' => true, 'unenroll' => $data));
     exit;
