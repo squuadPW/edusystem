@@ -47,7 +47,7 @@ function update_user_laravel($data)
   curl_close($ch);
 }
 
-function student_unsubscribe_admin($data)
+function student_unsubscribe_admin($data = [])
 {
   $url = URL_LARAVEL_PPADMIN;
   $ch = curl_init($url . 'api/public/delete-student');

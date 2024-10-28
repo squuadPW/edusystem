@@ -1477,12 +1477,19 @@ function student_unsubscribe_callback()
         $id_document = get_user_meta($current_user->ID, 'id_document', true);
     }
 
-    student_unsubscribe_moodle($student_id);
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $period = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id={$student_id} ORDER BY id DESC");
 
-    $data = array('id_document' => $id_document);
+    $courses = student_unsubscribe_moodle($student_id);
+
+    $data = array(
+        'id_document' => $id_document, 
+        'courses' => json_encode($courses), 
+        'period' => $period->code_period
+    );
     student_unsubscribe_admin($data);
 
-    wp_send_json(array('success' => true, 'moodle' => student_unsubscribe_moodle($student_id)));
+    wp_send_json(array('success' => true, 'unenroll' => $data));
     exit;
 }
 
