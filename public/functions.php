@@ -501,34 +501,51 @@ add_action('woocommerce_thankyou', 'redirect_to_my_account', 10, 1);
 
 function student_unsubscribe()
 {
-
-    global $current_user, $wpdb;
-    $table_students = $wpdb->prefix . 'students';
-    $roles = $current_user->roles;
-
-    if (in_array('parent', $roles)) {
-
-        $student_id = null;
-        $student = null;
-
-        if (in_array('parent', $roles) && !in_array('student', $roles)) {
-            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
-            $student_id = $student->id;
-        } else if(in_array('parent', $roles) && in_array('student', $roles)) {
-            $student_id = get_user_meta($current_user->ID, 'student_id', true);
-        }
-
-        $started_course = false;
-        $enrolled = is_enrolled_in_courses($student_id);
-        foreach ($enrolled as $key => $enroll) {
-            if ($enroll->progress != '') {
-                $started_course = true;
+    try {
+        global $current_user, $wpdb;
+        $table_students = $wpdb->prefix . 'students';
+        $roles = $current_user->roles;
+    
+        if (in_array('parent', $roles)) {
+    
+            $student_id = null;
+            $student = null;
+    
+            if (in_array('parent', $roles) && !in_array('student', $roles)) {
+                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
+                $student_id = $student->id;
+            } else if(in_array('parent', $roles) && in_array('student', $roles)) {
+                $student_id = get_user_meta($current_user->ID, 'student_id', true);
+                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+            }
+    
+            $started_course = false;
+            $enrolled = is_enrolled_in_courses($student_id);
+            $moodle_student_id = $student->moodle_student_id;
+            $filtered_grades = [];
+            $total_evaluated = 0;
+            foreach ($enrolled as $key => $enroll) {
+                $grades = course_grade(course_id: $enroll['id']);
+                $grades = $grades['usergrades'];
+                $filtered_grades = array_filter($grades, function($entry) use ($moodle_student_id) {
+                    return $entry['userid'] == $moodle_student_id;
+                });
+                $filtered_grades = array_values($filtered_grades);
+    
+                $grade_items = $filtered_grades[0]['gradeitems'];
+                $filtered_grade_items = array_filter($grade_items, function($entry) {
+                    return $entry['id'] == 1;
+                });
+                $filtered_grade_items = array_values($filtered_grade_items);
+                $total_evaluated += $filtered_grade_items[0]['graderaw'];
+            }
+    
+            if (count($enrolled) > 0 && $total_evaluated == 0) {
+                include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
             }
         }
-
-        if (count($enrolled) > 0 && !$started_course) {
-            include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
-        }
+    } catch (\Throwable $th) {
+        error_log($th);
     }
 }
 

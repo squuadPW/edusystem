@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded',function(){
         XHR.send(params);
         XHR.onload = function () {
           if (XHR.status === 200) {
-            // location.reload();
+            location.reload();
           }
         };
       });

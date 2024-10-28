@@ -55,3 +55,15 @@ function student_unsubscribe_moodle($student_id) {
         }
     }
 }
+
+function course_grade($course_id) {
+
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+
+    if (!empty($moodle_url) && !empty($moodle_token)) {
+        $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);
+        $grades = $MoodleRest->request('gradereport_user_get_grade_items', ['courseid' => $course_id]);
+        return $grades;
+    }
+}
