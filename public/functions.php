@@ -1490,6 +1490,7 @@ function student_unsubscribe_callback()
     $student_id = null;
     $student = null;
     $id_document = null;
+    $reason = $_POST['reason'];
 
     if (in_array('parent', $roles) && !in_array('student', $roles)) {
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
@@ -1498,6 +1499,7 @@ function student_unsubscribe_callback()
     } else if(in_array('parent', $roles) && in_array('student', $roles)) {
         $student_id = get_user_meta($current_user->ID, 'student_id', true);
         $id_document = get_user_meta($current_user->ID, 'id_document', true);
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
     }
 
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
@@ -1511,6 +1513,18 @@ function student_unsubscribe_callback()
         'period' => $period->code_period
     );
     student_unsubscribe_admin($data);
+
+    $user_student = get_user_by('email', $student->email);
+    $table_users_notices =  $wpdb->prefix.'users_notices';
+    $data = [
+        'user_id' => $user_student->ID,
+        'read' => 1,
+        'message' => 'Reason of unsubscribe: '.$reason,
+        'importance' => 3,
+        'type_notice' => 'unsubscribe',
+    ];
+
+    $wpdb->insert($table_users_notices, $data);
 
     wp_send_json(array('success' => true, 'unenroll' => $data));
     exit;
