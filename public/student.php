@@ -334,15 +334,17 @@ function insert_student($customer_id)
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
-
-    // Obtener la fecha actual en formato MySQL
+    $table_academic_periods_cut = $wpdb->prefix.'academic_periods_cut';
     $current_time = current_time('mysql');
     $code = 'noperiod';
-
-    // Ejecutar la consulta y obtener el resultado
+    $cut = 'nocut';
     $period_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
     if ($period_data) {
-        $code = $period_data->code;
+        $code =  $period_data->code;
+        $period_data_cut = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods_cut} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
+        if ($period_data_cut) {
+            $cut =  $period_data_cut->cut;
+        }
     }
 
     $wpdb->insert($table_students, [
@@ -350,6 +352,7 @@ function insert_student($customer_id)
         'type_document' => $_COOKIE['document_type'],
         'id_document' => $_COOKIE['id_document'],
         'academic_period' => $code,
+        'initial_cut' => $cut,
         'middle_name' => $_COOKIE['middle_name_student'],
         'last_name' => $_COOKIE['last_name_student'],
         'middle_last_name' => $_COOKIE['middle_last_name_student'],
