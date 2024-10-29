@@ -79,7 +79,7 @@ function get_courses_moodle_student($grade) {
     $courses = [];
     switch ($grade) {
         case 1:
-            $courses = [2];
+            $courses = [2, 3];
             break;
     }
 
