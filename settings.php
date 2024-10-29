@@ -11,6 +11,11 @@
 	define( 'AES_DUAL_DEFAULT_VARIABLE','60'); // Product variable
 	define( 'ROLES_OF_STAFF', array('owner', 'administrador', 'admision', 'admission', 'alliance', 'administration', 'allied', 'webinar-aliance'));
 
+	// Moodle
+	define( 'LOWER_COURSES_MOODLE', array(2, 3) );
+	define( 'MIDDLE_COURSES_MOODLE', array(2, 3) );
+	define( 'UPPER_COURSES_MOODLE', array(2, 3) );
+
 	// FOR ALL USERS, DONT COMMENT
 	define( 'AES_PROGRAM_ID','HSD-01'); // AES program for endpoint for laravel create user and move documents
 	define( 'AES_PERIOD','20242025'); // AES period for endpoint for laravel create user and move documents
