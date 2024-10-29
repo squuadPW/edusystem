@@ -20,7 +20,7 @@
           </div>
 
           <!-- DATOS DEL GRADO -->
-          <div class="mt-3" style="text-align:center;">
+          <div style="text-align:center; margin-top: 3rem">
             <button type="button" class="submit button-danger" id="send-unsubscribe"><?= __('Unsubscribe', 'aes'); ?></button>
           </div>
       </div>

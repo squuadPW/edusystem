@@ -903,7 +903,7 @@ h3 {
   }
 }
 .modal-missing-documents .modal-content {
-  width: 80% !important;
+  width: 50%;
 }
 @media screen and (max-width: 767px) {
   .modal-missing-documents .modal-content {
