@@ -3,294 +3,298 @@
 function add_admin_form_admission_content()
 {
 
-    global $current_user, $wpdb;
-    if (isset($_GET['action']) && !empty($_GET['action'])) {
-
-        if ($_GET['action'] == 'save_users_details') {
-            global $wpdb;
-
-            //STUDENT
-            $id = $_POST['id'];
-            $program = $_POST['program'];
-            $grade = $_POST['grade'];
-            $document_type = $_POST['document_type'];
-            $id_document = $_POST['id_document'];
-            $academic_period = $_POST['academic_period'];
-            $username = $_POST['username'] ?? null;
-            $new_password = $_POST['new_password'] ?? null;
-            $first_name = $_POST['first_name'];
-            $middle_name = $_POST['middle_name'];
-            $last_name = $_POST['last_name'];
-            $middle_last_name = $_POST['middle_last_name'];
-            $birth_date = $_POST['birth_date'];
-            $gender = $_POST['gender'];
-            $country = $_POST['country'];
-            $city = $_POST['city'];
-            $postal_code = $_POST['postal_code'];
-            $email = $_POST['email'];
-            $phone = $_POST['phone'];
-            $old_email = $_POST['old_email'];
-
-            //TABLE STUDENTS
-            $table_students = $wpdb->prefix . 'students';
-            $student_exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='" . $email . "'");
-            if ((isset($student_exist) && $email == $old_email) || (!isset($student_exist) && $email != $old_email)) {
-                $wpdb->update(
-                    $table_students,
-                    array(
-                        'type_document' => $document_type,
-                        'id_document' => $id_document,
-                        'academic_period' => $academic_period,
-                        'name' => $first_name,
-                        'middle_name' => $middle_name,
-                        'last_name' => $last_name,
-                        'middle_last_name' => $middle_last_name,
-                        'birth_date' => date('Y-m-d', strtotime($birth_date)),
-                        'phone' => $phone,
-                        'email' => $email,
-                        'gender' => $gender,
-                        'city' => $city,
-                        'country' => $country,
-                        'postal_code' => $postal_code,
+    if (current_user_can('manager_admission_aes') || current_user_can('only_read_admission_aes')) {
+        global $current_user, $wpdb;
+        if (isset($_GET['action']) && !empty($_GET['action'])) {
     
-                    ),
-                    array('ID' => $id),
-                    array('%s', '%s', '%s'),
-                    array('%d')
-                );
-            }
-
-            //TABLE USERS
-            $table_users = $wpdb->prefix . 'users';
-            $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $old_email . "'");
-            $user_student_exist = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $email . "'");
-            if (isset($user_student) && (isset($user_student_exist) && $email == $old_email) || (!isset($user_student_exist) && $email != $old_email)) {
-                $wpdb->update(
-                    $wpdb->users,
-                    array(
-                        'user_email' => $email,
-                        'user_login' => $email,
-                        'user_nicename' => $username,
-                        'display_name' => $first_name . ' ' . $last_name,
-                    ),
-                    array('ID' => $user_student->ID),
-                    array('%s', '%s', '%s'),
-                    array('%d')
-                );
-
-                if ($new_password && isset($user_student)) {
-                    $user_id = $user_student->ID; // Replace with the ID of the user you want to update
-                    wp_set_password($new_password, $user_student->ID);
+            if ($_GET['action'] == 'save_users_details') {
+                global $wpdb;
+    
+                //STUDENT
+                $id = $_POST['id'];
+                $program = $_POST['program'];
+                $grade = $_POST['grade'];
+                $document_type = $_POST['document_type'];
+                $id_document = $_POST['id_document'];
+                $academic_period = $_POST['academic_period'];
+                $username = $_POST['username'] ?? null;
+                $new_password = $_POST['new_password'] ?? null;
+                $first_name = $_POST['first_name'];
+                $middle_name = $_POST['middle_name'];
+                $last_name = $_POST['last_name'];
+                $middle_last_name = $_POST['middle_last_name'];
+                $birth_date = $_POST['birth_date'];
+                $gender = $_POST['gender'];
+                $country = $_POST['country'];
+                $city = $_POST['city'];
+                $postal_code = $_POST['postal_code'];
+                $email = $_POST['email'];
+                $phone = $_POST['phone'];
+                $old_email = $_POST['old_email'];
+    
+                //TABLE STUDENTS
+                $table_students = $wpdb->prefix . 'students';
+                $student_exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='" . $email . "'");
+                if ((isset($student_exist) && $email == $old_email) || (!isset($student_exist) && $email != $old_email)) {
+                    $wpdb->update(
+                        $table_students,
+                        array(
+                            'type_document' => $document_type,
+                            'id_document' => $id_document,
+                            'academic_period' => $academic_period,
+                            'name' => $first_name,
+                            'middle_name' => $middle_name,
+                            'last_name' => $last_name,
+                            'middle_last_name' => $middle_last_name,
+                            'birth_date' => date('Y-m-d', strtotime($birth_date)),
+                            'phone' => $phone,
+                            'email' => $email,
+                            'gender' => $gender,
+                            'city' => $city,
+                            'country' => $country,
+                            'postal_code' => $postal_code,
+        
+                        ),
+                        array('ID' => $id),
+                        array('%s', '%s', '%s'),
+                        array('%d')
+                    );
                 }
     
-                //METAADATA
-                update_user_meta($id, 'first_name', $first_name);
-                update_user_meta($id, 'last_name', $last_name);
-                update_user_meta($id, 'nickname', $username);
-                update_user_meta($id, 'birth_date', $birth_date);
-                update_user_meta($id, 'gender', $gender);
-                update_user_meta($id, 'billing_phone', $phone);
-            }
-
-            //PARENT
-            $parent_id = $_POST['parent_id'];
-            $parent_document_type = $_POST['parent_document_type'];
-            $parent_id_document = $_POST['parent_id_document'];
-            $parent_username = $_POST['parent_username'];
-            $parent_first_name = $_POST['parent_first_name'];
-            $parent_last_name = $_POST['parent_last_name'];
-            $parent_birth_date = $_POST['parent_birth_date'];
-            $parent_gender = $_POST['parent_gender'];
-            $parent_country = $_POST['parent_country'];
-            $parent_city = $_POST['parent_city'];
-            $parent_postal_code = $_POST['parent_postal_code'];
-            $parent_email = $_POST['parent_email'];
-            $parent_old_email = $_POST['parent_old_email'];
-            $parent_phone = $_POST['parent_phone'];
-            $parent_occupation = $_POST['parent_occupation'];
-
-            //TABLE USERS
-            $table_users = $wpdb->prefix . 'users';
-            $user_parent = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $parent_old_email . "'");
-            $user_parent_exist = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $parent_email . "'");
-            if (isset($user_parent) && (isset($user_parent_exist) && $parent_email == $parent_old_email) || (!isset($user_parent_exist) && $parent_email != $parent_old_email)) {
-                $wpdb->update(
-                    $wpdb->users,
-                    array(
-                        'user_email' => $parent_email,
-                        'user_login' => $parent_email,
-                        'user_nicename' => $parent_username,
-                        'display_name' => $parent_first_name . ' ' . $parent_last_name,
-                    ),
-                    array('ID' => $user_parent->ID),
-                    array('%s', '%s', '%s'),
-                    array('%d')
-                );    
+                //TABLE USERS
+                $table_users = $wpdb->prefix . 'users';
+                $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $old_email . "'");
+                $user_student_exist = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $email . "'");
+                if (isset($user_student) && (isset($user_student_exist) && $email == $old_email) || (!isset($user_student_exist) && $email != $old_email)) {
+                    $wpdb->update(
+                        $wpdb->users,
+                        array(
+                            'user_email' => $email,
+                            'user_login' => $email,
+                            'user_nicename' => $username,
+                            'display_name' => $first_name . ' ' . $last_name,
+                        ),
+                        array('ID' => $user_student->ID),
+                        array('%s', '%s', '%s'),
+                        array('%d')
+                    );
+    
+                    if ($new_password && isset($user_student)) {
+                        $user_id = $user_student->ID; // Replace with the ID of the user you want to update
+                        wp_set_password($new_password, $user_student->ID);
+                    }
         
-                //METAADATA
-                update_user_meta($user_parent->ID, 'first_name', $parent_first_name);
-                update_user_meta($user_parent->ID, 'billing_first_name', $parent_first_name);
-                update_user_meta($user_parent->ID, 'last_name', $parent_last_name);
-                update_user_meta($user_parent->ID, 'billing_last_name', $parent_last_name);
-                update_user_meta($user_parent->ID, 'nickname', $parent_username);
-                update_user_meta($user_parent->ID, 'birth_date', $parent_birth_date);
-                update_user_meta($user_parent->ID, 'gender', $parent_gender);
-                update_user_meta($user_parent->ID, 'billing_country', $parent_country);
-                update_user_meta($user_parent->ID, 'billing_city', $parent_city);
-                update_user_meta($user_parent->ID, 'billing_postcode', $parent_postal_code);
-                update_user_meta($user_parent->ID, 'billing_phone', $parent_phone);
-                update_user_meta($user_parent->ID, 'occupation', $parent_occupation);
-                update_user_meta($user_parent->ID, 'document_type', $parent_document_type);
-                update_user_meta($user_parent->ID, 'type_document', $parent_document_type);
-                update_user_meta($user_parent->ID, 'id_document', $parent_id_document);
-            }
-
-            $type_document = '';
-            switch ($student_exist->type_document) {
-                case 'identification_document':
-                    $type_document = 1;
-                    break;
-                case 'passport':
-                    $type_document = 2;
-                    break;
-                case 'ssn':
-                    $type_document = 4;
-                    break;
-            }
-
-            $type_document_re = '';
-            if (get_user_meta($user_parent->ID, 'type_document', true)) {
-                switch (get_user_meta($user_parent->ID, 'type_document', true)) {
+                    //METAADATA
+                    update_user_meta($id, 'first_name', $first_name);
+                    update_user_meta($id, 'last_name', $last_name);
+                    update_user_meta($id, 'nickname', $username);
+                    update_user_meta($id, 'birth_date', $birth_date);
+                    update_user_meta($id, 'gender', $gender);
+                    update_user_meta($id, 'billing_phone', $phone);
+                }
+    
+                //PARENT
+                $parent_id = $_POST['parent_id'];
+                $parent_document_type = $_POST['parent_document_type'];
+                $parent_id_document = $_POST['parent_id_document'];
+                $parent_username = $_POST['parent_username'];
+                $parent_first_name = $_POST['parent_first_name'];
+                $parent_last_name = $_POST['parent_last_name'];
+                $parent_birth_date = $_POST['parent_birth_date'];
+                $parent_gender = $_POST['parent_gender'];
+                $parent_country = $_POST['parent_country'];
+                $parent_city = $_POST['parent_city'];
+                $parent_postal_code = $_POST['parent_postal_code'];
+                $parent_email = $_POST['parent_email'];
+                $parent_old_email = $_POST['parent_old_email'];
+                $parent_phone = $_POST['parent_phone'];
+                $parent_occupation = $_POST['parent_occupation'];
+    
+                //TABLE USERS
+                $table_users = $wpdb->prefix . 'users';
+                $user_parent = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $parent_old_email . "'");
+                $user_parent_exist = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $parent_email . "'");
+                if (isset($user_parent) && (isset($user_parent_exist) && $parent_email == $parent_old_email) || (!isset($user_parent_exist) && $parent_email != $parent_old_email)) {
+                    $wpdb->update(
+                        $wpdb->users,
+                        array(
+                            'user_email' => $parent_email,
+                            'user_login' => $parent_email,
+                            'user_nicename' => $parent_username,
+                            'display_name' => $parent_first_name . ' ' . $parent_last_name,
+                        ),
+                        array('ID' => $user_parent->ID),
+                        array('%s', '%s', '%s'),
+                        array('%d')
+                    );    
+            
+                    //METAADATA
+                    update_user_meta($user_parent->ID, 'first_name', $parent_first_name);
+                    update_user_meta($user_parent->ID, 'billing_first_name', $parent_first_name);
+                    update_user_meta($user_parent->ID, 'last_name', $parent_last_name);
+                    update_user_meta($user_parent->ID, 'billing_last_name', $parent_last_name);
+                    update_user_meta($user_parent->ID, 'nickname', $parent_username);
+                    update_user_meta($user_parent->ID, 'birth_date', $parent_birth_date);
+                    update_user_meta($user_parent->ID, 'gender', $parent_gender);
+                    update_user_meta($user_parent->ID, 'billing_country', $parent_country);
+                    update_user_meta($user_parent->ID, 'billing_city', $parent_city);
+                    update_user_meta($user_parent->ID, 'billing_postcode', $parent_postal_code);
+                    update_user_meta($user_parent->ID, 'billing_phone', $parent_phone);
+                    update_user_meta($user_parent->ID, 'occupation', $parent_occupation);
+                    update_user_meta($user_parent->ID, 'document_type', $parent_document_type);
+                    update_user_meta($user_parent->ID, 'type_document', $parent_document_type);
+                    update_user_meta($user_parent->ID, 'id_document', $parent_id_document);
+                }
+    
+                $type_document = '';
+                switch ($student_exist->type_document) {
                     case 'identification_document':
-                        $type_document_re = 1;
+                        $type_document = 1;
                         break;
                     case 'passport':
-                        $type_document_re = 2;
+                        $type_document = 2;
                         break;
                     case 'ssn':
-                        $type_document_re = 4;
+                        $type_document = 4;
                         break;
                 }
-            } else {
-                $type_document_re = 1;
-            }
-
-
-            $gender = '';
-            switch ($student_exist->gender) {
-                case 'male':
-                    $gender = 'M';
-                    break;
-                case 'female':
-                    $gender = 'F';
-                    break;
-            }
-
-
-            $gender_re = '';
-            if (get_user_meta($user_parent->ID, 'gender', true)) {
-                switch (get_user_meta($user_parent->ID, 'gender', true)) {
+    
+                $type_document_re = '';
+                if (get_user_meta($user_parent->ID, 'type_document', true)) {
+                    switch (get_user_meta($user_parent->ID, 'type_document', true)) {
+                        case 'identification_document':
+                            $type_document_re = 1;
+                            break;
+                        case 'passport':
+                            $type_document_re = 2;
+                            break;
+                        case 'ssn':
+                            $type_document_re = 4;
+                            break;
+                    }
+                } else {
+                    $type_document_re = 1;
+                }
+    
+    
+                $gender = '';
+                switch ($student_exist->gender) {
                     case 'male':
-                        $gender_re = 'M';
+                        $gender = 'M';
                         break;
                     case 'female':
-                        $gender_re = 'F';
+                        $gender = 'F';
                         break;
                 }
-            } else {
-                $gender_re = 'M';
+    
+    
+                $gender_re = '';
+                if (get_user_meta($user_parent->ID, 'gender', true)) {
+                    switch (get_user_meta($user_parent->ID, 'gender', true)) {
+                        case 'male':
+                            $gender_re = 'M';
+                            break;
+                        case 'female':
+                            $gender_re = 'F';
+                            break;
+                    }
+                } else {
+                    $gender_re = 'M';
+                }
+    
+                $grade = '';
+                switch ($student_exist->grade_id) {
+                    case 1:
+                        $grade = 9;
+                        break;
+                    case 2:
+                        $grade = 10;
+                        break;
+                    case 3:
+                        $grade = 11;
+                        break;
+                    case 4:
+                        $grade = 12;
+                        break;
+                }
+    
+                $data = array(
+                    // DATOS DEL ESTUDIANTE
+                    'id_document' => $id_document,
+                    'type_document' => $type_document,
+                    'firstname' => $first_name . ' ' . $middle_name,
+                    'lastname' => $last_name . ' ' . $middle_last_name,
+                    'birth_date' => $birth_date,
+                    'phone' => $phone,
+                    'email' => $email,
+                    'grade' => $grade,
+                    'gender' => $gender,
+                    'etnia' => $student_exist->ethnicity,
+    
+                    // PADRE
+                    'id_document_re' => $parent_id_document,
+                    'type_document_re' => $type_document_re,
+                    'firstname_re' => $parent_first_name,
+                    'lastname_re' => $parent_last_name,
+                    'birth_date_re' => $parent_birth_date,
+                    'phone_re' => $parent_phone,
+                    'email_re' => $parent_email,
+                    'gender_re' => $parent_gender,
+    
+                    'cod_program' => AES_PROGRAM_ID,
+                    'cod_tip' => AES_TYPE_PROGRAM,
+                    'cod_period' => $student_exist->academic_period,
+                    'address' => get_user_meta($user_parent->ID, 'billing_address_1', true),
+                    'country' => $parent_country,
+                    'city' => $parent_city,
+                    'postal_code' => $parent_postal_code,
+                );
+    
+                update_user_laravel($data);
+    
+                wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
+                exit;
             }
-
-            $grade = '';
-            switch ($student_exist->grade_id) {
-                case 1:
-                    $grade = 9;
-                    break;
-                case 2:
-                    $grade = 10;
-                    break;
-                case 3:
-                    $grade = 11;
-                    break;
-                case 4:
-                    $grade = 12;
-                    break;
-            }
-
-            $data = array(
-                // DATOS DEL ESTUDIANTE
-                'id_document' => $id_document,
-                'type_document' => $type_document,
-                'firstname' => $first_name . ' ' . $middle_name,
-                'lastname' => $last_name . ' ' . $middle_last_name,
-                'birth_date' => $birth_date,
-                'phone' => $phone,
-                'email' => $email,
-                'grade' => $grade,
-                'gender' => $gender,
-                'etnia' => $student_exist->ethnicity,
-
-                // PADRE
-                'id_document_re' => $parent_id_document,
-                'type_document_re' => $type_document_re,
-                'firstname_re' => $parent_first_name,
-                'lastname_re' => $parent_last_name,
-                'birth_date_re' => $parent_birth_date,
-                'phone_re' => $parent_phone,
-                'email_re' => $parent_email,
-                'gender_re' => $parent_gender,
-
-                'cod_program' => AES_PROGRAM_ID,
-                'cod_tip' => AES_TYPE_PROGRAM,
-                'cod_period' => $student_exist->academic_period,
-                'address' => get_user_meta($user_parent->ID, 'billing_address_1', true),
-                'country' => $parent_country,
-                'city' => $parent_city,
-                'postal_code' => $parent_postal_code,
-            );
-
-            update_user_laravel($data);
-
-            wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
-            exit;
         }
-    }
-
-    if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
-
-        /*
-        if($_GET['section_tab'] == 'document_review'){
-
+    
+        if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
+    
+            /*
+            if($_GET['section_tab'] == 'document_review'){
+    
+                $list_students = new TT_document_review_List_Table;
+                $list_students->prepare_items();
+                include(plugin_dir_path(__FILE__).'templates/list-student-documents.php');
+             */
+            if ($_GET['section_tab'] == 'all_students') {
+                $table_academic_periods = $wpdb->prefix . 'academic_periods';
+                $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+                $list_students = new TT_all_student_List_Table;
+                $list_students->prepare_items();
+                include(plugin_dir_path(__FILE__) . 'templates/list-student-documents.php');
+            } else if ($_GET['section_tab'] == 'student_details') {
+    
+                $roles = $current_user->roles;
+                $documents = get_documents($_GET['student_id']);
+                $student = get_student_detail($_GET['student_id']);
+                $countries = get_countries();
+                $partner = get_userdata($student->partner_id);
+                $table_users = $wpdb->prefix . 'users';
+                $table_academic_periods = $wpdb->prefix . 'academic_periods';
+                $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+                $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $student->email . "'");
+                include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
+            }
+    
+        } else {
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
+            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             $list_students = new TT_document_review_List_Table;
             $list_students->prepare_items();
-            include(plugin_dir_path(__FILE__).'templates/list-student-documents.php');
-         */
-        if ($_GET['section_tab'] == 'all_students') {
-            $table_academic_periods = $wpdb->prefix . 'academic_periods';
-            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
-            $list_students = new TT_all_student_List_Table;
-            $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-student-documents.php');
-        } else if ($_GET['section_tab'] == 'student_details') {
-
-            $roles = $current_user->roles;
-            $documents = get_documents($_GET['student_id']);
-            $student = get_student_detail($_GET['student_id']);
-            $countries = get_countries();
-            $partner = get_userdata($student->partner_id);
-            $table_users = $wpdb->prefix . 'users';
-            $table_academic_periods = $wpdb->prefix . 'academic_periods';
-            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
-            $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $student->email . "'");
-            include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
         }
-
     } else {
-        $table_academic_periods = $wpdb->prefix . 'academic_periods';
-        $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
-        $list_students = new TT_document_review_List_Table;
-        $list_students->prepare_items();
-        include(plugin_dir_path(__FILE__) . 'templates/list-student-documents.php');
+        wp_die(__('You do not have sufficient permissions to access this page.'));
     }
 }
 
