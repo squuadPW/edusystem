@@ -8,12 +8,14 @@ function add_admin_form_configuration_options_content()
             $documents_warning = sanitize_text_field($_POST['documents_warning']);
             $documents_red = sanitize_text_field($_POST['documents_red']);
             $payment_due = sanitize_text_field($_POST['payment_due']);
-        
+            $student_continue = sanitize_text_field($_POST['student_continue']);
+
             // Update the options
             update_option('documents_ok', $documents_ok);
             update_option('documents_warning', $documents_warning);
             update_option('documents_red', $documents_red);
             update_option('payment_due', $payment_due);
+            update_option('student_continue', $student_continue);
         
             // Redirect to the same page with a success message
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content&success=true'));

@@ -30,4 +30,10 @@ document.addEventListener('DOMContentLoaded',function(){
         };
       });
     }
+
+    if(document.getElementById('close-unsubscribe')){
+      document.getElementById('close-unsubscribe').addEventListener('click', function(event) {
+        document.getElementById('modal-unsubscribe').style.display = 'none';
+      });
+    }
 });

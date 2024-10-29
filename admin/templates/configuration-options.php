@@ -27,6 +27,12 @@
       <label for="payment-due">Days elapsed after payment due to block access to the site (greater than):</label> <br>
       <span>></span><input type="number" id="payment-due" name="payment_due" value="<?php echo get_option('payment_due') ?>" required>
     </div>
-    <button type="submit" class="button button-primary">Save Options</button>
+    <div class="form-group" style="padding: 10px">
+      <input type="checkbox" id="student-continue" name="student_continue" <?php echo get_option('student_continue') == 'on' ? 'checked' : '' ?>>
+      <label for="student-continue">Show button for students to register for the next academic cut</label>
+    </div>
+    <div style="margin-top: 16px">
+      <button type="submit" class="button button-primary">Save Options</button>
+    </div>
   </form>
 </section>

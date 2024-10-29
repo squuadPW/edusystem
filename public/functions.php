@@ -91,6 +91,16 @@ function form_plugin_scripts()
             )
         );
         wp_enqueue_script('student-unsubscribe');
+
+        wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.0', true);
+        wp_localize_script(
+            'student-continue',
+            'ajax_object',
+            array(
+                'ajax_url' => admin_url('admin-ajax.php')
+            )
+        );
+        wp_enqueue_script('student-continue');
     }
 }
 
@@ -550,6 +560,15 @@ function student_unsubscribe()
 }
 
 add_action('woocommerce_edit_account_form_start', 'student_unsubscribe');
+
+function student_continue()
+{
+    if (get_option('student_continue') == 'on') {
+        include(plugin_dir_path(__FILE__) . 'templates/student-continue.php');
+    }
+}
+
+add_action('woocommerce_edit_account_form_start', 'student_continue');
 
 
 function create_ticket($email, $ticket_id, $subject, $message)

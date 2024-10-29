@@ -299,6 +299,18 @@ input, textarea {
   opacity: 0.75;
 }
 
+.button-success {
+  padding: 5px 20px !important;
+  text-align: center;
+  background-color: green !important;
+  border-radius: 20px;
+  color: white !important;
+  font-size: 18px;
+}
+.button-success:hover {
+  opacity: 0.75;
+}
+
 .button-danger {
   padding: 5px 20px !important;
   text-align: center;
