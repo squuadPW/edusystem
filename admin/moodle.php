@@ -67,12 +67,23 @@ function create_user_moodle($student_id){
             'moodle_password' => $password
         ],['id' => $student_id]);
 
-        // auto_enroll_student($student_id, 2);
+        auto_enroll_student($student_id, get_courses_moodle_student($data_student->grade_id));
 
         return $create_user;
     }
 
     return;
+}
+
+function get_courses_moodle_student($grade) {
+    $courses = [];
+    switch ($grade) {
+        case 1:
+            $courses = [2];
+            break;
+    }
+
+    return $courses;
 }
 
 /**
@@ -205,7 +216,7 @@ function get_url_login($email){
     }
 }
 
-function auto_enroll_student($student_id, $course_id) {
+function auto_enroll_student($student_id, $courses = []) {
     global $wpdb;
     $table_students = $wpdb->prefix.'students';
 
@@ -218,13 +229,17 @@ function auto_enroll_student($student_id, $course_id) {
         if (!empty($moodle_url) && !empty($moodle_token)) {
             $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);
 
-            $enrolments = ['enrolments' => Array([
-                'userid' => $data_student->moodle_student_id,
-                'courseid' => $course_id,
-                'roleid' => ROLE_ID_STUDENT_MOODLE,
-            ])];
+            $enrollments = [];
+            foreach ($courses as $key => $course_id) {    
+                array_push($enrollments, [
+                    'userid' => $data_student->moodle_student_id,
+                    'courseid' => $course_id,
+                    'roleid' => ROLE_ID_STUDENT_MOODLE,
+                ]);
+            }
 
-            $enrolled_courses = $MoodleRest->request('enrol_manual_enrol_users', $enrolments);
+            error_log('ENROLLMENTS'.['enrolments' => $enrollments]);
+            $enrolled_courses = $MoodleRest->request('enrol_manual_enrol_users', ['enrolments' => $enrollments]);
 
             if (empty($enrolled_courses)) {
                 return [];
