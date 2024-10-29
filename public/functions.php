@@ -1551,6 +1551,21 @@ function student_unsubscribe_callback()
     exit;
 }
 
+add_action('wp_ajax_nopriv_student_continue', 'student_continue_callback');
+add_action('wp_ajax_student_continue', 'student_continue_callback');
+function student_continue_callback()
+{
+    global $current_user, $wpdb;
+    $reason = $_POST['reason'];
+
+    // $wpdb->update($table_student_period_inscriptions, [
+    //     'status_id' => 0,
+    // ], ['id' => $period->id]);
+
+    wp_send_json(array('success' => true));
+    exit;
+}
+
 function redirect_logged_in_users_to_my_account()
 {
     if (is_user_logged_in() && is_front_page()) {

@@ -10,14 +10,14 @@ document.addEventListener('DOMContentLoaded',function(){
       document.getElementById('send-continue').addEventListener('click', function(event) {
         document.getElementById('send-continue').disabled = true;
         document.getElementById('send-continue').innerText = 'Loading...';
-        let reason = document.querySelector('textarea[name="reason"]').value;
+        let elective = document.querySelector('select[name="elective"]').value;
         const XHR = new XMLHttpRequest();
         XHR.open("POST", `${ajax_object.ajax_url}?action=student_continue`, true);
         XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         XHR.responseType = "text";
         let params = `action=student_continue`;
-        if (reason) {
-          params += `&reason=${reason}`;
+        if (elective) {
+          params += `&elective=${elective}`;
         }
         XHR.send(params);
         XHR.onload = function () {
