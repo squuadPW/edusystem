@@ -276,10 +276,10 @@ class TT_alliances_review_List_Table extends WP_List_Table{
             $alliances = $wpdb->get_results("SELECT * 
                     FROM {$table_alliances} WHERE 
                     status = 0 AND 
-                    ( `name` LIKE '{$search}%' || 
-                     last_name LIKE '{$search}%' || 
-                     name_legal LIKE '{$search}%' || 
-                     email LIKE '{$search}%')"
+                    ( `name` LIKE '%{$search}%' || 
+                     last_name LIKE '%{$search}%' || 
+                     name_legal LIKE '%{$search}%' || 
+                     email LIKE '%{$search}%')"
                 ,"ARRAY_A");
 
         }else{
@@ -408,10 +408,10 @@ class TT_alliances_List_Table extends WP_List_Table{
             $alliances = $wpdb->get_results("SELECT * 
                     FROM {$table_alliances} WHERE 
                     status = 1 AND 
-                    ( `name` LIKE '{$search}%' || 
-                     last_name LIKE '{$search}%' || 
-                     name_legal LIKE '{$search}%' || 
-                     email LIKE '{$search}%')"
+                    ( `name` LIKE '%{$search}%' || 
+                     last_name LIKE '%{$search}%' || 
+                     name_legal LIKE '%{$search}%' || 
+                     email LIKE '%{$search}%')"
                 ,"ARRAY_A");
 
         }else{
