@@ -257,7 +257,8 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('Start Date', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="start_date_inscriptions" value="<?= $period->start_date_inscription; ?>">
+                                            <input type="date" name="start_date_inscriptions"
+                                                value="<?= $period->start_date_inscription; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('Start Date', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -268,7 +269,8 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('End Date', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="end_date_inscriptions" value="<?= $period->end_date_inscription; ?>">
+                                            <input type="date" name="end_date_inscriptions"
+                                                value="<?= $period->end_date_inscription; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('End Date', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -286,7 +288,8 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('Start Date', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="start_date_pre_inscriptions" value="<?= $period->start_date_pre_inscription; ?>">
+                                            <input type="date" name="start_date_pre_inscriptions"
+                                                value="<?= $period->start_date_pre_inscription; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('Start Date', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -297,11 +300,30 @@
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
                                                 for="input_id"><b><?= __('End Date', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                            <input type="date" name="end_date_pre_inscriptions" value="<?= $period->end_date_pre_inscription; ?>">
+                                            <input type="date" name="end_date_pre_inscriptions"
+                                                value="<?= $period->end_date_pre_inscription; ?>">
                                         <?php else: ?>
                                             <label for="input_id"><b><?= __('End Date', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <input type="date" name="end_date_pre_inscriptions" value="" required>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <h3
+                                    style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
+                                    <b><?= __('Next academic period', 'aes'); ?></b>
+                                </h3>
+                                <div style="display: flex; justify-content: space-evenly; margin: 18px;">
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($period) && !empty($period)): ?>
+                                            <label
+                                                for="code_next"><b><?= __('Next period code', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                            <input type="text" name="code_next" value="<?= ucwords($period->code_next); ?>">
+                                        <?php else: ?>
+                                            <label for="code_next"><b><?= __('Next period code', 'aes'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="text" name="code_next" value="" required>
                                         <?php endif; ?>
                                     </div>
                                 </div>

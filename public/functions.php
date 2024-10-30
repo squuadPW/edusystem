@@ -1574,18 +1574,6 @@ function student_continue_callback()
     $table_students = $wpdb->prefix . 'students';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
-    $table_academic_periods_cut = $wpdb->prefix.'academic_periods_cut';
-    $current_time = current_time('mysql');
-    $code = 'noperiod';
-    $cut = 'nocut';
-    $period_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
-    if ($period_data) {
-        $code =  $period_data->code;
-        $period_data_cut = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods_cut} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
-        if ($period_data_cut) {
-            $cut =  $period_data_cut->cut;
-        }
-    }
 
     $student_id = null;
     if (in_array('parent', $roles) && !in_array('student', $roles)) {
@@ -1595,18 +1583,54 @@ function student_continue_callback()
         $student_id = get_user_meta($current_user->ID, 'student_id', true);
     }
 
+    $last_inscription = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id={$student_id} ORDER BY id DESC");
+    $period_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods} WHERE code = {$last_inscription->code_period}"));
+
     $courses = [1];
+    $continue_data = get_next_cut($period_data, $last_inscription);
     foreach ($courses as $key => $course) {
         $wpdb->insert($table_student_period_inscriptions, [
             'student_id' => $student_id,
-            'code_period' => $code,
-            'cut_period' => $cut,
+            'code_period' => $continue_data['code'],
+            'cut_period' => $continue_data['cut'],
             'status_id' => 0,
         ]);
     }
 
     wp_send_json(array('success' => true));
     exit;
+}
+
+function get_next_cut($period, $period_cut) {
+    $code = 'noperiod';
+    $cut = 'nocut';
+    if ($period && $period_cut) {
+        switch ($period_cut->cut_period) {
+            case 'A':
+                $cut = 'B';
+                $code = $period->code;
+                break;
+            case 'B':
+                $cut = 'C';
+                $code = $period->code;
+                break;
+            case 'C':
+                $cut = 'D';
+                $code = $period->code;
+                break;
+            case 'D':
+                $cut = 'E';
+                $code = $period->code;
+                break;
+            case 'E':
+                $cut = 'A';
+                $code = $period->code_next;
+                break;
+        }
+    }
+
+    return ['code' => $code, 'cut' =>  $cut];
+
 }
 
 function redirect_logged_in_users_to_my_account()

@@ -127,6 +127,7 @@ function create_tables() {
         id INT(11) NOT NULL AUTO_INCREMENT,
         name TEXT NOT NULL,
         code TEXT NOT NULL,
+        code_next TEXT NOT NULL,
         year INT(11) NULL,
         start_date DATE NULL,
         end_date DATE NULL,

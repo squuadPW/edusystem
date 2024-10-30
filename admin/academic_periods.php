@@ -37,6 +37,7 @@ function add_admin_form_academic_periods_content()
             $period_id = $_POST['period_id'];
             $name = $_POST['name'];
             $code = $_POST['code'];
+            $code_next = $_POST['code_next'];
             $old_code = $_POST['old_code'];
             $year = $_POST['year'];
             $start_date = $_POST['start_date'];
@@ -76,6 +77,7 @@ function add_admin_form_academic_periods_content()
                 $wpdb->update($table_periods, [
                     'name' => $name,
                     'code' => $code,
+                    'code_next' => $code_next,
                     'year' => $year,
                     'start_date' => $start_date,
                     'end_date' => $end_date,
@@ -106,6 +108,7 @@ function add_admin_form_academic_periods_content()
                 $wpdb->insert($table_periods, [
                     'name' => $name,
                     'code' => $code,
+                    'code_next' => $code_next,
                     'year' => $year,
                     'start_date' => $start_date,
                     'end_date' => $end_date,
