@@ -501,12 +501,21 @@ class TT_document_review_List_Table extends WP_List_Table
     {
 
         global $current_user;
+        $roles = $current_user->roles;
+        $url = admin_url('user-edit.php?user_id=');
 
         switch ($column_name) {
             case 'index':
                 return $item['index'];
             case 'full_name':
-                return $item['name'] . ' ' . $item['last_name'];
+
+                if (in_array('owner', $roles) || in_array('administrator', $roles)) {
+                    $user_student = get_user_by('email', $item['email']);
+                    return '<a href="' . $url . $user_student->ID . '" target="_blank">' . $item['name'] . ' ' . $item['middle_name'] . ' ' . $item['last_name'] . ' ' . $item['middle_last_name'] . '</a>';
+                } else {
+                    return $item['name'] . ' ' . $item['middle_name'] . ' ' . $item['last_name'] . ' ' . $item['middle_last_name'];
+                }
+    
             case 'program':
                 $program = get_name_program($item['program_id']);
                 return $program;
