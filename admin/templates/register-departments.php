@@ -113,6 +113,12 @@
                 </tr>
                 <tr>
                     <th scope="row" style="width:10px;padding:3px;">
+                        <input type="checkbox" name="capabilities[]" id="manager_school_subjects_aes" value="manager_school_subjects_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_school_subjects_aes'])) ? 'checked' : ''; ?>>
+                    </th>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_school_subjects_aes" style="margin-left:20px;"><?= __('School subjects','aes'); ?></label></td>
+                </tr>
+                <tr>
+                    <th scope="row" style="width:10px;padding:3px;">
                         <input type="checkbox" name="capabilities[]" id="manager_configuration_options_aes" value="manager_configuration_options_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_configuration_options_aes'])) ? 'checked' : ''; ?>>
                     </th>
                     <td style="display:table-cell;padding:3px;"><label for="manager_configuration_options_aes" style="margin-left:20px;"><?= __('Configuration options admission','aes'); ?></label></td>

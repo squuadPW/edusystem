@@ -566,6 +566,7 @@ function student_continue()
     global $current_user, $wpdb;
     $roles = $current_user->roles;
     $table_students = $wpdb->prefix . 'students';
+    $table_school_subjects = $wpdb->prefix.'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
     $student_id = null;
@@ -578,6 +579,7 @@ function student_continue()
 
     $next_cut_enrollment = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id={$student_id} AND status_id = 0 ORDER BY id DESC");
     if (get_option('student_continue') == 'on' && !$next_cut_enrollment) {
+        $electives = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_elective=1");
         include(plugin_dir_path(__FILE__) . 'templates/student-continue.php');
     }
 }
