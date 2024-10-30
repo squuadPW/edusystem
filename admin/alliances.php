@@ -221,7 +221,7 @@ class TT_alliances_review_List_Table extends WP_List_Table{
             case 'email':
             // case 'state':
             // case 'city':
-            //     return $item[$column_name];
+                return $item[$column_name];
             case 'country':
                 $name = get_name_country($item[$column_name]);
                 return $name;
