@@ -371,10 +371,13 @@ class TT_institutes_review_List_Table extends WP_List_Table
                 "SELECT SQL_CALC_FOUND_ROWS * 
                 FROM {$table_institutes} WHERE 
                 status = 0  AND 
-                ( name LIKE '{$search}%' || 
-                email LIKE '{$search}%' || 
-                name_rector LIKE '{$search}%' || 
-                lastname_rector LIKE '{$search}%')
+                ( `name` LIKE '{$search}%' ||
+                   email LIKE '{$search}%' || 
+                   name_rector LIKE '{$search}%' || 
+                   lastname_rector LIKE '{$search}%'
+                   name_contact LIKE '{$search}%' || 
+                   lastname_contact LIKE '{$search}%'
+                )
                 LIMIT {$per_page} OFFSET {$offset}",
                 "ARRAY_A"
             );
@@ -532,10 +535,12 @@ class TT_institutes_List_Table extends WP_List_Table
                 FROM {$table_institutes}
                 WHERE status=1
                 AND 
-                ( name LIKE '{$search}%' ||
+                ( `name` LIKE '{$search}%' ||
                    email LIKE '{$search}%' || 
                    name_rector LIKE '{$search}%' || 
                    lastname_rector LIKE '{$search}%'
+                   name_contact LIKE '{$search}%' || 
+                   lastname_contact LIKE '{$search}%'
                 ) LIMIT {$per_page} OFFSET {$offset}", 'ARRAY_A');
 
         } else {
