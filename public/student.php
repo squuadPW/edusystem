@@ -466,12 +466,15 @@ function insert_period_inscriptions($student_id)
         }
     }
 
-    $wpdb->insert($table_student_period_inscriptions, [
-        'student_id' => $student_id,
-        'code_period' => $code,
-        'cut_period' => $cut,
-        'status_id' => 1,
-    ]);
+    $courses = [1];
+    foreach ($courses as $key => $course) {
+        $wpdb->insert($table_student_period_inscriptions, [
+            'student_id' => $student_id,
+            'code_period' => $code,
+            'cut_period' => $cut,
+            'status_id' => 1,
+        ]);
+    }
 }
 
 function get_documents($student_id)

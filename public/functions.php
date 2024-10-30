@@ -1544,7 +1544,7 @@ function student_unsubscribe_callback()
     $wpdb->insert($table_users_notices, $data);
 
     $wpdb->update($table_student_period_inscriptions, [
-        'status_id' => 0,
+        'status_id' => 2,
     ], ['id' => $period->id]);
 
     wp_send_json(array('success' => true, 'unenroll' => $data));
@@ -1556,11 +1556,41 @@ add_action('wp_ajax_student_continue', 'student_continue_callback');
 function student_continue_callback()
 {
     global $current_user, $wpdb;
-    $reason = $_POST['reason'];
+    $roles = $current_user->roles;
+    $elective = $_POST['elective'];
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_academic_periods = $wpdb->prefix . 'academic_periods';
+    $table_academic_periods_cut = $wpdb->prefix.'academic_periods_cut';
+    $current_time = current_time('mysql');
+    $code = 'noperiod';
+    $cut = 'nocut';
+    $period_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
+    if ($period_data) {
+        $code =  $period_data->code;
+        $period_data_cut = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods_cut} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
+        if ($period_data_cut) {
+            $cut =  $period_data_cut->cut;
+        }
+    }
 
-    // $wpdb->update($table_student_period_inscriptions, [
-    //     'status_id' => 0,
-    // ], ['id' => $period->id]);
+    $student_id = null;
+    if (in_array('parent', $roles) && !in_array('student', $roles)) {
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
+        $student_id = $student->id;
+    } else if(in_array('parent', $roles) && in_array('student', $roles)) {
+        $student_id = get_user_meta($current_user->ID, 'student_id', true);
+    }
+
+    $courses = [1];
+    foreach ($courses as $key => $course) {
+        $wpdb->insert($table_student_period_inscriptions, [
+            'student_id' => $student_id,
+            'code_period' => $code,
+            'cut_period' => $cut,
+            'status_id' => 0,
+        ]);
+    }
 
     wp_send_json(array('success' => true));
     exit;
