@@ -67,7 +67,7 @@ function create_user_moodle($student_id){
             'moodle_password' => $password
         ],['id' => $student_id]);
 
-        // auto_enroll_student($student_id, get_courses_moodle_student($data_student->grade_id));
+        auto_enroll_student($student_id, get_courses_moodle_student($data_student->grade_id));
 
         return $create_user;
     }
