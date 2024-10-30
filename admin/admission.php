@@ -501,12 +501,21 @@ class TT_document_review_List_Table extends WP_List_Table
     {
 
         global $current_user;
+        $roles = $current_user->roles;
+        $url = admin_url('user-edit.php?user_id=');
 
         switch ($column_name) {
             case 'index':
                 return $item['index'];
             case 'full_name':
-                return $item['name'] . ' ' . $item['last_name'];
+
+                if (in_array('owner', $roles) || in_array('administrator', $roles)) {
+                    $user_student = get_user_by('email', $item['email']);
+                    return '<a href="' . $url . $user_student->ID . '" target="_blank">' . $item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name'] . '</a>';
+                } else {
+                    return $item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name'];
+                }
+    
             case 'program':
                 $program = get_name_program($item['program_id']);
                 return $program;
@@ -913,11 +922,11 @@ class TT_all_student_List_Table extends WP_List_Table
 
             $value['index'] = $key + 1;
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $value['student'] = '<a href="' . $url . $student->ID . '" target="_blank">' . $value['name'] . ' ' . $value['middle_name'] . ' ' . $value['last_name'] . ' ' . $value['middle_last_name'] . '</a>';
-                $value['parent'] = '<a href="' . $url . $parent->ID . '" target="_blank">' . $parent->first_name . ' ' . $parent->last_name . '</a>';
+                $value['student'] = '<a href="' . $url . $student->ID . '" target="_blank">' . $value['last_name'] . ' ' . $value['middle_last_name'] . ' ' . $value['name'] . ' ' . $value['middle_name'] . '</a>';
+                $value['parent'] = '<a href="' . $url . $parent->ID . '" target="_blank">' . $parent->last_name . ' ' . $parent->first_name . '</a>';
             } else {
-                $value['student'] = $value['name'] . ' ' . $value['middle_name'] . ' ' . $value['last_name'] . ' ' . $value['middle_last_name'];
-                $value['parent'] = $parent->first_name . ' ' . $parent->last_name;
+                $value['student'] =  $value['last_name'] . ' ' . $value['middle_last_name'] . ' ' . $value['name'] . ' ' . $value['middle_name'];
+                $value['parent'] = $parent->last_name . ' ' . $parent->first_name;
             }
             $moodleActive = isset($value['moodle_student_id']) ? 'Yes' : 'No';
             $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px; cursor: not-allowed"';

@@ -513,6 +513,8 @@ add_action('wp_ajax_list_accounts_receivables', 'list_accounts_receivables');
 function list_report_students()
 {
 
+    global $current_user;
+    $roles = $current_user->roles;
     $academic_period = $_POST['academic_period'] ?? '';
     $academic_period_cut = $_POST['academic_period_cut'] ?? '';
     $grade = $_POST['period'] ?? '';
@@ -529,10 +531,18 @@ function list_report_students()
 
             $html .= "<tr>";
             $html .= "<td class='column' data-colname='" . __('Academic Period', 'restaurant-system-app') . "'>" . $student->academic_period . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
+            if (in_array('owner', $roles) || in_array('administrator', $roles)) {
+                $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
+            } else {
+                $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
+            }
             $html .= "<td class='column' data-colname='" . __('Student document', 'restaurant-system-app') . "'>" . $student->id_document . "</td>";
             $html .= "<td class='column' data-colname='" . __('Student email', 'restaurant-system-app') . "'>" . $student->email . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Parent', 'restaurant-system-app') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true) . "</a></td>";
+            if (in_array('owner', $roles) || in_array('administrator', $roles)) {
+                $html .= "<td class='column' data-colname='" . __('Parent', 'restaurant-system-app') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true) . "</a></td>";
+            } else {
+                $html .= "<td class='column' data-colname='" . __('Parent', 'restaurant-system-app') . "'>" . get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true) . "</a></td>";
+            }
             $html .= "<td class='column' data-colname='" . __('Parent email', 'restaurant-system-app') . "'>" . $parent->user_email . "</td>";
             $html .= "<td class='column' data-colname='" . __('Country', 'restaurant-system-app') . "'>" . $student->country . "</td>";
             $html .= "<td class='column' data-colname='" . __('Grade', 'restaurant-system-app') . "'>" . get_name_grade($student->grade_id) . "</td>";
