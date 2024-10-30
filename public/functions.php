@@ -1505,33 +1505,43 @@ function student_unsubscribe_callback()
 {
     global $current_user, $wpdb;
     $table_students = $wpdb->prefix . 'students';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $roles = $current_user->roles;
     $student_id = null;
     $student = null;
     $id_document = null;
     $reason = $_POST['reason'];
 
+    // SI ES PADRE CARGAMOS AL ESTUDIANTE POR EL PARTNER ID
     if (in_array('parent', $roles) && !in_array('student', $roles)) {
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
         $id_document = $student->id_document;
         $student_id = $student->id;
     } else if(in_array('parent', $roles) && in_array('student', $roles)) {
+        // SI ES ESTUDIANTE MAYOR DE EDAD CARGAMOS AL ESTUDIANTE POR EL MISMO USUARIO
         $student_id = get_user_meta($current_user->ID, 'student_id', true);
         $id_document = get_user_meta($current_user->ID, 'id_document', true);
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
     }
 
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    // OBTENEMOS LA ULTTMA INSCRIPCION DEL ESTUDIANTE
     $period = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id={$student_id} ORDER BY id DESC");
-    $courses = student_unsubscribe_moodle($student_id);
+    // OBTENEMOS LA ULTTMA INSCRIPCION DEL ESTUDIANTE
 
+    // DAMOS DE BAJA EN MOODLE Y OBTENEMOS LOS CURSOS A DAR DE BAJA
+    $courses = student_unsubscribe_moodle($student_id);
+    // DAMOS DE BAJA EN MOODLE Y OBTENEMOS LOS CURSOS A DAR DE BAJA
+
+    // DAMOS DE BAJA EN EL ADMIN
     $data = array(
         'id_document' => $id_document, 
         'courses' => json_encode($courses), 
         'period' => $period->code_period
     );
     student_unsubscribe_admin($data);
+    // DAMOS DE BAJA EN EL ADMIN
 
+    // GUARDAMOS LA RAZON DE LA BAJA DEL ESTUDIANTE
     $user_student = get_user_by('email', $student->email);
     $table_users_notices =  $wpdb->prefix.'users_notices';
     $data = [
@@ -1542,10 +1552,13 @@ function student_unsubscribe_callback()
         'type_notice' => 'unsubscribe',
     ];
     $wpdb->insert($table_users_notices, $data);
+    // GUARDAMOS LA RAZON DE LA BAJA DEL ESTUDIANTE
 
+    // TODAS LAS INSCRIPCIONES DE ESE CORTE SE DAN DE BAJA
     $wpdb->update($table_student_period_inscriptions, [
         'status_id' => 2,
-    ], ['id' => $period->id]);
+    ], ['cut_period' => $period->cut_period, 'student_id' => $student_id]);
+    // TODAS LAS INSCRIPCIONES DE ESE CORTE SE DAN DE BAJA
 
     wp_send_json(array('success' => true, 'unenroll' => $data));
     exit;
