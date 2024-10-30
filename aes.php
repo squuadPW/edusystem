@@ -74,7 +74,7 @@ function create_tables() {
         id INT(11) NOT NULL AUTO_INCREMENT,
         status_id INT(11) NOT NULL,
         student_id INT(11) NOT NULL,
-        subject_code TEXT NULL,
+        code_subject TEXT NULL,
         code_period INT(11) NOT NULL,
         cut_period TEXT NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
