@@ -563,7 +563,21 @@ add_action('woocommerce_edit_account_form_start', 'student_unsubscribe');
 
 function student_continue()
 {
-    if (get_option('student_continue') == 'on') {
+    global $current_user, $wpdb;
+    $roles = $current_user->roles;
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+
+    $student_id = null;
+    if (in_array('parent', $roles) && !in_array('student', $roles)) {
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
+        $student_id = $student->id;
+    } else if(in_array('parent', $roles) && in_array('student', $roles)) {
+        $student_id = get_user_meta($current_user->ID, 'student_id', true);
+    }
+
+    $next_cut_enrollment = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id={$student_id} AND status_id = 0 ORDER BY id DESC");
+    if (get_option('student_continue') == 'on' && !$next_cut_enrollment) {
         include(plugin_dir_path(__FILE__) . 'templates/student-continue.php');
     }
 }
