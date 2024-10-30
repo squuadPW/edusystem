@@ -219,11 +219,14 @@ class TT_alliances_review_List_Table extends WP_List_Table{
                 return ucwords($item['name']).' '.ucwords($item['last_name']);
             case 'phone':
             case 'email':
-            case 'state':
-            case 'city':
-                return $item[$column_name];
+            // case 'state':
+            // case 'city':
+            //     return $item[$column_name];
             case 'country':
                 $name = get_name_country($item[$column_name]);
+                return $name;
+            case 'created_at':
+                $name = $item['created_at'];
                 return $name;
             case 'name_rector':
                 return ucwords($item['name_rector']).' '.ucwords($item['lastname_rector']);
@@ -252,8 +255,9 @@ class TT_alliances_review_List_Table extends WP_List_Table{
             'phone'         => __('Phone','aes'),
             'email'         => __('Email','aes'),
             'country'       => __('Country','aes'),
-            'state'         => __('State','aes'),
-            'city'          => __('City','aes'),
+            // 'state'         => __('State','aes'),
+            // 'city'          => __('City','aes'),
+            'created_at'       => __('Created at','aes'),
             'view_details' => __('Actions','aes'),
         );
 
