@@ -16,9 +16,9 @@
             <div>
               <label for="elective"><?= __('Elective', 'aes'); ?><span class="required">*</span></label>
               <select class="form-control" name="elective" autocomplete="off" required>
-                <option value="1">Electiva 1</option>
-                <option value="2">Electiva 2</option>
-                <option value="3">Electiva 3</option>
+                <?php foreach($electives as $elective) { ?>
+                  <option value="<?php echo $elective->code_subject ?>"><?php echo $elective->name ?> (<?php echo $elective->code_subject ?>)</option>
+                <?php } ?>
               </select>
             </div>
           </div>
