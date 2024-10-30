@@ -183,8 +183,9 @@
                                 <?php } ?>
                             </tobdy>
                             </table>
-                            <?php $user_id = get_current_user_id();
-                            if($user_id != 288){?>
+                            <?php global $current_user;
+                                $roles = $current_user->roles;
+                                if(!in_array('webinar-aliance', $roles)){?>
                                 <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
                                     <?php if(($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) && ($order->get_meta('pending_payment') && $order->get_meta('pending_payment') > 0)){ ?>
                                         <div style="margin-right: 10px">
