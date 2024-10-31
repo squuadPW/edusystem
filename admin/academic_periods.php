@@ -214,7 +214,13 @@ class TT_academic_period_all_List_Table extends WP_List_Table
         global $wpdb;
         $academic_periods_array = [];
 
-        $academic_periods = $wpdb->get_results("SELECT * FROM wp_academic_periods");
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
+            $search = $_POST['s'];
+            $academic_periods = $wpdb->get_results("SELECT * FROM wp_academic_periods WHERE (`name` LIKE '%{$search}%' || code LIKE '%{$search}%')");
+        } else {
+            $academic_periods = $wpdb->get_results("SELECT * FROM wp_academic_periods");
+        }
+
 
         if ($academic_periods) {
             foreach ($academic_periods as $academic_period) {
