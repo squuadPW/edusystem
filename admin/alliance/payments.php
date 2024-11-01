@@ -224,7 +224,7 @@ function get_invoices_alliances($start, $end, $id = ""){
                 'created_at' => $order->get_date_created()->format('F j, Y g:i a')
             ]);
 
-            $total += $order->get_meta('alliance_fee');
+            $total += (float)$order->get_meta('alliance_fee');
         }
     }
 
