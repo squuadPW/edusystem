@@ -7,6 +7,7 @@ require plugin_dir_path( __FILE__ ) . 'payments.php';
 require plugin_dir_path( __FILE__ ) . 'scholarships.php';
 require plugin_dir_path( __FILE__ ) . 'academic_periods.php';
 require plugin_dir_path( __FILE__ ) . 'school_subjects.php';
+require plugin_dir_path( __FILE__ ) . 'enrollments.php';
 require plugin_dir_path( __FILE__ ) . 'configuration-options.php';
 require plugin_dir_path( __FILE__ ) . 'send-email.php';
 require plugin_dir_path( __FILE__ ) . 'staff.php';
@@ -106,6 +107,15 @@ function aes_scripts_admin(){
 
     if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_department_content'){
         wp_enqueue_script('department',plugins_url('aes').'/admin/assets/js/department.js',array('jquery'),'1.0.0',true);
+    }
+
+    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_enrollments_content'){
+        wp_enqueue_script('enrollment',plugins_url('aes').'/admin/assets/js/enrollment.js',array('jquery'),'1.0.0',true);
+        
+        wp_localize_script('enrollment','search_student_id_document',[
+            'url' => admin_url( 'admin-ajax.php' ),
+            'action' => 'search_student_id_document' 
+        ]);
     }
 
     if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_admission_content'){
@@ -296,6 +306,16 @@ function add_custom_admin_page() {
     );
 
     add_menu_page( 
+        __('Enrollments','aes'),
+        __('Enrollments','aes'),
+        'manager_enrollments_aes', 
+        'add_admin_form_enrollments_content',
+        'add_admin_form_enrollments_content', 
+        'dashicons-id', 
+        7
+    );
+
+    add_menu_page( 
         __('Configuration','aes'),
         __('Configuration','aes'),
         'manager_configuration_options_aes', 
@@ -371,6 +391,7 @@ function add_cap_to_administrator(){
     $role->add_cap('manager_scholarship_aes');
     $role->add_cap('manager_academic_periods_aes');
     $role->add_cap('manager_school_subjects_aes');
+    $role->add_cap('manager_enrollments_aes');
     $role->add_cap('manager_configuration_options_aes');
     $role->add_cap('manager_send_email_aes');
     $role->add_cap('manager_staff_aes');

@@ -217,3 +217,13 @@ function get_subject_details($subject_id)
     $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id={$subject_id}");
     return $subject;
 }
+
+function get_subject_details_code($code_subject)
+{
+    global $wpdb;
+    $table_school_subjects = $wpdb->prefix.'school_subjects';
+
+    $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE code_subject='{$code_subject}'");
+    return $subject;
+}
+
