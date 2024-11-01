@@ -283,7 +283,7 @@ function get_invoices_institutes($start, $end, $id = "")
                 'created_at' => $order->get_date_created()->format('F j, Y g:i a')
             ]);
 
-            $total += $order->get_meta('institute_fee');
+            $total += (float)$order->get_meta('institute_fee');
         }
     }
 
