@@ -23,7 +23,7 @@
                                 </tr>
                                 <tr>
                                     <th scope="row"><label for="input_id"><?= __('Type Document','aes').':'; ?></label></th>
-                                    <td><?= ucwords($student->type_document) ?></td>
+                                    <td><?= get_name_type_document($student->type_document) ?></td>
                                     <th scope="row"><label for="input_id"><?= __('ID Document','aes').':'; ?></label></th>
                                     <td><?= $student->id_document ?></td>
                                 </tr>
