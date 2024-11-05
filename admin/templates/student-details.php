@@ -230,7 +230,7 @@ $countries = get_countries();
                                         if (in_array('administrator', $roles)) {
                                     ?>
                                         <p style="text-align: center">
-                                            <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>" target="_blank">
+                                            <a href="<?php echo admin_url('user-edit.php?user_id=') . $partner->ID ?>" target="_blank">
                                                 <button  type="button" class="button button-success" style="margin-left: 10px"><?= __('View user parent', 'aes'); ?></button>
                                             </a>
                                         </p>
