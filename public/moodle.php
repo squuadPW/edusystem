@@ -13,7 +13,7 @@ function is_enrolled_in_courses($student_id) {
             $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);
 
             $enrolments = [
-                'userid' => $data_student->moodle_student_id, // asumo que el campo moodle_id existe en la tabla students
+                'userid' => $data_student->moodle_student_id ?? 0, // asumo que el campo moodle_id existe en la tabla students
             ];
 
             $enrolled_courses = $MoodleRest->request('core_enrol_get_users_courses', $enrolments);
@@ -72,18 +72,20 @@ function student_assignments_moodle($student_id) {
             $grades = [];
             $moodle_student_id = $data_student->moodle_student_id;
 
-            foreach ($courses as $key => $course) {
-                if ($course['visible']) {
-                    array_push($courseids, (int)$course['id']);
+            if (count($courses) > 0) {    
+                foreach ($courses as $key => $course) {
+                    if ($course['visible']) {
+                        array_push($courseids, (int)$course['id']);
 
-                    $grades_course = course_grade((int)$course['id']);
-                    $grades_course = $grades_course['usergrades'];
-                    $filtered_grades = array_filter($grades_course, function($entry) use ($moodle_student_id) {
-                        return $entry['userid'] == $moodle_student_id;
-                    });
-                    $filtered_grades = array_values($filtered_grades);
+                        $grades_course = course_grade((int)$course['id']);
+                        $grades_course = $grades_course['usergrades'];
+                        $filtered_grades = array_filter($grades_course, function($entry) use ($moodle_student_id) {
+                            return $entry['userid'] == $moodle_student_id;
+                        });
+                        $filtered_grades = array_values($filtered_grades);
 
-                    array_push($grades, ['course_id' => (int)$course['id'], 'grades' => $filtered_grades]);
+                        array_push($grades, ['course_id' => (int)$course['id'], 'grades' => $filtered_grades]);
+                    }
                 }
             }
 

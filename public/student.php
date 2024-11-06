@@ -334,32 +334,34 @@ add_action('woocommerce_account_califications_endpoint', function () {
             return $entry['course_id'] == $course_id;
         });
         $filtered_course_student = array_values($filtered_course_student);
-        $assignments_student_filtered = $filtered_course_student[0]['grades'][0]['gradeitems'];
+        if ($filtered_course_student[0]) {
+            $assignments_student_filtered = $filtered_course_student[0]['grades'][0]['gradeitems'];
 
-        foreach ($assignments_coursing as $key => $work) {
-            $assignment_id = (int)$work['id'];
-            $cmid = (int)$work['cmid'];
-
-            $filtered_assignments_student = array_filter($assignments_student_filtered, function($entry) use ($cmid) {
-                return $entry['id'] == $cmid;
-            });
-            $filtered_assignments_student = array_values($filtered_assignments_student);
-
-            array_push($assignments_work, [
-                'assignment_id' => $assignment_id,
-                'name' => $work['name'],
-                'max_grade' => $work['grade'],
-                'grade' => count($filtered_assignments_student) > 0 ? $filtered_assignments_student[0]['gradeformatted'] : 0,
-                'start_date' => date('Y-m-d', $work['allowsubmissionsfromdate']),
-                'end_date' => date('Y-m-d', $work['duedate'])
-            ]);
-        }
-
-        array_push($formatted_assignments, [
-            'course_id' => $course_id,
-            'course' => $assignment_c['fullname'],
-            'assignments' => $assignments_work
-        ]);        
+            foreach ($assignments_coursing as $key => $work) {
+                $assignment_id = (int)$work['id'];
+                $cmid = (int)$work['cmid'];
+    
+                $filtered_assignments_student = array_filter($assignments_student_filtered, function($entry) use ($cmid) {
+                    return $entry['id'] == $cmid;
+                });
+                $filtered_assignments_student = array_values($filtered_assignments_student);
+    
+                array_push($assignments_work, [
+                    'assignment_id' => $assignment_id,
+                    'name' => $work['name'],
+                    'max_grade' => $work['grade'],
+                    'grade' => count($filtered_assignments_student) > 0 ? $filtered_assignments_student[0]['gradeformatted'] : 0,
+                    'start_date' => date('Y-m-d', $work['allowsubmissionsfromdate']),
+                    'end_date' => date('Y-m-d', $work['duedate'])
+                ]);
+            }
+    
+            array_push($formatted_assignments, [
+                'course_id' => $course_id,
+                'course' => $assignment_c['fullname'],
+                'assignments' => $assignments_work
+            ]);   
+        }     
     }
     
     include(plugin_dir_path(__FILE__) . 'templates/califications.php');
