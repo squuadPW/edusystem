@@ -556,7 +556,7 @@ function student_unsubscribe()
             }
     
             if (count($enrolled) > 0 && $total_evaluated == 0) {
-                include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
+                // include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
             }
         }
     } catch (\Throwable $th) {
