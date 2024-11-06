@@ -316,10 +316,9 @@ add_action('woocommerce_account_califications_endpoint', function () {
         $students = get_student_from_id($student_id);
     }
 
-    if (in_array('parent', $roles) && !in_array('student', $roles)) {
+    if (in_array('parent', $roles) && !in_array('student', $roles) || in_array('parent', $roles) && in_array('student', $roles)) {
         $students = get_student($current_user->ID);
     }
-
 
     foreach ($students as $key => $student) {
         $moodle_student_id = $student->moodle_student_id;
