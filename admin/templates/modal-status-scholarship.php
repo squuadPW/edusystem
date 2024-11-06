@@ -2,7 +2,7 @@
 	<div class='modal-content'>
 		<div class="modal-header">
 			<h3 style="font-size:20px;" id="title-modal-status-scholarship"></h3>
-			<span class="modal-close disabled"><span class="dashicons dashicons-no-alt"></span></span>
+			<span class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
 		</div>
 		<form method="post"
 			action="<?= admin_url('admin.php?page=add_admin_form_scholarships_content&action=change_status_scholarship') ?>">

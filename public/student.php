@@ -304,6 +304,67 @@ add_action('woocommerce_account_my-tickets_endpoint', function () {
     include(plugin_dir_path(__FILE__) . 'templates/my-tickets.php');
 });
 
+add_action('woocommerce_account_califications_endpoint', function () {
+
+    global $current_user;
+    $roles = $current_user->roles;
+
+    if (!in_array('parent', $roles) && in_array('student', $roles)) {
+        $student_id = get_user_meta($current_user->ID, 'student_id', true);
+        $student = get_student_from_id($student_id);
+    }
+
+    if (in_array('parent', $roles) && in_array('student', $roles) || in_array('parent', $roles) && !in_array('student', $roles)) {
+        $student = get_student($current_user->ID);
+    }
+
+    $moodle_student_id = $student[0]->moodle_student_id;
+    $assignments = student_assignments_moodle($student[0]->id);
+    $assignments_course = $assignments['assignments'];
+    $assignments_student = $assignments['grades'];
+    $formatted_assignments = [];
+
+    foreach ($assignments_course as $key => $assignment_c) {
+        $course_id = (int)$assignment_c['id'];
+
+        $assignments_coursing = $assignment_c['assignments'];
+        $assignments_work = [];
+
+        $filtered_course_student = array_filter($assignments_student, function($entry) use ($course_id) {
+            return $entry['course_id'] == $course_id;
+        });
+        $filtered_course_student = array_values($filtered_course_student);
+        $assignments_student_filtered = $filtered_course_student[0]['grades'][0]['gradeitems'];
+
+        foreach ($assignments_coursing as $key => $work) {
+            $assignment_id = (int)$work['id'];
+            $cmid = (int)$work['cmid'];
+
+            $filtered_assignments_student = array_filter($assignments_student_filtered, function($entry) use ($cmid) {
+                return $entry['id'] == $cmid;
+            });
+            $filtered_assignments_student = array_values($filtered_assignments_student);
+
+            array_push($assignments_work, [
+                'assignment_id' => $assignment_id,
+                'name' => $work['name'],
+                'max_grade' => $work['grade'],
+                'grade' => count($filtered_assignments_student) > 0 ? $filtered_assignments_student[0]['gradeformatted'] : 0,
+                'start_date' => date('Y-m-d', $work['allowsubmissionsfromdate']),
+                'end_date' => date('Y-m-d', $work['duedate'])
+            ]);
+        }
+
+        array_push($formatted_assignments, [
+            'course_id' => $course_id,
+            'course' => $assignment_c['fullname'],
+            'assignments' => $assignments_work
+        ]);        
+    }
+    
+    include(plugin_dir_path(__FILE__) . 'templates/califications.php');
+});
+
 add_action('woocommerce_account_student-details_endpoint', function () {
 
     $student = get_student_detail($_GET['student']);
