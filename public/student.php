@@ -334,6 +334,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
             $assignments_student = $assignments['grades'];
             $formatted_assignments = [];
         
+            // print_r($assignments);
             foreach ($assignments_course as $key => $assignment_c) {
                 $course_id = (int)$assignment_c['id'];
         
