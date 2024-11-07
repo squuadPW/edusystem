@@ -90,8 +90,6 @@ function student_assignments_moodle($student_id) {
             }
 
             $assignments = $MoodleRest->request('mod_assign_get_assignments', ['courseids' => $courseids, 'includenotenrolledcourses' => 1]);
-            print_r($assignments);
-
             return ['assignments' => $assignments['courses'], 'grades' => $grades];
         }
     }
