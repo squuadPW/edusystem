@@ -13,9 +13,7 @@
                     <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                             class="nobr"><?= __('Assignment', 'aes'); ?></span></th>
                     <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                            class="nobr"><?= __('Start date', 'aes'); ?></span></th>
-                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                            class="nobr"><?= __('Due date', 'aes'); ?></span></th>
+                            class="nobr"><?= __('Max date', 'aes'); ?></span></th>
                     <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                             class="nobr"><?= __('Calification', 'aes'); ?></span></th>
                 </tr>
@@ -37,11 +35,7 @@
                             </td>
                             <td style="background-color: #f8f8f8;"
                                 class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                data-title="<?= __('Start date', 'aes') ?>">
-                            </td>
-                            <td style="background-color: #f8f8f8;"
-                                class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                data-title="<?= __('End date', 'aes') ?>">
+                                data-title="<?= __('Max date', 'aes') ?>">
                             </td>
                             <td style="background-color: #f8f8f8;"
                                 class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
@@ -61,12 +55,8 @@
                                     <?= $assignment['name'] ?>
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                    data-title="<?= __('Start date', 'aes') ?>">
-                                    <?= $assignment['start_date'] ?>
-                                </td>
-                                <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                    data-title="<?= __('End date', 'aes') ?>">
-                                    <?= $assignment['end_date'] ?>
+                                    data-title="<?= __('Max date', 'aes') ?>">
+                                    <?= $assignment['max_date'] ?>
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                                     data-title="<?= __('Calification', 'aes') ?>">

@@ -333,7 +333,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
             $assignments_course = $assignments['assignments'];
             $assignments_student = $assignments['grades'];
             $formatted_assignments = [];
-        
+
             // print_r($assignments);
             foreach ($assignments_course as $key => $assignment_c) {
                 $course_id = (int)$assignment_c['id'];
@@ -345,26 +345,19 @@ add_action('woocommerce_account_califications_endpoint', function () {
                     return $entry['course_id'] == $course_id;
                 });
                 $filtered_course_student = array_values($filtered_course_student);
+
                 if ($filtered_course_student[0]) {
                     $assignments_student_filtered = $filtered_course_student[0]['grades'][0]['gradeitems'];
 
-                    foreach ($assignments_coursing as $key => $work) {
-                        $assignment_id = (int)$work['id'];
-                        $cmid = (int)$work['cmid'];
-            
-                        $filtered_assignments_student = array_filter($assignments_student_filtered, function($entry) use ($cmid) {
-                            return $entry['cmid'] == $cmid;
-                        });
-                        $filtered_assignments_student = array_values($filtered_assignments_student);
-            
-                        array_push($assignments_work, [
-                            'assignment_id' => $assignment_id,
-                            'name' => $work['name'],
-                            'max_grade' => $work['grade'],
-                            'grade' => count($filtered_assignments_student) > 0 ? $filtered_assignments_student[0]['gradeformatted'] : 0,
-                            'start_date' => date('Y-m-d', $work['allowsubmissionsfromdate']),
-                            'end_date' => date('Y-m-d', $work['duedate'])
-                        ]);
+                    foreach ($assignments_student_filtered as $key => $work) {
+                        if (isset($work['cmid'])) {
+                            array_push($assignments_work, [
+                                'name' => $work['itemname'],
+                                'max_grade' => $work['grademax'],
+                                'grade' => (isset($work['gradeformatted']) && $work['gradeformatted'] != '') ? $work['gradeformatted'] : '-',
+                                'max_date' => date('Y-m-d', $work['gradedatesubmitted']),
+                            ]);
+                        }
                     }
             
                     array_push($formatted_assignments, [
