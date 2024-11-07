@@ -280,7 +280,7 @@ class TT_scholarship_pending_List_Table extends WP_List_Table{
         global $wpdb;
         $scholarships_array = [];
 
-        $scholarships = $wpdb->get_results("SELECT * FROM wp_student_scholarship_application WHERE status_id = 0");
+        $scholarships = $wpdb->get_results("SELECT * FROM wp_student_scholarship_application WHERE status_id = 0 ORDER BY id DESC");
 
         if($scholarships){
             foreach($scholarships as $scholarship){
@@ -414,7 +414,7 @@ class TT_scholarship_all_List_Table extends WP_List_Table{
         global $wpdb;
         $scholarships_array = [];
 
-        $scholarships = $wpdb->get_results("SELECT * FROM wp_student_scholarship_application WHERE status_id = 1");
+        $scholarships = $wpdb->get_results("SELECT * FROM wp_student_scholarship_application WHERE status_id = 1 ORDER BY id DESC");
 
         if($scholarships){
             foreach($scholarships as $scholarship){
