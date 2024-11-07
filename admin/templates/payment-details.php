@@ -21,6 +21,9 @@
                                 <?php if($order->get_meta('from_webinar')) { ?>
                                     <h4 style="text-align: center; font-weight: 600; font-style: italic; color: #2271b1; font-size: 18px;">From webinar</h4>
                                 <?php } ?>
+                                <?php if($order->get_meta('is_scholarship')) { ?>
+                                    <h4 style="text-align: center; font-weight: 600; font-style: italic; color: #1f8605; font-size: 18px;">Scholarship</h4>
+                                <?php } ?>
                                 <tr>
                                     <th scope="row" ><label for="input_id"><?= __('Payment ID','aes').':'; ?></label></th>
                                     <td>
