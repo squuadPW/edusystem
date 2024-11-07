@@ -347,13 +347,13 @@ add_action('woocommerce_account_califications_endpoint', function () {
                 $filtered_course_student = array_values($filtered_course_student);
                 if ($filtered_course_student[0]) {
                     $assignments_student_filtered = $filtered_course_student[0]['grades'][0]['gradeitems'];
-        
+
                     foreach ($assignments_coursing as $key => $work) {
                         $assignment_id = (int)$work['id'];
                         $cmid = (int)$work['cmid'];
             
                         $filtered_assignments_student = array_filter($assignments_student_filtered, function($entry) use ($cmid) {
-                            return $entry['id'] == $cmid;
+                            return $entry['cmid'] == $cmid;
                         });
                         $filtered_assignments_student = array_values($filtered_assignments_student);
             
