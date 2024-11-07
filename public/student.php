@@ -351,11 +351,17 @@ add_action('woocommerce_account_califications_endpoint', function () {
 
                     foreach ($assignments_student_filtered as $key => $work) {
                         if (isset($work['cmid'])) {
+                            $cmid = $work['cmid'];
+                            $filtered_assignments_coursing = array_filter($assignments_coursing, function($entry) use ($cmid) {
+                                return $entry['cmid'] == $cmid;
+                            });
+                            $filtered_assignments_coursing = array_values($filtered_assignments_coursing);
+
                             array_push($assignments_work, [
                                 'name' => $work['itemname'],
                                 'max_grade' => $work['grademax'],
                                 'grade' => (isset($work['gradeformatted']) && $work['gradeformatted'] != '') ? $work['gradeformatted'] : '-',
-                                'max_date' => date('Y-m-d', $work['gradedatesubmitted']),
+                                'max_date' => isset($filtered_assignments_coursing[0]) && $filtered_assignments_coursing[0]['duedate'] != 0 ? wp_date('Y-m-d', $filtered_assignments_coursing[0]['duedate']) : '-',
                             ]);
                         }
                     }
