@@ -230,6 +230,9 @@ function woocommerce_checkout_order_created_action($order)
         $email_new_student->trigger($student_id);
 
         insert_data_student($order);
+        if (isset($_COOKIE['is_scholarship']) && !empty($_COOKIE['is_scholarship'])) {
+            save_scholarship();
+        }
     }
 
     if (isset($_COOKIE['is_older']) && !empty($_COOKIE['is_older'])) {
@@ -308,6 +311,7 @@ function woocommerce_checkout_order_created_action($order)
     setcookie('password', '', time());
     setcookie('from_webinar', '', time());
     setcookie('one_time_payment', '', time());
+    setcookie('is_scholarship', '', time());
 }
 
 add_action('woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action');
@@ -367,6 +371,10 @@ function change_billing_phone_checkout_field_value($order)
 
     if (isset($_COOKIE['one_time_payment']) && !empty($_COOKIE['one_time_payment'])) {
         $order->add_meta_data('one_time_payment', 1);
+    }
+
+    if (isset($_COOKIE['is_scholarship']) && !empty($_COOKIE['is_scholarship'])) {
+        $order->add_meta_data('is_scholarship', 1);
     }
 
     $order->save();

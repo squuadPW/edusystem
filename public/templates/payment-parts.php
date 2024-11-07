@@ -13,7 +13,7 @@
   }
 
   // Check if the product is a variable product
-  if (isset($product) && $product->is_type('variable')) {
+  if (isset($product) && $product->is_type('variable') && !isset($_COOKIE['is_scholarship'])) {
     ?>
 
     <?php if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) { ?>
@@ -71,8 +71,10 @@
   }
 ?>
 
-<div id="table-payment">
+<?php if(isset($product) && $product->is_type('variable') && !isset($_COOKIE['is_scholarship'])) { ?>
+  <div id="table-payment">
  
-</div>
-
-<input type="hidden" name="submit" value="Apply Scholarship">
+  </div>
+  
+  <input type="hidden" name="submit" value="Apply Scholarship">
+<?php } ?>

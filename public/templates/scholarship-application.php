@@ -1,7 +1,7 @@
 <div class="title">
     <?= __('Scholarship application', 'aes'); ?>
 </div>
-<form method="POST" action="<?= the_permalink() . '?action=save_scholarship'; ?>" class="form-aes">
+<form method="POST" action="<?= the_permalink() . '?action=save_student_scholarship'; ?>" class="form-aes">
     <!-- DATOS DEL ESTUDIANTE -->
     <div class="grid grid-cols-12 gap-4">
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
@@ -14,6 +14,8 @@
                 required>
             <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
                 value="0">
+            <input class="formdata" autocomplete="off" type="hidden" id="is_scholarship" name="is_scholarship"
+                value="1">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>

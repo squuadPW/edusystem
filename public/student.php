@@ -3,7 +3,7 @@
 function save_student()
 {
     if (
-        isset($_GET['action']) && !empty($_GET['action']) && ($_GET['action'] == 'save_student' || $_GET['action'] == 'new_applicant_others' || $_GET['action'] == 'new_applicant_me' || $_GET['action'] == 'save_student_custom' || $_GET['action'] == 'save_student_info')
+        isset($_GET['action']) && !empty($_GET['action']) && ($_GET['action'] == 'save_student' || $_GET['action'] == 'new_applicant_others' || $_GET['action'] == 'new_applicant_me' || $_GET['action'] == 'save_student_custom' || $_GET['action'] == 'save_student_info' || $_GET['action'] == 'save_student_scholarship')
     ) {
 
         $action = $_GET['action'];
@@ -11,6 +11,7 @@ function save_student()
 
         setcookie('from_webinar', '', time(), '/');
         setcookie('one_time_payment', '', time(), '/');
+        setcookie('is_scholarship', '', time(), '/');
 
         // Datos del estudiante
         $birth_date = isset($_POST['birth_date_student']) ? $_POST['birth_date_student'] : null;
@@ -44,6 +45,7 @@ function save_student()
         $password = isset($_POST['password']) ? $_POST['password'] : null;
         $from_webinar = isset($_POST['from_webinar']) ? true : false;
         $one_time_payment = isset($_POST['one_time_payment']) ? true : false;
+        $is_scholarship = isset($_POST['is_scholarship']) ? true : false;
 
         if ($one_time_payment) {
             setcookie('one_time_payment', 1, time() + 3600, '/');
@@ -72,7 +74,7 @@ function save_student()
         setcookie('gender', $gender, time() + 3600, '/');
         setcookie('password', $password, time() + 3600, '/');
 
-        $id_bitrix = $_GET['idbitrix'];
+        $id_bitrix = $_GET['idbitrix'] ?? null;
         if (isset($id_bitrix)) {
             setcookie('id_bitrix', $id_bitrix, time() + 3600, '/');
         }
@@ -87,6 +89,7 @@ function save_student()
 
         setcookie('name_institute', ucwords($name_institute), time() + 3600, '/');
         switch ($action) {
+            case 'save_student_scholarship':
             case 'save_student':
                 if (!empty($agent_name) && !empty($agent_last_name) && !empty($email_partner) && !empty($number_partner) && !empty($birth_date_parent) && !empty($parent_document_type) && !empty($id_document_parent)) {
                     setcookie('agent_name', ucwords($agent_name), time() + 3600, '/');
@@ -108,7 +111,7 @@ function save_student()
                     setcookie('gender_parent', $gender, time() + 3600, '/');
                 }
 
-                redirect_to_checkout($program, $grade, $from_webinar);
+                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
                 break;
 
             case 'save_student_custom':
@@ -173,7 +176,7 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 3600, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 3600, '/');
 
-                redirect_to_checkout($program, $grade, $from_webinar);
+                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
                 break;
 
             default:
@@ -188,7 +191,7 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 3600, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 3600, '/');
 
-                redirect_to_checkout($program, $grade, $from_webinar);
+                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
                 break;
         }
     }
@@ -211,7 +214,7 @@ function save_student()
     }
 }
 
-function redirect_to_checkout($program, $grade, $from_webinar = false)
+function redirect_to_checkout($program, $grade, $from_webinar = false, $is_scholarship = false)
 {
     global $woocommerce;
     $woocommerce->cart->empty_cart();
@@ -247,9 +250,12 @@ function redirect_to_checkout($program, $grade, $from_webinar = false)
         $woocommerce->cart->add_to_cart(102, 1);
     }
 
-    if (!$from_webinar) {
+    if (!$from_webinar && !$is_scholarship) {
         $woocommerce->cart->apply_coupon('Registration fee discount');
-    } else {
+    } else if ($is_scholarship) {
+        $woocommerce->cart->apply_coupon('Honor Excellent AES');
+        setcookie('is_scholarship', 1, time() + 3600, '/');
+    } else if ($from_webinar) {
         $woocommerce->cart->apply_coupon('100% Registration fee');
         setcookie('from_webinar', 1, time() + 3600, '/', '/');
     }
