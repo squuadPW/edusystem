@@ -12,8 +12,8 @@
                             class="nobr"><?= __('Course', 'aes'); ?></span></th>
                     <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                             class="nobr"><?= __('Assignment', 'aes'); ?></span></th>
-                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                            class="nobr"><?= __('Max date', 'aes'); ?></span></th>
+                    <!-- <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
+                            class="nobr"><?= __('Max date', 'aes'); ?></span></th> -->
                     <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                             class="nobr"><?= __('Calification', 'aes'); ?></span></th>
                 </tr>
@@ -33,10 +33,10 @@
                                 class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
                                 data-title="<?= __('Assignment', 'aes'); ?>">
                             </td>
-                            <td style="background-color: #f8f8f8;"
+                            <!-- <td style="background-color: #f8f8f8;"
                                 class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                                 data-title="<?= __('Max date', 'aes') ?>">
-                            </td>
+                            </td> -->
                             <td style="background-color: #f8f8f8;"
                                 class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                                 data-title="<?= __('Calification', 'aes') ?>">
@@ -54,10 +54,10 @@
                                     data-title="<?= __('Assignment', 'aes'); ?>">
                                     <?= $assignment['name'] ?>
                                 </td>
-                                <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
+                                <!-- <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                                     data-title="<?= __('Max date', 'aes') ?>">
                                     <?= $assignment['max_date'] ?>
-                                </td>
+                                </td> -->
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                                     data-title="<?= __('Calification', 'aes') ?>">
                                     <?= $assignment['grade'] ?> / <?= $assignment['max_grade'] ?>
