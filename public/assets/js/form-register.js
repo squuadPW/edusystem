@@ -428,14 +428,14 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
         }
       }
     }
-  };
+  };  
 }
 
 if (document.getElementById("birth_date_student")) {
   flatpickr(document.getElementById("birth_date_student"), {
     dateFormat: "m/d/Y",
     disableMobile: "true",
-    maxDate: "today",
+    maxDate: "01/01/2015"
   });
 
   document
@@ -747,7 +747,7 @@ if (document.getElementById("birth_date_parent")) {
   flatpickr(document.getElementById("birth_date_parent"), {
     dateFormat: "m/d/Y",
     disableMobile: "true",
-    maxDate: "today",
+    maxDate: "01/01/2007"
   });
 }
 
