@@ -435,7 +435,7 @@ if (document.getElementById("birth_date_student")) {
   flatpickr(document.getElementById("birth_date_student"), {
     dateFormat: "m/d/Y",
     disableMobile: "true",
-    maxDate: "01/01/2015"
+    maxDate: "12/31/2015"
   });
 
   document
@@ -747,7 +747,7 @@ if (document.getElementById("birth_date_parent")) {
   flatpickr(document.getElementById("birth_date_parent"), {
     dateFormat: "m/d/Y",
     disableMobile: "true",
-    maxDate: "01/01/2007"
+    maxDate: "12/31/2007"
   });
 }
 
