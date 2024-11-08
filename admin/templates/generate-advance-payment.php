@@ -15,7 +15,7 @@
 			action="<?= admin_url('admin.php?page=add_admin_form_payments_content&action=generate_payment'); ?>">
 			<div class="form-group" style="padding: 0px 10px 10px 10px; text-align: center">
 				<label for="id_document">Enter the document id of student</label> <br>
-				<input type="number" id="id_document" name="id_document" <?php echo $_GET['student_available'] == 1 ? 'readonly' : '' ?> value="<?php echo $_GET['id_document'] ?>"
+				<input type="text" id="id_document" name="id_document" <?php echo $_GET['student_available'] == 1 ? 'readonly' : '' ?> value="<?php echo $_GET['id_document'] ?>"
 					required> <br>
 				<input type="hidden" id="generate" name="generate"
 					value="<?php echo $_GET['student_available'] == 1 && isset($payment) ? true : false ?>" required>
