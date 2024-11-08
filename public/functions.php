@@ -462,9 +462,9 @@ function remove_my_account_links($menu_links)
             + array('my-tickets' => __('My Tickets', 'form-plugin'))
             + array_slice($menu_links, 4, NULL, true);
 
-        // $menu_links = array_slice($menu_links, 0, 4, true)
-        //     + array('califications' => __('Califications', 'form-plugin'))
-        //     + array_slice($menu_links, 4, NULL, true);
+        $menu_links = array_slice($menu_links, 0, 4, true)
+            + array('califications' => __('Califications', 'form-plugin'))
+            + array_slice($menu_links, 4, NULL, true);
 
         /*
         if(in_array('student',$roles) && in_array('parent',$roles)){
@@ -662,7 +662,7 @@ function add_loginout_link($items, $args)
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'form-plugin') . '</a></li>';
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account details', 'form-plugin') . '</a></li>';
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('My tickets', 'form-plugin') . '</a></li>';
-            // $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'form-plugin') . '</a></li>';
         }
 
         $logout_link = wp_logout_url(get_home_url());
