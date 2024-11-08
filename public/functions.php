@@ -39,7 +39,7 @@ function form_plugin_scripts()
     wp_enqueue_script('payment-parts-update');
 
     // form-register
-    wp_register_script('form-register', plugins_url('aes') . '/public/assets/js/form-register.js', array('jquery'), '1.0.0', true);
+    wp_register_script('form-register', plugins_url('aes') . '/public/assets/js/form-register.js', array('jquery'), '1.0.1', true);
     wp_localize_script(
         'form-register',
         'ajax_object',

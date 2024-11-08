@@ -434,7 +434,7 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
 if (document.getElementById("birth_date_student")) {
   flatpickr(document.getElementById("birth_date_student"), {
     dateFormat: "m/d/Y",
-    disableMobile: "false",
+    disableMobile: "true",
     maxDate: "today",
   });
 
@@ -746,7 +746,7 @@ function diff_years(dt2, dt1) {
 if (document.getElementById("birth_date_parent")) {
   flatpickr(document.getElementById("birth_date_parent"), {
     dateFormat: "m/d/Y",
-    disableMobile: "false",
+    disableMobile: "true",
     maxDate: "today",
   });
 }
