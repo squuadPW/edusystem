@@ -205,18 +205,18 @@ function get_orders_by_date($date)
     $institute_fee = 0.00;
     $alliance_fee = 0.00;
     $gross = 0.00;
-    $discount = 0.00;
+    $net = 0.00;
     $orders = wc_get_orders($args);
     foreach ($orders as $order) {
         $institute_fee += (float) $order->get_meta('institute_fee');
         $alliance_fee += (float) $order->get_meta('alliance_fee');
-        $gross += ($order->get_subtotal() ? $order->get_subtotal() : 0);
-        $discount += ($order->get_total_discount() ? $order->get_total_discount() : 0);
+        $gross += ($order->get_subtotal() ? (float)$order->get_subtotal() : 0);
+        $net += ($order->get_total() ? (float)$order->get_total() : 0);
     }
 
     return [
         'gross' => $gross,
-        'net' => (($gross - $discount) - ($institute_fee + $alliance_fee)),
+        'net' => $net
     ];
 }
 
