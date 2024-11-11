@@ -148,7 +148,7 @@
                                         <?php if (isset($enrollment) && !empty($enrollment)): ?>
                                             <label for="code_subject"><b><?= __('Subject', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
-                                            <select name="code_subject" required>
+                                            <select name="code_subject">
                                                 <option value="">Select a subject</option>
                                                 <?php foreach ($subjects as $key => $subject) { ?>
                                                     <option value="<?php echo $subject->code_subject ?>"
@@ -160,7 +160,7 @@
                                         <?php else: ?>
                                             <label for="code_subject"><b><?= __('Subject', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
-                                            <select name="code_subject" required>
+                                            <select name="code_subject">
                                                 <option value="">Select a subject</option>
                                                 <?php foreach ($subjects as $key => $subject) { ?>
                                                     <option value="<?php echo $subject->code_subject ?>">
