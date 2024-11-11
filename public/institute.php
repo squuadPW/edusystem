@@ -128,7 +128,12 @@ function set_institute_in_order($order)
             }
 
             // Calcular la tarifa del instituto
-            $total_institute_fee = ($fee_institute * $total_for_fee) / 100;
+            if ($order->get_meta('is_scholarship')) {
+                $total_institute_fee = 0;
+            } else {
+                $total_institute_fee = ($fee_institute * $total_for_fee) / 100;
+            }
+
             $order->update_meta_data('institute_fee', $total_institute_fee);
 
             // si tiene alianza
@@ -139,9 +144,13 @@ function set_institute_in_order($order)
                 $data_alliance = $wpdb->get_row("SELECT fee FROM {$table_alliances} WHERE id={$alliance_id}");
 
                 if (!empty($data_alliance)) {
-
-                    $fee_alliance = $data_alliance->fee;
-                    $total_alliance_fee = ($fee_alliance * $total_for_fee) / 100;
+                    if ($order->get_meta('is_scholarship')) {
+                        $total_alliance_fee = 0;
+                    } else {
+                        $fee_alliance = $data_alliance->fee;
+                        $total_alliance_fee = ($fee_alliance * $total_for_fee) / 100;
+                    }
+        
                     $order->update_meta_data('alliance_fee', $total_alliance_fee);
                 }
             }
