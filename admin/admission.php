@@ -1092,6 +1092,8 @@ function update_status_documents()
             if ($access_virtual && isset($paid)) {
                 $table_name = $wpdb->prefix . 'students'; // assuming the table name is "wp_students"
                 $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
+
+                send_notification_staff('Approved student', 'We inform you that the documents of the student '. $student->name .  ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name .', with the identification ' . $student->id_document . ' have been approved and he already has access to the virtual classroom and the admin. We are waiting for him to be assigned to his corresponding course.');
                 $type_document = array(
                     'identification_document' => 1,
                     'passport' => 2,

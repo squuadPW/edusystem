@@ -9,23 +9,7 @@ function add_admin_form_send_notification_content()
     if (isset($_GET['action']) && !empty($_GET['action'])) {
         if ($_GET['action'] == 'send_notification') {
 
-            for ($i=0; $i < 3; $i++) { 
-                $email = '';
-                switch ($i) {
-                    case 0:
-                        $email = get_option('email_coordination');
-                        break;
-                    case 1:
-                        $email = get_option('email_academic_management');
-                        break;
-                    case 2:
-                        $email = get_option('email_manager');
-                        break;
-                }
-                $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
-                $sender_email->trigger($email, $_POST['subject'], $_POST['message']);
-            }
-
+            send_notification_staff($_POST['subject'], $_POST['message']);
             setcookie('message', __('Email sent successfully.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_send_notification_content'));
             exit;
@@ -34,4 +18,23 @@ function add_admin_form_send_notification_content()
 
     $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
     include (plugin_dir_path(__FILE__) . 'templates/send-notification.php');
+}
+
+function send_notification_staff($subject, $message) {
+    for ($i=0; $i < 3; $i++) { 
+        $email = '';
+        switch ($i) {
+            case 0:
+                $email = get_option('email_coordination');
+                break;
+            case 1:
+                $email = get_option('email_academic_management');
+                break;
+            case 2:
+                $email = get_option('email_manager');
+                break;
+        }
+        $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
+        $sender_email->trigger($email, $subject, $message);
+    }
 }
