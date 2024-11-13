@@ -20,7 +20,7 @@
         </div>
         <div class="card-body">
             <div class="content-notification-staff">
-                <?= __('An email notification will be sent to the X, X and X departments.')?> <br>
+                <?= __('An email notification will be sent to the academic coordination, academic management, admission and national and international manager.')?> <br>
                 <?= __('This module is essential to keep all departments aligned and updated, thus improving collaboration and response to situations that require immediate attention.', 'aes'); ?>
             </div>
             <form method="post"
