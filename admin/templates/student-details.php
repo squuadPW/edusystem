@@ -65,7 +65,7 @@ $countries = get_countries();
                                         <td>
                                             <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
                                             <input readonly type="text" id="name_institute" name="name_institute"
-                                                value="<?php echo $student->name_institute; ?>"
+                                                value="<?php echo strtoupper($student->name_institute); ?>"
                                                 style="width:100%">
                                         </td>
                                     </tr>
