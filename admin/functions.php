@@ -10,6 +10,7 @@ require plugin_dir_path( __FILE__ ) . 'school_subjects.php';
 require plugin_dir_path( __FILE__ ) . 'enrollments.php';
 require plugin_dir_path( __FILE__ ) . 'configuration-options.php';
 require plugin_dir_path( __FILE__ ) . 'send-email.php';
+require plugin_dir_path( __FILE__ ) . 'send-notification.php';
 require plugin_dir_path( __FILE__ ) . 'staff.php';
 require plugin_dir_path( __FILE__ ) . 'institute.php';
 require plugin_dir_path( __FILE__ ) . 'alliances.php';
@@ -57,6 +58,10 @@ function aes_scripts_admin(){
 
     if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_email_content'){
         wp_enqueue_script('send-email',plugins_url('aes').'/admin/assets/js/send-email.js',array('jquery'),'1.0.0',true);    
+    }
+
+    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_notification_content'){
+        wp_enqueue_script('send-notification',plugins_url('aes').'/admin/assets/js/send-notification.js',array('jquery'),'1.0.0',true);    
     }
 
     if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_configuration_options_content'){
@@ -324,8 +329,8 @@ function add_custom_admin_page() {
     );
 
     add_menu_page( 
-        __('Configuration','aes'),
-        __('Configuration','aes'),
+        __('Settings','aes'),
+        __('Settings','aes'),
         'manager_configuration_options_aes', 
         'add_admin_form_configuration_options_content',
         'add_admin_form_configuration_options_content', 
@@ -334,12 +339,23 @@ function add_custom_admin_page() {
     );
 
     add_menu_page( 
-        __('Send email','aes'),
-        __('Send email','aes'),
+        __('Email to students','aes'),
+        __('Email to students','aes'),
         'manager_send_email_aes', 
         'add_admin_form_send_email_content',
         'add_admin_form_send_email_content', 
         'dashicons-email-alt2', 
+        8
+    );
+
+    
+    add_menu_page( 
+        __('Email to staff','aes'),
+        __('Email to staff','aes'),
+        'manager_send_notification_aes', 
+        'add_admin_form_send_notification_content',
+        'add_admin_form_send_notification_content', 
+        'dashicons-bell', 
         8
     );
 
@@ -402,6 +418,7 @@ function add_cap_to_administrator(){
     $role->add_cap('manager_enrollments_aes');
     $role->add_cap('manager_configuration_options_aes');
     $role->add_cap('manager_send_email_aes');
+    $role->add_cap('manager_send_notification_aes');
     $role->add_cap('manager_staff_aes');
     $role->add_cap('manager_admission_aes');
     $role->add_cap('manager_report_aes');

@@ -16,7 +16,7 @@
 
     <div class="card">
         <div class="card-header">
-            <h3><?= __('Send email', 'aes'); ?></h3>
+            <h3><?= __('Send email for students', 'aes'); ?></h3>
         </div>
         <div class="card-body">
 

@@ -137,6 +137,12 @@
                 </tr>
                 <tr>
                     <th scope="row" style="width:10px;padding:3px;">
+                        <input type="checkbox" name="capabilities[]" id="manager_send_notification_aes" value="manager_send_notification_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_send_notification_aes'])) ? 'checked' : ''; ?>>
+                    </th>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_send_notification_aes" style="margin-left:20px;"><?= __('Send notification','aes'); ?></label></td>
+                </tr>
+                <tr>
+                    <th scope="row" style="width:10px;padding:3px;">
                         <input type="checkbox" name="capabilities[]" id="manager_staff_aes" value="manager_staff_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_staff_aes'])) ? 'checked' : ''; ?>>
                     </th>
                     <td style="display:table-cell;padding:3px;"><label for="manager_staff_aes" style="margin-left:20px;"><?= __('Staff','aes'); ?></label></td>

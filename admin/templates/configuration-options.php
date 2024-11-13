@@ -16,7 +16,7 @@
 
     <div class="card" style="max-width: 90% !important;">
         <div class="card-header">
-            <h3><?= __('Configuration options', 'aes'); ?></h3>
+            <h3><?= __('Settings for AES', 'aes'); ?></h3>
         </div>
         <div class="card-body-configuration">
 
@@ -68,7 +68,7 @@
                   </div>
                 </div>
                 <div class="form-group" style="text-align: center">
-                    <button type="submit" class="btn btn-primary"><?= __('Save configuration', 'aes'); ?></button>
+                    <button type="submit" class="btn btn-primary"><?= __('Save settings', 'aes'); ?></button>
                 </div>
             </form>
         </div>

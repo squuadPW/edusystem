@@ -372,6 +372,11 @@ div#application-passwords-section {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+.card-body .content-notification-staff {
+  margin: 20px 10px;
+  text-align: center;
+  font-style: italic;
+}
 
 .card-body-configuration {
   padding: 20px;
