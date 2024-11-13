@@ -55,16 +55,16 @@
                 </div>
                 <div id="by_notifications" style="display: none">
                   <div class="form-group" style="padding: 0px 10px 10px 10px;">
-                    <label for="email_1">Email one:</label> <br>
-                    <input class="full-input" type="email" id="email_1" name="email_1" value="<?php echo get_option('email_1') ?>" required>
+                    <label for="email_coordination">Email academic coordination and admission:</label> <br>
+                    <input class="full-input" type="email" id="email_coordination" name="email_coordination" value="<?php echo get_option('email_coordination') ?>" required>
                   </div>
                   <div class="form-group" style="padding: 0px 10px 10px 10px;">
-                    <label for="email_2">Email two:</label> <br>
-                    <input class="full-input" type="email" id="email_2" name="email_2" value="<?php echo get_option('email_2') ?>" required>
+                    <label for="email_academic_management">Email academic management:</label> <br>
+                    <input class="full-input" type="email" id="email_academic_management" name="email_academic_management" value="<?php echo get_option('email_academic_management') ?>" required>
                   </div>
                   <div class="form-group" style="padding: 0px 10px 10px 10px;">
-                    <label for="email_3">Email tree:</label> <br>
-                    <input class="full-input" type="email" id="email_3" name="email_3" value="<?php echo get_option('email_3') ?>" required>
+                    <label for="email_manager">Email national and international manager:</label> <br>
+                    <input class="full-input" type="email" id="email_manager" name="email_manager" value="<?php echo get_option('email_manager') ?>" required>
                   </div>
                 </div>
                 <div class="form-group" style="text-align: center">

@@ -21,9 +21,9 @@ segmentButtons.forEach((button) => {
             formAdmission.style.display = "block";
 
             // form notifications
-            document.querySelector('input[name="email_1"]').required = false;
-            document.querySelector('input[name="email_2"]').required = false;
-            document.querySelector('input[name="email_3"]').required = false;
+            document.querySelector('input[name="email_coordination"]').required = false;
+            document.querySelector('input[name="email_academic_management"]').required = false;
+            document.querySelector('input[name="email_manager"]').required = false;
 
             // form administration
             document.querySelector('input[name="payment_due"]').required = false;
@@ -43,9 +43,9 @@ segmentButtons.forEach((button) => {
             formAdministration.style.display = "block";
 
             // form notifications
-            document.querySelector('input[name="email_1"]').required = false;
-            document.querySelector('input[name="email_2"]').required = false;
-            document.querySelector('input[name="email_3"]').required = false;
+            document.querySelector('input[name="email_coordination"]').required = false;
+            document.querySelector('input[name="email_academic_management"]').required = false;
+            document.querySelector('input[name="email_manager"]').required = false;
 
             // form administration
             document.querySelector('input[name="payment_due"]').required = true;
@@ -65,9 +65,9 @@ segmentButtons.forEach((button) => {
             formNotifications.style.display = "block";
 
             // form notifications
-            document.querySelector('input[name="email_1"]').required = true;
-            document.querySelector('input[name="email_2"]').required = true;
-            document.querySelector('input[name="email_3"]').required = true;
+            document.querySelector('input[name="email_coordination"]').required = true;
+            document.querySelector('input[name="email_academic_management"]').required = true;
+            document.querySelector('input[name="email_manager"]').required = true;
 
             // form administration
             document.querySelector('input[name="payment_due"]').required = false;

@@ -15,9 +15,9 @@ function add_admin_form_configuration_options_content()
             $student_continue = sanitize_text_field($_POST['student_continue']) ?? get_option('student_continue');
 
             // notifications
-            $email_1 = sanitize_text_field($_POST['email_1']) ?? get_option('email_1');
-            $email_2 = sanitize_text_field($_POST['email_2']) ?? get_option('email_2');
-            $email_3 = sanitize_text_field($_POST['email_3']) ?? get_option('email_3');
+            $email_coordination = sanitize_text_field($_POST['email_coordination']) ?? get_option('email_coordination');
+            $email_academic_management = sanitize_text_field($_POST['email_academic_management']) ?? get_option('email_academic_management');
+            $email_manager = sanitize_text_field($_POST['email_manager']) ?? get_option('email_manager');
 
             // Update the options
             update_option('documents_ok', $documents_ok);
@@ -25,9 +25,9 @@ function add_admin_form_configuration_options_content()
             update_option('documents_red', $documents_red);
             update_option('payment_due', $payment_due);
             update_option('student_continue', $student_continue);
-            update_option('email_1', $email_1);
-            update_option('email_2', $email_2);
-            update_option('email_3', $email_3);
+            update_option('email_coordination', $email_coordination);
+            update_option('email_academic_management', $email_academic_management);
+            update_option('email_manager', $email_manager);
         
             // Redirect to the same page with a success message
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content&success=true'));

@@ -13,13 +13,13 @@ function add_admin_form_send_notification_content()
                 $email = '';
                 switch ($i) {
                     case 0:
-                        $email = get_option('email_1');
+                        $email = get_option('email_coordination');
                         break;
                     case 1:
-                        $email = get_option('email_2');
+                        $email = get_option('email_academic_management');
                         break;
                     case 2:
-                        $email = get_option('email_3');
+                        $email = get_option('email_manager');
                         break;
                 }
                 $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
