@@ -55,6 +55,14 @@ function aes_scripts_admin(){
         wp_enqueue_script('student-payment',plugins_url('aes').'/admin/assets/js/scholarship.js',array('jquery'),'1.0.0',true);    
     }
 
+    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_email_content'){
+        wp_enqueue_script('send-email',plugins_url('aes').'/admin/assets/js/send-email.js',array('jquery'),'1.0.0',true);    
+    }
+
+    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_configuration_options_content'){
+        wp_enqueue_script('configuration',plugins_url('aes').'/admin/assets/js/configuration.js',array('jquery'),'1.0.0',true);    
+    }
+
     if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')){
         wp_enqueue_script('institute',plugins_url('aes').'/admin/assets/js/institute.js',array('jquery'),'1.0.0',true);
 

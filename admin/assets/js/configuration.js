@@ -1,0 +1,82 @@
+const segmentButtons = document.querySelectorAll(".segment-button");
+
+segmentButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+        // Remove active class from all buttons
+        segmentButtons.forEach((btn) => btn.classList.remove("active"));
+
+        // Add active class to the clicked button
+        event.target.classList.add("active");
+
+        // Get the currently selected option
+        const selectedOption = event.target.getAttribute("data-option");
+        if (selectedOption == "admission") {
+            const formAdministration = document.getElementById("by_administration");
+            formAdministration.style.display = "none";
+
+            const formNotifications = document.getElementById("by_notifications");
+            formNotifications.style.display = "none";
+
+            const formAdmission = document.getElementById("by_admission");
+            formAdmission.style.display = "block";
+
+            // form notifications
+            document.querySelector('input[name="email_1"]').required = false;
+            document.querySelector('input[name="email_2"]').required = false;
+            document.querySelector('input[name="email_3"]').required = false;
+
+            // form administration
+            document.querySelector('input[name="payment_due"]').required = false;
+
+            // form admission
+            document.querySelector('input[name="documents_ok"]').required = true;
+            document.querySelector('input[name="documents_warning"]').required = true;
+            document.querySelector('input[name="documents_red"]').required = true;
+        } else if(selectedOption == "administration") {
+            const formAdmission = document.getElementById("by_admission");
+            formAdmission.style.display = "none";
+
+            const formNotifications = document.getElementById("by_notifications");
+            formNotifications.style.display = "none";
+
+            const formAdministration = document.getElementById("by_administration");
+            formAdministration.style.display = "block";
+
+            // form notifications
+            document.querySelector('input[name="email_1"]').required = false;
+            document.querySelector('input[name="email_2"]').required = false;
+            document.querySelector('input[name="email_3"]').required = false;
+
+            // form administration
+            document.querySelector('input[name="payment_due"]').required = true;
+
+            // form admission
+            document.querySelector('input[name="documents_ok"]').required = false;
+            document.querySelector('input[name="documents_warning"]').required = false;
+            document.querySelector('input[name="documents_red"]').required = false;
+        } else {
+            const formAdmission = document.getElementById("by_admission");
+            formAdmission.style.display = "none";
+
+            const formAdministration = document.getElementById("by_administration");
+            formAdministration.style.display = "none";
+
+            const formNotifications = document.getElementById("by_notifications");
+            formNotifications.style.display = "block";
+
+            // form notifications
+            document.querySelector('input[name="email_1"]').required = true;
+            document.querySelector('input[name="email_2"]').required = true;
+            document.querySelector('input[name="email_3"]').required = true;
+
+            // form administration
+            document.querySelector('input[name="payment_due"]').required = false;
+
+            // form admission
+            document.querySelector('input[name="documents_ok"]').required = false;
+            document.querySelector('input[name="documents_warning"]').required = false;
+            document.querySelector('input[name="documents_red"]').required = false;
+            
+        }
+    });
+});
