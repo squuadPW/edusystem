@@ -72,10 +72,10 @@ function save_scholarship(){
 
             if (!empty($institute_id) && $institute_id != 'other') {
                 $institute = get_institute_details($institute_id);
-                $name_institute = strtolower($institute->name);
+                $name_institute = strtoupper($institute->name);
                 setcookie('institute_id', $institute_id, time() + 3600);
             } else {
-                $name_institute = isset($_COOKIE['name_institute']) ? strtolower($_COOKIE['name_institute']) : null;
+                $name_institute = isset($_COOKIE['name_institute']) ? strtoupper($_COOKIE['name_institute']) : null;
             }
 
             $partner_id = null;
@@ -151,7 +151,7 @@ function save_scholarship(){
                 'country' => $country,
                 'city' => $city,
                 'grade_id' => $grade,
-                'name_institute' => $name_institute,
+                'name_institute' => strtoupper($name_institute),
                 'institute_id' => $institute_id,
                 'program_id' => $program,
                 'partner_id' => $partner_id, 

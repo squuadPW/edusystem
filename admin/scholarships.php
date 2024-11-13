@@ -72,7 +72,7 @@ function add_admin_form_scholarships_content(){
                             'city' => $pre_student_row->city,
                             'postal_code' => $pre_student_row->postal_code,
                             'grade_id' => $pre_student_row->grade_id,
-                            'name_institute' => $pre_student_row->name_institute,
+                            'name_institute' => strtoupper($pre_student_row->name_institute),
                             'institute_id' => $pre_student_row->institute_id,
                             'program_id' => $pre_student_row->program_id,
                             'partner_id' => $user_partner_id,

@@ -18,7 +18,7 @@ function save_institute()
             global $wpdb;
             $table_institutes = $wpdb->prefix . 'institutes';
 
-            $name = strtolower($_POST['name_institute']);
+            $name = strtoupper($_POST['name_institute']);
             $phone = $_POST['number_phone_hidden'];
             $email = $_POST['current_email'];
             $country = $_POST['country'];

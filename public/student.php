@@ -81,13 +81,13 @@ function save_student()
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);
-            $name_institute = strtolower($institute->name);
+            $name_institute = strtoupper($institute->name);
             setcookie('institute_id', $institute_id, time() + 3600, '/');
         } else {
-            $name_institute = isset($_POST['name_institute']) ? strtolower($_POST['name_institute']) : null;
+            $name_institute = isset($_POST['name_institute']) ? strtoupper($_POST['name_institute']) : null;
         }
 
-        setcookie('name_institute', ucwords($name_institute), time() + 3600, '/');
+        setcookie('name_institute', strtoupper($name_institute), time() + 3600, '/');
         switch ($action) {
             case 'save_student_scholarship':
             case 'save_student':
@@ -438,7 +438,7 @@ function insert_student($customer_id)
         'middle_last_name' => $_COOKIE['middle_last_name_student'],
         'birth_date' => date_i18n('Y-m-d', strtotime($_COOKIE['birth_date'])),
         'grade_id' => $_COOKIE['initial_grade'],
-        'name_institute' => $_COOKIE['name_institute'],
+        'name_institute' => strtoupper($_COOKIE['name_institute']),
         'institute_id' => $_COOKIE['institute_id'],
         'postal_code' => $_POST['billing_postcode'],
         'gender' => $_COOKIE['gender'],
