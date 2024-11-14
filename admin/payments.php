@@ -462,7 +462,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
     
         $args['limit'] = $per_page; // limit to 10 orders per page
         $args['offset'] = $offset; // offset to start from the first order
-        $args['status'] = array('wc-pending', 'wc-cancelled', 'wc-processing', 'wc-on-hold');
+        $args['status'] = array('wc-pending', 'wc-processing', 'wc-on-hold'); // 'wc-cancelled'
         $orders = wc_get_orders($args);
     
         if ($orders) {
