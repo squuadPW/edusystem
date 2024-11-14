@@ -119,12 +119,12 @@
                     </th>
                     <td style="display:table-cell;padding:3px;"><label for="manager_enrollments_aes"><?= __('Enrollments','aes'); ?></label></td>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <th scope="row" style="width:10px;padding:3px;">
                         <input type="checkbox" name="capabilities[]" id="manager_configuration_options_aes" value="manager_configuration_options_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_configuration_options_aes'])) ? 'checked' : ''; ?>>
                     </th>
                     <td style="display:table-cell;padding:3px;"><label for="manager_configuration_options_aes"><?= __('Configuration options admission','aes'); ?></label></td>
-                </tr>
+                </tr> -->
                 <tr>
                     <th scope="row" style="width:10px;padding:3px;">
                         <input type="checkbox" name="capabilities[]" id="manager_communications_aes" value="manager_communications_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_communications_aes'])) ? 'checked' : ''; ?>>
