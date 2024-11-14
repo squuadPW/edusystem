@@ -9,22 +9,26 @@ function add_admin_form_configuration_options_content()
             $documents_ok = sanitize_text_field($_POST['documents_ok']) ?? get_option('documents_ok');
             $documents_warning = sanitize_text_field($_POST['documents_warning']) ?? get_option('documents_warning');
             $documents_red = sanitize_text_field($_POST['documents_red']) ?? get_option('documents_red');
+            update_option('documents_ok', $documents_ok);
+            update_option('documents_warning', $documents_warning);
+            update_option('documents_red', $documents_red);
 
             // administration
             $payment_due = sanitize_text_field($_POST['payment_due']) ?? get_option('payment_due');
             $student_continue = sanitize_text_field($_POST['student_continue']) ?? get_option('student_continue');
+            update_option('payment_due', $payment_due);
+            update_option('student_continue', $student_continue);
+
+            // moodle
+            $moodle_url = sanitize_text_field($_POST['moodle_url']) ?? get_option('moodle_url');
+            $moodle_token = sanitize_text_field($_POST['moodle_token']) ?? get_option('moodle_token');
+            update_option('moodle_url', $moodle_url);
+            update_option('moodle_token', $moodle_token);
 
             // notifications
             $email_coordination = sanitize_text_field($_POST['email_coordination']) ?? get_option('email_coordination');
             $email_academic_management = sanitize_text_field($_POST['email_academic_management']) ?? get_option('email_academic_management');
             $email_manager = sanitize_text_field($_POST['email_manager']) ?? get_option('email_manager');
-
-            // Update the options
-            update_option('documents_ok', $documents_ok);
-            update_option('documents_warning', $documents_warning);
-            update_option('documents_red', $documents_red);
-            update_option('payment_due', $payment_due);
-            update_option('student_continue', $student_continue);
             update_option('email_coordination', $email_coordination);
             update_option('email_academic_management', $email_academic_management);
             update_option('email_manager', $email_manager);

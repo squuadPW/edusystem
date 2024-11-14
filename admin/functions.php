@@ -339,27 +339,6 @@ function add_custom_admin_page() {
     );
 
     add_menu_page( 
-        __('Email to students','aes'),
-        __('Email to students','aes'),
-        'manager_send_email_aes', 
-        'add_admin_form_send_email_content',
-        'add_admin_form_send_email_content', 
-        'dashicons-email-alt2', 
-        8
-    );
-
-    
-    add_menu_page( 
-        __('Email to staff','aes'),
-        __('Email to staff','aes'),
-        'manager_send_notification_aes', 
-        'add_admin_form_send_notification_content',
-        'add_admin_form_send_notification_content', 
-        'dashicons-bell', 
-        8
-    );
-
-    add_menu_page( 
         __('Staff','aes'),
         __('Staff','aes'),
         'manager_staff_aes', 
@@ -389,18 +368,54 @@ function add_custom_admin_page() {
         7
     );
 
+    
+    // add_menu_page( 
+    //     __('Email to students','aes'),
+    //     __('Email to students','aes'),
+    //     'manager_send_email_aes', 
+    //     'add_admin_form_send_email_content',
+    //     'add_admin_form_send_email_content', 
+    //     'dashicons-email-alt2', 
+    //     8
+    // );
+
+    
+    // add_menu_page( 
+    //     __('Email to staff','aes'),
+    //     __('Email to staff','aes'),
+    //     'manager_send_notification_aes', 
+    //     'add_admin_form_send_notification_content',
+    //     'add_admin_form_send_notification_content', 
+    //     'dashicons-bell', 
+    //     8
+    // );
+
     add_menu_page( 
-        __('Moodle','aes'),
-        __('Moodle','aes'),
-        'manager_moodle_aes', 
-        'add_admin_moodle_content',
-        'add_admin_moodle_content', 
-        'dashicons-share-alt', 
+        __('Communications','aes'),
+        __('Communications','aes'),
+        'manager_communications_aes', 
+        'add_admin_form_communications_content',
+        'add_admin_form_communications_content', 
+        'dashicons-email-alt2', 
         7
     );
 
-    add_submenu_page('add_admin_moodle_content',__('Settings','aes'),__('Settings','aes'),'manager_moodle_settings_aes','moodle-setting','show_moodle_setting', 10);
-    remove_submenu_page('add_admin_moodle_content','add_admin_moodle_content');
+    add_submenu_page('add_admin_form_communications_content',__('Email to students','aes'),__('Email to students','aes'),'manager_send_email_aes','add_admin_form_send_email_content','add_admin_form_send_email_content', 10);
+    add_submenu_page('add_admin_form_communications_content',__('Email to staff','aes'),__('Email to staff','aes'),'manager_send_notification_aes','add_admin_form_send_notification_content','add_admin_form_send_notification_content', 10);
+    remove_submenu_page('add_admin_form_communications_content','add_admin_form_communications_content');
+
+    // add_menu_page( 
+    //     __('Moodle','aes'),
+    //     __('Moodle','aes'),
+    //     'manager_moodle_aes', 
+    //     'add_admin_moodle_content',
+    //     'add_admin_moodle_content', 
+    //     'dashicons-share-alt', 
+    //     7
+    // );
+
+    // add_submenu_page('add_admin_moodle_content',__('Settings','aes'),__('Settings','aes'),'manager_moodle_settings_aes','moodle-setting','show_moodle_setting', 10);
+    // remove_submenu_page('add_admin_moodle_content','add_admin_moodle_content');
     
     //add_menu_page('logo', 'logo', 'read', 'logo_based_menu', '', '', 1);
 }
@@ -419,6 +434,7 @@ function add_cap_to_administrator(){
     $role->add_cap('manager_configuration_options_aes');
     $role->add_cap('manager_send_email_aes');
     $role->add_cap('manager_send_notification_aes');
+    $role->add_cap('manager_notifications_aes');
     $role->add_cap('manager_staff_aes');
     $role->add_cap('manager_admission_aes');
     $role->add_cap('manager_report_aes');
