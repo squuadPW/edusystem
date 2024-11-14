@@ -809,9 +809,14 @@ class TT_Invoices_Alliances_List_Table extends WP_List_Table
         $per_page = 20;
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
+        $only_pending = $_POST['only_pending'] ?? false;
+        $only_pending_query = '';
+        if ($only_pending) {
+            $only_pending_query = 'WHERE status_id = 0';
+        }
 
         $table_alliances_payments = $wpdb->prefix . 'alliances_payments';
-        $transactions = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_alliances_payments} LIMIT {$per_page} OFFSET {$offset}");
+        $transactions = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_alliances_payments} {$only_pending_query} LIMIT {$per_page} OFFSET {$offset}");
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
         return ['data' => $transactions, 'total_count' => $total_count];
@@ -950,9 +955,14 @@ class TT_Invoices_Institutes_List_Table extends WP_List_Table
         $per_page = 20;
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
+        $only_pending = $_POST['only_pending'] ?? false;
+        $only_pending_query = '';
+        if ($only_pending) {
+            $only_pending_query = 'WHERE status_id = 0';
+        }
 
         $table_institutes_payments = $wpdb->prefix . 'institutes_payments';
-        $transactions = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes_payments} LIMIT {$per_page} OFFSET {$offset}");
+        $transactions = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes_payments} {$only_pending_query} LIMIT {$per_page} OFFSET {$offset}");
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
         return ['data' => $transactions, 'total_count' => $total_count];
