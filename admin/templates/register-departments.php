@@ -147,19 +147,19 @@
                     <th scope="row" style="width:10px;padding:3px;">
                         <input type="checkbox" name="capabilities[]" id="manager_staff_aes" value="manager_staff_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_staff_aes'])) ? 'checked' : ''; ?>>
                     </th>
-                    <td style="display:table-cell;padding:3px;"><label for="manager_staff_aes" style="margin-left:20px;"><?= __('Staff','aes'); ?></label></td>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_staff_aes"><?= __('Staff','aes'); ?></label></td>
                 </tr>
                 <tr>
                     <th scope="row" style="width:10px;padding:3px;">
                         <input type="checkbox" name="capabilities[]" id="manager_users_aes" value="manager_users_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_users_aes'])) ? 'checked' : ''; ?>>
                     </th>
-                    <td style="display:table-cell;padding:3px;"><label for="manager_users_aes" style="margin-left:20px;"><?= __('Users','aes'); ?></label></td>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_users_aes"><?= __('Users','aes'); ?></label></td>
                 </tr>
                 <tr>
                     <th scope="row" style="width:10px;padding:3px;">
                         <input type="checkbox" name="capabilities[]" value="manager_report_aes" id="manager_report_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_report_aes'])) ? 'checked' : ''; ?>>
                     </th>
-                    <td style="display:table-cell;padding:3px;"><label for="manager_report_aes" style="margin-left:20px;"><?= __('Report','aes'); ?></label></td>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_report_aes"><?= __('Report','aes'); ?></label></td>
                 </tr>
                 <tr>
                     <th scope="row" style="width:10px;padding:3px;">
