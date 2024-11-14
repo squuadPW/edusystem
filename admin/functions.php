@@ -870,7 +870,7 @@ function get_states_by_country() {
     function send_email_remember_documents_students() {
         global $wpdb;
         $table_students =  $wpdb->prefix.'students';
-        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE status_id = 1 ORDER BY id DESC");
+        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE status_id = 1 AND moodle_student_id IS NULL ORDER BY id DESC");
         $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
         foreach ($students as $key => $student) {
             $sender_email->trigger($student->email, 'Pending documents', 'From American Elite School, we want to remind you that you still have pending documents to upload to our platform. It is essential that you send them as soon as possible to ensure that your academic process continues smoothly. If you need assistance or have any questions about the required documents, please do not hesitate to contact us. We are here to help you with whatever you need.');
