@@ -472,6 +472,10 @@ if (is_user_logged_in()) {
                 <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
             </div>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="birth_date"><?= __('Year', 'aes'); ?><span class="required">*</span></label>
+                <select id="year-select" class="year-select"></select>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
                     required>

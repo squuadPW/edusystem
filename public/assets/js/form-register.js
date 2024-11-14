@@ -432,11 +432,41 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
 }
 
 if (document.getElementById("birth_date_student")) {
-  flatpickr(document.getElementById("birth_date_student"), {
-    dateFormat: "m/d/Y",
-    disableMobile: "true",
-    maxDate: "12/31/2015"
-  });
+  console.log(document.querySelector(".numInputWrapper"));
+    if (document.querySelector(".numInputWrapper")) {
+      document.querySelector(".numInputWrapper").style.display = 'none';
+    }
+
+    // Cargar años en el select
+    const yearSelect = document.getElementById("year-select");
+    const currentYear = new Date().getFullYear() - 14;
+    const startYear = 1900; // Cambia esto si deseas un rango diferente
+
+    for (let year = currentYear; year >= startYear; year--) {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    }
+
+    // Inicializar Flatpickr
+    const flatpickrInstance = flatpickr(document.getElementById("birth_date_student"), {
+        dateFormat: "m/d/Y",
+        disableMobile: "true",
+        maxDate: "12/31/2015"
+    });
+
+    // Manejar el cambio de año
+    yearSelect.addEventListener("change", function(e) {
+      document.querySelector('.cur-year').disabled = true;
+      let date = flatpickrInstance.input.value;
+      if (date && date != '') {
+        let date_split = date.split('/');
+        flatpickrInstance.setDate(`${date_split[0]}/${date_split[1]}/${e.target.value}`);
+      } else {
+        flatpickrInstance.setDate(`12/31/${e.target.value}`);
+      }
+    });
 
   document
     .getElementById("birth_date_student")
