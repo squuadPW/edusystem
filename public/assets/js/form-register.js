@@ -1156,7 +1156,6 @@ function customFlatpickr() {
           instance.setDate(newDate);
         }
     }
-    // maxDate: "12/31/2015"
   });
 
   setTimeout(() => {
