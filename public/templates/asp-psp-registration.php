@@ -24,7 +24,7 @@ if (is_user_logged_in()) {
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
-                    <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
+                    <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
                         required>
                     <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
                         value="1">
@@ -177,7 +177,7 @@ if (is_user_logged_in()) {
                 <?php if (!get_user_meta(get_current_user_id(), 'birth_date', true)) { ?>
                     <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                         <label for="birth_date_parent"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
-                        <input class="formdata" autocomplete="off" type="date" id="birth_date_parent" name="birth_date_parent"
+                        <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_parent" name="birth_date_parent"
                             required>
                     </div>
                 <?php } ?>
@@ -313,7 +313,7 @@ if (is_user_logged_in()) {
                 </div>
                 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                     <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
-                    <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
+                    <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
                         required>
                     <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
                         value="1">
@@ -471,13 +471,13 @@ if (is_user_logged_in()) {
                 style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
                 <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
             </div>
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <!-- <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date"><?= __('Year', 'aes'); ?><span class="required">*</span></label>
                 <select id="year-select" class="year-select"></select>
-            </div>
+            </div> -->
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
-                <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
+                <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
                     required>
                 <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
                     value="0">
@@ -557,7 +557,7 @@ if (is_user_logged_in()) {
             </div>
             <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date_parent"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
-                <input class="formdata" autocomplete="off" type="date" id="birth_date_parent" name="birth_date_parent"
+                <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_parent" name="birth_date_parent"
                     required>
             </div>
             <div id="parent_document_type_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
