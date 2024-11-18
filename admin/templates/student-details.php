@@ -59,7 +59,7 @@ $grades = get_grades();
                                                 value="<?php echo get_name_program($student->program_id); ?>"
                                                 style="width:100%">
                                         </th>
-                                        <td>
+                                        <td style="text-align: center">
                                             <label for="grade"><b><?php _e('Grade', 'aes'); ?></b></label><br>
                                             <select name="grade" autocomplete="off" required style="width: 100%">
                                                 <?php foreach ($grades as $grade): ?>
@@ -67,7 +67,7 @@ $grades = get_grades();
                                                 <?php endforeach; ?>
                                             </select>
                                         </td>
-                                        <td>
+                                        <td  style="text-align: center">
                                             <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
                                             <select name="institute_id" autocomplete="off" id="institute_id" required style="width: 100%">
                                                 <?php foreach ($institutes as $institute): ?>
