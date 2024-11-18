@@ -61,7 +61,7 @@ $grades = get_grades();
                                         </th>
                                         <td>
                                             <label for="grade"><b><?php _e('Grade', 'aes'); ?></b></label><br>
-                                            <select name="grade" autocomplete="off" required>
+                                            <select name="grade" autocomplete="off" required style="width: 100%">
                                                 <?php foreach ($grades as $grade): ?>
                                                     <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>><?= $grade->name; ?> <?= $grade->description; ?></option>
                                                 <?php endforeach; ?>
