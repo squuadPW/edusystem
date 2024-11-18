@@ -1883,7 +1883,7 @@ function modal_enrollment_student()
     }
 
     $institute = $institute_id ? get_institute_details($institute_id) : null;
-    $institute_name = $student->institute_name;
+    $institute_name = $student->name_institute;
     $user_partner = get_user_by('id', $student->partner_id);
 
     $user = [
