@@ -1,5 +1,8 @@
 <?php
 $countries = get_countries();
+$institutes = get_list_institutes_active();
+$grades = get_grades();
+
 ?>
 
 <div class="wrap">
@@ -58,16 +61,33 @@ $countries = get_countries();
                                         </th>
                                         <td>
                                             <label for="grade"><b><?php _e('Grade', 'aes'); ?></b></label><br>
-                                            <input readonly type="text" id="grade" name="grade"
-                                                value="<?php echo get_name_grade($student->grade_id); ?>"
-                                                style="width:100%">
+                                            <select name="grade" autocomplete="off" required>
+                                                <?php foreach ($grades as $grade): ?>
+                                                    <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>><?= $grade->name; ?> <?= $grade->description; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
                                         </td>
                                         <td>
                                             <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
-                                            <input readonly type="text" id="name_institute" name="name_institute"
-                                                value="<?php echo strtoupper($student->name_institute); ?>"
-                                                style="width:100%">
+                                            <select name="institute_id" autocomplete="off" id="institute_id" required style="width: 100%">
+                                                <?php foreach ($institutes as $institute): ?>
+                                                    <option value="<?= $institute->id; ?>" <?php echo isset($student->institute_id) && $institute->id == $student->institute_id ? 'selected' : ''; ?>>
+                                                        <?= $institute->name; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                                <option value="other" <?php echo !isset($student->institute_id) ? 'selected' : ''; ?>><?= __('Other', 'aes'); ?></option>
+                                            </select>
                                         </td>
+                                        <?php if(isset($student->institute_id)) { 
+                                            $style = 'display: none';
+                                        }
+                                        ?>
+                                            <td id="input_name_institute" style="<?php echo $style ?>">
+                                                <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
+                                                <input type="text" id="name_institute" name="name_institute"
+                                                    value="<?php echo strtoupper($student->name_institute); ?>"
+                                                    style="width:100%">
+                                            </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -479,3 +499,18 @@ $countries = get_countries();
         </div>
 	</div>
 </div>
+
+<script>
+    let institute_id = document.getElementById('institute_id');
+    institute_id.addEventListener('change', function (e) {
+        document.querySelector('input[name=name_institute]').value = '';
+        if (e.target.value == 'other') {
+            document.getElementById('input_name_institute').style.display = 'block';
+            document.querySelector('input[name=name_institute]').required = true;
+        } else {
+            document.getElementById('input_name_institute').style.display = 'none';
+            document.querySelector('input[name=name_institute]').required = false;
+        }
+        
+    })
+</script>

@@ -28,9 +28,19 @@ function add_admin_form_admission_content()
                 $country = $_POST['country'];
                 $city = $_POST['city'];
                 $postal_code = $_POST['postal_code'];
+                $institute_id = $_POST['institute_id'];
+                $name_institute = $_POST['name_institute'];
                 $email = $_POST['email'];
                 $phone = $_POST['phone'];
                 $old_email = $_POST['old_email'];
+                $institute = null;
+                if ($institute_id != 'other') {
+                    $institute = get_institute_details($institute_id);
+                    $name_institute = $institute->name;
+                    $institute_id = $institute->id;
+                } else {
+                    $institute_id = null;
+                }
     
                 //TABLE STUDENTS
                 $table_students = $wpdb->prefix . 'students';
@@ -50,9 +60,12 @@ function add_admin_form_admission_content()
                             'phone' => $phone,
                             'email' => $email,
                             'gender' => $gender,
+                            'grade_id' => $grade,
                             'city' => $city,
                             'country' => $country,
                             'postal_code' => $postal_code,
+                            'institute_id' => $institute_id,
+                            'name_institute' => $name_institute,
         
                         ),
                         array('ID' => $id),
