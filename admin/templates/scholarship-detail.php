@@ -73,7 +73,7 @@
                                 </tr>
                                 <tr>
                                     <th scope="row"><label for="input_id"><?= __('Institute','aes').':'; ?></label></th>
-                                    <td><?= $institute ? $institute->name : $student->institute_name ?></td>
+                                    <td><?= $institute ? $institute->name : $student->name_institute ?></td>
                                 </tr>
                                 
                             </tbody>
