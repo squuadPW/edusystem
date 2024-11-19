@@ -53,21 +53,21 @@ $grades = get_grades();
                                         </p>
                                     </tr>
                                     <tr>
-                                        <th scope="row" style="font-weight:400;">
+                                        <th scope="row" style="font-weight:400; text-align: center">
                                             <label for="program"><b><?php _e('Program', 'aes'); ?></b></label><br>
                                             <input readonly type="text" id="program" name="program"
                                                 value="<?php echo get_name_program($student->program_id); ?>"
                                                 style="width:100%">
                                         </th>
-                                        <td style="text-align: center">
+                                        <th scope="row" style="font-weight:400; text-align: center">
                                             <label for="grade"><b><?php _e('Grade', 'aes'); ?></b></label><br>
                                             <select name="grade" autocomplete="off" required style="width: 100%">
                                                 <?php foreach ($grades as $grade): ?>
                                                     <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>><?= $grade->name; ?> <?= $grade->description; ?></option>
                                                 <?php endforeach; ?>
                                             </select>
-                                        </td>
-                                        <td  style="text-align: center">
+                                        </th>
+                                        <th scope="row" style="font-weight:400; text-align: center">
                                             <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
                                             <select name="institute_id" autocomplete="off" id="institute_id" required style="width: 100%">
                                                 <?php foreach ($institutes as $institute): ?>
@@ -77,17 +77,19 @@ $grades = get_grades();
                                                 <?php endforeach; ?>
                                                 <option value="other" <?php echo !isset($student->institute_id) ? 'selected' : ''; ?>><?= __('Other', 'aes'); ?></option>
                                             </select>
-                                        </td>
-                                        <?php if(isset($student->institute_id)) { 
-                                            $style = 'display: none';
-                                        }
-                                        ?>
-                                            <td id="input_name_institute" style="<?php echo $style ?>">
-                                                <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
-                                                <input type="text" id="name_institute" name="name_institute"
-                                                    value="<?php echo strtoupper($student->name_institute); ?>"
-                                                    style="width:100%">
-                                            </td>
+                                        </th>
+                                    </tr>
+                                    <?php if(isset($student->institute_id)) { 
+                                        $style_dos = 'display: none';
+                                    }
+                                    ?>
+                                    <tr id="institute_down" style="<?php echo $style_dos ?>">
+                                        <th scope="row" colspan="3" style="font-weight:400; text-align: center">
+                                            <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
+                                            <input type="text" id="name_institute" name="name_institute"
+                                                value="<?php echo strtoupper($student->name_institute); ?>"
+                                                style="width:100%">
+                                        </th>
                                     </tr>
                                 </tbody>
                             </table>
@@ -505,10 +507,10 @@ $grades = get_grades();
     institute_id.addEventListener('change', function (e) {
         document.querySelector('input[name=name_institute]').value = '';
         if (e.target.value == 'other') {
-            document.getElementById('input_name_institute').style.display = 'block';
+            document.getElementById('institute_down').style.display = 'contents';
             document.querySelector('input[name=name_institute]').required = true;
         } else {
-            document.getElementById('input_name_institute').style.display = 'none';
+            document.getElementById('institute_down').style.display = 'none';
             document.querySelector('input[name=name_institute]').required = false;
         }
         
