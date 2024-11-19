@@ -61,7 +61,7 @@ $grades = get_grades();
                                         </th>
                                         <th scope="row" style="font-weight:400; text-align: center">
                                             <label for="grade"><b><?php _e('Grade', 'aes'); ?></b></label><br>
-                                            <select name="grade" autocomplete="off" required style="width: 100%">
+                                            <select name="grade" autocomplete="off" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($grades as $grade): ?>
                                                     <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>><?= $grade->name; ?> <?= $grade->description; ?></option>
                                                 <?php endforeach; ?>
@@ -69,7 +69,7 @@ $grades = get_grades();
                                         </th>
                                         <th scope="row" style="font-weight:400; text-align: center">
                                             <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
-                                            <select name="institute_id" autocomplete="off" id="institute_id" required style="width: 100%">
+                                            <select name="institute_id" autocomplete="off" id="institute_id" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($institutes as $institute): ?>
                                                     <option value="<?= $institute->id; ?>" <?php echo isset($student->institute_id) && $institute->id == $student->institute_id ? 'selected' : ''; ?>>
                                                         <?= $institute->name; ?>
@@ -88,7 +88,7 @@ $grades = get_grades();
                                             <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
                                             <input type="text" id="name_institute" name="name_institute"
                                                 value="<?php echo strtoupper($student->name_institute); ?>"
-                                                style="width:100%">
+                                                style="width:100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </th>
                                     </tr>
                                 </tbody>
