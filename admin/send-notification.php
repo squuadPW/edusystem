@@ -51,6 +51,9 @@ function send_notification_staff_particular($subject, $message, $i) {
         case 2:
             $email = get_option('email_manager');
             break;
+        case 3:
+            $email = get_option('email_administration');
+            break;
     }
     $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
     $sender_email->trigger($email, $subject, $message);

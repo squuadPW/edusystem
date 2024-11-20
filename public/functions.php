@@ -280,7 +280,7 @@ function woocommerce_checkout_order_created_action($order)
     set_institute_in_order($order);
 
     if ($order->get_payment_method_title() != 'Credit Card') {
-        send_notification_staff_particular('New payment received for approval', 'Please be informed that we have received a new student that your payment must be manually approved, please login to the platform to confirm.', 0);
+        send_notification_staff_particular('New payment received for approval', 'Please be informed that we have received a new student that your payment must be manually approved, please login to the platform to confirm.', 3);
     }
 
     setcookie('is_older', '', time());
