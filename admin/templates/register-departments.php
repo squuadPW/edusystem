@@ -115,6 +115,12 @@
                 </tr>
                 <tr>
                     <th scope="row" style="width:10px;padding:3px;">
+                        <input type="checkbox" name="capabilities[]" id="manager_teachers_aes" value="manager_teachers_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_teachers_aes'])) ? 'checked' : ''; ?>>
+                    </th>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_teachers_aes"><?= __('School subjects','aes'); ?></label></td>
+                </tr>
+                <tr>
+                    <th scope="row" style="width:10px;padding:3px;">
                         <input type="checkbox" name="capabilities[]" id="manager_enrollments_aes" value="manager_enrollments_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_enrollments_aes'])) ? 'checked' : ''; ?>>
                     </th>
                     <td style="display:table-cell;padding:3px;"><label for="manager_enrollments_aes"><?= __('Enrollments','aes'); ?></label></td>

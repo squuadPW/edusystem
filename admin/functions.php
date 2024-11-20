@@ -7,6 +7,7 @@ require plugin_dir_path( __FILE__ ) . 'payments.php';
 require plugin_dir_path( __FILE__ ) . 'scholarships.php';
 require plugin_dir_path( __FILE__ ) . 'academic_periods.php';
 require plugin_dir_path( __FILE__ ) . 'school_subjects.php';
+require plugin_dir_path( __FILE__ ) . 'teachers.php';
 require plugin_dir_path( __FILE__ ) . 'enrollments.php';
 require plugin_dir_path( __FILE__ ) . 'configuration-options.php';
 require plugin_dir_path( __FILE__ ) . 'send-email.php';
@@ -319,6 +320,16 @@ function add_custom_admin_page() {
     );
 
     add_menu_page( 
+        __('Teachers','aes'),
+        __('Teachers','aes'),
+        'manager_teachers_aes', 
+        'add_admin_form_teachers_content',
+        'add_admin_form_teachers_content', 
+        'dashicons-businessman', 
+        7
+    );
+
+    add_menu_page( 
         __('Enrollments','aes'),
         __('Enrollments','aes'),
         'manager_enrollments_aes', 
@@ -430,6 +441,7 @@ function add_cap_to_administrator(){
     $role->add_cap('manager_scholarship_aes');
     $role->add_cap('manager_academic_periods_aes');
     $role->add_cap('manager_school_subjects_aes');
+    $role->add_cap('manager_teachers_aes');
     $role->add_cap('manager_enrollments_aes');
     $role->add_cap('manager_configuration_options_aes');
     $role->add_cap('manager_send_email_aes');
