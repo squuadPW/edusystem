@@ -42,6 +42,15 @@ function create_tables() {
   $table_user_notices = $wpdb->prefix.'users_notices';
   $table_tickets_created = $wpdb->prefix.'tickets_created';
   $table_school_subjects = $wpdb->prefix.'school_subjects';
+  $table_teachers = $wpdb->prefix.'teachers';
+
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_teachers}'") != $table_teachers){
+    dbDelta( "CREATE TABLE " . $table_teachers . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subjects}'") != $table_school_subjects){
     dbDelta( "CREATE TABLE " . $table_school_subjects . " (
