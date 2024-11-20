@@ -66,6 +66,10 @@
                 </div>
                 <div id="by_notifications" style="display: none">
                   <div class="form-group" style="padding: 0px 10px 10px 10px;">
+                    <label for="email_administration"><?= __('Email administration'); ?></label> <br>
+                    <input class="full-input" type="email" id="email_administration" name="email_administration" value="<?php echo get_option('email_administration') ?>" required>
+                  </div>
+                  <div class="form-group" style="padding: 0px 10px 10px 10px;">
                     <label for="email_coordination"><?= __('Email academic coordination and admission'); ?></label> <br>
                     <input class="full-input" type="email" id="email_coordination" name="email_coordination" value="<?php echo get_option('email_coordination') ?>" required>
                   </div>
