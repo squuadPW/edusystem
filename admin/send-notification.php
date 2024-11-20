@@ -38,3 +38,20 @@ function send_notification_staff($subject, $message) {
         $sender_email->trigger($email, $subject, $message);
     }
 }
+
+function send_notification_staff_particular($subject, $message, $i) {
+    $email = '';
+    switch ($i) {
+        case 0:
+            $email = get_option('email_coordination');
+            break;
+        case 1:
+            $email = get_option('email_academic_management');
+            break;
+        case 2:
+            $email = get_option('email_manager');
+            break;
+    }
+    $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
+    $sender_email->trigger($email, $subject, $message);
+}
