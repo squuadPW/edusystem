@@ -6,7 +6,7 @@ function add_admin_form_teachers_content()
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         if ($_GET['section_tab'] == 'teacher_details') {
             $teacher_id = $_GET['teacher_id'];
-            $subject = get_teacher_details($teacher_id);
+            $teacher = get_teacher_details($teacher_id);
             include (plugin_dir_path(__FILE__) . 'templates/teacher-detail.php');
         }
         if ($_GET['section_tab'] == 'add_teacher') {
@@ -17,40 +17,62 @@ function add_admin_form_teachers_content()
 
         if ($_GET['action'] == 'save_teacher_details') {
             global $wpdb;
-            $table_school_subjects = $wpdb->prefix . 'school_subjects';
+            $table_teachers = $wpdb->prefix . 'teachers';
 
-            $subject_id = $_POST['subject_id'];
-            $name = strtoupper($_POST['name']);
-            $code_subject = strtoupper($_POST['code_subject']);
-            $description = $_POST['description'];
-            $hc = $_POST['hc'];
-            $is_elective = $_POST['is_elective'];
+            $teacher_id = $_POST['teacher_id'];
+            $type_document = $_POST['type_document'];
+            $id_document = $_POST['id_document'];
+            $birth_date = $_POST['birth_date'];
+            $gender = $_POST['gender'];
+            $name = $_POST['name'];
+            $middle_name = $_POST['middle_name'];
+            $last_name = $_POST['last_name'];
+            $middle_last_name = $_POST['middle_last_name'];
+            $email = $_POST['email'];
+            $phone = $_POST['phone'];
+            $phone_hidden = $_POST['phone_hidden'];
+            $address = $_POST['address'];
+            $status = $_POST['status'] ?? 0;
 
             //update
-            if (isset($subject_id) && !empty($subject_id)) {
+            if (isset($teacher_id) && !empty($teacher_id)) {
 
-                $wpdb->update($table_school_subjects, [
+                $wpdb->update($table_teachers, [
+                    'type_document' => $type_document,
+                    'id_document' => $id_document,
+                    'birth_date' => $birth_date,
+                    'gender' => $gender,
                     'name' => $name,
-                    'code_subject' => $code_subject,
-                    'description' => $description,
-                    'hc' => $hc,
-                    'is_elective' => $is_elective == 'on' ? 1 : 0
-                ], ['id' => $subject_id]);
+                    'middle_name' => $middle_name,
+                    'last_name' => $last_name,
+                    'middle_last_name' => $middle_last_name,
+                    'email' => $email,
+                    'phone' => $phone_hidden,
+                    'address' => $address,
+                    'status' => $status,
+                ], ['id' => $teacher_id]);
 
                 setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
-                wp_redirect(admin_url('admin.php?page=add_admin_form_school_subjects_content&section_tab=subject_details&subject_id=' . $subject_id));
+                wp_redirect(admin_url('admin.php?page=add_admin_form_teachers_content&section_tab=teacher_details&teacher_id=' . $teacher_id));
                 exit;
             } else {
 
-                $wpdb->insert($table_school_subjects, [
+                $wpdb->insert($table_teachers, [
+                    'type_document' => $type_document,
+                    'id_document' => $id_document,
+                    'birth_date' => $birth_date,
+                    'gender' => $gender,
                     'name' => $name,
-                    'code_subject' => $code_subject,
-                    'description' => $description,
-                    'hc' => $hc,
-                    'is_elective' => $is_elective == 'on' ? 1 : 0
+                    'middle_name' => $middle_name,
+                    'last_name' => $last_name,
+                    'middle_last_name' => $middle_last_name,
+                    'email' => $email,
+                    'phone' => $phone_hidden,
+                    'address' => $address,
+                    'status' => $status,
                 ]);
 
-                wp_redirect(admin_url('admin.php?page=add_admin_form_school_subjects_content'));
+                wp_redirect(admin_url('admin.php?page=add_admin_form_teachers_content'));
                 exit;
 
             }
@@ -71,8 +93,8 @@ class TT_teachers_all_List_Table extends WP_List_Table
 
         parent::__construct(
             array(
-                'singular' => 'school_subject_',
-                'plural' => 'school_subject_s',
+                'singular' => 'teacher_',
+                'plural' => 'teacher_s',
                 'ajax' => true
             ));
 
@@ -84,22 +106,23 @@ class TT_teachers_all_List_Table extends WP_List_Table
         global $current_user;
 
         switch ($column_name) {
-            case 'code_subject':
+            case 'full_name':
+                return strtoupper($item[$column_name]);
+            case 'email':
+            case 'identification':
                 return ucwords($item[$column_name]);
-            case 'name':
-                return ucwords($item[$column_name]);
-            case 'is_elective':
+            case 'status':
                 switch ($item[$column_name]) {
                     case 1:
-                        return 'Yes';
+                        return 'Active';
                         break;
 
                     default:
-                        return 'No';
+                        return 'Inactive';
                         break;
                 }
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_school_subjects_content&section_tab=subject_details&subject_id=' . $item['school_subject_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_teachers_content&section_tab=teacher_details&teacher_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -120,39 +143,41 @@ class TT_teachers_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'code_subject' => __('Code of subject', 'aes'),
-            'name' => __('Name', 'aes'),
-            'is_elective' => __('Is elective', 'aes'),
+            'identification' => __('Identification', 'aes'),
+            'full_name' => __('Full name', 'aes'),
+            'email' => __('Email', 'aes'),
+            'status' => __('Status', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
 
         return $columns;
     }
 
-    function get_school_subject_pendings()
+    function get_teachers()
     {
         global $wpdb;
-        $school_subjects_array = [];
+        $teachers_array = [];
 
         if (isset($_POST['s']) && !empty($_POST['s'])) {
             $search = $_POST['s'];
-            $school_subjects = $wpdb->get_results("SELECT * FROM wp_school_subjects WHERE (`name` LIKE '%{$search}%' || code_subject LIKE '%{$search}%')");
+            $teachers = $wpdb->get_results("SELECT * FROM wp_teachers WHERE (`name` LIKE '%{$search}%' || middle_name LIKE '%{$search}%' || last_name LIKE '%{$search}%' || middle_last_name LIKE '%{$search}%' || email LIKE '%{$search}%')");
         } else {
-            $school_subjects = $wpdb->get_results("SELECT * FROM wp_school_subjects");
+            $teachers = $wpdb->get_results("SELECT * FROM wp_teachers");
         }
 
-        if ($school_subjects) {
-            foreach ($school_subjects as $subject) {
-                array_push($school_subjects_array, [
-                    'code_subject' => $subject->code_subject,
-                    'school_subject_id' => $subject->id,
-                    'name' => $subject->name,
-                    'is_elective' => $subject->is_elective,
+        if ($teachers) {
+            foreach ($teachers as $teacher) {
+                array_push($teachers_array, [
+                    'id' => $teacher->id,
+                    'identification' => get_type_document_student($teacher->type_document) . ' - ' . $teacher->id_document,                
+                    'full_name' => $teacher->name . ' ' . $teacher->middle_name . ' ' . $teacher->last_name . ' ' . $teacher->middle_last_name,
+                    'email' => $teacher->email,
+                    'status' => $teacher->status
                 ]);
             }
         }
 
-        return $school_subjects_array;
+        return $teachers_array;
     }
 
     function get_sortable_columns()
@@ -179,7 +204,7 @@ class TT_teachers_all_List_Table extends WP_List_Table
     function prepare_items()
     {
 
-        $data_school_subjects = $this->get_school_subject_pendings();
+        $data_teachers = $this->get_teachers();
 
         $per_page = 10;
 
@@ -190,7 +215,7 @@ class TT_teachers_all_List_Table extends WP_List_Table
 
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        $data = $data_school_subjects;
+        $data = $data_teachers;
 
         function usort_reorder($a, $b)
         {
@@ -212,8 +237,8 @@ class TT_teachers_all_List_Table extends WP_List_Table
 function get_teacher_details($teacher_id)
 {
     global $wpdb;
-    $table_school_subjects = $wpdb->prefix.'school_subjects';
+    $table_teachers = $wpdb->prefix.'teachers';
 
-    $teacher = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id={$teacher_id}");
+    $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id={$teacher_id}");
     return $teacher;
 }

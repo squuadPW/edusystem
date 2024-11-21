@@ -69,6 +69,10 @@ function aes_scripts_admin(){
         wp_enqueue_script('configuration',plugins_url('aes').'/admin/assets/js/configuration.js',array('jquery'),'1.0.0',true);    
     }
 
+    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_teachers_content'){
+        wp_enqueue_script('teacher',plugins_url('aes').'/admin/assets/js/teacher.js',array('jquery'),'1.0.0',true);    
+    }
+
     if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')){
         wp_enqueue_script('institute',plugins_url('aes').'/admin/assets/js/institute.js',array('jquery'),'1.0.0',true);
 
@@ -319,15 +323,15 @@ function add_custom_admin_page() {
         7
     );
 
-    // add_menu_page( 
-    //     __('Teachers','aes'),
-    //     __('Teachers','aes'),
-    //     'manager_teachers_aes', 
-    //     'add_admin_form_teachers_content',
-    //     'add_admin_form_teachers_content', 
-    //     'dashicons-businessman', 
-    //     7
-    // );
+    add_menu_page( 
+        __('Teachers','aes'),
+        __('Teachers','aes'),
+        'manager_teachers_aes', 
+        'add_admin_form_teachers_content',
+        'add_admin_form_teachers_content', 
+        'dashicons-businessman', 
+        7
+    );
 
     add_menu_page( 
         __('Enrollments','aes'),
