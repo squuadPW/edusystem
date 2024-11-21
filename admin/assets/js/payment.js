@@ -11,8 +11,29 @@ document.addEventListener('DOMContentLoaded',function(){
             let message = approved_status.getAttribute('data-message');
             
             document.getElementById('title-modal-status-payment').textContent = title;
+            document.getElementById('text-modal-status-payment').textContent = title.toLowerCase();
             document.getElementById('message-modal-status-payment').textContent = message;
             document.getElementById('order_id').value = order_id;
+            document.getElementById('status_id').value = 'completed';
+            document.getElementById('modalStatusPayment').style.display = "block";
+        });
+    }
+
+    decline_status = document.getElementById('decline_payment');
+
+    if(decline_status){
+
+        decline_status.addEventListener('click',(e) => {
+
+            order_id = decline_status.getAttribute('data-id');
+            let title = decline_status.getAttribute('data-title');
+            let message = decline_status.getAttribute('data-message');
+            
+            document.getElementById('title-modal-status-payment').textContent = title;
+            document.getElementById('text-modal-status-payment').textContent = title.toLowerCase();
+            document.getElementById('message-modal-status-payment').textContent = message;
+            document.getElementById('order_id').value = order_id;
+            document.getElementById('status_id').value = 'canceled';
             document.getElementById('modalStatusPayment').style.display = "block";
         });
     }

@@ -25,6 +25,12 @@
                                     <h4 style="text-align: center; font-weight: 600; font-style: italic; color: #1f8605; font-size: 18px;">Scholarship</h4>
                                 <?php } ?>
                                 <tr>
+                                    <th scope="row" ><label for="input_id"><?= __('Status','aes').':'; ?></label></th>
+                                    <td>
+                                        <?= strtoupper($order->get_status()); ?>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th scope="row" ><label for="input_id"><?= __('Payment ID','aes').':'; ?></label></th>
                                     <td>
                                         <?= '#'.$order->get_id(); ?>
@@ -190,6 +196,15 @@
                                 $roles = $current_user->roles;
                                 if(!in_array('webinar-aliance', $roles)){?>
                                 <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
+                                    <?php if($order->get_status() != 'completed' && $order->get_status() != 'cancelled'){ ?>
+                                        <div style="margin-right: 10px">
+                                            <?php if(wp_is_mobile()){ ?>
+                                                <button data-message="<?= __('Do you want to decline this payment?','aes'); ?>" data-title="<?= __('Decline','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="decline_payment" style="width:100%;" class="button button-danger"><?= __('Decline','aes'); ?></button>
+                                            <?php }else{ ?>
+                                                <button data-message="<?= __('Do you want to decline this payment?','aes'); ?>" data-title="<?= __('Decline','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="decline_payment" class="button button-danger"><?= __('Decline','aes'); ?></button>
+                                            <?php } ?>
+                                        </div>
+                                    <?php } ?>
                                     <?php if(($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) && ($order->get_meta('pending_payment') && $order->get_meta('pending_payment') > 0)){ ?>
                                         <div style="margin-right: 10px">
                                             <?php if(wp_is_mobile()){ ?>
@@ -200,7 +215,7 @@
                                         </div>
                                     <?php } ?>
 
-                                    <?php if($order->get_status() != 'completed'){ ?>
+                                    <?php if($order->get_status() != 'completed' && $order->get_status() != 'cancelled'){ ?>
                                         <div>
                                             <?php if(wp_is_mobile()){ ?>
                                                 <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-success"><?= __('Approve','aes'); ?></button>

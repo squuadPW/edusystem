@@ -26,11 +26,12 @@
 				<?php } ?>
 				<div class="display:flex">
 					<div>
-						<label for="description">You can add a description about the payment approval if you
+						<label for="description">You can add a description about the payment <strong><span id="text-modal-status-payment"></span></strong> if you
 							wish</label>
 						<textarea style="width: 100%" name="description" value=""></textarea>
 					</div>
 					<input type="hidden" id="order_id" name="order_id" value="">
+					<input type="hidden" id="status_id" name="status_id" value="completed">
 				</div>
 			</div>
 			<div class="modal-footer">
