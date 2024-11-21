@@ -3,7 +3,7 @@
 Plugin Name: AES
 Plugin URI: https://online.american-elite.us/wp-admin/plugins.php
 Description: The WordPress plugin for American Elite School is a customized tool that offers a range of functionalities for the proper functioning of the school's website
-Version: 1.1.3
+Version: 1.1.5
 Author: Squuad
 Author URI: https://online.american-elite.us/wp-admin/plugins.php
 License:      GPL2
