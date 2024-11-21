@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: AES
+Plugin Name: Squuad for educational system
 Plugin URI: https://online.american-elite.us/wp-admin/plugins.php
-Description: The WordPress plugin for American Elite School is a customized tool that offers a range of functionalities for the proper functioning of the school's website
-Version: 1.1.5
+Description: The WordPress plugin for educational system is a customized tool that offers a range of functionalities for the proper functioning of the institute website
+Version: 1.1.6
 Author: Squuad
 Author URI: https://online.american-elite.us/wp-admin/plugins.php
 License:      GPL2
