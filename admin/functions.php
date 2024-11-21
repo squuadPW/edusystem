@@ -319,15 +319,15 @@ function add_custom_admin_page() {
         7
     );
 
-    // add_menu_page( 
-    //     __('Teachers','aes'),
-    //     __('Teachers','aes'),
-    //     'manager_teachers_aes', 
-    //     'add_admin_form_teachers_content',
-    //     'add_admin_form_teachers_content', 
-    //     'dashicons-businessman', 
-    //     7
-    // );
+    add_menu_page( 
+        __('Teachers','aes'),
+        __('Teachers','aes'),
+        'manager_teachers_aes', 
+        'add_admin_form_teachers_content',
+        'add_admin_form_teachers_content', 
+        'dashicons-businessman', 
+        7
+    );
 
     add_menu_page( 
         __('Enrollments','aes'),

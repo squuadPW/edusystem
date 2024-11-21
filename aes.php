@@ -47,6 +47,18 @@ function create_tables() {
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_teachers}'") != $table_teachers){
     dbDelta( "CREATE TABLE " . $table_teachers . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
+        type_document TEXT NULL,
+        id_document TEXT NULL,
+        name TEXT NOT NULL,
+        middle_name TEXT NULL,
+        last_name TEXT NOT NULL,
+        middle_last_name TEXT NULL,
+        birth_date DATE NULL,
+        gender TEXT NULL,
+        email TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        address TEXT NULL,
+        status INT(1) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
