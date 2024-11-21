@@ -48,7 +48,7 @@ function save_student()
         $is_scholarship = isset($_POST['is_scholarship']) ? true : false;
 
         if ($one_time_payment) {
-            setcookie('one_time_payment', 1, time() + 3600, '/');
+            setcookie('one_time_payment', 1, time() + 864000, '/');
         }
 
         if (isset($email_partner) && ($email_partner === $email_student)) {
@@ -56,59 +56,59 @@ function save_student()
             return;
         }
 
-        setcookie('is_older', '', time() + 3600, '/');
-        setcookie('ethnicity', $ethnicity, time() + 3600, '/');
-        setcookie('billing_city', ucwords($city), time() + 3600, '/');
-        setcookie('billing_country', $country, time() + 3600, '/');
-        setcookie('initial_grade', $grade, time() + 3600, '/');
-        setcookie('program_id', $program, time() + 3600, '/');
-        setcookie('phone_student', $number_phone, time() + 3600, '/');
-        setcookie('id_document', $id_document, time() + 3600, '/');
-        setcookie('document_type', $document_type, time() + 3600, '/');
-        setcookie('email_student', $email_student, time() + 3600, '/');
-        setcookie('name_student', ucwords($name), time() + 3600, '/');
-        setcookie('middle_name_student', ucwords($middle_name_student), time() + 3600, '/');
-        setcookie('last_name_student', ucwords($last_name), time() + 3600, '/');
-        setcookie('middle_last_name_student', ucwords($middle_last_name_student), time() + 3600, '/');
-        setcookie('birth_date', $birth_date, time() + 3600, '/');
-        setcookie('gender', $gender, time() + 3600, '/');
-        setcookie('password', $password, time() + 3600, '/');
+        setcookie('is_older', '', time() + 864000, '/');
+        setcookie('ethnicity', $ethnicity, time() + 864000, '/');
+        setcookie('billing_city', ucwords($city), time() + 864000, '/');
+        setcookie('billing_country', $country, time() + 864000, '/');
+        setcookie('initial_grade', $grade, time() + 864000, '/');
+        setcookie('program_id', $program, time() + 864000, '/');
+        setcookie('phone_student', $number_phone, time() + 864000, '/');
+        setcookie('id_document', $id_document, time() + 864000, '/');
+        setcookie('document_type', $document_type, time() + 864000, '/');
+        setcookie('email_student', $email_student, time() + 864000, '/');
+        setcookie('name_student', ucwords($name), time() + 864000, '/');
+        setcookie('middle_name_student', ucwords($middle_name_student), time() + 864000, '/');
+        setcookie('last_name_student', ucwords($last_name), time() + 864000, '/');
+        setcookie('middle_last_name_student', ucwords($middle_last_name_student), time() + 864000, '/');
+        setcookie('birth_date', $birth_date, time() + 864000, '/');
+        setcookie('gender', $gender, time() + 864000, '/');
+        setcookie('password', $password, time() + 864000, '/');
 
         $id_bitrix = $_GET['idbitrix'] ?? null;
         if (isset($id_bitrix)) {
-            setcookie('id_bitrix', $id_bitrix, time() + 3600, '/');
+            setcookie('id_bitrix', $id_bitrix, time() + 864000, '/');
         }
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);
             $name_institute = strtoupper($institute->name);
-            setcookie('institute_id', $institute_id, time() + 3600, '/');
+            setcookie('institute_id', $institute_id, time() + 864000, '/');
         } else {
             $name_institute = isset($_POST['name_institute']) ? strtoupper($_POST['name_institute']) : null;
         }
 
-        setcookie('name_institute', strtoupper($name_institute), time() + 3600, '/');
+        setcookie('name_institute', strtoupper($name_institute), time() + 864000, '/');
         switch ($action) {
             case 'save_student_scholarship':
             case 'save_student':
                 if (!empty($agent_name) && !empty($agent_last_name) && !empty($email_partner) && !empty($number_partner) && !empty($birth_date_parent) && !empty($parent_document_type) && !empty($id_document_parent)) {
-                    setcookie('agent_name', ucwords($agent_name), time() + 3600, '/');
-                    setcookie('agent_last_name', ucwords($agent_last_name), time() + 3600, '/');
-                    setcookie('email_partner', $email_partner, time() + 3600, '/');
-                    setcookie('number_partner', $number_partner, time() + 3600, '/');
-                    setcookie('birth_date_parent', $birth_date_parent, time() + 3600, '/');
-                    setcookie('parent_document_type', $parent_document_type, time() + 3600, '/');
-                    setcookie('id_document_parent', $id_document_parent, time() + 3600, '/');
-                    setcookie('gender_parent', $gender_parent, time() + 3600, '/');
+                    setcookie('agent_name', ucwords($agent_name), time() + 864000, '/');
+                    setcookie('agent_last_name', ucwords($agent_last_name), time() + 864000, '/');
+                    setcookie('email_partner', $email_partner, time() + 864000, '/');
+                    setcookie('number_partner', $number_partner, time() + 864000, '/');
+                    setcookie('birth_date_parent', $birth_date_parent, time() + 864000, '/');
+                    setcookie('parent_document_type', $parent_document_type, time() + 864000, '/');
+                    setcookie('id_document_parent', $id_document_parent, time() + 864000, '/');
+                    setcookie('gender_parent', $gender_parent, time() + 864000, '/');
                 } else {
-                    setcookie('agent_name', ucwords($name), time() + 3600, '/');
-                    setcookie('agent_last_name', ucwords($last_name), time() + 3600, '/');
-                    setcookie('email_partner', $email_student, time() + 3600, '/');
-                    setcookie('number_partner', $number_phone, time() + 3600, '/');
-                    setcookie('birth_date_parent', $birth_date, time() + 3600, '/');
-                    setcookie('parent_document_type', $document_type, time() + 3600, '/');
-                    setcookie('id_document_parent', $id_document, time() + 3600, '/');
-                    setcookie('gender_parent', $gender, time() + 3600, '/');
+                    setcookie('agent_name', ucwords($name), time() + 864000, '/');
+                    setcookie('agent_last_name', ucwords($last_name), time() + 864000, '/');
+                    setcookie('email_partner', $email_student, time() + 864000, '/');
+                    setcookie('number_partner', $number_phone, time() + 864000, '/');
+                    setcookie('birth_date_parent', $birth_date, time() + 864000, '/');
+                    setcookie('parent_document_type', $document_type, time() + 864000, '/');
+                    setcookie('id_document_parent', $id_document, time() + 864000, '/');
+                    setcookie('gender_parent', $gender, time() + 864000, '/');
                 }
 
                 redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
@@ -126,23 +126,23 @@ function save_student()
 
             case 'save_student_info':
                 if (!empty($agent_name) && !empty($agent_last_name) && !empty($email_partner) && !empty($number_partner) && !empty($birth_date_parent) && !empty($parent_document_type) && !empty($id_document_parent)) {
-                    setcookie('agent_name', ucwords($agent_name), time() + 3600, '/');
-                    setcookie('agent_last_name', ucwords($agent_last_name), time() + 3600, '/');
-                    setcookie('email_partner', $email_partner, time() + 3600, '/');
-                    setcookie('number_partner', $number_partner, time() + 3600, '/');
-                    setcookie('birth_date_parent', $birth_date_parent, time() + 3600, '/');
-                    setcookie('parent_document_type', $parent_document_type, time() + 3600, '/');
-                    setcookie('id_document_parent', $id_document_parent, time() + 3600, '/');
-                    setcookie('gender_parent', $gender_parent, time() + 3600, '/');
+                    setcookie('agent_name', ucwords($agent_name), time() + 864000, '/');
+                    setcookie('agent_last_name', ucwords($agent_last_name), time() + 864000, '/');
+                    setcookie('email_partner', $email_partner, time() + 864000, '/');
+                    setcookie('number_partner', $number_partner, time() + 864000, '/');
+                    setcookie('birth_date_parent', $birth_date_parent, time() + 864000, '/');
+                    setcookie('parent_document_type', $parent_document_type, time() + 864000, '/');
+                    setcookie('id_document_parent', $id_document_parent, time() + 864000, '/');
+                    setcookie('gender_parent', $gender_parent, time() + 864000, '/');
                 } else {
-                    setcookie('agent_name', ucwords($name), time() + 3600, '/');
-                    setcookie('agent_last_name', ucwords($last_name), time() + 3600, '/');
-                    setcookie('email_partner', $email_student, time() + 3600, '/');
-                    setcookie('number_partner', $number_phone, time() + 3600, '/');
-                    setcookie('birth_date_parent', $birth_date, time() + 3600, '/');
-                    setcookie('parent_document_type', $document_type, time() + 3600, '/');
-                    setcookie('id_document_parent', $id_document, time() + 3600, '/');
-                    setcookie('gender_parent', $gender, time() + 3600, '/');
+                    setcookie('agent_name', ucwords($name), time() + 864000, '/');
+                    setcookie('agent_last_name', ucwords($last_name), time() + 864000, '/');
+                    setcookie('email_partner', $email_student, time() + 864000, '/');
+                    setcookie('number_partner', $number_phone, time() + 864000, '/');
+                    setcookie('birth_date_parent', $birth_date, time() + 864000, '/');
+                    setcookie('parent_document_type', $document_type, time() + 864000, '/');
+                    setcookie('id_document_parent', $id_document, time() + 864000, '/');
+                    setcookie('gender_parent', $gender, time() + 864000, '/');
                 }
 
                 wp_redirect(wp_get_referer() . '?action=fill_data');
@@ -160,21 +160,21 @@ function save_student()
                 $gender = $gender_parent ? $gender_parent : strtolower(get_user_meta(get_current_user_id(), 'gender', true));
                 $ethnicity = $ethnicity ? $ethnicity : strtolower(get_user_meta(get_current_user_id(), 'ethnicity', true));
 
-                setcookie('ethnicity_parent', $ethnicity, time() + 3600, '/');
-                setcookie('phone_student', $number_phone, time() + 3600, '/');
-                setcookie('id_document', $id_document, time() + 3600, '/');
-                setcookie('document_type', $document_type, time() + 3600, '/');
-                setcookie('email_student', $email_student, time() + 3600, '/');
-                setcookie('birth_date', $birth_date, time() + 3600, '/');
-                setcookie('gender', $gender, time() + 3600, '/');
-                setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 3600, '/');
-                setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 3600, '/');
-                setcookie('email_partner', $email_student, time() + 3600, '/');
-                setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 3600, '/');
-                setcookie('birth_date_parent', get_user_meta(get_current_user_id(), 'birth_date', true), time() + 3600, '/');
-                setcookie('parent_document_type', get_user_meta(get_current_user_id(), 'type_document', true), time() + 3600, '/');
-                setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 3600, '/');
-                setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 3600, '/');
+                setcookie('ethnicity_parent', $ethnicity, time() + 864000, '/');
+                setcookie('phone_student', $number_phone, time() + 864000, '/');
+                setcookie('id_document', $id_document, time() + 864000, '/');
+                setcookie('document_type', $document_type, time() + 864000, '/');
+                setcookie('email_student', $email_student, time() + 864000, '/');
+                setcookie('birth_date', $birth_date, time() + 864000, '/');
+                setcookie('gender', $gender, time() + 864000, '/');
+                setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 864000, '/');
+                setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 864000, '/');
+                setcookie('email_partner', $email_student, time() + 864000, '/');
+                setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 864000, '/');
+                setcookie('birth_date_parent', get_user_meta(get_current_user_id(), 'birth_date', true), time() + 864000, '/');
+                setcookie('parent_document_type', get_user_meta(get_current_user_id(), 'type_document', true), time() + 864000, '/');
+                setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
+                setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
                 redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
                 break;
@@ -182,14 +182,14 @@ function save_student()
             default:
 
                 global $current_user;
-                setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 3600, '/');
-                setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 3600, '/');
-                setcookie('email_partner', $current_user->user_email, time() + 3600, '/');
-                setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 3600, '/');
-                setcookie('birth_date_parent', get_user_meta(get_current_user_id(), 'birth_date', true), time() + 3600, '/');
-                setcookie('parent_document_type', get_user_meta(get_current_user_id(), 'type_document', true), time() + 3600, '/');
-                setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 3600, '/');
-                setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 3600, '/');
+                setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 864000, '/');
+                setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 864000, '/');
+                setcookie('email_partner', $current_user->user_email, time() + 864000, '/');
+                setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 864000, '/');
+                setcookie('birth_date_parent', get_user_meta(get_current_user_id(), 'birth_date', true), time() + 864000, '/');
+                setcookie('parent_document_type', get_user_meta(get_current_user_id(), 'type_document', true), time() + 864000, '/');
+                setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
+                setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
                 redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
                 break;
