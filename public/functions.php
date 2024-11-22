@@ -1139,11 +1139,30 @@ function woocommerce_update_cart()
 
     if ($variation != 'Complete') {
         // Remover el cupón con la clave "fee_inscription" de la matriz $applied_coupons
-        $applied_coupons = array_diff($applied_coupons, array("registration fee discount"));
+        $applied_coupons = array_diff($applied_coupons, array(strtolower(get_option('offer_complete'))));
+
+        $offer_quote = strtolower(get_option('offer_quote'));
+
+        if (!empty($offer_quote)) {
+            // Verifica si el valor ya existe en el array
+            if (in_array($offer_quote, $applied_coupons)) {
+                // Si existe, lo eliminamos
+                $applied_coupons = array_diff($applied_coupons, [$offer_quote]);
+            }
+        
+            // Agregamos el valor al array
+            array_push($applied_coupons, $offer_quote);
+        }
     } else {
         // Agregar el cupón con la clave "fee_inscription" a la matriz $applied_coupons
         if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
-            array_push($applied_coupons, 'registration fee discount');
+            if (!empty(get_option('offer_complete'))) {
+                $applied_coupons = array_diff($applied_coupons, array(strtolower(get_option('offer_quote'))));
+            }
+
+            if (!empty(get_option('offer_complete'))) {
+                array_push($applied_coupons, strtolower(get_option('offer_complete')));
+            }
         }
     }
 
@@ -1154,6 +1173,9 @@ function woocommerce_update_cart()
 
     // Calculate totals
     $woocommerce->cart->calculate_totals();
+
+    wp_send_json(array('applied_coupons' => $applied_coupons, 'offer' => get_option('offer_complete'), 'quote' => get_option('offer_quote')));
+    die();
 }
 
 add_action('wp_ajax_nopriv_fee_update', 'fee_update');
@@ -1184,7 +1206,15 @@ function fee_update()
 
         if ($is_complete) {
             if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
-                $woocommerce->cart->apply_coupon('Registration fee discount');
+                if (!empty(get_option('offer_complete'))) {
+                    $woocommerce->cart->apply_coupon(get_option('offer_complete'));
+                }
+            }
+        } else {
+            if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
+                if (!empty(get_option('offer_quote'))) {
+                    $woocommerce->cart->apply_coupon(get_option('offer_quote'));
+                }
             }
         }
 
@@ -1192,7 +1222,9 @@ function fee_update()
     } else {
         $woocommerce->cart->remove_cart_item($woocommerce->cart->generate_cart_id($id));
         if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
-            $woocommerce->cart->remove_coupon('Registration fee discount');
+            if (!empty(get_option('offer_complete'))) {
+                $woocommerce->cart->remove_coupon(get_option('offer_complete'));
+            }
         }
         $woocommerce->cart->calculate_totals();
     }

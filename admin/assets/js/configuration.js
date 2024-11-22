@@ -20,6 +20,9 @@ segmentButtons.forEach((button) => {
             const formMoodle = document.getElementById("by_moodle");
             formMoodle.style.display = "none";
 
+            const formOffers = document.getElementById("by_offers");
+            formOffers.style.display = "none";
+
             const formAdmission = document.getElementById("by_admission");
             formAdmission.style.display = "block";
 
@@ -49,6 +52,9 @@ segmentButtons.forEach((button) => {
             const formMoodle = document.getElementById("by_moodle");
             formMoodle.style.display = "none";
 
+            const formOffers = document.getElementById("by_offers");
+            formOffers.style.display = "none";
+
             const formAdministration = document.getElementById("by_administration");
             formAdministration.style.display = "block";
 
@@ -68,7 +74,7 @@ segmentButtons.forEach((button) => {
             document.querySelector('input[name="documents_ok"]').required = false;
             document.querySelector('input[name="documents_warning"]').required = false;
             document.querySelector('input[name="documents_red"]').required = false;
-        }  else if(selectedOption == "moodle") {
+        } else if(selectedOption == "moodle") {
             const formAdmission = document.getElementById("by_admission");
             formAdmission.style.display = "none";
 
@@ -77,6 +83,9 @@ segmentButtons.forEach((button) => {
 
             const formAdministration = document.getElementById("by_administration");
             formAdministration.style.display = "none";
+
+            const formOffers = document.getElementById("by_offers");
+            formOffers.style.display = "none";
 
             const formMoodle = document.getElementById("by_moodle");
             formMoodle.style.display = "block";
@@ -97,6 +106,38 @@ segmentButtons.forEach((button) => {
             document.querySelector('input[name="documents_ok"]').required = false;
             document.querySelector('input[name="documents_warning"]').required = false;
             document.querySelector('input[name="documents_red"]').required = false;
+        }  else if(selectedOption == "offers") {
+            const formAdmission = document.getElementById("by_admission");
+            formAdmission.style.display = "none";
+
+            const formNotifications = document.getElementById("by_notifications");
+            formNotifications.style.display = "none";
+
+            const formAdministration = document.getElementById("by_administration");
+            formAdministration.style.display = "none";
+
+            const formMoodle = document.getElementById("by_moodle");
+            formMoodle.style.display = "none";
+
+            const formOffers = document.getElementById("by_offers");
+            formOffers.style.display = "block";
+
+            // form notifications
+            document.querySelector('input[name="email_coordination"]').required = false;
+            document.querySelector('input[name="email_academic_management"]').required = false;
+            document.querySelector('input[name="email_manager"]').required = false;
+
+            // form administration
+            document.querySelector('input[name="payment_due"]').required = false;
+
+            // form moodle
+            document.querySelector('input[name="moodle_url"]').required = false;
+            document.querySelector('input[name="moodle_token"]').required = false;
+
+            // form admission
+            document.querySelector('input[name="documents_ok"]').required = false;
+            document.querySelector('input[name="documents_warning"]').required = false;
+            document.querySelector('input[name="documents_red"]').required = false;
         } else {
             const formAdmission = document.getElementById("by_admission");
             formAdmission.style.display = "none";
@@ -106,6 +147,9 @@ segmentButtons.forEach((button) => {
 
             const formMoodle = document.getElementById("by_moodle");
             formMoodle.style.display = "none";
+
+            const formOffers = document.getElementById("by_offers");
+            formOffers.style.display = "none";
 
             const formNotifications = document.getElementById("by_notifications");
             formNotifications.style.display = "block";

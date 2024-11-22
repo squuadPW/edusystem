@@ -251,7 +251,11 @@ function redirect_to_checkout($program, $grade, $from_webinar = false, $is_schol
     }
 
     if (!$from_webinar && !$is_scholarship) {
-        $woocommerce->cart->apply_coupon('Registration fee discount');
+        // $woocommerce->cart->apply_coupon('Registration fee discount');
+        if (!empty(get_option('offer_complete'))) {
+            $woocommerce->cart->apply_coupon(get_option('offer_complete'));
+        }
+
     } else if ($is_scholarship) {
         $woocommerce->cart->apply_coupon('Honor Excellent AES');
         setcookie('is_scholarship', 1, time() + 3600, '/');

@@ -24,6 +24,7 @@
                 <div class="segment-button active" data-option="admission"><?= __('Admission', 'aes'); ?></div>
                 <div class="segment-button" data-option="administration"><?= __('Administration', 'aes'); ?></div>
                 <div class="segment-button" data-option="moodle"><?= __('Moodle', 'aes'); ?></div>
+                <div class="segment-button" data-option="offers"><?= __('Offers', 'aes'); ?></div>
                 <div class="segment-button" data-option="notifications"><?= __('Notifications', 'aes'); ?></div>
             </section>
 
@@ -62,6 +63,16 @@
                   <div class="form-group" style="padding: 0px 10px 10px 10px;">
                     <label for="email_academic_management"><?= __('Moodle Token','aes'); ?></label> <br>
                     <input class="full-input" name="moodle_token" type="text" id="moodle_token" value="<?= get_option('moodle_token'); ?>" required>
+                  </div>
+                </div>
+                <div id="by_offers" style="display: none">
+                  <div class="form-group" style="padding: 0px 10px 10px 10px;">
+                    <label for="email_coordination"><?= __('Coupon registration fee in complete payment (empty is disabled)','aes'); ?></label> <br>
+                    <input class="full-input" name="offer_complete" type="text" id="offer_complete" value="<?= get_option('offer_complete'); ?>">
+                  </div>
+                  <div class="form-group" style="padding: 0px 10px 10px 10px;">
+                    <label for="email_academic_management"><?= __('Coupon for registration fee with installment payments (empty is disabled)','aes'); ?></label> <br>
+                    <input class="full-input" name="offer_quote" type="text" id="offer_quote" value="<?= get_option('offer_quote'); ?>">
                   </div>
                 </div>
                 <div id="by_notifications" style="display: none">

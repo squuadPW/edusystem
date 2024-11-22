@@ -25,6 +25,12 @@ function add_admin_form_configuration_options_content()
             update_option('moodle_url', $moodle_url);
             update_option('moodle_token', $moodle_token);
 
+            // offers
+            $offer_complete = sanitize_text_field($_POST['offer_complete']) ?? get_option('offer_complete');
+            $offer_quote = sanitize_text_field($_POST['offer_quote']) ?? get_option('offer_quote');
+            update_option('offer_complete', $offer_complete);
+            update_option('offer_quote', $offer_quote);
+
             // notifications
             $email_coordination = sanitize_text_field($_POST['email_coordination']) ?? get_option('email_coordination');
             $email_administration = sanitize_text_field($_POST['email_administration']) ?? get_option('email_administration');
