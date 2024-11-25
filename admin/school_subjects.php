@@ -122,6 +122,7 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
         $columns = array(
             'code_subject' => __('Subject code (the same as moodle)', 'aes'),
             'name' => __('Name', 'aes'),
+            'hc' => __('HC', 'aes'),
             'is_elective' => __('Is elective', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
@@ -147,6 +148,7 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
                     'code_subject' => $subject->code_subject,
                     'school_subject_id' => $subject->id,
                     'name' => $subject->name,
+                    'hc' => $subject->hc,
                     'is_elective' => $subject->is_elective,
                 ]);
             }
