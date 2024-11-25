@@ -21,7 +21,7 @@ function add_admin_form_school_subjects_content()
 
             $subject_id = $_POST['subject_id'];
             $name = strtoupper($_POST['name']);
-            $code_subject = strtoupper($_POST['code_subject']);
+            $code_subject = strtoupper($_POST['code_subject']) ?? null;
             $description = $_POST['description'];
             $hc = $_POST['hc'];
             $is_elective = $_POST['is_elective'];
