@@ -552,7 +552,7 @@ function student_unsubscribe()
             $filtered_grades = [];
             $total_evaluated = 0;
             foreach ($enrolled as $key => $enroll) {
-                $grades = course_grade(course_id: $enroll['id']);
+                $grades = course_grade($enroll['id']);
                 $grades = $grades['usergrades'];
                 $filtered_grades = array_filter($grades, function($entry) use ($moodle_student_id) {
                     return $entry['userid'] == $moodle_student_id;
