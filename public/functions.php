@@ -1186,23 +1186,10 @@ function fee_update()
     global $woocommerce;
     $value = $_POST['option'];
     $id = AES_FEE_INSCRIPTION;
-    $products_id = [];
 
     if ($value == 'true') {
         $woocommerce->cart->add_to_cart($id, 1);
-
-        foreach ($woocommerce->cart->get_cart() as $key => $product) {
-            array_push($products_id, $product['variation_id'] ? $product['variation_id'] : $product['product_id']);
-        }
-
-        $is_complete = false;
-        foreach ($products_id as $key => $product_id) {
-            $product = wc_get_product($product_id);
-            $product_name = $product->get_name();
-            if (str_contains($product_name, 'Complete')) {
-                $is_complete = true;
-            }
-        }
+        $is_complete = returnIsComplete();
 
         if ($is_complete) {
             if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
@@ -1218,16 +1205,46 @@ function fee_update()
             }
         }
 
-        $woocommerce->cart->calculate_totals();
     } else {
         $woocommerce->cart->remove_cart_item($woocommerce->cart->generate_cart_id($id));
-        if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
-            if (!empty(get_option('offer_complete'))) {
-                $woocommerce->cart->remove_coupon(get_option('offer_complete'));
+        $is_complete = returnIsComplete();
+
+        if ($is_complete) {
+            if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
+                if (!empty(get_option('offer_complete'))) {
+                    $woocommerce->cart->remove_coupon(get_option('offer_complete'));
+                }
+            }
+        } else {
+            if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
+                if (!empty(get_option('offer_quote'))) {
+                    $woocommerce->cart->remove_coupon(get_option('offer_quote'));
+                }
             }
         }
-        $woocommerce->cart->calculate_totals();
     }
+
+    $woocommerce->cart->calculate_totals();
+}
+
+function returnIsComplete() {
+    global $woocommerce;
+    $products_id = [];
+    $is_complete = false;
+
+    foreach ($woocommerce->cart->get_cart() as $key => $product) {
+        array_push($products_id, $product['variation_id'] ? $product['variation_id'] : $product['product_id']);
+    }
+
+    foreach ($products_id as $key => $product_id) {
+        $product = wc_get_product($product_id);
+        $product_name = $product->get_name();
+        if (str_contains($product_name, 'Complete')) {
+            $is_complete = true;
+        }
+    }
+
+    return $is_complete;
 }
 
 add_action('wp_ajax_nopriv_load_signatures_data', 'load_signatures_data');
