@@ -120,7 +120,7 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'code_subject' => __('Code of subject', 'aes'),
+            'code_subject' => __('Subject code (the same as moodle)', 'aes'),
             'name' => __('Name', 'aes'),
             'is_elective' => __('Is elective', 'aes'),
             'view_details' => __('Actions', 'aes'),

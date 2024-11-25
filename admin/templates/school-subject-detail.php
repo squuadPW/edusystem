@@ -69,10 +69,10 @@
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
-                                                for="code_subject"><b><?= __('Code of subject', 'aes'); ?></b><span class="text-danger">*</span></label><br>
+                                                for="code_subject"><b><?= __('Subject code (the same as moodle)', 'aes'); ?></b><span class="text-danger">*</span></label><br>
                                             <input type="text" name="code_subject" value="<?= ucwords($subject->code_subject); ?>">
                                         <?php else: ?>
-                                            <label for="code_subject"><b><?= __('Code of subject', 'aes'); ?></b><span
+                                            <label for="code_subject"><b><?= __('Subject code (the same as moodle)', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <input type="text" name="code_subject" value="" required>
                                         <?php endif; ?>
@@ -82,12 +82,12 @@
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
-                                                for="description"><b><?= __('Description', 'aes'); ?></b><span class="text-danger">*</span></label><br>
+                                                for="description"><b><?= __('Description', 'aes'); ?></b></label><br>
                                             <textarea name="description"><?= $subject->description; ?></textarea>
                                         <?php else: ?>
                                             <label for="description"><b><?= __('Description', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
-                                            <textarea name="description" required></textarea>
+                                            <textarea name="description"></textarea>
                                         <?php endif; ?>
                                     </div>
                                     <div style="font-weight:400; text-align: center">
