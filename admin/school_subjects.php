@@ -141,12 +141,23 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
 
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
-            $search = $_POST['s'];
-            $school_subjects = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM wp_school_subjects WHERE (`name` LIKE '%{$search}%' || code_subject LIKE '%{$search}%') ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
-        } else {
-            $school_subjects = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM wp_school_subjects ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        $query_search = "";
+        if (isset($_GET['s']) && !empty($_GET['s'])) {
+            $search = $_GET['s'];
+            $query_search  = "WHERE (`name` LIKE '%{$search}%' || code_subject LIKE '%{$search}%')";
         }
+
+        $query_electives = "";
+        if (isset($_GET['subject_type']) && $_GET['subject_type'] != '') {
+            $search = $_GET['subject_type'];
+            if ($query_search != '') {
+                $query_electives  = "AND (`is_elective` = {$search})";
+            } else {
+                $query_electives  = "WHERE (`is_elective` = {$search})";
+            }
+        }
+
+        $school_subjects = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM wp_school_subjects {$query_search} {$query_electives} ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
 
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
