@@ -135,26 +135,34 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
         global $wpdb;
         $school_subjects_array = [];
 
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+
         if (isset($_POST['s']) && !empty($_POST['s'])) {
             $search = $_POST['s'];
-            $school_subjects = $wpdb->get_results("SELECT * FROM wp_school_subjects WHERE (`name` LIKE '%{$search}%' || code_subject LIKE '%{$search}%')");
+            $school_subjects = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM wp_school_subjects WHERE (`name` LIKE '%{$search}%' || code_subject LIKE '%{$search}%') ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
         } else {
-            $school_subjects = $wpdb->get_results("SELECT * FROM wp_school_subjects");
+            $school_subjects = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM wp_school_subjects ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
         }
+
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
         if ($school_subjects) {
             foreach ($school_subjects as $subject) {
                 array_push($school_subjects_array, [
-                    'code_subject' => $subject->code_subject,
-                    'school_subject_id' => $subject->id,
-                    'name' => $subject->name,
-                    'hc' => $subject->hc,
-                    'is_elective' => $subject->is_elective,
+                    'code_subject' => $subject['code_subject'],
+                    'school_subject_id' => $subject['id'],
+                    'name' => $subject['name'],
+                    'hc' => $subject['hc'],
+                    'is_elective' => $subject['is_elective'],
                 ]);
             }
         }
 
-        return $school_subjects_array;
+        return ['data' => $school_subjects_array, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -192,7 +200,9 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
 
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        $data = $data_school_subjects;
+        
+        $data = $data_school_subjects['data'];
+        $total_count = (int) $data_school_subjects['total_count'];
 
         function usort_reorder($a, $b)
         {
@@ -202,9 +212,11 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $current_page = $this->get_pagenum();
-
-        $total_items = count($data);
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
 
         $this->items = $data;
     }
