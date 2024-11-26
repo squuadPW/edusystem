@@ -2103,7 +2103,7 @@ function create_enrollment_document_callback()
 
         $user_student = get_user_by('id', $student_user_id);
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user_student->data->user_email}'");
-        $wpdb->update($table_student_documents, ['status' => 5, 'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $student->id, 'document_id' => $document_id]);
+        $wpdb->update($table_student_documents, ['status' => 1, 'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $student->id, 'document_id' => $document_id]);
     }
     // SAVE THE DOCUMENT
 
