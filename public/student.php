@@ -422,12 +422,28 @@ function insert_student($customer_id)
     $current_time = current_time('mysql');
     $code = 'noperiod';
     $cut = 'nocut';
-    $period_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
+
+    // Consulta para obtener el periodo académico
+    $period_data = $wpdb->get_row($wpdb->prepare("
+        SELECT * FROM {$table_academic_periods} 
+        WHERE DATE_SUB(`start_date`, INTERVAL 1 MONTH) <= %s 
+        AND DATE_ADD(`end_date`, INTERVAL -1 MONTH) >= %s", 
+        array($current_time, $current_time)
+    ));
+
     if ($period_data) {
-        $code =  $period_data->code;
-        $period_data_cut = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods_cut} WHERE `start_date` <= %s AND end_date >= %s", array($current_time, $current_time)));
+        $code = $period_data->code;
+
+        // Consulta para obtener el corte académico
+        $period_data_cut = $wpdb->get_row($wpdb->prepare("
+            SELECT * FROM {$table_academic_periods_cut} 
+            WHERE DATE_SUB(`start_date`, INTERVAL 1 MONTH) <= %s 
+            AND DATE_ADD(`end_date`, INTERVAL -1 MONTH) >= %s", 
+            array($current_time, $current_time)
+        ));
+
         if ($period_data_cut) {
-            $cut =  $period_data_cut->cut;
+            $cut = $period_data_cut->cut;
         }
     }
 
