@@ -9,7 +9,7 @@
 		<form action="" id="post-filter" method="get">
 			<p class="search-box">
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','aes').':'; ?></label>
-				<input type="search" id="search-box-id-search-input" name="s" placeholder="<?= __('Search for Subject','aes'); ?>" value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
+				<input value="<?= $_GET['s'] ?>" type="search" id="search-box-id-search-input" name="s" placeholder="<?= __('Search for Subject','aes'); ?>" value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
 				<input type="submit" id="search-submit" class="button" value="Search">
 			</p>
 			<p class="search-box" style="margin-right: 10px">
