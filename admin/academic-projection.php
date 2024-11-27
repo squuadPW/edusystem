@@ -29,9 +29,34 @@ function add_admin_form_academic_projection_content()
                 ));
             
                 if ($exists == 0) {
+                    $projection = [];
+                    $subjects_number = 0;
+                    switch ($student->grade_id) {
+                        case 1: // lower
+                            $subjects_number = 15;
+                            break;
+                        case 2: // upper
+                            $subjects_number = 10;
+                            break;
+                        case 3: // middle
+                        case 4: // graduated
+                            $subjects_number = 5;
+                            break;
+                    }
+
+                    $initial_cut = -1;
+                    for ($i=0; $i < $subjects_number; $i++) { 
+                        $initial_cut++;
+                        $cut = ['A','B','C','D','E'];
+                        array_push($projection, ['subject_position' => $i, 'subject_code' => '', 'subject_name' => '', 'cut' => $cut[$initial_cut]]);
+                        if ($initial_cut == 4) {
+                            $initial_cut = -1;
+                        }
+                    }
+
                     $wpdb->insert($table_student_academic_projection, [
                         'student_id' => $student->id,
-                        'projection' => json_encode([]) // Ajusta el valor de 'projection' según sea necesario
+                        'projection' => json_encode($projection) // Ajusta el valor de 'projection' según sea necesario
                     ]);
                 }
             }
@@ -41,6 +66,9 @@ function add_admin_form_academic_projection_content()
             exit;
         } else if($_GET['action'] == 'save_academic_projection') {
 
+            setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            exit;
         } else {
             $list_academic_projection = new TT_academic_projection_all_List_Table;
             $list_academic_projection->prepare_items();
