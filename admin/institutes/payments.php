@@ -384,10 +384,10 @@ function get_list_fee_institute()
                 $html .= '#' . $order['order_id'];
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
-                $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . $order['customer'] . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Fee', 'restaurant-system-app') . "'>" . get_woocommerce_currency_symbol() . number_format($order['fee'], 2, '.', ',') . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Created', 'restaurant-system-app') . "'><b>" . $order['created_at'] . "</b></td>";
-                $html .= "<td class='column' data-colname='" . __('Action', 'restaurant-system-app') . "'>";
+                $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>" . $order['customer'] . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Fee', 'aes') . "'>" . get_woocommerce_currency_symbol() . number_format($order['fee'], 2, '.', ',') . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Created', 'aes') . "'><b>" . $order['created_at'] . "</b></td>";
+                $html .= "<td class='column' data-colname='" . __('Action', 'aes') . "'>";
 
                 if (!empty($institute_id)) {
                     $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=add_admin_institutes_content&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
@@ -443,10 +443,10 @@ function get_invoices_institute()
                 $html .= '#' . $order['order_id'];
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
-                $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . $order['customer'] . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Fee', 'restaurant-system-app') . "'>" . wc_price($order['fee']) . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Created', 'restaurant-system-app') . "'><b>" . $order['created_at'] . "</b></td>";
-                $html .= "<td class='column' data-colname='" . __('Action', 'restaurant-system-app') . "'>";
+                $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>" . $order['customer'] . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Fee', 'aes') . "'>" . wc_price($order['fee']) . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Created', 'aes') . "'><b>" . $order['created_at'] . "</b></td>";
+                $html .= "<td class='column' data-colname='" . __('Action', 'aes') . "'>";
 
                 if (!$institute_id) {
                     $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_institutes_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
@@ -480,9 +480,9 @@ function get_invoices_institute()
                 $html_transactions .= "<td class='column column-primary' data-colname='" . __('Status', 'aes') . "'>";
                 $html_transactions .= $order['status'];
                 $html_transactions .= "</td>";
-                $html_transactions .= "<td class='column' data-colname='" . __('Month', 'restaurant-system-app') . "'><b>" . $order['month'] . "</b></td>";
-                $html_transactions .= "<td class='column' data-colname='" . __('Amount', 'restaurant-system-app') . "'>" . wc_price($order['amount']) . "</td>";
-                $html_transactions .= "<td class='column' data-colname='" . __('Total orders', 'restaurant-system-app') . "'><b>" . $order['total_orders'] . "</b></td>";
+                $html_transactions .= "<td class='column' data-colname='" . __('Month', 'aes') . "'><b>" . $order['month'] . "</b></td>";
+                $html_transactions .= "<td class='column' data-colname='" . __('Amount', 'aes') . "'>" . wc_price($order['amount']) . "</td>";
+                $html_transactions .= "<td class='column' data-colname='" . __('Total orders', 'aes') . "'><b>" . $order['total_orders'] . "</b></td>";
                 $html_transactions .= "</tr>";
             }
 

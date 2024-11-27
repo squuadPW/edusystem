@@ -1,5 +1,5 @@
 <div class="wrap">
-	<h1 class="wp-heading-line"><?= __('Moodle Settings','restaurant-system-app'); ?></h1>
+	<h1 class="wp-heading-line"><?= __('Moodle Settings','aes'); ?></h1>
 	<form method="post" action="<?= admin_url('admin.php?page=moodle-setting&action=save_setting') ?>"> 
 		<table class="form-table">
 			<tbody>

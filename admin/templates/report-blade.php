@@ -45,13 +45,13 @@
             <?php } else { ?>
                 <select id="typeFilter" name="typeFilter" autocomplete="off">
                 <?php } ?>
-                <option value="today"><?= __('Today', 'restaurant-system-app'); ?></option>
-                <option value="yesterday"><?= __('yesterday', 'restaurant-system-app'); ?></option>
-                <option value="this-week"><?= __('This week', 'restaurant-system-app'); ?></option>
-                <option value="last-week"><?= __('Last week', 'restaurant-system-app'); ?></option>
-                <option value="this-month" selected><?= __('This month', 'restaurant-system-app'); ?></option>
-                <option value="last-month"><?= __('Last month', 'restaurant-system-app'); ?></option>
-                <option value="custom"><?= __('Custom', 'restaurant-system-app'); ?></option>
+                <option value="today"><?= __('Today', 'aes'); ?></option>
+                <option value="yesterday"><?= __('yesterday', 'aes'); ?></option>
+                <option value="this-week"><?= __('This week', 'aes'); ?></option>
+                <option value="last-week"><?= __('Last week', 'aes'); ?></option>
+                <option value="this-month" selected><?= __('This month', 'aes'); ?></option>
+                <option value="last-month"><?= __('Last month', 'aes'); ?></option>
+                <option value="custom"><?= __('Custom', 'aes'); ?></option>
             </select>
             <?php if (wp_is_mobile()) { ?>
                 <input type="text" value="<?= $start_date; ?>" id="inputStartDate"
@@ -61,10 +61,10 @@
             <?php } ?>
             <?php if (wp_is_mobile()): ?>
                 <button type="button" id="update_data_chart" class="button button-primary"
-                    style="width:100%;"></span><?= __('Update data', 'restaurant-system-app'); ?></button>
+                    style="width:100%;"></span><?= __('Update data', 'aes'); ?></button>
             <?php else: ?>
                 <button type="button" id="update_data_chart"
-                    class="button button-primary"></span><?= __('Update data', 'restaurant-system-app'); ?></button>
+                    class="button button-primary"></span><?= __('Update data', 'aes'); ?></button>
             <?php endif; ?>
     </div>
 

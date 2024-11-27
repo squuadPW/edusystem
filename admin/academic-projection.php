@@ -5,56 +5,46 @@ function add_admin_form_academic_projection_content()
 
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         if ($_GET['section_tab'] == 'academic_projection_details') {
-            $student_id = $_GET['student_id'];
-            $student = get_student_detail($student_id);
+            global $wpdb;
+            $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+            $projection_id = $_GET['projection_id'];
+            $projection = get_projection_details($projection_id);
+            $student = get_student_detail($projection->student_id);
+            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id}");
             include (plugin_dir_path(__FILE__) . 'templates/academic-projection-detail.php');
         }
-        if ($_GET['section_tab'] == 'add_academic_projection') {
-            include (plugin_dir_path(__FILE__) . 'templates/academic-projection-detail.php');
-        }
-
     } else {
 
-        if ($_GET['action'] == 'save_academic_projection_details') {
+        if ($_GET['action'] == 'generate_academic_projections') {
             global $wpdb;
             $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+            $table_students = $wpdb->prefix.'students';
 
-            $academic_projection_id = $_POST['academic_projection_id'];
-            $student_id = $_POST['student_id'];
-            $academic_projection = $_POST['academic_projection'];
-
-            //update
-            if (isset($academic_projection_id) && !empty($academic_projection_id)) {
-
-                $wpdb->update($table_student_academic_projection, [
-                    'name' => $name,
-                    'code_subject' => $code_subject,
-                    'description' => $description,
-                    'hc' => $hc,
-                    'is_elective' => $is_elective == 'on' ? 1 : 0
-                ], ['id' => $academic_projection_id]);
-
-                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
-                wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=subject_details&subject_id=' . $subject_id));
-                exit;
-            } else {
-
-                $wpdb->insert($table_student_academic_projection, [
-                    'name' => $name,
-                    'code_subject' => $code_subject,
-                    'description' => $description,
-                    'hc' => $hc,
-                    'is_elective' => $is_elective == 'on' ? 1 : 0
-                ]);
-
-                wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
-                exit;
-
+            $students = $wpdb->get_results("SELECT * FROM {$table_students}");
+            
+            foreach ($students as $key => $student) {
+                $exists = $wpdb->get_var($wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$table_student_academic_projection} WHERE student_id = %d",
+                    $student->id
+                ));
+            
+                if ($exists == 0) {
+                    $wpdb->insert($table_student_academic_projection, [
+                        'student_id' => $student->id,
+                        'projection' => json_encode([]) // Ajusta el valor de 'projection' según sea necesario
+                    ]);
+                }
             }
+
+            setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            exit;
+        } else if($_GET['action'] == 'save_academic_projection') {
+
         } else {
-            $list_school_subjects = new TT_academic_projection_all_List_Table;
-            $list_school_subjects->prepare_items();
-            include (plugin_dir_path(__FILE__) . 'templates/list-school-subjects.php');
+            $list_academic_projection = new TT_academic_projection_all_List_Table;
+            $list_academic_projection->prepare_items();
+            include (plugin_dir_path(__FILE__) . 'templates/list-academic-projection.php');
         }
     }
 }
@@ -68,8 +58,8 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
 
         parent::__construct(
             array(
-                'singular' => 'school_subject_',
-                'plural' => 'school_subject_s',
+                'singular' => 'academic_projection_',
+                'plural' => 'academic_projection_s',
                 'ajax' => true
             ));
 
@@ -81,22 +71,11 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
         global $current_user;
 
         switch ($column_name) {
-            case 'code_subject':
-                return ucwords($item[$column_name]);
-            case 'name':
-                return ucwords($item[$column_name]);
-            case 'is_elective':
-                switch ($item[$column_name]) {
-                    case 1:
-                        return 'Yes';
-                        break;
-
-                    default:
-                        return 'No';
-                        break;
-                }
+            case 'student':
+            case 'initial_cut':
+                return strtoupper($item[$column_name]);
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=subject_details&subject_id=' . $item['school_subject_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $item['academic_projection_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -117,20 +96,20 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'code_subject' => __('Subject code (the same as moodle)', 'aes'),
-            'name' => __('Name', 'aes'),
-            'hc' => __('HC', 'aes'),
-            'is_elective' => __('Is elective', 'aes'),
+            'student' => __('Student', 'aes'),
+            'initial_cut' => __('Initial period - cut', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
 
         return $columns;
     }
 
-    function get_school_subject_pendings()
+    function get_academic_projections()
     {
         global $wpdb;
-        $school_subjects_array = [];
+        $academic_projections_array = [];
+        $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+        $table_students = $wpdb->prefix.'students';
 
         // PAGINATION
         $per_page = 20; // number of items per page
@@ -141,36 +120,30 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
         $query_search = "";
         if (isset($_GET['s']) && !empty($_GET['s'])) {
             $search = $_GET['s'];
-            $query_search  = "WHERE (`name` LIKE '%{$search}%' || code_subject LIKE '%{$search}%')";
+            $query_search  = "WHERE (`name` LIKE '{$search}%' OR middle_name LIKE '{$search}%' OR last_name LIKE '{$search}%' OR middle_last_name LIKE '{$search}%' OR id_document LIKE '{$search}%' )";
         }
 
-        $query_electives = "";
-        if (isset($_GET['subject_type']) && $_GET['subject_type'] != '') {
-            $search = $_GET['subject_type'];
-            if ($query_search != '') {
-                $query_electives  = "AND (`is_elective` = {$search})";
-            } else {
-                $query_electives  = "WHERE (`is_elective` = {$search})";
-            }
+        $students_id = $wpdb->get_col("SELECT id FROM {$table_students} {$query_search}");
+        if (!empty($students_id)) {
+            $students_id_list = implode(',', array_map('intval', $students_id)); // Asegúrate de que los IDs sean enteros
         }
 
-        $school_subjects = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM wp_school_subjects {$query_search} {$query_electives} ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
-
+        $academic_projections = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_student_academic_projection} WHERE student_id IN ($students_id_list) ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
-        if ($school_subjects) {
-            foreach ($school_subjects as $subject) {
-                array_push($school_subjects_array, [
-                    'code_subject' => $subject['code_subject'],
-                    'school_subject_id' => $subject['id'],
-                    'name' => $subject['name'],
-                    'hc' => $subject['hc'],
-                    'is_elective' => $subject['is_elective'],
+        if ($academic_projections) {
+            foreach ($academic_projections as $projection) {
+                $student = get_student_detail($projection['student_id']);
+                array_push($academic_projections_array, [
+                    'student' => $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name,
+                    'student_id' => $projection['student_id'],
+                    'initial_cut' => $student->academic_period . ' - ' . $student->initial_cut,
+                    'academic_projection_id' => $projection['id'],
                 ]);
             }
         }
 
-        return ['data' => $school_subjects_array, 'total_count' => $total_count];
+        return ['data' => $academic_projections_array, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -197,7 +170,7 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
     function prepare_items()
     {
 
-        $data_school_subjects = $this->get_school_subject_pendings();
+        $data_academic_projections = $this->get_academic_projections();
 
         $per_page = 10;
 
@@ -209,8 +182,8 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
         
-        $data = $data_school_subjects['data'];
-        $total_count = (int) $data_school_subjects['total_count'];
+        $data = $data_academic_projections['data'];
+        $total_count = (int) $data_academic_projections['total_count'];
 
         function usort_reorder($a, $b)
         {
@@ -229,4 +202,13 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
         $this->items = $data;
     }
 
+}
+
+function get_projection_details($projection_id)
+{
+    global $wpdb;
+    $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+
+    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE id={$projection_id}");
+    return $projection;
 }

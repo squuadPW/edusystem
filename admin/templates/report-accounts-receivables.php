@@ -17,13 +17,13 @@
             <?php } else { ?>
                 <select id="typeFilter" name="typeFilter" autocomplete="off">
                 <?php } ?>
-                <option value="today"><?= __('Today', 'restaurant-system-app'); ?></option>
-                <option value="tomorrow"><?= __('Tomorrow', 'restaurant-system-app'); ?></option>
-                <option value="this-week"><?= __('This week', 'restaurant-system-app'); ?></option>
-                <option value="next-week"><?= __('Next week', 'restaurant-system-app'); ?></option>
-                <option value="this-month" selected><?= __('This month', 'restaurant-system-app'); ?></option>
-                <option value="next-month"><?= __('Next month', 'restaurant-system-app'); ?></option>
-                <option value="custom"><?= __('Custom', 'restaurant-system-app'); ?></option>
+                <option value="today"><?= __('Today', 'aes'); ?></option>
+                <option value="tomorrow"><?= __('Tomorrow', 'aes'); ?></option>
+                <option value="this-week"><?= __('This week', 'aes'); ?></option>
+                <option value="next-week"><?= __('Next week', 'aes'); ?></option>
+                <option value="this-month" selected><?= __('This month', 'aes'); ?></option>
+                <option value="next-month"><?= __('Next month', 'aes'); ?></option>
+                <option value="custom"><?= __('Custom', 'aes'); ?></option>
             </select>
             <?php if (wp_is_mobile()) { ?>
                 <input type="text" value="<?= $start_date; ?>" id="inputStartDate"
@@ -33,50 +33,50 @@
             <?php } ?>
             <?php if (wp_is_mobile()): ?>
                 <button type="button" id="update_data_accounts_receivable" class="button button-primary"
-                    style="width:100%;"></span><?= __('Update data', 'restaurant-system-app'); ?></button>
+                    style="width:100%;"></span><?= __('Update data', 'aes'); ?></button>
             <?php else: ?>
                 <button type="button" id="update_data_accounts_receivable"
-                    class="button button-primary"></span><?= __('Update data', 'restaurant-system-app'); ?></button>
+                    class="button button-primary"></span><?= __('Update data', 'aes'); ?></button>
             <?php endif; ?>
     </div>
     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
         <thead>
             <tr>
-                <th scope="col" class=" manage-column column"><?= __('Parent', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column-primary"><?= __('Student', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Product', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Amount', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Number cuote', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Total cuotes', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Date', 'restaurant-system-app'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Parent', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column-primary"><?= __('Student', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Product', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Amount', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Number cuote', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Total cuotes', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Date', 'aes'); ?></th>
             </tr>
         </thead>
         <tbody id="table-institutes-payment">
             <?php if (!empty($orders['cuotes'])) { ?>
                 <?php foreach ($orders['cuotes'] as $order) { ?>
                     <tr>
-                    <td class="column" data-colname="<?= __('Parent', 'restaurant-system-app'); ?>">
+                    <td class="column" data-colname="<?= __('Parent', 'aes'); ?>">
                             <?= $order['customer']; ?>
                         </td>
-                    <td class="column" data-colname="<?= __('Student', 'restaurant-system-app'); ?>">
+                    <td class="column" data-colname="<?= __('Student', 'aes'); ?>">
                             <?= $order['student']; ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Product', 'restaurant-system-app'); ?>">
+                        <td class="column" data-colname="<?= __('Product', 'aes'); ?>">
                             <?= $order['product']; ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Amount', 'restaurant-system-app'); ?>">
+                        <td class="column" data-colname="<?= __('Amount', 'aes'); ?>">
                             <?= wc_price($order['amount']); ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Number cuote', 'restaurant-system-app'); ?>">
+                        <td class="column" data-colname="<?= __('Number cuote', 'aes'); ?>">
                             <?= $order['cuote']; ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Total cuotes', 'restaurant-system-app'); ?>">
+                        <td class="column" data-colname="<?= __('Total cuotes', 'aes'); ?>">
                             <?= $order['num_cuotes']; ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Date', 'restaurant-system-app'); ?>">
+                        <td class="column" data-colname="<?= __('Date', 'aes'); ?>">
                             <b><?= $order['date_next_payment']; ?></b>
                         </td>
-                        <!-- <td class="column" data-colname="<?= __('Action', 'restaurant-system-app'); ?>">
+                        <!-- <td class="column" data-colname="<?= __('Action', 'aes'); ?>">
                             
                         </td> -->
                     </tr>

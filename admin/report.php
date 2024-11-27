@@ -353,18 +353,18 @@ function get_list_orders_sales()
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
                 if ($order['customer']) {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order['customer']->data->ID . '" target="_blank">' . get_user_meta($order['customer']->data->ID, 'last_name', true) . ' ' . get_user_meta($order['customer']->data->ID, 'first_name', true) . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>" . '<a href="' . $url . $order['customer']->data->ID . '" target="_blank">' . get_user_meta($order['customer']->data->ID, 'last_name', true) . ' ' . get_user_meta($order['customer']->data->ID, 'first_name', true) . "</a></td>";
                 } else {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>N/A</td>";
+                    $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>N/A</td>";
                 }
                 if ($order['student']) {
-                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order['student_id'] . '" target="_blank">' . $order['student']['last_name'] . ' ' . $order['student']['middle_last_name'] . ' ' . $order['student']['name'] . ' ' . $order['student']['middle_name'] . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $order['student_id'] . '" target="_blank">' . $order['student']['last_name'] . ' ' . $order['student']['middle_last_name'] . ' ' . $order['student']['name'] . ' ' . $order['student']['middle_name'] . "</a></td>";
                 } else {
-                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>N/A</td>";
+                    $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>N/A</td>";
                 }
-                $html .= "<td class='column' data-colname='" . __('Total', 'restaurant-system-app') . "'>" . wc_price($order['total']) . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Created', 'restaurant-system-app') . "'><b>" . $order['created_at'] . "</b></td>";
-                $html .= "<td class='column' data-colname='" . __('Action', 'restaurant-system-app') . "'>";
+                $html .= "<td class='column' data-colname='" . __('Total', 'aes') . "'>" . wc_price($order['total']) . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Created', 'aes') . "'><b>" . $order['created_at'] . "</b></td>";
+                $html .= "<td class='column' data-colname='" . __('Action', 'aes') . "'>";
 
                 $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=report-sales&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
 
@@ -414,12 +414,12 @@ function list_sales_product()
                 $html .= '#' . $product_id;
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
-                $html .= "<td class='column' data-colname='" . __('Product', 'restaurant-system-app') . "'><strong>" . $product_name . "</strong></td>";
-                $html .= "<td class='column' data-colname='" . __('Quantity', 'restaurant-system-app') . "'><strong>" . $quantity . "</strong></td>";
-                $html .= "<td class='column' data-colname='" . __('Subtotal', 'restaurant-system-app') . "'><strong>" . wc_price($orders['product_subtotals'][$product_id]) . "</strong></td>";
-                $html .= "<td class='column' data-colname='" . __('Discount', 'restaurant-system-app') . "'><strong>" . wc_price($orders['product_discounts'][$product_id]) . "</strong></td>";
-                $html .= "<td class='column' data-colname='" . __('Tax', 'restaurant-system-app') . "'><strong>" . wc_price($orders['product_taxs'][$product_id]) . "</strong></td>";
-                $html .= "<td class='column' data-colname='" . __('Total', 'restaurant-system-app') . "'><strong>" . wc_price(($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]))) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Product', 'aes') . "'><strong>" . $product_name . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Quantity', 'aes') . "'><strong>" . $quantity . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Subtotal', 'aes') . "'><strong>" . wc_price($orders['product_subtotals'][$product_id]) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Discount', 'aes') . "'><strong>" . wc_price($orders['product_discounts'][$product_id]) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Tax', 'aes') . "'><strong>" . wc_price($orders['product_taxs'][$product_id]) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Total', 'aes') . "'><strong>" . wc_price(($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]))) . "</strong></td>";
                 $html .= "</tr>";
 
                 uasort($orders['product_quantities_variation'][$product_id], function($a, $b) {
@@ -436,12 +436,12 @@ function list_sales_product()
                         $html .= '#' . $key;
                         $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                         $html .= "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Product', 'restaurant-system-app') . "'>" . $ex_product_name[1] . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Quantity', 'restaurant-system-app') . "'>" . $orders['product_quantities_variation'][$product_id][$key] . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Subtotal', 'restaurant-system-app') . "'>" . wc_price($orders['product_subtotals_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Discount', 'restaurant-system-app') . "'>" . wc_price($orders['product_discounts_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Tax', 'restaurant-system-app') . "'>" . wc_price($orders['product_taxs_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Total', 'restaurant-system-app') . "'>" . wc_price(($orders['product_subtotals_variation'][$product_id][$key] - ($orders['product_discounts_variation'][$product_id][$key] - $orders['product_taxs_variation'][$product_id][$key]))) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Product', 'aes') . "'>" . $ex_product_name[1] . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Quantity', 'aes') . "'>" . $orders['product_quantities_variation'][$product_id][$key] . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Subtotal', 'aes') . "'>" . wc_price($orders['product_subtotals_variation'][$product_id][$key]) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Discount', 'aes') . "'>" . wc_price($orders['product_discounts_variation'][$product_id][$key]) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Tax', 'aes') . "'>" . wc_price($orders['product_taxs_variation'][$product_id][$key]) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Total', 'aes') . "'>" . wc_price(($orders['product_subtotals_variation'][$product_id][$key] - ($orders['product_discounts_variation'][$product_id][$key] - $orders['product_taxs_variation'][$product_id][$key]))) . "</td>";
                         $html .= "</tr>";
                     }
                 }
@@ -479,20 +479,20 @@ function list_accounts_receivables()
             foreach ($orders['cuotes'] as $order) {
                 $html .= "<tr>";
                 if ($order->customer['data']) {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true) . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true) . "</a></td>";
                 } else {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'restaurant-system-app') . "'>N/A</td>";
+                    $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>N/A</td>";
                 }
                 if ($order->student) {
-                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . $order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '') . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . $order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '') . "</a></td>";
                 } else {
-                    $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>N/A</td>";
+                    $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>N/A</td>";
                 }
-                $html .= "<td class='column' data-colname='" . __('Product', 'restaurant-system-app') . "'>" . $order->product . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Amount', 'restaurant-system-app') . "'>" . wc_price($order->amount) . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Number cuote', 'restaurant-system-app') . "'>" . $order->cuote . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Total cuotes', 'restaurant-system-app') . "'>" . $order->num_cuotes . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Date', 'restaurant-system-app') . "'><b>" . $order->date_next_payment . "</b></td>";
+                $html .= "<td class='column' data-colname='" . __('Product', 'aes') . "'>" . $order->product . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Amount', 'aes') . "'>" . wc_price($order->amount) . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Number cuote', 'aes') . "'>" . $order->cuote . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Total cuotes', 'aes') . "'>" . $order->num_cuotes . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Date', 'aes') . "'><b>" . $order->date_next_payment . "</b></td>";
                 $html .= "</tr>";
             }
 
@@ -530,24 +530,24 @@ function list_report_students()
             $user_student = get_user_by('email', $student->email);
 
             $html .= "<tr>";
-            $html .= "<td class='column' data-colname='" . __('Academic Period', 'restaurant-system-app') . "'>" . $student->academic_period . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Academic Period', 'aes') . "'>" . $student->academic_period . "</td>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
             } else {
-                $html .= "<td class='column' data-colname='" . __('Student', 'restaurant-system-app') . "'>" .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
             }
-            $html .= "<td class='column' data-colname='" . __('Student document', 'restaurant-system-app') . "'>" . $student->id_document . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Student email', 'restaurant-system-app') . "'>" . $student->email . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Student document', 'aes') . "'>" . $student->id_document . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Student email', 'aes') . "'>" . $student->email . "</td>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column' data-colname='" . __('Parent', 'restaurant-system-app') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true) . "</a></td>";
+                $html .= "<td class='column' data-colname='" . __('Parent', 'aes') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true) . "</a></td>";
             } else {
-                $html .= "<td class='column' data-colname='" . __('Parent', 'restaurant-system-app') . "'>" . get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true) . "</a></td>";
+                $html .= "<td class='column' data-colname='" . __('Parent', 'aes') . "'>" . get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true) . "</a></td>";
             }
-            $html .= "<td class='column' data-colname='" . __('Parent email', 'restaurant-system-app') . "'>" . $parent->user_email . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Country', 'restaurant-system-app') . "'>" . $student->country . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Grade', 'restaurant-system-app') . "'>" . get_name_grade($student->grade_id) . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Program', 'restaurant-system-app') . "'>" . get_name_program($student->program_id) . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Institute', 'restaurant-system-app') . "'>" . $student->name_institute . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Parent email', 'aes') . "'>" . $parent->user_email . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Country', 'aes') . "'>" . $student->country . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Grade', 'aes') . "'>" . get_name_grade($student->grade_id) . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Program', 'aes') . "'>" . get_name_program($student->program_id) . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Institute', 'aes') . "'>" . $student->name_institute . "</td>";
             $html .= "</tr>";
         }
 

@@ -21,9 +21,9 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="submit" class="button button-primary"><?= __('Generate', 'restaurant-system-app'); ?></button>
+				<button type="submit" class="button button-primary"><?= __('Generate', 'aes'); ?></button>
 				<button type="button"
-					class="button button-outline-primary modal-close"><?= __('Cancel', 'restaurant-system-app'); ?></button>
+					class="button button-outline-primary modal-close"><?= __('Cancel', 'aes'); ?></button>
 			</div>
 		</form>
 	</div>

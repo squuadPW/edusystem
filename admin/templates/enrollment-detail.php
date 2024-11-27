@@ -69,25 +69,25 @@
                                             <thead>
                                                 <tr>
                                                     <th scope="col" class=" manage-column column">
-                                                        <?= __('Type document', 'restaurant-system-app'); ?>
+                                                        <?= __('Type document', 'aes'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column column-primary">
-                                                        <?= __('ID document', 'restaurant-system-app'); ?>
+                                                        <?= __('ID document', 'aes'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column">
-                                                        <?= __('Student', 'restaurant-system-app'); ?>
+                                                        <?= __('Student', 'aes'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column">
-                                                        <?= __('Student email', 'restaurant-system-app'); ?>
+                                                        <?= __('Student email', 'aes'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column">
-                                                        <?= __('Student phone', 'restaurant-system-app'); ?>
+                                                        <?= __('Student phone', 'aes'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column">
-                                                        <?= __('Student country', 'restaurant-system-app'); ?>
+                                                        <?= __('Student country', 'aes'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column column">
-                                                        <?= __('Institute', 'restaurant-system-app'); ?>
+                                                        <?= __('Institute', 'aes'); ?>
                                                     </th>
                                                 </tr>
                                             </thead>

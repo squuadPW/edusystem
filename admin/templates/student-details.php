@@ -478,11 +478,11 @@ $grades = get_grades();
             <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
             <thead>
                 <tr>
-                    <th scope="col" class=" manage-column column"><?= __('Date user registered', 'restaurant-system-app'); ?></th>
-                    <th scope="col" class=" manage-column column-primary"><?= __('Date upload documents', 'restaurant-system-app'); ?></th>
-                    <th scope="col" class=" manage-column column-email"><?= __('Date status change', 'restaurant-system-app'); ?></th>
-                    <th scope="col" class=" manage-column column-email"><?= __('Status changed by', 'restaurant-system-app'); ?></th>
-                    <th scope="col" class=" manage-column column-email"><?= __('Reason of decline', 'restaurant-system-app'); ?></th>
+                    <th scope="col" class=" manage-column column"><?= __('Date user registered', 'aes'); ?></th>
+                    <th scope="col" class=" manage-column column-primary"><?= __('Date upload documents', 'aes'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Date status change', 'aes'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Status changed by', 'aes'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Reason of decline', 'aes'); ?></th>
                 </tr>
             </thead>
             <tbody>

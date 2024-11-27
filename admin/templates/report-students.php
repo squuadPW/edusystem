@@ -30,29 +30,29 @@
                 </select>
             <?php if (wp_is_mobile()): ?>
                 <button type="button" id="export_excel_students" class="button button-primary"
-                    style="width:100%;"></span><?= __('Update data', 'restaurant-system-app'); ?></button>
+                    style="width:100%;"></span><?= __('Update data', 'aes'); ?></button>
                 <button type="button" id="update_data_report_students" class="button button-success"
-                    style="width:100%;"></span><?= __('Export excel', 'restaurant-system-app'); ?></button>
+                    style="width:100%;"></span><?= __('Export excel', 'aes'); ?></button>
             <?php else: ?>
                 <button type="button" id="update_data_report_students"
-                    class="button button-primary"></span><?= __('Update data', 'restaurant-system-app'); ?></button>
+                    class="button button-primary"></span><?= __('Update data', 'aes'); ?></button>
                 <button type="button" id="export_excel_students"
-                    class="button button-success"></span><?= __('Export excel', 'restaurant-system-app'); ?></button>
+                    class="button button-success"></span><?= __('Export excel', 'aes'); ?></button>
             <?php endif; ?>
     </div>
     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
         <thead>
             <tr>
-                <th scope="col" class=" manage-column column"><?= __('Academic period', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column-primary"><?= __('Student', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column"><?= __('Student document', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column"><?= __('Student email', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Parent', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Parent email', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Country', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Grade', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Program', 'restaurant-system-app'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Institute', 'restaurant-system-app'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Academic period', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column-primary"><?= __('Student', 'aes'); ?></th>
+                <th scope="col" class=" manage-column"><?= __('Student document', 'aes'); ?></th>
+                <th scope="col" class=" manage-column"><?= __('Student email', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Parent', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Parent email', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Country', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Grade', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Program', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Institute', 'aes'); ?></th>
             </tr>
         </thead>
         <tbody id="table-institutes-payment">

@@ -48,13 +48,13 @@
                     <?php } else { ?>
                         <select id="typeFilter" name="typeFilter" autocomplete="off">
                         <?php } ?>
-                        <option value="today"><?= __('Today', 'restaurant-system-app'); ?></option>
-                        <option value="yesterday"><?= __('yesterday', 'restaurant-system-app'); ?></option>
-                        <option value="this-week"><?= __('This week', 'restaurant-system-app'); ?></option>
-                        <option value="last-week"><?= __('Last week', 'restaurant-system-app'); ?></option>
-                        <option value="this-month" selected><?= __('This month', 'restaurant-system-app'); ?></option>
-                        <option value="last-month"><?= __('Last month', 'restaurant-system-app'); ?></option>
-                        <option value="custom"><?= __('Custom', 'restaurant-system-app'); ?></option>
+                        <option value="today"><?= __('Today', 'aes'); ?></option>
+                        <option value="yesterday"><?= __('yesterday', 'aes'); ?></option>
+                        <option value="this-week"><?= __('This week', 'aes'); ?></option>
+                        <option value="last-week"><?= __('Last week', 'aes'); ?></option>
+                        <option value="this-month" selected><?= __('This month', 'aes'); ?></option>
+                        <option value="last-month"><?= __('Last month', 'aes'); ?></option>
+                        <option value="custom"><?= __('Custom', 'aes'); ?></option>
                     </select>
                     <?php if (wp_is_mobile()) { ?>
                         <input type="text" value="<?= $start_date; ?>" id="inputStartDate"
@@ -65,10 +65,10 @@
                     <?php } ?>
                     <?php if (wp_is_mobile()): ?>
                         <button type="button" id="update_data" class="button button-primary"
-                            style="width:100%;"></span><?= __('Update data', 'restaurant-system-app'); ?></button>
+                            style="width:100%;"></span><?= __('Update data', 'aes'); ?></button>
                     <?php else: ?>
                         <button type="button" id="update_data"
-                            class="button button-primary"></span><?= __('Update data', 'restaurant-system-app'); ?></button>
+                            class="button button-primary"></span><?= __('Update data', 'aes'); ?></button>
                     <?php endif; ?>
             </div>
             <input type="hidden" id="institute_id"
@@ -78,16 +78,16 @@
                 <thead>
                     <tr>
                         <th scope="col" class=" manage-column column-primary">
-                            <?= __('Payment ID', 'restaurant-system-app'); ?>
+                            <?= __('Payment ID', 'aes'); ?>
                         </th>
                         <th scope="col" class=" manage-column column-email">
-                            <?= __('Customer', 'restaurant-system-app'); ?>
+                            <?= __('Customer', 'aes'); ?>
                         </th>
-                        <th scope="col" class=" manage-column column-phone"><?= __('Fee', 'restaurant-system-app'); ?>
+                        <th scope="col" class=" manage-column column-phone"><?= __('Fee', 'aes'); ?>
                         </th>
-                        <th scope="col" class=" manage-column column"><?= __('Created', 'restaurant-system-app'); ?>
+                        <th scope="col" class=" manage-column column"><?= __('Created', 'aes'); ?>
                         </th>
-                        <th scope="col" class=" manage-column column"><?= __('Actions', 'restaurant-system-app'); ?>
+                        <th scope="col" class=" manage-column column"><?= __('Actions', 'aes'); ?>
                         </th>
                     </tr>
                 </thead>
@@ -96,20 +96,20 @@
                         <?php foreach ($orders['orders'] as $order) { ?>
                             <tr>
                                 <td class="column column-primary"
-                                    data-colname="<?= __('Payment ID', 'restaurant-system-app'); ?>">
+                                    data-colname="<?= __('Payment ID', 'aes'); ?>">
                                     <?= '#' . $order['order_id']; ?>
                                     <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                                 </td>
-                                <td class="column" data-colname="<?= __('Customer', 'restaurant-system-app'); ?>">
+                                <td class="column" data-colname="<?= __('Customer', 'aes'); ?>">
                                     <?= $order['customer']; ?>
                                 </td>
-                                <td class="column" data-colname="<?= __('Fee', 'restaurant-system-app'); ?>">
+                                <td class="column" data-colname="<?= __('Fee', 'aes'); ?>">
                                     <?= get_woocommerce_currency_symbol() . number_format($order['fee'], 2, '.', ','); ?>
                                 </td>
-                                <td class="column" data-colname="<?= __('Created', 'restaurant-system-app'); ?>">
+                                <td class="column" data-colname="<?= __('Created', 'aes'); ?>">
                                     <b><?= $order['created_at']; ?></b>
                                 </td>
-                                <td class="column" data-colname="<?= __('Action', 'restaurant-system-app'); ?>">
+                                <td class="column" data-colname="<?= __('Action', 'aes'); ?>">
                                     <?php if ($_GET['institute_id']): ?>
                                         <a class='button button-primary'
                                             href="<?= admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id=' . $order['order_id']) ?>"><?= __('View details', 'aes'); ?></a>
@@ -133,16 +133,16 @@
                 <thead>
                     <tr>
                         <th scope="col" class=" manage-column column-primary">
-                            <?= __('Status', 'restaurant-system-app'); ?>
+                            <?= __('Status', 'aes'); ?>
                         </th>
                         <th scope="col" class=" manage-column column-email">
-                            <?= __('Month', 'restaurant-system-app'); ?>
+                            <?= __('Month', 'aes'); ?>
                         </th>
                         <th scope="col" class=" manage-column column-phone">
-                            <?= __('Amount', 'restaurant-system-app'); ?>
+                            <?= __('Amount', 'aes'); ?>
                         </th>
                         <th scope="col" class=" manage-column column">
-                            <?= __('Total orders', 'restaurant-system-app'); ?></th>
+                            <?= __('Total orders', 'aes'); ?></th>
                     </tr>
                 </thead>
                 <tbody id="table-institutes-payment-payments">
@@ -150,20 +150,20 @@
                         <?php foreach ($orders['orders'] as $order) { ?>
                             <tr>
                                 <td class="column column-primary"
-                                    data-colname="<?= __('Payment ID', 'restaurant-system-app'); ?>">
+                                    data-colname="<?= __('Payment ID', 'aes'); ?>">
                                     <?= '#' . $order['order_id']; ?>
                                     <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                                 </td>
-                                <td class="column" data-colname="<?= __('Customer', 'restaurant-system-app'); ?>">
+                                <td class="column" data-colname="<?= __('Customer', 'aes'); ?>">
                                     <?= $order['customer']; ?>
                                 </td>
-                                <td class="column" data-colname="<?= __('Fee', 'restaurant-system-app'); ?>">
+                                <td class="column" data-colname="<?= __('Fee', 'aes'); ?>">
                                     <?= get_woocommerce_currency_symbol() . number_format($order['fee'], 2, '.', ','); ?>
                                 </td>
-                                <td class="column" data-colname="<?= __('Created', 'restaurant-system-app'); ?>">
+                                <td class="column" data-colname="<?= __('Created', 'aes'); ?>">
                                     <b><?= $order['created_at']; ?></b>
                                 </td>
-                                <td class="column" data-colname="<?= __('Action', 'restaurant-system-app'); ?>">
+                                <td class="column" data-colname="<?= __('Action', 'aes'); ?>">
                                     <?php if (isset($_GET['institute_id']) && !empty($_GET['institute_id'])): ?>
                                         <a class='button button-primary'
                                             href="<?= admin_url('admin.php?page=add_admin_institutes_content&section_tab=payment-detail&payment_id=' . $order['order_id']) ?>"><?= __('View details', 'aes'); ?></a>

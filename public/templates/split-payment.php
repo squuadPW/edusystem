@@ -88,7 +88,7 @@ if ($order) {
                     <p>Best regards, American Elite School</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" id="continue-payment" class="button button-primary"><?= __('Continue', 'restaurant-system-app'); ?></button>
+                        <button type="button" id="continue-payment" class="button button-primary"><?= __('Continue', 'aes'); ?></button>
                     </div>
             </div>
         </div>

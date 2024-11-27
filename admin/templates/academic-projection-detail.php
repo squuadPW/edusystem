@@ -1,8 +1,8 @@
 <div class="wrap">
-    <?php if (isset($subject) && !empty($subject)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Subject Details', 'aes'); ?></h2>
+    <?php if (isset($projection) && !empty($projection)): ?>
+        <h2 style="margin-bottom:15px;"><?= __('Academic projection of ' . $student->last_name . ' ' . $student->name, 'aes'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Add Subject', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Not found', 'aes'); ?></h2>
     <?php endif; ?>
 
     <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
@@ -29,90 +29,77 @@
                     <div class="inside">
 
                         <form method="post"
-                            action="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=save_subject_details'); ?>">
+                            action="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=save_academic_projection'); ?>">
+
                             <div>
-                                <h3
-                                    style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Subject Information', 'aes'); ?></b>
+                                <h3 style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
+                                    <b><?= __('Academic projection', 'aes'); ?></b>
                                 </h3>
-                                <div style="text-align: center; margin: 18px">
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <input type="hidden" name="subject_id" id="subject_id"
-                                                value="<?= $subject->id; ?>">
-                                            <div>
-                                                <input type="checkbox" name="is_elective" id="is_elective"
-                                                <?= ($subject->is_elective == 1) ? 'checked' : ''; ?>>
-                                                <label for="is_elective"><b><?= __('Is elective', 'aes'); ?></b></label>
-                                            </div>
-                                        <?php else: ?>
-                                            <input type="hidden" name="subject_id" id="subject_id" value="">
-                                            <div>
-                                            <input type="checkbox" name="is_elective" id="is_elective">
-                                                <label for="is_elective"><b><?= __('Is elective', 'aes'); ?></b></label>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div style="display: flex; justify-content: space-evenly; margin: 18px;">
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="name"><b><?= __('Subject', 'aes'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="text" name="name" value="<?= ucwords($subject->name); ?>">
-                                        <?php else: ?>
-                                            <label for="name"><b><?= __('Subject', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <input type="text" name="name" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="code_subject"><b><?= __('Subject code (the same as moodle)', 'aes'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="text" name="code_subject" value="<?= ucwords($subject->code_subject); ?>">
-                                        <?php else: ?>
-                                            <label for="code_subject"><b><?= __('Subject code (the same as moodle)', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <input type="text" name="code_subject" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div style="display: flex; justify-content: space-evenly; margin: 18px;">
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="description"><b><?= __('Description', 'aes'); ?></b></label><br>
-                                            <textarea name="description"><?= $subject->description; ?></textarea>
-                                        <?php else: ?>
-                                            <label for="description"><b><?= __('Description', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <textarea name="description"></textarea>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="hc"><b><?= __('HC', 'aes'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="text" name="hc" value="<?= ucwords($subject->hc); ?>">
-                                        <?php else: ?>
-                                            <label for="hc"><b><?= __('HC', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <input type="text" name="hc" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
+                            </div>
+
+                            <div>
+                                <h3 style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
+                                    <b><?= __('Inscriptions', 'aes'); ?></b>
+                                </h3>
+
+                                <table class="wp-list-table widefat fixed striped posts"
+                                    style="margin-top:20px;">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class=" manage-column column">
+                                                <?= __('Status', 'aes'); ?>
+                                            </th>
+                                            <th scope="col" class=" manage-column column-primary">
+                                                <?= __('Student', 'aes'); ?>
+                                            </th>
+                                            <th scope="col" class=" manage-column">
+                                                <?= __('Code subject', 'aes'); ?>
+                                            </th>
+                                            <th scope="col" class=" manage-column">
+                                                <?= __('Period - cut', 'aes'); ?>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                       <?php foreach ($inscriptions as $key => $inscription) { ?>
+                                            <tr>
+                                                <td>
+                                                    <?php
+                                                        switch ($inscription->status_id) {
+                                                            case 1:
+                                                                echo '<div style="color: blue; font-weight: 600">'. strtoupper('Active') . '</div>';
+                                                                break;
+                                                            case 0:
+                                                                echo '<div style="color: gray; font-weight: 600">'. strtoupper('To begin') . '</div>';
+                                                                break;
+                                                            case 2:
+                                                                echo '<div style="color: red; font-weight: 600">'. strtoupper('Unsubscribed') . '</div>';
+                                                                break;
+                                                            case 3:
+                                                                echo '<div style="color: green; font-weight: 600">'. strtoupper('Completed') . '</div>';
+                                                                break;
+                                                        }
+                                                    ?>
+                                                </td>
+                                                <td>
+                                                    <?php echo strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ' ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name); ?>
+                                                </td>
+                                                <td>
+                                                    <?php echo $inscription->code_subject ?? 'N/A'; ?>
+                                                </td>
+                                                <td>
+                                                    <?php echo $inscription->code_period . ' - ' . $inscription->cut_period; ?>
+                                                </td>
+                                            </tr>
+                                       <?php } ?>
+                                    </tbody>
+                                </table>
                             </div>
 
                             <?php if (isset($subject) && !empty($subject)): ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
                                         class="button button-primary"><?= __('Saves changes', 'aes'); ?></button>
-                                </div>
-                            <?php else: ?>
-                                <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
-                                    <button type="submit"
-                                        class="button button-primary"><?= __('Add subject', 'aes'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

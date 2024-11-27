@@ -1,7 +1,7 @@
 <div class="tabs-content">
 	<div class="wrap">
         <div style="text-align:start;">
-			<h1 class="wp-heading-line"><?= __('Departments','restaurant-system-app'); ?></h1>
+			<h1 class="wp-heading-line"><?= __('Departments','aes'); ?></h1>
 		</div>
 		<div style="text-align:end;">
 			<a href="<?= admin_url('admin.php?page=add_admin_department_content&action=add'); ?>" class="button button-outline-primary"><?= __('Add Department','aes'); ?></a>

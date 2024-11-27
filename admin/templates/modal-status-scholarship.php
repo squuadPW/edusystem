@@ -19,9 +19,9 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="submit" class="button button-primary"><?= __('Yes', 'restaurant-system-app'); ?></button>
+				<button type="submit" class="button button-primary"><?= __('Yes', 'aes'); ?></button>
 				<button type="button"
-					class="button button-outline-primary modal-close"><?= __('No', 'restaurant-system-app'); ?></button>
+					class="button button-outline-primary modal-close"><?= __('No', 'aes'); ?></button>
 			</div>
 		</form>
 	</div>
