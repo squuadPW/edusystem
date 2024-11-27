@@ -29,35 +29,7 @@ function add_admin_form_academic_projection_content()
                 ));
             
                 if ($exists == 0) {
-                    $projection = [];
-                    $subjects_number = 0;
-                    switch ($student->grade_id) {
-                        case 1: // lower
-                            $subjects_number = 15;
-                            break;
-                        case 2: // upper
-                            $subjects_number = 10;
-                            break;
-                        case 3: // middle
-                        case 4: // graduated
-                            $subjects_number = 5;
-                            break;
-                    }
-
-                    $initial_cut = -1;
-                    for ($i=0; $i < $subjects_number; $i++) { 
-                        $initial_cut++;
-                        $cut = ['A','B','C','D','E'];
-                        array_push($projection, ['subject_position' => $i, 'subject_code' => '', 'subject_name' => '', 'cut' => $cut[$initial_cut]]);
-                        if ($initial_cut == 4) {
-                            $initial_cut = -1;
-                        }
-                    }
-
-                    $wpdb->insert($table_student_academic_projection, [
-                        'student_id' => $student->id,
-                        'projection' => json_encode($projection) // Ajusta el valor de 'projection' según sea necesario
-                    ]);
+                    generate_projection_student($student->id, $student->grade_id);
                 }
             }
 
@@ -239,4 +211,39 @@ function get_projection_details($projection_id)
 
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE id={$projection_id}");
     return $projection;
+}
+
+function generate_projection_student($student_id, $grade_id)
+{
+    global $wpdb;
+    $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+    $projection = [];
+    $subjects_number = 0;
+    switch ($grade_id) {
+        case 1: // lower
+            $subjects_number = 15;
+            break;
+        case 2: // upper
+            $subjects_number = 10;
+            break;
+        case 3: // middle
+        case 4: // graduated
+            $subjects_number = 5;
+            break;
+    }
+
+    $initial_cut = -1;
+    for ($i=0; $i < $subjects_number; $i++) { 
+        $initial_cut++;
+        $cut = ['A','B','C','D','E'];
+        array_push($projection, ['subject_position' => $i, 'subject_code' => '', 'subject_name' => '', 'cut' => $cut[$initial_cut]]);
+        if ($initial_cut == 4) {
+            $initial_cut = -1;
+        }
+    }
+
+    $wpdb->insert($table_student_academic_projection, [
+        'student_id' => $student_id,
+        'projection' => json_encode($projection) // Ajusta el valor de 'projection' según sea necesario
+    ]);
 }
