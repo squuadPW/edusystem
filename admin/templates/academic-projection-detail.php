@@ -1,6 +1,6 @@
 <div class="wrap">
     <?php if (isset($projection) && !empty($projection)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Academic projection of ' . $student->last_name . ' ' . $student->name, 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Academic projection of ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . ' (' . $student->id_document . ')', 'aes'); ?></h2>
     <?php else: ?>
         <h2 style="margin-bottom:15px;"><?= __('Not found', 'aes'); ?></h2>
     <?php endif; ?>
