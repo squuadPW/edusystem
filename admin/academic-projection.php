@@ -41,6 +41,7 @@ function add_admin_form_academic_projection_content()
         } else if($_GET['action'] == 'save_academic_projection') {
             global $wpdb;
             $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+            $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
             $projection_id = $_POST['projection_id'];
             $completed = $_POST['completed'] ?? [];
             $academic_period = $_POST['academic_period'] ?? [];
@@ -60,8 +61,21 @@ function add_admin_form_academic_projection_content()
                 $projection_obj[$key]->code_period = $period;
                 $projection_obj[$key]->cut = $cut;
                 $projection_obj[$key]->calification = $calification_value;
-                // Aquí puedes hacer lo que necesites con los datos
-                // Por ejemplo, guardar en la base de datos o realizar alguna lógica
+
+                if (!$is_completed) {
+                    $wpdb->delete($table_student_period_inscriptions,['code_subject' => $projection_obj[$key]->code_subject, 'student_id' => $projection->student_id]);
+                } else {
+                    $exist = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$projection->student_id} AND code_subject = '{$projection_obj[$key]->code_subject}'");
+                    if (!isset($exist)) {
+                        $wpdb->insert($table_student_period_inscriptions, [
+                            'status_id' => 3,
+                            'student_id' => $projection->student_id,
+                            'code_subject' => $projection_obj[$key]->code_subject,
+                            'code_period' => $projection_obj[$key]->code_period,
+                            'cut_period' => $projection_obj[$key]->cut
+                        ]);
+                    }
+                }
             }
 
             $wpdb->update($table_student_academic_projection, [

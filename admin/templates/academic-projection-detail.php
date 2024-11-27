@@ -94,7 +94,7 @@
                                                 <?= __('Student', 'aes'); ?>
                                             </th>
                                             <th scope="col" class=" manage-column">
-                                                <?= __('Code subject', 'aes'); ?>
+                                                <?= __('Subject - Code', 'aes'); ?>
                                             </th>
                                             <th scope="col" class=" manage-column">
                                                 <?= __('Period - cut', 'aes'); ?>
@@ -126,7 +126,8 @@
                                                     <?php echo strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ' ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name); ?>
                                                 </td>
                                                 <td>
-                                                    <?php echo $inscription->code_subject ?? 'N/A'; ?>
+                                                    <?php $subject = get_subject_details_code($inscription->code_subject); ?>
+                                                    <?php echo $subject ? ($subject->name . ' - ' . $subject->code_subject) : 'N/A'; ?>
                                                 </td>
                                                 <td>
                                                     <?php echo $inscription->code_period . ' - ' . $inscription->cut_period; ?>
