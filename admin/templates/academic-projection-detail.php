@@ -35,6 +35,44 @@
                                 <h3 style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
                                     <b><?= __('Academic projection', 'aes'); ?></b>
                                 </h3>
+                                <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
+                                    <div style="display: flex; width: 100%;">
+                                        <div style="flex: 1; padding: 5px; align-content: center;">
+                                            <input type="checkbox" name="completed[<?= $key ?>]">
+                                            <label for="input_id"><b><?= __($projection_for->subject, 'aes'); ?></b></label><br>
+                                        </div>
+                                        
+                                        <div style="flex: 1; padding: 5px;">
+                                            <label for="input_id"><b><?= __('Period', 'aes'); ?></b></label><br>
+                                            <select name="academic_period[<?= $key ?>]">
+                                                <option value="" selected>Select academic period to filter</option>
+                                                <?php foreach ($periods as $period) { ?>
+                                                    <option value="<?php echo $period->code; ?>" <?= ($projection_for->code_period == $period->code) ? 'selected' : ''; ?>>
+                                                        <?php echo $period->name; ?>
+                                                    </option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                        
+                                        <div style="flex: 1; padding: 5px;">
+                                            <label for="input_id"><b><?= __('Cut', 'aes'); ?></b></label><br>
+                                            <select name="academic_period_cut[<?= $key ?>]">
+                                                <option value="">Select academic period cut</option>
+                                                <option value="A" <?= ($projection_for->cut == 'A') ? 'selected' : ''; ?>>A</option>
+                                                <option value="B" <?= ($projection_for->cut == 'B') ? 'selected' : ''; ?>>B</option>
+                                                <option value="C" <?= ($projection_for->cut == 'C') ? 'selected' : ''; ?>>C</option>
+                                                <option value="D" <?= ($projection_for->cut == 'D') ? 'selected' : ''; ?>>D</option>
+                                                <option value="E" <?= ($projection_for->cut == 'E') ? 'selected' : ''; ?>>E</option>
+                                            </select>
+                                        </div>
+
+                                        <div style="flex: 1; padding: 5px;">
+                                            <label for="input_id"><b><?= __('Calification', 'aes'); ?></b></label><br>
+                                            <input type="number" name="calification[<?= $key ?>]" value="<?= $projection_for->calification ?? ''; ?>">
+                                        </div>
+                                        
+                                    </div>
+                                <?php } ?>
                             </div>
 
                             <div>

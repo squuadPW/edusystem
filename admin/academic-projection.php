@@ -7,10 +7,12 @@ function add_admin_form_academic_projection_content()
         if ($_GET['section_tab'] == 'academic_projection_details') {
             global $wpdb;
             $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $projection_id = $_GET['projection_id'];
             $projection = get_projection_details($projection_id);
             $student = get_student_detail($projection->student_id);
             $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id}");
+            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             include (plugin_dir_path(__FILE__) . 'templates/academic-projection-detail.php');
         }
     } else {
@@ -37,7 +39,8 @@ function add_admin_form_academic_projection_content()
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
         } else if($_GET['action'] == 'save_academic_projection') {
-
+            print_r($_POST['academic_period_cut[0]']);
+            exit;
             setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
@@ -217,29 +220,36 @@ function generate_projection_student($student_id, $grade_id)
 {
     global $wpdb;
     $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
-    $projection = [];
-    $subjects_number = 0;
-    switch ($grade_id) {
-        case 1: // lower
-            $subjects_number = 15;
-            break;
-        case 2: // upper
-            $subjects_number = 10;
-            break;
-        case 3: // middle
-        case 4: // graduated
-            $subjects_number = 5;
-            break;
-    }
+    $table_school_subjects = $wpdb->prefix.'school_subjects';
+    $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_elective = 0");
 
-    $initial_cut = -1;
-    for ($i=0; $i < $subjects_number; $i++) { 
-        $initial_cut++;
-        $cut = ['A','B','C','D','E'];
-        array_push($projection, ['subject_position' => $i, 'subject_code' => '', 'subject_name' => '', 'cut' => $cut[$initial_cut]]);
-        if ($initial_cut == 4) {
-            $initial_cut = -1;
-        }
+    $projection = [];
+    // $subjects_number = 0;
+    // switch ($grade_id) {
+    //     case 1: // lower
+    //         $subjects_number = 15;
+    //         break;
+    //     case 2: // upper
+    //         $subjects_number = 10;
+    //         break;
+    //     case 3: // middle
+    //     case 4: // graduated
+    //         $subjects_number = 5;
+    //         break;
+    // }
+
+    // $initial_cut = -1;
+    // for ($i=0; $i < $subjects_number; $i++) { 
+    //     $initial_cut++;
+    //     $cut = ['A','B','C','D','E'];
+    //     array_push($projection, ['subject_position' => $i, 'subject_code' => '', 'subject_name' => '', 'cut' => $cut[$initial_cut]]);
+    //     if ($initial_cut == 4) {
+    //         $initial_cut = -1;
+    //     }
+    // }
+
+    foreach ($subjects as $key => $subject) {
+        array_push($projection, ['code_subject' => $subject->code_subject, 'subject' => $subject->name, 'hc' => $subject->hc, 'cut' => "", 'code_period' => "", 'calification' => "", 'completed' => false]);
     }
 
     $wpdb->insert($table_student_academic_projection, [
