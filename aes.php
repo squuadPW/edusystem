@@ -11,43 +11,46 @@ License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain:  form-plugin
 */
 
-if(!class_exists('WP_List_Table')){
-  require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+if (!class_exists('WP_List_Table')) {
+  require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
-require plugin_dir_path(__FILE__).'settings.php';
-require plugin_dir_path(__FILE__).'public/functions.php';
-require plugin_dir_path(__FILE__).'admin/functions.php';
-require_once(ABSPATH. 'wp-admin/includes/upgrade.php');
+require plugin_dir_path(__FILE__) . 'settings.php';
+require plugin_dir_path(__FILE__) . 'public/functions.php';
+require plugin_dir_path(__FILE__) . 'admin/functions.php';
+require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-function create_tables() {
+function create_tables()
+{
   global $wpdb;
   $charset_collate = $wpdb->get_charset_collate();
-  $table_departments = $wpdb->prefix. 'departments';
-  $table_student_payments = $wpdb->prefix.'student_payments';
-  $table_students = $wpdb->prefix.'students';
-  $table_student_documents = $wpdb->prefix.'student_documents';
-  $table_student_period_inscriptions = $wpdb->prefix.'student_period_inscriptions';
-  $table_student_califications = $wpdb->prefix.'student_califications';
-  $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
-  $table_institutes =  $wpdb->prefix.'institutes';
-  $table_alliances =  $wpdb->prefix.'alliances';
-  $table_grades = $wpdb->prefix.'grades';
-  $table_documents = $wpdb->prefix.'documents';
-  $table_pre_users = $wpdb->prefix.'pre_users';
-  $table_pre_students = $wpdb->prefix.'pre_students';
-  $table_student_scholarship_application = $wpdb->prefix.'student_scholarship_application';
-  $table_academic_periods = $wpdb->prefix.'academic_periods';
-  $table_academic_periods_cut = $wpdb->prefix.'academic_periods_cut';
-  $table_users_signatures = $wpdb->prefix.'users_signatures';
-  $table_institutes_payments = $wpdb->prefix.'institutes_payments';
-  $table_alliances_payments = $wpdb->prefix.'alliances_payments';
-  $table_user_notices = $wpdb->prefix.'users_notices';
-  $table_tickets_created = $wpdb->prefix.'tickets_created';
-  $table_school_subjects = $wpdb->prefix.'school_subjects';
-  $table_teachers = $wpdb->prefix.'teachers';
+  $table_departments = $wpdb->prefix . 'departments';
+  $table_student_payments = $wpdb->prefix . 'student_payments';
+  $table_students = $wpdb->prefix . 'students';
+  $table_student_documents = $wpdb->prefix . 'student_documents';
+  $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+  $table_student_califications = $wpdb->prefix . 'student_califications';
+  $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+  $table_academic_projection_base = $wpdb->prefix . 'academic_projection_base';
+  $table_institutes = $wpdb->prefix . 'institutes';
+  $table_alliances = $wpdb->prefix . 'alliances';
+  $table_grades = $wpdb->prefix . 'grades';
+  $table_documents = $wpdb->prefix . 'documents';
+  $table_pre_users = $wpdb->prefix . 'pre_users';
+  $table_pre_students = $wpdb->prefix . 'pre_students';
+  $table_student_scholarship_application = $wpdb->prefix . 'student_scholarship_application';
+  $table_academic_periods = $wpdb->prefix . 'academic_periods';
+  $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+  $table_users_signatures = $wpdb->prefix . 'users_signatures';
+  $table_institutes_payments = $wpdb->prefix . 'institutes_payments';
+  $table_alliances_payments = $wpdb->prefix . 'alliances_payments';
+  $table_user_notices = $wpdb->prefix . 'users_notices';
+  $table_tickets_created = $wpdb->prefix . 'tickets_created';
+  $table_school_subjects = $wpdb->prefix . 'school_subjects';
+  $table_teachers = $wpdb->prefix . 'teachers';
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_academic_projection}'") != $table_student_academic_projection){
-    dbDelta( "CREATE TABLE " . $table_student_academic_projection . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_academic_projection}'") != $table_student_academic_projection) {
+    dbDelta(
+      "CREATE TABLE " . $table_student_academic_projection . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         student_id INT(11) NOT NULL,
         projection JSON NULL,
@@ -56,8 +59,9 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_califications}'") != $table_student_califications){
-    dbDelta( "CREATE TABLE " . $table_student_califications . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_califications}'") != $table_student_califications) {
+    dbDelta(
+      "CREATE TABLE " . $table_student_califications . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         student_id INT(11) NOT NULL,
         code_subject TEXT NULL,
@@ -70,8 +74,9 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_teachers}'") != $table_teachers){
-    dbDelta( "CREATE TABLE " . $table_teachers . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_teachers}'") != $table_teachers) {
+    dbDelta(
+      "CREATE TABLE " . $table_teachers . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         type_document TEXT NULL,
         id_document TEXT NULL,
@@ -90,8 +95,9 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subjects}'") != $table_school_subjects){
-    dbDelta( "CREATE TABLE " . $table_school_subjects . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subjects}'") != $table_school_subjects) {
+    dbDelta(
+      "CREATE TABLE " . $table_school_subjects . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         code_subject TEXT NOT NULL,
         name TEXT NOT NULL,
@@ -103,8 +109,9 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_tickets_created}'") != $table_tickets_created){
-    dbDelta( "CREATE TABLE " . $table_tickets_created . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_tickets_created}'") != $table_tickets_created) {
+    dbDelta(
+      "CREATE TABLE " . $table_tickets_created . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         user_id INT(11) NOT NULL,
         ticket_id INT(11) NOT NULL,
@@ -116,8 +123,9 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_period_inscriptions}'") != $table_student_period_inscriptions){
-    dbDelta( "CREATE TABLE " . $table_student_period_inscriptions . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_period_inscriptions}'") != $table_student_period_inscriptions) {
+    dbDelta(
+      "CREATE TABLE " . $table_student_period_inscriptions . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         status_id INT(11) NOT NULL,
         student_id INT(11) NOT NULL,
@@ -129,8 +137,9 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_user_notices}'") != $table_user_notices){
-    dbDelta( "CREATE TABLE " . $table_user_notices . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_user_notices}'") != $table_user_notices) {
+    dbDelta(
+      "CREATE TABLE " . $table_user_notices . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         user_id INT(11) NOT NULL,
         message LONGTEXT NOT NULL,
@@ -141,9 +150,10 @@ function create_tables() {
         PRIMARY KEY (id))$charset_collate;"
     );
   }
-  
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances_payments}'") != $table_alliances_payments){
-    dbDelta( "CREATE TABLE " . $table_alliances_payments . " (
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances_payments}'") != $table_alliances_payments) {
+    dbDelta(
+      "CREATE TABLE " . $table_alliances_payments . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         alliance_id INT(11) NOT NULL,
         total_orders INT(11) NOT NULL,
@@ -155,9 +165,10 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_institutes_payments}'") != $table_institutes_payments){
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_institutes_payments}'") != $table_institutes_payments) {
 
-    dbDelta( "CREATE TABLE " . $table_institutes_payments . " (
+    dbDelta(
+      "CREATE TABLE " . $table_institutes_payments . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         institute_id INT(11) NOT NULL,
         total_orders INT(11) NOT NULL,
@@ -169,9 +180,10 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_users_signatures}'") != $table_users_signatures){
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_users_signatures}'") != $table_users_signatures) {
 
-    dbDelta( "CREATE TABLE " . $table_users_signatures . " (
+    dbDelta(
+      "CREATE TABLE " . $table_users_signatures . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         user_id TEXT NOT NULL,
         signature LONGTEXT NOT NULL,
@@ -182,9 +194,10 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_academic_periods}'") != $table_academic_periods){
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_academic_periods}'") != $table_academic_periods) {
 
-    dbDelta( "CREATE TABLE " . $table_academic_periods . " (
+    dbDelta(
+      "CREATE TABLE " . $table_academic_periods . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         name TEXT NOT NULL,
         code TEXT NOT NULL,
@@ -202,8 +215,9 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_academic_periods_cut}'") != $table_academic_periods_cut){
-    dbDelta( "CREATE TABLE " . $table_academic_periods_cut . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_academic_periods_cut}'") != $table_academic_periods_cut) {
+    dbDelta(
+      "CREATE TABLE " . $table_academic_periods_cut . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         code TEXT NOT NULL,
         cut TEXT NOT NULL,
@@ -214,9 +228,10 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_pre_users}'") != $table_pre_users){
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_pre_users}'") != $table_pre_users) {
 
-    dbDelta( "CREATE TABLE " . $table_pre_users . " (
+    dbDelta(
+      "CREATE TABLE " . $table_pre_users . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         type_document TEXT NULL,
         id_document TEXT NULL,
@@ -238,9 +253,10 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_pre_students}'") != $table_pre_students){
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_pre_students}'") != $table_pre_students) {
 
-    dbDelta( "CREATE TABLE " . $table_pre_students . " (
+    dbDelta(
+      "CREATE TABLE " . $table_pre_students . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         type_document TEXT NULL,
         id_document TEXT NULL,
@@ -271,9 +287,10 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_scholarship_application}'") != $table_student_scholarship_application){
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_scholarship_application}'") != $table_student_scholarship_application) {
 
-    dbDelta( "CREATE TABLE " . $table_student_scholarship_application . " (
+    dbDelta(
+      "CREATE TABLE " . $table_student_scholarship_application . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         student_id INT(11) NOT NULL,
         partner_id INT(11) NOT NULL,
@@ -286,9 +303,10 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_departments}'") != $table_departments){
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_departments}'") != $table_departments) {
 
-    dbDelta( "CREATE TABLE " . $table_departments . " (
+    dbDelta(
+      "CREATE TABLE " . $table_departments . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         name VARCHAR(255) NOT NULL,
         description TEXT NOT NULL,
@@ -297,9 +315,10 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_payments}'") != $table_student_payments){
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_payments}'") != $table_student_payments) {
 
-    dbDelta( "CREATE TABLE " . $table_student_payments . " (
+    dbDelta(
+      "CREATE TABLE " . $table_student_payments . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         status_id INT(11) NOT NULL,
         student_id INT(11) NOT NULL,
@@ -316,10 +335,11 @@ function create_tables() {
         PRIMARY KEY (id))$charset_collate;"
     );
   }
- 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_students}'") != $table_students){
 
-    dbDelta( "CREATE TABLE " . $table_students . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_students}'") != $table_students) {
+
+    dbDelta(
+      "CREATE TABLE " . $table_students . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         type_document TEXT NULL,
         id_document TEXT NULL,
@@ -351,9 +371,10 @@ function create_tables() {
     );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_documents}'") != $table_student_documents){
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_documents}'") != $table_student_documents) {
 
-    dbDelta( "CREATE TABLE " . $table_student_documents . " (
+    dbDelta(
+      "CREATE TABLE " . $table_student_documents . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         student_id INT(11) NOT NULL,
         document_id TEXT NOT NULL,
@@ -369,10 +390,11 @@ function create_tables() {
     );
   }
 
-  
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_institutes}'") != $table_institutes){
 
-    dbDelta( "CREATE TABLE " . $table_institutes . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_institutes}'") != $table_institutes) {
+
+    dbDelta(
+      "CREATE TABLE " . $table_institutes . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         name TEXT NOT NULL,
         phone TEXT NOT NULL,
@@ -401,9 +423,10 @@ function create_tables() {
   }
 
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances}'") != $table_alliances){
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances}'") != $table_alliances) {
 
-      dbDelta( "CREATE TABLE " . $table_alliances . " (
+    dbDelta(
+      "CREATE TABLE " . $table_alliances . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         code TEXT NULL,
         name TEXT NOT NULL,
@@ -422,12 +445,13 @@ function create_tables() {
         updated_at DATETIME NULL,
         created_at DATETIME NOT NULL,
         PRIMARY KEY (id))$charset_collate;"
-      );
+    );
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_grades}'") != $table_grades){
-      
-    dbDelta( "CREATE TABLE " . $table_grades . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_grades}'") != $table_grades) {
+
+    dbDelta(
+      "CREATE TABLE " . $table_grades . " (
       id INT(11) NOT NULL AUTO_INCREMENT,
       name TEXT NULL,
       description TEXT NULL,
@@ -437,33 +461,34 @@ function create_tables() {
     );
 
 
-    $wpdb->insert($table_grades,[
+    $wpdb->insert($table_grades, [
       'name' => 'Lower',
       'description' => '(Antepenultimate)',
-      'created_at' => date('Y-m-d H:i:s') 
+      'created_at' => date('Y-m-d H:i:s')
     ]);
 
-    $wpdb->insert($table_grades,[
+    $wpdb->insert($table_grades, [
       'name' => 'Middle',
       'description' => '(Penultimate)',
-      'created_at' => date('Y-m-d H:i:s') 
+      'created_at' => date('Y-m-d H:i:s')
     ]);
 
-    $wpdb->insert($table_grades,[
+    $wpdb->insert($table_grades, [
       'name' => 'Upper',
       'description' => '(Last)',
-      'created_at' => date('Y-m-d H:i:s') 
+      'created_at' => date('Y-m-d H:i:s')
     ]);
 
-    $wpdb->insert($table_grades,[
+    $wpdb->insert($table_grades, [
       'name' => 'Graduate',
-      'created_at' => date('Y-m-d H:i:s') 
+      'created_at' => date('Y-m-d H:i:s')
     ]);
   }
 
-  if($wpdb->get_var("SHOW TABLES LIKE '{$table_documents}'") != $table_documents){
-      
-    dbDelta( "CREATE TABLE " . $table_documents . " (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_documents}'") != $table_documents) {
+
+    dbDelta(
+      "CREATE TABLE " . $table_documents . " (
       id INT(11) NOT NULL AUTO_INCREMENT,
       name TEXT NOT NULL,
       type_file TEXT NOT NULL,
@@ -478,104 +503,396 @@ function create_tables() {
 
     $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
 
-    if(!empty($grades)){
+    if (!empty($grades)) {
 
-        foreach($grades as $grade){
+      foreach ($grades as $grade) {
 
-            $wpdb->insert($table_documents,[
-              'name' => 'CERTIFIED NOTES HIGH SCHOOL',
-              'type_file' => '.pdf',
-              'grade_id' => $grade->id,
-              'is_required' => 0,
-              'id_requisito' => 'NC',
-              'created_at' => date('Y-m-d H:i:s') 
-            ]);
+        $wpdb->insert($table_documents, [
+          'name' => 'CERTIFIED NOTES HIGH SCHOOL',
+          'type_file' => '.pdf',
+          'grade_id' => $grade->id,
+          'is_required' => 0,
+          'id_requisito' => 'NC',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
 
-            $wpdb->insert($table_documents,[
-              'name' => 'HIGH SCHOOL DIPLOMA',
-              'type_file' => '.pdf',
-              'grade_id' => $grade->id,
-              'is_required' => 0,
-              'id_requisito' => 'TB',
-              'created_at' => date('Y-m-d H:i:s') 
-            ]);
+        $wpdb->insert($table_documents, [
+          'name' => 'HIGH SCHOOL DIPLOMA',
+          'type_file' => '.pdf',
+          'grade_id' => $grade->id,
+          'is_required' => 0,
+          'id_requisito' => 'TB',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
 
-            $wpdb->insert($table_documents,[
-              'name' => 'ID OR CI OF THE PARENTS',
-              'type_file' => '.pdf, .png, .jpeg',
-              'grade_id' => $grade->id,
-              'is_required' => 1,
-              'id_requisito' => 'IR',
-              'created_at' => date('Y-m-d H:i:s') 
-            ]);
+        $wpdb->insert($table_documents, [
+          'name' => 'ID OR CI OF THE PARENTS',
+          'type_file' => '.pdf, .png, .jpeg',
+          'grade_id' => $grade->id,
+          'is_required' => 1,
+          'id_requisito' => 'IR',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
 
-            $wpdb->insert($table_documents,[
-              'name' => 'ID STUDENTS',
-              'type_file' => '.pdf, .png, .jpeg',
-              'grade_id' => $grade->id,
-              'is_required' => 1,
-              'id_requisito' => 'ID',
-              'created_at' => date('Y-m-d H:i:s') 
-            ]);
+        $wpdb->insert($table_documents, [
+          'name' => 'ID STUDENTS',
+          'type_file' => '.pdf, .png, .jpeg',
+          'grade_id' => $grade->id,
+          'is_required' => 1,
+          'id_requisito' => 'ID',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
 
-            $wpdb->insert($table_documents,[
-              'name' => 'PHOTO OF STUDENT CARD',
-              'type_file' => '.pdf, .png, .jpeg',
-              'grade_id' => $grade->id,
-              'is_required' => 1,
-              'id_requisito' => 'FP',
-              'created_at' => date('Y-m-d H:i:s') 
-            ]);
+        $wpdb->insert($table_documents, [
+          'name' => 'PHOTO OF STUDENT CARD',
+          'type_file' => '.pdf, .png, .jpeg',
+          'grade_id' => $grade->id,
+          'is_required' => 1,
+          'id_requisito' => 'FP',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
 
-            $wpdb->insert($table_documents,[
-              'name' => 'PROOF OF GRADE',
-              'type_file' => '.pdf',
-              'grade_id' => $grade->id,
-              'is_required' => 0,
-              'id_requisito' => 'PG',
-              'created_at' => date('Y-m-d H:i:s') 
-            ]);
+        $wpdb->insert($table_documents, [
+          'name' => 'PROOF OF GRADE',
+          'type_file' => '.pdf',
+          'grade_id' => $grade->id,
+          'is_required' => 0,
+          'id_requisito' => 'PG',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
 
-            $wpdb->insert($table_documents,[
-              'name' => 'PROOF OF STUDY',
-              'type_file' => '.pdf',
-              'grade_id' => $grade->id,
-              'is_required' => 0,
-              'id_requisito' => 'PS',
-              'created_at' => date('Y-m-d H:i:s') 
-            ]);
+        $wpdb->insert($table_documents, [
+          'name' => 'PROOF OF STUDY',
+          'type_file' => '.pdf',
+          'grade_id' => $grade->id,
+          'is_required' => 0,
+          'id_requisito' => 'PS',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
 
-            $wpdb->insert($table_documents,[
-              'name' => 'VACCUNATION CARD',
-              'type_file' => '.pdf, .png, .jpeg',
-              'grade_id' => $grade->id,
-              'is_required' => 0,
-              'id_requisito' => 'TV',
-              'created_at' => date('Y-m-d H:i:s') 
-            ]);
+        $wpdb->insert($table_documents, [
+          'name' => 'VACCUNATION CARD',
+          'type_file' => '.pdf, .png, .jpeg',
+          'grade_id' => $grade->id,
+          'is_required' => 0,
+          'id_requisito' => 'TV',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
 
-            $wpdb->insert($table_documents,[
-              'name' => 'ENROLLMENT',
-              'type_file' => '.pdf',
-              'grade_id' => $grade->id,
-              'is_required' => 1,
-              'is_visible' => 0,
-              'id_requisito' => 'ENROLLMENT',
-              'created_at' => date('Y-m-d H:i:s')
-            ]);
+        $wpdb->insert($table_documents, [
+          'name' => 'ENROLLMENT',
+          'type_file' => '.pdf',
+          'grade_id' => $grade->id,
+          'is_required' => 1,
+          'is_visible' => 0,
+          'id_requisito' => 'ENROLLMENT',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
 
-            $wpdb->insert($table_documents,[
-              'name' => 'MISSING DOCUMENT',
-              'type_file' => '.pdf',
-              'grade_id' => $grade->id,
-              'is_required' => 0,
-              'is_visible' => 0,
-              'id_requisito' => 'CC',
-              'created_at' => date('Y-m-d H:i:s') 
-            ]);
-        } 
+        $wpdb->insert($table_documents, [
+          'name' => 'MISSING DOCUMENT',
+          'type_file' => '.pdf',
+          'grade_id' => $grade->id,
+          'is_required' => 0,
+          'is_visible' => 0,
+          'id_requisito' => 'CC',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+      }
     }
   }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_academic_projection_base}'") != $table_academic_projection_base) {
+    dbDelta(
+      "CREATE TABLE " . $table_academic_projection_base . " (
+      id INT(11) NOT NULL AUTO_INCREMENT,
+      name TEXT NULL,
+      projection JSON NULL,
+      updated_at DATETIME NULL,
+      created_at DATETIME NOT NULL,
+      PRIMARY KEY (id))$charset_collate;"
+    );
+
+    $lower = [
+      [
+        "cut" => "A",
+        "type" => "regular",
+        "name" => "U.S. History",
+        "code" => ""
+      ],
+      [
+        "cut" => "B",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "C",
+        "type" => "regular",
+        "name" => "U.S. Government",
+        "code" => ""
+      ],
+      [
+        "cut" => "D",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "E",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "A",
+        "type" => "regular",
+        "name" => "English III",
+        "code" => ""
+      ],
+      [
+        "cut" => "B",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "C",
+        "type" => "regular",
+        "name" => "Economic & financial literacy",
+        "code" => ""
+      ],
+      [
+        "cut" => "D",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "E",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "A",
+        "type" => "regular",
+        "name" => "English IV",
+        "code" => ""
+      ],
+      [
+        "cut" => "B",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "C",
+        "type" => "regular",
+        "name" => "Pre-calculus",
+        "code" => ""
+      ],
+      [
+        "cut" => "D",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "E",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+    ];
+    $middle = [
+      [
+        "cut" => "A",
+        "type" => "regular",
+        "name" => "U.S. History",
+        "code" => ""
+      ],
+      [
+        "cut" => "B",
+        "type" => "regular",
+        "name" => "Economic & financial literacy",
+        "code" => ""
+      ],
+      [
+        "cut" => "C",
+        "type" => "regular",
+        "name" => "U.S. Government",
+        "code" => ""
+      ],
+      [
+        "cut" => "D",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "E",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "A",
+        "type" => "regular",
+        "name" => "English III",
+        "code" => ""
+      ],
+      [
+        "cut" => "B",
+        "type" => "regular",
+        "name" => "English IV",
+        "code" => ""
+      ],
+      [
+        "cut" => "C",
+        "type" => "regular",
+        "name" => "Pre-calculus",
+        "code" => ""
+      ],
+      [
+        "cut" => "D",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "E",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+    ];
+    $upper = [
+      [
+        "cut" => "A",
+        "type" => "regular",
+        "name" => "U.S. History",
+        "code" => ""
+      ],
+      [
+        "cut" => "A",
+        "type" => "regular",
+        "name" => "U.S. Government",
+        "code" => ""
+      ],
+      [
+        "cut" => "B",
+        "type" => "regular",
+        "name" => "English III",
+        "code" => ""
+      ],
+      [
+        "cut" => "B",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "C",
+        "type" => "regular",
+        "name" => "Economic & financial literacy",
+        "code" => ""
+      ],
+      [
+        "cut" => "C",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "D",
+        "type" => "regular",
+        "name" => "English IV",
+        "code" => ""
+      ],
+      [
+        "cut" => "E",
+        "type" => "regular",
+        "name" => "Pre-calculus",
+        "code" => ""
+      ],
+    ];
+    $graduated = [
+      [
+        "cut" => "A",
+        "type" => "regular",
+        "name" => "U.S. History",
+        "code" => ""
+      ],
+      [
+        "cut" => "A",
+        "type" => "regular",
+        "name" => "U.S. Government",
+        "code" => ""
+      ],
+      [
+        "cut" => "B",
+        "type" => "regular",
+        "name" => "English III",
+        "code" => ""
+      ],
+      [
+        "cut" => "B",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "C",
+        "type" => "regular",
+        "name" => "Economic & financial literacy",
+        "code" => ""
+      ],
+      [
+        "cut" => "C",
+        "type" => "elective",
+        "name" => "",
+        "code" => ""
+      ],
+      [
+        "cut" => "D",
+        "type" => "regular",
+        "name" => "English IV",
+        "code" => ""
+      ],
+      [
+        "cut" => "E",
+        "type" => "regular",
+        "name" => "Pre-calculus",
+        "code" => ""
+      ],
+    ];
+
+    $wpdb->insert($table_academic_projection_base, [
+      'name' => 'Lower',
+      'projection' => json_encode($lower),
+      'created_at' => date('Y-m-d H:i:s')
+    ]);
+
+    $wpdb->insert($table_academic_projection_base, [
+      'name' => 'Middle',
+      'projection' => json_encode($middle),
+      'created_at' => date('Y-m-d H:i:s')
+    ]);
+
+    $wpdb->insert($table_academic_projection_base, [
+      'name' => 'Upper',
+      'projection' => json_encode($upper),
+      'created_at' => date('Y-m-d H:i:s')
+    ]);
+
+    $wpdb->insert($table_academic_projection_base, [
+      'name' => 'Graduated',
+      'projection' => json_encode($graduated),
+      'created_at' => date('Y-m-d H:i:s')
+    ]);
+  }
+
 }
 
 register_activation_hook(__FILE__, 'create_tables');
