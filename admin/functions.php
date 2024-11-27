@@ -7,6 +7,7 @@ require plugin_dir_path( __FILE__ ) . 'payments.php';
 require plugin_dir_path( __FILE__ ) . 'scholarships.php';
 require plugin_dir_path( __FILE__ ) . 'academic_periods.php';
 require plugin_dir_path( __FILE__ ) . 'school_subjects.php';
+require plugin_dir_path( __FILE__ ) . 'academic-projection.php';
 require plugin_dir_path( __FILE__ ) . 'teachers.php';
 require plugin_dir_path( __FILE__ ) . 'enrollments.php';
 require plugin_dir_path( __FILE__ ) . 'configuration-options.php';
@@ -164,6 +165,15 @@ function aes_scripts_admin(){
             'action' => 'get_approved_by' 
         ]);
     }
+
+    if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')){
+        wp_enqueue_script('institute',plugins_url('aes').'/admin/assets/js/institute.js',array('jquery'),'1.0.0',true);
+
+        wp_localize_script('institute','list_fee_institute',[
+            'url' => admin_url( 'admin-ajax.php' ),
+            'action' => 'list_fee_institute' 
+        ]);
+    }
     
 }
 
@@ -241,19 +251,6 @@ function add_custom_admin_page() {
         );
     }
 
-    add_menu_page(
-        __('Administrations','aes'),
-        __('Administrations','aes'),
-        'manage_administrator_aes',
-        'list_admin_form_administrations_content',
-        'list_admin_form_administrations_content', 
-        'dashicons-admin-multisite',
-        10
-    );
-
-    add_submenu_page('list_admin_form_administrations_content',__('Departments','aes'),__('Departments','aes'),'manager_departments_aes','add_admin_department_content', 'list_admin_form_department_content',);
-    remove_submenu_page('list_admin_form_administrations_content','list_admin_form_administrations_content');
-
     if (current_user_can('manager_admission_aes') || current_user_can('only_read_admission_aes')) {
         add_menu_page( 
             __('Admission','aes'),
@@ -262,27 +259,27 @@ function add_custom_admin_page() {
             'add_admin_form_admission_content',
             'add_admin_form_admission_content', 
             'dashicons-groups', 
-            7
+            4
         );
+        add_submenu_page('add_admin_form_admission_content',__('Required Documents','aes'),__('Required Documents','aes'),'manager_documents_aes','admission-documents','show_admission_documents', 10);
     }
 
-    add_submenu_page('add_admin_form_admission_content',__('Required Documents','aes'),__('Required Documents','aes'),'manager_documents_aes','admission-documents','show_admission_documents', 10);
-
     add_menu_page( 
-        __('Report','aes'),
-        __('Report','aes'),
-        'manager_report_aes', 
-        'add_admin_form_report_content',
-        'add_admin_form_report_content', 
-        'dashicons-list-view', 
-        7
+        __('Academic','aes'),
+        __('Academic','aes'),
+        'manager_academic_aes', 
+        'add_admin_form_academic_content',
+        'add_admin_form_academic_content', 
+        'dashicons-welcome-learn-more', 
+        4
     );
-
-    add_submenu_page('add_admin_form_report_content',__('Sales','aes'),__('Sales','aes'),'manager_sales_aes','report-sales','show_report_sales', 10);
-    add_submenu_page('add_admin_form_report_content',__('Accounts receivable','aes'),__('Accounts receivable','aes'),'manager_accounts_receivables_aes','report-accounts-receivables','show_report_accounts_receivables', 10);
-    add_submenu_page('add_admin_form_report_content',__('Students','aes'),__('Students','aes'),'manager_report_students_aes','report-students','show_report_students', 10);
-    add_submenu_page('add_admin_form_report_content',__('Sales by product','aes'),__('Sales by product','aes'),'manager_report_sales_product','report-sales-product','show_report_sales_product', 10);
-
+    add_submenu_page('add_admin_form_academic_content',__('Academic projection','aes'),__('Academic projection','aes'),'manager_academic_projection_aes','add_admin_form_academic_projection_content','add_admin_form_academic_projection_content', 10);
+    add_submenu_page('add_admin_form_academic_content',__('School subjects','aes'),__('School subjects','aes'),'manager_school_subjects_aes','add_admin_form_school_subjects_content','add_admin_form_school_subjects_content', 10);
+    add_submenu_page('add_admin_form_academic_content',__('Academic periods','aes'),__('Academic periods','aes'),'manager_academic_periods_aes','add_admin_form_academic_periods_content','add_admin_form_academic_periods_content', 10);
+    add_submenu_page('add_admin_form_academic_content',__('Scholarship','aes'),__('Scholarship','aes'),'manager_scholarship_aes','add_admin_form_scholarships_content','add_admin_form_scholarships_content', 10);
+    add_submenu_page('add_admin_form_academic_content',__('Enrollments','aes'),__('Enrollments','aes'),'manager_enrollments_aes','add_admin_form_enrollments_content','add_admin_form_enrollments_content', 10);
+    remove_submenu_page('add_admin_form_academic_content','add_admin_form_academic_content');
+    
     add_menu_page( 
         __('Payments','aes'),
         __('Payments','aes'),
@@ -290,120 +287,22 @@ function add_custom_admin_page() {
         'add_admin_form_payments_content',
         'add_admin_form_payments_content', 
         'dashicons-money-alt', 
-        7
-    );
-
-    add_menu_page( 
-        __('Scholarship','aes'),
-        __('Scholarship','aes'),
-        'manager_scholarship_aes', 
-        'add_admin_form_scholarships_content',
-        'add_admin_form_scholarships_content', 
-        'dashicons-star-empty', 
-        7
-    );
-
-    add_menu_page( 
-        __('Academic periods','aes'),
-        __('Academic periods','aes'),
-        'manager_academic_periods_aes', 
-        'add_admin_form_academic_periods_content',
-        'add_admin_form_academic_periods_content', 
-        'dashicons-welcome-learn-more', 
-        7
-    );
-
-    add_menu_page( 
-        __('School subjects','aes'),
-        __('School subjects','aes'),
-        'manager_school_subjects_aes', 
-        'add_admin_form_school_subjects_content',
-        'add_admin_form_school_subjects_content', 
-        'dashicons-book-alt', 
-        7
-    );
-
-    // add_menu_page( 
-    //     __('Teachers','aes'),
-    //     __('Teachers','aes'),
-    //     'manager_teachers_aes', 
-    //     'add_admin_form_teachers_content',
-    //     'add_admin_form_teachers_content', 
-    //     'dashicons-businessman', 
-    //     7
-    // );
-
-    add_menu_page( 
-        __('Enrollments','aes'),
-        __('Enrollments','aes'),
-        'manager_enrollments_aes', 
-        'add_admin_form_enrollments_content',
-        'add_admin_form_enrollments_content', 
-        'dashicons-id', 
-        7
-    );
-
-    add_menu_page( 
-        __('Settings','aes'),
-        __('Settings','aes'),
-        'manager_configuration_options_aes', 
-        'add_admin_form_configuration_options_content',
-        'add_admin_form_configuration_options_content', 
-        'dashicons-admin-settings', 
-        30
+        5
     );
 
     add_menu_page( 
         __('Staff','aes'),
         __('Staff','aes'),
-        'manager_staff_aes', 
-        'add_admin_form_staff_content',
-        'add_admin_form_staff_content', 
+        'manager_staff_menu_aes', 
+        'add_admin_form_staff_menu_content',
+        'add_admin_form_staff_menu_content', 
         'dashicons-buddicons-buddypress-logo', 
-        7
+        6
     );
-
-    add_menu_page( 
-        __('Institutes','aes'),
-        __('Institutes','aes'),
-        'manager_institutes_aes', 
-        'add_admin_institutes_content',
-        'add_admin_institutes_content', 
-        ' dashicons-bank', 
-        7
-    );
-
-    add_menu_page( 
-        __('Alliances','aes'),
-        __('Alliances','aes'),
-        'manager_alliances_aes', 
-        'add_admin_partners_content',
-        'add_admin_partners_content', 
-        'dashicons-thumbs-up', 
-        7
-    );
-
-    
-    // add_menu_page( 
-    //     __('Email to students','aes'),
-    //     __('Email to students','aes'),
-    //     'manager_send_email_aes', 
-    //     'add_admin_form_send_email_content',
-    //     'add_admin_form_send_email_content', 
-    //     'dashicons-email-alt2', 
-    //     8
-    // );
-
-    
-    // add_menu_page( 
-    //     __('Email to staff','aes'),
-    //     __('Email to staff','aes'),
-    //     'manager_send_notification_aes', 
-    //     'add_admin_form_send_notification_content',
-    //     'add_admin_form_send_notification_content', 
-    //     'dashicons-bell', 
-    //     8
-    // );
+    add_submenu_page('add_admin_form_staff_menu_content',__('Staff','aes'),__('Staff','aes'),'manager_staff_aes','add_admin_form_staff_content','add_admin_form_staff_content', 10);
+    add_submenu_page('add_admin_form_staff_menu_content',__('Institutes','aes'),__('Institutes','aes'),'manager_institutes_aes','add_admin_institutes_content','add_admin_institutes_content', 10);
+    add_submenu_page('add_admin_form_staff_menu_content',__('Alliances','aes'),__('Alliances','aes'),'manager_alliances_aes','add_admin_partners_content','add_admin_partners_content', 10);
+    remove_submenu_page('add_admin_form_staff_menu_content','add_admin_form_staff_menu_content');
 
     add_menu_page( 
         __('Communications','aes'),
@@ -414,25 +313,36 @@ function add_custom_admin_page() {
         'dashicons-email-alt2', 
         7
     );
-
     add_submenu_page('add_admin_form_communications_content',__('Email to students','aes'),__('Email to students','aes'),'manager_send_email_aes','add_admin_form_send_email_content','add_admin_form_send_email_content', 10);
     add_submenu_page('add_admin_form_communications_content',__('Email to staff','aes'),__('Email to staff','aes'),'manager_send_notification_aes','add_admin_form_send_notification_content','add_admin_form_send_notification_content', 10);
-    remove_submenu_page('add_admin_form_communications_content','add_admin_form_communications_content');
+    remove_submenu_page('add_admin_form_communications_content','add_admin_form_communications_content'); 
 
-    // add_menu_page( 
-    //     __('Moodle','aes'),
-    //     __('Moodle','aes'),
-    //     'manager_moodle_aes', 
-    //     'add_admin_moodle_content',
-    //     'add_admin_moodle_content', 
-    //     'dashicons-share-alt', 
-    //     7
-    // );
+    add_menu_page( 
+        __('Report','aes'),
+        __('Report','aes'),
+        'manager_report_aes', 
+        'add_admin_form_report_content',
+        'add_admin_form_report_content', 
+        'dashicons-list-view', 
+        8
+    );
+    add_submenu_page('add_admin_form_report_content',__('Sales','aes'),__('Sales','aes'),'manager_sales_aes','report-sales','show_report_sales', 10);
+    add_submenu_page('add_admin_form_report_content',__('Accounts receivable','aes'),__('Accounts receivable','aes'),'manager_accounts_receivables_aes','report-accounts-receivables','show_report_accounts_receivables', 10);
+    add_submenu_page('add_admin_form_report_content',__('Students','aes'),__('Students','aes'),'manager_report_students_aes','report-students','show_report_students', 10);
+    add_submenu_page('add_admin_form_report_content',__('Sales by product','aes'),__('Sales by product','aes'),'manager_report_sales_product','report-sales-product','show_report_sales_product', 10);
 
-    // add_submenu_page('add_admin_moodle_content',__('Settings','aes'),__('Settings','aes'),'manager_moodle_settings_aes','moodle-setting','show_moodle_setting', 10);
-    // remove_submenu_page('add_admin_moodle_content','add_admin_moodle_content');
-    
-    //add_menu_page('logo', 'logo', 'read', 'logo_based_menu', '', '', 1);
+    add_menu_page( 
+        __('Settings','aes'),
+        __('Settings','aes'),
+        'manager_settings_aes', 
+        'add_admin_form_settings_content',
+        'add_admin_form_settings_content', 
+        'dashicons-admin-generic', 
+        30
+    );
+    add_submenu_page('add_admin_form_settings_content',__('Settings','aes'),__('Settings','aes'),'manager_configuration_options_aes','add_admin_form_configuration_options_content','add_admin_form_configuration_options_content', 10);
+    add_submenu_page('add_admin_form_settings_content',__('Departments','aes'),__('Departments','aes'),'manager_departments_aes','add_admin_department_content','list_admin_form_department_content', 10);
+    remove_submenu_page('add_admin_form_settings_content','add_admin_form_settings_content');   
 }
   
 add_action('admin_menu', 'add_custom_admin_page');
@@ -445,6 +355,7 @@ function add_cap_to_administrator(){
     $role->add_cap('manager_scholarship_aes');
     $role->add_cap('manager_academic_periods_aes');
     $role->add_cap('manager_school_subjects_aes');
+    $role->add_cap('manager_academic_projection_aes');
     $role->add_cap('manager_teachers_aes');
     $role->add_cap('manager_enrollments_aes');
     $role->add_cap('manager_configuration_options_aes');
