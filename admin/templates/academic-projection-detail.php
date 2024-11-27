@@ -35,10 +35,13 @@
                                 <h3 style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
                                     <b><?= __('Academic projection', 'aes'); ?></b>
                                 </h3>
+
+                                <input type="hidden" name="projection_id" value="<?php echo $projection->id ?>">
+
                                 <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
                                     <div style="display: flex; width: 100%;">
                                         <div style="flex: 1; padding: 5px; align-content: center;">
-                                            <input type="checkbox" name="completed[<?= $key ?>]">
+                                            <input type="checkbox" name="completed[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'checked' : '' ?>>
                                             <label for="input_id"><b><?= __($projection_for->subject, 'aes'); ?></b></label><br>
                                         </div>
                                         

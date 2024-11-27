@@ -39,8 +39,35 @@ function add_admin_form_academic_projection_content()
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
         } else if($_GET['action'] == 'save_academic_projection') {
-            print_r($_POST['academic_period_cut[0]']);
-            exit;
+            global $wpdb;
+            $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+            $projection_id = $_POST['projection_id'];
+            $completed = $_POST['completed'] ?? [];
+            $academic_period = $_POST['academic_period'] ?? [];
+            $academic_period_cut = $_POST['academic_period_cut'] ?? [];
+            $calification = $_POST['calification'] ?? [];
+            $projection = get_projection_details(projection_id: $projection_id);
+            $projection_obj = json_decode($projection->projection);
+
+            // Procesar los datos
+            foreach ($projection_obj as $key => $value) {
+                $is_completed = isset($completed[$key]) ? true : false;
+                $period = $academic_period[$key] ?? null;
+                $cut = $academic_period_cut[$key] ?? null;
+                $calification_value = $calification[$key] ?? null;
+
+                $projection_obj[$key]->is_completed = $is_completed;
+                $projection_obj[$key]->code_period = $period;
+                $projection_obj[$key]->cut = $cut;
+                $projection_obj[$key]->calification = $calification_value;
+                // Aquí puedes hacer lo que necesites con los datos
+                // Por ejemplo, guardar en la base de datos o realizar alguna lógica
+            }
+
+            $wpdb->update($table_student_academic_projection, [
+                'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
+            ], ['id' => $projection->id]);
+    
             setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
