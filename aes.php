@@ -28,6 +28,7 @@ function create_tables() {
   $table_student_documents = $wpdb->prefix.'student_documents';
   $table_student_period_inscriptions = $wpdb->prefix.'student_period_inscriptions';
   $table_student_califications = $wpdb->prefix.'student_califications';
+  $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
   $table_institutes =  $wpdb->prefix.'institutes';
   $table_alliances =  $wpdb->prefix.'alliances';
   $table_grades = $wpdb->prefix.'grades';
@@ -44,6 +45,16 @@ function create_tables() {
   $table_tickets_created = $wpdb->prefix.'tickets_created';
   $table_school_subjects = $wpdb->prefix.'school_subjects';
   $table_teachers = $wpdb->prefix.'teachers';
+
+  if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_academic_projection}'") != $table_student_academic_projection){
+    dbDelta( "CREATE TABLE " . $table_student_academic_projection . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        student_id INT(11) NOT NULL,
+        projection JSON NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if($wpdb->get_var("SHOW TABLES LIKE '{$table_student_califications}'") != $table_student_califications){
     dbDelta( "CREATE TABLE " . $table_student_califications . " (
