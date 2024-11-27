@@ -96,7 +96,7 @@
                                 </table>
                             </div>
 
-                            <?php if (isset($subject) && !empty($subject)): ?>
+                            <?php if (isset($projection) && !empty($projection)): ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
                                         class="button button-primary"><?= __('Saves changes', 'aes'); ?></button>
