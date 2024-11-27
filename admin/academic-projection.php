@@ -290,7 +290,7 @@ function generate_projection_student($student_id, $grade_id)
     // }
 
     foreach ($subjects as $key => $subject) {
-        array_push($projection, ['code_subject' => $subject->code_subject, 'subject' => $subject->name, 'hc' => $subject->hc, 'cut' => "", 'code_period' => "", 'calification' => "", 'completed' => false]);
+        array_push($projection, ['code_subject' => $subject->code_subject, 'subject' => $subject->name, 'hc' => $subject->hc, 'cut' => "", 'code_period' => "", 'calification' => "", 'is_completed' => false]);
     }
 
     $wpdb->insert($table_student_academic_projection, [
