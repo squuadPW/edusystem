@@ -69,18 +69,6 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('create-enrollment');
 
-    if (str_contains(home_url($wp->request), 'student-documents')) {
-        wp_register_script('create-missing-documents', plugins_url('aes') . '/public/assets/js/create-missing-documents.js', array('jquery'), '1.0.0', true);
-        wp_localize_script(
-            'create-missing-documents',
-            'ajax_object',
-            array(
-                'ajax_url' => admin_url('admin-ajax.php')
-            )
-        );
-        wp_enqueue_script('create-missing-documents');
-    }
-
     if (str_contains(home_url($wp->request), 'edit-account')) {
         wp_register_script('student-unsubscribe', plugins_url('aes') . '/public/assets/js/student-unsubscribe.js', array('jquery'), '1.0.0', true);
         wp_localize_script(
@@ -1255,6 +1243,7 @@ function load_signatures_data()
     // Imprime el contenido del archivo modal-reset-password.php
     global $wpdb, $current_user;
     $roles = $current_user->roles;
+    $document = $_POST['document'] ?? 'ENROLLMENT';
     if (in_array('student', $roles)) {
         $table_students = $wpdb->prefix . 'students';
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
@@ -1268,8 +1257,8 @@ function load_signatures_data()
         $partner_id = $current_user->ID;
     }
     $table_signatures = $wpdb->prefix . 'users_signatures';
-    $student_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$student_id}' AND document_id='ENROLLMENT'");
-    $parent_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$partner_id}' AND document_id='ENROLLMENT'");
+    $student_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$student_id}' AND document_id='{$document}'");
+    $parent_signature = $wpdb->get_row("SELECT * FROM {$table_signatures} WHERE user_id='{$partner_id}' AND document_id='{$document}'");
     if ($parent_signature) {
         $grade_selected = $parent_signature->grade_selected ? $parent_signature->grade_selected : null;
     } else if ($student_signature) {
@@ -1875,6 +1864,7 @@ function verificar_contraseña()
                 $table_student_documents = $wpdb->prefix . 'student_documents';
                 $table_student_payments = $wpdb->prefix . 'student_payments';
                 $user_enrollment_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+                $user_missing_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'MISSING DOCUMENT' ORDER BY id DESC");
 
                 if (in_array('student', $roles)) {
                     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
@@ -1890,12 +1880,36 @@ function verificar_contraseña()
                 //     // Agrega un script para levantar el modal
                 //     add_action('wp_footer', 'modal_create_password');
                 // } else 
-                if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+                if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true))) {
                     add_action('wp_footer', 'modal_enrollment_student');
+                }
+
+                if ($document_was_created && (isset($user_enrollment_signature) && !isset($user_missing_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+                    add_action('wp_footer', 'modal_missing_student');
                 }
             }
         }
     }
+}
+
+function modal_missing_student()
+{
+    // Imprime el contenido del archivo modal-reset-password.php
+    global $wpdb, $current_user;
+    $roles = $current_user->roles;
+    $show_parent_info = 1;
+    if (in_array('student', $roles)) {
+        $table_students = $wpdb->prefix . 'students';
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+    } else if (in_array('parent', $roles)) {
+        $table_students = $wpdb->prefix . 'students';
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+    }
+
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+    $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE attachment_id=0 AND is_visible=1 AND is_required = 0 AND student_id={$student->id}");
+    $today = date('m-d-Y');
+    include plugin_dir_path(__FILE__) . 'templates/create-missing-documents.php';
 }
 
 function modal_fill_info()
@@ -1967,6 +1981,7 @@ function modal_missing_documents($student_id)
     $student = get_student_detail($student_id);
     $table_student_documents = $wpdb->prefix . 'student_documents';
     $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE attachment_id=0 AND is_visible=1 AND student_id={$student_id}");
+    $show_parent_info = 0;
     include plugin_dir_path(__FILE__) . 'templates/create-missing-documents.php';
 }
 
@@ -2015,7 +2030,6 @@ function create_password()
     }
 }
 
-// In your WordPress plugin or theme's functions.php file
 
 add_action('wp_ajax_create_enrollment_document', 'create_enrollment_document_callback');
 add_action('wp_ajax_nopriv_create_enrollment_document', 'create_enrollment_document_callback');
@@ -2102,6 +2116,9 @@ function create_enrollment_document_callback()
         wp_update_attachment_metadata($attach_id, $attach_data);
 
         $user_student = get_user_by('id', $student_user_id);
+        error_log('USER ID ' . $student_user_id);
+        error_log('USER STUDENT ' . json_encode($user_student));
+
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user_student->data->user_email}'");
         $wpdb->update($table_student_documents, ['status' => 1, 'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $student->id, 'document_id' => $document_id]);
     }
