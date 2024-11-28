@@ -106,7 +106,7 @@
 
               </div>
               <div style="display: flex; margin-top: 20px">
-                <div style="flex: auto; padding: 8px; text-align: center"><strong>Date:</strong><?= $today ?>
+                <div style="flex: auto; padding: 8px; text-align: center"><strong>Date:</strong> <?= $today ?>
                 </div>
               </div>
 
