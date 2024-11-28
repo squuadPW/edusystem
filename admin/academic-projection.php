@@ -47,33 +47,55 @@ function add_admin_form_academic_projection_content()
             $academic_period = $_POST['academic_period'] ?? [];
             $academic_period_cut = $_POST['academic_period_cut'] ?? [];
             $calification = $_POST['calification'] ?? [];
+            $this_cut = $_POST['this_cut'] ?? [];
             $projection = get_projection_details(projection_id: $projection_id);
             $projection_obj = json_decode($projection->projection);
 
             // Procesar los datos
             foreach ($projection_obj as $key => $value) {
                 $is_completed = isset($completed[$key]) ? true : false;
+                $is_this_cut = isset($this_cut[$key]) ? true : false;
                 $period = $academic_period[$key] ?? null;
                 $cut = $academic_period_cut[$key] ?? null;
                 $calification_value = $calification[$key] ?? null;
 
                 $projection_obj[$key]->is_completed = $is_completed;
+                $projection_obj[$key]->this_cut = $is_this_cut;
                 $projection_obj[$key]->code_period = $period;
                 $projection_obj[$key]->cut = $cut;
                 $projection_obj[$key]->calification = $calification_value;
 
                 if (!$is_completed) {
                     $wpdb->delete($table_student_period_inscriptions,['code_subject' => $projection_obj[$key]->code_subject, 'student_id' => $projection->student_id]);
+
+                    //borramos inscripcion moodle
+                    $projection_obj[$key]->this_cut = false;
+                    unenroll_student($projection->student_id, [$projection_obj[$key]->moodle_course_id]);
                 } else {
                     $exist = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$projection->student_id} AND code_subject = '{$projection_obj[$key]->code_subject}'");
                     if (!isset($exist)) {
                         $wpdb->insert($table_student_period_inscriptions, [
-                            'status_id' => 3,
+                            'status_id' => $projection_obj[$key]->this_cut ? 1 : 3,
                             'student_id' => $projection->student_id,
                             'code_subject' => $projection_obj[$key]->code_subject,
                             'code_period' => $projection_obj[$key]->code_period,
                             'cut_period' => $projection_obj[$key]->cut
                         ]);
+                    } else {
+                        $wpdb->update($table_student_period_inscriptions, [
+                            'status_id' => $projection_obj[$key]->this_cut ? 1 : 3,
+                            'student_id' => $projection->student_id,
+                            'code_subject' => $projection_obj[$key]->code_subject,
+                            'code_period' => $projection_obj[$key]->code_period,
+                            'cut_period' => $projection_obj[$key]->cut
+                        ], ['id' => $exist->id]);
+                    }
+
+                    //generamos inscripcion moodle
+                    if ($projection_obj[$key]->this_cut) {
+                        enroll_student($projection->student_id, [$projection_obj[$key]->moodle_course_id]);
+                    } else {
+                        unenroll_student($projection->student_id, [$projection_obj[$key]->moodle_course_id]);
                     }
                 }
             }
@@ -290,7 +312,7 @@ function generate_projection_student($student_id, $grade_id)
     // }
 
     foreach ($subjects as $key => $subject) {
-        array_push($projection, ['code_subject' => $subject->code_subject, 'subject' => $subject->name, 'hc' => $subject->hc, 'cut' => "", 'code_period' => "", 'calification' => "", 'is_completed' => false]);
+        array_push($projection, ['code_subject' => $subject->code_subject, 'moodle_course_id' => $subject->moodle_course_id, 'subject' => $subject->name, 'hc' => $subject->hc, 'cut' => "", 'code_period' => "", 'calification' => "", 'is_completed' => false, 'this_cut' => false]);
     }
 
     $wpdb->insert($table_student_academic_projection, [

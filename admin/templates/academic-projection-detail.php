@@ -43,6 +43,9 @@
                                         <div style="flex: 1; padding: 5px; align-content: center;">
                                             <input type="checkbox" name="completed[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'checked' : '' ?>>
                                             <label for="input_id"><b><?= __($projection_for->subject, 'aes'); ?></b></label><br>
+
+                                            <input type="checkbox" name="this_cut[<?= $key ?>]" <?php echo $projection_for->this_cut ? 'checked' : '' ?>>
+                                            <label for="input_id"><b><?= __('This cut', 'aes'); ?></b></label><br>
                                         </div>
                                         
                                         <div style="flex: 1; padding: 5px;">

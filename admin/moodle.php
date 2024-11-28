@@ -67,7 +67,7 @@ function create_user_moodle($student_id){
             'moodle_password' => $password
         ],['id' => $student_id]);
 
-        // auto_enroll_student($student_id, get_courses_moodle_student($data_student->grade_id));
+        // enroll_student($student_id, get_courses_moodle_student($data_student->grade_id));
 
         return $create_user;
     }
@@ -216,12 +216,10 @@ function get_url_login($email){
     }
 }
 
-function auto_enroll_student($student_id, $courses = []) {
+function enroll_student($student_id, $courses = []) {
     global $wpdb;
     $table_students = $wpdb->prefix.'students';
-
     $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
-
     $moodle_url = get_option('moodle_url');
     $moodle_token = get_option('moodle_token');
 
@@ -238,9 +236,37 @@ function auto_enroll_student($student_id, $courses = []) {
                 ]);
             }
 
-            error_log('ENROLLMENTS'.['enrolments' => $enrollments]);
             $enrolled_courses = $MoodleRest->request('enrol_manual_enrol_users', ['enrolments' => $enrollments]);
+            if (empty($enrolled_courses)) {
+                return [];
+            } else {
+                return $enrolled_courses;
+            }
+        }
+    }
+}
 
+function unenroll_student($student_id, $courses = []) {
+    global $wpdb;
+    $table_students = $wpdb->prefix.'students';
+    $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+
+    if (!empty($data_student)) {
+        if (!empty($moodle_url) && !empty($moodle_token)) {
+            $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);
+
+            $enrollments = [];
+            foreach ($courses as $key => $course_id) {    
+                array_push($enrollments, [
+                    'userid' => $data_student->moodle_student_id,
+                    'courseid' => $course_id,
+                    'roleid' => ROLE_ID_STUDENT_MOODLE,
+                ]);
+            }
+
+            $enrolled_courses = $MoodleRest->request('enrol_manual_unenrol_users', ['enrolments' => $enrollments]);
             if (empty($enrolled_courses)) {
                 return [];
             } else {

@@ -103,6 +103,7 @@ function create_tables()
         name TEXT NOT NULL,
         description TEXT NOT NULL,
         hc INT(11) NOT NULL,
+        moodle_course_id INT(11) NULL,
         is_elective BOOLEAN NOT NULL DEFAULT 0,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"

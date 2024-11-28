@@ -24,6 +24,7 @@ function add_admin_form_school_subjects_content()
             $code_subject = strtoupper($_POST['code_subject']) ?? null;
             $description = $_POST['description'];
             $hc = $_POST['hc'];
+            $moodle_course_id = $_POST['moodle_course_id'];
             $is_elective = $_POST['is_elective'];
 
             //update
@@ -34,6 +35,7 @@ function add_admin_form_school_subjects_content()
                     'code_subject' => $code_subject,
                     'description' => $description,
                     'hc' => $hc,
+                    'moodle_course_id' => $moodle_course_id,
                     'is_elective' => $is_elective == 'on' ? 1 : 0
                 ], ['id' => $subject_id]);
 
@@ -47,6 +49,7 @@ function add_admin_form_school_subjects_content()
                     'code_subject' => $code_subject,
                     'description' => $description,
                     'hc' => $hc,
+                    'moodle_course_id' => $moodle_course_id,
                     'is_elective' => $is_elective == 'on' ? 1 : 0
                 ]);
 

@@ -101,6 +101,18 @@
                                             <input type="text" name="hc" value="" required>
                                         <?php endif; ?>
                                     </div>
+                                    
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($subject) && !empty($subject)): ?>
+                                            <label
+                                                for="hc"><b><?= __('Moodle course ID', 'aes'); ?></b><span class="text-danger">*</span></label><br>
+                                            <input type="text" name="moodle_course_id" value="<?= ucwords($subject->moodle_course_id); ?>">
+                                        <?php else: ?>
+                                            <label for="hc"><b><?= __('Moodle course ID', 'aes'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="text" name="moodle_course_id" value="" required>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
 
