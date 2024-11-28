@@ -297,7 +297,7 @@ if (document.getElementById("signature-student")) {
       }
     } else {
       if (auto_signature_student == 1) {
-        generateDocEnrollmentSend();
+        generateDocEnrollment();
         return;
       }
 
@@ -356,14 +356,11 @@ function generateDocEnrollment() {
   };
 
   html2pdf().set(opt).from(element).save();
-  console.log("ya se guardo");
-
   html2pdf()
     .set(opt)
     .from(element)
     .outputPdf("blob", filename)
     .then((response) => {
-      console.log("se manda");
       generateDocEnrollmentSend(response);
     });
 }
