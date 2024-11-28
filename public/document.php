@@ -39,9 +39,9 @@ function save_document(){
             $table_student_documents = $wpdb->prefix.'student_documents';
             $table_students = $wpdb->prefix.'students';
             $table_users_signatures = $wpdb->prefix.'users_signatures';
-            $missing_documents = [];
-            $user_signature = null;
-            $pending_required_documents = false;
+            // $missing_documents = [];
+            // $user_signature = null;
+            // $pending_required_documents = false;
             if(isset($_POST['students']) && !empty($_POST['students'])){
 
                 $students = $_POST['students'];
@@ -83,23 +83,23 @@ function save_document(){
                                 }
                             } else {
                                 $file_is_required = $_POST['file_is_required'.$file_id.'_student_id_'.$student_id];
-                                if ($file_is_required == 1 && !$pending_required_documents) {
-                                    $pending_required_documents = true;
-                                }
+                                // if ($file_is_required == 1 && !$pending_required_documents) {
+                                //     $pending_required_documents = true;
+                                // }
 
-                                if (!in_array($student_id, $missing_documents)) {
-                                    array_push($missing_documents, $student_id);
-                                }
+                                // if (!in_array($student_id, $missing_documents)) {
+                                //     array_push($missing_documents, $student_id);
+                                // }
 
                             }
                         }
                     }
 
-                    if (sizeof($missing_documents) > 0) {
-                        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
-                        $user_student = get_user_by('email', $student->email);
-                        $user_signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id = {$user_student->ID} AND document_id='MISSING DOCUMENTS'");
-                    } else {
+                    // if (sizeof($missing_documents) > 0) {
+                    //     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+                    //     $user_student = get_user_by('email', $student->email);
+                    //     $user_signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id = {$user_student->ID} AND document_id='MISSING DOCUMENTS'");
+                    // } else {
                         $email_update_document = WC()->mailer()->get_emails()['WC_Update_Document_Email'];
                         $email_update_document->trigger($student_id);
     
@@ -289,21 +289,21 @@ function save_document(){
                                 }
                             }
                         }
-                    }
+                    // }
         
                 }
 
                 
             }
 
-            if ($pending_required_documents) {
-                $missing_documents = [];
-            }
+            // if ($pending_required_documents) {
+            //     $missing_documents = [];
+            // }
             wc_add_notice( __( 'Documents saved successfully.', 'form-plugin' ), 'success' );
             $url = wc_get_endpoint_url('student-documents', '', get_permalink(get_option('woocommerce_myaccount_page_id')));
-            if (count($missing_documents) > 0 && !$user_signature) {
-                $url .= "?missing=". json_encode($missing_documents) . ""; // append data as query parameters
-            }
+            // if (count($missing_documents) > 0 && !$user_signature) {
+            //     $url .= "?missing=". json_encode($missing_documents) . ""; // append data as query parameters
+            // }
             wp_redirect($url);
             exit;
         }
