@@ -41,8 +41,8 @@
                 <?php } ?>
               </ul><br>
 
-              <p>The academic HIGH SCHOOL program will begin the ACADEMIC YEAR 2024-2025
-                (2024/08/12) and since it is my responsibility to deliver the documents specified above, I will
+              <p>The academic HIGH SCHOOL program will begin the ACADEMIC YEAR 2024-2025 and since it is my
+                responsibility to deliver the documents specified above, I will
                 have a rank of forty-five (45) business days top from the start of my classes. In accordance
                 with the previous American Elite School, it may extend for an additional rank of fifteen (15)
                 more business days if the student needs them. For this process, the student must send an
@@ -75,7 +75,8 @@
                     style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none"
                     id="signature-text-student">
                     <div style="bottom: 0; position: absolute; text-align: center; width: 100%;">
-                      <?= $student->name . ' ' . $student->last_name ?></div>
+                      <?= $student->name . ' ' . $student->last_name ?>
+                    </div>
                   </div>
                   <button id="clear-student-signature" style="width: 100%; display: none">Cancel</button>
                 </div>
