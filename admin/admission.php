@@ -1004,34 +1004,34 @@ function update_status_documents()
         $wpdb->insert($table_users_notices, $data);
 
         $table_student_documents =  $wpdb->prefix.'student_documents';
-        $document_loaded = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id={$document_id}");
-        if ($document_loaded->document_id == 'ENROLLMENT') {
-            $table_users_signatures =  $wpdb->prefix.'users_signatures';
-            $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$user_student->ID} AND document_id = 'ENROLLMENT'");
-            $wpdb->delete($table_users_signatures,['id' => $signature->id]);
-
-            $table_students = $wpdb->prefix . 'students';
-            $student_get = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_students WHERE id = %d", $student_id));
-            $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$student_get->partner_id} AND document_id = 'ENROLLMENT'");
-            $wpdb->delete($table_users_signatures,['id' => $signature->id]);
-        }
-
-        if ($document_loaded->document_id == 'MISSING DOCUMENT') {
-            $table_users_signatures =  $wpdb->prefix.'users_signatures';
-            $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$user_student->ID}  AND document_id = 'MISSING DOCUMENT'");
-            $wpdb->delete($table_users_signatures,['id' => $signature->id]);
-
-            $table_students = $wpdb->prefix . 'students';
-            $student_get = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_students WHERE id = %d", $student_id));
-            $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$student_get->partner_id}  AND document_id = 'MISSING DOCUMENT'");
-            $wpdb->delete($table_users_signatures,['id' => $signature->id]);
-        }
-
         $wpdb->update($table_student_documents, ['approved_by' => $current_user->ID, 'status' => $status_id, 'updated_at' => date('Y-m-d H:i:s'), 'description' => $description], ['id' => $document_id, 'student_id' => $student_id]);
 
         if ($status_id == 3) {
             $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
             $email_rejected_document->trigger($student_id, $document_id);
+
+            $document_loaded = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id={$document_id}");
+            if ($document_loaded->document_id == 'ENROLLMENT') {
+                $table_users_signatures =  $wpdb->prefix.'users_signatures';
+                $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$user_student->ID} AND document_id = 'ENROLLMENT'");
+                $wpdb->delete($table_users_signatures,['id' => $signature->id]);
+    
+                $table_students = $wpdb->prefix . 'students';
+                $student_get = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_students WHERE id = %d", $student_id));
+                $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$student_get->partner_id} AND document_id = 'ENROLLMENT'");
+                $wpdb->delete($table_users_signatures,['id' => $signature->id]);
+            }
+    
+            if ($document_loaded->document_id == 'MISSING DOCUMENT') {
+                $table_users_signatures =  $wpdb->prefix.'users_signatures';
+                $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$user_student->ID}  AND document_id = 'MISSING DOCUMENT'");
+                $wpdb->delete($table_users_signatures,['id' => $signature->id]);
+    
+                $table_students = $wpdb->prefix . 'students';
+                $student_get = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_students WHERE id = %d", $student_id));
+                $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$student_get->partner_id}  AND document_id = 'MISSING DOCUMENT'");
+                $wpdb->delete($table_users_signatures,['id' => $signature->id]);
+            }
         }
 
         // if ($status_id == 5) {
