@@ -455,6 +455,8 @@ function sendSignatures(doc = null) {
       document.getElementById("modal-contraseña").style.display = "none";
       document.getElementById("modal-content").style.display = "none";
       document.body.classList.remove("modal-open");
+
+      location.reload();
     }
   };
 }

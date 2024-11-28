@@ -520,20 +520,20 @@ function student_unsubscribe()
         global $current_user, $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $roles = $current_user->roles;
-    
+
         if (in_array('parent', $roles)) {
-    
+
             $student_id = null;
             $student = null;
-    
+
             if (in_array('parent', $roles) && !in_array('student', $roles)) {
                 $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
                 $student_id = $student->id;
-            } else if(in_array('parent', $roles) && in_array('student', $roles)) {
+            } else if (in_array('parent', $roles) && in_array('student', $roles)) {
                 $student_id = get_user_meta($current_user->ID, 'student_id', true);
                 $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
             }
-    
+
             $started_course = false;
             $enrolled = is_enrolled_in_courses($student_id);
             $moodle_student_id = $student->moodle_student_id;
@@ -542,19 +542,19 @@ function student_unsubscribe()
             foreach ($enrolled as $key => $enroll) {
                 $grades = course_grade($enroll['id']);
                 $grades = $grades['usergrades'];
-                $filtered_grades = array_filter($grades, function($entry) use ($moodle_student_id) {
+                $filtered_grades = array_filter($grades, function ($entry) use ($moodle_student_id) {
                     return $entry['userid'] == $moodle_student_id;
                 });
                 $filtered_grades = array_values($filtered_grades);
-    
+
                 $grade_items = $filtered_grades[0]['gradeitems'];
-                $filtered_grade_items = array_filter($grade_items, function($entry) {
+                $filtered_grade_items = array_filter($grade_items, function ($entry) {
                     return $entry['id'] == 1;
                 });
                 $filtered_grade_items = array_values($filtered_grade_items);
                 $total_evaluated += $filtered_grade_items[0]['graderaw'];
             }
-    
+
             if (count($enrolled) > 0 && $total_evaluated == 0) {
                 // include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
             }
@@ -571,14 +571,14 @@ function student_continue()
     global $current_user, $wpdb;
     $roles = $current_user->roles;
     $table_students = $wpdb->prefix . 'students';
-    $table_school_subjects = $wpdb->prefix.'school_subjects';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
     $student_id = null;
     if (in_array('parent', $roles) && !in_array('student', $roles)) {
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
         $student_id = $student->id;
-    } else if(in_array('parent', $roles) && in_array('student', $roles)) {
+    } else if (in_array('parent', $roles) && in_array('student', $roles)) {
         $student_id = get_user_meta($current_user->ID, 'student_id', true);
     }
 
@@ -596,15 +596,15 @@ function create_ticket($email, $ticket_id, $subject, $message)
 {
     if (is_user_logged_in()) {
         global $current_user, $wpdb;
-        $table_tickets_created =  $wpdb->prefix.'tickets_created';
-        $wpdb->insert($table_tickets_created,[
+        $table_tickets_created = $wpdb->prefix . 'tickets_created';
+        $wpdb->insert($table_tickets_created, [
             'user_id' => $current_user->ID,
             'ticket_id' => $ticket_id,
             'email' => $email,
             'subject' => $subject,
             'message' => $message
         ]);
-    }   
+    }
 }
 
 add_action('ticket_created', 'create_ticket', 10, 4);
@@ -986,7 +986,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                 if (!$exist) {
                     create_user_moodle($student_id);
                 } else {
-                    $table_students = $wpdb->prefix.'students';
+                    $table_students = $wpdb->prefix . 'students';
                     $wpdb->update($table_students, ['moodle_student_id' => $exist[0]['id']], ['id' => $student_id]);
 
                     $is_exist_password = is_password_user_moodle($student_id);
@@ -1137,7 +1137,7 @@ function woocommerce_update_cart()
                 // Si existe, lo eliminamos
                 $applied_coupons = array_diff($applied_coupons, [$offer_quote]);
             }
-        
+
             // Agregamos el valor al array
             array_push($applied_coupons, $offer_quote);
         }
@@ -1215,7 +1215,8 @@ function fee_update()
     $woocommerce->cart->calculate_totals();
 }
 
-function returnIsComplete() {
+function returnIsComplete()
+{
     global $woocommerce;
     $products_id = [];
     $is_complete = false;
@@ -1589,7 +1590,7 @@ function student_unsubscribe_callback()
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
         $id_document = $student->id_document;
         $student_id = $student->id;
-    } else if(in_array('parent', $roles) && in_array('student', $roles)) {
+    } else if (in_array('parent', $roles) && in_array('student', $roles)) {
         // SI ES ESTUDIANTE MAYOR DE EDAD CARGAMOS AL ESTUDIANTE POR EL MISMO USUARIO
         $student_id = get_user_meta($current_user->ID, 'student_id', true);
         $id_document = get_user_meta($current_user->ID, 'id_document', true);
@@ -1606,8 +1607,8 @@ function student_unsubscribe_callback()
 
     // DAMOS DE BAJA EN EL ADMIN
     $data = array(
-        'id_document' => $id_document, 
-        'courses' => json_encode($courses), 
+        'id_document' => $id_document,
+        'courses' => json_encode($courses),
         'period' => $period->code_period
     );
     student_unsubscribe_admin($data);
@@ -1615,11 +1616,11 @@ function student_unsubscribe_callback()
 
     // GUARDAMOS LA RAZON DE LA BAJA DEL ESTUDIANTE
     $user_student = get_user_by('email', $student->email);
-    $table_users_notices =  $wpdb->prefix.'users_notices';
+    $table_users_notices = $wpdb->prefix . 'users_notices';
     $data = [
         'user_id' => $user_student->ID,
         'read' => 1,
-        'message' => 'Reason of unsubscribe: '.$reason,
+        'message' => 'Reason of unsubscribe: ' . $reason,
         'importance' => 3,
         'type_notice' => 'unsubscribe',
     ];
@@ -1651,7 +1652,7 @@ function student_continue_callback()
     if (in_array('parent', $roles) && !in_array('student', $roles)) {
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
         $student_id = $student->id;
-    } else if(in_array('parent', $roles) && in_array('student', $roles)) {
+    } else if (in_array('parent', $roles) && in_array('student', $roles)) {
         $student_id = get_user_meta($current_user->ID, 'student_id', true);
     }
 
@@ -1673,7 +1674,8 @@ function student_continue_callback()
     exit;
 }
 
-function get_next_cut($period, $period_cut) {
+function get_next_cut($period, $period_cut)
+{
     $code = 'noperiod';
     $cut = 'nocut';
     if ($period && $period_cut) {
@@ -1701,7 +1703,7 @@ function get_next_cut($period, $period_cut) {
         }
     }
 
-    return ['code' => $code, 'cut' =>  $cut];
+    return ['code' => $code, 'cut' => $cut];
 
 }
 
@@ -1880,11 +1882,12 @@ function verificar_contraseña()
                 //     // Agrega un script para levantar el modal
                 //     add_action('wp_footer', 'modal_create_password');
                 // } else 
-                if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true))) {
+
+                if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                     add_action('wp_footer', 'modal_enrollment_student');
                 }
 
-                if ($document_was_created && (isset($user_enrollment_signature) && !isset($user_missing_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+                if ($document_was_created && (isset($user_enrollment_signature) && !isset($user_missing_signature) && !$pending_payments) && in_array('student', $roles, true)) {
                     add_action('wp_footer', 'modal_missing_student');
                 }
             }
