@@ -363,9 +363,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 button.parentNode.replaceChild(newButton, button);
               });
               watchButtons();
+
+              location.reload();
             // setTimeout(() => {
             //   document.getElementById("notice-status").style.display = "none";
             // }, 2000);
+          } else {
+            document.getElementById("tr_document_" + document_id).innerHTML =
+            result.html;
+
+            buttons_change_status.forEach((button) => {
+              const newButton = button.cloneNode(true);
+              button.parentNode.replaceChild(newButton, button);
+            });
+            watchButtons();
+
+            if (confirm(`Moodle: ${result.message}`) || !confirm(`Moodle: ${result.message}`)) {
+              location.reload();
+            }
           }
 
           // Habilitar nuevamente los botones cuando se completa la solicitud

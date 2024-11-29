@@ -1262,7 +1262,7 @@ function update_status_documents()
                 $exist = is_search_student_by_email($student_id);
 
                 if (!$exist) {
-                    create_user_moodle($student_id);
+                    $user_created_moodle = create_user_moodle($student_id);
                 } else {
                     $wpdb->update($table_students, ['moodle_student_id' => $exist[0]['id']], ['id' => $student_id]);
 
@@ -1277,7 +1277,14 @@ function update_status_documents()
             }
         }
 
-        echo json_encode(['status' => 'success', 'message' => __('status changed', 'aes'), 'html' => $html]);
+        if (isset($user_created_moodle['exception'])) {
+            $table_student_documents =  $wpdb->prefix.'student_documents';
+            $wpdb->update($table_student_documents, ['approved_by' => $current_user->ID, 'status' => 1, 'updated_at' => date('Y-m-d H:i:s'), 'description' => $description], ['id' => $document_id, 'student_id' => $student_id]);
+
+            echo json_encode(['status' => 'false', 'message' => __($user_created_moodle['message'], 'aes'), 'html' => $html]);
+        } else {
+            echo json_encode(['status' => 'success', 'message' => __('status changed', 'aes'), 'html' => $html]);
+        }
 
     }
 
