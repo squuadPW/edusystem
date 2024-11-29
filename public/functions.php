@@ -1731,7 +1731,6 @@ function sendOrderbitrix($id_bitrix, $id_order, $status)
         'order_id' => $id_order, // reemplaza con el valor real
         'status_id' => $status // reemplaza con el valor real
     );
-    error_log('body: ' . json_encode($body));
 
     // Construct the API URL
     $url = 'https://api.luannerkerton.com/api/addNewOrderAes';
@@ -1751,7 +1750,6 @@ function sendOrderbitrix($id_bitrix, $id_order, $status)
     if (wp_remote_retrieve_response_code($response) === 200) {
         // Get the JSON data from the response
         $data = json_decode(wp_remote_retrieve_body($response), true);
-        error_log('data: ' . json_encode($data));
         // Do something with the data...
     } else {
         // Handle the error
@@ -2119,9 +2117,6 @@ function create_enrollment_document_callback()
         wp_update_attachment_metadata($attach_id, $attach_data);
 
         $user_student = get_user_by('id', $student_user_id);
-        error_log('USER ID ' . $student_user_id);
-        error_log('USER STUDENT ' . json_encode($user_student));
-
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user_student->data->user_email}'");
         $wpdb->update($table_student_documents, ['status' => 1, 'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $student->id, 'document_id' => $document_id]);
     }
@@ -2220,7 +2215,9 @@ function loadFeesSplit()
             if ($payment_page == 0) {
                 $cart->add_fee('Bank transfer Fee', $fee);
             } else {
-                $order->add_fee('Bank transfer Fee', $fee);
+                // $order->add_fee('Bank transfer Fee', $fee);
+                // $order->calculate_totals();
+                // $order->save();
             }
         }
 
@@ -2231,14 +2228,23 @@ function loadFeesSplit()
                 $discount = $cart->get_cart_discount_total();
                 $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
                 $fee = $stripe_fee_amount;
-                $cart->add_fee('Credit card fee', $stripe_fee_amount);
+        
+                // Solo agregar fee si es mayor que 0
+                if ($stripe_fee_amount > 0) {
+                    $cart->add_fee('Credit card fee', $stripe_fee_amount);
+                }
             } else {
                 $stripe_fee_percentage = 4.5; // 4.5% fee
                 $cart_subtotal = (float) $order->get_meta('pending_payment');
-                // $discount = $order->get_total_discount() ? $order->get_total_discount() : 0;
                 $stripe_fee_amount = ($cart_subtotal / 100) * $stripe_fee_percentage;
                 $fee = $stripe_fee_amount;
-                $order->add_fee('Credit card fee', $fee);
+        
+                // Solo agregar fee si es mayor que 0
+                if ($stripe_fee_amount > 0) {
+                    // $order->add_fee('Credit card fee', $stripe_fee_amount);
+                    // $order->calculate_totals();
+                    // $order->save();
+                }
             }
         }
     }
