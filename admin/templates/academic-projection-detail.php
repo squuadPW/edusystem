@@ -143,8 +143,10 @@
 
                             <?php if (isset($projection) && !empty($projection)): ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
-                                    <button type="submit"
-                                        class="button button-primary"><?= __('Saves changes', 'aes'); ?></button>
+                                <button type="submit"
+                                    class="button button-primary" name="action" value="send_email"><?= __('Save and send email', 'aes'); ?></button>
+                                    <!-- <button type="submit"
+                                        class="button button-success" name="action" value="save"><?= __('Saves changes', 'aes'); ?></button> -->
                                 </div>
                             <?php endif; ?>
                         </form>

@@ -10,13 +10,14 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 // Email template
 $email_template = '
 <html>
-  <body>
-    <p>Dear ' . $student->name . ' ' . $student->last_name . ',</p>
+  <body>';
+    if ($email_heading != 'Welcome') {
+      $email_template .= '<p>Dear ' . $student->name . ' ' . $student->last_name . ',</p>';
+    }
     
-    <p>'.$description.'</p>
+    $email_template .= '<p>'.$description.'</p>
   </body>
-</html>
-';
+</html>';
 
 // Output the email template
 echo $email_template;

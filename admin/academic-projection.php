@@ -38,6 +38,11 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
+        } else if($_GET['action'] == 'generate_enrollments_moodle') {
+            generate_enroll_student();
+            setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            exit;
         } else if($_GET['action'] == 'save_academic_projection') {
             global $wpdb;
             $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
@@ -48,6 +53,7 @@ function add_admin_form_academic_projection_content()
             $academic_period_cut = $_POST['academic_period_cut'] ?? [];
             $calification = $_POST['calification'] ?? [];
             $this_cut = $_POST['this_cut'] ?? [];
+            $action = $_POST['action'] ?? 'save';
             $projection = get_projection_details(projection_id: $projection_id);
             $projection_obj = json_decode($projection->projection);
 
@@ -69,8 +75,10 @@ function add_admin_form_academic_projection_content()
                     $wpdb->delete($table_student_period_inscriptions,['code_subject' => $projection_obj[$key]->code_subject, 'student_id' => $projection->student_id]);
 
                     //borramos inscripcion moodle
-                    $projection_obj[$key]->this_cut = false;
-                    unenroll_student($projection->student_id, [$projection_obj[$key]->moodle_course_id]);
+                    if ($action != 'send_email') {
+                        $projection_obj[$key]->this_cut = false;
+                        unenroll_student($projection->student_id, [$projection_obj[$key]->moodle_course_id]);
+                    }
                 } else {
                     $exist = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$projection->student_id} AND code_subject = '{$projection_obj[$key]->code_subject}'");
                     if (!isset($exist)) {
@@ -92,10 +100,15 @@ function add_admin_form_academic_projection_content()
                     }
 
                     //generamos inscripcion moodle
-                    if ($projection_obj[$key]->this_cut) {
-                        enroll_student($projection->student_id, [$projection_obj[$key]->moodle_course_id]);
-                    } else {
-                        unenroll_student($projection->student_id, [$projection_obj[$key]->moodle_course_id]);
+                    if ($action != 'send_email') {
+                        $table_school_subjects = $wpdb->prefix . 'school_subjects';
+                        if ($projection_obj[$key]->this_cut) {
+                            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_obj[$key]->subject_id}");
+                            enroll_student($projection->student_id, [$subject->moodle_course_id]);
+                        } else {
+                            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_obj[$key]->subject_id}");
+                            unenroll_student($projection->student_id, [$subject->moodle_course_id]);
+                        }
                     }
                 }
             }
@@ -103,6 +116,84 @@ function add_admin_form_academic_projection_content()
             $wpdb->update($table_student_academic_projection, [
                 'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
             ], ['id' => $projection->id]);
+
+            if ($action == 'send_email') {
+                $table_students = $wpdb->prefix . 'students';
+                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
+
+                $filteredArray = array_filter($projection_obj, function($item) {
+                    return $item->this_cut === true;
+                });
+                $filteredArray = array_values($filteredArray);
+
+                $text = '';
+                $text .= '<div style="margin: 10px 0px; border-bottom: 1px solid gray;"></div>';
+                $text .= '<div>
+                    Estimado(a) estudiante ' . $student->last_name . ' ' . $student->middle_last_name . ', '.  $student->name . ' ' . $student->middle_name . ' en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos complace anunciarle el inicio del Periodo C correspondiente al Año Escolar 2024 – 2025.
+                </div><br>';
+
+                $text .= '<div>';
+                $text .= '<div><strong>FECHA DE INICIO:</strong> lunes 2 de diciembre de 2024</div>';
+                $text .= '<div><strong>FECHA DE CULMINACIÓN:</strong> domingo 2 de febrero de 2025</div>';
+                $text .= '</div>';
+
+                $text .= '<br>';
+
+                $text .= '<div> A continuación, detallamos su <strong>Carga Académica</strong> de cursos ofertados para este periodo C: </div>';
+
+                $text .= '<table style="margin: 20px 0px">';
+                $text .= '<thead>
+                        <tr>
+                            <th style="border: 1px solid gray;">
+                               Code
+                            </th>
+                            <th style="border: 1px solid gray;">
+                                Subject
+                            </th>
+                            <th style="border: 1px solid gray;">
+                                Fecha inicio
+                            </th>
+                            <th style="border: 1px solid gray;">
+                                Fecha fin
+                            </th>
+                            <th style="border: 1px solid gray;">
+                                Period
+                            </th>
+                        </tr>
+                    </thead>';
+                $text .= '<tbody>';
+                foreach ($filteredArray as $key => $val) {
+                    $text .= '<tr>';
+                    $text .= '<td style="border: 1px solid gray;">'.$val->code_subject .'</td>';
+                    $text .= '<td style="border: 1px solid gray;">'.$val->subject .'</td>';
+                    $text .= '<td style="border: 1px solid gray;"></td>';
+                    $text .= '<td style="border: 1px solid gray;"></td>';
+                    $text .= '<td style="border: 1px solid gray;">C</td>';
+                    $text .= '</tr>';
+                }
+                $text .= '</tbody>';
+                $text .= '</table>';
+
+                $text .= '<br>';
+                $text .= '<div> Dejamos a su disposición enlaces y contactos de interés: </div>';
+
+                $text .= '<ul>';
+                $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+                $text .= '<li>Aula virtual: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+                $text .= '</ul>';
+
+                $text .= '<div> Contactos: </div>';
+                $text .= '<ul>';
+                $text .= '<li>Soporte Virtual: <a href="mailto:virtual.support@american-elite.us" target="_blank">virtual.support@american-elite.us</a></li>';
+                $text .= '<li>Soporte Académico: <a href="mailto:academic.support@american-elite.us" target="_blank">academic.support@american-elite.us</a></li>';
+                $text .= '<li>Servicios Estudiantiles: <a href="mailto:student.services@american-elite.us" target="_blank">student.services@american-elite.us</a></li>';
+                $text .= '</ul>';
+
+                $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un periodo académico lleno de logros satisfactorios.</div>';
+
+                $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
+                $email_student->trigger($student, 'Welcome', $text);
+            }
     
             setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
@@ -287,36 +378,35 @@ function generate_projection_student($student_id, $grade_id)
     $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_elective = 0");
 
     $projection = [];
-    // $subjects_number = 0;
-    // switch ($grade_id) {
-    //     case 1: // lower
-    //         $subjects_number = 15;
-    //         break;
-    //     case 2: // upper
-    //         $subjects_number = 10;
-    //         break;
-    //     case 3: // middle
-    //     case 4: // graduated
-    //         $subjects_number = 5;
-    //         break;
-    // }
-
-    // $initial_cut = -1;
-    // for ($i=0; $i < $subjects_number; $i++) { 
-    //     $initial_cut++;
-    //     $cut = ['A','B','C','D','E'];
-    //     array_push($projection, ['subject_position' => $i, 'subject_code' => '', 'subject_name' => '', 'cut' => $cut[$initial_cut]]);
-    //     if ($initial_cut == 4) {
-    //         $initial_cut = -1;
-    //     }
-    // }
 
     foreach ($subjects as $key => $subject) {
-        array_push($projection, ['code_subject' => $subject->code_subject, 'moodle_course_id' => $subject->moodle_course_id, 'subject' => $subject->name, 'hc' => $subject->hc, 'cut' => "", 'code_period' => "", 'calification' => "", 'is_completed' => false, 'this_cut' => false]);
+        array_push($projection, ['code_subject' => $subject->code_subject, 'subject_id' => $subject->id, 'subject' => $subject->name, 'hc' => $subject->hc, 'cut' => "", 'code_period' => "", 'calification' => "", 'is_completed' => false, 'this_cut' => false]);
     }
 
     $wpdb->insert($table_student_academic_projection, [
         'student_id' => $student_id,
         'projection' => json_encode($projection) // Ajusta el valor de 'projection' según sea necesario
     ]);
+}
+
+function generate_enroll_student()
+{
+    global $wpdb;
+    $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+
+    $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
+    foreach ($projections as $key => $projection) {
+        $projection_obj = json_decode($projection->projection);
+
+        $filteredArray = array_filter($projection_obj, function($item) {
+            return $item->this_cut === true;
+        });
+        $filteredArray = array_values($filteredArray);
+
+        foreach ($filteredArray as $key => $projection_filtered) {
+            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_filtered->subject_id}");
+            enroll_student($projection->student_id, [(int)$subject->moodle_course_id]);
+        }
+    }
 }
