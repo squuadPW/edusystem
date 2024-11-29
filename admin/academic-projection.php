@@ -254,6 +254,10 @@ function add_admin_form_academic_projection_content()
 
                 $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
                 $email_student->trigger($student, 'Welcome', $text);
+
+                $user_parent = get_user_by('id', $student->partner_id);
+                $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                $email_student->trigger($user_parent, 'Welcome', $text);
             }
     
             setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 3600, '/');
