@@ -15,6 +15,67 @@ function add_admin_form_academic_projection_content()
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             include (plugin_dir_path(__FILE__) . 'templates/academic-projection-detail.php');
         }
+
+        if ($_GET['section_tab'] == 'validate_enrollments') {
+            global $wpdb;
+            $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+            $table_students = $wpdb->prefix.'students';
+
+            $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");    
+            $history = [];
+            $government = [];
+            $english_tree = [];
+            $english_four = [];
+            $economic = [];
+            $precalc = [];
+            foreach ($projections as $key => $projection) {
+                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
+                $projection_obj = json_decode($projection->projection);
+                $history_arr = array_filter($projection_obj, function($item) {
+                    return $item->code_subject === 'USH0914' && $item->this_cut == true;
+                });
+                if(count(array_values($history_arr)) > 0) {
+                    array_push($history, $student);
+                }
+
+                $government_arr = array_filter($projection_obj, function($item) {
+                    return $item->code_subject === 'GOV1016' && $item->this_cut == true;
+                });
+                if(count(array_values($government_arr)) > 0) {
+                    array_push($government, $student);
+                }
+
+                $english_tree_arr = array_filter($projection_obj, function($item) {
+                    return $item->code_subject === 'ENG1114' && $item->this_cut == true;
+                });
+                if(count(array_values($english_tree_arr)) > 0) {
+                    array_push($english_tree, $student);
+                }
+
+                $english_four_arr = array_filter($projection_obj, function($item) {
+                    return $item->code_subject === 'EOSENG4' && $item->this_cut == true;
+                });
+                if(count(array_values($english_four_arr)) > 0) {
+                    array_push($english_four, $student);
+                }
+
+                $economic_arr = array_filter($projection_obj, function($item) {
+                    return $item->code_subject === 'EFL1216' && $item->this_cut == true;
+                });
+                if(count(array_values($economic_arr)) > 0) {
+                    array_push($economic, $student);
+                }
+
+                $precalc_arr = array_filter($projection_obj, function($item) {
+                    return $item->code_subject === 'PCL1211' && $item->this_cut == true;
+                });
+                if(count(array_values($precalc_arr)) > 0) {
+                    array_push($precalc, $student);
+                }
+
+            }
+            include (plugin_dir_path(__FILE__) . 'templates/academic-projection-validation.php');
+        }
     } else {
 
         if ($_GET['action'] == 'generate_academic_projections') {

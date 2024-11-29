@@ -50,7 +50,7 @@
                                         
                                         <div style="flex: 1; padding: 5px;">
                                             <label for="input_id"><b><?= __('Period', 'aes'); ?></b></label><br>
-                                            <select name="academic_period[<?= $key ?>]" required>
+                                            <select name="academic_period[<?= $key ?>]">
                                                 <option value="" selected>Select academic period to filter</option>
                                                 <?php foreach ($periods as $period) { ?>
                                                     <option value="<?php echo $period->code; ?>" <?= ($projection_for->code_period == $period->code) ? 'selected' : ''; ?>>
@@ -62,7 +62,7 @@
                                         
                                         <div style="flex: 1; padding: 5px;">
                                             <label for="input_id"><b><?= __('Cut', 'aes'); ?></b></label><br>
-                                            <select name="academic_period_cut[<?= $key ?>]" required>
+                                            <select name="academic_period_cut[<?= $key ?>]">
                                                 <option value="">Select academic period cut</option>
                                                 <option value="A" <?= ($projection_for->cut == 'A') ? 'selected' : ''; ?>>A</option>
                                                 <option value="B" <?= ($projection_for->cut == 'B') ? 'selected' : ''; ?>>B</option>
@@ -74,7 +74,7 @@
 
                                         <div style="flex: 1; padding: 5px;">
                                             <label for="input_id"><b><?= __('Calification', 'aes'); ?></b></label><br>
-                                            <input type="number" name="calification[<?= $key ?>]" value="<?= $projection_for->calification ?? ''; ?>" required>
+                                            <input type="number" name="calification[<?= $key ?>]" value="<?= $projection_for->calification ?? ''; ?>">
                                         </div>
                                         
                                     </div>

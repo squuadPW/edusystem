@@ -16,6 +16,7 @@
 			<?php setcookie('message-error', '', time(), '/'); ?>
 		<?php } ?>
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
+			<a style="margin-right: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollments'); ?>" class="button button-outline-primary"><?= __('VALIDAR','aes'); ?></a>
 			<a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projections'); ?>" class="button button-outline-primary"><?= __('Generate academic projections','aes'); ?></a>
 			<a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_enrollments_moodle'); ?>" class="button button-outline-primary"><?= __('Generate ENROLLMENTS MOODLE','aes'); ?></a>
 		</div>
