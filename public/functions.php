@@ -1886,7 +1886,7 @@ function verificar_contraseña()
                 }
 
                 if ($document_was_created && (isset($user_enrollment_signature) && !isset($user_missing_signature) && !$pending_payments) && in_array('student', $roles, true)) {
-                    // add_action('wp_footer', 'modal_missing_student');
+                    add_action('wp_footer', 'modal_missing_student');
                 }
             }
         }
