@@ -809,8 +809,8 @@ function get_states_by_country() {
         exit;
     }
 
-    add_action('send_email_remember_documents_student', 'send_email_remember_documents_students');
-    function send_email_remember_documents_students() {
+    add_action('send_email_remember_documents_student', 'send_email_remember_documents_student');
+    function send_email_remember_documents_student() {
         global $wpdb;
         $table_students =  $wpdb->prefix.'students';
         $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE status_id = 1 AND moodle_student_id IS NULL ORDER BY id DESC");
