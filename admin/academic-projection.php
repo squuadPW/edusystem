@@ -242,14 +242,15 @@ function add_admin_form_academic_projection_content()
                 $text .= '<ul>';
                 $text .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
                 $text .= '<li>Virtual classroom: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+                $text .= '<li>Contact: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
                 $text .= '</ul>';
 
-                $text .= '<div> Contact us: </div>';
-                $text .= '<ul>';
-                $text .= '<li>Virtual Support: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+                // $text .= '<div> Contact us: </div>';
+                // $text .= '<ul>';
+                // $text .= '<li>Virtual Support: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
                 // $text .= '<li>Academic Support: <a href="mailto:academic.support@american-elite.us" target="_blank">academic.support@american-elite.us</a></li>';
                 // $text .= '<li>Student Services: <a href="mailto:student.services@american-elite.us" target="_blank">student.services@american-elite.us</a></li>';
-                $text .= '</ul>';
+                // $text .= '</ul>';
 
                 $text .= '<div>On behalf of our institution, we thank you for your commitment and wish you a successful academic term.</div>';
                 $text .= '<div style="margin: 10px 0px; border-bottom: 1px solid gray;"></div>';
@@ -306,14 +307,15 @@ function add_admin_form_academic_projection_content()
                 $text .= '<ul>';
                 $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
                 $text .= '<li>Aula virtual: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+                $text .= '<li>Contact: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
                 $text .= '</ul>';
 
-                $text .= '<div> Contactos: </div>';
-                $text .= '<ul>';
-                $text .= '<li>Soporte Virtual: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+                // $text .= '<div> Contactos: </div>';
+                // $text .= '<ul>';
+                // $text .= '<li>Soporte Virtual: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
                 // $text .= '<li>Soporte Académico: <a href="mailto:academic.support@american-elite.us" target="_blank">academic.support@american-elite.us</a></li>';
                 // $text .= '<li>Servicios Estudiantiles: <a href="mailto:student.services@american-elite.us" target="_blank">student.services@american-elite.us</a></li>';
-                $text .= '</ul>';
+                // $text .= '</ul>';
 
                 $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un periodo académico lleno de logros satisfactorios.</div>';
 
