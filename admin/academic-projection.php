@@ -188,9 +188,71 @@ function add_admin_form_academic_projection_content()
                 $filteredArray = array_values($filteredArray);
 
                 $text = '';
+                $text .= '<div>
+                    Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', '.  strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' on behalf of the academic team of American Elite School, based in the city of Doral, Florida-USA, we are pleased to announce the beginning of Period C, corresponding to the School Year 2024 – 2025.
+                </div><br>';
+
+                $text .= '<div>';
+                $text .= '<div><strong>START DATE:</strong> Monday, December 2, 2024</div>';
+                $text .= '<div><strong>END DATE:</strong> Sunday, February 2, 2025</div>';
+                $text .= '</div>';
+
+                $text .= '<br>';
+
+                $text .= '<div> Listed below is your <strong>Academic Load</strong> of mandatory courses registered for this Period C: </div>';
+
+                $text .= '<table style="margin: 20px 0px">';
+                $text .= '<thead>
+                        <tr>
+                            <th style="border: 1px solid gray;">
+                                <strong>CODE</strong>
+                            </th>
+                            <th style="border: 1px solid gray;">
+                                <strong>SUBJECT</strong>
+                            </th>
+                            <th style="border: 1px solid gray;">
+                                <strong>START DATE</strong>
+                            </th>
+                            <th style="border: 1px solid gray;">
+                                <strong>END DATE</strong>
+                            </th>
+                            <th style="border: 1px solid gray;">
+                                <strong>PERIOD</strong>
+                            </th>
+                        </tr>
+                    </thead>';
+                $text .= '<tbody>';
+                foreach ($filteredArray as $key => $val) {
+                    $text .= '<tr>';
+                    $text .= '<td style="border: 1px solid gray;">'.$val->code_subject .'</td>';
+                    $text .= '<td style="border: 1px solid gray;">'.$val->subject .'</td>';
+                    $text .= '<td style="border: 1px solid gray;"></td>';
+                    $text .= '<td style="border: 1px solid gray;"></td>';
+                    $text .= '<td style="border: 1px solid gray;">C</td>';
+                    $text .= '</tr>';
+                }
+                $text .= '</tbody>';
+                $text .= '</table>';
+
+                $text .= '<br>';
+                $text .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
+
+                $text .= '<ul>';
+                $text .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+                $text .= '<li>Virtual classroom: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+                $text .= '</ul>';
+
+                $text .= '<div> Contact us: </div>';
+                $text .= '<ul>';
+                $text .= '<li>Virtual Support: <a href="mailto:virtual.support@american-elite.us" target="_blank">virtual.support@american-elite.us</a></li>';
+                $text .= '<li>Academic Support: <a href="mailto:academic.support@american-elite.us" target="_blank">academic.support@american-elite.us</a></li>';
+                $text .= '<li>Student Services: <a href="mailto:student.services@american-elite.us" target="_blank">student.services@american-elite.us</a></li>';
+                $text .= '</ul>';
+
+                $text .= '<div>On behalf of our institution, we thank you for your commitment and wish you a successful academic term.</div>';
                 $text .= '<div style="margin: 10px 0px; border-bottom: 1px solid gray;"></div>';
                 $text .= '<div>
-                    Estimado(a) estudiante ' . $student->last_name . ' ' . $student->middle_last_name . ', '.  $student->name . ' ' . $student->middle_name . ' en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos complace anunciarle el inicio del Periodo C correspondiente al Año Escolar 2024 – 2025.
+                    Estimado(a) estudiante ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', '.  strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos complace anunciarle el inicio del Periodo C correspondiente al Año Escolar 2024 – 2025.
                 </div><br>';
 
                 $text .= '<div>';
@@ -206,19 +268,19 @@ function add_admin_form_academic_projection_content()
                 $text .= '<thead>
                         <tr>
                             <th style="border: 1px solid gray;">
-                               Code
+                               <strong>CÓDIGO</strong>
                             </th>
                             <th style="border: 1px solid gray;">
-                                Subject
+                                <strong>MATERIA</strong>
                             </th>
                             <th style="border: 1px solid gray;">
-                                Fecha inicio
+                                <strong>FECHA INICIO</strong>
                             </th>
                             <th style="border: 1px solid gray;">
-                                Fecha fin
+                                <strong>FECHA FIN</strong>
                             </th>
                             <th style="border: 1px solid gray;">
-                                Period
+                                <strong>PERIODO</strong>
                             </th>
                         </tr>
                     </thead>';
