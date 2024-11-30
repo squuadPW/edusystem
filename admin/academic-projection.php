@@ -179,6 +179,7 @@ function add_admin_form_academic_projection_content()
             ], ['id' => $projection->id]);
 
             if ($action == 'send_email') {
+                $table_school_subjects = $wpdb->prefix . 'school_subjects';
                 $table_students = $wpdb->prefix . 'students';
                 $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
 
@@ -223,9 +224,10 @@ function add_admin_form_academic_projection_content()
                     </thead>';
                 $text .= '<tbody>';
                 foreach ($filteredArray as $key => $val) {
+                    $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
                     $text .= '<tr>';
-                    $text .= '<td style="border: 1px solid gray;">'.$val->code_subject .'</td>';
-                    $text .= '<td style="border: 1px solid gray;">'.$val->subject .'</td>';
+                    $text .= '<td style="border: 1px solid gray;">'.$subject->code_subject .'</td>';
+                    $text .= '<td style="border: 1px solid gray;">'.$subject->name .'</td>';
                     $text .= '<td style="border: 1px solid gray;"></td>';
                     $text .= '<td style="border: 1px solid gray;"></td>';
                     $text .= '<td style="border: 1px solid gray;">C</td>';
@@ -286,9 +288,10 @@ function add_admin_form_academic_projection_content()
                     </thead>';
                 $text .= '<tbody>';
                 foreach ($filteredArray as $key => $val) {
+                    $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
                     $text .= '<tr>';
-                    $text .= '<td style="border: 1px solid gray;">'.$val->code_subject .'</td>';
-                    $text .= '<td style="border: 1px solid gray;">'.$val->subject .'</td>';
+                    $text .= '<td style="border: 1px solid gray;">'.$subject->code_subject .'</td>';
+                    $text .= '<td style="border: 1px solid gray;">'.$subject->name .'</td>';
                     $text .= '<td style="border: 1px solid gray;"></td>';
                     $text .= '<td style="border: 1px solid gray;"></td>';
                     $text .= '<td style="border: 1px solid gray;">C</td>';
