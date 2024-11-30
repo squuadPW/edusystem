@@ -307,7 +307,7 @@ function add_admin_form_academic_projection_content()
                 $text .= '<ul>';
                 $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
                 $text .= '<li>Aula virtual: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
-                $text .= '<li>Contact: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+                $text .= '<li>Contacto: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
                 $text .= '</ul>';
 
                 // $text .= '<div> Contactos: </div>';
