@@ -228,7 +228,7 @@ function add_admin_form_academic_projection_content()
                     $text .= '<tr>';
                     $text .= '<td style="border: 1px solid gray;">'.$subject->code_subject .'</td>';
                     $text .= '<td style="border: 1px solid gray;">'.$subject->name .'</td>';
-                    $text .= '<td style="border: 1px solid gray;">02/12/24</td>';
+                    $text .= '<td style="border: 1px solid gray;">12/02/24</td>';
                     $text .= '<td style="border: 1px solid gray;">02/02/25</td>';
                     $text .= '<td style="border: 1px solid gray;">C</td>';
                     $text .= '</tr>';
@@ -293,7 +293,7 @@ function add_admin_form_academic_projection_content()
                     $text .= '<tr>';
                     $text .= '<td style="border: 1px solid gray;">'.$subject->code_subject .'</td>';
                     $text .= '<td style="border: 1px solid gray;">'.$subject->name .'</td>';
-                    $text .= '<td style="border: 1px solid gray;">02/12/24</td>';
+                    $text .= '<td style="border: 1px solid gray;">12/02/24</td>';
                     $text .= '<td style="border: 1px solid gray;">02/02/25</td>';
                     $text .= '<td style="border: 1px solid gray;">C</td>';
                     $text .= '</tr>';
