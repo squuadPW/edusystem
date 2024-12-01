@@ -843,7 +843,7 @@ class TT_all_student_List_Table extends WP_List_Table
         $cut = sanitize_text_field($_GET['academic_period_cut']);
     
         // Obtener los student_id que coinciden con el cut_period
-        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE cut_period = '$cut'");
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_students} WHERE initial_cut = '$cut'");
     
         $today = date('Y-m-d'); // get today's date
         $filter_date = '';
