@@ -11,9 +11,9 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 $email_template = '
 <html>
   <body>';
-    if ($email_heading != 'Welcome') {
-      $email_template .= '<p>Dear ' . $student->name . ' ' . $student->last_name . ',</p>';
-    }
+    // if ($email_heading != 'Welcome') {
+    //   $email_template .= '<p>Dear ' . $student->name . ' ' . $student->last_name . ',</p>';
+    // }
     
     $email_template .= '<p>'.$description.'</p>
   </body>
