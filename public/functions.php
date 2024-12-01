@@ -79,17 +79,17 @@ function form_plugin_scripts()
             )
         );
         wp_enqueue_script('student-unsubscribe');
-
-        wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.0', true);
-        wp_localize_script(
-            'student-continue',
-            'ajax_object',
-            array(
-                'ajax_url' => admin_url('admin-ajax.php')
-            )
-        );
-        wp_enqueue_script('student-continue');
     }
+
+    wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.0', true);
+    wp_localize_script(
+        'student-continue',
+        'ajax_object',
+        array(
+            'ajax_url' => admin_url('admin-ajax.php')
+        )
+    );
+    wp_enqueue_script('student-continue');
 }
 
 add_action('wp_enqueue_scripts', 'form_plugin_scripts');
@@ -1645,8 +1645,10 @@ function student_continue_callback()
     $roles = $current_user->roles;
     $elective = $_POST['elective'];
     $table_students = $wpdb->prefix . 'students';
+    $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+    $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $table_academic_periods = $wpdb->prefix . 'academic_periods';
 
     $student_id = null;
     if (in_array('parent', $roles) && !in_array('student', $roles)) {
@@ -1656,19 +1658,37 @@ function student_continue_callback()
         $student_id = get_user_meta($current_user->ID, 'student_id', true);
     }
 
-    $last_inscription = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id={$student_id} ORDER BY id DESC");
-    $period_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_periods} WHERE code = {$last_inscription->code_period}"));
+    $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$elective}");
+    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student_id}");
+    $projection_obj = json_decode($projection->projection);
 
-    $courses = [1];
-    $continue_data = get_next_cut($period_data, $last_inscription);
-    foreach ($courses as $key => $course) {
-        $wpdb->insert($table_student_period_inscriptions, [
-            'student_id' => $student_id,
-            'code_period' => $continue_data['code'],
-            'cut_period' => $continue_data['cut'],
-            'status_id' => 0,
-        ]);
-    }
+    array_push($projection_obj, [
+        'code_subject' => $subject->code_subject, 
+        'subject_id' => $subject->id, 
+        'subject' => $subject->name, 
+        'hc' => $subject->hc, 
+        'cut' => "C", 
+        'code_period' => "20242025", 
+        'calification' => "", 
+        'is_completed' => true, 
+        'this_cut' => true
+    ]);
+
+    $wpdb->update($table_student_academic_projection, [
+        'projection' => json_encode($projection_obj),
+    ], ['id' => $projection->id]);
+    
+    $wpdb->update($table_students, [
+        'elective' => 0,
+    ], ['id' => $student_id]);
+
+    $wpdb->insert($table_student_period_inscriptions, [
+        'status_id' => $projection_obj[count($projection_obj) - 1]['this_cut'] ? 1 : 3,
+        'student_id' => $projection->student_id,
+        'code_subject' => $projection_obj[count($projection_obj) - 1]['code_subject'],
+        'code_period' => $projection_obj[count($projection_obj) - 1]['code_period'],
+        'cut_period' => $projection_obj[count($projection_obj) - 1]['cut']
+    ]);
 
     wp_send_json(array('success' => true));
     exit;
@@ -1865,32 +1885,42 @@ function verificar_contraseña()
                 $table_student_payments = $wpdb->prefix . 'student_payments';
                 $user_enrollment_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'ENROLLMENT' ORDER BY id DESC");
                 $user_missing_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'MISSING DOCUMENT' ORDER BY id DESC");
+                $user_take_elective = false;
 
                 if (in_array('student', $roles)) {
                     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
                     $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
                     $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+                    $user_take_elective = $student->elective;
                 } else if (in_array('parent', $roles)) {
                     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
                     $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
                     $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+                    $user_take_elective = $student->elective;
                 }
 
-                // if ($current_user->user_pass_reset == 0 && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
-                //     // Agrega un script para levantar el modal
-                //     add_action('wp_footer', 'modal_create_password');
-                // } else 
-
-                if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
-                    add_action('wp_footer', 'modal_enrollment_student');
-                }
-
-                if ($document_was_created && (isset($user_enrollment_signature) && !isset($user_missing_signature) && !$pending_payments) && in_array('student', $roles, true)) {
-                    // add_action('wp_footer', 'modal_missing_student');
+                if ($user_take_elective == 1) {
+                    add_action('wp_footer', 'modal_take_elective');
+                } else {
+                    if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+                        add_action('wp_footer', 'modal_enrollment_student');
+                    }
+    
+                    if ($document_was_created && (isset($user_enrollment_signature) && !isset($user_missing_signature) && !$pending_payments) && in_array('student', $roles, true)) {
+                        // add_action('wp_footer', 'modal_missing_student');
+                    }
                 }
             }
         }
     }
+}
+
+function modal_take_elective()
+{
+    global $wpdb;
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $electives = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_elective=1");
+    include(plugin_dir_path(__FILE__) . 'templates/modal-select-elective.php');
 }
 
 function modal_missing_student()
