@@ -5,9 +5,9 @@
         <span class="modal-close" id="close-continue"><span class="dashicons dashicons-no-alt"></span></span>
       </div>
       <div class="modal-body">
-          <!-- <div>
-            <p style="font-size: 12px; font-style: italic; text-align: center">You are about to initiate the unenrollment process from your courses. Please be aware that if you proceed, all your assigned courses will be permanently removed, and you will be moved to the next academic cut-off. Are you sure you want to proceed with this action? Please confirm your decision.</p>
-          </div> -->
+          <div>
+            <p style="font-size: 12px; font-style: italic; text-align: center">During this period you will be able to take an elective of your choice. Please choose one of the available electives:</p>
+          </div>
           <div>
             <div>
               <label for="elective"><?= __('Elective', 'aes'); ?><span class="required">*</span></label>
