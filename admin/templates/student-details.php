@@ -442,6 +442,44 @@ $grades = get_grades();
             </tbody>
         </table>
     <?php endif; ?>
+    <?php if (in_array('administrator', haystack: $roles)): ?>
+        <h2 style="margin-bottom:15px;"><?= __('Payments', 'aes'); ?></h2>
+        <div id="notice-status" class="notice-custom notice-info" style="display:none;">
+            <p><?= __('Status change successfully', 'aes'); ?></p>
+        </div>
+        <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
+            <thead>
+                <tr>
+                    <th scope="col" class="manage-column column-primary column-title"><?= __('Payment ID', 'aes') ?></th>
+                    <th scope="col" class="manage-column column-title-translate"><?= __('Product ID', 'aes') ?></th>
+                    <th scope="col" class="manage-column column-price"><?= __('Amount', 'aes') ?></th>
+                </tr>
+            </thead>
+            <tbody id="table-documents">
+                <?php if (!empty($payments)): ?>
+                    <?php foreach ($payments as $payment): ?>
+                        <tr id="<?= 'tr_payment_' . $payment->id; ?>">
+                            <td id="<?= 'td_payment_' . $payment->payment_id . '_payment_id'; ?>" data-colname="<?= __('Payment ID', 'aes'); ?>">
+                                <b>
+                                    <?= $payment->id; ?>
+                                </b>
+                            </td>
+                            <td id="<?= 'td_payment_' . $payment->payment_id . '_product_id'; ?>" data-colname="<?= __('Product ID', 'aes'); ?>">
+                                <b>
+                                    <?= $payment->product_id; ?>
+                                </b>
+                            </td>
+                            <td id="<?= 'td_payment_' . $payment->payment_id . '_amount'; ?>" data-colname="<?= __('Amount', 'aes'); ?>">
+                                <b>
+                                    <?= $payment->amount ?>
+                                </b>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
 </div>
 
 

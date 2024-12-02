@@ -90,6 +90,16 @@ function form_plugin_scripts()
         )
     );
     wp_enqueue_script('student-continue');
+
+    wp_register_script('previous-form', plugins_url('aes') . '/public/assets/js/previous-form.js', array('jquery'), '1.0.0', true);
+    wp_localize_script(
+        'previous-form',
+        'ajax_object',
+        array(
+            'ajax_url' => admin_url('admin-ajax.php')
+        )
+    );
+    wp_enqueue_script('previous-form');
 }
 
 add_action('wp_enqueue_scripts', 'form_plugin_scripts');
@@ -107,10 +117,45 @@ function form_asp_psp()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
+    if (
+        isset($_COOKIE['name_student']) && !empty($_COOKIE['name_student']) &&
+        isset($_COOKIE['last_name_student']) && !empty($_COOKIE['last_name_student']) &&
+        isset($_COOKIE['birth_date']) && !empty($_COOKIE['birth_date']) &&
+        isset($_COOKIE['initial_grade']) && !empty($_COOKIE['initial_grade']) &&
+        isset($_COOKIE['program_id']) && !empty($_COOKIE['program_id']) &&
+        isset($_COOKIE['email_partner']) && !empty($_COOKIE['email_partner']) &&
+        isset($_COOKIE['number_partner']) && !empty($_COOKIE['number_partner'])
+    ) {
+        add_action('wp_footer', 'modal_continue_checkout');
+    }
+
     include(plugin_dir_path(__FILE__) . 'templates/asp-psp-registration.php');
 }
 
 add_shortcode('form_asp_psp', 'form_asp_psp');
+
+function modal_continue_checkout()
+{
+    include(plugin_dir_path(__FILE__) . 'templates/modal-continue-checkout.php');
+}
+
+add_action('wp_ajax_use_previous_form_aes', 'use_previous_form_aes_callback');
+add_action('wp_ajax_nopriv_use_previous_form_aes', 'use_previous_form_aes_callback');
+
+function use_previous_form_aes_callback()
+{
+    $use_previous_form = $_POST['use'];
+    if ($use_previous_form == 1) {
+        // Redirigir a la URL especificada
+        $url = redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false, true);
+        wp_send_json_success(array('redirect' => $url));
+        exit;
+    } else {
+        clear_all_cookies();
+        wp_send_json_success(array('success' => true));
+        exit;
+    }
+}
 
 function one_time_payment()
 {
@@ -271,39 +316,7 @@ function woocommerce_checkout_order_created_action($order)
         send_notification_staff_particular('New payment received for approval', 'Please be informed that we have received a new student that your payment must be manually approved, please login to the platform to confirm.', 3);
     }
 
-    setcookie('is_older', '', time());
-    setcookie('ethnicity', '', time());
-    setcookie('ethnicity_parent', '', time());
-    setcookie('phone_student', '', time());
-    setcookie('id_document', '', time());
-    setcookie('document_type', '', time());
-    setcookie('email_student', '', time());
-    setcookie('name_student', '', time());
-    setcookie('middle_name_student', '', time());
-    setcookie('last_name_student', '', time());
-    setcookie('middle_last_name_student', '', time());
-    setcookie('billing_city', '', time());
-    setcookie('billing_country', '', time());
-    setcookie('name_institute', '', time());
-    setcookie('institute_id', '', time());
-    setcookie('birth_date', '', time());
-    setcookie('initial_grade', '', time());
-    setcookie('program_id', '', time());
-    setcookie('agent_name', '', time());
-    setcookie('agent_last_name', '', time());
-    setcookie('email_partner', '', time());
-    setcookie('number_partner', '', time());
-    setcookie('birth_date_parent', '', time());
-    setcookie('parent_document_type', '', time());
-    setcookie('id_document_parent', '', time());
-    setcookie('id_bitrix', '', time());
-    setcookie('institute_id', '', time());
-    setcookie('gender', '', time());
-    setcookie('gender_parent', '', time());
-    setcookie('password', '', time());
-    setcookie('from_webinar', '', time());
-    setcookie('one_time_payment', '', time());
-    setcookie('is_scholarship', '', time());
+    clear_all_cookies();
 }
 
 add_action('woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action');
@@ -1651,11 +1664,12 @@ function student_continue_callback()
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
     $student_id = null;
-    if (in_array('parent', $roles) && !in_array('student', $roles)) {
+    if (in_array('parent', $roles)) {
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
         $student_id = $student->id;
-    } else if (in_array('parent', $roles) && in_array('student', $roles)) {
-        $student_id = get_user_meta($current_user->ID, 'student_id', true);
+    } else if (in_array('student', $roles)) {
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+        $student_id = $student->id;
     }
 
     $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$elective}");
@@ -2316,3 +2330,11 @@ add_shortcode('users_notifications', 'users_notifications');
 // {
 //     return true;
 // }
+
+function clear_all_cookies() {
+    // Iterar sobre todas las cookies
+    foreach ($_COOKIE as $cookie_name => $cookie_value) {
+        // Establecer cada cookie con una fecha de expiración en el pasado
+        setcookie($cookie_name, '', time() - 3600, '/'); // '/' para eliminar en todo el dominio
+    }
+}

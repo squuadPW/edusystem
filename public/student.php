@@ -214,7 +214,7 @@ function save_student()
     }
 }
 
-function redirect_to_checkout($program, $grade, $from_webinar = false, $is_scholarship = false)
+function redirect_to_checkout($program, $grade, $from_webinar = false, $is_scholarship = false, $return_url = false)
 {
     global $woocommerce;
     $woocommerce->cart->empty_cart();
@@ -277,8 +277,12 @@ function redirect_to_checkout($program, $grade, $from_webinar = false, $is_schol
         }
     }
 
-    wp_redirect(wc_get_checkout_url());
-    exit;
+    if ($return_url) {
+        return wc_get_checkout_url();
+    } else {
+        wp_redirect(wc_get_checkout_url());
+        exit;
+    }
 }
 
 add_action('wp_loaded', 'save_student');
@@ -601,6 +605,16 @@ function get_documents($student_id)
 
     $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
     return $documents;
+}
+
+function get_payments($student_id)
+{
+
+    global $wpdb;
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+
+    $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student_id}");
+    return $payments;
 }
 
 function get_name_grade($grade_id)
