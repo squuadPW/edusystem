@@ -11,8 +11,8 @@
 
           <!-- DATOS DEL GRADO -->
           <div style="text-align:center; margin-top: 3rem">
-            <button type="button" class="submit button-success" id="continue-checkout"><?= __('Continue', 'aes'); ?></button>
-            <button style="margin-top: 20px" type="button" class="submit button-danger" id="quit-checkout"><?= __('Start a new one', 'aes'); ?></button>
+            <button type="button" class="submit button-primary" id="continue-checkout"><?= __('Continue', 'aes'); ?></button>
+            <button style="margin-top: 20px; background-color: #ffffff !important; border: 1px solid #2e6da4; color: #091c5c !important;" type="button" class="submit button-primary" id="quit-checkout"><?= __('Start a new one', 'aes'); ?></button>
           </div>
       </div>
     </div>
