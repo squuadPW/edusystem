@@ -453,6 +453,7 @@ $grades = get_grades();
                     <th scope="col" class="manage-column column-primary column-title"><?= __('Payment ID', 'aes') ?></th>
                     <th scope="col" class="manage-column column-title-translate"><?= __('Product ID', 'aes') ?></th>
                     <th scope="col" class="manage-column column-price"><?= __('Amount', 'aes') ?></th>
+                    <th scope="col" class="manage-column column-price"><?= __('Status', 'aes') ?></th>
                 </tr>
             </thead>
             <tbody id="table-documents">
@@ -472,6 +473,11 @@ $grades = get_grades();
                             <td id="<?= 'td_payment_' . $payment->payment_id . '_amount'; ?>" data-colname="<?= __('Amount', 'aes'); ?>">
                                 <b>
                                     <?= $payment->amount ?>
+                                </b>
+                            </td>
+                            <td id="<?= 'td_payment_' . $payment->payment_id . '_status'; ?>" data-colname="<?= __('Status', 'aes'); ?>">
+                                <b>
+                                    <?= $payment->status_id == 1 ? 'COMPLETE' : 'PENDING' ?>
                                 </b>
                             </td>
                         </tr>
