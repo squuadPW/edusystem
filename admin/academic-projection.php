@@ -361,6 +361,7 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
 
         switch ($column_name) {
             case 'student':
+            case 'grade_id':
             case 'initial_cut':
                 return strtoupper($item[$column_name]);
             case 'view_details':
@@ -387,6 +388,7 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
         $columns = array(
             'student' => __('Student', 'aes'),
             'initial_cut' => __('Initial period - cut', 'aes'),
+            'grade_id' => __('Grade', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
 
@@ -428,6 +430,7 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
                     'student_id' => $projection['student_id'],
                     'initial_cut' => $student->academic_period . ' - ' . $student->initial_cut,
                     'academic_projection_id' => $projection['id'],
+                    'grade_id' => get_name_grade($student->grade_id)
                 ]);
             }
         }
