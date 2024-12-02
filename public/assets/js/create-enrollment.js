@@ -22,23 +22,26 @@ function resizeCanvas(canvasId) {
       canvas.style.height = `${height}px`;
       canvas.getContext("2d").scale(ratio, ratio);
 
-      if (!first_time) {
-        first_time = true;
-        loadSignatures();
-      }
+      loadSignatures();
     }, 1500);
   }
 }
 
-window.addEventListener("resize", function () {
-  resizeCanvas("signature-student");
-  resizeCanvas("signature-parent");
-});
+// window.addEventListener("resize", function () {
+//   if (!first_time) {
+//     first_time = true;
+//     resizeCanvas("signature-student");
+//     resizeCanvas("signature-parent");
+//   }
+// });
 
-window.addEventListener("orientationchange", function () {
-  resizeCanvas("signature-student");
-  resizeCanvas("signature-parent");
-});
+// window.addEventListener("orientationchange", function () {
+//   if (!first_time) {
+//     first_time = true;
+//     resizeCanvas("signature-student");
+//     resizeCanvas("signature-parent");
+//   }
+// });
 
 resizeCanvas("signature-student");
 resizeCanvas("signature-parent");
