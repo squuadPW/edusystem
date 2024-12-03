@@ -45,9 +45,10 @@ if (in_array('student', $roles)) {
         <h2 style="font-size:24px;text-align:center;"><?= __('Students Information', 'form-plugin'); ?></h2>
     <?php endif; ?>
 <?php } ?>
-<?php if(count($students) == 0) { ?>
+<?php if (count($students) == 0) { ?>
     <div style="text-align: center; margin: 30px;">
-        <span><button type="button" class="submit" style="width: 180px !important" id="add_new_student">Add student</button></span>
+        <span><button type="button" class="submit" style="width: 180px !important" id="add_new_student">Add
+                student</button></span>
     </div>
 <?php } ?>
 <table
@@ -107,15 +108,15 @@ if (in_array('student', $roles)) {
     </tbody>
 </table>
 
-<?php if(count($students) == 0) { 
-include('fill-info-student.php'); 
+<?php if (count($students) == 0) {
+    include('fill-info-student.php');
 } ?>
 
 <script>
     document.body.classList.remove("modal-open");
     let add_new_student = document.getElementById('add_new_student');
     if (add_new_student) {
-        add_new_student.addEventListener('click', function() {
+        add_new_student.addEventListener('click', function () {
             document.getElementById('modal-content-fill-student').style.display = 'block';
             document.getElementById('modal-fill').style.display = 'block';
             document.body.classList.add("modal-open");

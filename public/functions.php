@@ -151,7 +151,7 @@ function use_previous_form_aes_callback()
         wp_send_json_success(array('redirect' => $url));
         exit;
     } else {
-        clear_all_cookies();
+        clear_all_cookies(true);
         wp_send_json_success(array('success' => true));
         exit;
     }
@@ -2340,11 +2340,15 @@ add_shortcode('users_notifications', 'users_notifications');
 //     return true;
 // }
 
-function clear_all_cookies() {
-    // Iterar sobre todas las cookies
+function clear_all_cookies($force = false) {
     foreach ($_COOKIE as $cookie_name => $cookie_value) {
-        // Establecer cada cookie con una fecha de expiración en el pasado
-        setcookie($cookie_name, '', time() - 3600, '/'); // '/' para eliminar en todo el dominio
+        if ($force) {
+            setcookie($cookie_name, '', time() - 3600, '/');
+        } else {
+            if (!str_contains($cookie_name, 'wordpress') && !str_contains($cookie_name, 'woocommerce') && !str_contains($cookie_name, 'sbjs') && !str_contains($cookie_name, 'stripe')) {
+                setcookie($cookie_name, '', time() - 3600, '/');
+            }
+        }
     }
 }
 
