@@ -1,11 +1,14 @@
 // Get the modal and close elements
 var modal = document.getElementById('modal-contraseña');
 var save = document.getElementById('save_password');
+var alert_content = document.getElementById('alert');
+var alert_content_text = document.getElementById('content-password');
 
     if (save) {
         // Agrega un evento de click al botón save
         save.addEventListener('click', function(event) {
             // Evita que el formulario se envíe de manera tradicional
+            alert_content.style.display = 'none';
             event.preventDefault();
 
             // Obtiene los valores de los campos de contraseña y confirmación
@@ -13,16 +16,19 @@ var save = document.getElementById('save_password');
             var confirmPassword = document.getElementById('confirm_password').value;
 
             if (!password || !confirmPassword) {
-                alert('You must enter a password before continuing');
+                alert_content.style.display = 'block';
+                alert_content_text.textContent = 'You must enter a password before continuing';
                 return;
             }
 
             // Verifica si las contraseñas coinciden
             if (password !== confirmPassword) {
-                alert('Passwords do not match');
+                alert_content.style.display = 'block';
+                alert_content_text.textContent = 'Passwords do not match';
                 return;
             }
 
+            save.disabled = true;
             // Crea un objeto con los datos del formulario
             var datos = {
                 'action': 'create_password',
@@ -38,12 +44,13 @@ var save = document.getElementById('save_password');
                 success: function(response) {
                     // Maneja la respuesta del servidor
                     if (response.success) {
-                        alert('Password saved successfully');
+                        // alert('Password saved successfully');
                         // Cierra el modal
                         modal.style.display = 'none';
                         window.location.href = response.redirect;
                     } else {
                         alert('Error saving password');
+                        save.disabled = false;
                     }
                 },
                 error: function(xhr, status, error) {

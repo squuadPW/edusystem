@@ -471,6 +471,7 @@ function insert_student($customer_id)
         'phone' => $_COOKIE['phone_student'],
         'email' => $_COOKIE['email_student'],
         'status_id' => 0,
+        'set_password' => 0,
         'country' => $_POST['billing_country'],
         'city' => $_POST['billing_city'],
         'ethnicity' => $_COOKIE['ethnicity'],

@@ -1902,12 +1902,17 @@ function verificar_contraseña()
                 $user_enrollment_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'ENROLLMENT' ORDER BY id DESC");
                 $user_missing_signature = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$current_user->ID} and document_id = 'MISSING DOCUMENT' ORDER BY id DESC");
                 $user_take_elective = false;
+                $set_password = false;
 
                 if (in_array('student', $roles)) {
                     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
                     $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
                     $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
                     $user_take_elective = $student->elective;
+
+                    if (!$student->set_password) {
+                        $set_password = true;
+                    }
                 } else if (in_array('parent', $roles)) {
                     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
                     $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
@@ -1915,16 +1920,20 @@ function verificar_contraseña()
                     $user_take_elective = $student->elective;
                 }
 
-                if ($user_take_elective == 1) {
-                    add_action('wp_footer', 'modal_take_elective');
+                if (!$set_password) {
+                    if ($user_take_elective == 1) {
+                        add_action('wp_footer', 'modal_take_elective');
+                    } else {
+                        if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+                            add_action('wp_footer', 'modal_enrollment_student');
+                        }
+        
+                        if ($document_was_created && (isset($user_enrollment_signature) && !isset($user_missing_signature) && !$pending_payments) && in_array('student', $roles, true)) {
+                            // add_action('wp_footer', 'modal_missing_student');
+                        }
+                    }
                 } else {
-                    if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
-                        add_action('wp_footer', 'modal_enrollment_student');
-                    }
-    
-                    if ($document_was_created && (isset($user_enrollment_signature) && !isset($user_missing_signature) && !$pending_payments) && in_array('student', $roles, true)) {
-                        // add_action('wp_footer', 'modal_missing_student');
-                    }
+                    add_action('wp_footer', 'modal_create_password');
                 }
             }
         }
@@ -2034,8 +2043,7 @@ function modal_missing_documents($student_id)
 
 function modal_create_password()
 {
-    // Imprime el contenido del archivo modal-reset-password.php
-    echo file_get_contents(plugin_dir_path(__FILE__) . 'templates/create-password.php');
+    include plugin_dir_path(__FILE__) . 'templates/create-password.php';
 }
 
 add_action('wp_ajax_nopriv_create_password', 'create_password');
@@ -2046,20 +2054,21 @@ function create_password()
     // Verifica si el usuario está conectado
     if (is_user_logged_in()) {
         // Obtiene el ID del usuario actual
-        $current_user = wp_get_current_user();
+        global $current_user;
 
         // Obtiene la contraseña y la confirmación de la contraseña
-        $contraseña = sanitize_text_field($_POST['password']);
-        $confirmar_contraseña = sanitize_text_field($_POST['confirm_password']);
+        $password = sanitize_text_field($_POST['password']);
+        $confirm_password = sanitize_text_field($_POST['confirm_password']);
 
         // Verifica si las contraseñas coinciden
-        if ($contraseña === $confirmar_contraseña) {
+        if ($password === $confirm_password) {
             // Actualiza la contraseña del usuario
-            wp_set_password($contraseña, $current_user->ID);
+            wp_set_password($password, $current_user->ID);
 
             // Actualiza la columna user_pass_reset en la tabla wp_users
             global $wpdb;
-            $wpdb->update($wpdb->users, array('user_pass_reset' => 1), array('ID' => $current_user->ID));
+            $table_students = $wpdb->prefix . 'students';
+            $wpdb->update($table_students, array('set_password' => 1), array('email' => $current_user->user_email));
 
             // Cierra la sesión del usuario
             wp_logout();
@@ -2338,3 +2347,30 @@ function clear_all_cookies() {
         setcookie($cookie_name, '', time() - 3600, '/'); // '/' para eliminar en todo el dominio
     }
 }
+
+function custom_new_user_notification($send, $user) {
+    $password = wp_generate_password(12);
+    $user_student = get_user_by('email', $user->user_email);
+    wp_set_password($password, $user_student->ID);
+
+    $content = '';
+    $content .= '<div>Welcome to the American Elite School platform, we have assigned you a password that you can use to log in and change it immediately.</div><br>';
+    $content .= '<div>Access information</div>';
+    $content .= '<ul>';
+    $content .= '<li><strong>Email</strong>: ' . $user->user_email . '</li>';
+    $content .= '<li><strong>Password</strong>: ' . $password . '</li>';
+    $content .= '</ul>';
+    $content .= '<div style="border: 0; background: none; border-color: #43454b; cursor: pointer; text-decoration: none; font-weight: 600; text-shadow: none; display: inline-block; -webkit-appearance: none; padding: 5px 20px !important; text-align: center; background-color: #091c5c !important; border-radius: 20px; color: white !important; font-size: 18px;"> <a href="https://online.american-elite.us/my-account" target="_blank"><button>My Account</button></a> </div><br>';
+    $content .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
+    $content .= '<ul>';
+    $content .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+    $content .= '<li>Virtual classroom: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+    $content .= '<li>Contact us: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+    $content .= '</ul>';
+    $content .= '<div>Best regardss.</div>';
+
+    $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+    $email_user->trigger($user_student, 'WELCOME', $content);
+    return false;
+}
+add_filter('wp_send_new_user_notification_to_user', 'custom_new_user_notification', 10, 2);

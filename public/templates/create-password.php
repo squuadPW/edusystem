@@ -1,27 +1,32 @@
 <!-- Modal container -->
-<div id="modal-contraseña" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <div class="title">
-                Create password
+<div class="modal-content modal-enrollment" id="modal-content">
+    <div id="modal-contraseña" class="modal" style="overflow: auto; padding: 0 !important">
+        <div class="modal-content modal-enrollment">
+            <div class="modal-header">
+                <div class="title">
+                    Create password
+                </div>
             </div>
-        </div>
-        <div class="modal-body">
-            <form method="POST" action="<?= the_permalink(); ?>">
-                <div class="grid grid-cols-12 gap-4">
-                    <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                        <label for="lastname">Password<span class="required">*</span></label>
-                        <input type="password" id="password" name="password" class="form-control">
+            <div class="modal-body">
+                <form method="POST" action="<?= the_permalink(); ?>">
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="alert" style="display: none; background-color: #ff002f9e; padding: 10px; text-align: center; color: white; border-radius: 10px;">
+                            <div id="content-password"></div>
+                        </div>
+                        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                            <label for="lastname">Password<span class="required">*</span></label>
+                            <input type="password" id="password" name="password" class="form-control">
+                        </div>
+                        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                            <label for="lastname">Confirm password<span class="required">*</span></label>
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-control">
+                        </div>
                     </div>
-                    <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                        <label for="lastname">Confirm password<span class="required">*</span></label>
-                        <input type="password" id="confirm_password" name="confirm_password" class="form-control">
+                    <div style="text-align: center">
+                        <button id="save_password" class="button button-primary" style="width: 200px !important;">Save</button>
                     </div>
-                </div>
-                <div style="text-align: center">
-                    <button id="save_password" class="btn">Save</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>
