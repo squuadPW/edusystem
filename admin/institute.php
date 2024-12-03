@@ -470,6 +470,8 @@ class TT_institutes_List_Table extends WP_List_Table
                 return $item['phone'];
             case 'email':
                 return $item[$column_name];
+            case 'created_at':
+                return $item[$column_name];
             case 'country':
                 $name = get_name_country($item[$column_name]);
                 return $name;
@@ -511,6 +513,7 @@ class TT_institutes_List_Table extends WP_List_Table
             'country' => __('Country', 'aes'),
             'name_rector' => __('Name Rector', 'aes'),
             'name_contact' => __('Name Contact', 'aes'),
+            'created_at' => __('Created at', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
 
