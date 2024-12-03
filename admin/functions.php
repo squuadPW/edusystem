@@ -1,353 +1,357 @@
 <?php
 
-require plugin_dir_path( __FILE__ ) . 'roles.php';
-require plugin_dir_path( __FILE__ ) . 'admission.php';
-require plugin_dir_path( __FILE__ ) . 'report.php';
-require plugin_dir_path( __FILE__ ) . 'payments.php';
-require plugin_dir_path( __FILE__ ) . 'scholarships.php';
-require plugin_dir_path( __FILE__ ) . 'academic_periods.php';
-require plugin_dir_path( __FILE__ ) . 'school_subjects.php';
-require plugin_dir_path( __FILE__ ) . 'academic-projection.php';
-require plugin_dir_path( __FILE__ ) . 'teachers.php';
-require plugin_dir_path( __FILE__ ) . 'enrollments.php';
-require plugin_dir_path( __FILE__ ) . 'configuration-options.php';
-require plugin_dir_path( __FILE__ ) . 'send-email.php';
-require plugin_dir_path( __FILE__ ) . 'send-notification.php';
-require plugin_dir_path( __FILE__ ) . 'staff.php';
-require plugin_dir_path( __FILE__ ) . 'institute.php';
-require plugin_dir_path( __FILE__ ) . 'alliances.php';
-require plugin_dir_path( __FILE__ ) . 'departments.php';
-require plugin_dir_path( __FILE__ ) . 'bitrix/sdk/crest.php';
-require plugin_dir_path( __FILE__ ) . 'emails/function.php';
-require plugin_dir_path( __FILE__ ) . 'user.php';
-require plugin_dir_path( __FILE__ ) . 'moodle/rest.php';
-require plugin_dir_path( __FILE__ ) . 'moodle.php';
-require plugin_dir_path( __FILE__ ) . 'laravelRequests.php';
-require plugin_dir_path( __FILE__ ) . 'documents.php';
+require plugin_dir_path(__FILE__) . 'roles.php';
+require plugin_dir_path(__FILE__) . 'admission.php';
+require plugin_dir_path(__FILE__) . 'report.php';
+require plugin_dir_path(__FILE__) . 'payments.php';
+require plugin_dir_path(__FILE__) . 'scholarships.php';
+require plugin_dir_path(__FILE__) . 'academic_periods.php';
+require plugin_dir_path(__FILE__) . 'school_subjects.php';
+require plugin_dir_path(__FILE__) . 'academic-projection.php';
+require plugin_dir_path(__FILE__) . 'teachers.php';
+require plugin_dir_path(__FILE__) . 'enrollments.php';
+require plugin_dir_path(__FILE__) . 'configuration-options.php';
+require plugin_dir_path(__FILE__) . 'send-email.php';
+require plugin_dir_path(__FILE__) . 'send-notification.php';
+require plugin_dir_path(__FILE__) . 'staff.php';
+require plugin_dir_path(__FILE__) . 'institute.php';
+require plugin_dir_path(__FILE__) . 'alliances.php';
+require plugin_dir_path(__FILE__) . 'departments.php';
+require plugin_dir_path(__FILE__) . 'bitrix/sdk/crest.php';
+require plugin_dir_path(__FILE__) . 'emails/function.php';
+require plugin_dir_path(__FILE__) . 'user.php';
+require plugin_dir_path(__FILE__) . 'moodle/rest.php';
+require plugin_dir_path(__FILE__) . 'moodle.php';
+require plugin_dir_path(__FILE__) . 'laravelRequests.php';
+require plugin_dir_path(__FILE__) . 'documents.php';
 
 // modules institutes
-require plugin_dir_path( __FILE__ ) . '/institutes/student-registered.php';
-require plugin_dir_path( __FILE__ ) . '/institutes/payments.php';
+require plugin_dir_path(__FILE__) . '/institutes/student-registered.php';
+require plugin_dir_path(__FILE__) . '/institutes/payments.php';
 
 //modules alliance
-require plugin_dir_path( __FILE__ ) . 'alliance/institutes-registered.php';
-require plugin_dir_path( __FILE__ ) . 'alliance/payments.php';
+require plugin_dir_path(__FILE__) . 'alliance/institutes-registered.php';
+require plugin_dir_path(__FILE__) . 'alliance/payments.php';
 
-function admin_form_plugin_scripts(){
-  wp_enqueue_style('style-admin',plugins_url('aes').'/admin/assets/css/style.css');
+function admin_form_plugin_scripts()
+{
+    wp_enqueue_style('style-admin', plugins_url('aes') . '/admin/assets/css/style.css');
 }
 
-add_action( 'wp_enqueue_scripts', 'admin_form_plugin_scripts');
+add_action('wp_enqueue_scripts', 'admin_form_plugin_scripts');
 
-function aes_scripts_admin(){
+function aes_scripts_admin()
+{
 
-    wp_enqueue_style('flatpickr',plugins_url('aes').'/public/assets/css/flatpickr.min.css');
-    wp_enqueue_style('intel-css',plugins_url('aes').'/public/assets/css/intlTelInput.css');
-    wp_enqueue_style('style-admin',plugins_url('aes').'/admin/assets/css/style.css');
-    wp_enqueue_script('xlsx-js',plugins_url('aes').'/admin/assets/js/xlsx.full.min.js',array('jquery'),'1.0.0',true);
-    wp_enqueue_script('admin-flatpickr',plugins_url('aes').'/public/assets/js/flatpickr.js',array('jquery'),'1.0.0',true);
-    wp_enqueue_script('admin-flatpickr',plugins_url('aes').'/public/assets/js/flatpickr.js',array('jquery'),'1.0.0',true);
-    wp_enqueue_script('intel-js',plugins_url('aes').'/public/assets/js/intlTelInput.min.js');
-    wp_enqueue_script('masker-js',plugins_url('aes').'/public/assets/js/vanilla-masker.min.js');
+    wp_enqueue_style('flatpickr', plugins_url('aes') . '/public/assets/css/flatpickr.min.css');
+    wp_enqueue_style('intel-css', plugins_url('aes') . '/public/assets/css/intlTelInput.css');
+    wp_enqueue_style('style-admin', plugins_url('aes') . '/admin/assets/css/style.css');
+    wp_enqueue_script('xlsx-js', plugins_url('aes') . '/admin/assets/js/xlsx.full.min.js', array('jquery'), '1.0.0', true);
+    wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js', array('jquery'), '1.0.0', true);
+    wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js', array('jquery'), '1.0.0', true);
+    wp_enqueue_script('intel-js', plugins_url('aes') . '/public/assets/js/intlTelInput.min.js');
+    wp_enqueue_script('masker-js', plugins_url('aes') . '/public/assets/js/vanilla-masker.min.js');
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_payments_content'){
-        wp_enqueue_script('student-payment',plugins_url('aes').'/admin/assets/js/payment.js',array('jquery'),'1.0.0',true);    
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_payments_content') {
+        wp_enqueue_script('student-payment', plugins_url('aes') . '/admin/assets/js/payment.js', array('jquery'), '1.0.0', true);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_scholarships_content'){
-        wp_enqueue_script('student-payment',plugins_url('aes').'/admin/assets/js/scholarship.js',array('jquery'),'1.0.0',true);    
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_scholarships_content') {
+        wp_enqueue_script('student-payment', plugins_url('aes') . '/admin/assets/js/scholarship.js', array('jquery'), '1.0.0', true);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_email_content'){
-        wp_enqueue_script('send-email',plugins_url('aes').'/admin/assets/js/send-email.js',array('jquery'),'1.0.0',true);    
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_email_content') {
+        wp_enqueue_script('send-email', plugins_url('aes') . '/admin/assets/js/send-email.js', array('jquery'), '1.0.0', true);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_notification_content'){
-        wp_enqueue_script('send-notification',plugins_url('aes').'/admin/assets/js/send-notification.js',array('jquery'),'1.0.0',true);    
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_notification_content') {
+        wp_enqueue_script('send-notification', plugins_url('aes') . '/admin/assets/js/send-notification.js', array('jquery'), '1.0.0', true);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_configuration_options_content'){
-        wp_enqueue_script('configuration',plugins_url('aes').'/admin/assets/js/configuration.js',array('jquery'),'1.0.0',true);    
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_configuration_options_content') {
+        wp_enqueue_script('configuration', plugins_url('aes') . '/admin/assets/js/configuration.js', array('jquery'), '1.0.0', true);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_teachers_content'){
-        wp_enqueue_script('teacher',plugins_url('aes').'/admin/assets/js/teacher.js',array('jquery'),'1.0.0',true);    
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_teachers_content') {
+        wp_enqueue_script('teacher', plugins_url('aes') . '/admin/assets/js/teacher.js', array('jquery'), '1.0.0', true);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')){
-        wp_enqueue_script('institute',plugins_url('aes').'/admin/assets/js/institute.js',array('jquery'),'1.0.0',true);
+    if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')) {
+        wp_enqueue_script('institute', plugins_url('aes') . '/admin/assets/js/institute.js', array('jquery'), '1.0.0', true);
 
-        wp_localize_script('institute','list_fee_institute',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'list_fee_institute' 
+        wp_localize_script('institute', 'list_fee_institute', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'list_fee_institute'
         ]);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables' || $_GET['page'] == 'report-students' || $_GET['page'] == 'report-sales-product'){
-        wp_enqueue_script('report',plugins_url('aes').'/admin/assets/js/report.js',array('jquery'),'1.0.0',true);
+    if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables' || $_GET['page'] == 'report-students' || $_GET['page'] == 'report-sales-product') {
+        wp_enqueue_script('report', plugins_url('aes') . '/admin/assets/js/report.js', array('jquery'), '1.0.0', true);
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js');
         wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js');
 
-        wp_localize_script('report','list_orders_sales',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'list_orders_sales' 
+        wp_localize_script('report', 'list_orders_sales', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'list_orders_sales'
         ]);
 
-        wp_localize_script('report','list_sales_product',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'list_sales_product' 
+        wp_localize_script('report', 'list_sales_product', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'list_sales_product'
         ]);
 
-        wp_localize_script('report','list_accounts_receivables',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'list_accounts_receivables' 
+        wp_localize_script('report', 'list_accounts_receivables', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'list_accounts_receivables'
         ]);
 
-        wp_localize_script('report','list_report_students',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'list_report_students' 
+        wp_localize_script('report', 'list_report_students', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'list_report_students'
         ]);
 
-        wp_localize_script('report','load_chart_data',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'load_chart_data' 
-        ]);
-    }
-    
-    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_partners_content' || isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'list_admin_partner_payments_content' || $_GET['page'] == 'list_admin_partner_invoice_content'){
-        wp_enqueue_script('alliance',plugins_url('aes').'/admin/assets/js/alliance.js',array('jquery'),'1.0.0',true);
-
-
-        wp_localize_script('alliance','list_fee_alliance',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'list_fee_alliance' 
+        wp_localize_script('report', 'load_chart_data', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'load_chart_data'
         ]);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_department_content'){
-        wp_enqueue_script('department',plugins_url('aes').'/admin/assets/js/department.js',array('jquery'),'1.0.0',true);
-    }
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_partners_content' || isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'list_admin_partner_payments_content' || $_GET['page'] == 'list_admin_partner_invoice_content') {
+        wp_enqueue_script('alliance', plugins_url('aes') . '/admin/assets/js/alliance.js', array('jquery'), '1.0.0', true);
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_enrollments_content'){
-        wp_enqueue_script('enrollment',plugins_url('aes').'/admin/assets/js/enrollment.js',array('jquery'),'1.0.0',true);
-        
-        wp_localize_script('enrollment','search_student_id_document',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'search_student_id_document' 
+
+        wp_localize_script('alliance', 'list_fee_alliance', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'list_fee_alliance'
         ]);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_admission_content'){
-        wp_enqueue_script('student-documents',plugins_url('aes').'/admin/assets/js/document.js',array('jquery'),'1.0.0',true);
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_department_content') {
+        wp_enqueue_script('department', plugins_url('aes') . '/admin/assets/js/department.js', array('jquery'), '1.0.0', true);
+    }
 
-        wp_localize_script('student-documents','update_status_documents',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'update_status_documents' 
-        ]);
-    
-        wp_localize_script('student-documents','get_student_details',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'update_status_documents' 
-        ]);
-    
-        wp_localize_script('student-documents','get_student_details',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'get_student_details' 
-        ]);
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_enrollments_content') {
+        wp_enqueue_script('enrollment', plugins_url('aes') . '/admin/assets/js/enrollment.js', array('jquery'), '1.0.0', true);
 
-        wp_localize_script('student-documents','last_access_moodle',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'last_access_moodle' 
-        ]);
-
-        wp_localize_script('student-documents','get_approved_by',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'get_approved_by' 
+        wp_localize_script('enrollment', 'search_student_id_document', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'search_student_id_document'
         ]);
     }
 
-    if(isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')){
-        wp_enqueue_script('institute',plugins_url('aes').'/admin/assets/js/institute.js',array('jquery'),'1.0.0',true);
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_admission_content') {
+        wp_enqueue_script('student-documents', plugins_url('aes') . '/admin/assets/js/document.js', array('jquery'), '1.0.0', true);
 
-        wp_localize_script('institute','list_fee_institute',[
-            'url' => admin_url( 'admin-ajax.php' ),
-            'action' => 'list_fee_institute' 
+        wp_localize_script('student-documents', 'update_status_documents', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'update_status_documents'
+        ]);
+
+        wp_localize_script('student-documents', 'get_student_details', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'update_status_documents'
+        ]);
+
+        wp_localize_script('student-documents', 'get_student_details', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'get_student_details'
+        ]);
+
+        wp_localize_script('student-documents', 'last_access_moodle', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'last_access_moodle'
+        ]);
+
+        wp_localize_script('student-documents', 'get_approved_by', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'get_approved_by'
         ]);
     }
-    
+
+    if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')) {
+        wp_enqueue_script('institute', plugins_url('aes') . '/admin/assets/js/institute.js', array('jquery'), '1.0.0', true);
+
+        wp_localize_script('institute', 'list_fee_institute', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'list_fee_institute'
+        ]);
+    }
+
 }
 
-add_action( 'admin_enqueue_scripts', 'aes_scripts_admin',3 );
+add_action('admin_enqueue_scripts', 'aes_scripts_admin', 3);
 
-function add_custom_admin_page() {
+function add_custom_admin_page()
+{
 
     global $current_user;
     $roles = $current_user->roles;
 
-    if(in_array('institutes',$roles)){
+    if (in_array('institutes', $roles)) {
 
         add_menu_page(
-            __('Students','aes'),
-            __('Students','aes'),
+            __('Students', 'aes'),
+            __('Students', 'aes'),
             'read',
             'list_admin_institutes_student_registered_content',
-            'list_admin_institutes_student_registered_content', 
+            'list_admin_institutes_student_registered_content',
             'dashicons-groups',
             10
         );
 
         add_menu_page(
-            __('Fees','aes'),
-            __('Fees','aes'),
+            __('Fees', 'aes'),
+            __('Fees', 'aes'),
             'read',
             'list_admin_institutes_payments_content',
-            'list_admin_institutes_payments_content', 
+            'list_admin_institutes_payments_content',
             'dashicons-money-alt',
             11
         );
 
-        
+
         add_menu_page(
-            __('Invoice','aes'),
-            __('Invoice','aes'),
+            __('Invoice', 'aes'),
+            __('Invoice', 'aes'),
             'read',
             'list_admin_institutes_invoice_content',
-            'list_admin_institutes_invoice_content', 
+            'list_admin_institutes_invoice_content',
             'dashicons-admin-page',
             11
         );
     }
 
-    if(in_array('alliance',$roles)){
+    if (in_array('alliance', $roles)) {
 
         add_menu_page(
-            __('Institutes','aes'),
-            __('Institutes','aes'),
+            __('Institutes', 'aes'),
+            __('Institutes', 'aes'),
             'read',
             'list_admin_institutes_partner_registered_content',
-            'list_admin_institutes_partner_registered_content', 
+            'list_admin_institutes_partner_registered_content',
             'dashicons-groups',
             10
         );
 
         add_menu_page(
-            __('Fees','aes'),
-            __('Fees','aes'),
+            __('Fees', 'aes'),
+            __('Fees', 'aes'),
             'read',
             'list_admin_partner_payments_content',
-            'list_admin_partner_payments_content', 
+            'list_admin_partner_payments_content',
             'dashicons-money-alt',
             11
         );
 
         add_menu_page(
-            __('Invoice','aes'),
-            __('Invoice','aes'),
+            __('Invoice', 'aes'),
+            __('Invoice', 'aes'),
             'read',
             'list_admin_partner_invoice_content',
-            'list_admin_partner_invoice_content', 
+            'list_admin_partner_invoice_content',
             'dashicons-admin-page',
             11
         );
     }
 
     if (current_user_can('manager_admission_aes') || current_user_can('only_read_admission_aes')) {
-        add_menu_page( 
-            __('Admission','aes'),
-            __('Admission','aes'),
-            'manage_options', 
+        add_menu_page(
+            __('Admission', 'aes'),
+            __('Admission', 'aes'),
+            'manage_options',
             'add_admin_form_admission_content',
-            'add_admin_form_admission_content', 
-            'dashicons-groups', 
+            'add_admin_form_admission_content',
+            'dashicons-groups',
             4
         );
-        add_submenu_page('add_admin_form_admission_content',__('Required Documents','aes'),__('Required Documents','aes'),'manager_documents_aes','admission-documents','show_admission_documents', 10);
+        add_submenu_page('add_admin_form_admission_content', __('Required Documents', 'aes'), __('Required Documents', 'aes'), 'manager_documents_aes', 'admission-documents', 'show_admission_documents', 10);
     }
 
-    add_menu_page( 
-        __('Academic','aes'),
-        __('Academic','aes'),
-        'manager_academic_aes', 
+    add_menu_page(
+        __('Academic', 'aes'),
+        __('Academic', 'aes'),
+        'manager_academic_aes',
         'add_admin_form_academic_content',
-        'add_admin_form_academic_content', 
-        'dashicons-welcome-learn-more', 
+        'add_admin_form_academic_content',
+        'dashicons-welcome-learn-more',
         4
     );
-    add_submenu_page('add_admin_form_academic_content',__('Academic projection','aes'),__('Academic projection','aes'),'manager_academic_projection_aes','add_admin_form_academic_projection_content','add_admin_form_academic_projection_content', 10);
-    add_submenu_page('add_admin_form_academic_content',__('School subjects','aes'),__('School subjects','aes'),'manager_school_subjects_aes','add_admin_form_school_subjects_content','add_admin_form_school_subjects_content', 10);
-    add_submenu_page('add_admin_form_academic_content',__('Academic periods','aes'),__('Academic periods','aes'),'manager_academic_periods_aes','add_admin_form_academic_periods_content','add_admin_form_academic_periods_content', 10);
-    add_submenu_page('add_admin_form_academic_content',__('Scholarship','aes'),__('Scholarship','aes'),'manager_scholarship_aes','add_admin_form_scholarships_content','add_admin_form_scholarships_content', 10);
-    add_submenu_page('add_admin_form_academic_content',__('Enrollments','aes'),__('Enrollments','aes'),'manager_enrollments_aes','add_admin_form_enrollments_content','add_admin_form_enrollments_content', 10);
-    remove_submenu_page('add_admin_form_academic_content','add_admin_form_academic_content');
-    
-    add_menu_page( 
-        __('Payments','aes'),
-        __('Payments','aes'),
-        'manager_payments_aes', 
+    add_submenu_page('add_admin_form_academic_content', __('Academic projection', 'aes'), __('Academic projection', 'aes'), 'manager_academic_projection_aes', 'add_admin_form_academic_projection_content', 'add_admin_form_academic_projection_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('School subjects', 'aes'), __('School subjects', 'aes'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'aes'), __('Academic periods', 'aes'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Scholarship', 'aes'), __('Scholarship', 'aes'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'aes'), __('Enrollments', 'aes'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
+    remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
+
+    add_menu_page(
+        __('Payments', 'aes'),
+        __('Payments', 'aes'),
+        'manager_payments_aes',
         'add_admin_form_payments_content',
-        'add_admin_form_payments_content', 
-        'dashicons-money-alt', 
+        'add_admin_form_payments_content',
+        'dashicons-money-alt',
         5
     );
 
-    add_menu_page( 
-        __('Staff','aes'),
-        __('Staff','aes'),
-        'manager_staff_menu_aes', 
+    add_menu_page(
+        __('Staff', 'aes'),
+        __('Staff', 'aes'),
+        'manager_staff_menu_aes',
         'add_admin_form_staff_menu_content',
-        'add_admin_form_staff_menu_content', 
-        'dashicons-buddicons-buddypress-logo', 
+        'add_admin_form_staff_menu_content',
+        'dashicons-buddicons-buddypress-logo',
         6
     );
-    add_submenu_page('add_admin_form_staff_menu_content',__('Staff','aes'),__('Staff','aes'),'manager_staff_aes','add_admin_form_staff_content','add_admin_form_staff_content', 10);
-    add_submenu_page('add_admin_form_staff_menu_content',__('Institutes','aes'),__('Institutes','aes'),'manager_institutes_aes','add_admin_institutes_content','add_admin_institutes_content', 10);
-    add_submenu_page('add_admin_form_staff_menu_content',__('Alliances','aes'),__('Alliances','aes'),'manager_alliances_aes','add_admin_partners_content','add_admin_partners_content', 10);
-    remove_submenu_page('add_admin_form_staff_menu_content','add_admin_form_staff_menu_content');
+    add_submenu_page('add_admin_form_staff_menu_content', __('Staff', 'aes'), __('Staff', 'aes'), 'manager_staff_aes', 'add_admin_form_staff_content', 'add_admin_form_staff_content', 10);
+    add_submenu_page('add_admin_form_staff_menu_content', __('Institutes', 'aes'), __('Institutes', 'aes'), 'manager_institutes_aes', 'add_admin_institutes_content', 'add_admin_institutes_content', 10);
+    add_submenu_page('add_admin_form_staff_menu_content', __('Alliances', 'aes'), __('Alliances', 'aes'), 'manager_alliances_aes', 'add_admin_partners_content', 'add_admin_partners_content', 10);
+    remove_submenu_page('add_admin_form_staff_menu_content', 'add_admin_form_staff_menu_content');
 
-    add_menu_page( 
-        __('Communications','aes'),
-        __('Communications','aes'),
-        'manager_communications_aes', 
+    add_menu_page(
+        __('Communications', 'aes'),
+        __('Communications', 'aes'),
+        'manager_communications_aes',
         'add_admin_form_communications_content',
-        'add_admin_form_communications_content', 
-        'dashicons-email-alt2', 
+        'add_admin_form_communications_content',
+        'dashicons-email-alt2',
         7
     );
-    add_submenu_page('add_admin_form_communications_content',__('Email to students','aes'),__('Email to students','aes'),'manager_send_email_aes','add_admin_form_send_email_content','add_admin_form_send_email_content', 10);
-    add_submenu_page('add_admin_form_communications_content',__('Email to staff','aes'),__('Email to staff','aes'),'manager_send_notification_aes','add_admin_form_send_notification_content','add_admin_form_send_notification_content', 10);
-    remove_submenu_page('add_admin_form_communications_content','add_admin_form_communications_content'); 
+    add_submenu_page('add_admin_form_communications_content', __('Email to students', 'aes'), __('Email to students', 'aes'), 'manager_send_email_aes', 'add_admin_form_send_email_content', 'add_admin_form_send_email_content', 10);
+    add_submenu_page('add_admin_form_communications_content', __('Email to staff', 'aes'), __('Email to staff', 'aes'), 'manager_send_notification_aes', 'add_admin_form_send_notification_content', 'add_admin_form_send_notification_content', 10);
+    remove_submenu_page('add_admin_form_communications_content', 'add_admin_form_communications_content');
 
-    add_menu_page( 
-        __('Report','aes'),
-        __('Report','aes'),
-        'manager_report_aes', 
+    add_menu_page(
+        __('Report', 'aes'),
+        __('Report', 'aes'),
+        'manager_report_aes',
         'add_admin_form_report_content',
-        'add_admin_form_report_content', 
-        'dashicons-list-view', 
+        'add_admin_form_report_content',
+        'dashicons-list-view',
         8
     );
-    add_submenu_page('add_admin_form_report_content',__('Sales','aes'),__('Sales','aes'),'manager_sales_aes','report-sales','show_report_sales', 10);
-    add_submenu_page('add_admin_form_report_content',__('Accounts receivable','aes'),__('Accounts receivable','aes'),'manager_accounts_receivables_aes','report-accounts-receivables','show_report_accounts_receivables', 10);
-    add_submenu_page('add_admin_form_report_content',__('Students','aes'),__('Students','aes'),'manager_report_students_aes','report-students','show_report_students', 10);
-    add_submenu_page('add_admin_form_report_content',__('Sales by product','aes'),__('Sales by product','aes'),'manager_report_sales_product','report-sales-product','show_report_sales_product', 10);
+    add_submenu_page('add_admin_form_report_content', __('Sales', 'aes'), __('Sales', 'aes'), 'manager_sales_aes', 'report-sales', 'show_report_sales', 10);
+    add_submenu_page('add_admin_form_report_content', __('Accounts receivable', 'aes'), __('Accounts receivable', 'aes'), 'manager_accounts_receivables_aes', 'report-accounts-receivables', 'show_report_accounts_receivables', 10);
+    add_submenu_page('add_admin_form_report_content', __('Students', 'aes'), __('Students', 'aes'), 'manager_report_students_aes', 'report-students', 'show_report_students', 10);
+    add_submenu_page('add_admin_form_report_content', __('Sales by product', 'aes'), __('Sales by product', 'aes'), 'manager_report_sales_product', 'report-sales-product', 'show_report_sales_product', 10);
 
-    add_menu_page( 
-        __('Settings','aes'),
-        __('Settings','aes'),
-        'manager_settings_aes', 
+    add_menu_page(
+        __('Settings', 'aes'),
+        __('Settings', 'aes'),
+        'manager_settings_aes',
         'add_admin_form_settings_content',
-        'add_admin_form_settings_content', 
-        'dashicons-admin-generic', 
+        'add_admin_form_settings_content',
+        'dashicons-admin-generic',
         30
     );
-    add_submenu_page('add_admin_form_settings_content',__('Settings','aes'),__('Settings','aes'),'manager_configuration_options_aes','add_admin_form_configuration_options_content','add_admin_form_configuration_options_content', 10);
-    add_submenu_page('add_admin_form_settings_content',__('Departments','aes'),__('Departments','aes'),'manager_departments_aes','add_admin_department_content','list_admin_form_department_content', 10);
-    remove_submenu_page('add_admin_form_settings_content','add_admin_form_settings_content');   
+    add_submenu_page('add_admin_form_settings_content', __('Settings', 'aes'), __('Settings', 'aes'), 'manager_configuration_options_aes', 'add_admin_form_configuration_options_content', 'add_admin_form_configuration_options_content', 10);
+    add_submenu_page('add_admin_form_settings_content', __('Departments', 'aes'), __('Departments', 'aes'), 'manager_departments_aes', 'add_admin_department_content', 'list_admin_form_department_content', 10);
+    remove_submenu_page('add_admin_form_settings_content', 'add_admin_form_settings_content');
 }
-  
+
 add_action('admin_menu', 'add_custom_admin_page');
 
-function add_cap_to_administrator(){
+function add_cap_to_administrator()
+{
 
     $role = get_role('administrator');
     $role->add_cap('manage_administrator_aes');
@@ -377,91 +381,93 @@ function add_cap_to_administrator(){
     $role->add_cap('manager_moodle_settings_aes');
 }
 
-add_action('admin_init','add_cap_to_administrator');
+add_action('admin_init', 'add_cap_to_administrator');
 
-function list_departments_admin_page_callback() {
-    echo do_shortcode( '[list_departments]' );
+function list_departments_admin_page_callback()
+{
+    echo do_shortcode('[list_departments]');
 }
-  
+
 add_action('admin_menu', 'add_custom_admin_page');
 
-function get_dates_search($filter,$custom){
+function get_dates_search($filter, $custom)
+{
 
-    if($filter == 'today'){
-        $start = get_gmt_from_date(wp_date('Y-m-d').'00:00','Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d').'23:59','Y-m-d H:i');
+    if ($filter == 'today') {
+        $start = get_gmt_from_date(wp_date('Y-m-d') . '00:00', 'Y-m-d H:i');
+        $end = get_gmt_from_date(wp_date('Y-m-d') . '23:59', 'Y-m-d H:i');
 
-    }else if($filter == 'yesterday'){
-        $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('-1 days')).'00:00','Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d',).'00:00','Y-m-d H:i');
+    } else if ($filter == 'yesterday') {
+        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('-1 days')) . '00:00', 'Y-m-d H:i');
+        $end = get_gmt_from_date(wp_date('Y-m-d', ) . '00:00', 'Y-m-d H:i');
 
-    }else if($filter == 'tomorrow'){
-        $start = get_gmt_from_date(wp_date('Y-m-d').'00:00','Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('+1 days')).'00:00','Y-m-d H:i');
+    } else if ($filter == 'tomorrow') {
+        $start = get_gmt_from_date(wp_date('Y-m-d') . '00:00', 'Y-m-d H:i');
+        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('+1 days')) . '00:00', 'Y-m-d H:i');
 
-    }else if($filter == 'this-week'){
+    } else if ($filter == 'this-week') {
 
-        $date = Datetime ::createFromFormat('Y-m-d',wp_date('Y-m-d'));
-    
-        if($date->format('w') == 1){
-            $start = get_gmt_from_date(wp_date('Y-m-d').'00:00','Y-m-d H:i');
-        }else{
-            $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('last tuesday')).'00:00','Y-m-d H:i');
+        $date = Datetime::createFromFormat('Y-m-d', wp_date('Y-m-d'));
+
+        if ($date->format('w') == 1) {
+            $start = get_gmt_from_date(wp_date('Y-m-d') . '00:00', 'Y-m-d H:i');
+        } else {
+            $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('last tuesday')) . '00:00', 'Y-m-d H:i');
         }
 
-        if($date->format('w') == 1){
-            $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('next saturday',strtotime('+1 days'))).'23:59','Y-m-d H:i');
-        }else{
-            $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('next sunday')).'23:59','Y-m-d H:i');
+        if ($date->format('w') == 1) {
+            $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('next saturday', strtotime('+1 days'))) . '23:59', 'Y-m-d H:i');
+        } else {
+            $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('next sunday')) . '23:59', 'Y-m-d H:i');
         }
-      
-    }else if($filter == 'last-week'){
-        
-        $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('last week')).'00:00','Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('this week -1 days')).'23:59','Y-m-d H:i');
-        
 
-    }else if($filter == 'next-week'){
-        
-        $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('this week')).'00:00','Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('next week -1 days')).'23:59','Y-m-d H:i');
-        
+    } else if ($filter == 'last-week') {
 
-    }else if($filter == 'this-month'){
-        
-        $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('first day of this month')).'00:00','Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('last day of this month')).'23:59','Y-m-d H:i');
-        
-    }else if($filter == 'last-month'){
+        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('last week')) . '00:00', 'Y-m-d H:i');
+        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('this week -1 days')) . '23:59', 'Y-m-d H:i');
 
-        $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('first day of last month')).'00:00','Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('last day of last month')).'23:59','Y-m-d H:i');
-        
-       
-    }else if($filter == 'next-month'){
 
-        $start = get_gmt_from_date(wp_date('Y-m-d',strtotime('first day of next month')).'00:00','Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d',strtotime('last day of next month')).'23:59','Y-m-d H:i');
-        
-       
-    }else if($filter == 'custom'){
+    } else if ($filter == 'next-week') {
 
-        $date = str_replace([' to ',' a '],',',$custom);
-        $date_array = explode(',',$date);
+        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('this week')) . '00:00', 'Y-m-d H:i');
+        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('next week -1 days')) . '23:59', 'Y-m-d H:i');
 
-        $start = str_replace('/','-',$date_array[0]);
 
-        if(isset($date_array[1]) && !empty($date_array[1])){
-            $end = str_replace('/','-',$date_array[1]);
-        }else{
-            $end = str_replace('/','-',$date_array[0]);
-        } 
+    } else if ($filter == 'this-month') {
 
-        $startDatetime = Datetime ::createFromFormat('m-d-Y',$start);
-        $endDatetime = Datetime ::createFromFormat('m-d-Y',$end);
-    
-        $start = get_gmt_from_date($startDatetime->format('Y-m-d').'07:00','Y-m-d H:i');
-        $end = get_gmt_from_date($endDatetime->modify('+1 day')->format('Y-m-d').'06:59','Y-m-d H:i');
+        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('first day of this month')) . '00:00', 'Y-m-d H:i');
+        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('last day of this month')) . '23:59', 'Y-m-d H:i');
+
+    } else if ($filter == 'last-month') {
+
+        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('first day of last month')) . '00:00', 'Y-m-d H:i');
+        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('last day of last month')) . '23:59', 'Y-m-d H:i');
+
+
+    } else if ($filter == 'next-month') {
+
+        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('first day of next month')) . '00:00', 'Y-m-d H:i');
+        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('last day of next month')) . '23:59', 'Y-m-d H:i');
+
+
+    } else if ($filter == 'custom') {
+
+        $date = str_replace([' to ', ' a '], ',', $custom);
+        $date_array = explode(',', $date);
+
+        $start = str_replace('/', '-', $date_array[0]);
+
+        if (isset($date_array[1]) && !empty($date_array[1])) {
+            $end = str_replace('/', '-', $date_array[1]);
+        } else {
+            $end = str_replace('/', '-', $date_array[0]);
+        }
+
+        $startDatetime = Datetime::createFromFormat('m-d-Y', $start);
+        $endDatetime = Datetime::createFromFormat('m-d-Y', $end);
+
+        $start = get_gmt_from_date($startDatetime->format('Y-m-d') . '07:00', 'Y-m-d H:i');
+        $end = get_gmt_from_date($endDatetime->modify('+1 day')->format('Y-m-d') . '06:59', 'Y-m-d H:i');
         /*
         if($sales){
 
@@ -496,45 +502,48 @@ function get_dates_search($filter,$custom){
         }
         */
     }
-   
-    return [$start,$end];
+
+    return [$start, $end];
 }
 
 
 
 // AGREGAR NUEVO CAMPO DE VARIACION DE PRODUCTO PARA JUGAR CON LOS VALORES DE LAS CUOTAS EN LOS PROGRAMAS
-add_action( 'woocommerce_product_after_variable_attributes', 'num_cuotes', 10, 3 );
-function num_cuotes( $loop, $variation_data, $variation ) {
+add_action('woocommerce_product_after_variable_attributes', 'num_cuotes', 10, 3);
+function num_cuotes($loop, $variation_data, $variation)
+{
     woocommerce_wp_text_input(
         array(
-            'id'            => 'text_field[' . $loop . ']',
-            'label'         => 'Num cuotes',
+            'id' => 'text_field[' . $loop . ']',
+            'label' => 'Num cuotes',
             'wrapper_class' => 'form-row',
-            'placeholder'   => 'Num cuotes for program',
-            'desc_tip'      => true,
-            'description'   => 'Number of installments to pay for a product.',
-            'value'         => get_post_meta( $variation->ID, 'num_cuotes_text', true )
+            'placeholder' => 'Num cuotes for program',
+            'desc_tip' => true,
+            'description' => 'Number of installments to pay for a product.',
+            'value' => get_post_meta($variation->ID, 'num_cuotes_text', true)
         )
     );
 }
 
-add_action( 'woocommerce_save_product_variation', 'save_num_cuotes', 10, 2 );
-function save_num_cuotes( $variation_id, $i ) {
-    if ( isset( $_POST['text_field'][$i] ) ) {
-        update_post_meta( $variation_id, 'num_cuotes_text', sanitize_text_field( $_POST['text_field'][$i] ) );
+add_action('woocommerce_save_product_variation', 'save_num_cuotes', 10, 2);
+function save_num_cuotes($variation_id, $i)
+{
+    if (isset($_POST['text_field'][$i])) {
+        update_post_meta($variation_id, 'num_cuotes_text', sanitize_text_field($_POST['text_field'][$i]));
     }
 }
 // AGREGAR NUEVO CAMPO DE VARIACION DE PRODUCTO PARA JUGAR CON LOS VALORES DE LAS CUOTAS EN LOS PROGRAMAS
 
 // functions.php
 
-function add_logo_dashboard(){
+function add_logo_dashboard()
+{
     $url = 'http://online.american-elite.us/wp-content/uploads/2024/07/cropped-cropped-cropped-LOGOS-Y-ONDAS-10.png';
     $url_small = 'http://online.american-elite.us/wp-content/uploads/2024/07/cropped-cropped-cropped-LOGOS-Y-ONDAS-10.png';
     echo '<style>
     @media screen and (min-width:992px){
         #toplevel_page_logo_based_menu {
-            background-image: url('.$url.');
+            background-image: url(' . $url . ');
             background-size: 90%;
             background-repeat: no-repeat;
             margin: 10px !important;
@@ -546,7 +555,7 @@ function add_logo_dashboard(){
     }
     @media screen and (min-width:783px) and (max-width:991px){
         #toplevel_page_logo_based_menu {
-            background-image: url('.$url_small.');
+            background-image: url(' . $url_small . ');
             background-size: 80%;
             background-repeat: no-repeat;
             margin: 5px !important;
@@ -559,7 +568,7 @@ function add_logo_dashboard(){
     }
     @media screen and (max-width:782px){
         #toplevel_page_logo_based_menu {
-            background-image: url('.$url_small.');
+            background-image: url(' . $url_small . ');
             background-size: 20%;
             background-repeat: no-repeat;
             background-color: #ffffff !important;
@@ -579,13 +588,14 @@ function add_logo_dashboard(){
 }
 add_action('admin_enqueue_scripts', 'add_logo_dashboard');
 
-function custom_login_store(){
-if(get_option('blog_img_logo')){
-    $url = 'http://online.american-elite.us/wp-content/uploads/2024/07/cropped-cropped-cropped-LOGOS-Y-ONDAS-10.png';
-    echo '
+function custom_login_store()
+{
+    if (get_option('blog_img_logo')) {
+        $url = 'http://online.american-elite.us/wp-content/uploads/2024/07/cropped-cropped-cropped-LOGOS-Y-ONDAS-10.png';
+        echo '
     <style type="text/css">
         #login h1 a, .login h1 a {
-            background-image: url('.$url.');
+            background-image: url(' . $url . ');
         background-size: cover;
         background-repeat: no-repeat;
         width:110px;
@@ -594,68 +604,75 @@ if(get_option('blog_img_logo')){
         border-radius:50%;
         }
     </style>';
+    }
 }
-}
-add_action( 'login_enqueue_scripts', 'custom_login_store' );
+add_action('login_enqueue_scripts', 'custom_login_store');
 
-function remove_text_admin_bar_profile( $wp_admin_bar ){
-    $avatar = get_avatar( get_current_user_id(), 16 );
-    if (!$wp_admin_bar->get_node( 'my-account' )){
+function remove_text_admin_bar_profile($wp_admin_bar)
+{
+    $avatar = get_avatar(get_current_user_id(), 16);
+    if (!$wp_admin_bar->get_node('my-account')) {
         return;
     }
-    $wp_admin_bar->add_node( array(
+    $wp_admin_bar->add_node(array(
         'id' => 'my-account',
-        'title' => sprintf( '%s', wp_get_current_user()->user_firstname.' '.wp_get_current_user()->user_lastname ) . $avatar,
-    ) );
+        'title' => sprintf('%s', wp_get_current_user()->user_firstname . ' ' . wp_get_current_user()->user_lastname) . $avatar,
+    ));
 }
-add_action( 'admin_bar_menu', 'remove_text_admin_bar_profile' );
+add_action('admin_bar_menu', 'remove_text_admin_bar_profile');
 
-function aes_logo() {
+function aes_logo()
+{
     add_menu_page('logo', 'logo', 'read', 'logo_based_menu', '', '', 1);
 }
-add_action('admin_menu','aes_logo');
+add_action('admin_menu', 'aes_logo');
 
-function hide_notices(){
+function hide_notices()
+{
     if (!is_super_admin()) {
-        remove_all_actions( 'user_admin_notices' );
-        remove_all_actions( 'admin_notices' );
+        remove_all_actions('user_admin_notices');
+        remove_all_actions('admin_notices');
     }
 }
 add_action('in_admin_header', 'hide_notices', 99);
 
-add_action( 'login_enqueue_scripts', 'aes_change_login_logo' );
-function aes_change_login_logo() { ?>
-    <style type="text/css"> 
-        #login h1 a { 
-            background: url('https://online.american-elite.us/wp-content/uploads/2024/06/cropped-cropped-cropped-American-elite-LOGO-1-600x188-1-2-1.png') no-repeat center center; 
-            background-size: 100px; 
-            height: 100px; 
-            margin: 0 auto; 
-            width: 100px; 
-        } 
+add_action('login_enqueue_scripts', 'aes_change_login_logo');
+function aes_change_login_logo()
+{ ?>
+    <style type="text/css">
+        #login h1 a {
+            background: url('https://online.american-elite.us/wp-content/uploads/2024/06/cropped-cropped-cropped-American-elite-LOGO-1-600x188-1-2-1.png') no-repeat center center;
+            background-size: 100px;
+            height: 100px;
+            margin: 0 auto;
+            width: 100px;
+        }
     </style>
 <?php }
 
 add_filter('login_headerurl', 'aes_login_redirect_url');
-function aes_login_redirect_url() {
+function aes_login_redirect_url()
+{
     return 'https://online.american-elite.us/'; // Replace with your desired URL
 }
 
 // Add a custom action to the user list
-add_filter( 'user_row_actions', 'add_welcome_student_action', 10, 2 );
-function add_welcome_student_action( $actions, $user_object ) {
+add_filter('user_row_actions', 'add_welcome_student_action', 10, 2);
+function add_welcome_student_action($actions, $user_object)
+{
     // Get the user roles
     $user_roles = $user_object->roles;
-    
+
     // Check if the user has the "student" role
-    if ( in_array( 'student', $user_roles ) ) {
+    if (in_array('student', $user_roles)) {
         $actions['welcome_student'] = '<a href="#" onclick="welcomeStudent(' . $user_object->ID . ')">Welcome Student</a>';
     }
     return $actions;
 }
 
 // Add a new column to the user list
-function add_last_login_column($columns) {
+function add_last_login_column($columns)
+{
     $columns['last_login'] = 'Last login';
     unset($columns['posts']);
     return $columns;
@@ -663,7 +680,8 @@ function add_last_login_column($columns) {
 add_filter('manage_users_columns', 'add_last_login_column');
 
 // Populate the last login column with user data
-function populate_last_login_column($value, $column_name, $user_id) {
+function populate_last_login_column($value, $column_name, $user_id)
+{
     if ($column_name == 'last_login') {
         $last_login = get_user_meta($user_id, 'last_login', true);
         if ($last_login) {
@@ -676,22 +694,24 @@ function populate_last_login_column($value, $column_name, $user_id) {
 }
 add_action('manage_users_custom_column', 'populate_last_login_column', 10, 3);
 
-function update_last_login($user_login, $user) {
+function update_last_login($user_login, $user)
+{
     $current_time = current_time('timestamp');
     update_user_meta($user->ID, 'last_login', $current_time);
 }
 add_action('wp_login', 'update_last_login', 10, 2);
 
 // Add a JavaScript code to trigger the welcome student function
-add_action( 'admin_footer', 'add_welcome_student_js' );
-function add_welcome_student_js() {
+add_action('admin_footer', 'add_welcome_student_js');
+function add_welcome_student_js()
+{
     ?>
     <script>
         function welcomeStudent(userId) {
             jQuery.post(ajaxurl, {
                 'action': 'welcome_student',
                 'user_id': userId
-            }, function(response) {
+            }, function (response) {
                 // console.log(response);
             });
         }
@@ -700,18 +720,20 @@ function add_welcome_student_js() {
 }
 
 // Handle the AJAX request to trigger the welcome student function
-add_action( 'wp_ajax_welcome_student', 'welcome_student_ajax_handler' );
-function welcome_student_ajax_handler() {
+add_action('wp_ajax_welcome_student', 'welcome_student_ajax_handler');
+function welcome_student_ajax_handler()
+{
     $user_id = $_POST['user_id'];
-    $user = get_userdata( $user_id );
+    $user = get_userdata($user_id);
     welcome_students($user->user_email);
     wp_die();
 }
 
-function welcome_students($user_login) {
+function welcome_students($user_login)
+{
     // Get the student ID from the user data
     global $wpdb;
-    $table_students = $wpdb->prefix.'students';
+    $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user_login}'");
     if ($student) {
         $student_id = $student->id;
@@ -729,7 +751,8 @@ function welcome_students($user_login) {
     }
 }
 
-function admin_notice($message, $type = 'success') {
+function admin_notice($message, $type = 'success')
+{
     ?>
     <div class="notice notice-<?php echo $type; ?> is-dismissible">
         <p><?php echo $message; ?></p>
@@ -737,196 +760,201 @@ function admin_notice($message, $type = 'success') {
     <?php
 }
 
-function get_states_by_country() {
+function get_states_by_country()
+{
     $country_code = $_POST['country_code'];
     $wc_countries = new WC_Countries();
     $states = $wc_countries->get_states($country_code);
     echo json_encode($states);
     exit;
-  }
-  
-  add_action('wp_ajax_get_states_by_country', 'get_states_by_country');
-  add_action('wp_ajax_nopriv_get_states_by_country', 'get_states_by_country');
+}
 
-    add_action('create_invoice_instute_monthly', 'monthly_invoice_institute');
-    function monthly_invoice_institute() {
-        global $wpdb;
-        $table_institutes =  $wpdb->prefix.'institutes';
-        $table_institutes_payments =  $wpdb->prefix.'institutes_payments';
-        $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status = 1");
-        $first_day_prev_month = date('Y-m-01', strtotime('first day of previous month'));
-        foreach ($institutes as $key => $institute) {
-            $exist = $wpdb->get_row("SELECT * FROM {$table_institutes_payments} WHERE institute_id={$institute->id} AND month='{$first_day_prev_month}'");
-            if (!$exist) {
+add_action('wp_ajax_get_states_by_country', 'get_states_by_country');
+add_action('wp_ajax_nopriv_get_states_by_country', 'get_states_by_country');
 
-                $last_month_invoice = get_dates_search('last-month', null);
-                $invoice = get_invoices_institutes($last_month_invoice[0], $last_month_invoice[1], $institute->id);
+add_action('create_invoice_instute_monthly', 'monthly_invoice_institute');
+function monthly_invoice_institute()
+{
+    global $wpdb;
+    $table_institutes = $wpdb->prefix . 'institutes';
+    $table_institutes_payments = $wpdb->prefix . 'institutes_payments';
+    $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status = 1");
+    $first_day_prev_month = date('Y-m-01', strtotime('first day of previous month'));
+    foreach ($institutes as $key => $institute) {
+        $exist = $wpdb->get_row("SELECT * FROM {$table_institutes_payments} WHERE institute_id={$institute->id} AND month='{$first_day_prev_month}'");
+        if (!$exist) {
 
-                $wpdb->insert(
-                    $table_institutes_payments,
-                    array(
-                        'institute_id' => $institute->id,
-                        'total_orders' => sizeof($invoice['orders']),
-                        'amount' => $invoice['total'],
-                        'status_id' => $invoice['total'] > 0 ? 0 : 1,
-                        'month' => $first_day_prev_month,
-                        'created_at' => current_time('mysql'),
-                    )
-                );
-            }
+            $last_month_invoice = get_dates_search('last-month', null);
+            $invoice = get_invoices_institutes($last_month_invoice[0], $last_month_invoice[1], $institute->id);
+
+            $wpdb->insert(
+                $table_institutes_payments,
+                array(
+                    'institute_id' => $institute->id,
+                    'total_orders' => sizeof($invoice['orders']),
+                    'amount' => $invoice['total'],
+                    'status_id' => $invoice['total'] > 0 ? 0 : 1,
+                    'month' => $first_day_prev_month,
+                    'created_at' => current_time('mysql'),
+                )
+            );
         }
-        exit;
     }
+    exit;
+}
 
 
-    add_action('create_invoice_alliance_monthly', 'monthly_invoice_alliance');
-    function monthly_invoice_alliance() {
-        global $wpdb;
-        $table_alliances =  $wpdb->prefix.'alliances';
-        $table_alliances_payments =  $wpdb->prefix.'alliances_payments';
-        $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 1");
-        $first_day_prev_month = date('Y-m-01', strtotime('first day of previous month'));
-        foreach ($alliances as $key => $alliance) {
-            $exist = $wpdb->get_row("SELECT * FROM {$table_alliances_payments} WHERE alliance_id={$alliance->id} AND month='{$first_day_prev_month}'");
-            if (!$exist) {
+add_action('create_invoice_alliance_monthly', 'monthly_invoice_alliance');
+function monthly_invoice_alliance()
+{
+    global $wpdb;
+    $table_alliances = $wpdb->prefix . 'alliances';
+    $table_alliances_payments = $wpdb->prefix . 'alliances_payments';
+    $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 1");
+    $first_day_prev_month = date('Y-m-01', strtotime('first day of previous month'));
+    foreach ($alliances as $key => $alliance) {
+        $exist = $wpdb->get_row("SELECT * FROM {$table_alliances_payments} WHERE alliance_id={$alliance->id} AND month='{$first_day_prev_month}'");
+        if (!$exist) {
 
-                $last_month_invoice = get_dates_search('last-month', null);
-                $invoice = get_invoices_alliances($last_month_invoice[0], $last_month_invoice[1], $alliance->id);
+            $last_month_invoice = get_dates_search('last-month', null);
+            $invoice = get_invoices_alliances($last_month_invoice[0], $last_month_invoice[1], $alliance->id);
 
-                $wpdb->insert(
-                    $table_alliances_payments,
-                    array(
-                        'alliance_id' => $alliance->id,
-                        'total_orders' => sizeof($invoice['orders']),
-                        'amount' => $invoice['total'],
-                        'status_id' => $invoice['total'] > 0 ? 0 : 1,
-                        'month' => $first_day_prev_month,
-                        'created_at' => current_time('mysql'),
-                    )
-                );
-            }
+            $wpdb->insert(
+                $table_alliances_payments,
+                array(
+                    'alliance_id' => $alliance->id,
+                    'total_orders' => sizeof($invoice['orders']),
+                    'amount' => $invoice['total'],
+                    'status_id' => $invoice['total'] > 0 ? 0 : 1,
+                    'month' => $first_day_prev_month,
+                    'created_at' => current_time('mysql'),
+                )
+            );
         }
-        exit;
     }
+    exit;
+}
 
-    add_action('send_email_remember_documents_student', 'send_email_remember_documents_student');
-    function send_email_remember_documents_student() {
-        global $wpdb;
-        $table_students =  $wpdb->prefix.'students';
-        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE status_id = 1 AND moodle_student_id IS NULL ORDER BY id DESC");
-        foreach ($students as $key => $student) {
-            $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
-            $sender_email->trigger($student->email, 'Pending documents', 'From American Elite School, we want to remind you that you still have pending documents to upload to our platform. It is essential that you send them as soon as possible to ensure that your academic process continues smoothly. If you need assistance or have any questions about the required documents, please do not hesitate to contact us. We are here to help you with whatever you need.');
-        }
-        exit;
+add_action('send_email_remember_documents_student', 'send_email_remember_documents_student');
+function send_email_remember_documents_student()
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE status_id = 1 AND moodle_student_id IS NULL ORDER BY id DESC");
+    foreach ($students as $key => $student) {
+        $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
+        $sender_email->trigger($student->email, 'Pending documents', 'From American Elite School, we want to remind you that you still have pending documents to upload to our platform. It is essential that you send them as soon as possible to ensure that your academic process continues smoothly. If you need assistance or have any questions about the required documents, please do not hesitate to contact us. We are here to help you with whatever you need.');
     }
+    exit;
+}
 
-    add_action('cuote_pendings_daily', 'daily_cuote_pendings');
-    function daily_cuote_pendings() {
-        global $wpdb;
-        $table_students = $wpdb->prefix . 'students';
-        $table_student_payments = $wpdb->prefix . 'student_payments';
-        
-        $payments = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM {$table_student_payments} 
+add_action('cuote_pendings_daily', 'daily_cuote_pendings');
+function daily_cuote_pendings()
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+
+    $payments = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM {$table_student_payments} 
                  WHERE status_id = %d 
                  AND date_next_payment BETWEEN %s AND %s",
-                0,
-                date('Y-m-d'),
-                date('Y-m-d', strtotime('+7 days'))
-            )
-        );
+            0,
+            date('Y-m-d'),
+            date('Y-m-d', strtotime('+7 days'))
+        )
+    );
 
-        foreach ($payments as $payment) {
-            // validamos si tiene cuotas pendientes
-            global $wpdb;
-            $pre_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id='{$payment->student_id}'");
-            $user = get_user_by('email', $pre_student->email);
+    foreach ($payments as $payment) {
+        // validamos si tiene cuotas pendientes
+        global $wpdb;
+        $pre_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id='{$payment->student_id}'");
+        $user = get_user_by('email', $pre_student->email);
 
-            $roles = $user->roles;
-            $table_students = $wpdb->prefix . 'students';
-            $table_student_payments = $wpdb->prefix . 'student_payments';
-            $customer_id = 0;
-            if (in_array('student', $roles)) {
-                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user->user_email}'");
+        $roles = $user->roles;
+        $table_students = $wpdb->prefix . 'students';
+        $table_student_payments = $wpdb->prefix . 'student_payments';
+        $customer_id = 0;
+        if (in_array('student', $roles)) {
+            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user->user_email}'");
 
-                $birth_date = get_user_meta($user->ID, 'birth_date', true);
-                $birth_date_timestamp = strtotime($birth_date);
-                $current_timestamp = time();
-                $age = floor(($current_timestamp - $birth_date_timestamp) / 31536000); // 31536000 es el número de segundos en un año
-                if ($age >= 18) {
-                    $customer_id = $user->ID;
-                } else {
-                    $customer_id = $student->partner_id;
-                }
-            } else if (in_array('parent', $roles)) {
-                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$user->ID}'");
+            $birth_date = get_user_meta($user->ID, 'birth_date', true);
+            $birth_date_timestamp = strtotime($birth_date);
+            $current_timestamp = time();
+            $age = floor(($current_timestamp - $birth_date_timestamp) / 31536000); // 31536000 es el número de segundos en un año
+            if ($age >= 18) {
                 $customer_id = $user->ID;
+            } else {
+                $customer_id = $student->partner_id;
             }
+        } else if (in_array('parent', $roles)) {
+            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$user->ID}'");
+            $customer_id = $user->ID;
+        }
 
-            if ($student) {
-                $cuote_pending = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
-                if ($cuote_pending) {
-                    update_user_meta($customer_id, 'cuote_pending', 1);
+        if ($student) {
+            $cuote_pending = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
+            if ($cuote_pending) {
+                update_user_meta($customer_id, 'cuote_pending', 1);
 
-                    $args['customer_id'] = $customer_id;
-                    $args['status'] = array('wc-pending', 'wc-on-hold');
-                    $order_pendings = wc_get_orders($args);
-                    if (count($order_pendings) == 0) {
-                        $orders_customer = wc_get_orders(array(
-                            'customer_id' => $customer_id,
-                            'limit' => 1,
-                            'orderby' => 'date',
-                            'order' => 'ASC' // Para obtener la primera orden
-                        ));
-                        $order_old = $orders_customer[0];                
-                        $order_id = $order_old->get_id();
-                        $old_order_items = $order_old->get_items();
-                        $first_item = reset($old_order_items);
+                $args['customer_id'] = $customer_id;
+                $args['status'] = array('wc-pending', 'wc-on-hold');
+                $order_pendings = wc_get_orders($args);
+                if (count($order_pendings) == 0) {
+                    $orders_customer = wc_get_orders(array(
+                        'customer_id' => $customer_id,
+                        'limit' => 1,
+                        'orderby' => 'date',
+                        'order' => 'ASC' // Para obtener la primera orden
+                    ));
+                    $order_old = $orders_customer[0];
+                    $order_id = $order_old->get_id();
+                    $old_order_items = $order_old->get_items();
+                    $first_item = reset($old_order_items);
 
-                        $order_args = array(
-                            'customer_id' => $customer_id,
-                            'status' => 'pending-payment',
-                        );
-                        
-                        $new_order = wc_create_order($order_args);
-                        $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
-                        $new_order->add_meta_data('old_order_primary', $order_id);
-                        $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
-                        $new_order->add_meta_data('is_vat_exempt', $order_old->get_meta('is_vat_exempt'));
-                        $new_order->add_meta_data('pending_payment', $order_old->get_meta('pending_payment'));
-                        $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
-                        $product = $first_item->get_product();
-                        $product->set_price($cuote_pending->amount);
-                        $new_order->add_product($product, $first_item->get_quantity());
-                        $new_order->calculate_totals();
-                        if ($order_old->get_address('billing')) {
-                            $billing_address = $order_old->get_address('billing');
-                            $new_order->set_billing_first_name($billing_address['first_name']);
-                            $new_order->set_billing_last_name($billing_address['last_name']);
-                            $new_order->set_billing_company($billing_address['company']);
-                            $new_order->set_billing_address_1($billing_address['address_1']);
-                            $new_order->set_billing_address_2($billing_address['address_2']);
-                            $new_order->set_billing_city($billing_address['city']);
-                            $new_order->set_billing_state($billing_address['state']);
-                            $new_order->set_billing_postcode($billing_address['postcode']);
-                            $new_order->set_billing_country($billing_address['country']);
-                            $new_order->set_billing_email($billing_address['email']);
-                            $new_order->set_billing_phone($billing_address['phone']);
-                        }
-                        $new_order->save();
+                    $order_args = array(
+                        'customer_id' => $customer_id,
+                        'status' => 'pending-payment',
+                    );
 
-                        // hacemos el envio del email al email del customer, es decir, al que paga.
-                        $user_customer = get_user_by('id', $customer_id);
-                        $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
-                        $email_user->trigger($user_customer, 'You have pending payments', 'We invite you to log in to our platform as soon as possible so you can see your pending payments.');
+                    $new_order = wc_create_order($order_args);
+                    $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
+                    $new_order->add_meta_data('old_order_primary', $order_id);
+                    $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
+                    $new_order->add_meta_data('is_vat_exempt', $order_old->get_meta('is_vat_exempt'));
+                    $new_order->add_meta_data('pending_payment', $order_old->get_meta('pending_payment'));
+                    $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
+                    $product = $first_item->get_product();
+                    $product->set_price($cuote_pending->amount);
+                    $new_order->add_product($product, $first_item->get_quantity());
+                    $new_order->calculate_totals();
+                    if ($order_old->get_address('billing')) {
+                        $billing_address = $order_old->get_address('billing');
+                        $new_order->set_billing_first_name($billing_address['first_name']);
+                        $new_order->set_billing_last_name($billing_address['last_name']);
+                        $new_order->set_billing_company($billing_address['company']);
+                        $new_order->set_billing_address_1($billing_address['address_1']);
+                        $new_order->set_billing_address_2($billing_address['address_2']);
+                        $new_order->set_billing_city($billing_address['city']);
+                        $new_order->set_billing_state($billing_address['state']);
+                        $new_order->set_billing_postcode($billing_address['postcode']);
+                        $new_order->set_billing_country($billing_address['country']);
+                        $new_order->set_billing_email($billing_address['email']);
+                        $new_order->set_billing_phone($billing_address['phone']);
                     }
-                } else {
-                    update_user_meta($customer_id, 'cuote_pending', 0);
+                    $new_order->save();
+
+                    // hacemos el envio del email al email del customer, es decir, al que paga.
+                    $user_customer = get_user_by('id', $customer_id);
+                    $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                    $email_user->trigger($user_customer, 'You have pending payments', 'We invite you to log in to our platform as soon as possible so you can see your pending payments.');
                 }
+            } else {
+                update_user_meta($customer_id, 'cuote_pending', 0);
             }
         }
-    
-        exit;
     }
+
+    exit;
+}

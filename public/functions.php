@@ -1658,8 +1658,8 @@ function student_continue_callback()
     $roles = $current_user->roles;
     $elective = $_POST['elective'];
     $table_students = $wpdb->prefix . 'students';
-    $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
-    $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
@@ -1677,21 +1677,21 @@ function student_continue_callback()
     $projection_obj = json_decode($projection->projection);
 
     array_push($projection_obj, [
-        'code_subject' => $subject->code_subject, 
-        'subject_id' => $subject->id, 
-        'subject' => $subject->name, 
-        'hc' => $subject->hc, 
-        'cut' => "C", 
-        'code_period' => "20242025", 
-        'calification' => "", 
-        'is_completed' => true, 
+        'code_subject' => $subject->code_subject,
+        'subject_id' => $subject->id,
+        'subject' => $subject->name,
+        'hc' => $subject->hc,
+        'cut' => "C",
+        'code_period' => "20242025",
+        'calification' => "",
+        'is_completed' => true,
         'this_cut' => true
     ]);
 
     $wpdb->update($table_student_academic_projection, [
         'projection' => json_encode($projection_obj),
     ], ['id' => $projection->id]);
-    
+
     $wpdb->update($table_students, [
         'elective' => 0,
     ], ['id' => $student_id]);
@@ -1927,7 +1927,7 @@ function verificar_contraseña()
                         if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                             add_action('wp_footer', 'modal_enrollment_student');
                         }
-        
+
                         if ($document_was_created && (isset($user_enrollment_signature) && !isset($user_missing_signature) && !$pending_payments) && in_array('student', $roles, true)) {
                             // add_action('wp_footer', 'modal_missing_student');
                         }
@@ -2283,7 +2283,7 @@ function loadFeesSplit()
                 $discount = $cart->get_cart_discount_total();
                 $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
                 $fee = $stripe_fee_amount;
-        
+
                 // Solo agregar fee si es mayor que 0
                 if ($stripe_fee_amount > 0) {
                     $cart->add_fee('Credit card fee', $stripe_fee_amount);
@@ -2293,7 +2293,7 @@ function loadFeesSplit()
                 $cart_subtotal = (float) $order->get_meta('pending_payment');
                 $stripe_fee_amount = ($cart_subtotal / 100) * $stripe_fee_percentage;
                 $fee = $stripe_fee_amount;
-        
+
                 // Solo agregar fee si es mayor que 0
                 if ($stripe_fee_amount > 0) {
                     // $order->add_fee('Credit card fee', $stripe_fee_amount);
@@ -2335,12 +2335,8 @@ function users_notifications()
 
 add_shortcode('users_notifications', 'users_notifications');
 
-// function other_endpoint_callback()
-// {
-//     return true;
-// }
-
-function clear_all_cookies($force = false) {
+function clear_all_cookies($force = false)
+{
     foreach ($_COOKIE as $cookie_name => $cookie_value) {
         if ($force) {
             setcookie($cookie_name, '', time() - 3600, '/');
@@ -2352,7 +2348,8 @@ function clear_all_cookies($force = false) {
     }
 }
 
-function custom_new_user_notification($send, $user) {
+function custom_new_user_notification($send, $user)
+{
     $password = wp_generate_password(12);
     $user_student = get_user_by('email', $user->user_email);
     wp_set_password($password, $user_student->ID);
