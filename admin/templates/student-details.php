@@ -451,7 +451,7 @@ $grades = get_grades();
             <thead>
                 <tr>
                     <th scope="col" style="text-align: center" class="manage-column column-primary column-title"><?= __('Fee registration', 'aes') ?></th>
-                    <th scope="col" style="text-align: center" class="manage-column column-title-translate"><?= __('Product payment', 'aes') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-title-translate"><?= __('Program payment', 'aes') ?></th>
                     <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Fee graduation', 'aes') ?></th>
                 </tr>
             </thead>
@@ -462,7 +462,7 @@ $grades = get_grades();
                             <?= isset($fee_payment_ready) && $fee_payment_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
                         </b>
                     </td>
-                    <td style="text-align: center" id="<?= 'td_payment_product'; ?>" data-colname="<?= __('Product payment', 'aes'); ?>">
+                    <td style="text-align: center" id="<?= 'td_payment_product'; ?>" data-colname="<?= __('Program payment', 'aes'); ?>">
                         <b>
                             <?= isset($product_ready) && $product_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
                         </b>
