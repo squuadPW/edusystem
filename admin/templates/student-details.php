@@ -442,7 +442,7 @@ $grades = get_grades();
             </tbody>
         </table>
     <?php endif; ?>
-    <?php if (in_array('administrator', haystack: $roles)): ?>
+    <?php if (in_array('administrator', haystack: $roles) || in_array('admision', haystack: $roles)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Payments', 'aes'); ?></h2>
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">
             <p><?= __('Status change successfully', 'aes'); ?></p>
@@ -450,39 +450,29 @@ $grades = get_grades();
         <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
             <thead>
                 <tr>
-                    <th scope="col" class="manage-column column-primary column-title"><?= __('Payment ID', 'aes') ?></th>
-                    <th scope="col" class="manage-column column-title-translate"><?= __('Product ID', 'aes') ?></th>
-                    <th scope="col" class="manage-column column-price"><?= __('Amount', 'aes') ?></th>
-                    <th scope="col" class="manage-column column-price"><?= __('Status', 'aes') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-primary column-title"><?= __('Fee registration', 'aes') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-title-translate"><?= __('Product payment', 'aes') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Fee graduation', 'aes') ?></th>
                 </tr>
             </thead>
             <tbody id="table-documents">
-                <?php if (!empty($payments)): ?>
-                    <?php foreach ($payments as $payment): ?>
-                        <tr id="<?= 'tr_payment_' . $payment->id; ?>">
-                            <td id="<?= 'td_payment_' . $payment->payment_id . '_payment_id'; ?>" data-colname="<?= __('Payment ID', 'aes'); ?>">
-                                <b>
-                                    <?= $payment->id; ?>
-                                </b>
-                            </td>
-                            <td id="<?= 'td_payment_' . $payment->payment_id . '_product_id'; ?>" data-colname="<?= __('Product ID', 'aes'); ?>">
-                                <b>
-                                    <?= $payment->product_id; ?>
-                                </b>
-                            </td>
-                            <td id="<?= 'td_payment_' . $payment->payment_id . '_amount'; ?>" data-colname="<?= __('Amount', 'aes'); ?>">
-                                <b>
-                                    <?= $payment->amount ?>
-                                </b>
-                            </td>
-                            <td id="<?= 'td_payment_' . $payment->payment_id . '_status'; ?>" data-colname="<?= __('Status', 'aes'); ?>">
-                                <b>
-                                    <?= $payment->status_id == 1 ? 'COMPLETE' : 'PENDING' ?>
-                                </b>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                <tr id="<?= 'tr_payment_'; ?>">
+                    <td style="text-align: center" id="<?= 'td_payment_fee'; ?>" data-colname="<?= __('Fee registration', 'aes'); ?>">
+                        <b>
+                            <?= isset($fee_payment_ready) && $fee_payment_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
+                        </b>
+                    </td>
+                    <td style="text-align: center" id="<?= 'td_payment_product'; ?>" data-colname="<?= __('Product payment', 'aes'); ?>">
+                        <b>
+                            <?= isset($product_ready) && $product_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
+                        </b>
+                    </td>
+                    <td style="text-align: center" id="<?= 'td_payment_graduation'; ?>" data-colname="<?= __('Fee graduation', 'aes'); ?>">
+                        <b>
+                            <?= isset($fee_graduation_ready) && $fee_graduation_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
+                        </b>
+                    </td>
+                </tr>
             </tbody>
         </table>
     <?php endif; ?>

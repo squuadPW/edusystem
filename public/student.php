@@ -607,14 +607,18 @@ function get_documents($student_id)
     return $documents;
 }
 
-function get_payments($student_id)
+function get_payments($student_id, $product_id = false)
 {
-
     global $wpdb;
     $table_student_payments = $wpdb->prefix . 'student_payments';
 
-    $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student_id}");
-    return $payments;
+    if($product_id) {
+        $payments = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id={$student_id} AND product_id={$product_id}");
+        return $payments;
+    } else {
+        $payments = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id={$student_id} AND NOT product_id = 63");
+        return $payments;
+    }
 }
 
 function get_name_grade($grade_id)

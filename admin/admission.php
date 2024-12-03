@@ -289,7 +289,9 @@ function add_admin_form_admission_content()
     
                 $roles = $current_user->roles;
                 $documents = get_documents($_GET['student_id']);
-                $payments = get_payments($_GET['student_id']);
+                $fee_payment_ready = get_payments($_GET['student_id'], 63);
+                $product_ready = get_payments($_GET['student_id']);
+                $fee_graduation_ready = false;
                 $student = get_student_detail($_GET['student_id']);
                 $countries = get_countries();
                 $partner = get_userdata($student->partner_id);
