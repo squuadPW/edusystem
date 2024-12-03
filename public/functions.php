@@ -2360,7 +2360,7 @@ function custom_new_user_notification($send, $user) {
     $content .= '<li><strong>Email</strong>: ' . $user->user_email . '</li>';
     $content .= '<li><strong>Password</strong>: ' . $password . '</li>';
     $content .= '</ul>';
-    $content .= '<div style="border: 0; background: none; border-color: #43454b; cursor: pointer; text-decoration: none; font-weight: 600; text-shadow: none; display: inline-block; -webkit-appearance: none; padding: 5px 20px !important; text-align: center; background-color: #091c5c !important; border-radius: 20px; color: white !important; font-size: 18px;"> <a href="https://online.american-elite.us/my-account" target="_blank"><button>My Account</button></a> </div><br>';
+    $content .= '<div style="text-align: center"> <a href="https://online.american-elite.us/my-account" target="_blank"><button style="style="border: 0; background: none; border-color: #43454b; cursor: pointer; text-decoration: none; font-weight: 600; text-shadow: none; display: inline-block; -webkit-appearance: none; padding: 5px 20px !important; text-align: center; background-color: #091c5c !important; border-radius: 20px; color: white !important; font-size: 18px;"">My Account</button></a> </div><br>';
     $content .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
     $content .= '<ul>';
     $content .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
