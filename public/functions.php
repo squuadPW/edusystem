@@ -1933,9 +1933,7 @@ function verificar_contraseña()
                     } else {
                         if ($document_was_created && ((!isset($user_enrollment_signature) || !isset($user_enrollment_signature_other)) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                             add_action('wp_footer', 'modal_enrollment_student');
-                        }
-
-                        if ($document_was_created && (isset($user_enrollment_signature) && (!isset($user_missing_signature) || !isset($user_missing_signature_other)) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+                        } else if ($document_was_created && (isset($user_enrollment_signature) && (!isset($user_missing_signature) || !isset($user_missing_signature_other)) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                             add_action('wp_footer', 'modal_missing_student');
                         }
                     }
