@@ -28,7 +28,7 @@
                             style="background-color: #091c5c; color: white; padding: 4px; text-align: center; font-weight: 600;">
                             STUDENT PERSONAL INFORMATION</h4> -->
 
-                        <div style="font-size: 16px">
+                        <div style="font-size: 15px">
                             <div style="margin-bottom: 20px;">
                                 This document serves as a commitment on behalf of <?= strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) ?>, <?= strtoupper($student->name) . ' ' . strtoupper($student->middle_name) ?>, to
                                 submit, within

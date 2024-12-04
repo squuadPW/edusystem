@@ -96,6 +96,29 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <?php } ?>
                                 </td>
                             </tr>
+                        <?php } else if($document->status != 0) { ?>
+                            <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
+                                <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
+                                    data-title="<?= __('Document', 'aes'); ?>">
+                                    <input type="hidden" name="<?= 'file_student_' . $student->id . '_id[]'; ?>"
+                                        value="<?= $document->id; ?>">
+                                    <?php $name = get_name_document($document->document_id); ?>
+                                    <?php if ($name == 'PHOTO OF STUDENT CARD') {
+                                        $name = 'PHOTO OF STUDENT';
+                                    }?>
+
+                                    <strong><?= $name; ?> AGREEMENT</strong>
+                                </td>
+                                <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
+                                    data-title="<?= __('Status', 'aes'); ?>">
+                                    <?= $status = get_status_document($document->status); ?>
+                                </td>
+                                <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
+                                    data-title="<?= __('Action', 'aes'); ?>">
+                                    <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" type="button"
+                                    class="button">View Document</a>
+                                </td>
+                            </tr>
                         <?php } ?>
                     <?php endforeach; ?>
                 </tbody>
