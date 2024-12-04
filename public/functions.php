@@ -656,7 +656,7 @@ function add_loginout_link($items, $args)
 
         $birthday = get_user_meta($current_user->ID, 'birth_date', true);
         $age = floor((time() - strtotime($birthday)) / 31556926);
-        if ($age > 18) {
+        if ($age >= 18) {
             $items .= '<li><a href="' . home_url() . '">' . __('New applicant', 'form-plugin') . '</a></li>';
         }
 
@@ -1913,23 +1913,30 @@ function verificar_contraseña()
                     if (!$student->set_password) {
                         $set_password = true;
                     }
+
+                    $user_enrollment_signature_other = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$student->partner_id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+                    $user_missing_signature_other = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$student->partner_id} and document_id = 'MISSING DOCUMENT' ORDER BY id DESC");
                 } else if (in_array('parent', $roles)) {
                     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
                     $pending_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
                     $document_was_created = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id} and document_id = 'ENROLLMENT' ORDER BY id DESC");
                     $user_take_elective = $student->elective;
+
+                    $user_student = get_user_by('email', $student->email);
+                    $user_enrollment_signature_other = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$user_student->ID} and document_id = 'ENROLLMENT' ORDER BY id DESC");
+                    $user_missing_signature_other = $wpdb->get_row("SELECT * FROM {$table_user_signatures} WHERE user_id={$user_student->ID} and document_id = 'MISSING DOCUMENT' ORDER BY id DESC");
                 }
 
                 if (!$set_password) {
                     if ($user_take_elective == 1) {
                         add_action('wp_footer', 'modal_take_elective');
                     } else {
-                        if ($document_was_created && (!isset($user_enrollment_signature) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+                        if ($document_was_created && ((!isset($user_enrollment_signature) || !isset($user_enrollment_signature_other)) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
                             add_action('wp_footer', 'modal_enrollment_student');
                         }
 
-                        if ($document_was_created && (isset($user_enrollment_signature) && !isset($user_missing_signature) && !$pending_payments) && in_array('student', $roles, true)) {
-                            // add_action('wp_footer', 'modal_missing_student');
+                        if ($document_was_created && (isset($user_enrollment_signature) && (!isset($user_missing_signature) || !isset($user_missing_signature_other)) && !$pending_payments) && (in_array('student', $roles, true) || in_array('parent', $roles, true))) {
+                            add_action('wp_footer', 'modal_missing_student');
                         }
                     }
                 } else {
@@ -1957,11 +1964,33 @@ function modal_missing_student()
     if (in_array('student', $roles)) {
         $table_students = $wpdb->prefix . 'students';
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+
+        $partner_id = $student->partner_id;
+        $student_id = $current_user->ID;
+
+        $birth_date = get_user_meta($current_user->ID, 'birth_date', true);
+        $birth_date_timestamp = strtotime($birth_date);
+        $current_timestamp = time();
+        $age = floor(($current_timestamp - $birth_date_timestamp) / 31536000); // 31536000 es el número de segundos en un año
+        if ($age >= 18) {
+            $show_parent_info = 0;
+        }
     } else if (in_array('parent', $roles)) {
         $table_students = $wpdb->prefix . 'students';
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+
+        $user_student = get_user_by('email', $student->email);
+        $student_id = $user_student->ID;
+        $partner_id = $current_user->ID;
     }
 
+    $user_partner = get_user_by('id', $student->partner_id);
+    $user = [
+        'student_full_name' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
+        'student_signature' => $student->name . ' ' . $student->last_name,
+        'parent_full_name' => get_user_meta($student->partner_id, 'first_name', true) . ' ' . get_user_meta($student->partner_id, 'last_name', true),
+        'today' => date('Y-m-d'),
+    ];
     $table_student_documents = $wpdb->prefix . 'student_documents';
     $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE attachment_id=0 AND is_visible=1 AND is_required = 0 AND student_id={$student->id}");
     $today = date('m-d-Y');
@@ -2142,7 +2171,7 @@ function create_enrollment_document_callback()
             'grade_selected' => $grade_selected
         );
 
-        $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_users_signatures} WHERE user_id = %d AND document_id = %d", $partner_user_id, $document_id));
+        $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_users_signatures} WHERE user_id = %d AND document_id = %s", $partner_user_id, $document_id));
         if (!$existing_row) {
             $wpdb->insert($table_users_signatures, $data);
         }

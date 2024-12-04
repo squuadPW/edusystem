@@ -451,6 +451,10 @@ function insert_student($customer_id)
         }
     }
 
+    $birth_date = date_i18n('Y-m-d', strtotime($_COOKIE['birth_date']));
+    $today = new DateTime();
+    $age = $today->diff(new DateTime($birth_date))->y;
+
     $wpdb->insert($table_students, [
         'name' => $_COOKIE['name_student'],
         'type_document' => $_COOKIE['document_type'],
@@ -471,7 +475,7 @@ function insert_student($customer_id)
         'phone' => $_COOKIE['phone_student'],
         'email' => $_COOKIE['email_student'],
         'status_id' => 0,
-        'set_password' => 0,
+        'set_password' => ($age >= 18 ? 1 : 0),
         'country' => $_POST['billing_country'],
         'city' => $_POST['billing_city'],
         'ethnicity' => $_COOKIE['ethnicity'],

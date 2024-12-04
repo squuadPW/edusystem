@@ -79,7 +79,7 @@ if (document.getElementById("signature-student")) {
     document.getElementById("signature-student").style.backgroundColor =
       "#ffff005c";
     if (!signaturePadStudent.isEmpty() && !signaturePadParent.isEmpty()) {
-      save_signatures.innerHTML = "Generate enrollment";
+      save_signatures.innerHTML = `Generate ${returnButtonTitle()}`;
     } else {
       save_signatures.innerHTML = "Save";
     }
@@ -95,7 +95,7 @@ if (document.getElementById("signature-student")) {
       document.getElementById("signature-student").style.backgroundColor =
         "#ffff005c";
       if (!signaturePadStudent.isEmpty() && !signaturePadParent.isEmpty()) {
-        save_signatures.innerHTML = "Generate enrollment";
+        save_signatures.innerHTML = `Generate ${returnButtonTitle()}`;
       } else {
         save_signatures.innerHTML = "Save";
       }
@@ -126,7 +126,7 @@ if (document.getElementById("signature-student")) {
       document.getElementById("signature-parent").style.backgroundColor =
         "#ffff005c";
       if (!signaturePadStudent.isEmpty() && !signaturePadParent.isEmpty()) {
-        save_signatures.innerHTML = "Generate enrollment";
+        save_signatures.innerHTML = `Generate ${returnButtonTitle()}`;
       } else {
         save_signatures.innerHTML = "Save";
       }
@@ -142,7 +142,7 @@ if (document.getElementById("signature-student")) {
         document.getElementById("signature-parent").style.backgroundColor =
           "#ffff005c";
         if (!signaturePadStudent.isEmpty() && !signaturePadParent.isEmpty()) {
-          save_signatures.innerHTML = "Generate enrollment";
+          save_signatures.innerHTML = `Generate ${returnButtonTitle()}`;
         } else {
           save_signatures.innerHTML = "Save";
         }
@@ -164,7 +164,7 @@ if (document.getElementById("signature-student")) {
         signaturePadParent &&
         !signaturePadParent.isEmpty()
       ) {
-        save_signatures.innerHTML = "Generate enrollment";
+        save_signatures.innerHTML = `Generate ${returnButtonTitle()}`;
       } else {
         save_signatures.innerHTML = "Save";
       }
@@ -194,7 +194,7 @@ if (document.getElementById("signature-student")) {
         !signaturePadParent.isEmpty()) ||
         show_parent_info == 0)
     ) {
-      save_signatures.innerHTML = "Generate enrollment";
+      save_signatures.innerHTML = `Generate ${returnButtonTitle()}`;
     } else {
       save_signatures.innerHTML = "Save";
     }
@@ -245,68 +245,50 @@ if (document.getElementById("signature-student")) {
       return;
     }
 
-    if (document_id != "MISSING DOCUMENT") {
-      if (show_parent_info == 0) {
-        if (auto_signature_student == 1) {
-          generateDocEnrollment();
-        } else if (signaturePadStudent.isEmpty()) {
-          save_signatures.disabled = false;
-          alert(
-            "To proceed with your enrollment, please sign in the student area or generate the signature automatically"
-          );
-          return;
-        } else {
-          generateDocEnrollment();
-        }
-      } else {
-        if (auto_signature_student == 1 && auto_signature_parent == 1) {
-          generateDocEnrollment();
-          return;
-        }
-
-        if (auto_signature_student == 1) {
-          if (signaturePadParent.isEmpty()) {
-            generateDocEnrollmentSend();
-          } else {
-            generateDocEnrollment();
-          }
-          return;
-        }
-
-        if (auto_signature_parent == 1) {
-          if (signaturePadStudent.isEmpty()) {
-            generateDocEnrollmentSend();
-          } else {
-            generateDocEnrollment();
-          }
-          return;
-        }
-
-        if (!signaturePadParent.isEmpty() && !signaturePadStudent.isEmpty()) {
-          generateDocEnrollment();
-          return;
-        } else if (
-          !signaturePadParent.isEmpty() ||
-          !signaturePadStudent.isEmpty()
-        ) {
-          generateDocEnrollmentSend();
-        } else {
-          save_signatures.disabled = false;
-          alert(
-            "To continue with your registration, please sign or generate signatures automatically"
-          );
-          return;
-        }
-      }
-    } else {
+    if (show_parent_info == 0) {
       if (auto_signature_student == 1) {
         generateDocEnrollment();
+      } else if (signaturePadStudent.isEmpty()) {
+        save_signatures.disabled = false;
+        alert(
+          "To proceed with your enrollment, please sign in the student area or generate the signature automatically"
+        );
+        return;
+      } else {
+        generateDocEnrollment();
+      }
+    } else {
+      if (auto_signature_student == 1 && auto_signature_parent == 1) {
+        generateDocEnrollment();
         return;
       }
 
-      if (!signaturePadStudent.isEmpty()) {
+      if (auto_signature_student == 1) {
+        if (signaturePadParent.isEmpty()) {
+          generateDocEnrollmentSend();
+        } else {
+          generateDocEnrollment();
+        }
+        return;
+      }
+
+      if (auto_signature_parent == 1) {
+        if (signaturePadStudent.isEmpty()) {
+          generateDocEnrollmentSend();
+        } else {
+          generateDocEnrollment();
+        }
+        return;
+      }
+
+      if (!signaturePadParent.isEmpty() && !signaturePadStudent.isEmpty()) {
         generateDocEnrollment();
         return;
+      } else if (
+        !signaturePadParent.isEmpty() ||
+        !signaturePadStudent.isEmpty()
+      ) {
+        generateDocEnrollmentSend();
       } else {
         save_signatures.disabled = false;
         alert(
@@ -500,12 +482,26 @@ function loadSignatures() {
           document.getElementById("clear-parent").style.display = "none";
           document.getElementById("generate-signature-parent").style.display =
             "none";
+
+          sign_here_parent.style.display = "none";
+          document.getElementById("signature-parent").style.border = "none";
+          document.getElementById("signature-parent").style.borderBottom =
+            "1px solid gray";
+          document.getElementById("signature-parent").style.backgroundColor =
+            "#fff";
         } else {
           signaturePadParent.fromData(parent_signature);
           signaturePadParent.off();
           document.getElementById("clear-parent").style.display = "none";
           document.getElementById("generate-signature-parent").style.display =
             "none";
+
+          sign_here_parent.style.display = "none";
+          document.getElementById("signature-parent").style.border = "none";
+          document.getElementById("signature-parent").style.borderBottom =
+            "1px solid gray";
+          document.getElementById("signature-parent").style.backgroundColor =
+            "#fff";
         }
       }
 
@@ -522,12 +518,26 @@ function loadSignatures() {
           document.getElementById("clear-student").style.display = "none";
           document.getElementById("generate-signature-student").style.display =
             "none";
+
+          sign_here_student.style.display = "none";
+          document.getElementById("signature-student").style.border = "none";
+          document.getElementById("signature-student").style.borderBottom =
+            "1px solid gray";
+          document.getElementById("signature-student").style.backgroundColor =
+            "#fff";
         } else {
           signaturePadStudent.fromData(student_signature);
           signaturePadStudent.off();
           document.getElementById("clear-student").style.display = "none";
           document.getElementById("generate-signature-student").style.display =
             "none";
+
+          sign_here_student.style.display = "none";
+          document.getElementById("signature-student").style.border = "none";
+          document.getElementById("signature-student").style.borderBottom =
+            "1px solid gray";
+          document.getElementById("signature-student").style.backgroundColor =
+            "#fff";
         }
       }
 
@@ -553,5 +563,19 @@ function autoSignature(hide, show, button_hide, clear_hide = null) {
 
   if (clear_hide) {
     document.getElementById(clear_hide).style.display = "none";
+  }
+}
+
+function returnButtonTitle() {
+
+  let document_id = "ENROLLMENT";
+  if (document.querySelector("input[name=document_id]")) {
+    document_id = document.querySelector("input[name=document_id]").value;
+  }
+
+  if (document_id == 'ENROLLMENT') {
+    return 'enrollment';
+  } else {
+    return 'missing document';
   }
 }
