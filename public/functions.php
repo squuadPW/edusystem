@@ -151,7 +151,7 @@ function use_previous_form_aes_callback()
         wp_send_json_success(array('redirect' => $url));
         exit;
     } else {
-        clear_all_cookies(true);
+        clear_all_cookies();
         wp_send_json_success(array('success' => true));
         exit;
     }

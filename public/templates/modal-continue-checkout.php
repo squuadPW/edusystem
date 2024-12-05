@@ -1,4 +1,4 @@
-<div id="modal-continue-checkout" class="modal" style="display: block">
+<div id="modal-continue-checkout" class="modal" style="display: block; z-index: 10000">
     <div class="modal-content" style="overflow: auto; padding: 0 !important">
     <div class="modal-header p-5">
         <h3 style="font-weight: 600">Previous form</h3>
