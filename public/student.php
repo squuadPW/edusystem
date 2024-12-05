@@ -455,33 +455,36 @@ function insert_student($customer_id)
     $today = new DateTime();
     $age = $today->diff(new DateTime($birth_date))->y;
 
-    $wpdb->insert($table_students, [
-        'name' => $_COOKIE['name_student'],
-        'type_document' => $_COOKIE['document_type'],
-        'id_document' => $_COOKIE['id_document'],
-        'academic_period' => $code,
-        'initial_cut' => $cut,
-        'middle_name' => $_COOKIE['middle_name_student'],
-        'last_name' => $_COOKIE['last_name_student'],
-        'middle_last_name' => $_COOKIE['middle_last_name_student'],
-        'birth_date' => date_i18n('Y-m-d', strtotime($_COOKIE['birth_date'])),
-        'grade_id' => $_COOKIE['initial_grade'],
-        'name_institute' => strtoupper($_COOKIE['name_institute']),
-        'institute_id' => $_COOKIE['institute_id'],
-        'postal_code' => $_POST['billing_postcode'],
-        'gender' => $_COOKIE['gender'],
-        'program_id' => $_COOKIE['program_id'],
-        'partner_id' => $customer_id,
-        'phone' => $_COOKIE['phone_student'],
-        'email' => $_COOKIE['email_student'],
-        'status_id' => 0,
-        'set_password' => ($age >= 18 ? 1 : 0),
-        'country' => $_POST['billing_country'],
-        'city' => $_POST['billing_city'],
-        'ethnicity' => $_COOKIE['ethnicity'],
-        'created_at' => date('Y-m-d H:i:s'),
-        'updated_at' => date('Y-m-d H:i:s')
-    ]);
+    $exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '{$_COOKIE['email_student']}'");
+    if(!$exist) {
+        $wpdb->insert($table_students, [
+            'name' => $_COOKIE['name_student'],
+            'type_document' => $_COOKIE['document_type'],
+            'id_document' => $_COOKIE['id_document'],
+            'academic_period' => $code,
+            'initial_cut' => $cut,
+            'middle_name' => $_COOKIE['middle_name_student'],
+            'last_name' => $_COOKIE['last_name_student'],
+            'middle_last_name' => $_COOKIE['middle_last_name_student'],
+            'birth_date' => date_i18n('Y-m-d', strtotime($_COOKIE['birth_date'])),
+            'grade_id' => $_COOKIE['initial_grade'],
+            'name_institute' => strtoupper($_COOKIE['name_institute']),
+            'institute_id' => $_COOKIE['institute_id'],
+            'postal_code' => $_POST['billing_postcode'],
+            'gender' => $_COOKIE['gender'],
+            'program_id' => $_COOKIE['program_id'],
+            'partner_id' => $customer_id,
+            'phone' => $_COOKIE['phone_student'],
+            'email' => $_COOKIE['email_student'],
+            'status_id' => 0,
+            'set_password' => ($age >= 18 ? 1 : 0),
+            'country' => $_POST['billing_country'],
+            'city' => $_POST['billing_city'],
+            'ethnicity' => $_COOKIE['ethnicity'],
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+    }
 
     $student_id = $wpdb->insert_id;
     return $student_id;
@@ -544,15 +547,17 @@ function insert_register_documents($student_id, $grade_id)
     if ($documents) {
 
         foreach ($documents as $document) {
-
-            $wpdb->insert($table_student_documents, [
-                'student_id' => $student_id,
-                'document_id' => $document->name,
-                'is_required' => $document->is_required,
-                'is_visible' => $document->is_visible,
-                'status' => 0,
-                'created_at' => date('Y-m-d H:i:s')
-            ]);
+            $exist = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id = {$student_id} AND document_id = '{$document->name}'");
+            if (!$exist) {
+                $wpdb->insert($table_student_documents, [
+                    'student_id' => $student_id,
+                    'document_id' => $document->name,
+                    'is_required' => $document->is_required,
+                    'is_visible' => $document->is_visible,
+                    'status' => 0,
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+            }
         }
     }
 }
@@ -593,12 +598,15 @@ function insert_period_inscriptions($student_id)
 
     $courses = [1];
     foreach ($courses as $key => $course) {
-        $wpdb->insert($table_student_period_inscriptions, [
-            'student_id' => $student_id,
-            'code_period' => $code,
-            'cut_period' => $cut,
-            'status_id' => 1,
-        ]);
+        $exist = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student_id} AND code = {$code} AND cut = {$cut} ");
+        if (!$exist) {
+            $wpdb->insert($table_student_period_inscriptions, [
+                'student_id' => $student_id,
+                'code_period' => $code,
+                'cut_period' => $cut,
+                'status_id' => 1,
+            ]);
+        }
     }
 }
 

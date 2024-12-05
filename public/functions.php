@@ -316,7 +316,7 @@ function woocommerce_checkout_order_created_action($order)
         send_notification_staff_particular('New payment received for approval', 'Please be informed that we have received a new student that your payment must be manually approved, please login to the platform to confirm.', 3);
     }
 
-    clear_all_cookies();
+    // clear_all_cookies();
 }
 
 add_action('woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action');
@@ -686,6 +686,10 @@ function status_changed_payment($order_id, $old_status, $new_status)
     $order = wc_get_order($order_id);
     $customer_id = $order->get_customer_id();
     $status_register = get_user_meta($customer_id, 'status_register', true);
+
+    if ($order->get_status() != 'failed' && $order->get_status() != 'pending' ) {
+        clear_all_cookies();
+    }
 
     if ($order->get_status() == 'completed') {
         status_order_completed($order, $order_id, $customer_id, $status_register);
