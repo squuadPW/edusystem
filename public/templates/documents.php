@@ -96,7 +96,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <?php } ?>
                                 </td>
                             </tr>
-                        <?php } else if($document->status != 0) { ?>
+                        <?php } else if($document->status != 0 && $document->status != 3) { ?>
                             <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                     data-title="<?= __('Document', 'aes'); ?>">
