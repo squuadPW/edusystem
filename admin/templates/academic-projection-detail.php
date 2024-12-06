@@ -139,7 +139,7 @@
                                                     <?php echo $inscription->code_period . ' - ' . $inscription->cut_period; ?>
                                                 </td>
                                                 <td style="text-align: end">
-                                                    <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=delete_inscription&inscription_id=' . $inscription->id . '&projection_id=' . $projection->id); ?>" class="button button-danger"> <span class='dashicons dashicons-trash'></span> </a>;
+                                                    <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=delete_inscription&inscription_id=' . $inscription->id . '&projection_id=' . $projection->id); ?>" class="button button-danger"> <span class='dashicons dashicons-trash'></span> </a>
                                                 </td>
                                             </tr>
                                        <?php } ?>
