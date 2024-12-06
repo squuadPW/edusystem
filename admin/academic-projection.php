@@ -356,7 +356,7 @@ function add_admin_form_academic_projection_content()
                 $projection_obj[$indexToEdit]->cut = '';
                 $projection_obj[$indexToEdit]->this_cut = false;
                 $projection_obj[$indexToEdit]->code_period = '';
-                $projection_obj[$indexToEdit]->calification = 0;
+                $projection_obj[$indexToEdit]->calification = '';
                 $projection_obj[$indexToEdit]->is_completed = false;
             }
 
