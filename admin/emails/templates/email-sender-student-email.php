@@ -15,7 +15,7 @@ $email_template = '
     //   $email_template .= '<p>Dear ' . $student->name . ' ' . $student->last_name . ',</p>';
     // }
     
-    $email_template .= '<p>'.$description.'</p>
+    $email_template .= '<div>'.$description.'</div>
   </body>
 </html>';
 
