@@ -643,7 +643,6 @@ class TT_document_review_List_Table extends WP_List_Table
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $table_student_documents = $wpdb->prefix . 'student_documents';
-        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
@@ -835,7 +834,6 @@ class TT_all_student_List_Table extends WP_List_Table
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $table_student_documents = $wpdb->prefix . 'student_documents';
-        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);

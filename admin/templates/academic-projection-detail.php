@@ -41,16 +41,16 @@
                                 <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
                                     <div style="display: flex; width: 100%;">
                                         <div style="flex: 1; padding: 5px; align-content: center;">
-                                            <input type="checkbox" name="completed[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'checked' : '' ?>>
+                                            <input type="checkbox" name="completed[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'checked style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                             <label for="input_id"><b><?= __($projection_for->subject, 'aes'); ?></b></label><br>
 
-                                            <input type="checkbox" name="this_cut[<?= $key ?>]" <?php echo $projection_for->this_cut ? 'checked' : '' ?>>
-                                            <label for="input_id"><b><?= __('This cut', 'aes'); ?></b></label><br>
+                                            <input type="checkbox" name="this_cut[<?= $key ?>]" <?php echo $projection_for->this_cut ? 'checked' : '' ?>  <?php echo $projection_for->is_completed && !$projection_for->this_cut ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
+                                            <label for="input_id"><b><?= __('This period', 'aes'); ?></b></label><br>
                                         </div>
                                         
                                         <div style="flex: 1; padding: 5px;">
                                             <label for="input_id"><b><?= __('Period', 'aes'); ?></b></label><br>
-                                            <select name="academic_period[<?= $key ?>]">
+                                            <select name="academic_period[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                                 <option value="" selected>Select academic period to filter</option>
                                                 <?php foreach ($periods as $period) { ?>
                                                     <option value="<?php echo $period->code; ?>" <?= ($projection_for->code_period == $period->code) ? 'selected' : ''; ?>>
@@ -62,7 +62,7 @@
                                         
                                         <div style="flex: 1; padding: 5px;">
                                             <label for="input_id"><b><?= __('Cut', 'aes'); ?></b></label><br>
-                                            <select name="academic_period_cut[<?= $key ?>]">
+                                            <select name="academic_period_cut[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                                 <option value="">Select academic period cut</option>
                                                 <option value="A" <?= ($projection_for->cut == 'A') ? 'selected' : ''; ?>>A</option>
                                                 <option value="B" <?= ($projection_for->cut == 'B') ? 'selected' : ''; ?>>B</option>
@@ -74,7 +74,7 @@
 
                                         <div style="flex: 1; padding: 5px;">
                                             <label for="input_id"><b><?= __('Calification', 'aes'); ?></b></label><br>
-                                            <input type="number" name="calification[<?= $key ?>]" value="<?= $projection_for->calification ?? ''; ?>">
+                                            <input type="number" name="calification[<?= $key ?>]" value="<?= $projection_for->calification ?? ''; ?>" <?php echo $projection_for->is_completed && !$projection_for->this_cut ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                         </div>
                                         
                                     </div>
@@ -101,6 +101,9 @@
                                             </th>
                                             <th scope="col" class=" manage-column">
                                                 <?= __('Period - cut', 'aes'); ?>
+                                            </th>
+                                            <th scope="col" class=" manage-column" style="text-align: end">
+                                                <?= __('Action', 'aes'); ?>
                                             </th>
                                         </tr>
                                     </thead>
@@ -135,6 +138,9 @@
                                                 <td>
                                                     <?php echo $inscription->code_period . ' - ' . $inscription->cut_period; ?>
                                                 </td>
+                                                <td style="text-align: end">
+                                                    <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=delete_inscription&inscription_id=' . $inscription->id . '&projection_id=' . $projection->id); ?>" class="button button-danger"> <span class='dashicons dashicons-trash'></span> </a>;
+                                                </td>
                                             </tr>
                                        <?php } ?>
                                     </tbody>
@@ -145,8 +151,8 @@
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                 <button type="submit"
                                     class="button button-primary" name="action" value="send_email"><?= __('Save and send email', 'aes'); ?></button>
-                                    <!-- <button type="submit"
-                                        class="button button-success" name="action" value="save"><?= __('Saves changes', 'aes'); ?></button> -->
+                                    <button type="submit"
+                                        class="button button-success" name="action" value="save"><?= __('Only saves changes', 'aes'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

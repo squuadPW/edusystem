@@ -36,12 +36,15 @@ function add_admin_form_enrollments_content()
             $code_period = $_POST['code_period'];
             $cut_period = $_POST['cut_period'];
 
+            $subject = get_subject_details_code($code_subject);
+
             //update
             if (isset($enrollment_id) && !empty($enrollment_id)) {
 
                 $wpdb->update($table_student_period_inscriptions, [
                     'status_id' => $status_id,
                     'student_id' => $student_id,
+                    'subject_id' => $subject->id,
                     'code_subject' => $code_subject,
                     'code_period' => $code_period,
                     'cut_period' => $cut_period
@@ -55,6 +58,7 @@ function add_admin_form_enrollments_content()
                 $wpdb->insert($table_student_period_inscriptions, [
                     'status_id' => $status_id,
                     'student_id' => $student_id,
+                    'subject_id' => $subject->id,
                     'code_subject' => $code_subject,
                     'code_period' => $code_period,
                     'cut_period' => $cut_period

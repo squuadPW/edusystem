@@ -106,6 +106,7 @@ function add_admin_form_academic_projection_content()
             exit;
         } else if($_GET['action'] == 'save_academic_projection') {
             global $wpdb;
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
             $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
             $projection_id = $_POST['projection_id'];
@@ -136,16 +137,17 @@ function add_admin_form_academic_projection_content()
                     $wpdb->delete($table_student_period_inscriptions,['code_subject' => $projection_obj[$key]->code_subject, 'student_id' => $projection->student_id]);
 
                     //borramos inscripcion moodle
-                    if ($action != 'send_email') {
-                        $projection_obj[$key]->this_cut = false;
-                        unenroll_student($projection->student_id, [$projection_obj[$key]->moodle_course_id]);
-                    }
+                    // if ($action != 'send_email') {
+                    //     $projection_obj[$key]->this_cut = false;
+                    //     unenroll_student($projection->student_id, [$projection_obj[$key]->moodle_course_id]);
+                    // }
                 } else {
                     $exist = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$projection->student_id} AND code_subject = '{$projection_obj[$key]->code_subject}'");
                     if (!isset($exist)) {
                         $wpdb->insert($table_student_period_inscriptions, [
                             'status_id' => $projection_obj[$key]->this_cut ? 1 : 3,
                             'student_id' => $projection->student_id,
+                            'subject_id' => $projection_obj[$key]->subject_id,
                             'code_subject' => $projection_obj[$key]->code_subject,
                             'code_period' => $projection_obj[$key]->code_period,
                             'cut_period' => $projection_obj[$key]->cut
@@ -154,6 +156,7 @@ function add_admin_form_academic_projection_content()
                         $wpdb->update($table_student_period_inscriptions, [
                             'status_id' => $projection_obj[$key]->this_cut ? 1 : 3,
                             'student_id' => $projection->student_id,
+                            'subject_id' => $projection_obj[$key]->subject_id,
                             'code_subject' => $projection_obj[$key]->code_subject,
                             'code_period' => $projection_obj[$key]->code_period,
                             'cut_period' => $projection_obj[$key]->cut
@@ -161,16 +164,16 @@ function add_admin_form_academic_projection_content()
                     }
 
                     //generamos inscripcion moodle
-                    if ($action != 'send_email') {
-                        $table_school_subjects = $wpdb->prefix . 'school_subjects';
-                        if ($projection_obj[$key]->this_cut) {
-                            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_obj[$key]->subject_id}");
-                            enroll_student($projection->student_id, [$subject->moodle_course_id]);
-                        } else {
-                            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_obj[$key]->subject_id}");
-                            unenroll_student($projection->student_id, [$subject->moodle_course_id]);
-                        }
-                    }
+                    // if ($action != 'send_email') {
+                    //     $table_school_subjects = $wpdb->prefix . 'school_subjects';
+                    //     if ($projection_obj[$key]->this_cut) {
+                    //         $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_obj[$key]->subject_id}");
+                    //         enroll_student($projection->student_id, [$subject->moodle_course_id]);
+                    //     } else {
+                    //         $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_obj[$key]->subject_id}");
+                    //         unenroll_student($projection->student_id, [$subject->moodle_course_id]);
+                    //     }
+                    // }
                 }
             }
 
@@ -327,8 +330,46 @@ function add_admin_form_academic_projection_content()
                 $email_student->trigger($user_parent, 'Welcome', $text);
             }
     
+            $projection = get_projection_details($projection_id);
+            $student = get_student_detail($projection->student_id);
+            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id}");
+            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 3600, '/');
-            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
+            exit;
+        } else if($_GET['action'] == 'delete_inscription') {
+            global $wpdb;
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
+            $table_student_academic_projection = $wpdb->prefix.'student_academic_projection';
+            $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+            $projection_id = $_GET['projection_id'];
+            $inscription_id = $_GET['inscription_id'] ?? [];
+            $enrollment = get_enrollment_details($inscription_id);
+            $projection = get_projection_details(projection_id: $projection_id);
+            $projection_obj = json_decode($projection->projection);
+    
+            $subjectIds = array_column($projection_obj, 'code_subject');
+            $indexToEdit = array_search($enrollment->code_subject, $subjectIds);
+            if ($indexToEdit !== false) {
+                $projection_obj[$indexToEdit]->cut = '';
+                $projection_obj[$indexToEdit]->this_cut = false;
+                $projection_obj[$indexToEdit]->code_period = '';
+                $projection_obj[$indexToEdit]->calification = 0;
+                $projection_obj[$indexToEdit]->is_completed = false;
+            }
+
+            $wpdb->update($table_student_academic_projection, [
+                'projection' => json_encode($projection_obj)
+            ], ['id' => $projection->id]);
+
+            $wpdb->delete($table_student_period_inscriptions, ['id' => $inscription_id]);
+
+            $projection = get_projection_details($projection_id);
+            $student = get_student_detail($projection->student_id);
+            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id}");
+            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+            setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 3600, '/');
+            wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
         } else {
             $list_academic_projection = new TT_academic_projection_all_List_Table;
