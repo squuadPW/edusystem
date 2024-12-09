@@ -225,12 +225,40 @@ let existStudentId = document.querySelector("#exisstudentid");
 let emailStudentInput = form?.querySelector('input[name="email_student"]');
 let emailPartnerInput = form?.querySelector('input[name="email_partner"]');
 let idDocument = form?.querySelector('input[name="id_document"]');
+let idDocumentParent = form?.querySelector('input[name="id_document_parent"]');
 let typeDocument = form?.querySelector('select[name="document_type"]');
+let typeDocumentParent = form?.querySelector('select[name="parent_document_type"]');
 let dont_allow_adult = document.getElementById("dont_allow_adult");
 let dontBeAdult = document.querySelector("#dontBeAdult");
 
 emailStudentInput?.addEventListener("input", checkEmails);
 emailPartnerInput?.addEventListener("input", checkEmails);
+
+function validateIDs(validating = true) {
+  if (typeDocument.value && typeDocumentParent.value && idDocument.value && idDocumentParent.value) {
+    if ((typeDocument.value != typeDocumentParent.value) || (idDocument.value != idDocumentParent.value)) {
+      let samestudentsids = document.querySelectorAll('.sameids');
+      samestudentsids.forEach(element => {
+        element.style.display = 'none';
+      });
+      if (!validating) {
+        buttonSave.disabled = false;
+      }
+      return true;
+    }
+  
+    let samestudentsids = document.querySelectorAll('.sameids');
+    samestudentsids.forEach(element => {
+      element.style.display = 'block';
+    });
+    if (!validating) {
+      buttonSave.disabled = true;
+    }
+    return false;
+  }
+
+  return true;
+}
 
 function checkEmails() {
   const emailStudent = emailStudentInput?.value;
@@ -353,6 +381,7 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
               existStudentEmail?.style.display === "none" &&
               existStudentId?.style.display === "none" &&
               sameEmailStudent?.style.display === "none" &&
+              validateIDs() &&
               dontBeAdult?.style.display === "none"
             ) {
               buttonSave.disabled = false;
@@ -362,6 +391,7 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
               existParentEmail?.style.display === "none" &&
               existStudentEmail?.style.display === "none" &&
               existStudentId?.style.display === "none" &&
+              validateIDs() &&
               sameEmailParent?.style.display === "none" &&
               sameEmailStudent?.style.display === "none"
             ) {
@@ -379,6 +409,7 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
             if (
               existStudentEmail?.style.display === "none" &&
               existStudentId?.style.display === "none" &&
+              validateIDs() &&
               sameEmailStudent?.style.display === "none" &&
               dontBeAdult?.style.display === "none"
             ) {
@@ -388,6 +419,7 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
             if (
               existParentEmail?.style.display === "none" &&
               existStudentEmail?.style.display === "none" &&
+              validateIDs() &&
               existStudentId?.style.display === "none" &&
               sameEmailParent?.style.display === "none" &&
               sameEmailStudent?.style.display === "none"
@@ -406,6 +438,7 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
             if (
               existStudentEmail?.style.display === "none" &&
               existStudentId?.style.display === "none" &&
+              validateIDs() &&
               sameEmailStudent?.style.display === "none" &&
               dontBeAdult?.style.display === "none"
             ) {
@@ -416,6 +449,7 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
               existParentEmail?.style.display === "none" &&
               existStudentEmail?.style.display === "none" &&
               existStudentId?.style.display === "none" &&
+              validateIDs() &&
               sameEmailParent?.style.display === "none" &&
               sameEmailStudent?.style.display === "none"
             ) {
