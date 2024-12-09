@@ -312,7 +312,7 @@ add_action('woocommerce_account_student_endpoint', function () {
 add_action('woocommerce_account_my-tickets_endpoint', function () {
 
     global $current_user, $wpdb;
-    $table_tickets_created = $wpdb->prefix.'tickets_created';
+    $table_tickets_created = $wpdb->prefix . 'tickets_created';
     $tickets = $wpdb->get_results("SELECT * FROM {$table_tickets_created}  WHERE user_id = {$current_user->ID}");
 
     include(plugin_dir_path(__FILE__) . 'templates/my-tickets.php');
@@ -344,12 +344,12 @@ add_action('woocommerce_account_califications_endpoint', function () {
 
             // print_r($assignments);
             foreach ($assignments_course as $key => $assignment_c) {
-                $course_id = (int)$assignment_c['id'];
-        
+                $course_id = (int) $assignment_c['id'];
+
                 $assignments_coursing = $assignment_c['assignments'];
                 $assignments_work = [];
-        
-                $filtered_course_student = array_filter($assignments_student, function($entry) use ($course_id) {
+
+                $filtered_course_student = array_filter($assignments_student, function ($entry) use ($course_id) {
                     return $entry['course_id'] == $course_id;
                 });
                 $filtered_course_student = array_values($filtered_course_student);
@@ -360,7 +360,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
                     foreach ($assignments_student_filtered as $key => $work) {
                         if (isset($work['cmid'])) {
                             $cmid = $work['cmid'];
-                            $filtered_assignments_coursing = array_filter($assignments_coursing, function($entry) use ($cmid) {
+                            $filtered_assignments_coursing = array_filter($assignments_coursing, function ($entry) use ($cmid) {
                                 return $entry['cmid'] == $cmid;
                             });
                             $filtered_assignments_coursing = array_values($filtered_assignments_coursing);
@@ -373,13 +373,13 @@ add_action('woocommerce_account_califications_endpoint', function () {
                             ]);
                         }
                     }
-            
+
                     array_push($formatted_assignments, [
                         'course_id' => $course_id,
                         'course' => $assignment_c['fullname'],
                         'assignments' => $assignments_work
                     ]);
-                }     
+                }
             }
 
             array_push($students_formatted, [
@@ -388,7 +388,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
             ]);
         }
     }
-    
+
     include(plugin_dir_path(__FILE__) . 'templates/califications.php');
 });
 
@@ -421,42 +421,16 @@ function insert_student($customer_id)
 
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
-    $table_academic_periods = $wpdb->prefix . 'academic_periods';
-    $table_academic_periods_cut = $wpdb->prefix.'academic_periods_cut';
-    $current_time = current_time('mysql');
-    $code = 'noperiod';
-    $cut = 'nocut';
-
-    // Consulta para obtener el periodo académico
-    $period_data = $wpdb->get_row($wpdb->prepare("
-        SELECT * FROM {$table_academic_periods} 
-        WHERE DATE_SUB(`start_date`, INTERVAL 1 MONTH) <= %s 
-        AND DATE_ADD(`end_date`, INTERVAL -1 MONTH) >= %s", 
-        array($current_time, $current_time)
-    ));
-
-    if ($period_data) {
-        $code = $period_data->code;
-
-        // Consulta para obtener el corte académico
-        $period_data_cut = $wpdb->get_row($wpdb->prepare("
-            SELECT * FROM {$table_academic_periods_cut} 
-            WHERE DATE_SUB(`start_date`, INTERVAL 1 MONTH) <= %s 
-            AND DATE_ADD(`end_date`, INTERVAL -1 MONTH) >= %s", 
-            array($current_time, $current_time)
-        ));
-
-        if ($period_data_cut) {
-            $cut = $period_data_cut->cut;
-        }
-    }
+    $load = load_current_cut_enrollment();
+    $code = $load['code'];
+    $cut = $load['cut'];
 
     $birth_date = date_i18n('Y-m-d', strtotime($_COOKIE['birth_date']));
     $today = new DateTime();
     $age = $today->diff(new DateTime($birth_date))->y;
 
     $exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '{$_COOKIE['email_student']}'");
-    if(!$exist) {
+    if (!$exist) {
         $wpdb->insert($table_students, [
             'name' => $_COOKIE['name_student'],
             'type_document' => $_COOKIE['document_type'],
@@ -566,35 +540,9 @@ function insert_period_inscriptions($student_id)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $table_academic_periods = $wpdb->prefix . 'academic_periods';
-    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
-    $current_time = current_time('mysql');
-    $code = 'noperiod';
-    $cut = 'nocut';
-
-    // Consulta para obtener el periodo académico
-    $period_data = $wpdb->get_row($wpdb->prepare("
-        SELECT * FROM {$table_academic_periods} 
-        WHERE DATE_SUB(`start_date`, INTERVAL 1 MONTH) <= %s 
-        AND DATE_ADD(`end_date`, INTERVAL -1 MONTH) >= %s", 
-        array($current_time, $current_time)
-    ));
-
-    if ($period_data) {
-        $code = $period_data->code;
-
-        // Consulta para obtener el corte académico
-        $period_data_cut = $wpdb->get_row($wpdb->prepare("
-            SELECT * FROM {$table_academic_periods_cut} 
-            WHERE DATE_SUB(`start_date`, INTERVAL 1 MONTH) <= %s 
-            AND DATE_ADD(`end_date`, INTERVAL -1 MONTH) >= %s", 
-            array($current_time, $current_time)
-        ));
-
-        if ($period_data_cut) {
-            $cut = $period_data_cut->cut;
-        }
-    }
+    $load = load_current_cut_enrollment();
+    $code = $load['code'];
+    $cut = $load['cut'];
 
     $courses = [1];
     foreach ($courses as $key => $course) {
@@ -625,7 +573,7 @@ function get_payments($student_id, $product_id = false)
     global $wpdb;
     $table_student_payments = $wpdb->prefix . 'student_payments';
 
-    if($product_id) {
+    if ($product_id) {
         $payments = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id={$student_id} AND product_id={$product_id}");
         return $payments;
     } else {

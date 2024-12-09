@@ -225,6 +225,7 @@ function create_tables()
         cut TEXT NOT NULL,
         start_date DATE NULL,
         end_date DATE NULL,
+        max_date DATE NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );

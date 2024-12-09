@@ -150,6 +150,17 @@
                                             <input type="date" name="end_date_A" value="" required>
                                         <?php endif; ?>
                                     </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($period) && !empty($period)): ?>
+                                            <label
+                                                for="input_id"><b><?= __('Max Date Cut A', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                            <input type="date" name="max_date_A" value="<?= $cuts[0]->max_date; ?>">
+                                        <?php else: ?>
+                                            <label for="input_id"><b><?= __('Max Date Cut A', 'aes'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="date" name="max_date_A" value="" required>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div style="display: flex; justify-content: space-evenly; margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
@@ -172,6 +183,17 @@
                                             <label for="input_id"><b><?= __('End Date Cut B', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <input type="date" name="end_date_B" value="" required>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($period) && !empty($period)): ?>
+                                            <label
+                                                for="input_id"><b><?= __('Max Date Cut B', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                            <input type="date" name="max_date_B" value="<?= $cuts[1]->max_date; ?>">
+                                        <?php else: ?>
+                                            <label for="input_id"><b><?= __('Max Date Cut B', 'aes'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="date" name="max_date_B" value="" required>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -198,6 +220,17 @@
                                             <input type="date" name="end_date_C" value="" required>
                                         <?php endif; ?>
                                     </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($period) && !empty($period)): ?>
+                                            <label
+                                                for="input_id"><b><?= __('Max Date Cut C', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                            <input type="date" name="max_date_C" value="<?= $cuts[2]->max_date; ?>">
+                                        <?php else: ?>
+                                            <label for="input_id"><b><?= __('Max Date Cut C', 'aes'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="date" name="max_date_C" value="" required>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div style="display: flex; justify-content: space-evenly; margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
@@ -222,6 +255,17 @@
                                             <input type="date" name="end_date_D" value="" required>
                                         <?php endif; ?>
                                     </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($period) && !empty($period)): ?>
+                                            <label
+                                                for="input_id"><b><?= __('Max Date Cut D', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                            <input type="date" name="max_date_D" value="<?= $cuts[3]->max_date; ?>">
+                                        <?php else: ?>
+                                            <label for="input_id"><b><?= __('Max Date Cut D', 'aes'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="date" name="max_date_D" value="" required>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div style="display: flex; justify-content: space-evenly; margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
@@ -244,6 +288,17 @@
                                             <label for="input_id"><b><?= __('End Date Cut E', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <input type="date" name="end_date_E" value="" required>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($period) && !empty($period)): ?>
+                                            <label
+                                                for="input_id"><b><?= __('Max Date Cut E', 'aes'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                            <input type="date" name="max_date_E" value="<?= $cuts[4]->max_date; ?>">
+                                        <?php else: ?>
+                                            <label for="input_id"><b><?= __('Max Date Cut E', 'aes'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="date" name="max_date_E" value="" required>
                                         <?php endif; ?>
                                     </div>
                                 </div>

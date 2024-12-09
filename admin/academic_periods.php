@@ -52,22 +52,27 @@ function add_admin_form_academic_periods_content()
                 'A' => [
                     'start_date' => $_POST['start_date_A'],
                     'end_date' => $_POST['end_date_A'],
+                    'max_date' => $_POST['max_date_A'],
                 ],
                 'B' => [
                     'start_date' => $_POST['start_date_B'],
                     'end_date' => $_POST['end_date_B'],
+                    'max_date' => $_POST['max_date_B'],
                 ],
                 'C' => [
                     'start_date' => $_POST['start_date_C'],
                     'end_date' => $_POST['end_date_C'],
+                    'max_date' => $_POST['max_date_C'],
                 ],
                 'D' => [
                     'start_date' => $_POST['start_date_D'],
                     'end_date' => $_POST['end_date_D'],
+                    'max_date' => $_POST['max_date_D'],
                 ],
                 'E' => [
                     'start_date' => $_POST['start_date_E'],
                     'end_date' => $_POST['end_date_E'],
+                    'max_date' => $_POST['max_date_E'],
                 ],
             ];
 
@@ -91,12 +96,13 @@ function add_admin_form_academic_periods_content()
                 foreach ($cuts as $key => $cut) {
                     $start_date = $cuts_arr[$cut]['start_date'];
                     $end_date = $cuts_arr[$cut]['end_date'];
+                    $max_date = $cuts_arr[$cut]['max_date'];
 
                     $wpdb->update($table_academic_periods_cut, [
                         'code' => $code,
                         'cut' => $cut,
                         'start_date' => $start_date,
-                        'end_date' => $end_date,
+                        'max_date' => $max_date,
                     ], ['code' => $old_code, 'cut' => $cut]);
                 }
 
@@ -126,6 +132,7 @@ function add_admin_form_academic_periods_content()
                         'cut' => $cut,
                         'start_date' => $cuts_arr[$cut]['start_date'],
                         'end_date' => $cuts_arr[$cut]['end_date'],
+                        'max_date' => $cuts_arr[$cut]['max_date'],
                     ]);
                 }
 
