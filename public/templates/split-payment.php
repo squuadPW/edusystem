@@ -203,8 +203,8 @@ if ($order) {
                 document.getElementById('place_order').disabled = false;
                 let value = document.getElementById('aes_amount_split').value ? document.getElementById('aes_amount_split').value : 0;
                 let amount_calculated = (parseFloat(value) + parseFloat(current_fee)).toFixed(2);
-                document.getElementById('total_entered').innerText = `$${amount_calculated.toLocaleString('en-US')}`
-                document.getElementById('payment_method_comission').innerText = `($${current_fee})`;
+                document.getElementById('total_entered').innerText =  parseFloat(value) > 0 ? `$${amount_calculated.toLocaleString('en-US')}` : 0.00;
+                document.getElementById('payment_method_comission').innerText = parseFloat(value) > 0 ? `($${current_fee})` : `$0.00`;
                 document.getElementById('total_payment_button').disabled = false;
 
                 loadTableTotalsFee(response.fee);
@@ -302,10 +302,10 @@ if ($order) {
             current_fee = ((cart_subtotal / 100) * fee).toFixed(2);
         }
         current_fee = current_fee.toLocaleString('en-US');
-        document.getElementById('payment_method_comission').innerText = `($${current_fee})`;
+        document.getElementById('payment_method_comission').innerText = parseFloat(value) > 0 ? `($${current_fee})` : `$0.00`;
         document.querySelector('input[name="aes_amount_split_fee"]').value = current_fee;
         document.querySelector('input[name="aes_amount_split"]').value = value;
-        let amount_calculated = (parseFloat(value) + parseFloat(current_fee)).toFixed(2);
+        let amount_calculated = parseFloat(value) > 0 ? (parseFloat(value) + parseFloat(current_fee)).toFixed(2) : 0.00;
         document.getElementById('total_entered').innerText = `$${amount_calculated.toLocaleString('en-US')}`
         if (pending_amount > 0) {
             if (value > pending_amount) {
