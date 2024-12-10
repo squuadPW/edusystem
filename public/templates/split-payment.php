@@ -33,7 +33,8 @@ $style_checkbox = ($split_payment_metadata !== '') ? 'none' : 'block';
         <div style="padding: 10px; font-weight: 600; display: <?php echo $style_checkbox ?>">
             <label class="fee-container" style="margin-bottom: 0px !important">
                 <strong>Split payment</strong>
-                <input type="checkbox" id="aes_split_payment" name="aes_split_payment" onchange="showInput(this.checked)" <?php echo $aes_split_payment_checked; ?>>
+                <input type="checkbox" id="aes_split_payment" name="aes_split_payment"
+                    onchange="showInput(this.checked)" <?php echo $aes_split_payment_checked; ?>>
                 <span class="checkmark"></span>
             </label>
         </div>
@@ -42,20 +43,30 @@ $style_checkbox = ($split_payment_metadata !== '') ? 'none' : 'block';
         <div class="input-container" style="margin-top: 10px; display: <?php echo $style ?>">
             <!-- The input for entering the amount -->
             <div>
-                <p style="font-style: italic; font-size: 14px">A split payment is a payment method that allows you to divide a single transaction into multiple payments. This means that instead of paying the full amount upfront, you can split it into two or more installments, making it more manageable and convenient for your budget.</p>
+                <p style="font-style: italic; font-size: 14px">A split payment is a payment method that allows you to
+                    divide a single transaction into multiple payments. This means that instead of paying the full
+                    amount upfront, you can split it into two or more installments, making it more manageable and
+                    convenient for your budget.</p>
                 <div style="margin-top: 10px;">
                     <div>
                         <label for="aes_amount_split">Amount to pay</label>
                         <div style="position: relative; display: inline-block; width: 100%;">
-                            <input type="text" id="aes_amount_split_visual" name="aes_amount_split_visual" style="width: 100%; padding-right: <?php echo $style_button_total_payment == 'none' ? '10px' : '150px' ?>; box-sizing: border-box; -webkit-appearance: none; -moz-appearance: textfield;" class="money">
+                            <input type="text" id="aes_amount_split_visual" name="aes_amount_split_visual"
+                                style="width: 100%; padding-right: <?php echo $style_button_total_payment == 'none' ? '10px' : '150px' ?>; box-sizing: border-box; -webkit-appearance: none; -moz-appearance: textfield;"
+                                class="money">
                             <input type="hidden" id="aes_amount_split" name="aes_amount_split">
-                            <button id="total_payment_button" type="button" class="submit" style="font-size: 14px; padding: 10px 10px !important; border-radius: 9px !important; position: absolute; top: 50%; right: 8px; height: 36px; transform: translateY(-50%); width: auto; display: <?php echo $style_button_total_payment ?>" onclick="clickLoadInfoFee()">Pending amount</button>
+                            <button id="total_payment_button" type="button" class="submit"
+                                style="font-size: 14px; padding: 10px 10px !important; border-radius: 9px !important; position: absolute; top: 50%; right: 8px; height: 36px; transform: translateY(-50%); width: auto; display: <?php echo $style_button_total_payment ?>"
+                                onclick="clickLoadInfoFee()">Pending amount</button>
                         </div>
-                        <label for="aes_amount_split" style="font-size: 14px">Payment method commission <strong id="payment_method_comission"></strong> <br> Total paid: <strong id="total_entered" style="color: green;"></strong></label><br>
+                        <label for="aes_amount_split" style="font-size: 14px">Payment method commission <strong
+                                id="payment_method_comission"></strong> <br> Total paid: <strong id="total_entered"
+                                style="color: green;"></strong></label><br>
                     </div>
                 </div>
                 <input type="hidden" id="aes_amount_split_fee" name="aes_amount_split_fee" style="width: 100%">
-                <input type="hidden" id="aes_payment_page" name="aes_payment_page" value="<?php echo $split_payment_page ?>" style="width: 100%">
+                <input type="hidden" id="aes_payment_page" name="aes_payment_page"
+                    value="<?php echo $split_payment_page ?>" style="width: 100%">
             </div>
 
             <!-- The button to generate parts -->
@@ -67,11 +78,11 @@ $style_checkbox = ($split_payment_metadata !== '') ? 'none' : 'block';
     </div>
 </div>
 
-<?php 
+<?php
 if ($order) {
     global $current_user;
     $payments = json_decode($order->get_meta('split_method'));
-    if($order->get_meta('pending_payment') && $order->get_meta('pending_payment') > 0) { ?>
+    if ($order->get_meta('pending_payment') && $order->get_meta('pending_payment') > 0) { ?>
         <div id='modalNextPayment' class='modal' style="display: block">
             <div class='modal-content'>
                 <div class="modal-header">
@@ -80,41 +91,47 @@ if ($order) {
                 </div>
                 <div class="modal-body" style="margin: 10px; padding: 0px">
                     <p>Dear <?php echo $current_user->first_name . ' ' . $current_user->last_name ?>,</p>
-    
-                    <p>We are pleased to inform you that we have successfully received your last payment <?php echo $payments[count($payments) - 1]->method ?>, in the amount of <strong><?php echo wc_price($payments[count($payments) - 1]->amount) ?></strong>.</p>
-    
+
+                    <p>We are pleased to inform you that we have successfully received your last payment
+                        <?php echo $payments[count($payments) - 1]->method ?>, in the amount of
+                        <strong><?php echo wc_price($payments[count($payments) - 1]->amount) ?></strong>.
+                    </p>
+
                     <p>Please proceed to the next payment step to complete your transaction.</p>
-    
+
                     <p>Best regards, American Elite School</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" id="continue-payment" class="button button-primary"><?= __('Continue', 'aes'); ?></button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="continue-payment"
+                        class="button button-primary"><?= __('Continue', 'aes'); ?></button>
+                </div>
             </div>
         </div>
-<?php  }
-    }
+    <?php }
+}
 ?>
 
 
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.js" integrity="sha512-0XDfGxFliYJPFrideYOoxdgNIvrwGTLnmK20xZbCAvPfLGQMzHUsaqZK8ZoH+luXGRxTrS46+Aq400nCnAT0/w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.js"
+    integrity="sha512-0XDfGxFliYJPFrideYOoxdgNIvrwGTLnmK20xZbCAvPfLGQMzHUsaqZK8ZoH+luXGRxTrS46+Aq400nCnAT0/w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 
-    $(document).ready(function(){
-        $('.money').mask('#,##0.00', {reverse: true});
+    $(document).ready(function () {
+        $('.money').mask('#,##0.00', { reverse: true });
     });
 
     let button_continue = document.getElementById('continue-payment');
     if (button_continue) {
-        button_continue.addEventListener('click',(e) => {
+        button_continue.addEventListener('click', (e) => {
             document.getElementById('modalNextPayment').style.display = "none";
         });
     }
 
     document.querySelectorAll('.modal-close').forEach((close) => {
-        close.addEventListener('click',(e) => {
+        close.addEventListener('click', (e) => {
             document.getElementById('modalNextPayment').style.display = "none";
         });
     });
@@ -140,19 +157,23 @@ if ($order) {
         loadInfoFee(current_payment_method_text);
     }
 
-    $(document).on('change', 'input[name="payment_method"]', function () {
+    $(document).on('change', 'input[name="payment_method"]', function (e) {
+        changePaymentMethod($(this).val());
+    });
+
+    function changePaymentMethod(value) {
         document.querySelector('input[name="aes_amount_split"]').value = 0;
         document.querySelector('input[name="aes_amount_split_visual"]').value = 0;
         document.getElementById('total_entered').innerText = `Loading...`;
         document.getElementById('payment_method_comission').innerText = `Loading...`;
         document.getElementById('total_payment_button').disabled = true;
 
-        current_payment_method_text = $(this).val();
+        current_payment_method_text = value;
 
         setTimeout(() => {
-            loadInfoFee($(this).val())
-        }, 1000);
-    });
+            loadInfoFee(value)
+        }, 500);
+    }
 
     function loadInfoFee(pay) {
         aes_payment_page = document.getElementById('aes_payment_page').value;
@@ -181,12 +202,51 @@ if ($order) {
 
                 document.getElementById('place_order').disabled = false;
                 let value = document.getElementById('aes_amount_split').value ? document.getElementById('aes_amount_split').value : 0;
-                let amount_calculated = (parseFloat(value) + parseFloat(current_fee)).toFixed(2); 
+                let amount_calculated = (parseFloat(value) + parseFloat(current_fee)).toFixed(2);
                 document.getElementById('total_entered').innerText = `$${amount_calculated.toLocaleString('en-US')}`
                 document.getElementById('payment_method_comission').innerText = `($${current_fee})`;
                 document.getElementById('total_payment_button').disabled = false;
+
+                loadTableTotalsFee(response.fee);
             }
         });
+    }
+
+    function loadTableTotalsFee(fee, from_input = 0) {
+        fee = parseFloat(fee);
+        aes_payment_page = document.getElementById('aes_payment_page').value;
+        if (aes_payment_page == 1) {
+            // Eliminar el tr anterior si existe
+            $('table.shop_table tfoot tr.fee-row').remove();
+
+            // Crear un nuevo tr para la tarifa
+            var newFeeRow = '<tr class="fee-row">' +
+                '<th scope="row" colspan="2">Payment method fee:</th>' +
+                '<td class="product-total"><span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">$</span>' + fee + '</bdi></span></td>' +
+                '</tr>';
+
+            // Agregar el nuevo tr al pie de la tabla en la segunda posición
+            $('table.shop_table tfoot tr').eq(1).before(newFeeRow);
+
+            let subtotal = 0;
+            if (from_input) {
+                subtotal = from_input;
+            } else {
+                subtotal = <?php echo $order->get_subtotal(); ?>;
+            }
+            let new_total = subtotal + fee; // Calcula el nuevo total
+
+            // Formatear el nuevo total como un precio
+            let formattedTotal = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(new_total);
+
+            let prices = document.querySelectorAll('.woocommerce-Price-amount');
+            prices[(prices.length - 1)].innerText = formattedTotal;
+        }
     }
 
     // Function to show or hide the input and button based on the checkbox state
@@ -196,6 +256,8 @@ if ($order) {
         } else {
             document.querySelector('.input-container').style.display = 'none';
         }
+
+        changePaymentMethod(current_payment_method_text);
     }
 
     function loadFee(amount = null) {
@@ -218,7 +280,7 @@ if ($order) {
     }
 
     document.getElementById('aes_amount_split_visual').addEventListener('input', (e) => {
-        $('.money').mask('#,##0.00', {reverse: true});
+        $('.money').mask('#,##0.00', { reverse: true });
         let value_parsed = $('.money').cleanVal();
         let divisor = 1;
         if (value_parsed.length > 2) {
@@ -243,7 +305,7 @@ if ($order) {
         document.getElementById('payment_method_comission').innerText = `($${current_fee})`;
         document.querySelector('input[name="aes_amount_split_fee"]').value = current_fee;
         document.querySelector('input[name="aes_amount_split"]').value = value;
-        let amount_calculated = (parseFloat(value) + parseFloat(current_fee)).toFixed(2); 
+        let amount_calculated = (parseFloat(value) + parseFloat(current_fee)).toFixed(2);
         document.getElementById('total_entered').innerText = `$${amount_calculated.toLocaleString('en-US')}`
         if (pending_amount > 0) {
             if (value > pending_amount) {
@@ -254,6 +316,8 @@ if ($order) {
         } else {
             document.getElementById('place_order').disabled = false;
         }
+
+        loadTableTotalsFee(current_fee, parseFloat(value));
     }
 
     function getCookie(name) {
@@ -261,7 +325,7 @@ if ($order) {
         for (let i = 0; i < cookies.length; i++) {
             const cookie = cookies[i].trim();
             if (cookie.startsWith(name + '=')) {
-            return cookie.substring(name.length + 1);
+                return cookie.substring(name.length + 1);
             }
         }
         return null;

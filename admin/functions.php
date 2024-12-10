@@ -712,7 +712,6 @@ function add_welcome_student_js()
                 'action': 'welcome_student',
                 'user_id': userId
             }, function (response) {
-                // console.log(response);
             });
         }
     </script>

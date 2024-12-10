@@ -1292,76 +1292,76 @@ function reload_payment_table()
 {
     ob_start();
     ?>
-        <?php
-        $value = $_POST['option'];
-        global $woocommerce;
-        $cart = $woocommerce->cart->get_cart();
-        $id = AES_FEE_INSCRIPTION;
-        $filtered_products = array_filter($cart, function ($product) use ($id) {
-            return $product['product_id'] != $id;
-        });
+            <?php
+            $value = $_POST['option'];
+            global $woocommerce;
+            $cart = $woocommerce->cart->get_cart();
+            $id = AES_FEE_INSCRIPTION;
+            $filtered_products = array_filter($cart, function ($product) use ($id) {
+                return $product['product_id'] != $id;
+            });
 
-        $cart_total = 0;
-        $product_id = null;
-        foreach ($filtered_products as $key => $product) {
-            $product_id = $product['product_id'];
-            $cart_total = $product['line_total'];
-            // $price = $product['line_total']; 
-        }
-        if (isset($product_id)) {
-            $product = wc_get_product($product_id);
-            if ($product->is_type('variable')) {
-                $variations = $product->get_available_variations();
-                $date = new DateTime('August 12');
-                $date = $date->format('Y-m-d');
-                foreach ($variations as $key => $variation) {
-                    if ($variation['attributes']['attribute_payments'] === $value) {
-                        ?>
-                                        <table class="payment-parts-table mt-5">
-                                            <tr>
-                                                <th class="payment-parts-table-header">Payment</th>
-                                                <th class="payment-parts-table-header">Next date payment</th>
-                                                <th class="payment-parts-table-header">Amount</th>
-                                            </tr>
-                                            <?php
-                                            $date_calc = '';
-                                            switch ($value) {
-                                                case 'Annual':
-                                                    $date_calc = '+1 year';
-                                                    break;
-                                                case 'Semiannual':
-                                                    $date_calc = '+6 months';
-                                                    break;
-                                            }
-                                            $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true);
-                                            for ($i = 0; $i < $cuotes; $i++) {
-                                                $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
-                                                ?>
-                                                    <tr class="payment-parts-table-row">
-                                                        <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
-                                                        <td class="payment-parts-table-data">
-                                                            <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?>
-                                                        </td>
-                                                        <td class="payment-parts-table-data"><?php echo wc_price($cart_total) ?></td>
-                                                    </tr>
-                                                    <?php
-                                            }
-                                            ?>
-                                            <tr>
-                                                <th class="payment-parts-table-header text-end" colspan="3">Total</th>
-                                            </tr>
-                                            <tr class="payment-parts-table-row">
-                                                <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes)) ?></td>
-                                            </tr>
-                                        </table>
-                                        <?php
+            $cart_total = 0;
+            $product_id = null;
+            foreach ($filtered_products as $key => $product) {
+                $product_id = $product['product_id'];
+                $cart_total = $product['line_total'];
+                // $price = $product['line_total']; 
+            }
+            if (isset($product_id)) {
+                $product = wc_get_product($product_id);
+                if ($product->is_type('variable')) {
+                    $variations = $product->get_available_variations();
+                    $date = new DateTime('August 12');
+                    $date = $date->format('Y-m-d');
+                    foreach ($variations as $key => $variation) {
+                        if ($variation['attributes']['attribute_payments'] === $value) {
+                            ?>
+                                                            <table class="payment-parts-table mt-5">
+                                                                <tr>
+                                                                    <th class="payment-parts-table-header">Payment</th>
+                                                                    <th class="payment-parts-table-header">Next date payment</th>
+                                                                    <th class="payment-parts-table-header">Amount</th>
+                                                                </tr>
+                                                                <?php
+                                                                $date_calc = '';
+                                                                switch ($value) {
+                                                                    case 'Annual':
+                                                                        $date_calc = '+1 year';
+                                                                        break;
+                                                                    case 'Semiannual':
+                                                                        $date_calc = '+6 months';
+                                                                        break;
+                                                                }
+                                                                $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true);
+                                                                for ($i = 0; $i < $cuotes; $i++) {
+                                                                    $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
+                                                                    ?>
+                                                                            <tr class="payment-parts-table-row">
+                                                                                <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
+                                                                                <td class="payment-parts-table-data">
+                                                                                    <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?>
+                                                                                </td>
+                                                                                <td class="payment-parts-table-data"><?php echo wc_price($cart_total) ?></td>
+                                                                            </tr>
+                                                                            <?php
+                                                                }
+                                                                ?>
+                                                                <tr>
+                                                                    <th class="payment-parts-table-header text-end" colspan="3">Total</th>
+                                                                </tr>
+                                                                <tr class="payment-parts-table-row">
+                                                                    <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes)) ?></td>
+                                                                </tr>
+                                                            </table>
+                                                            <?php
+                        }
                     }
                 }
             }
-        }
-        $html = ob_get_clean();
-        echo $html;
-        wp_die();
+            $html = ob_get_clean();
+            echo $html;
+            wp_die();
 }
 
 add_action('wp_ajax_nopriv_reload_button_schoolship', 'reload_button_schoolship');
@@ -1379,19 +1379,19 @@ function reload_button_schoolship()
         }
     }
     ?>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
-            <?php if ($has_scholarship): ?>
-                    <button id="apply-scholarship-btn" type="button"
-                        disabled><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?></button>
-            <?php else: ?>
-                    <button id="apply-scholarship-btn"
-                        type="button"><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?></button>
-            <?php endif; ?>
-        </div>
-        <?php
-        $html = ob_get_clean();
-        echo $html;
-        wp_die();
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
+                <?php if ($has_scholarship): ?>
+                            <button id="apply-scholarship-btn" type="button"
+                                disabled><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?></button>
+                <?php else: ?>
+                            <button id="apply-scholarship-btn"
+                                type="button"><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?></button>
+                <?php endif; ?>
+            </div>
+            <?php
+            $html = ob_get_clean();
+            echo $html;
+            wp_die();
 }
 
 add_action('wp_ajax_nopriv_apply_scholarship', 'apply_scholarship');
@@ -2322,6 +2322,9 @@ function loadFeesSplit()
             } else {
                 $stripe_fee_percentage = 4.5; // 4.5% fee
                 $cart_subtotal = (float) $order->get_meta('pending_payment');
+                if (!$cart_subtotal || $cart_subtotal == 0) {
+                    $cart_subtotal = $order->get_subtotal();
+                }
                 $stripe_fee_amount = ($cart_subtotal / 100) * $stripe_fee_percentage;
                 $fee = $stripe_fee_amount;
 
