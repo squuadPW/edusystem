@@ -919,11 +919,9 @@ function daily_cuote_pendings()
                     );
 
                     $new_order = wc_create_order($order_args);
-                    $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
                     $new_order->add_meta_data('old_order_primary', $order_id);
+                    $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
                     $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
-                    $new_order->add_meta_data('is_vat_exempt', $order_old->get_meta('is_vat_exempt'));
-                    $new_order->add_meta_data('pending_payment', 0);
                     $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
                     $product = $first_item->get_product();
                     $product->set_price($cuote_pending->amount);
