@@ -101,8 +101,25 @@ function add_admin_form_payments_content()
                         $payment_row = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE id = {$cuote_credit}");
                         $amount = $payment_row->amount - $calculated_amount;
                         $wpdb->update($table_student_payments, [
-                            'amount' => $amount,
-                        ], ['id' => $cuote_credit]);
+                            'amount' => ($amount <= 0 ? 0 : $amount),
+                            'status_id' => ($amount <= 0 ? 1 : 0)
+                        ], ['id' => $payment_row->id]);
+
+                        if ($amount < 0) {
+                            $amount = abs($amount);
+                            $next_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$order->get_meta('student_id')} AND status_id = 0 ORDER BY id DESC");
+                            foreach ($next_payments as $key => $payment) {
+                                if ($payment->amount > $amount) {
+                                    $amount_next_payment = $payment->amount - $amount;
+                                    $wpdb->update($table_student_payments, [
+                                        'amount' => ($amount <= 0 ? 0 : $amount),
+                                        'status_id' => ($amount <= 0 ? 1 : 0)
+                                    ], ['id' => $payment->id]);
+                                    return;
+                                }
+                            }
+                        }
+
                     }
 
                     $order->update_status('completed');
