@@ -2320,9 +2320,7 @@ function loadFeesSplit()
                     $order->save();
                 }
             }
-        }
-        
-        if ($chosen_gateway == 'woo_squuad_stripe') {
+        } else if ($chosen_gateway == 'woo_squuad_stripe') {
             if ($payment_page == 0) {
                 $stripe_fee_percentage = 4.5; // 4.5% fee
                 $cart_subtotal = $cart->get_subtotal();
@@ -2357,6 +2355,15 @@ function loadFeesSplit()
                     $order->save();
                 }
             }
+        } else {
+            foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
+                if ( $item_fee->get_name() === 'Bank transfer Fee' || $item_fee->get_name() === 'Credit card Fee' ) {
+                    $order->remove_item( $item_id );
+                }
+            }
+
+            $order->calculate_totals();
+            $order->save();
         }
     }
 
