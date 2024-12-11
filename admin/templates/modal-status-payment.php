@@ -1,3 +1,5 @@
+<?php global $wpdb ?>
+
 <div id='modalStatusPayment' class='modal' style='display:none'>
 	<div class='modal-content'>
 		<div class="modal-header">
@@ -33,6 +35,38 @@
 							?>
 						</select>
 					</div><br>
+				<?php } 
+				
+				$table_student_payments = $wpdb->prefix . 'student_payments';
+				$payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$order->get_meta('student_id')} AND status_id = 0");
+				array_shift($payments);
+				?>
+				<?php if (($order->get_meta('cuote_payment') && $order->get_meta('cuote_payment') == 1) && count($payments) > 0) { ?>
+					<div>
+						<p>It is possible that the client has paid more than the amount of the outstanding installment.
+							Therefore, the amount of the installment will be applied and the remaining amount will be
+							credited to the next installment.</p>
+						<div style="display: flex; align-items: center; margin-bottom: 10px">
+							<input type="checkbox" name="paid_more" id="paid-more" style="margin: 0 5px 0px 0px;">
+							<label for="paid_more">Yes, the client paid more than the quota.</label>
+						</div>
+						<div id="amount-credit-input" style="display: none; margin-bottom: 10px">
+							<label for="amount_credit">Amount paid:</label><br>
+							<input type="number" name="amount_credit" id="amount-credit">
+						</div>
+						<div id="cuote-credit-select" style="display: none">
+							<label for="cuote_credit">Select one installment to be paid the remaining amount:</label><br>
+							<select name="cuote_credit" id="cuote-credit" style="width: 100%">
+								<?php foreach ($payments as $key => $pay) { ?>
+									<option value="<?php echo $pay->id ?>">
+										Quota N° <?php echo $pay->cuote . ' - ' . wc_price($pay->amount) ?>
+									</option>
+									<?php
+								}
+								?>
+							</select>
+						</div>
+					</div><br>
 				<?php } ?>
 				<div class="display:flex">
 					<div>
@@ -52,7 +86,7 @@
 						<p>If you want to finalize the order, because it is a payment agreement and no more payments are
 							needed, you can check this option, which will mark the order as completed and will mark all
 							payments made with the split as completed.</p>
-						<div style="display: flex; align-items: center; margin-botom: 10px">
+						<div style="display: flex; align-items: center; margin-bottom: 10px">
 							<input type="checkbox" name="finish_order" style="margin: 0 5px 0px 0px;" />
 							<label for="finish_order">Finish order</label>
 						</div>

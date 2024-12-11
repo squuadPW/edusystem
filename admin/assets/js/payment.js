@@ -38,6 +38,25 @@ document.addEventListener('DOMContentLoaded',function(){
         });
     }
 
+    paid_more = document.querySelector('input[name=paid_more]');
+
+    if(paid_more){
+
+        paid_more.addEventListener('change',(e) => {
+            if (e.target.checked) {
+                document.getElementById('cuote-credit-select').style.display = "block";
+                document.getElementById('amount-credit-input').style.display = "block";
+                document.querySelector('input[name=amount_credit]').required = true;
+                document.querySelector('select[name=cuote_credit]').required = true;
+            } else {
+                document.getElementById('cuote-credit-select').style.display = "none";
+                document.getElementById('amount-credit-input').style.display = "none";
+                document.querySelector('input[name=amount_credit]').required = false;
+                document.querySelector('select[name=cuote_credit]').required = false;
+            }
+        });
+    }
+
     
     generate_order_split = document.getElementById('generate_order_split');
 

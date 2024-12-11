@@ -53,6 +53,12 @@
 
                                     </tr>
                                 <?php endif; ?>
+                                <?php if($order->get_meta('fee_order_pay') && $order->get_meta('fee_order_pay') > 0): ?>
+                                    <tr>
+                                        <th scope="row"><label for="input_id"><?= __('Fee payment method','aes'); ?></label></th>
+                                        <td><?= wc_price($order->get_meta('fee_order_pay')); ?></td>
+                                    </tr>
+                                <?php endif; ?>
                                 <?php if(!in_array('institutes',$roles) && !in_array('alliance',$roles)): ?>
                                     <tr>
                                         <th scope="row"><label for="input_id"><?= __('Payment Total','aes').':'; ?></label></th>

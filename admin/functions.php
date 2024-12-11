@@ -922,6 +922,8 @@ function daily_cuote_pendings()
                     $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
                     $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
                     $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
+                    $new_order->add_meta_data('cuote_payment', 1);
+                    $new_order->update_meta_data('_order_origin', 'Cuote pending - CronJob');
                     $product = $first_item->get_product();
                     $product->set_price($cuote_pending->amount);
                     $new_order->add_product($product, $first_item->get_quantity());

@@ -7,7 +7,7 @@ function add_admin_form_payments_content()
 
         if ($_GET['action'] == 'change_status_payment') {
 
-            global $current_user;
+            global $current_user, $wpdb;
             $name = get_user_meta($current_user->ID, 'first_name', true) . ' ' . get_user_meta($current_user->ID, 'last_name', true);
             $order_id = $_POST['order_id'];
             $status_id = $_POST['status_id'];
@@ -15,6 +15,9 @@ function add_admin_form_payments_content()
             $split_payment = $_POST['split_payment'] ?? null;
             $finish_order = $_POST['finish_order'] ?? null;
             $payment_confirm = $_POST['payment_confirm'] ?? null;
+            $paid_more = $_POST['paid_more'] ?? null;
+            $cuote_credit = $_POST['cuote_credit'] ?? null;
+            $amount_credit = $_POST['amount_credit'] ?? null;
             $order = wc_get_order($order_id);
 
             if ($status_id == 'completed') {
@@ -91,6 +94,17 @@ function add_admin_form_payments_content()
                         $order->update_status('completed');
                     }
                 } else {
+
+                    if (isset($paid_more) && $paid_more == 'on') {
+                        $calculated_amount = $amount_credit - $order->get_subtotal();
+					    $table_student_payments = $wpdb->prefix . 'student_payments';
+                        $payment_row = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE id = {$cuote_credit}");
+                        $amount = $payment_row->amount - $calculated_amount;
+                        $wpdb->update($table_student_payments, [
+                            'amount' => $amount,
+                        ], ['id' => $cuote_credit]);
+                    }
+
                     $order->update_status('completed');
                     $order->add_order_note('Payment modified by '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
                     $order->update_meta_data('payment_approved_by', $current_user->ID);

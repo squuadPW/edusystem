@@ -2301,9 +2301,23 @@ function loadFeesSplit()
             if ($payment_page == 0) {
                 $cart->add_fee('Bank transfer Fee', $fee);
             } else {
-                // $order->add_fee('Bank transfer Fee', $fee);
-                // $order->calculate_totals();
-                // $order->save();
+                $cart_subtotal = (float) $order->get_meta('pending_payment');
+                $is_total = false;
+                if (!$cart_subtotal || $cart_subtotal == 0) {
+                    $is_total = true;
+                    $cart_subtotal = $order->get_subtotal();
+                }
+
+                if ($is_total) {
+                    $order->set_total($order->get_subtotal() + $fee);
+                    $fee_order_pay = $order->get_meta('fee_order_pay');
+                    if ($fee_order_pay) {
+                        $order->update_meta_data('fee_order_pay', $fee);
+                    } else {
+                        $order->add_meta_data('fee_order_pay', $fee);
+                    }
+                    $order->save();
+                }
             }
         }
 
@@ -2322,17 +2336,25 @@ function loadFeesSplit()
             } else {
                 $stripe_fee_percentage = 4.5; // 4.5% fee
                 $cart_subtotal = (float) $order->get_meta('pending_payment');
+                $is_total = false;
                 if (!$cart_subtotal || $cart_subtotal == 0) {
+                    $is_total = true;
                     $cart_subtotal = $order->get_subtotal();
                 }
                 $stripe_fee_amount = ($cart_subtotal / 100) * $stripe_fee_percentage;
                 $fee = $stripe_fee_amount;
 
-                // Solo agregar fee si es mayor que 0
-                if ($stripe_fee_amount > 0) {
-                    // $order->add_fee('Credit card fee', $stripe_fee_amount);
-                    // $order->calculate_totals();
-                    // $order->save();
+                if ($is_total) {
+                    $order->set_total($order->get_subtotal() + $fee);
+
+                    $fee_order_pay = $order->get_meta('fee_order_pay');
+                    if ($fee_order_pay) {
+                        $order->update_meta_data('fee_order_pay', $fee);
+                    } else {
+                        $order->add_meta_data('fee_order_pay', $fee);
+                    }
+
+                    $order->save();
                 }
             }
         }
