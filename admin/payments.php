@@ -107,7 +107,7 @@ function add_admin_form_payments_content()
 
                         if ($amount < 0) {
                             $amount = abs($amount);
-                            $next_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$order->get_meta('student_id')} AND status_id = 0 ORDER BY id DESC");
+                            $next_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$order->get_meta('student_id')} AND status_id = 0 ORDER BY id ASC");
                             foreach ($next_payments as $key => $payment) {
                                 if ($payment->amount > $amount) {
                                     $amount_next_payment = $payment->amount - $amount;
