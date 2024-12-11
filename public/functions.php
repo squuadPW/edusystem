@@ -2356,14 +2356,16 @@ function loadFeesSplit()
                 }
             }
         } else {
-            foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
-                if ( $item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' ) {
-                    $order->remove_item( $item_id );
+            if ($order) {
+                foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
+                    if ( $item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' ) {
+                        $order->remove_item( $item_id );
+                    }
                 }
+    
+                $order->calculate_totals();
+                $order->save();
             }
-
-            $order->calculate_totals();
-            $order->save();
         }
     }
 
