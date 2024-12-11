@@ -28,7 +28,13 @@ $style_checkbox = ($split_payment_metadata !== '') ? 'none' : 'block';
         Payment methods
     </div>
 
-    <div style="padding: 18px">
+    <?php 
+    $style_checkbox_split = "";
+    if($order && $order->get_meta('cuote_payment')) {
+        $style_checkbox_split = "display: none !important";
+    } ?>
+
+    <div style="padding: 18px; <?php echo $style_checkbox_split; ?>">
         <!-- The checkbox -->
         <div style="padding: 10px; font-weight: 600; display: <?php echo $style_checkbox ?>">
             <label class="fee-container" style="margin-bottom: 0px !important">
@@ -72,7 +78,7 @@ $style_checkbox = ($split_payment_metadata !== '') ? 'none' : 'block';
             <!-- The button to generate parts -->
             <!-- <div style="text-align: center; display: flex; justify-content: space-evenly;">
             <div style="width: 45%; border-top: 1px solid gray;"></div><span style="margin-top: -10px;">Or</span><div style="width: 45%; border-top: 1px solid gray;"></div>
-         </div>
+        </div>
         <button id="generate-button" class="button button-primary" style="margin: 10px 0px !important;">Generate payment splits</button> -->
         </div>
     </div>
@@ -203,7 +209,7 @@ if ($order) {
                 document.getElementById('place_order').disabled = false;
                 let value = document.getElementById('aes_amount_split').value ? document.getElementById('aes_amount_split').value : 0;
                 let amount_calculated = (parseFloat(value) + parseFloat(current_fee)).toFixed(2);
-                document.getElementById('total_entered').innerText =  parseFloat(value) > 0 ? `$${amount_calculated.toLocaleString('en-US')}` : 0.00;
+                document.getElementById('total_entered').innerText = parseFloat(value) > 0 ? `$${amount_calculated.toLocaleString('en-US')}` : 0.00;
                 document.getElementById('payment_method_comission').innerText = parseFloat(value) > 0 ? `($${current_fee})` : `$0.00`;
                 document.getElementById('total_payment_button').disabled = false;
 
@@ -235,6 +241,10 @@ if ($order) {
                 rowsAfterFeeRow.first().remove(); // Eliminar el primer tr después de fee-row
             }
 
+            if (rowsAfterFeeRow.length === 5) {
+                rowsAfterFeeRow.eq(1).remove(); // Eliminar la cuarta fila (índice 3)
+            }
+
             let subtotal = 0;
             if (from_input) {
                 subtotal = from_input;
@@ -251,8 +261,9 @@ if ($order) {
                 maximumFractionDigits: 2
             }).format(new_total);
 
-            let prices = document.querySelectorAll('.woocommerce-Price-amount');
-            prices[(prices.length - 1)].innerText = formattedTotal;
+            let prices = document.querySelectorAll('.product-total > .woocommerce-Price-amount');
+            let less = prices.length == 6 ? 3 : 1;
+            prices[(prices.length - less)].innerText = formattedTotal;
         }
     }
 
