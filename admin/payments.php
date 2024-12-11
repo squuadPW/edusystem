@@ -29,9 +29,9 @@ function add_admin_form_payments_content()
                         $split_method[$index]->status = 'completed';
                         $order->update_meta_data('split_method', json_encode($split_method));
                     }
-    
-                    $order->add_order_note('Payment verified by  '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
-    
+
+                    $order->add_order_note('Payment verified by  ' . $name . '. Description: ' . ($description != '' ? $description : 'N/A'), 2); // 2 = admin note
+
                     $split_method_updated = $order->get_meta('split_method');
                     $split_method_updated = json_decode($split_method_updated);
                     $on_hold_found = false;
@@ -41,37 +41,37 @@ function add_admin_form_payments_content()
                             break;
                         }
                     }
-    
+
                     $total = 0.00;
                     $total_gross = 0.00;
                     foreach ($split_method_updated as $key => $split) {
                         $total += $split->amount;
                         $total_gross += $split->gross_total;
                     }
-    
+
                     $total_paid_meta = $order->get_meta('total_paid');
                     if ($total_paid_meta) {
                         $order->update_meta_data('total_paid', $total);
                     } else {
                         $order->add_meta_data('total_paid', $total);
                     }
-    
+
                     $total_paid_meta = $order->get_meta('total_paid_gross');
                     if ($total_paid_meta) {
                         $order->update_meta_data('total_paid_gross', $total_gross);
                     } else {
                         $order->add_meta_data('total_paid_gross', $total_gross);
                     }
-                    
+
                     $pending_payment_meta = $order->get_meta('pending_payment');
                     if ($pending_payment_meta) {
                         $order->update_meta_data('pending_payment', ($order->get_total() - $total));
                     } else {
                         $order->add_meta_data('pending_payment', ($order->get_total() - $total));
                     }
-    
+
                     if (!$on_hold_found) {
-                        if ((float)$order->get_meta('pending_payment') <= 0) {
+                        if ((float) $order->get_meta('pending_payment') <= 0) {
                             $order->update_status('completed');
                         } else {
                             $order->update_status('pending-payment');
@@ -79,11 +79,11 @@ function add_admin_form_payments_content()
                     }
 
                     if ($finish_order) {
-                        $discount_amount = (float)$order->get_meta('pending_payment');
+                        $discount_amount = (float) $order->get_meta('pending_payment');
                         $total = $order->get_total();
                         $new_total = ($total - $discount_amount);
                         $order->set_total($new_total);
-                        $order->add_meta_data('discount_from_split', (float)$order->get_meta('pending_payment'));
+                        $order->add_meta_data('discount_from_split', (float) $order->get_meta('pending_payment'));
                         $order->update_meta_data('pending_payment', 0);
 
                         foreach ($split_method_updated as $key => $split) {
@@ -97,7 +97,7 @@ function add_admin_form_payments_content()
 
                     if (isset($paid_more) && $paid_more == 'on') {
                         $calculated_amount = $amount_credit - $order->get_subtotal();
-					    $table_student_payments = $wpdb->prefix . 'student_payments';
+                        $table_student_payments = $wpdb->prefix . 'student_payments';
                         $payment_row = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE id = {$cuote_credit}");
                         $amount = $payment_row->amount - $calculated_amount;
                         $wpdb->update($table_student_payments, [
@@ -124,17 +124,17 @@ function add_admin_form_payments_content()
                     }
 
                     $order->update_status('completed');
-                    $order->add_order_note('Payment verified by '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
+                    $order->add_order_note('Payment verified by ' . $name . '. Description: ' . ($description != '' ? $description : 'N/A'), 2); // 2 = admin note
                     $order->update_meta_data('payment_approved_by', $current_user->ID);
                 }
-    
+
                 $order->save();
-    
+
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
             } else {
 
                 $order->update_status('cancelled');
-                $order->add_order_note('Payment declined by '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
+                $order->add_order_note('Payment declined by ' . $name . '. Description: ' . ($description != '' ? $description : 'N/A'), 2); // 2 = admin note
                 $order->update_meta_data('payment_declined_by', $current_user->ID);
                 $order->save();
 
@@ -151,21 +151,21 @@ function add_admin_form_payments_content()
             global $wpdb;
             $id_document = $_POST['id_document'];
             $generate = $_POST['generate'];
-            $table_students = $wpdb->prefix.'students';
+            $table_students = $wpdb->prefix . 'students';
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}'");
 
             if ($generate) {
                 $amount = $_POST['amount'];
                 $product_id = $_POST['product_id'];
                 $customer_id = $student->partner_id;
-    
+
                 $orders_customer = wc_get_orders(array(
                     'customer_id' => $customer_id,
                     'limit' => 1,
                     'orderby' => 'date',
                     'order' => 'ASC' // Para obtener la primera orden
                 ));
-                $order_old = $orders_customer[0];                
+                $order_old = $orders_customer[0];
                 $order_id = $order_old->get_id();
                 $old_order_items = $order_old->get_items();
                 $first_item = reset($old_order_items);
@@ -174,7 +174,7 @@ function add_admin_form_payments_content()
                     'customer_id' => $customer_id,
                     'status' => 'pending-payment',
                 );
-                
+
                 $new_order = wc_create_order($order_args);
                 $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
                 $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
@@ -205,15 +205,15 @@ function add_admin_form_payments_content()
                 $user_customer = get_user_by('id', $customer_id);
                 $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
                 $email_user->trigger($user_customer, 'You have pending payments', 'We invite you to log in to our platform as soon as possible so you can see your pending payments.');
-            
+
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&success_advance_payment=true'));
                 exit;
             }
 
             if ($student) {
-                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document='.$id_document));
+                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document));
             } else {
-                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=0&id_document='.$id_document));
+                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=0&id_document=' . $id_document));
             }
         } else if ($_GET['action'] == 'generate_order') {
             global $wpdb;
@@ -222,17 +222,17 @@ function add_admin_form_payments_content()
             $order_id = $_POST['order_id_old'];
             $name = get_user_meta($current_user->ID, 'first_name', true) . ' ' . get_user_meta($current_user->ID, 'last_name', true);
 
-            if (!isset($order_id)) {    
+            if (!isset($order_id)) {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
                 exit;
             }
 
             $order_old = wc_get_order($order_id);
             $order_old->add_meta_data('split_complete', 1);
-            $order_old->update_status('on-hold'); 
+            $order_old->update_status('on-hold');
             $order_old->save();
 
-            $order_old->update_status('completed'); 
+            $order_old->update_status('completed');
             $order_old->save();
 
             $order_old->update_status('pending-payment');
@@ -240,23 +240,23 @@ function add_admin_form_payments_content()
             // $order_old->set_date_created($date_order);
 
             if ($order_old->get_meta('dates_next_orders')) {
-				$dates = json_decode($order_old->get_meta('dates_next_orders'));
-				array_push($dates, [
-					'id' => (count($dates) + 1),
+                $dates = json_decode($order_old->get_meta('dates_next_orders'));
+                array_push($dates, [
+                    'id' => (count($dates) + 1),
                     'date' => $date_order,
                     'pending_payment' => $amount_order
-				]);
-				$order_old->update_meta_data( 'dates_next_orders', json_encode($dates));
-			} else {
-				$dates = [
-					[
-						'id' => 1,
+                ]);
+                $order_old->update_meta_data('dates_next_orders', json_encode($dates));
+            } else {
+                $dates = [
+                    [
+                        'id' => 1,
                         'date' => $date_order,
                         'pending_payment' => $amount_order
-					]
-				];
-				$order_old->add_meta_data( 'dates_next_orders', json_encode($dates));
-			}
+                    ]
+                ];
+                $order_old->add_meta_data('dates_next_orders', json_encode($dates));
+            }
 
             $split_method = $order_old->get_meta('split_method');
             $split_method = json_decode($split_method);
@@ -266,7 +266,7 @@ function add_admin_form_payments_content()
                 $order_old->update_meta_data('split_method', json_encode($split_method));
             }
 
-            $order_old->add_order_note('Payment verified by '. $name . '. Description: N/A', 2); // 2 = admin note
+            $order_old->add_order_note('Payment verified by ' . $name . '. Description: N/A', 2); // 2 = admin note
 
             $split_method_updated = $order_old->get_meta('split_method');
             $split_method_updated = json_decode($split_method_updated);
@@ -299,7 +299,7 @@ function add_admin_form_payments_content()
                 } else {
                     $order_old->add_meta_data('total_paid_gross', $total_gross);
                 }
-                
+
                 // $pending_payment_meta = $order_old->get_meta('pending_payment');
                 // if ($pending_payment_meta) {
                 //     $order_old->update_meta_data('pending_payment', (($order_old->get_subtotal() - $order_old->get_total_discount()) - $total));
@@ -321,7 +321,7 @@ function add_admin_form_payments_content()
             //     'customer_id' => $customer_id,
             //     'status' => 'pending-payment',
             // );
-            
+
             // $new_order = wc_create_order($order_args);
             // $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
             // $new_order->add_meta_data('old_order_primary', $order_id);
@@ -394,8 +394,8 @@ function add_admin_form_payments_content()
             global $wpdb;
             $id_document = $_GET['id_document'];
             $generate = $_GET['generate'];
-            $table_students = $wpdb->prefix.'students';
-            $table_student_payments = $wpdb->prefix.'student_payments';
+            $table_students = $wpdb->prefix . 'students';
+            $table_student_payments = $wpdb->prefix . 'student_payments';
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}'");
             if ($student) {
                 $payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' AND status_id = 0 ORDER BY cuote ASC");
@@ -411,18 +411,19 @@ function add_admin_form_payments_content()
     }
 }
 
-function success_advance_payment() {
+function success_advance_payment()
+{
     if (isset($_GET['success_advance_payment']) && $_GET['success_advance_payment'] == 'true') {
-      ?>
-      <div class="notice notice-success is-dismissible">
-        <p>Payment generated successfully</p>
-      </div>
-      <?php
+        ?>
+        <div class="notice notice-success is-dismissible">
+            <p>Payment generated successfully</p>
+        </div>
+        <?php
     }
-  }
-  
-  // Add the success message to the admin_notices action
-  add_action('admin_notices', 'success_advance_payment');
+}
+
+// Add the success message to the admin_notices action
+add_action('admin_notices', 'success_advance_payment');
 
 
 class TT_payment_pending_List_Table extends WP_List_Table
@@ -502,7 +503,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
-    
+
         // Verificar si el usuario actual tiene el rol 'webinar-alliance'
         if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
             // Si el usuario tiene el rol, solo buscar órdenes con from_webinar = 1
@@ -514,16 +515,16 @@ class TT_payment_pending_List_Table extends WP_List_Table
                 ]
             ];
         }
-    
+
         if (isset($_POST['s']) && !empty($_POST['s'])) {
             $args['s'] = $_POST['s'];
         }
-    
+
         $args['limit'] = $per_page; // limit to 10 orders per page
         $args['offset'] = $offset; // offset to start from the first order
         $args['status'] = array('wc-pending', 'wc-processing', 'wc-on-hold'); // 'wc-cancelled'
         $orders = wc_get_orders($args);
-    
+
         if ($orders) {
             foreach ($orders as $order) {
                 array_push($orders_array, [
@@ -536,10 +537,10 @@ class TT_payment_pending_List_Table extends WP_List_Table
                 ]);
             }
         }
-    
+
         $args_filtered['limit'] = -1;
         $args_filtered['status'] = array('wc-pending', 'wc-cancelled', 'wc-processing', 'wc-on-hold');
-    
+
         if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
             $args_filtered['meta_query'] = [
                 [
@@ -549,7 +550,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
                 ]
             ];
         }
-    
+
         $total_count = wc_get_orders(array_merge($args_filtered, array('return' => 'count')));
         return ['data' => $orders_array, 'total_count' => sizeof($total_count)];
     }
@@ -683,7 +684,7 @@ class TT_all_payments_List_Table extends WP_List_Table
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
-    
+
         // Verificar si el usuario actual tiene el rol 'webinar-alliance'
         if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
             // Si el usuario tiene el rol, solo buscar órdenes con from_webinar = 1
@@ -695,11 +696,11 @@ class TT_all_payments_List_Table extends WP_List_Table
                 ]
             ];
         }
-    
+
         if (isset($_POST['s']) && !empty($_POST['s'])) {
             $args['s'] = $_POST['s'];
         }
-    
+
         $args['limit'] = $per_page; // limit to 10 orders per page
         $args['offset'] = $offset; // offset to start from the first order
         $args['status'] = array('wc-pending', 'wc-completed', 'wc-cancelled', 'wc-processing', 'wc-on-hold');
@@ -717,10 +718,10 @@ class TT_all_payments_List_Table extends WP_List_Table
                 ]);
             }
         }
-    
+
         $args_filtered['limit'] = -1;
         $args_filtered['status'] = array('wc-pending', 'wc-completed', 'wc-cancelled', 'wc-processing', 'wc-on-hold');
-    
+
         if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
             $args_filtered['meta_query'] = [
                 [
@@ -730,7 +731,7 @@ class TT_all_payments_List_Table extends WP_List_Table
                 ]
             ];
         }
-    
+
         $total_count = wc_get_orders(array_merge($args_filtered, array('return' => 'count')));
         return ['data' => $orders_array, 'total_count' => sizeof($total_count)];
     }
