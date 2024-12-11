@@ -120,6 +120,7 @@ function add_admin_form_payments_content()
                             }
                         }
 
+                        $order->update_meta_data('amount_credit', $amount_credit);
                     }
 
                     $order->update_status('completed');
