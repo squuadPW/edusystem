@@ -232,7 +232,7 @@ if ($order) {
             if (from_input) {
                 subtotal = from_input;
             } else {
-                subtotal = <?php echo $order->get_subtotal(); ?>;
+                subtotal = <?php echo $order ? $order->get_subtotal() : 0; ?>;
             }
             let new_total = subtotal + fee; // Calcula el nuevo total
 
