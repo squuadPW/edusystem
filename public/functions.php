@@ -2296,6 +2296,18 @@ function loadFeesSplit()
     $fee = 0;
 
     if (!isset($_COOKIE['from_webinar']) || empty($_COOKIE['from_webinar'])) {
+
+        if ($order) {
+            foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
+                if ( $item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' ) {
+                    $order->remove_item( $item_id );
+                }
+            }
+
+            $order->calculate_totals();
+            $order->save();
+        }
+
         if ($chosen_gateway == 'aes_payment') {
             $fee = 35;
             if ($payment_page == 0) {
@@ -2320,7 +2332,9 @@ function loadFeesSplit()
                     $order->save();
                 }
             }
-        } else if ($chosen_gateway == 'woo_squuad_stripe') {
+        } 
+        
+        if ($chosen_gateway == 'woo_squuad_stripe') {
             if ($payment_page == 0) {
                 $stripe_fee_percentage = 4.5; // 4.5% fee
                 $cart_subtotal = $cart->get_subtotal();
@@ -2354,17 +2368,6 @@ function loadFeesSplit()
                     $order->calculate_totals();
                     $order->save();
                 }
-            }
-        } else {
-            if ($order) {
-                foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
-                    if ( $item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' ) {
-                        $order->remove_item( $item_id );
-                    }
-                }
-    
-                $order->calculate_totals();
-                $order->save();
             }
         }
     }
