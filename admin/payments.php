@@ -30,7 +30,7 @@ function add_admin_form_payments_content()
                         $order->update_meta_data('split_method', json_encode($split_method));
                     }
     
-                    $order->add_order_note('Payment modified by  '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
+                    $order->add_order_note('Payment verified by  '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
     
                     $split_method_updated = $order->get_meta('split_method');
                     $split_method_updated = json_decode($split_method_updated);
@@ -124,7 +124,7 @@ function add_admin_form_payments_content()
                     }
 
                     $order->update_status('completed');
-                    $order->add_order_note('Payment modified by '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
+                    $order->add_order_note('Payment verified by '. $name . '. Description: ' .($description != '' ? $description : 'N/A'), 2); // 2 = admin note
                     $order->update_meta_data('payment_approved_by', $current_user->ID);
                 }
     
@@ -266,7 +266,7 @@ function add_admin_form_payments_content()
                 $order_old->update_meta_data('split_method', json_encode($split_method));
             }
 
-            $order_old->add_order_note('Payment modified by '. $name . '. Description: N/A', 2); // 2 = admin note
+            $order_old->add_order_note('Payment verified by '. $name . '. Description: N/A', 2); // 2 = admin note
 
             $split_method_updated = $order_old->get_meta('split_method');
             $split_method_updated = json_decode($split_method_updated);
