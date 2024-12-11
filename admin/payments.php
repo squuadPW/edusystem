@@ -115,7 +115,7 @@ function add_admin_form_payments_content()
                                         'amount' => ($amount <= 0 ? 0 : $amount),
                                         'status_id' => ($amount <= 0 ? 1 : 0)
                                     ], ['id' => $payment->id]);
-                                    return;
+                                    break;
                                 }
                             }
                         }
