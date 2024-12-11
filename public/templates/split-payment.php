@@ -216,7 +216,6 @@ if ($order) {
         fee = parseFloat(fee);
         aes_payment_page = document.getElementById('aes_payment_page').value;
         if (aes_payment_page == 1) {
-            // Eliminar el tr anterior si existe
             $('table.shop_table tfoot tr.fee-row').remove();
 
             // Crear un nuevo tr para la tarifa
@@ -227,6 +226,14 @@ if ($order) {
 
             // Agregar el nuevo tr al pie de la tabla en la segunda posición
             $('table.shop_table tfoot tr').eq(1).before(newFeeRow);
+
+            // Verificar si hay exactamente dos tr después de la nueva fila fee-row
+            var feeRowIndex = $('table.shop_table tfoot tr.fee-row').index();
+            var rowsAfterFeeRow = $('table.shop_table tfoot tr').slice(feeRowIndex + 1); // Filas después de fee-row
+
+            if (rowsAfterFeeRow.length === 2) {
+                rowsAfterFeeRow.first().remove(); // Eliminar el primer tr después de fee-row
+            }
 
             let subtotal = 0;
             if (from_input) {
