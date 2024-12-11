@@ -2319,9 +2319,7 @@ function loadFeesSplit()
                     $order->save();
                 }
             }
-        }
-
-        if ($chosen_gateway == 'woo_squuad_stripe') {
+        } else if ($chosen_gateway == 'woo_squuad_stripe') {
             if ($payment_page == 0) {
                 $stripe_fee_percentage = 4.5; // 4.5% fee
                 $cart_subtotal = $cart->get_subtotal();
@@ -2356,6 +2354,23 @@ function loadFeesSplit()
 
                     $order->save();
                 }
+            }
+        } else {
+            $cart_subtotal = (float) $order->get_meta('pending_payment');
+            $is_total = false;
+            if (!$cart_subtotal || $cart_subtotal == 0) {
+                $is_total = true;
+            }
+
+            if ($is_total) {
+                $order->set_total($order->get_subtotal() + $fee);
+                $fee_order_pay = $order->get_meta('fee_order_pay');
+                if ($fee_order_pay) {
+                    $order->update_meta_data('fee_order_pay', $fee);
+                } else {
+                    $order->add_meta_data('fee_order_pay', $fee);
+                }
+                $order->save();
             }
         }
     }
