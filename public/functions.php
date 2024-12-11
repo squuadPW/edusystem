@@ -2299,7 +2299,7 @@ function loadFeesSplit()
         if ($chosen_gateway == 'aes_payment') {
             $fee = 35;
             if ($payment_page == 0) {
-                $cart->add_fee('Bank transfer Fee', $fee);
+                $cart->add_fee('Bank Transfer Fee', $fee);
             } else {
                 $cart_subtotal = (float) $order->get_meta('pending_payment');
                 $is_total = false;
@@ -2310,7 +2310,7 @@ function loadFeesSplit()
 
                 if ($is_total) {
                     $item_fee_payment_method = new WC_Order_Item_Fee();
-                    $item_fee_payment_method->set_name("Bank transfer Fee");
+                    $item_fee_payment_method->set_name("Bank Transfer Fee");
                     $item_fee_payment_method->set_amount($fee);
                     $item_fee_payment_method->set_tax_class('');
                     $item_fee_payment_method->set_tax_status('none');
@@ -2330,7 +2330,7 @@ function loadFeesSplit()
 
                 // Solo agregar fee si es mayor que 0
                 if ($stripe_fee_amount > 0) {
-                    $cart->add_fee('Credit card fee', $stripe_fee_amount);
+                    $cart->add_fee('Credit Card Fee', $stripe_fee_amount);
                 }
             } else {
                 $stripe_fee_percentage = 4.5; // 4.5% fee
@@ -2345,7 +2345,7 @@ function loadFeesSplit()
 
                 if ($is_total) {
                     $item_fee_payment_method = new WC_Order_Item_Fee();
-                    $item_fee_payment_method->set_name("Credit card Fee");
+                    $item_fee_payment_method->set_name("Credit Card Fee");
                     $item_fee_payment_method->set_amount($fee);
                     $item_fee_payment_method->set_tax_class('');
                     $item_fee_payment_method->set_tax_status('none');
@@ -2357,7 +2357,7 @@ function loadFeesSplit()
             }
         } else {
             foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
-                if ( $item_fee->get_name() === 'Bank transfer Fee' || $item_fee->get_name() === 'Credit card Fee' ) {
+                if ( $item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' ) {
                     $order->remove_item( $item_id );
                 }
             }
