@@ -2255,7 +2255,7 @@ function yaycommerce_add_checkout_fee_for_gateway()
     if (!isset($_COOKIE['from_webinar']) || empty($_COOKIE['from_webinar'])) {
         $chosen_gateway = WC()->session->get('chosen_payment_method');
         if ($chosen_gateway == 'aes_payment') {
-            WC()->cart->add_fee('Bank transfer Fee', 35);
+            WC()->cart->add_fee('Bank Transfer Fee', 35);
         }
 
         if ($chosen_gateway == 'woo_squuad_stripe') {
@@ -2263,7 +2263,7 @@ function yaycommerce_add_checkout_fee_for_gateway()
             $cart_subtotal = WC()->cart->get_subtotal();
             $discount = WC()->cart->get_cart_discount_total();
             $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
-            WC()->cart->add_fee('Credit card fee', $stripe_fee_amount);
+            WC()->cart->add_fee('Credit Card Fee', $stripe_fee_amount);
         }
     }
 }
@@ -2309,17 +2309,20 @@ function loadFeesSplit()
                 }
 
                 if ($is_total) {
-                    $order->set_total($order->get_subtotal() + $fee);
-                    $fee_order_pay = $order->get_meta('fee_order_pay');
-                    if ($fee_order_pay) {
-                        $order->update_meta_data('fee_order_pay', $fee);
-                    } else {
-                        $order->add_meta_data('fee_order_pay', $fee);
-                    }
+                    $item_fee_payment_method = new WC_Order_Item_Fee();
+                    $item_fee_payment_method->set_name("Bank transfer Fee");
+                    $item_fee_payment_method->set_amount($fee);
+                    $item_fee_payment_method->set_tax_class('');
+                    $item_fee_payment_method->set_tax_status('none');
+                    $item_fee_payment_method->set_total($fee);
+                    $order->add_item($item_fee_payment_method);
+                    $order->calculate_totals();
                     $order->save();
                 }
             }
-        } else if ($chosen_gateway == 'woo_squuad_stripe') {
+        }
+        
+        if ($chosen_gateway == 'woo_squuad_stripe') {
             if ($payment_page == 0) {
                 $stripe_fee_percentage = 4.5; // 4.5% fee
                 $cart_subtotal = $cart->get_subtotal();
@@ -2343,34 +2346,16 @@ function loadFeesSplit()
                 $fee = $stripe_fee_amount;
 
                 if ($is_total) {
-                    $order->set_total($order->get_subtotal() + $fee);
-
-                    $fee_order_pay = $order->get_meta('fee_order_pay');
-                    if ($fee_order_pay) {
-                        $order->update_meta_data('fee_order_pay', $fee);
-                    } else {
-                        $order->add_meta_data('fee_order_pay', $fee);
-                    }
-
+                    $item_fee_payment_method = new WC_Order_Item_Fee();
+                    $item_fee_payment_method->set_name("Credit card Fee");
+                    $item_fee_payment_method->set_amount($fee);
+                    $item_fee_payment_method->set_tax_class('');
+                    $item_fee_payment_method->set_tax_status('none');
+                    $item_fee_payment_method->set_total($fee);
+                    $order->add_item($item_fee_payment_method);
+                    $order->calculate_totals();
                     $order->save();
                 }
-            }
-        } else {
-            $cart_subtotal = (float) $order->get_meta('pending_payment');
-            $is_total = false;
-            if (!$cart_subtotal || $cart_subtotal == 0) {
-                $is_total = true;
-            }
-
-            if ($is_total) {
-                $order->set_total($order->get_subtotal() + $fee);
-                $fee_order_pay = $order->get_meta('fee_order_pay');
-                if ($fee_order_pay) {
-                    $order->update_meta_data('fee_order_pay', $fee);
-                } else {
-                    $order->add_meta_data('fee_order_pay', $fee);
-                }
-                $order->save();
             }
         }
     }
