@@ -221,7 +221,8 @@ if ($order) {
     function loadTableTotalsFee(fee, from_input = 0) {
         fee = parseFloat(fee);
         aes_payment_page = document.getElementById('aes_payment_page').value;
-        if (aes_payment_page == 1) {
+        let cuote_payment = <?php echo $order ? ($order->get_meta('cuote_payment') ? $order->get_meta('cuote_payment') : 0) : 0 ?>;
+        if (aes_payment_page == 1 && cuote_payment) {
             $('table.shop_table tfoot tr.fee-row').remove();
 
             // Crear un nuevo tr para la tarifa
@@ -263,7 +264,7 @@ if ($order) {
 
             let prices = document.querySelectorAll('.product-total > .woocommerce-Price-amount');
             let less = prices.length == 6 ? 3 : 1;
-            prices[(prices.length - less)].innerText = formattedTotal;
+            prices[(prices.length - less)].innerText = formattedTotal;   
         }
     }
 
