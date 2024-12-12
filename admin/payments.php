@@ -94,27 +94,36 @@ function add_admin_form_payments_content()
                         $order->update_status('completed');
                     }
                 } else {
+                    $order->update_status('completed');
+                    $order->add_order_note('Payment verified by ' . $name . '. Description: ' . ($description != '' ? $description : 'N/A'), 2); // 2 = admin note
+                    $order->update_meta_data('payment_approved_by', $current_user->ID);
 
                     if (isset($paid_more) && $paid_more == 'on') {
-                        $calculated_amount = $amount_credit - $order->get_subtotal();
                         $table_student_payments = $wpdb->prefix . 'student_payments';
                         $payment_row = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE id = {$cuote_credit}");
-                        $amount = $payment_row->amount - $calculated_amount;
-                        $wpdb->update($table_student_payments, [
-                            'amount' => ($amount <= 0 ? 0 : $amount),
-                            'status_id' => ($amount <= 0 ? 1 : 0)
-                        ], ['id' => $payment_row->id]);
 
-                        if ($amount < 0) {
-                            $amount = abs($amount);
+                        if ($amount_credit > $order->get_subtotal()) {
+                            $remaining_amount = $amount_credit - $order->get_subtotal();
+                        } else {
+                            $remaining_amount = $order->get_subtotal() - $amount_credit;
+                        }
+
+                        if ($remaining_amount > 0) {
                             $next_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$order->get_meta('student_id')} AND status_id = 0 ORDER BY id ASC");
                             foreach ($next_payments as $key => $payment) {
-                                if ($payment->amount > $amount) {
-                                    $amount_next_payment = $payment->amount - $amount;
+                                if ($remaining_amount > 0) {
+                                    $substract = $payment->amount - $remaining_amount;
+                                    $status_id = ($substract <= 0) ? 1 : 0;
+                                    $new_amount = ($substract <= 0) ? $payment->amount : $substract;
+                                    $payment_id = $payment->id;
+
                                     $wpdb->update($table_student_payments, [
-                                        'amount' => ($amount <= 0 ? 0 : $amount),
-                                        'status_id' => ($amount <= 0 ? 1 : 0)
-                                    ], ['id' => $payment->id]);
+                                        'amount' => $new_amount,
+                                        'status_id' => $status_id
+                                    ], ['id' => $payment_id]);
+
+                                    $remaining_amount = ($remaining_amount - $payment->amount);
+                                } else {
                                     break;
                                 }
                             }
@@ -122,10 +131,6 @@ function add_admin_form_payments_content()
 
                         $order->update_meta_data('amount_credit', $amount_credit);
                     }
-
-                    $order->update_status('completed');
-                    $order->add_order_note('Payment verified by ' . $name . '. Description: ' . ($description != '' ? $description : 'N/A'), 2); // 2 = admin note
-                    $order->update_meta_data('payment_approved_by', $current_user->ID);
                 }
 
                 $order->save();
