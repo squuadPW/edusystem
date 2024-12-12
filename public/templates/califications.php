@@ -2,10 +2,12 @@
 
 <?php if (!empty($students_formatted)): ?>
     <?php foreach ($students_formatted as $key => $student) { ?>
-        Califications for <?php echo $student['student']->name ?> <?php echo $student['student']->last_name ?>
         <table
             class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
             style="margin-top:20px;">
+            <caption style="text-align:start;">
+                Califications of <?php echo $student['student']->name ?> <?php echo $student['student']->last_name ?>
+            </caption>
             <thead>
                 <tr>
                     <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span
