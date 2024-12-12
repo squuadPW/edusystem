@@ -2,7 +2,7 @@
 
 <section class="segment" style="margin-top: 20px">
     <div class="segment-button-history active" data-option="current"><?= __('Current', 'aes'); ?></div>
-    <div class="segment-button-history" data-option="history"><?= __('History', 'aes'); ?></div>
+    <div class="segment-button-history" data-option="history"><?= __('Final', 'aes'); ?></div>
 </section>
 
 <div>
