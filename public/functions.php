@@ -81,6 +81,19 @@ function form_plugin_scripts()
         wp_enqueue_script('student-unsubscribe');
     }
 
+    
+    if (str_contains(home_url($wp->request), 'califications')) {
+        wp_register_script('califications', plugins_url('aes') . '/public/assets/js/califications.js', array('jquery'), '1.0.0', true);
+        wp_localize_script(
+            'califications',
+            'ajax_object',
+            array(
+                'ajax_url' => admin_url('admin-ajax.php')
+            )
+        );
+        wp_enqueue_script('califications');
+    }
+
     wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.0', true);
     wp_localize_script(
         'student-continue',

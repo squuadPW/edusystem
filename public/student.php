@@ -320,10 +320,12 @@ add_action('woocommerce_account_my-tickets_endpoint', function () {
 
 add_action('woocommerce_account_califications_endpoint', function () {
 
-    global $current_user;
+    global $current_user, $wpdb;
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $roles = $current_user->roles;
     $students = [];
     $students_formatted = [];
+    $students_formatted_history = [];
 
     if (!in_array('parent', $roles) && in_array('student', $roles)) {
         $student_id = get_user_meta($current_user->ID, 'student_id', true);
@@ -336,6 +338,8 @@ add_action('woocommerce_account_califications_endpoint', function () {
 
     foreach ($students as $key => $student) {
         $moodle_student_id = $student->moodle_student_id;
+        $formatted_assignments_history = [];
+
         if ($moodle_student_id) {
             $assignments = student_assignments_moodle($student->id);
             $assignments_course = $assignments['assignments'];
@@ -385,6 +389,29 @@ add_action('woocommerce_account_califications_endpoint', function () {
             array_push($students_formatted, [
                 'student' => $student,
                 'formatted_assignments' => $formatted_assignments
+            ]);
+        }
+
+        $projection_student = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
+        if ($projection_student) {
+            $projection = json_decode($projection_student->projection);
+
+            foreach ($projection as $key => $prj) {
+                if ($prj->is_completed) {
+                    array_push($formatted_assignments_history, [
+                        'subject' => $prj->subject,
+                        'code_subject' => $prj->code_subject,
+                        'code_period' => $prj->code_period,
+                        'cut' => $prj->cut,
+                        'hc' => $prj->hc,
+                        'calification' => $prj->calification,
+                    ]);
+                }
+            }
+
+            array_push($students_formatted_history, [
+                'student' => $student,
+                'formatted_assignments_history' => $formatted_assignments_history
             ]);
         }
     }
