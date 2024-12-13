@@ -35,6 +35,7 @@ function add_admin_form_enrollments_content()
             $code_subject = $_POST['code_subject'];
             $code_period = $_POST['code_period'];
             $cut_period = $_POST['cut_period'];
+            $calification = $_POST['calification'];
 
             $subject = get_subject_details_code($code_subject);
 
@@ -47,7 +48,8 @@ function add_admin_form_enrollments_content()
                     'subject_id' => $subject->id,
                     'code_subject' => $code_subject,
                     'code_period' => $code_period,
-                    'cut_period' => $cut_period
+                    'cut_period' => $cut_period,
+                    'calification' => $calification,
                 ], ['id' => $enrollment_id]);
 
                 setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
@@ -61,7 +63,8 @@ function add_admin_form_enrollments_content()
                     'subject_id' => $subject->id,
                     'code_subject' => $code_subject,
                     'code_period' => $code_period,
-                    'cut_period' => $cut_period
+                    'cut_period' => $cut_period,
+                    'calification' => $calification,
                 ]);
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_enrollments_content'));

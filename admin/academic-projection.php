@@ -150,7 +150,8 @@ function add_admin_form_academic_projection_content()
                             'subject_id' => $projection_obj[$key]->subject_id,
                             'code_subject' => $projection_obj[$key]->code_subject,
                             'code_period' => $projection_obj[$key]->code_period,
-                            'cut_period' => $projection_obj[$key]->cut
+                            'cut_period' => $projection_obj[$key]->cut,
+                            'calification' => $projection_obj[$key]->calification,
                         ]);
                     } else {
                         $wpdb->update($table_student_period_inscriptions, [
@@ -159,7 +160,8 @@ function add_admin_form_academic_projection_content()
                             'subject_id' => $projection_obj[$key]->subject_id,
                             'code_subject' => $projection_obj[$key]->code_subject,
                             'code_period' => $projection_obj[$key]->code_period,
-                            'cut_period' => $projection_obj[$key]->cut
+                            'cut_period' => $projection_obj[$key]->cut,
+                            'calification' => $projection_obj[$key]->calification,
                         ], ['id' => $exist->id]);
                     }
 

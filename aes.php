@@ -132,6 +132,7 @@ function create_tables()
         student_id INT(11) NOT NULL,
         subject_id INT(11) NULL,
         code_subject TEXT NULL,
+        calification DOUBLE(10, 2) NULL,
         code_period INT(11) NOT NULL,
         cut_period TEXT NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -170,6 +170,15 @@
                                             </select>
                                         <?php endif; ?>
                                     </div>
+                                    <div style="font-weight:400; text-align: center">
+                                    <?php if (isset($enrollment) && !empty($enrollment)): ?>
+                                            <label for="calification"><b><?= __('Calification', 'aes'); ?></b><span class="text-danger">*</span></label><br>
+                                            <input type="number" step="0.01" name="calification" value="<?= $enrollment->calification; ?>">
+                                        <?php else: ?>
+                                            <label for="calification"><b><?= __('Calification', 'aes'); ?></b><span class="text-danger">*</span></label><br>
+                                            <input type="number" step="0.01" name="calification">
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
 
                                 <h3
