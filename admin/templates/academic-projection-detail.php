@@ -1,6 +1,6 @@
 <div class="wrap">
     <?php if (isset($projection) && !empty($projection)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Academic projection of ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . ' (' . $student->id_document . ')', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Academic projection of ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . ' (' . $student->id_document . ')' . ' (' . $student->id . ')', 'aes'); ?></h2>
     <?php else: ?>
         <h2 style="margin-bottom:15px;"><?= __('Not found', 'aes'); ?></h2>
     <?php endif; ?>
@@ -74,7 +74,7 @@
 
                                         <div style="flex: 1; padding: 5px;">
                                             <label for="input_id"><b><?= __('Calification', 'aes'); ?></b></label><br>
-                                            <input type="number" name="calification[<?= $key ?>]" value="<?= $projection_for->calification ?? ''; ?>" <?php echo $projection_for->is_completed && !$projection_for->this_cut ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
+                                            <input type="number" step="0.01" name="calification[<?= $key ?>]" value="<?= $projection_for->calification ?? ''; ?>" <?php echo $projection_for->is_completed && !$projection_for->this_cut ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                         </div>
                                         
                                     </div>
