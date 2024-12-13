@@ -35,7 +35,7 @@ function adjust_projection_student(WP_REST_Request $request)
     $student_id = $data['student_id'];
     $cut = $data['cut'];
     $code_period = $data['code_period'];
-    $calification = $data['calification'];
+    $calification = (float)$data['calification'];
 
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
