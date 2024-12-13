@@ -45,15 +45,16 @@ function adjust_projection_student(WP_REST_Request $request)
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student_id}");
     $projection_obj = json_decode($projection->projection);
 
+    $status_id = ($calification >= $subject->min_pass ? 3 : 4);
     array_push($projection_obj, [
         'code_subject' => $subject->code_subject,
         'subject_id' => $subject->id,
         'subject' => $subject->name,
         'hc' => $subject->hc,
-        'cut' => $cut,
-        'code_period' => $code_period,
-        'calification' => $calification,
-        'is_completed' => true,
+        'cut' => $status_id == 4 ? '' : $cut,
+        'code_period' => $status_id == 4 ? '' : $code_period,
+        'calification' => $status_id == 4 ? '' : $calification,
+        'is_completed' => $status_id == 4 ? false : true,
         'this_cut' => false
     ]);
 
@@ -62,11 +63,12 @@ function adjust_projection_student(WP_REST_Request $request)
     ], ['id' => $projection->id]);
 
     $wpdb->insert($table_student_period_inscriptions, [
-        'status_id' => 3,
+        'status_id' => $status_id,
         'student_id' => $projection->student_id,
-        'code_subject' => $projection_obj[count($projection_obj) - 1]['code_subject'],
-        'code_period' => $projection_obj[count($projection_obj) - 1]['code_period'],
-        'cut_period' => $projection_obj[count($projection_obj) - 1]['cut'],
+        'code_subject' => $subject->code_subject,
+        'code_period' => $code_period,
+        'cut_period' => $cut,
+        'calification' => $calification,
     ]);
 
     wp_send_json(array('success' => true));

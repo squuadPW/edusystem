@@ -109,6 +109,7 @@ function add_admin_form_academic_projection_content()
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
             $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+            $table_school_subjects = $wpdb->prefix . 'school_subjects';
             $projection_id = $_POST['projection_id'];
             $completed = $_POST['completed'] ?? [];
             $academic_period = $_POST['academic_period'] ?? [];
@@ -121,62 +122,48 @@ function add_admin_form_academic_projection_content()
 
             // Procesar los datos
             foreach ($projection_obj as $key => $value) {
+                $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_obj[$key]->subject_id}");
+
                 $is_completed = isset($completed[$key]) ? true : false;
                 $is_this_cut = isset($this_cut[$key]) ? true : false;
                 $period = $academic_period[$key] ?? null;
                 $cut = $academic_period_cut[$key] ?? null;
                 $calification_value = $calification[$key] ?? null;
 
-                $projection_obj[$key]->is_completed = $is_completed;
-                $projection_obj[$key]->this_cut = $is_this_cut;
-                $projection_obj[$key]->code_period = $period;
-                $projection_obj[$key]->cut = $cut;
-                $projection_obj[$key]->calification = $calification_value;
+                $status_id = $is_this_cut ? 1 : ($calification_value >= $subject->min_pass ? 3 : 4);
+                if ($status_id != 4) {
+                    $projection_obj[$key]->is_completed = $is_completed;
+                    $projection_obj[$key]->this_cut = $is_this_cut;
+                    $projection_obj[$key]->code_period = $period;
+                    $projection_obj[$key]->cut = $cut;
+                    $projection_obj[$key]->calification = $calification_value;
+                }
 
-                if (!$is_completed) {
-                    $wpdb->delete($table_student_period_inscriptions, ['code_subject' => $projection_obj[$key]->code_subject, 'student_id' => $projection->student_id]);
-
-                    //borramos inscripcion moodle
-                    // if ($action != 'send_email') {
-                    //     $projection_obj[$key]->this_cut = false;
-                    //     unenroll_student($projection->student_id, [$projection_obj[$key]->moodle_course_id]);
-                    // }
-                } else {
-                    $exist = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$projection->student_id} AND code_subject = '{$projection_obj[$key]->code_subject}'");
+                if ($is_completed) {
+                    $exist = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$projection->student_id} AND code_subject = '{$projection_obj[$key]->code_subject}' AND status_id != 4");
                     if (!isset($exist)) {
                         $wpdb->insert($table_student_period_inscriptions, [
-                            'status_id' => $projection_obj[$key]->this_cut ? 1 : 3,
+                            'status_id' => $status_id,
                             'student_id' => $projection->student_id,
                             'subject_id' => $projection_obj[$key]->subject_id,
                             'code_subject' => $projection_obj[$key]->code_subject,
-                            'code_period' => $projection_obj[$key]->code_period,
-                            'cut_period' => $projection_obj[$key]->cut,
-                            'calification' => $projection_obj[$key]->calification,
+                            'code_period' => $period,
+                            'cut_period' => $cut,
+                            'calification' => $calification_value,
                         ]);
                     } else {
                         $wpdb->update($table_student_period_inscriptions, [
-                            'status_id' => $projection_obj[$key]->this_cut ? 1 : 3,
+                            'status_id' => $status_id,
                             'student_id' => $projection->student_id,
                             'subject_id' => $projection_obj[$key]->subject_id,
                             'code_subject' => $projection_obj[$key]->code_subject,
-                            'code_period' => $projection_obj[$key]->code_period,
-                            'cut_period' => $projection_obj[$key]->cut,
-                            'calification' => $projection_obj[$key]->calification,
+                            'code_period' => $period,
+                            'cut_period' => $cut,
+                            'calification' => $calification_value,
                         ], ['id' => $exist->id]);
                     }
-
-                    //generamos inscripcion moodle
-                    // if ($action != 'send_email') {
-                    //     $table_school_subjects = $wpdb->prefix . 'school_subjects';
-                    //     if ($projection_obj[$key]->this_cut) {
-                    //         $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_obj[$key]->subject_id}");
-                    //         enroll_student($projection->student_id, [$subject->moodle_course_id]);
-                    //     } else {
-                    //         $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_obj[$key]->subject_id}");
-                    //         unenroll_student($projection->student_id, [$subject->moodle_course_id]);
-                    //     }
-                    // }
                 }
+
             }
 
             $wpdb->update($table_student_academic_projection, [

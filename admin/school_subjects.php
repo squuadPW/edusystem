@@ -26,6 +26,7 @@ function add_admin_form_school_subjects_content()
             $hc = $_POST['hc'];
             $moodle_course_id = $_POST['moodle_course_id'];
             $is_elective = $_POST['is_elective'];
+            $min_pass = $_POST['min_pass'];
 
             //update
             if (isset($subject_id) && !empty($subject_id)) {
@@ -34,6 +35,7 @@ function add_admin_form_school_subjects_content()
                     'name' => $name,
                     'code_subject' => $code_subject,
                     'description' => $description,
+                    'min_pass' => $min_pass,
                     'hc' => $hc,
                     'moodle_course_id' => $moodle_course_id,
                     'is_elective' => $is_elective == 'on' ? 1 : 0
@@ -48,6 +50,7 @@ function add_admin_form_school_subjects_content()
                     'name' => $name,
                     'code_subject' => $code_subject,
                     'description' => $description,
+                    'min_pass' => $min_pass,
                     'hc' => $hc,
                     'moodle_course_id' => $moodle_course_id,
                     'is_elective' => $is_elective == 'on' ? 1 : 0

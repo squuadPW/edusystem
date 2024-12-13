@@ -102,6 +102,7 @@ function create_tables()
         code_subject TEXT NOT NULL,
         name TEXT NOT NULL,
         description TEXT NOT NULL,
+        min_pass DOUBLE(10, 2) NOT NULL,
         hc INT(11) NOT NULL,
         moodle_course_id INT(11) NULL,
         is_elective BOOLEAN NOT NULL DEFAULT 0,
@@ -125,6 +126,12 @@ function create_tables()
   }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_period_inscriptions}'") != $table_student_period_inscriptions) {
+    // status
+    // 0 to begin (por iniciar)
+    // 1 activo (activo, cursando actualmente)
+    // 2 unsubscribed (se retiro)
+    // 3 completed (completado)
+    // 4 failed (reprobado)
     dbDelta(
       "CREATE TABLE " . $table_student_period_inscriptions . " (
         id INT(11) NOT NULL AUTO_INCREMENT,

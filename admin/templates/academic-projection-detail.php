@@ -102,6 +102,9 @@
                                             <th scope="col" class=" manage-column">
                                                 <?= __('Period - cut', 'aes'); ?>
                                             </th>
+                                            <th scope="col" class=" manage-column">
+                                                <?= __('Calification', 'aes'); ?>
+                                            </th>
                                             <th scope="col" class=" manage-column" style="text-align: end">
                                                 <?= __('Action', 'aes'); ?>
                                             </th>
@@ -113,17 +116,20 @@
                                                 <td>
                                                     <?php
                                                         switch ($inscription->status_id) {
-                                                            case 1:
-                                                                echo '<div style="color: blue; font-weight: 600">'. strtoupper('Active') . '</div>';
-                                                                break;
                                                             case 0:
                                                                 echo '<div style="color: gray; font-weight: 600">'. strtoupper('To begin') . '</div>';
+                                                                break;
+                                                            case 1:
+                                                                echo '<div style="color: blue; font-weight: 600">'. strtoupper('Active') . '</div>';
                                                                 break;
                                                             case 2:
                                                                 echo '<div style="color: red; font-weight: 600">'. strtoupper('Unsubscribed') . '</div>';
                                                                 break;
                                                             case 3:
                                                                 echo '<div style="color: green; font-weight: 600">'. strtoupper('Completed') . '</div>';
+                                                                break;
+                                                            case 4:
+                                                                echo '<div style="color: red; font-weight: 600">'. strtoupper('Failed') . '</div>';
                                                                 break;
                                                         }
                                                     ?>
@@ -137,6 +143,9 @@
                                                 </td>
                                                 <td>
                                                     <?php echo $inscription->code_period . ' - ' . $inscription->cut_period; ?>
+                                                </td>
+                                                <td>
+                                                    <?php echo $inscription->calification ?? 'N/A'; ?>
                                                 </td>
                                                 <td style="text-align: end">
                                                     <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=delete_inscription&inscription_id=' . $inscription->id . '&projection_id=' . $projection->id); ?>" class="button button-danger"> <span class='dashicons dashicons-trash'></span> </a>

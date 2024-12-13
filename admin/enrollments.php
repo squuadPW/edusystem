@@ -127,6 +127,9 @@ class TT_enrollments_all_List_Table extends WP_List_Table
                     case 3:
                         return '<div style="color: green; font-weight: 600">'. strtoupper('Completed') . '</div>';
                         break;
+                    case 4:
+                        return '<div style="color: red; font-weight: 600">'. strtoupper('Failed') . '</div>';
+                        break;
                 }
             case 'view_details':
                 return "<a href='" . admin_url('/admin.php?page=add_admin_form_enrollments_content&section_tab=enrollment_details&enrollment_id=' . $item['enrollment_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";

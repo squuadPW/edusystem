@@ -77,6 +77,18 @@
                                             <input type="text" name="code_subject" value="" required>
                                         <?php endif; ?>
                                     </div>
+                                    
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($subject) && !empty($subject)): ?>
+                                            <label
+                                                for="min_pass"><b><?= __('Minimum passing grade', 'aes'); ?></b><span class="text-danger">*</span></label><br>
+                                            <input type="number" step="0.01" name="min_pass" value="<?= ucwords($subject->min_pass); ?>" required>
+                                        <?php else: ?>
+                                            <label for="min_pass"><b><?= __('Minimum passing grade', 'aes'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="number" step="0.01"  name="min_pass" value="" required>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div style="display: flex; justify-content: space-evenly; margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
