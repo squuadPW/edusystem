@@ -1,9 +1,9 @@
 <h2 style="font-size:24px;text-align:center;"><?= __('Califications', 'form-plugin'); ?></h2>
 
-<section class="segment" style="margin-top: 20px">
+<!-- <section class="segment" style="margin-top: 20px">
     <div class="segment-button-history active" data-option="current"><?= __('Current', 'aes'); ?></div>
     <div class="segment-button-history" data-option="history"><?= __('Final', 'aes'); ?></div>
-</section>
+</section> -->
 
 <div>
     <div id="current">

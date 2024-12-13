@@ -397,7 +397,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
             $projection = json_decode($projection_student->projection);
 
             foreach ($projection as $key => $prj) {
-                if ($prj->is_completed) {
+                if ($prj->is_completed && !$prj->this_cut) {
                     array_push($formatted_assignments_history, [
                         'subject' => $prj->subject,
                         'code_subject' => $prj->code_subject,
