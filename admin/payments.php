@@ -158,7 +158,7 @@ function add_admin_form_payments_content()
             $id_document = $_POST['id_document'];
             $generate = $_POST['generate'];
             $table_students = $wpdb->prefix . 'students';
-            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}'");
+            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}' OR email='{$id_document}'");
 
             if ($generate) {
                 $amount = $_POST['amount'];
@@ -182,11 +182,12 @@ function add_admin_form_payments_content()
                 );
 
                 $new_order = wc_create_order($order_args);
+                $new_order->add_meta_data('old_order_primary', $order_id);
                 $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
                 $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
-                $new_order->add_meta_data('is_vat_exempt', $order_old->get_meta('is_vat_exempt'));
-                $new_order->add_meta_data('pending_payment', 0);
                 $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
+                $new_order->add_meta_data('cuote_payment', 1);
+                $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin');
                 $product = $first_item->get_product();
                 $product->set_price($amount);
                 $new_order->add_product($product, $first_item->get_quantity());
@@ -399,12 +400,11 @@ function add_admin_form_payments_content()
         } else if ($_GET['section_tab'] == 'generate_advance_payment') {
             global $wpdb;
             $id_document = $_GET['id_document'];
-            $generate = $_GET['generate'];
             $table_students = $wpdb->prefix . 'students';
             $table_student_payments = $wpdb->prefix . 'student_payments';
-            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}'");
+            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}' OR email='{$id_document}'");
             if ($student) {
-                $payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' AND status_id = 0 ORDER BY cuote ASC");
+                $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' AND status_id = 0 ORDER BY cuote ASC");
             }
             include(plugin_dir_path(__FILE__) . 'templates/generate-advance-payment.php');
         }
