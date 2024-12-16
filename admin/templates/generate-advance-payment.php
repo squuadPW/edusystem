@@ -125,7 +125,7 @@
 							<table class="wp-list-table widefat fixed posts striped">
 								<thead>
 									<tr>
-										<th>Next payments</th>
+										<th>Next payments (<?php echo (count($payments) - 1) ?> remaining quotas)</th>
 										<th></th>
 										<th></th>
 									</tr>
