@@ -224,7 +224,7 @@ class TT_enrollments_all_List_Table extends WP_List_Table
                     'subject_code' => $enrollment['code_subject'] ? $subject->name . ' (' . $enrollment['code_subject'] . ')' : 'N/A',
                     'period_cut' => $enrollment['code_period'] . ' - ' . $enrollment['cut_period'],
                     'enrollment_id' => $enrollment['id'],
-                    'calification' => $enrollment['calification'] ?? 'N/A',
+                    'calification' => isset($enrollment['calification']) ? number_format($enrollment['calification'], 2) : 'N/A',
                 ]);
             }
         }

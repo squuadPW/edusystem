@@ -145,7 +145,7 @@
                                                     <?php echo $inscription->code_period . ' - ' . $inscription->cut_period; ?>
                                                 </td>
                                                 <td>
-                                                    <?php echo $inscription->calification ?? 'N/A'; ?>
+                                                    <?php echo isset($inscription->calification) ? number_format($inscription->calification, 2) : 'N/A'; ?>
                                                 </td>
                                                 <td style="text-align: end">
                                                     <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=delete_inscription&inscription_id=' . $inscription->id . '&projection_id=' . $projection->id); ?>" class="button button-danger"> <span class='dashicons dashicons-trash'></span> </a>
