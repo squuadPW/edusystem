@@ -27,7 +27,7 @@ function adjust_projection_student(WP_REST_Request $request)
     global $current_user, $wpdb;
 
     $body = $request->get_body();
-    
+
     // Decodificar el JSON
     $data = json_decode($body, true);
 
@@ -35,7 +35,7 @@ function adjust_projection_student(WP_REST_Request $request)
     $student_id = $data['student_id'];
     $cut = $data['cut'];
     $code_period = $data['code_period'];
-    $calification = (float)$data['calification'];
+    $calification = (float) $data['calification'];
 
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
@@ -46,17 +46,27 @@ function adjust_projection_student(WP_REST_Request $request)
     $projection_obj = json_decode($projection->projection);
 
     $status_id = ($calification >= $subject->min_pass ? 3 : 4);
-    array_push($projection_obj, [
-        'code_subject' => $subject->code_subject,
-        'subject_id' => $subject->id,
-        'subject' => $subject->name,
-        'hc' => $subject->hc,
-        'cut' => $status_id == 4 ? '' : $cut,
-        'code_period' => $status_id == 4 ? '' : $code_period,
-        'calification' => $status_id == 4 ? '' : $calification,
-        'is_completed' => $status_id == 4 ? false : true,
-        'this_cut' => false
-    ]);
+    $exists = false;
+    foreach ($projection_obj as $item) {
+        if ($item['subject_id'] === $subject->id) {
+            $exists = true;
+            break;
+        }
+    }
+
+    if (!$exists) {
+        array_push($projection_obj, [
+            'code_subject' => $subject->code_subject,
+            'subject_id' => $subject->id,
+            'subject' => $subject->name,
+            'hc' => $subject->hc,
+            'cut' => $status_id == 4 ? '' : $cut,
+            'code_period' => $status_id == 4 ? '' : $code_period,
+            'calification' => $status_id == 4 ? '' : $calification,
+            'is_completed' => $status_id == 4 ? false : true,
+            'this_cut' => false
+        ]);
+    }
 
     $wpdb->update($table_student_academic_projection, [
         'projection' => json_encode($projection_obj),
