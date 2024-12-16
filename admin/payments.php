@@ -17,7 +17,7 @@ function add_admin_form_payments_content()
             $payment_confirm = $_POST['payment_confirm'] ?? null;
             $paid_more = $_POST['paid_more'] ?? null;
             $cuote_credit = $_POST['cuote_credit'] ?? null;
-            $amount_credit = $_POST['amount_credit'] ?? null;
+            $amount_credit = (float)$_POST['amount_credit'] ?? null;
             $order = wc_get_order($order_id);
 
             if ($status_id == 'completed') {
@@ -130,6 +130,7 @@ function add_admin_form_payments_content()
                         }
 
                         $order->update_meta_data('amount_credit', $amount_credit);
+                        $order->set_total($amount_credit);
                     }
                 }
 
