@@ -108,6 +108,8 @@ class TT_enrollments_all_List_Table extends WP_List_Table
         global $current_user;
 
         switch ($column_name) {
+            case 'calification':
+                return $item[$column_name];
             case 'subject_code':
             case 'period_cut':
                 return strtoupper($item[$column_name]);
@@ -157,6 +159,7 @@ class TT_enrollments_all_List_Table extends WP_List_Table
             'full_name' => __('Student', 'aes'),
             'subject_code' => __('Subject - Code of subject', 'aes'),
             'period_cut' => __('Period - Cut', 'aes'),
+            'calification' => __('Calification', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
 
@@ -220,7 +223,8 @@ class TT_enrollments_all_List_Table extends WP_List_Table
                     'full_name' => $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name,
                     'subject_code' => $enrollment['code_subject'] ? $subject->name . ' (' . $enrollment['code_subject'] . ')' : 'N/A',
                     'period_cut' => $enrollment['code_period'] . ' - ' . $enrollment['cut_period'],
-                    'enrollment_id' => $enrollment['id']
+                    'enrollment_id' => $enrollment['id'],
+                    'calification' => $enrollment['calification'] ?? 'N/A',
                 ]);
             }
         }
