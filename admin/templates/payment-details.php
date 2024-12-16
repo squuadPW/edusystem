@@ -202,7 +202,7 @@
                                 $roles = $current_user->roles;
                                 if(!in_array('webinar-aliance', $roles)){?>
                                 <div style="margin-top:10px;display:flex;flex-direction:row;width:100%;justify-content:end;">
-                                    <?php if($order->get_status() != 'completed' && $order->get_status() != 'cancelled'){ ?>
+                                    <?php if($order->get_status() == 'on-hold'){ ?>
                                         <div style="margin-right: 10px">
                                             <?php if(wp_is_mobile()){ ?>
                                                 <button data-message="<?= __('Do you want to decline this payment?','aes'); ?>" data-title="<?= __('Decline','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="decline_payment" style="width:100%;" class="button button-danger"><?= __('Decline','aes'); ?></button>
@@ -211,7 +211,7 @@
                                             <?php } ?>
                                         </div>
                                     <?php } ?>
-                                    <?php if(($order->get_status() != 'completed' && $order->get_status() != 'cancelled') && ($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) && ($order->get_meta('pending_payment') && $order->get_meta('pending_payment') > 0)){ ?>
+                                    <?php if(($order->get_status() == 'on-hold') && ($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) && ($order->get_meta('pending_payment') && $order->get_meta('pending_payment') > 0)){ ?>
                                         <div style="margin-right: 10px">
                                             <?php if(wp_is_mobile()){ ?>
                                                 <button data-total="<?= $order->get_meta('pending_payment') ?>" data-message="<?= __('Do you want to set the date of the next payment?','aes'); ?>" data-title="<?= __('Generate next agreed payment','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="generate_order_split" style="width:100%;" class="button button-primary"><?= __('Payment agreement','aes'); ?></button>
