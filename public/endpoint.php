@@ -48,7 +48,7 @@ function adjust_projection_student(WP_REST_Request $request)
     $status_id = ($calification >= $subject->min_pass ? 3 : 4);
     $exists = false;
     foreach ($projection_obj as $item) {
-        if ($item['subject_id'] === $subject->id) {
+        if ($item->subject_id === $subject->id) {
             $exists = true;
             break;
         }
