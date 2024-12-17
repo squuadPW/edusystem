@@ -7,6 +7,7 @@ function add_admin_form_teachers_content()
         if ($_GET['section_tab'] == 'teacher_details') {
             $teacher_id = $_GET['teacher_id'];
             $teacher = get_teacher_details($teacher_id);
+            $documents = get_teacher_documents($teacher_id);
             include (plugin_dir_path(__FILE__) . 'templates/teacher-detail.php');
         }
         if ($_GET['section_tab'] == 'add_teacher') {
@@ -18,6 +19,8 @@ function add_admin_form_teachers_content()
         if ($_GET['action'] == 'save_teacher_details') {
             global $wpdb;
             $table_teachers = $wpdb->prefix . 'teachers';
+            $table_teacher_documents = $wpdb->prefix . 'teacher_documents';
+            $table_documents_for_teachers = $wpdb->prefix . 'documents_for_teachers';
 
             $teacher_id = $_POST['teacher_id'];
             $type_document = $_POST['type_document'];
@@ -143,6 +146,24 @@ function add_admin_form_teachers_content()
                 update_user_meta($user_teacher_id, 'id_document', $id_document);
                 update_user_meta($user_teacher_id, 'status_register', 1);
                 update_user_meta($user_teacher_id, 'teacher_id', $teacher_id);
+            
+                $documents = $wpdb->get_results("SELECT * FROM {$table_documents_for_teachers}");
+            
+                if ($documents) {
+                    foreach ($documents as $document) {
+                        $exist = $wpdb->get_row("SELECT * FROM {$table_teacher_documents} WHERE teacher_id = {$teacher_id} AND document_id = '{$document->name}'");
+                        if (!$exist) {
+                            $wpdb->insert($table_teacher_documents, [
+                                'teacher_id' => $teacher_id,
+                                'document_id' => $document->name,
+                                'is_required' => $document->is_required,
+                                'is_visible' => $document->is_visible,
+                                'status' => 0,
+                                'created_at' => date('Y-m-d H:i:s')
+                            ]);
+                        }
+                    }
+                }
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_teachers_content'));
                 exit;
@@ -233,9 +254,9 @@ class TT_teachers_all_List_Table extends WP_List_Table
 
         if (isset($_POST['s']) && !empty($_POST['s'])) {
             $search = $_POST['s'];
-            $teachers = $wpdb->get_results("SELECT * FROM wp_teachers WHERE (`name` LIKE '%{$search}%' || middle_name LIKE '%{$search}%' || last_name LIKE '%{$search}%' || middle_last_name LIKE '%{$search}%' || email LIKE '%{$search}%')");
+            $teachers = $wpdb->get_results("SELECT * FROM wp_teachers WHERE (`name` LIKE '%{$search}%' || middle_name LIKE '%{$search}%' || last_name LIKE '%{$search}%' || middle_last_name LIKE '%{$search}%' || email LIKE '%{$search}%')  ORDER BY id DESC");
         } else {
-            $teachers = $wpdb->get_results("SELECT * FROM wp_teachers");
+            $teachers = $wpdb->get_results("SELECT * FROM wp_teachers ORDER BY id DESC");
         }
 
         if ($teachers) {
@@ -315,3 +336,13 @@ function get_teacher_details($teacher_id)
     $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id={$teacher_id}");
     return $teacher;
 }
+
+function get_teacher_documents($teacher_id)
+{
+    global $wpdb;
+    $table_teacher_documents = $wpdb->prefix.'teacher_documents';
+
+    $documents = $wpdb->get_results("SELECT * FROM {$table_teacher_documents} WHERE teacher_id={$teacher_id}");
+    return $documents;
+}
+
