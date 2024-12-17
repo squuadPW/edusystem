@@ -3,7 +3,7 @@
 Plugin Name: Squuad for educational system
 Plugin URI: https://online.american-elite.us/wp-admin/plugins.php
 Description: The WordPress plugin for educational system is a customized tool that offers a range of functionalities for the proper functioning of the institute website
-Version: 1.2.61
+Version: 1.2.62
 Author: Squuad
 Author URI: https://online.american-elite.us/wp-admin/plugins.php
 License:      GPL2
@@ -35,6 +35,7 @@ function create_tables()
   $table_alliances = $wpdb->prefix . 'alliances';
   $table_grades = $wpdb->prefix . 'grades';
   $table_documents = $wpdb->prefix . 'documents';
+  $table_documents_for_teachers = $wpdb->prefix . 'documents_for_teachers';
   $table_pre_users = $wpdb->prefix . 'pre_users';
   $table_pre_students = $wpdb->prefix . 'pre_students';
   $table_student_scholarship_application = $wpdb->prefix . 'student_scholarship_application';
@@ -47,6 +48,7 @@ function create_tables()
   $table_tickets_created = $wpdb->prefix . 'tickets_created';
   $table_school_subjects = $wpdb->prefix . 'school_subjects';
   $table_teachers = $wpdb->prefix . 'teachers';
+  $table_teacher_documents = $wpdb->prefix . 'teacher_documents';
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_academic_projection}'") != $table_student_academic_projection) {
     dbDelta(
@@ -401,6 +403,24 @@ function create_tables()
     );
   }
 
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_teacher_documents}'") != $table_teacher_documents) {
+    dbDelta(
+      "CREATE TABLE " . $table_teacher_documents . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        teacher_id INT(11) NOT NULL,
+        document_id TEXT NOT NULL,
+        attachment_id BIGINT NOT NULL,
+        approved_by INT(11) NULL,
+        status INT(11) NOT NULL,
+        is_required INT(11) NOT NULL DEFAULT 0,
+        is_visible BOOLEAN NOT NULL DEFAULT 1,
+        upload_at DATETIME NULL,
+        updated_at DATETIME NULL,
+        created_at DATETIME NOT NULL,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_institutes}'") != $table_institutes) {
 
@@ -611,6 +631,68 @@ function create_tables()
         ]);
       }
     }
+  }
+
+  
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_documents_for_teachers}'") != $table_documents_for_teachers) {
+    dbDelta(
+      "CREATE TABLE " . $table_documents_for_teachers . " (
+      id INT(11) NOT NULL AUTO_INCREMENT,
+      name TEXT NOT NULL,
+      type_file TEXT NOT NULL,
+      is_required INT(11) NOT NULL,
+      is_visible BOOLEAN NOT NULL DEFAULT 1,
+      id_requisito TEXT NULL,
+      updated_at DATETIME NULL,
+      created_at DATETIME NOT NULL,
+      PRIMARY KEY (id))$charset_collate;"
+    );
+
+    $wpdb->insert($table_documents_for_teachers, [
+      'name' => 'PHOTO',
+      'type_file' => '.pdf',
+      'is_required' => 1,
+      'is_visible' => 1,
+      'id_requisito' => '',
+      'created_at' => date('Y-m-d H:i:s')
+    ]);
+
+    
+    $wpdb->insert($table_documents_for_teachers, [
+      'name' => 'FORM 402',
+      'type_file' => '.pdf',
+      'is_required' => 1,
+      'is_visible' => 1,
+      'id_requisito' => '',
+      'created_at' => date('Y-m-d H:i:s')
+    ]);
+
+    $wpdb->insert($table_documents_for_teachers, [
+      'name' => 'DIGITAL COPY OF UNDERGRADUATE DEGREE',
+      'type_file' => '.pdf',
+      'is_required' => 1,
+      'is_visible' => 1,
+      'id_requisito' => '',
+      'created_at' => date('Y-m-d H:i:s')
+    ]);
+
+    $wpdb->insert($table_documents_for_teachers, [
+      'name' => 'COPIA DIGITAL DEL TÍTULO DE POSTGRADO',
+      'type_file' => '.pdf',
+      'is_required' => 1,
+      'is_visible' => 1,
+      'id_requisito' => '',
+      'created_at' => date('Y-m-d H:i:s')
+    ]);
+
+    $wpdb->insert($table_documents_for_teachers, [
+      'name' => 'CURRICULAR SUMMARY',
+      'type_file' => '.pdf',
+      'is_required' => 1,
+      'is_visible' => 1,
+      'id_requisito' => '',
+      'created_at' => date('Y-m-d H:i:s')
+    ]);
   }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_academic_projection_base}'") != $table_academic_projection_base) {
