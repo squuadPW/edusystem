@@ -58,12 +58,12 @@
                                         </th>
                                         <th scope="row">
                                             <label for="id_document"><b><?php _e('ID document', 'aes'); ?></b></label><br>
-                                            <input type="text" id="id_document" name="id_document" value="<?php echo $teacher->id_document; ?>">
+                                            <input autocomplete="off" type="text" id="id_document" name="id_document" value="<?php echo $teacher->id_document; ?>">
                                         </th>
                                         
                                         <th scope="row">
                                             <label for="birth_date"><b><?php _e('Birth date', 'aes'); ?></b></label><br>
-                                            <input type="date" id="birth_date" name="birth_date" value="<?php echo $teacher->birth_date; ?>">
+                                            <input autocomplete="off" type="date" id="birth_date" name="birth_date" value="<?php echo $teacher->birth_date; ?>">
                                         </th>
                                         <th scope="row">
                                             <label for="gender"><b><?php _e('Gender', 'aes'); ?></b></label><br>
@@ -77,34 +77,39 @@
                                     <tr>
                                         <th scope="row">
                                             <label for="name"><b><?php _e('Name', 'aes'); ?></b></label><br>
-                                            <input type="text" id="name" name="name" value="<?php echo $teacher->name; ?>">
+                                            <input autocomplete="off" type="text" id="name" name="name" value="<?php echo $teacher->name; ?>">
                                         </th>
                                         <th scope="row">
                                             <label for="middle_name"><b><?php _e('Middle name', 'aes'); ?></b></label><br>
-                                            <input type="text" id="middle_name" name="middle_name" value="<?php echo $teacher->middle_name; ?>">
+                                            <input autocomplete="off" type="text" id="middle_name" name="middle_name" value="<?php echo $teacher->middle_name; ?>">
                                         </th>
                                         <th scope="row">
                                             <label for="last_name"><b><?php _e('Last name', 'aes'); ?></b></label><br>
-                                            <input type="text" id="last_name" name="last_name" value="<?php echo $teacher->last_name; ?>">
+                                            <input autocomplete="off" type="text" id="last_name" name="last_name" value="<?php echo $teacher->last_name; ?>">
                                         </th>
                                         <th scope="row">
                                             <label for="middle_last_name"><b><?php _e('Middle last name', 'aes'); ?></b></label><br>
-                                            <input type="text" id="middle_last_name" name="middle_last_name" value="<?php echo $teacher->middle_last_name; ?>">
+                                            <input autocomplete="off" type="text" id="middle_last_name" name="middle_last_name" value="<?php echo $teacher->middle_last_name; ?>">
                                         </th>
                                     </tr>
                                     <tr>
                                         <th scope="row">
                                             <label for="email"><b><?php _e('Email', 'aes'); ?></b></label><br>
-                                            <input type="text" id="email" name="email" value="<?php echo $teacher->email; ?>">
+                                            <input autocomplete="off" type="text" id="email" name="email" value="<?php echo $teacher->email; ?>">
+                                            <input autocomplete="off" type="hidden" id="old_email" name="old_email" value="<?php echo $teacher->email; ?>">
                                         </th>
                                         <th scope="row">
                                             <label for="phone"><b><?php _e('Phone', 'aes'); ?></b></label><br>
-                                            <input type="text" id="phone" name="phone" value="<?php echo $teacher->phone; ?>">
+                                            <input autocomplete="off" type="text" id="phone" name="phone" value="<?php echo $teacher->phone; ?>">
                                             <input type="hidden" name="phone_hidden" id="phone_hidden"  value="<?= $teacher->phone; ?>">
                                         </th>
                                         <th scope="row">
                                             <label for="address"><b><?php _e('Address', 'aes'); ?></b></label><br>
-                                            <input type="text" id="address" name="address" value="<?php echo $teacher->address; ?>">
+                                            <input autocomplete="off" type="text" id="address" name="address" value="<?php echo $teacher->address; ?>">
+                                        </th>
+                                        <th scope="row">
+                                            <label for="password"><b><?php _e('Password', 'aes'); ?></b></label><br>
+                                            <input type="password" id="password" name="password" autocomplete="off">
                                         </th>
                                     </tr>
                                 </tbody>

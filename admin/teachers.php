@@ -29,9 +29,11 @@ function add_admin_form_teachers_content()
             $last_name = $_POST['last_name'];
             $middle_last_name = $_POST['middle_last_name'];
             $email = $_POST['email'];
+            $old_email = $_POST['old_email'];
             $phone = $_POST['phone'];
             $phone_hidden = $_POST['phone_hidden'];
             $address = $_POST['address'];
+            $password = $_POST['password'];
             $status = (isset($_POST['status']) && $_POST['status'] == 'on') ? 1 : 0;
             
             //update
@@ -51,6 +53,46 @@ function add_admin_form_teachers_content()
                     'address' => $address,
                     'status' => $status,
                 ], ['id' => $teacher_id]);
+
+
+                //TABLE USERS
+                $table_users = $wpdb->prefix . 'users';
+                $user_teacher = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $old_email . "'");
+                $user_teacher_exist = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $email . "'");
+                if (isset($user_teacher) && (isset($user_teacher_exist) && $email == $old_email) || (!isset($user_teacher_exist) && $email != $old_email)) {
+                    $wpdb->update(
+                        $wpdb->users,
+                        array(
+                            'user_email' => $email,
+                            'user_login' => $email,
+                            'display_name' => $name . ' ' . $last_name,
+                        ),
+                        array('ID' => $user_teacher->ID),
+                        array('%s', '%s', '%s'),
+                        array('%d')
+                    );
+    
+                    if ($password && isset($user_teacher)) {
+                        $user_id = $user_teacher->ID; // Replace with the ID of the user you want to update
+                        wp_set_password($password, $user_teacher->ID);
+                    }
+        
+                    //METAADATA
+                    $username = $email;
+                    update_user_meta($user_teacher->ID, 'first_name', $name);
+                    update_user_meta($user_teacher->ID, 'billing_first_name', $name);
+                    update_user_meta($user_teacher->ID, 'last_name', $last_name);
+                    update_user_meta($user_teacher->ID, 'billing_last_name', $last_name);
+                    update_user_meta($user_teacher->ID, 'nickname', $username);
+                    update_user_meta($user_teacher->ID, 'birth_date', $birth_date);
+                    update_user_meta($user_teacher->ID, 'gender', $gender);
+                    update_user_meta($user_teacher->ID, 'billing_email', $email);
+                    update_user_meta($user_teacher->ID, 'billing_phone', $phone);
+                    update_user_meta($user_teacher->ID, 'document_type', $type_document);
+                    update_user_meta($user_teacher->ID, 'type_document', $type_document);
+                    update_user_meta($user_teacher->ID, 'id_document', $id_document);
+                }
+
 
                 setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_teachers_content&section_tab=teacher_details&teacher_id=' . $teacher_id));
@@ -75,7 +117,6 @@ function add_admin_form_teachers_content()
 
                 $username = $email;
                 $user_email = $email;
-                $password = $id_document;
                 if ( username_exists( $username ) ) {
                     $user_teacher_id = username_exists( $username );
                     $user_teacher = new WP_User($user_teacher_id);
@@ -140,6 +181,7 @@ class TT_teachers_all_List_Table extends WP_List_Table
             case 'full_name':
                 return strtoupper($item[$column_name]);
             case 'email':
+                return $item[$column_name];
             case 'identification':
                 return ucwords($item[$column_name]);
             case 'status':
