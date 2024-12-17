@@ -305,6 +305,7 @@ function add_custom_admin_page()
     add_submenu_page('add_admin_form_staff_menu_content', __('Staff', 'aes'), __('Staff', 'aes'), 'manager_staff_aes', 'add_admin_form_staff_content', 'add_admin_form_staff_content', 10);
     add_submenu_page('add_admin_form_staff_menu_content', __('Institutes', 'aes'), __('Institutes', 'aes'), 'manager_institutes_aes', 'add_admin_institutes_content', 'add_admin_institutes_content', 10);
     add_submenu_page('add_admin_form_staff_menu_content', __('Alliances', 'aes'), __('Alliances', 'aes'), 'manager_alliances_aes', 'add_admin_partners_content', 'add_admin_partners_content', 10);
+    add_submenu_page('add_admin_form_staff_menu_content', __('Teachers', 'aes'), __('Teachers', 'aes'), 'manager_teachers_aes', 'add_admin_form_teachers_content', 'add_admin_form_teachers_content', 10);
     remove_submenu_page('add_admin_form_staff_menu_content', 'add_admin_form_staff_menu_content');
 
     add_menu_page(

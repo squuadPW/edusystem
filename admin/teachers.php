@@ -22,7 +22,7 @@ function add_admin_form_teachers_content()
             $teacher_id = $_POST['teacher_id'];
             $type_document = $_POST['type_document'];
             $id_document = $_POST['id_document'];
-            $birth_date = $_POST['birth_date'];
+            $birth_date = date_i18n('Y-m-d', strtotime($_POST['birth_date']));
             $gender = $_POST['gender'];
             $name = $_POST['name'];
             $middle_name = $_POST['middle_name'];
@@ -32,8 +32,8 @@ function add_admin_form_teachers_content()
             $phone = $_POST['phone'];
             $phone_hidden = $_POST['phone_hidden'];
             $address = $_POST['address'];
-            $status = $_POST['status'] ?? 0;
-
+            $status = (isset($_POST['status']) && $_POST['status'] == 'on') ? 1 : 0;
+            
             //update
             if (isset($teacher_id) && !empty($teacher_id)) {
 
@@ -71,6 +71,37 @@ function add_admin_form_teachers_content()
                     'address' => $address,
                     'status' => $status,
                 ]);
+                $teacher_id = $wpdb->insert_id;
+
+                $username = $email;
+                $user_email = $email;
+                $password = $id_document;
+                if ( username_exists( $username ) ) {
+                    $user_teacher_id = username_exists( $username );
+                    $user_teacher = new WP_User($user_teacher_id);
+                    $user_teacher->remove_role('subscriber');
+                    $user_teacher->set_role( 'teacher' );
+                } else {
+                    $user_teacher_id = wp_create_user($username, $password, $user_email);
+                    $user_teacher = new WP_User($user_teacher_id);
+                    $user_teacher->remove_role('subscriber');
+                    $user_teacher->set_role( 'teacher' );
+                }
+                
+                update_user_meta($user_teacher_id, 'first_name', $name);
+                update_user_meta($user_teacher_id, 'billing_first_name', $name);
+                update_user_meta($user_teacher_id, 'last_name', $last_name);
+                update_user_meta($user_teacher_id, 'billing_last_name', $last_name);
+                update_user_meta($user_teacher_id, 'nickname', $username);
+                update_user_meta($user_teacher_id, 'birth_date', $birth_date);
+                update_user_meta($user_teacher_id, 'gender', $gender);
+                update_user_meta($user_teacher_id, 'billing_email', $email);
+                update_user_meta($user_teacher_id, 'billing_phone', $phone);
+                update_user_meta($user_teacher_id, 'document_type', $type_document);
+                update_user_meta($user_teacher_id, 'type_document', $type_document);
+                update_user_meta($user_teacher_id, 'id_document', $id_document);
+                update_user_meta($user_teacher_id, 'status_register', 1);
+                update_user_meta($user_teacher_id, 'teacher_id', $teacher_id);
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_teachers_content'));
                 exit;

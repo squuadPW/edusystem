@@ -40,7 +40,7 @@
 
                             <div style="text-align: center;">
                                 <div style="padding: 20px 0px 10px 0px;">
-                                    <input type="checkbox" id="status" name="status" value="<?php echo $teacher->name; ?>">
+                                    <input type="checkbox" id="status" name="status" <?= ($teacher->status == 1) ? 'checked' : ''; ?>>   
                                     <label for="status"><b><?php _e('Active', 'aes'); ?></b></label><br>
                                 </div>
                             </div>
@@ -51,26 +51,26 @@
                                             <label for="type_document"><b><?php _e('Type document', 'aes'); ?></b></label><br>
                                             <select name="type_document" autocomplete="off" required>
                                                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
-                                                <option value="passport"><?= __('Passport', 'aes'); ?></option>
-                                                <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
-                                                <option value="ssn"><?= __('SSN', 'aes'); ?></option>
+                                                <option value="passport" <?= ($teacher->type_document == 'passport') ? 'selected' : ''; ?>><?= __('Passport', 'aes'); ?></option>
+                                                <option value="identification_document" <?= ($teacher->type_document == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'aes'); ?></option>
+                                                <option value="ssn" <?= ($teacher->type_document == 'ssn') ? 'selected' : ''; ?>><?= __('SSN', 'aes'); ?></option>
                                             </select>
                                         </th>
                                         <th scope="row">
                                             <label for="id_document"><b><?php _e('ID document', 'aes'); ?></b></label><br>
-                                            <input type="text" id="id_document" name="id_document" value="<?php echo $teacher->name; ?>">
+                                            <input type="text" id="id_document" name="id_document" value="<?php echo $teacher->id_document; ?>">
                                         </th>
                                         
                                         <th scope="row">
                                             <label for="birth_date"><b><?php _e('Birth date', 'aes'); ?></b></label><br>
-                                            <input type="text" id="birth_date" name="birth_date" value="<?php echo $teacher->name; ?>">
+                                            <input type="date" id="birth_date" name="birth_date" value="<?php echo $teacher->birth_date; ?>">
                                         </th>
                                         <th scope="row">
                                             <label for="gender"><b><?php _e('Gender', 'aes'); ?></b></label><br>
                                             <select class="form-control" id="gender" required name="gender">
                                                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
-                                                <option value="male"><?= __('Male', 'aes'); ?></option>
-                                                <option value="female"><?= __('Female', 'aes'); ?></option>
+                                                <option value="male" <?= ($teacher->gender == 'male') ? 'selected' : ''; ?>><?= __('Male', 'aes'); ?></option>
+                                                <option value="female" <?= ($teacher->gender == 'female') ? 'selected' : ''; ?>><?= __('Female', 'aes'); ?></option>
                                             </select>
                                         </th>
                                     </tr>
@@ -81,21 +81,21 @@
                                         </th>
                                         <th scope="row">
                                             <label for="middle_name"><b><?php _e('Middle name', 'aes'); ?></b></label><br>
-                                            <input type="text" id="middle_name" name="middle_name" value="<?php echo $teacher->name; ?>">
+                                            <input type="text" id="middle_name" name="middle_name" value="<?php echo $teacher->middle_name; ?>">
                                         </th>
                                         <th scope="row">
                                             <label for="last_name"><b><?php _e('Last name', 'aes'); ?></b></label><br>
-                                            <input type="text" id="last_name" name="last_name" value="<?php echo $teacher->name; ?>">
+                                            <input type="text" id="last_name" name="last_name" value="<?php echo $teacher->last_name; ?>">
                                         </th>
                                         <th scope="row">
                                             <label for="middle_last_name"><b><?php _e('Middle last name', 'aes'); ?></b></label><br>
-                                            <input type="text" id="middle_last_name" name="middle_last_name" value="<?php echo $teacher->name; ?>">
+                                            <input type="text" id="middle_last_name" name="middle_last_name" value="<?php echo $teacher->middle_last_name; ?>">
                                         </th>
                                     </tr>
                                     <tr>
                                         <th scope="row">
                                             <label for="email"><b><?php _e('Email', 'aes'); ?></b></label><br>
-                                            <input type="text" id="email" name="email" value="<?php echo $teacher->name; ?>">
+                                            <input type="text" id="email" name="email" value="<?php echo $teacher->email; ?>">
                                         </th>
                                         <th scope="row">
                                             <label for="phone"><b><?php _e('Phone', 'aes'); ?></b></label><br>
@@ -104,7 +104,7 @@
                                         </th>
                                         <th scope="row">
                                             <label for="address"><b><?php _e('Address', 'aes'); ?></b></label><br>
-                                            <input type="text" id="address" name="address" value="<?php echo $teacher->name; ?>">
+                                            <input type="text" id="address" name="address" value="<?php echo $teacher->address; ?>">
                                         </th>
                                     </tr>
                                 </tbody>
@@ -129,7 +129,7 @@
     </div>
 </div>
 
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function () {
 
         flatpickr(document.getElementById('birth_date'), {
@@ -137,4 +137,4 @@
         });
 
     });
-</script>
+</script> -->
