@@ -409,24 +409,24 @@ function remove_my_account_links($menu_links)
     $roles = $current_user->roles;
     $user_id = $current_user->ID;
 
+    $menu_links['dashboard'] = __('Dashboard', 'form-plugin');
+    unset($menu_links['downloads']);
+    unset($menu_links['edit-address']);
+    unset($menu_links['payment-methods']);
+
+    if (in_array('parent', $roles)) {
+        $menu_links['orders'] = __('Payments', 'form-plugin');
+    } else {
+        unset($menu_links['orders']);
+    }
+
+    if (in_array('teacher', $roles)) {
+        $menu_links = array_slice($menu_links, 0, 1, true)
+        + array('teacher-documents' => __('Documents', 'form-plugin'))
+        + array_slice($menu_links, 1, NULL, true);
+    }
+
     if (in_array('parent', $roles) || in_array('student', $roles)) {
-
-        $birthday = get_user_meta($current_user->ID, 'birth_date', true);
-        $age = floor((time() - strtotime($birthday)) / 31556926);
-        // if ($age >= 18) {
-        $menu_links['dashboard'] = __('Dashboard', 'form-plugin');
-        // }
-
-        if (in_array('parent', $roles)) {
-            $menu_links['orders'] = __('Payments', 'form-plugin');
-        } else {
-            unset($menu_links['orders']);
-        }
-
-
-        unset($menu_links['downloads']);
-        unset($menu_links['edit-address']);
-        unset($menu_links['payment-methods']);
 
         if (in_array('parent', $roles) && in_array('student', $roles)) {
 
@@ -453,25 +453,6 @@ function remove_my_account_links($menu_links)
                 + array_slice($menu_links, 1, NULL, true);
         }
 
-        // if(in_array('parent',$roles) && in_array('student',$roles)){
-
-        //     $menu_links = array_slice( $menu_links, 0,2 , true )
-        //     + array( 'student' => __('Student Information','aes') )
-        //     + array_slice( $menu_links, 2, NULL, true );
-
-        // }else if(in_array('parent',$roles) && !in_array('student',$roles)){
-
-        //     $menu_links = array_slice( $menu_links, 0,2 , true )
-        //     + array( 'student' => __('Students Information','aes') )
-        //     + array_slice( $menu_links, 2, NULL, true );
-
-        // }else if(!in_array('parent',$roles) && in_array('student',$roles)){
-
-        //     $menu_links = array_slice( $menu_links, 0,1 , true )
-        //     + array( 'student' => __('Student Information','aes') )
-        //     + array_slice( $menu_links, 1, NULL, true );
-        // }
-
         $menu_links = array_slice($menu_links, 0, 2, true)
             + array('student' => __('Student Information', 'aes'))
             + array_slice($menu_links, 2, NULL, true);
@@ -483,34 +464,6 @@ function remove_my_account_links($menu_links)
         $menu_links = array_slice($menu_links, 0, 4, true)
             + array('califications' => __('Califications', 'form-plugin'))
             + array_slice($menu_links, 4, NULL, true);
-
-        /*
-        if(in_array('student',$roles) && in_array('parent',$roles)){
-
-            $menu_links = array_slice( $menu_links, 0,3 , true )
-            + array( 'notes' => __('Notes','aes') )
-            + array_slice( $menu_links, 3, NULL, true );
-
-        }else if(!in_array('parent',$roles) && in_array('student',$roles)){
-            
-            $menu_links = array_slice( $menu_links, 0,3 , true )
-            + array( 'notes' => __('Notes','aes') )
-            + array_slice( $menu_links, 2, NULL, true );
-        }
-
-        if(in_array('student',$roles) && in_array('parent',$roles)){
-
-            $menu_links = array_slice( $menu_links, 0,3 , true )
-            + array( 'academic-services' => __('Academic Services','aes') )
-            + array_slice( $menu_links, 3, NULL, true );
-
-        }else if(!in_array('parent',$roles) && in_array('student',$roles)){
-            
-            $menu_links = array_slice( $menu_links, 0,3 , true )
-            + array( 'academic-services' => __('Academic Services','aes') )
-            + array_slice( $menu_links, 2, NULL, true );
-        }
-        */
     }
 
     return $menu_links;
@@ -518,6 +471,7 @@ function remove_my_account_links($menu_links)
 
 add_action('init', function () {
     add_rewrite_endpoint('student-documents', EP_ROOT | EP_PAGES);
+    add_rewrite_endpoint('teacher-documents', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('student-details', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('student', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('my-tickets', EP_ROOT | EP_PAGES);

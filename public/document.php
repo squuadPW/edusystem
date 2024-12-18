@@ -1,5 +1,34 @@
 <?php 
 
+add_action('woocommerce_account_teacher-documents_endpoint', function() {
+
+    /*
+        0: no enviado
+        1: enviado
+        2: procesando
+        3: rechazado
+        4 vencido
+        5: aprobado
+    */
+
+    global $current_user;
+    $roles = $current_user->roles;
+    if(!in_array('parent',$roles) && in_array('student',$roles)){
+        $student_id = get_user_meta(get_current_user_id(),'student_id',true);
+        if($student_id){
+            $students = get_student_from_id($student_id);
+        }else{
+            $students = get_student(get_current_user_id());
+        }
+    }
+
+    if (in_array('parent',$roles) && in_array('student',$roles) || in_array('parent',$roles) && !in_array('student',$roles)) {
+        $students = get_student(get_current_user_id());
+    }
+    
+    include(plugin_dir_path(__FILE__).'templates/teacher-documents.php');
+});
+
 add_action('woocommerce_account_student-documents_endpoint', function() {
 
     /*

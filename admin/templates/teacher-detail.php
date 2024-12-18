@@ -130,7 +130,7 @@
                                         </th>
                                         <th scope="row">
                                             <label for="password"><b><?php _e('Password', 'aes'); ?></b></label><br>
-                                            <input type="password" id="password" name="password" autocomplete="off">
+                                            <input type="password" id="password" name="password" autocomplete="off" <?= !isset($teacher) ? 'required' : '' ?>>
                                         </th>
                                     </tr>
                                 </tbody>
@@ -149,36 +149,38 @@
                             <?php endif; ?>
                         </form>
 
-                        <div>
-                            <h3
-                                style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                <b><?= __('Teacher Information', 'aes'); ?></b>
-                            </h3>
-                        </div>
+                        <?php if (isset($documents) && count($documents) > 0) { ?>
+                            <div>
+                                <h3
+                                    style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
+                                    <b><?= __('Teacher Information', 'aes'); ?></b>
+                                </h3>
+                            </div>
 
-                        <div>
-                            <table class="wp-list-table widefat fixed posts striped">
-                                <thead>
-                                    <tr>
-                                        <th>Document</th>
-                                        <th>Upload at</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($documents as $key => $document) { ?>
+                            <div>
+                                <table class="wp-list-table widefat fixed posts striped">
+                                    <thead>
                                         <tr>
-                                            <td><?php echo $document->document_id ?>
-                                            </td>
-                                            <td><?php echo $document->upload_at ?? 'N/A' ?>
-                                            </td>
-                                            <td><?php echo $document->attachment_id != 0 ? 'acciones' : 'N/A' ?>
-                                            </td>
+                                            <th>Document</th>
+                                            <th>Upload at</th>
+                                            <th>Actions</th>
                                         </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($documents as $key => $document) { ?>
+                                            <tr>
+                                                <td><?php echo $document->document_id ?>
+                                                </td>
+                                                <td><?php echo $document->upload_at ?? 'N/A' ?>
+                                                </td>
+                                                <td><?php echo $document->attachment_id != 0 ? 'acciones' : 'N/A' ?>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
