@@ -8,10 +8,10 @@ function add_admin_form_teachers_content()
             $teacher_id = $_GET['teacher_id'];
             $teacher = get_teacher_details($teacher_id);
             $documents = get_teacher_documents($teacher_id);
-            include (plugin_dir_path(__FILE__) . 'templates/teacher-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/teacher-detail.php');
         }
         if ($_GET['section_tab'] == 'add_teacher') {
-            include (plugin_dir_path(__FILE__) . 'templates/teacher-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/teacher-detail.php');
         }
 
     } else {
@@ -38,7 +38,7 @@ function add_admin_form_teachers_content()
             $address = $_POST['address'];
             $password = $_POST['password'];
             $status = (isset($_POST['status']) && $_POST['status'] == 'on') ? 1 : 0;
-            
+
             //update
             if (isset($teacher_id) && !empty($teacher_id)) {
 
@@ -74,12 +74,12 @@ function add_admin_form_teachers_content()
                         array('%s', '%s', '%s'),
                         array('%d')
                     );
-    
+
                     if ($password && isset($user_teacher)) {
                         $user_id = $user_teacher->ID; // Replace with the ID of the user you want to update
                         wp_set_password($password, $user_teacher->ID);
                     }
-        
+
                     //METAADATA
                     $username = $email;
                     update_user_meta($user_teacher->ID, 'first_name', $name);
@@ -120,18 +120,18 @@ function add_admin_form_teachers_content()
 
                 $username = $email;
                 $user_email = $email;
-                if ( username_exists( $username ) ) {
-                    $user_teacher_id = username_exists( $username );
+                if (username_exists($username)) {
+                    $user_teacher_id = username_exists($username);
                     $user_teacher = new WP_User($user_teacher_id);
                     $user_teacher->remove_role('subscriber');
-                    $user_teacher->set_role( 'teacher' );
+                    $user_teacher->set_role('teacher');
                 } else {
                     $user_teacher_id = wp_create_user($username, $password, $user_email);
                     $user_teacher = new WP_User($user_teacher_id);
                     $user_teacher->remove_role('subscriber');
-                    $user_teacher->set_role( 'teacher' );
+                    $user_teacher->set_role('teacher');
                 }
-                
+
                 update_user_meta($user_teacher_id, 'first_name', $name);
                 update_user_meta($user_teacher_id, 'billing_first_name', $name);
                 update_user_meta($user_teacher_id, 'last_name', $last_name);
@@ -146,9 +146,9 @@ function add_admin_form_teachers_content()
                 update_user_meta($user_teacher_id, 'id_document', $id_document);
                 update_user_meta($user_teacher_id, 'status_register', 1);
                 update_user_meta($user_teacher_id, 'teacher_id', $teacher_id);
-            
+
                 $documents = $wpdb->get_results("SELECT * FROM {$table_documents_for_teachers}");
-            
+
                 if ($documents) {
                     foreach ($documents as $document) {
                         $exist = $wpdb->get_row("SELECT * FROM {$table_teacher_documents} WHERE teacher_id = {$teacher_id} AND document_id = '{$document->name}'");
@@ -169,10 +169,43 @@ function add_admin_form_teachers_content()
                 exit;
 
             }
+        } else if ($_GET['action'] == 'update_document_teacher') {
+            global $wpdb, $current_user;
+            $teacher_id = $_POST['teacher_id'];
+            $document_id = $_POST['document_id'];
+            $status_id = $_POST['status_id'];
+
+            $description = (!$_POST['description'] || $_POST['description'] == 'null') ? null : $_POST['description'];
+            $teacher = get_teacher_details($teacher_id);
+            $user_teacher = get_user_by('email', $teacher->email);
+            $table_users_notices =  $wpdb->prefix.'users_notices';
+            switch ($status_id) {
+                case 5:
+                    $description = "Document approved";
+                    break;
+                default:
+                    $description = "Status of document changed";
+                    break;
+            }
+            $data = [
+                'user_id' => $user_teacher->ID,
+                'message' => $description,
+                'importance' => $status_id == 3 ? 3 : 1,
+                'type_notice' => 'documents',
+            ];
+
+            $wpdb->insert($table_users_notices, $data);
+
+            $table_teacher_documents =  $wpdb->prefix.'teacher_documents';
+            $wpdb->update($table_teacher_documents, ['approved_by' => $current_user->ID, 'status' => $status_id, 'updated_at' => date('Y-m-d H:i:s'), 'description' => $description], ['id' => $document_id]);
+
+            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_teachers_content&section_tab=teacher_details&teacher_id=' . $teacher_id));
+            exit;
         } else {
             $list_teachers = new TT_teachers_all_List_Table;
             $list_teachers->prepare_items();
-            include (plugin_dir_path(__FILE__) . 'templates/list-teachers.php');
+            include(plugin_dir_path(__FILE__) . 'templates/list-teachers.php');
         }
     }
 }
@@ -189,7 +222,8 @@ class TT_teachers_all_List_Table extends WP_List_Table
                 'singular' => 'teacher_',
                 'plural' => 'teacher_s',
                 'ajax' => true
-            ));
+            )
+        );
 
     }
 
@@ -263,7 +297,7 @@ class TT_teachers_all_List_Table extends WP_List_Table
             foreach ($teachers as $teacher) {
                 array_push($teachers_array, [
                     'id' => $teacher->id,
-                    'identification' => get_type_document_student($teacher->type_document) . ' - ' . $teacher->id_document,                
+                    'identification' => get_type_document_student($teacher->type_document) . ' - ' . $teacher->id_document,
                     'full_name' => $teacher->name . ' ' . $teacher->middle_name . ' ' . $teacher->last_name . ' ' . $teacher->middle_last_name,
                     'email' => $teacher->email,
                     'status' => $teacher->status
@@ -331,7 +365,7 @@ class TT_teachers_all_List_Table extends WP_List_Table
 function get_teacher_details($teacher_id)
 {
     global $wpdb;
-    $table_teachers = $wpdb->prefix.'teachers';
+    $table_teachers = $wpdb->prefix . 'teachers';
 
     $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id='{$teacher_id}' OR email='{$teacher_id}'");
     return $teacher;
@@ -340,7 +374,7 @@ function get_teacher_details($teacher_id)
 function get_teacher_documents($teacher_id)
 {
     global $wpdb;
-    $table_teacher_documents = $wpdb->prefix.'teacher_documents';
+    $table_teacher_documents = $wpdb->prefix . 'teacher_documents';
 
     $documents = $wpdb->get_results("SELECT * FROM {$table_teacher_documents} WHERE teacher_id={$teacher_id}");
     return $documents;
