@@ -336,6 +336,70 @@ function save_document(){
             wp_redirect($url);
             exit;
         }
+
+        if($_GET['actions'] == 'save_documents_teacher'){
+
+            global $wpdb,$current_user;
+            $roles = $current_user->roles;
+            $table_teacher_documents = $wpdb->prefix.'teacher_documents';
+            $table_teachers = $wpdb->prefix.'teachers';
+            $table_users_signatures = $wpdb->prefix.'users_signatures';
+
+            if(isset($_POST['teachers']) && !empty($_POST['teachers'])){
+
+                $teachers = $_POST['teachers'];
+
+                /* foreach teacher */
+                foreach($teachers as $teacher_id){
+                    $files = $_POST['file_teacher_'.$teacher_id.'_id'];
+
+                    foreach($files as $file_id){
+                        
+                        $status = $_POST['status_file_'.$file_id.'_teacher_id_'.$teacher_id];
+
+                        if(isset($_FILES['document_'.$file_id.'_teacher_id_'.$teacher_id]) && !empty($_FILES['document_'.$file_id.'_teacher_id_'.$teacher_id])){
+                            $file_temp = $_FILES['document_'.$file_id.'_teacher_id_'.$teacher_id];
+                        }else{
+                            $file_temp = [];
+                        }
+
+                        if($status == 0 || $status == 3 || $status == 4){
+
+                            if(!empty($file_temp['tmp_name'])){
+                                
+                                $upload_data = wp_handle_upload($file_temp,array('test_form' => FALSE) );
+                            
+                                if ($upload_data && !is_wp_error($upload_data)) {
+                                    
+                                    $attachment = array(
+                                        'post_mime_type' => $upload_data['type'],
+                                        'post_title' => $file_id,
+                                        'post_content' => '',
+                                        'post_status' => 'inherit'
+                                    );
+                                    
+                                    $attach_id = wp_insert_attachment($attachment, $upload_data['file']);
+                                    $deleted = wp_delete_attachment($upload_data['file'], true );
+                                    $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
+                                    wp_update_attachment_metadata($attach_id, $attach_data);
+                                    $wpdb->update($table_teacher_documents,['status' => 1,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['teacher_id' => $teacher_id,'id' => $file_id ]);
+                                }
+                            } else {
+                                $file_is_required = $_POST['file_is_required'.$file_id.'_teacher_id_'.$teacher_id];
+                            }
+                        }
+                    }
+        
+                }
+
+                
+            }
+
+            wc_add_notice( __( 'Documents saved successfully.', 'form-plugin' ), 'success' );
+            $url = wc_get_endpoint_url('teacher-documents', '', get_permalink(get_option('woocommerce_myaccount_page_id')));
+            wp_redirect($url);
+            exit;
+        }
     }
 
     if(isset($_GET['missing'])) {
@@ -472,6 +536,16 @@ function get_help_info_document($document_id){
         $text = 'Please provide an official document that verifies the student\'s enrollment status. The allowed file type is ' . get_type_file_document($document_id);
     } else if ($document_id == 'VACCUNATION CARD') {
         $text = 'The card should clearly display the student\'s name, the type of vaccine received, the dates of vaccination, and any booster shots administered. The allowed file type is ' . get_type_file_document($document_id);
+    } else if ($document_id == 'PHOTO') {
+        $text = 'teacher\'s profile picture, this will be visible to the public. The allowed file type is ' . get_type_file_document_teacher($document_id);
+    } else if ($document_id == 'FORM 402') {
+        $text = 'FORM 402 is a document used in the U.S. immigration process, specifically related to the application for citizenship or naturalization. The allowed file type is ' . get_type_file_document_teacher($document_id);
+    } else if ($document_id == 'DIGITAL COPY OF UNDERGRADUATE DEGREE') {
+        $text = 'Please provide a DIGITAL COPY OF YOUR UNIVERSITY DEGREE to validate your information and continue with the registration process. The allowed file type is ' . get_type_file_document_teacher($document_id);
+    } else if ($document_id == 'DIGITAL COPY OF THE GRADUATE DEGREE') {
+        $text = 'Please provide DIGITAL COPY OF POSTGRADUATE DEGREE to validate your information and continue with the registration. The allowed file type is ' . get_type_file_document_teacher($document_id);
+    } else if ($document_id == 'CURRICULAR SUMMARY') {
+        $text = 'Please provide your CURRICULAR SUMMARY to validate your information and continue with the registration process. The allowed file type is ' . get_type_file_document_teacher($document_id);
     }
 
     return $text;
@@ -482,6 +556,13 @@ function get_type_file_document($document_id){
     global $wpdb;
     $table_documents = $wpdb->prefix.'documents';
     $doc = $wpdb->get_row("SELECT * FROM {$table_documents} WHERE name='{$document_id}'");
+    return $doc->type_file;
+}
+
+function get_type_file_document_teacher($document_id){
+    global $wpdb;
+    $table_documents_for_teachers = $wpdb->prefix.'documents_for_teachers';
+    $doc = $wpdb->get_row("SELECT * FROM {$table_documents_for_teachers} WHERE name='{$document_id}'");
     return $doc->type_file;
 }
 
