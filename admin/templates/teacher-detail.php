@@ -173,20 +173,20 @@
                                             action="<?= admin_url('admin.php?page=add_admin_form_teachers_content&action=update_document_teacher'); ?>">
                                             <input type="hidden" name="document_id" value="<?= $document->id ?>">
                                             <input type="hidden" name="teacher_id" value="<?= $teacher->id ?>">
-                                            <?php 
-                                                $approved_by = $document->approved_by ? get_user_by('id', $document->approved_by) : false;
+                                            <?php
+                                            $approved_by = $document->approved_by ? get_user_by('id', $document->approved_by) : false;
                                             ?>
                                             <tr>
                                                 </td>
                                                 <td>
-                                                <?php 
+                                                    <?php
                                                     switch ($document->status) {
                                                         case 5:
                                                             echo '<span class="dashicons dashicons-yes-alt" style="color: green; margin-top: -5px;"></span>';
                                                             break;
-                                                        
+
                                                         case 3:
-                                                            echo '<span class="dashicons dashicons-dismiss" style="color: red; margin-top: -5px;"></span>';
+                                                            echo '<span class="declined-document" data-tippy-content="'. $document->description .'"><span class="dashicons dashicons-dismiss" style="color: red; margin-top: -5px;"></span>';
                                                             break;
 
                                                         case 1:
@@ -197,20 +197,20 @@
                                                             echo '<span class="dashicons dashicons-minus" style="color: gray; margin-top: -5px;"></span>';
                                                             break;
                                                     }
-                                                ?>
-                                                <span><?php echo $document->document_id ?></span>
+                                                    ?>
+                                                    <span><?php echo $document->document_id ?></span>
                                                 </td>
                                                 <td><?php echo $document->upload_at ?? 'N/A' ?>
                                                 </td>
                                                 <td><?php echo $approved_by ? $approved_by->first_name . ' ' . $approved_by->last_name : 'N/A' ?>
                                                 </td>
-                                                <td><?php echo $document->attachment_id != 0 ? '
-                                                    <a href=' . wp_get_attachment_url($document->attachment_id) . ' target="_blank"><button type="button" class="button button-primary">View document</button></a>'.
-                                                    (($document->status) == 1 ? '
-                                                    <button name="status_id" value="3" id="decline-save" type="button" class="button button-danger">Decline</button>
-                                                    <button name="status_id" value="5" type="submit" class="button button-success">Approve</button>' : '') .
-                                                    (($document->status) != 1 ? '
-                                                    <button name="status_id" value="1" type="submit" class="button button-warning">Revert</button>' : '') : 'N/A' ?>
+                                                <td><?php echo $document->attachment_id != 0 ? "
+    <a href=" . wp_get_attachment_url($document->attachment_id) . " target='_blank'><button type='button' class='button button-primary'>View document</button></a>" .
+                                                    (($document->status) == 1 ? "
+    <button name='status_id' value='3' type='button' class='button button-danger' onclick='declineDocument(" . json_encode($document) . ")'>Decline</button>
+    <button name='status_id' value='5' type='submit' class='button button-success'>Approve</button>" : '') .
+                                                    (($document->status) != 1 ? "
+    <button name='status_id' value='1' type='submit' class='button button-warning'>Revert</button>" : '') : 'N/A' ?>
                                                 </td>
                                             </tr>
                                         </form>
@@ -228,35 +228,42 @@
 
 <div id='decline-modal' class='modal' style='display:none'>
     <div class='modal-content'>
-        <div class="modal-header">
-            <h3 style="font-size:20px;"><?= __('Decline Document') ?></h3>
-            <span id="decline-exit-icon" class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
-        </div>
-        <div class="modal-body" style="margin-top:10px;padding:0px;">
-            <div>
-                <span>This same text will be shown to the user in their notifications section, please create a message
-                    addressed to the user</span>
+        <form method="post"
+            action="<?= admin_url('admin.php?page=add_admin_form_teachers_content&action=update_document_teacher'); ?>">
+            <div class="modal-header">
+                <h3 style="font-size:20px;"><?= __('Decline Document') ?></h3>
+                <span id="decline-exit-icon" class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
             </div>
-            <div>
-                <label for="decline-description"><b><?= __('Reason why it is declined', 'aes'); ?></b><span
-                        class="text-danger">*</span></label><br>
-                <textarea name="decline-description" type="text" style="width: 100%;"></textarea>
+            <div class="modal-body" style="margin-top:10px;padding:0px;">
+                <div>
+                    <span>This same text will be shown to the user in their notifications section, please create a
+                        message
+                        addressed to the user</span>
+                </div>
+                <div>
+                    <label for="description"><b><?= __('Reason why it is declined', 'aes'); ?></b><span
+                            class="text-danger">*</span></label><br>
+                    <textarea name="description" type="text" style="width: 100%;" required></textarea>
+                    <input type="hidden" name="document_id_decline">
+                    <input type="hidden" name="teacher_id_decline">
+                    <input type="hidden" name="status_id_decline" value="3">
+                </div>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button id="decline-save" type="submit" class="button button-danger"><?= __('Decline', 'aes'); ?></button>
-            <button id="decline-exit-button" type="button"
-                class="button button-outline-primary modal-close"><?= __('Exit', 'aes'); ?></button>
-        </div>
+            <div class="modal-footer">
+                <button type="submit" class="button button-danger"><?= __('Decline', 'aes'); ?></button>
+                <button id="decline-exit-button" type="button"
+                    class="button button-outline-primary modal-close"><?= __('Exit', 'aes'); ?></button>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-
-        flatpickr(document.getElementById('birth_date'), {
-            dateFormat: "m/d/Y",
-        });
-
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script>
+    // With the above scripts loaded, you can call `tippy()` with a CSS
+    // selector and a `content` prop:
+    tippy('.declined-document', {
+        allowHTML: true
     });
-</script> -->
+</script>

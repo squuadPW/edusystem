@@ -25,8 +25,10 @@
                         $class = 'notification-urgent';
                         break;
                 }
-                if ($value->type_notice != 'unsubscribe') {                ?>
-                <a href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) ?>/student-documents">
+                if ($value->type_notice != 'unsubscribe') {                
+                    global $current_user;
+                    $roles = $current_user->roles;?>
+                <a href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . (in_array('student', $roles) ? '/student-documents' : '/teacher-documents') ?>">
                     <div class="notification-card <?php echo $class ?>">
                         <p><strong><?php echo $importance ?></strong> <span style="font-size: 12px; float: right"><?php echo $value->created_at ?></span></p>
                         <p><?php echo $value->message ?></p>

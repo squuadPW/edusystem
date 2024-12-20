@@ -28,3 +28,21 @@ document.addEventListener('DOMContentLoaded',function(){
         }
     });
 });
+
+modal = document.getElementById('decline-modal');
+function declineDocument(doc) {
+    modal.style.display = 'block';
+    document.querySelector('input[name=teacher_id_decline]').value = doc.teacher_id;
+    document.querySelector('input[name=document_id_decline]').value = doc.id;
+}
+
+var modalCloseElements = document.querySelectorAll('#decline-exit-icon, #decline-exit-button');
+if (modalCloseElements) {
+  modalCloseElements.forEach(function(element) {
+    element.addEventListener('click', function() {
+      document.getElementById('decline-modal').style.display = 'none';
+      const textarea = document.querySelector('textarea[name="decline-description"]');
+      textarea.value = '';
+    });
+  });
+}

@@ -171,9 +171,9 @@ function add_admin_form_teachers_content()
             }
         } else if ($_GET['action'] == 'update_document_teacher') {
             global $wpdb, $current_user;
-            $teacher_id = $_POST['teacher_id'];
-            $document_id = $_POST['document_id'];
-            $status_id = $_POST['status_id'];
+            $teacher_id = $_POST['teacher_id'] ?? $_POST['teacher_id_decline'];
+            $document_id = $_POST['document_id'] ?? $_POST['document_id_decline'];
+            $status_id = $_POST['status_id'] ?? $_POST['status_id_decline'];
 
             $description = (!$_POST['description'] || $_POST['description'] == 'null') ? null : $_POST['description'];
             $teacher = get_teacher_details($teacher_id);
@@ -182,6 +182,9 @@ function add_admin_form_teachers_content()
             switch ($status_id) {
                 case 5:
                     $description = "Document approved";
+                    break;
+                case 3:
+                        // $description = "Document approved";
                     break;
                 default:
                     $description = "Status of document changed";
