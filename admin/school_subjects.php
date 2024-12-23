@@ -7,9 +7,11 @@ function add_admin_form_school_subjects_content()
         if ($_GET['section_tab'] == 'subject_details') {
             $subject_id = $_GET['subject_id'];
             $subject = get_subject_details($subject_id);
+            $teachers = get_teachers_active();
             include (plugin_dir_path(__FILE__) . 'templates/school-subject-detail.php');
         }
         if ($_GET['section_tab'] == 'add_subject') {
+            $teachers = get_teachers_active();
             include (plugin_dir_path(__FILE__) . 'templates/school-subject-detail.php');
         }
 
@@ -27,6 +29,7 @@ function add_admin_form_school_subjects_content()
             $moodle_course_id = $_POST['moodle_course_id'];
             $is_elective = $_POST['is_elective'];
             $min_pass = $_POST['min_pass'];
+            $teacher_id = $_POST['teacher_id'];
 
             //update
             if (isset($subject_id) && !empty($subject_id)) {
@@ -38,6 +41,7 @@ function add_admin_form_school_subjects_content()
                     'min_pass' => $min_pass,
                     'hc' => $hc,
                     'moodle_course_id' => $moodle_course_id,
+                    'teacher_id' => $teacher_id,
                     'is_elective' => $is_elective == 'on' ? 1 : 0
                 ], ['id' => $subject_id]);
 
@@ -53,6 +57,7 @@ function add_admin_form_school_subjects_content()
                     'min_pass' => $min_pass,
                     'hc' => $hc,
                     'moodle_course_id' => $moodle_course_id,
+                    'teacher_id' => $teacher_id,
                     'is_elective' => $is_elective == 'on' ? 1 : 0
                 ]);
 

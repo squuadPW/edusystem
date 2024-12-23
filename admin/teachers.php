@@ -374,6 +374,15 @@ function get_teacher_details($teacher_id)
     return $teacher;
 }
 
+function get_teachers_active()
+{
+    global $wpdb;
+    $table_teachers = $wpdb->prefix . 'teachers';
+
+    $teachers = $wpdb->get_results("SELECT * FROM {$table_teachers} WHERE `status` = 1");
+    return $teachers;
+}
+
 function get_teacher_documents($teacher_id)
 {
     global $wpdb;

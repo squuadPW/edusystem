@@ -125,6 +125,31 @@
                                             <input type="text" name="moodle_course_id" value="" required>
                                         <?php endif; ?>
                                     </div>
+
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($subject) && !empty($subject)): ?>
+                                            <label
+                                                for="hc"><b><?= __('Teacher', 'aes'); ?></b></label><br>
+                                                <select name="teacher_id">
+                                                    <option value="" selected>Assigns a teacher to the subject</option>
+                                                    <?php foreach ($teachers as $teacher) { ?>
+                                                        <option value="<?php echo $teacher->id; ?>" <?= ($subject->teacher_id == $teacher->id) ? 'selected' : ''; ?>>
+                                                            <?php echo $teacher->name; ?> <?php echo $teacher->middle_name; ?> <?php echo $teacher->last_name; ?> <?php echo $teacher->middle_last_name; ?> 
+                                                        </option>
+                                                    <?php } ?>
+                                                </select>
+                                        <?php else: ?>
+                                            <label for="hc"><b><?= __('Teacher', 'aes'); ?></b></label><br>
+                                                    <select name="teacher_id">
+                                                    <option value="" selected>Assigns a teacher to the subject</option>
+                                                    <?php foreach ($teachers as $teacher) { ?>
+                                                        <option value="<?php echo $teacher->id; ?>" <?= ($subject->teacher_id == $teacher->id) ? 'selected' : ''; ?>>
+                                                            <?php echo $teacher->name; ?> <?php echo $teacher->middle_name; ?> <?php echo $teacher->last_name; ?> <?php echo $teacher->middle_last_name; ?> 
+                                                        </option>
+                                                    <?php } ?>
+                                                </select>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
 
