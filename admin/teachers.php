@@ -202,6 +202,14 @@ function add_admin_form_teachers_content()
             $table_teacher_documents =  $wpdb->prefix.'teacher_documents';
             $wpdb->update($table_teacher_documents, ['approved_by' => $current_user->ID, 'status' => $status_id, 'updated_at' => date('Y-m-d H:i:s'), 'description' => $description], ['id' => $document_id]);
 
+            $document_updated = $wpdb->get_row("SELECT * FROM {$table_teacher_documents} WHERE id = {$document_id}");
+            if ($status_id != 5) {
+                actualizar_avatar_usuario($user_teacher->ID, '');
+            } else {
+                $url = wp_get_attachment_url($document_updated->attachment_id);
+                actualizar_avatar_usuario($user_teacher->ID, $url);
+            }
+
             setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_teachers_content&section_tab=teacher_details&teacher_id=' . $teacher_id));
             exit;
@@ -392,3 +400,33 @@ function get_teacher_documents($teacher_id)
     return $documents;
 }
 
+// Función para actualizar el avatar de un usuario
+function actualizar_avatar_usuario($user_id, $avatar_url) {
+    // Actualiza el meta del usuario con la URL del avatar
+    update_user_meta($user_id, 'custom_avatar', esc_url($avatar_url));
+}
+
+// Función para obtener el avatar personalizado
+function obtener_avatar_personalizado($avatar, $id_or_email, $size, $default, $alt) {
+    $user_id = null;
+
+    // Verifica si se trata de un ID de usuario o un objeto de usuario
+    if (is_numeric($id_or_email)) {
+        $user_id = (int) $id_or_email;
+    } elseif (is_object($id_or_email) && !empty($id_or_email->user_id)) {
+        $user_id = (int) $id_or_email->user_id;
+    }
+
+    // Si hay un ID de usuario, busca el avatar personalizado
+    if ($user_id) {
+        $custom_avatar = get_user_meta($user_id, 'custom_avatar', true);
+        if ($custom_avatar) {
+            return '<img alt="' . esc_attr($alt) . '" src="' . esc_url($custom_avatar) . '" class="avatar avatar-' . (int) $size . ' photo" height="' . (int) $size . '" width="' . (int) $size . '" />';
+        }
+    }
+
+    // Retorna el avatar por defecto si no hay avatar personalizado
+    return $avatar;
+}
+
+add_filter('get_avatar', 'obtener_avatar_personalizado', 10, 5);
