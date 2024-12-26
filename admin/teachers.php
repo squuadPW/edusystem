@@ -94,6 +94,7 @@ function add_admin_form_teachers_content()
                     update_user_meta($user_teacher->ID, 'document_type', $type_document);
                     update_user_meta($user_teacher->ID, 'type_document', $type_document);
                     update_user_meta($user_teacher->ID, 'id_document', $id_document);
+                    actualizar_avatar_usuario($user_teacher->ID, '');
                 }
 
 
@@ -203,11 +204,13 @@ function add_admin_form_teachers_content()
             $wpdb->update($table_teacher_documents, ['approved_by' => $current_user->ID, 'status' => $status_id, 'updated_at' => date('Y-m-d H:i:s'), 'description' => $description], ['id' => $document_id]);
 
             $document_updated = $wpdb->get_row("SELECT * FROM {$table_teacher_documents} WHERE id = {$document_id}");
-            if ($status_id != 5) {
-                actualizar_avatar_usuario($user_teacher->ID, '');
-            } else {
-                $url = wp_get_attachment_url($document_updated->attachment_id);
-                actualizar_avatar_usuario($user_teacher->ID, $url);
+            if ($document_updated->document_id == 'PHOTO') {
+                if ($status_id != 5) {
+                    actualizar_avatar_usuario($user_teacher->ID, '');
+                } else {
+                    $url = wp_get_attachment_url($document_updated->attachment_id);
+                    actualizar_avatar_usuario($user_teacher->ID, $url);
+                }    
             }
 
             setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
