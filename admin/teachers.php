@@ -247,6 +247,14 @@ class TT_teachers_all_List_Table extends WP_List_Table
         global $current_user;
 
         switch ($column_name) {
+            case 'avatar':
+                if (isset($item[$column_name]) && !empty($item[$column_name])) {
+                    return '<img src="' . esc_url($item[$column_name]) . '" class="avatar avatar-small photo" style="width: 50px" />';
+                } else {
+                    return '';
+                }
+            case 'pending_documents':
+                return $item[$column_name];
             case 'full_name':
                 return strtoupper($item[$column_name]);
             case 'email':
@@ -285,10 +293,12 @@ class TT_teachers_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
+            'avatar' => __('Avatar', 'aes'),
             'identification' => __('Identification', 'aes'),
             'full_name' => __('Full name', 'aes'),
             'email' => __('Email', 'aes'),
             'status' => __('Status', 'aes'),
+            'pending_documents' => __('Pending documents', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
 
@@ -299,6 +309,7 @@ class TT_teachers_all_List_Table extends WP_List_Table
     {
         global $wpdb;
         $teachers_array = [];
+        $table_teacher_documents = $wpdb->prefix . 'teacher_documents';
 
         if (isset($_POST['s']) && !empty($_POST['s'])) {
             $search = $_POST['s'];
@@ -309,8 +320,12 @@ class TT_teachers_all_List_Table extends WP_List_Table
 
         if ($teachers) {
             foreach ($teachers as $teacher) {
+                $user_teacher = get_user_by('email', $teacher->email);
+                $pending_documents = $wpdb->get_results("SELECT * FROM {$table_teacher_documents} WHERE teacher_id = {$teacher->id} AND `status` = 1");
                 array_push($teachers_array, [
                     'id' => $teacher->id,
+                    'pending_documents' => count($pending_documents),
+                    'avatar' => get_user_meta($user_teacher->ID, 'custom_avatar', true),
                     'identification' => get_type_document_student($teacher->type_document) . ' - ' . $teacher->id_document,
                     'full_name' => $teacher->name . ' ' . $teacher->middle_name . ' ' . $teacher->last_name . ' ' . $teacher->middle_last_name,
                     'email' => $teacher->email,
