@@ -283,7 +283,7 @@ $grades = get_grades();
                                                 value="<?php echo get_user_meta($partner->ID, 'id_document', true); ?>"
                                                 style="width:100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                             <input type="hidden" id="parent_id" name="parent_id"
-                                                value="<?php echo $partner->ID; ?>" style="width:100%" required>
+                                                value="<?= $student->partner_id; ?>" style="width:100%" required>
                                         </td>
                                         <td>
                                             <label
