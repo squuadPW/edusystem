@@ -1038,7 +1038,7 @@ body.modal-open {
   font-weight: bold;
 }
 .card .header-select-payment .content-select-payment {
-  margin: 20px 20px 20px 0px;
+  margin: auto;
   color: white;
 }
 
