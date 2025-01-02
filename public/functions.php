@@ -2370,6 +2370,13 @@ function users_notifications()
 
 add_shortcode('users_notifications', 'users_notifications');
 
+function select_payment_aes()
+{
+    include(plugin_dir_path(__FILE__) . 'templates/select-payment-aes.php');
+}
+
+add_shortcode('select_payment_aes', 'select_payment_aes');
+
 function clear_all_cookies($force = false)
 {
     foreach ($_COOKIE as $cookie_name => $cookie_value) {
