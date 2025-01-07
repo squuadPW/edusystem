@@ -2372,6 +2372,7 @@ add_shortcode('users_notifications', 'users_notifications');
 
 function select_payment_aes()
 {
+    $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
     include(plugin_dir_path(__FILE__) . 'templates/select-payment-aes.php');
 }
 

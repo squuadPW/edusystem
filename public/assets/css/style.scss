@@ -1028,8 +1028,8 @@ body.modal-open {
 
 .container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 48px;
   @media (max-width: 768px) {
     grid-template-columns: repeat(1, 1fr);
     .card {
@@ -1059,7 +1059,7 @@ body.modal-open {
 }
 
 .card {
-  background-color: white;
+  background-color: #f6f6f6;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px;
@@ -1082,6 +1082,40 @@ body.modal-open {
     .content-select-payment {
       margin: auto;
       color: white;
+      padding: 10px;
+    }
+  }
+
+  .card-payment-commission {
+    text-align: center;
+    padding: 30px;
+    background-color: red;
+    border-radius: 10px 10px 0px 0px;
+    color: white;
+  }
+
+  .card-content {
+    background-color: #f6f6f6;
+    border-radius: 0px 0px 10px 10px;
+
+    .card-content-header {
+      padding: 10px;
+      text-align: center;
+    }
+
+    .card-content-commission {
+      font-size: 38px;
+      font-weight: bold;
+      font-family: emoji;
+      color: #002fbd;
+    }
+
+    .card-content-divisor {
+      width: 70%;
+      margin: auto;
+      height: 4px;
+      background-color: #dbdbdb;
+      border-radius: 50px;
     }
   }
 }

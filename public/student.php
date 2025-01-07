@@ -111,7 +111,8 @@ function save_student()
                     setcookie('gender_parent', $gender, time() + 864000, '/');
                 }
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                // redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                wp_redirect(home_url('/select-payment'));
                 break;
 
             case 'save_student_custom':
@@ -176,7 +177,8 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                // redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                wp_redirect(home_url('/select-payment'));
                 break;
 
             default:
@@ -191,7 +193,8 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                // redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                wp_redirect(home_url('/select-payment'));
                 break;
         }
     }
