@@ -983,7 +983,7 @@ body.modal-open {
 }
 .container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 48px;
 }
 @media (max-width: 768px) {
