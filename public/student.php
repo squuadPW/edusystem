@@ -215,6 +215,24 @@ function save_student()
 
         status_order_completed($order, $order_id, $customer_id, $status_register);
     }
+
+    if (isset($_GET['action']) && !empty($_GET['action']) && $_GET['action'] == 'select_payment') {
+        $country = isset($_POST['country']) ? $_POST['country'] : null;
+        $payment_method_selected = isset($_POST['payment_method_selected']) ? $_POST['payment_method_selected'] : null;
+        $city = isset($_POST['city']) ? strtolower($_POST['city']) : null;
+        $billing_address_1 = isset($_POST['billing_address_1']) ? strtolower($_POST['billing_address_1']) : null;
+        $billing_state = isset($_POST['billing_state']) ? strtolower($_POST['billing_state']) : null;
+        $billing_postcode = isset($_POST['billing_postcode']) ? strtolower($_POST['billing_postcode']) : null;
+
+        setcookie('payment_method_selected', $payment_method_selected, time() + 864000, '/');
+        setcookie('billing_city', ucwords($city), time() + 864000, '/');
+        setcookie('billing_country', strtoupper($country), time() + 864000, '/');
+        setcookie('billing_address_1', ucwords($billing_address_1), time() + 864000, '/');
+        setcookie('billing_state', strtoupper($billing_state), time() + 864000, '/');
+        setcookie('billing_postcode', ucwords($billing_postcode), time() + 864000, '/');
+        setcookie('billing_postcode', ucwords($billing_postcode), time() + 864000, '/');
+        redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false);
+    }
 }
 
 function redirect_to_checkout($program, $grade, $from_webinar = false, $is_scholarship = false, $return_url = false)

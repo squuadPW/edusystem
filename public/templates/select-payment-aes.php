@@ -2,37 +2,40 @@
     <?= __('Select payment', 'aes'); ?>
 </div>
 
-<form method="POST" action="<?= the_permalink() . '?action=new_applicant_me'; ?>" class="form-aes" id="form-me">
+<form method="POST" action="<?= the_permalink() . '?action=select_payment'; ?>" class="form-aes" id="form-me">
     <div class="grid grid-cols-12 gap-4">
+
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
-            <input value="<?php echo get_user_meta(get_current_user_id(), 'first_name', true) ?>"
-                class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
+            <label for="country"><?= __('Country', 'form-plugin'); ?><span class="required">*</span></label>
+            <select name="country" autocomplete="off" required id="country-select-step-two">
+                <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                <?php foreach ($countries as $key => $country) { ?>
+                    <option value="<?= $key ?>"><?= $country; ?></option>
+                <?php } ?>
+            </select>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
-            <input value="<?php echo get_user_meta(get_current_user_id(), 'first_name', true) ?>"
-                class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
+            <label for="billing_address_1"><?= __('Street address', 'aes'); ?><span class="required">*</span></label>
+            <input class="formdata capitalize" type="text" name="billing_address_1" autocomplete="off" required>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
-            <input value="<?php echo get_user_meta(get_current_user_id(), 'first_name', true) ?>"
-                class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
+            <label for="city"><?= __('City', 'aes'); ?><span class="required">*</span></label>
+            <input class="formdata capitalize" type="text" name="city" autocomplete="off" required>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
-            <input value="<?php echo get_user_meta(get_current_user_id(), 'first_name', true) ?>"
-                class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
+            <label for="billing_state"><?= __('State / County', 'aes'); ?><span class="required">*</span></label>
+            <select name="billing_state" id="state-select-step-two"></select>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
-            <input value="<?php echo get_user_meta(get_current_user_id(), 'first_name', true) ?>"
-                class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
+            <label for="billing_postcode"><?= __('Postcode / ZIP', 'aes'); ?><span class="required">*</span></label>
+            <input class="formdata" type="text" name="billing_postcode" autocomplete="off" required>
         </div>
+
+        <input class="formdata capitalize" type="hidden" name="payment_method_selected" autocomplete="off" required>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-3" style="text-align:center; display: none !important">
             <button class="submit" id="buttonsave"><?= __('Send', 'aes'); ?></button>
@@ -47,7 +50,7 @@
         $table_commissions = $wpdb->prefix . 'commissions';
         $commission = $wpdb->get_row("SELECT * FROM {$table_commissions} WHERE woocommerce_payment_id='" . $payment->id . "'");
         ?>
-        <div class="card">
+        <div class="card card-select-payment" data-id="<?= $payment->id; ?>">
             <div class="card-payment-commission">
                 <div><strong><?= strtoupper($payment->get_title()); ?></strong></div>
                 <div style="font-size: 12px">100% ONLINE</div>

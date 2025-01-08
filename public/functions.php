@@ -351,6 +351,18 @@ function custom_override_value_checkout_fields($fields)
         $fields['billing']['billing_city']['default'] = $_COOKIE['billing_city'];
     }
 
+    if (isset($_COOKIE['billing_state']) && !empty($_COOKIE['billing_state'])) {
+        $fields['billing']['billing_state']['default'] = $_COOKIE['billing_state'];
+    }
+
+    if (isset($_COOKIE['billing_address_1']) && !empty($_COOKIE['billing_address_1'])) {
+        $fields['billing']['billing_address_1']['default'] = $_COOKIE['billing_address_1'];
+    }
+
+    if (isset($_COOKIE['billing_postcode']) && !empty($_COOKIE['billing_postcode'])) {
+        $fields['billing']['billing_postcode']['default'] = $_COOKIE['billing_postcode'];
+    }
+
     if (isset($_COOKIE['billing_country']) && !empty($_COOKIE['billing_country'])) {
         $fields['billing']['billing_country']['default'] = $_COOKIE['billing_country'];
     }
@@ -1531,6 +1543,17 @@ function exist_user_email()
     }
 }
 
+add_action('wp_ajax_nopriv_get_states_country', 'get_states_country');
+add_action('wp_ajax_get_states_country', 'get_states_country');
+function get_states_country()
+{
+    $country = $_POST['option'];
+    $states = WC()->countries->get_states($country);
+
+    wp_send_json(array('states' => $states));
+    exit;
+}
+
 add_action('wp_ajax_nopriv_exist_user_id', 'exist_user_id');
 add_action('wp_ajax_exist_user_id', 'exist_user_id');
 function exist_user_id()
@@ -2373,6 +2396,7 @@ add_shortcode('users_notifications', 'users_notifications');
 function select_payment_aes()
 {
     $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+    $countries = get_countries();
     include(plugin_dir_path(__FILE__) . 'templates/select-payment-aes.php');
 }
 

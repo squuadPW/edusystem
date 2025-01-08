@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const countrySelect = document.getElementById("country-select");
   const instituteSelect = document.getElementById("institute_id");
 
-  if (countrySelect) {
+  if (countrySelect && instituteSelect) {
     countrySelect.addEventListener("change", function () {
       if (document.getElementById("institute_id")) {
         document.getElementById("institute_id").value = "";
@@ -1233,4 +1233,66 @@ function customFlatpickr() {
       selector_months[i].appendChild(yearSelect);
     });
   }, 1000);
+}
+
+let select_country_step_two = document.getElementById('country-select-step-two');
+let select_state_step_two = document.getElementById('state-select-step-two'); // Asegúrate de tener este select en tu HTML
+
+if (select_country_step_two) {
+  select_country_step_two.addEventListener('change', function (e) {
+    select_state_step_two.disabled = true;
+    let action = "action=get_states_country";
+    const XHR = new XMLHttpRequest();
+    XHR.open("POST", `${ajax_object.ajax_url}?${action}`, true);
+    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    XHR.responseType = "json";
+    let params = `${action}&option=${e.target.value}`;
+    XHR.send(params);
+    
+    XHR.onload = function () {
+      if (XHR.status === 200) {
+        // Limpiar el select de estados antes de llenarlo
+        select_state_step_two.innerHTML = '';
+
+        // Crear una opción por defecto
+        let defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Select a state'; // Cambia el texto según sea necesario
+        select_state_step_two.appendChild(defaultOption);
+
+        // Recorrer los estados y crear las opciones
+        select_state_step_two.required = false;
+        if (XHR.response && XHR.response.states) {
+          for (let key in XHR.response.states) {
+            if (XHR.response.states.hasOwnProperty(key)) {
+              let option = document.createElement('option');
+              option.value = key; // Código del estado
+              option.textContent = XHR.response.states[key]; // Nombre del estado
+              select_state_step_two.appendChild(option);
+            }
+          }
+          select_state_step_two.disabled = false;
+          select_state_step_two.required = true;
+        }
+      }
+    };
+  });
+}
+
+let select_payment_methods = document.querySelectorAll('.card-select-payment');
+if (select_payment_methods.length > 0) { // Verifica si hay elementos seleccionados
+  select_payment_methods.forEach(payment => {
+    payment.addEventListener('click', function (e) {
+      let paymentId = e.currentTarget.dataset.id;
+      console.log(paymentId); // Muestra el data-id en la consola
+      document.querySelector('input[name=payment_method_selected]').value = paymentId;
+    });
+  });
+}
+
+let buttonsave_secondary = document.getElementById('buttonsave_secondary');
+if (buttonsave_secondary) { // Verifica si hay elementos seleccionados
+  buttonsave_secondary.addEventListener('click', function (e) {
+    document.getElementById('buttonsave').click();
+  });
 }

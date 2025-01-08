@@ -146,19 +146,20 @@
                 <option value="female"><?= __('Female', 'aes'); ?></option>
             </select>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="country"><?= __('Country', 'form-plugin'); ?><span class="required">*</span></label>
-            <select name="country" autocomplete="off" required id="country-select">
+        <!-- <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="country"><?= __('Country', 'form-plugin'); ?><span class="required">*</span></label> -->
+            <input class="formdata" type="hidden" name="country" autocomplete="off">
+            <!-- <select name="country" autocomplete="off" id="country-select">
                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                 <?php foreach ($countries as $key => $country) { ?>
                     <option value="<?= $key ?>"><?= $country; ?></option>
                 <?php } ?>
-            </select>
-        </div>
+            </select> -->
+        <!-- </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="city"><?= __('City', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata" type="text" name="city" autocomplete="off" required>
-        </div>
+            <label for="city"><?= __('City', 'aes'); ?><span class="required">*</span></label> -->
+            <input class="formdata" type="hidden" name="city" autocomplete="off">
+        <!-- </div> -->
 
         <!-- DATOS DE ACCESO -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
