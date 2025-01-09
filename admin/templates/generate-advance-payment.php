@@ -79,7 +79,7 @@
 					</table>
 				</div>
 
-				<?php if (isset($payments)) { ?>
+				<?php if (isset($payments) && count($payments) > 0) { ?>
 					<div style="padding: 10px">
 						<table class="wp-list-table widefat fixed posts striped">
 							<thead>
