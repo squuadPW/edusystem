@@ -505,10 +505,10 @@ function get_name_document($document_id){
         'high_school_diploma' => __('HIGH SCHOOL DIPLOMA','aes'),
         'id_parents' => __('ID OR CI OF THE PARENTS','aes'),
         'id_student' => __('ID STUDENTS','aes'),
-        'photo_student_card' => __('PHOTO OF STUDENT CARD','aes'),
+        'photo_student_card' => __('STUDENT'S PHOTO','aes'),
         'proof_of_grades' => __('PROOF OF GRADE','aes'),
         'proof_of_study' => __('PROOF OF STUDY','aes'),
-        'vaccunation_card' => __('VACCUNATION CARD','aes'),
+        'vaccunation_card' => __('VACCINATION CARD','aes'),
         default => '',
     };
 
@@ -528,13 +528,13 @@ function get_help_info_document($document_id){
         $text = 'Please provide a clear and legible copy of the document. The allowed file type is ' . get_type_file_document($document_id);
     } else if ($document_id == 'ID STUDENTS') {
         $text = 'Please ensure you provide a clear and legible copy of the identification document. The allowed file type is ' . get_type_file_document($document_id);
-    } else if ($document_id == 'PHOTO OF STUDENT CARD') {
+    } else if ($document_id == 'STUDENT\'S PHOTO') {
         $text = "<div>Please provide a recent, clear, and high-quality photo of the student</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div> <div>The allowed file type is " . get_type_file_document($document_id) . "</div>";
     } else if ($document_id == 'PROOF OF GRADE') {
         $text = 'Please provide an official document that clearly indicates the student\'s name, the course or subject, and the corresponding grade achieved. The allowed file type is ' . get_type_file_document($document_id);
     } else if ($document_id == 'PROOF OF STUDY') {
         $text = 'Please provide an official document that verifies the student\'s enrollment status. The allowed file type is ' . get_type_file_document($document_id);
-    } else if ($document_id == 'VACCUNATION CARD') {
+    } else if ($document_id == 'VACCINATION CARD') {
         $text = 'The card should clearly display the student\'s name, the type of vaccine received, the dates of vaccination, and any booster shots administered. The allowed file type is ' . get_type_file_document($document_id);
     } else if ($document_id == 'PHOTO') {
         $text = 'teacher\'s profile picture, this will be visible to the public. The allowed file type is ' . get_type_file_document_teacher($document_id);

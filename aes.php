@@ -576,7 +576,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'PHOTO OF STUDENT CARD',
+          'name' => 'STUDENT\'S PHOTO',
           'type_file' => '.pdf, .png, .jpeg',
           'grade_id' => $grade->id,
           'is_required' => 1,
@@ -603,7 +603,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'VACCUNATION CARD',
+          'name' => 'VACCINATION CARD',
           'type_file' => '.pdf, .png, .jpeg',
           'grade_id' => $grade->id,
           'is_required' => 0,

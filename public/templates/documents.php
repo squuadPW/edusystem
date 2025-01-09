@@ -60,10 +60,6 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <input type="hidden" name="<?= 'file_student_' . $student->id . '_id[]'; ?>"
                                         value="<?= $document->id; ?>">
                                     <?php $name = get_name_document($document->document_id); ?>
-                                    <?php if ($name == 'PHOTO OF STUDENT CARD') {
-                                        $name = 'PHOTO OF STUDENT';
-                                    }?>
-
                                     <?php if ($document->is_required): ?>
                                         <?php $name = $name . "<span class='required' style='font-size:24px;'>*</span>"; ?>
                                     <?php endif; ?>
@@ -103,9 +99,6 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <input type="hidden" name="<?= 'file_student_' . $student->id . '_id[]'; ?>"
                                         value="<?= $document->id; ?>">
                                     <?php $name = get_name_document($document->document_id); ?>
-                                    <?php if ($name == 'PHOTO OF STUDENT CARD') {
-                                        $name = 'PHOTO OF STUDENT';
-                                    }?>
 
                                     <strong><?= $name; ?> AGREEMENT</strong>
                                 </td>
