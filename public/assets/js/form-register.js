@@ -771,16 +771,6 @@ function diff_years(dt2, dt1) {
   // return Math.abs(Math.ceil(diff / 365.25)); // Trunca hacia arriba
 }
 
-function getCookie(name) {
-  function escape(s) {
-    return s.replace(/([.*+?\^$(){}|\[\]\/\\])/g, "\\$1");
-  }
-  var match = document.cookie.match(
-    RegExp("(?:^|;\\s*)" + escape(name) + "=([^;]*)")
-  );
-  return match ? match[1] : null;
-}
-
 function setCookie(name, value) {
   var date = new Date();
   date.setTime(date.getTime() + 1 * 24 * 60 * 60 * 1000);
@@ -1283,8 +1273,17 @@ let select_payment_methods = document.querySelectorAll('.card-select-payment');
 if (select_payment_methods.length > 0) { // Verifica si hay elementos seleccionados
   select_payment_methods.forEach(payment => {
     payment.addEventListener('click', function (e) {
+      // Remover la clase .card-selected-payment de todos los elementos
+      select_payment_methods.forEach(p => p.classList.remove('card-selected-payment'));
+      
+      // Agregar la clase .card-selected-payment al elemento que fue clickeado
+      e.currentTarget.classList.add('card-selected-payment');
+
+      // Obtener el data-id del elemento clickeado
       let paymentId = e.currentTarget.dataset.id;
       console.log(paymentId); // Muestra el data-id en la consola
+      
+      // Asignar el valor al input correspondiente
       document.querySelector('input[name=payment_method_selected]').value = paymentId;
     });
   });
@@ -1295,4 +1294,40 @@ if (buttonsave_secondary) { // Verifica si hay elementos seleccionados
   buttonsave_secondary.addEventListener('click', function (e) {
     document.getElementById('buttonsave').click();
   });
+}
+
+setTimeout(() => {
+  let payment_methods_checkout = document.querySelector('.wc_payment_methods');
+
+  // Verificamos que payment_methods_checkout no sea null
+  if (payment_methods_checkout) {
+    // Obtenemos el valor de la cookie payment_method_selected
+    let selectedPaymentMethod = getCookie('payment_method_selected');
+
+    // Seleccionamos todos los elementos <li> dentro de payment_methods_checkout
+    let payment_methods = payment_methods_checkout.querySelectorAll('li');
+
+    // Iteramos sobre cada <li>
+    payment_methods.forEach(method => {
+      // Verificamos si el <li> tiene la clase que coincide con el valor de la cookie
+      if (!method.classList.contains(selectedPaymentMethod)) {
+        // Si no tiene la clase, le asignamos display: none
+        method.style.display = 'none';
+      }
+    });
+  }
+}, 3500);
+
+// Función para obtener el valor de una cookie por su nombre
+function getCookie(name) {
+  let cookieArr = document.cookie.split(";");
+  for (let i = 0; i < cookieArr.length; i++) {
+    let cookiePair = cookieArr[i].split("=");
+    // Eliminamos espacios en blanco y verificamos si el nombre de la cookie coincide
+    if (name === cookiePair[0].trim()) {
+      return decodeURIComponent(cookiePair[1]);
+    }
+  }
+  // Retornamos null si no se encuentra la cookie
+  return null;
 }

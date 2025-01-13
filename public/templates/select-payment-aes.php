@@ -21,14 +21,14 @@
                 </div>
                 <div class="card-content-divisor"></div>
                 <div style="padding: 20px; text-align: center;">
-                    <?= isset($commission) ? ($commission->commission > 0 ? 'The amount equivalent to ' . (isset($commission) ? ($commission->type_commission == 1 ? get_woocommerce_currency_symbol() : '') : '') . $commission->commission . (isset($commission) ? ($commission->type_commission == 2 ? '%' : '') : '')  . ' of the amount payable for bank processing costs must be added.' : 'There are no fees or commissions for commissions for bank processing bank processing fees.') : 'There are no fees or commissions for commissions for bank processing bank processing fees.' ?>
+                    <?= isset($commission) ? ($commission->commission > 0 ? 'The amount equivalent to ' . (isset($commission) ? ($commission->type_commission == 1 ? get_woocommerce_currency_symbol() : '') : '') . $commission->commission . (isset($commission) ? ($commission->type_commission == 2 ? '%' : '') : '')  . ' of the amount payable for bank processing costs must be added.' : 'There is no cost or commission for bank processing fees.') : 'There is no cost or commission for bank processing fees.' ?>
                 </div>
             </div>
         </div>
     <?php } ?>
 </div>
 
-<form method="POST" action="<?= the_permalink() . '?action=select_payment'; ?>" class="form-aes mt-5" id="form-me">
+<form method="POST" action="<?= the_permalink() . '?action=select_payment'; ?>" class="form-aes" id="form-me" style="margin-top: 3rem !important">
     <div class="grid grid-cols-12 gap-4">
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">

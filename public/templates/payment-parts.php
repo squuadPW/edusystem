@@ -18,7 +18,7 @@
 
     <?php if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) { ?>
       <div >
-        <div style="margin-bottom: 10px !important;">
+        <div style="margin-bottom: 10px !important; text-align: center">
         <?php
           $product_fee = wc_get_product(AES_FEE_INSCRIPTION);
           $product_price = $product_fee->get_price();

@@ -223,14 +223,21 @@ function save_student()
         $billing_address_1 = isset($_POST['billing_address_1']) ? strtolower($_POST['billing_address_1']) : null;
         $billing_state = isset($_POST['billing_state']) ? strtolower($_POST['billing_state']) : null;
         $billing_postcode = isset($_POST['billing_postcode']) ? strtolower($_POST['billing_postcode']) : null;
-
-        setcookie('payment_method_selected', $payment_method_selected, time() + 864000, '/');
+    
+        // Establecer cookies
+        setcookie('payment_method_selected', 'payment_method_' . $payment_method_selected, time() + 864000, '/');
         setcookie('billing_city', ucwords($city), time() + 864000, '/');
         setcookie('billing_country', strtoupper($country), time() + 864000, '/');
         setcookie('billing_address_1', ucwords($billing_address_1), time() + 864000, '/');
         setcookie('billing_state', strtoupper($billing_state), time() + 864000, '/');
         setcookie('billing_postcode', ucwords($billing_postcode), time() + 864000, '/');
-        setcookie('billing_postcode', ucwords($billing_postcode), time() + 864000, '/');
+    
+        // Establecer el método de pago seleccionado en la sesión de WooCommerce
+        if (class_exists('WC')) {
+            WC()->session->set('chosen_payment_method', 'payment_method_' . $payment_method_selected);
+        }
+    
+        // Redirigir al checkout
         redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false);
     }
 }
