@@ -551,19 +551,26 @@ function get_help_info_document($document_id){
     return $text;
 }
 
-
-function get_type_file_document($document_id){
+function get_type_file_document($document_id) {
     global $wpdb;
-    $table_documents = $wpdb->prefix.'documents';
-    $doc = $wpdb->get_row("SELECT * FROM {$table_documents} WHERE name='{$document_id}'");
-    return $doc->type_file;
+    $table_documents = $wpdb->prefix . 'documents';
+    
+    // Usar prepare para evitar problemas con apóstrofes y inyección SQL
+    $query = $wpdb->prepare("SELECT * FROM {$table_documents} WHERE name = %s", $document_id);
+    $doc = $wpdb->get_row($query);
+    
+    return $doc ? $doc->type_file : null; // Devuelve null si no se encuentra el documento
 }
 
-function get_type_file_document_teacher($document_id){
+function get_type_file_document_teacher($document_id) {
     global $wpdb;
-    $table_documents_for_teachers = $wpdb->prefix.'documents_for_teachers';
-    $doc = $wpdb->get_row("SELECT * FROM {$table_documents_for_teachers} WHERE name='{$document_id}'");
-    return $doc->type_file;
+    $table_documents_for_teachers = $wpdb->prefix . 'documents_for_teachers';
+    
+    // Usar prepare para evitar problemas con apóstrofes y inyección SQL
+    $query = $wpdb->prepare("SELECT * FROM {$table_documents_for_teachers} WHERE name = %s", $document_id);
+    $doc = $wpdb->get_row($query);
+    
+    return $doc ? $doc->type_file : null; // Devuelve null si no se encuentra el documento
 }
 
 function get_status_document($status_id){
