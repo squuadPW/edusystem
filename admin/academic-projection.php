@@ -104,6 +104,11 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
+        }  else if ($_GET['action'] == 'get_moodle_notes') {
+            get_moodle_notes();
+            setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            exit;
         } else if ($_GET['action'] == 'save_academic_projection') {
             global $wpdb;
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
@@ -577,4 +582,11 @@ function generate_enroll_student()
             enroll_student($projection->student_id, [(int) $subject->moodle_course_id]);
         }
     }
+}
+
+
+function get_moodle_notes()
+{
+    echo '25';
+    exit;
 }
