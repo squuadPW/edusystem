@@ -106,7 +106,7 @@ function add_admin_form_academic_projection_content()
             exit;
         }  else if ($_GET['action'] == 'get_moodle_notes') {
             get_moodle_notes();
-            setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
+            setcookie('message', __('Successfully updated notes for the students.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
         } else if ($_GET['action'] == 'save_academic_projection') {
@@ -587,6 +587,69 @@ function generate_enroll_student()
 
 function get_moodle_notes()
 {
-    echo '25';
-    exit;
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $students = $wpdb->get_results("SELECT * FROM {$table_students}");
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+
+    foreach ($students as $key => $student) {
+        $moodle_student_id = $student->moodle_student_id;
+
+        if ($moodle_student_id) {
+            $assignments = student_assignments_moodle($student->id);
+            $assignments_course = $assignments['assignments'];
+            $assignments_student = $assignments['grades'];
+            $formatted_assignments = [];
+
+            foreach ($assignments_course as $key => $assignment_c) {
+                $projection_student = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
+                $course_id = (int) $assignment_c['id'];
+                $filtered_course_student = array_filter($assignments_student, function ($entry) use ($course_id) {
+                    return $entry['course_id'] == $course_id;
+                });
+                $filtered_course_student = array_values($filtered_course_student);
+
+                if ($filtered_course_student[0]) {
+                    $assignments_student_filtered = $filtered_course_student[0]['grades'][0]['gradeitems'];
+                    $max_grade = 0;
+                    $assignments_total = 0;
+                    $total_grade = 0;
+
+                    foreach ($assignments_student_filtered as $key => $work) {
+                        if (!isset($work['cmid'])) {
+                            $max_grade = (isset($work['gradeformatted']) && $work['gradeformatted'] != '') ? (float)$work['gradeformatted'] : 0;
+                        } else {
+                            $assignments_total = ($assignments_total + 1);
+                        }
+                    }
+
+                    $total_grade = ($max_grade / $assignments_total);
+                    if ($projection_student) {
+                        $projection_obj = json_decode($projection_student->projection);
+            
+                        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE moodle_course_id = {$course_id}");
+        
+                        foreach ($projection_obj as $key => $prj) {
+                            if ($prj->this_cut && $prj->subject_id == $subject->id) {
+                                $prj->calification = $total_grade;
+                                $prj->this_cut = false;
+
+                                $status_id = $total_grade >= $subject->min_pass ? 3 : 4;
+                                $wpdb->update($table_student_period_inscriptions, [
+                                    'status_id' => $status_id,
+                                    'calification' => $total_grade,
+                                ], ['student_id' => $student->id, 'subject_id' => $subject->id]);
+                            }
+                        }
+
+                        $wpdb->update($table_student_academic_projection, [
+                            'projection' => json_encode($projection_obj)
+                        ], ['id' => $projection_student->id]);
+                    }
+                }
+            }
+        }
+    }
 }
