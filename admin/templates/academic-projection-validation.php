@@ -1,3 +1,6 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <div>
     <form method="post"
         action="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollments'); ?>">
@@ -41,16 +44,18 @@
 
 <div>
     <div style="padding: 20px !important">
-        <table class="wp-list-table widefat fixed posts striped">
+        <table class="wp-list-table widefat fixed posts striped" id="history">
             <thead>
                 <tr>
-                    <th colspan="4">STUDENTS OF U. S. HISTORY (<?= count($history) ?>)</th>
+                    <th colspan="6">STUDENTS OF U. S. HISTORY (<?= count($history) ?>)</th>
                 </tr>
                 <tr>
                     <th>#</th>
                     <th>ID</th>
                     <th>SURNAMES AND NAMES</th>
                     <th>Percentage</th>
+                    <th>Quality Points</th>
+                    <th>Grade</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,25 +72,34 @@
                             <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
                         </td>
                         <td>
-                            <?= $value['calification'] ?>
+                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
+                        </td>
+                        <td>
+                            <?= get_calc_note((int)$value['calification']); ?>
+                        </td>
+                        <td>
+                            <?= get_literal_note((int)$value['calification']); ?>
                         </td>
                     </tr>
                 <?php } ?>
             </tbody>
         </table>
+        <button id="download">Download as PDF</button>
     </div>
     <br>
     <div style="padding: 20px !important">
         <table class="wp-list-table widefat fixed posts striped">
             <thead>
                 <tr>
-                    <th colspan="4">STUDENTS OF U. S. GOVERNMENT (<?= count($government) ?>)</th>
+                    <th colspan="6">STUDENTS OF U. S. GOVERNMENT (<?= count($government) ?>)</th>
                 </tr>
                 <tr>
                     <th>#</th>
                     <th>ID</th>
                     <th>SURNAMES AND NAMES</th>
                     <th>Percentage</th>
+                    <th>Quality Points</th>
+                    <th>Grade</th>
                 </tr>
             </thead>
             <tbody>
@@ -102,7 +116,13 @@
                             <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
                         </td>
                         <td>
-                            <?= $value['calification'] ?>
+                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
+                        </td>
+                        <td>
+                            <?= get_calc_note((int)$value['calification']); ?>
+                        </td>
+                        <td>
+                            <?= get_literal_note((int)$value['calification']); ?>
                         </td>
                     </tr>
                 <?php } ?>
@@ -114,13 +134,15 @@
         <table class="wp-list-table widefat fixed posts striped">
             <thead>
                 <tr>
-                    <th colspan="4">STUDENTS OF ENGLISH III (<?= count($english_tree) ?>)</th>
+                    <th colspan="6">STUDENTS OF ENGLISH III (<?= count($english_tree) ?>)</th>
                 </tr>
                 <tr>
                     <th>#</th>
                     <th>ID</th>
                     <th>SURNAMES AND NAMES</th>
                     <th>Percentage</th>
+                    <th>Quality Points</th>
+                    <th>Grade</th>
                 </tr>
             </thead>
             <tbody>
@@ -137,7 +159,13 @@
                             <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
                         </td>
                         <td>
-                            <?= $value['calification'] ?>
+                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
+                        </td>
+                        <td>
+                            <?= get_calc_note((int)$value['calification']); ?>
+                        </td>
+                        <td>
+                            <?= get_literal_note((int)$value['calification']); ?>
                         </td>
                     </tr>
                 <?php } ?>
@@ -149,13 +177,15 @@
         <table class="wp-list-table widefat fixed posts striped">
             <thead>
                 <tr>
-                    <th colspan="4">STUDENTS OF ENGLISH IV (<?= count($english_four) ?>)</th>
+                    <th colspan="6">STUDENTS OF ENGLISH IV (<?= count($english_four) ?>)</th>
                 </tr>
                 <tr>
                     <th>#</th>
                     <th>ID</th>
                     <th>SURNAMES AND NAMES</th>
                     <th>Percentage</th>
+                    <th>Quality Points</th>
+                    <th>Grade</th>
                 </tr>
             </thead>
             <tbody>
@@ -172,7 +202,13 @@
                             <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
                         </td>
                         <td>
-                            <?= $value['calification'] ?>
+                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
+                        </td>
+                        <td>
+                            <?= get_calc_note((int)$value['calification']); ?>
+                        </td>
+                        <td>
+                            <?= get_literal_note((int)$value['calification']); ?>
                         </td>
                     </tr>
                 <?php } ?>
@@ -184,13 +220,15 @@
         <table class="wp-list-table widefat fixed posts striped">
             <thead>
                 <tr>
-                    <th colspan="4">STUDENTS OF ECONOMICS & FINANCIAL LITERACY (<?= count($economic) ?>)</th>
+                    <th colspan="6">STUDENTS OF ECONOMICS & FINANCIAL LITERACY (<?= count($economic) ?>)</th>
                 </tr>
                 <tr>
                     <th>#</th>
                     <th>ID</th>
                     <th>SURNAMES AND NAMES</th>
                     <th>Percentage</th>
+                    <th>Quality Points</th>
+                    <th>Grade</th>
                 </tr>
             </thead>
             <tbody>
@@ -207,7 +245,13 @@
                             <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
                         </td>
                         <td>
-                            <?= $value['calification'] ?>
+                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
+                        </td>
+                        <td>
+                            <?= get_calc_note((int)$value['calification']); ?>
+                        </td>
+                        <td>
+                            <?= get_literal_note((int)$value['calification']); ?>
                         </td>
                     </tr>
                 <?php } ?>
@@ -219,13 +263,15 @@
         <table class="wp-list-table widefat fixed posts striped">
             <thead>
                 <tr>
-                    <th colspan="4">STUDENTS OF PRE-CALCULUS (<?= count($precalc) ?>)</th>
+                    <th colspan="6">STUDENTS OF PRE-CALCULUS (<?= count($precalc) ?>)</th>
                 </tr>
                 <tr>
                     <th>#</th>
                     <th>ID</th>
                     <th>SURNAMES AND NAMES</th>
                     <th>Percentage</th>
+                    <th>Quality Points</th>
+                    <th>Grade</th>
                 </tr>
             </thead>
             <tbody>
@@ -242,7 +288,13 @@
                             <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
                         </td>
                         <td>
-                            <?= $value['calification'] ?>
+                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
+                        </td>
+                        <td>
+                            <?= get_calc_note((int)$value['calification']); ?>
+                        </td>
+                        <td>
+                            <?= get_literal_note((int)$value['calification']); ?>
                         </td>
                     </tr>
                 <?php } ?>
@@ -251,3 +303,32 @@
     </div>
     <br>
 </div>
+
+<script>
+    document.getElementById('download').addEventListener('click', function() {
+        const { jsPDF } = window.jspdf;
+
+        // Use html2canvas to take a screenshot of the table
+        html2canvas(document.getElementById('history')).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF();
+            const imgWidth = 190; // Adjust width as needed
+            const pageHeight = pdf.internal.pageSize.height;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            const heightLeft = imgHeight;
+
+            let position = 0;
+
+            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+            position += heightLeft;
+
+            // Add a new page if the content is too long
+            if (heightLeft >= pageHeight) {
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+            }
+
+            pdf.save('table.pdf');
+        });
+    });
+</script>
