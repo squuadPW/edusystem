@@ -20,7 +20,8 @@ function add_admin_form_academic_projection_content()
             global $wpdb;
             $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
             $table_students = $wpdb->prefix . 'students';
-
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
+            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
             $history = [];
             $government = [];
@@ -28,51 +29,62 @@ function add_admin_form_academic_projection_content()
             $english_four = [];
             $economic = [];
             $precalc = [];
-            foreach ($projections as $key => $projection) {
-                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
-                $projection_obj = json_decode($projection->projection);
-                $history_arr = array_filter($projection_obj, function ($item) {
-                    return $item->code_subject === 'USH0914' && $item->this_cut == true;
-                });
-                if (count(array_values($history_arr)) > 0) {
-                    array_push($history, $student);
-                }
 
-                $government_arr = array_filter($projection_obj, function ($item) {
-                    return $item->code_subject === 'GOV1016' && $item->this_cut == true;
-                });
-                if (count(array_values($government_arr)) > 0) {
-                    array_push($government, $student);
+            $academic_period = $_POST['academic_period'];
+            $academic_period_cut = $_POST['academic_period_cut'];
+            if ((isset($academic_period) && !empty($academic_period)) && (isset($academic_period_cut) && !empty($academic_period_cut))) {
+                foreach ($projections as $key => $projection) {
+                    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
+                    $projection_obj = json_decode($projection->projection);
+                    $history_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
+                        return $item->code_subject === 'USH0914' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
+                    });
+                    if (count(array_values($history_arr)) > 0) {
+                        $arr = array_values($history_arr);
+                        array_push($history, ['student' => $student, 'calification' => $arr[0]->calification]);
+                    }
+    
+                    $government_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
+                        return $item->code_subject === 'GOV1016' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
+                    });
+                    if (count(array_values($government_arr)) > 0) {
+                        $arr = array_values($government_arr);
+                        array_push($government, ['student' => $student, 'calification' => $arr[0]->calification]);
+                    }
+    
+                    $english_tree_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
+                        return $item->code_subject === 'ENG1114' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
+                    });
+                    if (count(array_values($english_tree_arr)) > 0) {
+                        $arr = array_values($english_tree_arr);
+                        array_push($english_tree, ['student' => $student, 'calification' => $arr[0]->calification]);
+                    }
+    
+                    $english_four_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
+                        return $item->code_subject === 'EOSENG4' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
+                    });
+                    if (count(array_values($english_four_arr)) > 0) {
+                        $arr = array_values($english_four_arr);
+                        array_push($english_four, ['student' => $student, 'calification' => $arr[0]->calification]);
+                    }
+    
+                    $economic_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
+                        return $item->code_subject === 'EFL1216' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
+                    });
+                    if (count(array_values($economic_arr)) > 0) {
+                        $arr = array_values($economic_arr);
+                        array_push($economic, ['student' => $student, 'calification' => $arr[0]->calification]);
+                    }
+    
+                    $precalc_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
+                        return $item->code_subject === 'PCL1211' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
+                    });
+                    if (count(array_values($precalc_arr)) > 0) {
+                        $arr = array_values($precalc_arr);
+                        array_push($precalc, ['student' => $student, 'calification' => $arr[0]->calification]);
+                    }
+    
                 }
-
-                $english_tree_arr = array_filter($projection_obj, function ($item) {
-                    return $item->code_subject === 'ENG1114' && $item->this_cut == true;
-                });
-                if (count(array_values($english_tree_arr)) > 0) {
-                    array_push($english_tree, $student);
-                }
-
-                $english_four_arr = array_filter($projection_obj, function ($item) {
-                    return $item->code_subject === 'EOSENG4' && $item->this_cut == true;
-                });
-                if (count(array_values($english_four_arr)) > 0) {
-                    array_push($english_four, $student);
-                }
-
-                $economic_arr = array_filter($projection_obj, function ($item) {
-                    return $item->code_subject === 'EFL1216' && $item->this_cut == true;
-                });
-                if (count(array_values($economic_arr)) > 0) {
-                    array_push($economic, $student);
-                }
-
-                $precalc_arr = array_filter($projection_obj, function ($item) {
-                    return $item->code_subject === 'PCL1211' && $item->this_cut == true;
-                });
-                if (count(array_values($precalc_arr)) > 0) {
-                    array_push($precalc, $student);
-                }
-
             }
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-validation.php');
         }
