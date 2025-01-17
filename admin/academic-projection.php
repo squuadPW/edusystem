@@ -648,13 +648,23 @@ function get_moodle_notes()
                         $projection_obj = json_decode($projection_student->projection);
             
                         $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE moodle_course_id = {$course_id}");
+                        $status_id = $total_grade >= $subject->min_pass ? 3 : 4;
         
                         foreach ($projection_obj as $key => $prj) {
                             if ($prj->this_cut && $prj->subject_id == $subject->id) {
                                 $prj->calification = $total_grade;
                                 $prj->this_cut = false;
 
-                                $status_id = $total_grade >= $subject->min_pass ? 3 : 4;
+                                if ($status_id == 4) {
+                                    $prj->is_completed = false;
+                                    $prj->this_cut = false;
+                                    $prj->cut = '';
+                                    $prj->code_period = '';
+                                    $prj->calification = '';
+                                } else {
+                                    $prj->is_completed = true;
+                                }
+
                                 $wpdb->update($table_student_period_inscriptions, [
                                     'status_id' => $status_id,
                                     'calification' => $total_grade,
