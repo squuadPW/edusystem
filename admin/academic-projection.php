@@ -20,73 +20,77 @@ function add_admin_form_academic_projection_content()
             global $wpdb;
             $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
             $table_students = $wpdb->prefix . 'students';
+            $table_school_subjects = $wpdb->prefix . 'school_subjects';
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
-            $history = [];
-            $government = [];
-            $english_tree = [];
-            $english_four = [];
-            $economic = [];
-            $precalc = [];
-
+            $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects}");
+            $projections_result = [];
+            
             $academic_period = $_POST['academic_period'];
             $academic_period_cut = $_POST['academic_period_cut'];
             if ((isset($academic_period) && !empty($academic_period)) && (isset($academic_period_cut) && !empty($academic_period_cut))) {
-                foreach ($projections as $key => $projection) {
-                    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
-                    $projection_obj = json_decode($projection->projection);
-                    $history_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
-                        return $item->code_subject === 'USH0914' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
-                    });
-                    if (count(array_values($history_arr)) > 0) {
-                        $arr = array_values($history_arr);
-                        array_push($history, ['student' => $student, 'calification' => $arr[0]->calification]);
+                foreach ($subjects as $subject) {
+                    $count = 0; // Inicializa el contador para cada subject
+                    foreach ($projections as $projection) {
+                        $projection_obj = json_decode($projection->projection);
+                        $history_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut, $subject) {
+                            return $item->subject_id === $subject->id && ($item->code_period == $academic_period && $item->cut == $academic_period_cut);
+                        });
+                        // Sumar la cantidad si hay coincidencias
+                        $count += count(array_values($history_arr));
                     }
-    
-                    $government_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
-                        return $item->code_subject === 'GOV1016' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
-                    });
-                    if (count(array_values($government_arr)) > 0) {
-                        $arr = array_values($government_arr);
-                        array_push($government, ['student' => $student, 'calification' => $arr[0]->calification]);
+                    // Solo agregar al resultado si hay coincidencias
+                    if ($count > 0) {
+                        $projections_result[$subject->name] = ['count' => $count, 'subject_id' => $subject->id, 'academic_period' => $academic_period, 'academic_period_cut' => $academic_period_cut]; // Usa el nombre del subject como clave
                     }
-    
-                    $english_tree_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
-                        return $item->code_subject === 'ENG1114' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
-                    });
-                    if (count(array_values($english_tree_arr)) > 0) {
-                        $arr = array_values($english_tree_arr);
-                        array_push($english_tree, ['student' => $student, 'calification' => $arr[0]->calification]);
-                    }
-    
-                    $english_four_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
-                        return $item->code_subject === 'EOSENG4' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
-                    });
-                    if (count(array_values($english_four_arr)) > 0) {
-                        $arr = array_values($english_four_arr);
-                        array_push($english_four, ['student' => $student, 'calification' => $arr[0]->calification]);
-                    }
-    
-                    $economic_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
-                        return $item->code_subject === 'EFL1216' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
-                    });
-                    if (count(array_values($economic_arr)) > 0) {
-                        $arr = array_values($economic_arr);
-                        array_push($economic, ['student' => $student, 'calification' => $arr[0]->calification]);
-                    }
-    
-                    $precalc_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut) {
-                        return $item->code_subject === 'PCL1211' && $item->code_period == $academic_period && $item->cut == $academic_period_cut;
-                    });
-                    if (count(array_values($precalc_arr)) > 0) {
-                        $arr = array_values($precalc_arr);
-                        array_push($precalc, ['student' => $student, 'calification' => $arr[0]->calification]);
-                    }
-    
                 }
             }
+            
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-validation.php');
+        }
+
+        if ($_GET['section_tab'] == 'validate_enrollment_subject') {
+            global $wpdb;
+            $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+            $table_students = $wpdb->prefix . 'students';
+            $table_teachers = $wpdb->prefix . 'teachers';
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
+            $table_school_subjects = $wpdb->prefix . 'school_subjects';
+            $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
+            $projections_result = [];
+            $students = [];
+
+            $academic_period = $_GET['academic_period'];
+            $academic_period_cut = $_GET['academic_period_cut'];
+            $subject_id = $_GET['subject_id'];
+            if ((isset($academic_period) && !empty($academic_period)) && (isset($academic_period_cut) && !empty($academic_period_cut))) {
+                foreach ($projections as $projection) {
+                    $projection_obj = json_decode($projection->projection);
+                    $filtered_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut, $subject_id) {
+                        return $item->subject_id === $subject_id && ($item->code_period == $academic_period && $item->cut == $academic_period_cut);
+                    });
+
+                    if(count(array_values($filtered_arr)) > 0) {
+                        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
+                        array_push($students, ['student' => $student, 'calification' => (int)array_values($filtered_arr)[0]->calification]);
+                    }
+                }
+
+                $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$subject_id}");
+                $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id = {$subject->teacher_id}");
+                $academic_period_result = $wpdb->get_row("SELECT * FROM {$table_academic_periods} WHERE code = {$academic_period}");
+            }
+
+            $projections_result = [
+                'students' => $students,
+                'subject' => $subject,
+                'teacher' => $teacher,
+                'academic_period' => $academic_period_result,
+                'academic_period_cut' => $academic_period_cut
+            ];
+            
+            include(plugin_dir_path(__FILE__) . 'templates/academic-projection-validation-subject.php');
         }
     } else {
 

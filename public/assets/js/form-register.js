@@ -1296,27 +1296,27 @@ if (buttonsave_secondary) { // Verifica si hay elementos seleccionados
   });
 }
 
-setTimeout(() => {
-  let payment_methods_checkout = document.querySelector('.wc_payment_methods');
+// setTimeout(() => {
+//   let payment_methods_checkout = document.querySelector('.wc_payment_methods');
 
-  // Verificamos que payment_methods_checkout no sea null
-  if (payment_methods_checkout) {
-    // Obtenemos el valor de la cookie payment_method_selected
-    let selectedPaymentMethod = getCookie('payment_method_selected');
+//   // Verificamos que payment_methods_checkout no sea null
+//   if (payment_methods_checkout) {
+//     // Obtenemos el valor de la cookie payment_method_selected
+//     let selectedPaymentMethod = getCookie('payment_method_selected');
 
-    // Seleccionamos todos los elementos <li> dentro de payment_methods_checkout
-    let payment_methods = payment_methods_checkout.querySelectorAll('li');
+//     // Seleccionamos todos los elementos <li> dentro de payment_methods_checkout
+//     let payment_methods = payment_methods_checkout.querySelectorAll('li');
 
-    // Iteramos sobre cada <li>
-    payment_methods.forEach(method => {
-      // Verificamos si el <li> tiene la clase que coincide con el valor de la cookie
-      if (!method.classList.contains(selectedPaymentMethod)) {
-        // Si no tiene la clase, le asignamos display: none
-        method.style.display = 'none';
-      }
-    });
-  }
-}, 3500);
+//     // Iteramos sobre cada <li>
+//     payment_methods.forEach(method => {
+//       // Verificamos si el <li> tiene la clase que coincide con el valor de la cookie
+//       if (!method.classList.contains(selectedPaymentMethod)) {
+//         // Si no tiene la clase, le asignamos display: none
+//         method.style.display = 'none';
+//       }
+//     });
+//   }
+// }, 3500);
 
 // Función para obtener el valor de una cookie por su nombre
 function getCookie(name) {

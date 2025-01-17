@@ -474,3 +474,13 @@ div#application-passwords-section {
 .btn:hover {
   background-color: #23527c;
 }
+
+.projection-report-template {
+  cursor: pointer !important;
+  transition: 100ms;
+}
+
+.projection-report-template:hover {
+  transform: scale(1.02) !important;
+  transition: 100ms;
+}

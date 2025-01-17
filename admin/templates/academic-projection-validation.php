@@ -1,5 +1,5 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
 
 <div>
     <form method="post"
@@ -44,267 +44,22 @@
 
 <div>
     <div style="padding: 20px !important">
-        <table class="wp-list-table widefat fixed posts striped" id="history">
-            <thead>
-                <tr>
-                    <th colspan="6">STUDENTS OF U. S. HISTORY (<?= count($history) ?>)</th>
-                </tr>
-                <tr>
-                    <th>#</th>
-                    <th>ID</th>
-                    <th>SURNAMES AND NAMES</th>
-                    <th>Percentage</th>
-                    <th>Quality Points</th>
-                    <th>Grade</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($history as $key => $value) { ?>
-
-                    <tr>
-                        <td>
-                            <?= $key + 1 ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->id_document) ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
-                        </td>
-                        <td>
-                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
-                        </td>
-                        <td>
-                            <?= get_calc_note((int)$value['calification']); ?>
-                        </td>
-                        <td>
-                            <?= get_literal_note((int)$value['calification']); ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-        <button id="download">Download as PDF</button>
+        <?php foreach ($projections_result as $key => $projection) { ?>
+            <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollment_subject&subject_id='.$projection['subject_id']).'&academic_period='.$projection['academic_period'].'&academic_period_cut='.$projection['academic_period_cut']; ?>">
+                <table class="wp-list-table widefat fixed posts striped projection-report-template">
+                    <thead>
+                        <tr>
+                            <th colspan="6">STUDENTS OF <?= $key ?> (<?= $projection['count'] ?>)</th>
+                        </tr>
+                    </thead>
+                </table>
+            </a>
+            <br>
+        <?php } ?>
     </div>
-    <br>
-    <div style="padding: 20px !important">
-        <table class="wp-list-table widefat fixed posts striped">
-            <thead>
-                <tr>
-                    <th colspan="6">STUDENTS OF U. S. GOVERNMENT (<?= count($government) ?>)</th>
-                </tr>
-                <tr>
-                    <th>#</th>
-                    <th>ID</th>
-                    <th>SURNAMES AND NAMES</th>
-                    <th>Percentage</th>
-                    <th>Quality Points</th>
-                    <th>Grade</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($government as $key => $value) { ?>
-
-                    <tr>
-                        <td>
-                            <?= $key + 1 ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->id_document) ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
-                        </td>
-                        <td>
-                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
-                        </td>
-                        <td>
-                            <?= get_calc_note((int)$value['calification']); ?>
-                        </td>
-                        <td>
-                            <?= get_literal_note((int)$value['calification']); ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-    </div>
-    <br>
-    <div style="padding: 20px !important">
-        <table class="wp-list-table widefat fixed posts striped">
-            <thead>
-                <tr>
-                    <th colspan="6">STUDENTS OF ENGLISH III (<?= count($english_tree) ?>)</th>
-                </tr>
-                <tr>
-                    <th>#</th>
-                    <th>ID</th>
-                    <th>SURNAMES AND NAMES</th>
-                    <th>Percentage</th>
-                    <th>Quality Points</th>
-                    <th>Grade</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($english_tree as $key => $value) { ?>
-
-                    <tr>
-                        <td>
-                            <?= $key + 1 ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->id_document) ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
-                        </td>
-                        <td>
-                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
-                        </td>
-                        <td>
-                            <?= get_calc_note((int)$value['calification']); ?>
-                        </td>
-                        <td>
-                            <?= get_literal_note((int)$value['calification']); ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-    </div>
-    <br>
-    <div style="padding: 20px !important">
-        <table class="wp-list-table widefat fixed posts striped">
-            <thead>
-                <tr>
-                    <th colspan="6">STUDENTS OF ENGLISH IV (<?= count($english_four) ?>)</th>
-                </tr>
-                <tr>
-                    <th>#</th>
-                    <th>ID</th>
-                    <th>SURNAMES AND NAMES</th>
-                    <th>Percentage</th>
-                    <th>Quality Points</th>
-                    <th>Grade</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($english_four as $key => $value) { ?>
-
-                    <tr>
-                        <td>
-                            <?= $key + 1 ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->id_document) ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
-                        </td>
-                        <td>
-                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
-                        </td>
-                        <td>
-                            <?= get_calc_note((int)$value['calification']); ?>
-                        </td>
-                        <td>
-                            <?= get_literal_note((int)$value['calification']); ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-    </div>
-    <br>
-    <div style="padding: 20px !important">
-        <table class="wp-list-table widefat fixed posts striped">
-            <thead>
-                <tr>
-                    <th colspan="6">STUDENTS OF ECONOMICS & FINANCIAL LITERACY (<?= count($economic) ?>)</th>
-                </tr>
-                <tr>
-                    <th>#</th>
-                    <th>ID</th>
-                    <th>SURNAMES AND NAMES</th>
-                    <th>Percentage</th>
-                    <th>Quality Points</th>
-                    <th>Grade</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($economic as $key => $value) { ?>
-
-                    <tr>
-                        <td>
-                            <?= $key + 1 ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->id_document) ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
-                        </td>
-                        <td>
-                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
-                        </td>
-                        <td>
-                            <?= get_calc_note((int)$value['calification']); ?>
-                        </td>
-                        <td>
-                            <?= get_literal_note((int)$value['calification']); ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-    </div>
-    <br>
-    <div style="padding: 20px !important">
-        <table class="wp-list-table widefat fixed posts striped">
-            <thead>
-                <tr>
-                    <th colspan="6">STUDENTS OF PRE-CALCULUS (<?= count($precalc) ?>)</th>
-                </tr>
-                <tr>
-                    <th>#</th>
-                    <th>ID</th>
-                    <th>SURNAMES AND NAMES</th>
-                    <th>Percentage</th>
-                    <th>Quality Points</th>
-                    <th>Grade</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($precalc as $key => $value) { ?>
-
-                    <tr>
-                        <td>
-                            <?= $key + 1 ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->id_document) ?>
-                        </td>
-                        <td>
-                            <?= strtoupper($value['student']->last_name) . ' ' . strtoupper($value['student']->middle_last_name) . ' ' . strtoupper($value['student']->name) . ' ' . strtoupper($value['student']->middle_name) ?>
-                        </td>
-                        <td>
-                            <?= (isset($value['calification']) && !empty($value['calification'])) ? $value['calification'] : 'N/A' ?>
-                        </td>
-                        <td>
-                            <?= get_calc_note((int)$value['calification']); ?>
-                        </td>
-                        <td>
-                            <?= get_literal_note((int)$value['calification']); ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-    </div>
-    <br>
 </div>
 
-<script>
+<!-- <script>
     document.getElementById('download').addEventListener('click', function() {
         const { jsPDF } = window.jspdf;
 
@@ -331,4 +86,4 @@
             pdf.save('table.pdf');
         });
     });
-</script>
+</script> -->

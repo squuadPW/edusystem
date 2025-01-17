@@ -558,6 +558,7 @@ h3 {
 
 /* The container */
 .fee-container {
+  display: block;
   position: relative;
   padding-left: 35px;
   margin-bottom: 12px;
@@ -1077,8 +1078,4 @@ body.modal-open {
 .card-selected-payment {
   transform: scale(1.05);
   border: 1px solid #002fbd;
-}
-
-.woocommerce-billing-fields__field-wrapper {
-  display: none !important;
 }/*# sourceMappingURL=style.css.map */
