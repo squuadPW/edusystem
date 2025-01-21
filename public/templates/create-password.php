@@ -1,7 +1,7 @@
 <!-- Modal container -->
 <div class="modal-content modal-enrollment" id="modal-content">
     <div id="modal-contraseña" class="modal" style="overflow: auto; padding: 0 !important">
-        <div class="modal-content modal-enrollment">
+        <div class="modal-content modal-enrollment"  style="border-radius: 10px !important; padding: 0 !important">
             <div class="modal-header">
                 <div class="title">
                     Create password
@@ -53,10 +53,7 @@
     }
 
     .modal-header {
-        /* background-color: #091c5c;
-        color: #fff; */
-        /* padding: 10px; */
-        border-bottom: 1px solid #091c5c;
+        border-bottom: 1px solid #091c5c29;
     }
 
     .modal-header h2 {
