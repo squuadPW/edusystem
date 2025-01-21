@@ -550,7 +550,7 @@ $grades = get_grades();
                 <input type="hidden" name="student_id" value="<?= $student->id; ?>">
                 <div>
                     <label for="document_upload_file">Document</label><br>
-                    <input type="file" name="document_upload_file" id="document_upload_file">
+                    <input type="file" name="document_upload_file" id="document_upload_file" required>
                 </div>
             </div>
             <div class="modal-footer">
