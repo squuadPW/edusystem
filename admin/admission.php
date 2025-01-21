@@ -268,6 +268,43 @@ function add_admin_form_admission_content()
                 wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
                 exit;
             }
+
+            if ($_GET['action'] == 'upload_document') {
+                $id = $_POST['student_id'];
+                $document_id = $_POST['document_upload_id'];
+                $document_name = $_POST['document_upload_name'];
+                $table_student_documents = $wpdb->prefix . 'student_documents';
+
+                if(isset($_FILES['document_upload_file']) && !empty($_FILES['document_upload_file'])){
+                    $file_temp = $_FILES['document_upload_file'];
+                }else{
+                    $file_temp = [];
+                }
+
+                if(!empty($file_temp['tmp_name'])){
+                        
+                    $upload_data = wp_handle_upload($file_temp,array('test_form' => FALSE) );
+
+                    if ($upload_data && !is_wp_error($upload_data)) {
+                        
+                        $attachment = array(
+                            'post_mime_type' => $upload_data['type'],
+                            'post_title' => $document_name,
+                            'post_content' => '',
+                            'post_status' => 'inherit'
+                        );
+                        
+                        $attach_id = wp_insert_attachment($attachment, $upload_data['file']);
+                        $deleted = wp_delete_attachment($upload_data['file'], true );
+                        $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
+                        wp_update_attachment_metadata($attach_id, $attach_data);
+                        $wpdb->update($table_student_documents,['status' => 5,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $id,'id' => $document_id ]);
+                    }
+                }
+
+                wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
+                exit;
+            }
         }
     
         if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
@@ -1058,18 +1095,19 @@ function update_status_documents()
 
             if ($document->id == $document_id) {
                 $html .= '<tr id="' . 'tr_document_' . $document->id . '">';
-                $html .= '<td class="column-primary">';
+                $html .= '<td class="column-primary" colspan="3">';
                 $html .= get_name_document($document->document_id);
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
 
-                $html .= '<td id="' . 'td_document_' . $document->document_id . '" data-colname="' . __('Status', 'aes') . '">';
+                $html .= '<td colspan="2" id="' . 'td_document_' . $document->document_id . '" data-colname="' . __('Status', 'aes') . '">';
                 $html .= "<b>";
                 $html .= get_status_document($document->status);
                 $html .= "</b>";
                 $html .= "</td>";
 
-                $html .= '<td data-colname="' . __('Actions', 'aes') . '">';
+                $html .= '<td colspan="7" data-colname="' . __('Actions', 'aes') . '">';
+                $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(". json_encode($document) .")'><button type='button' class='button button-primary-outline other-buttons-document'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'aes') . "</button></a>";
                 if ($document->status > 0) {
                     $html .= "<a style='margin-right: 3px;' target='_blank' onclick='watchDetails(". json_encode($document) .")'><button type='button' class='button button-primary-outline other-buttons-document'>" . __('View detail', 'aes') . "</button></a>";
                     $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '"><button type="button" class="button button-primary other-buttons-document">' . __('View documment', 'aes') . '</button></a>';

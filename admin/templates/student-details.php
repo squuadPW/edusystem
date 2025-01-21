@@ -400,25 +400,25 @@ $grades = get_grades();
         <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
             <thead>
                 <tr>
-                    <th scope="col" class="manage-column column-primary column-title"><?= __('Document', 'aes') ?></th>
-                    <th scope="col" class="manage-column column-title-translate"><?= __('Status', 'aes') ?></th>
-                    <th scope="col" class="manage-column column-price"><?= __('Actions', 'aes') ?></th>
+                    <th colspan="3" scope="col" class="manage-column column-primary column-title"><?= __('Document', 'aes') ?></th>
+                    <th colspan="2" scope="col" class="manage-column column-title-translate"><?= __('Status', 'aes') ?></th>
+                    <th colspan="7" scope="col" class="manage-column column-price"><?= __('Actions', 'aes') ?></th>
                 </tr>
             </thead>
             <tbody id="table-documents">
                 <?php if (!empty($documents)): ?>
                     <?php foreach ($documents as $document): ?>
                         <tr id="<?= 'tr_document_' . $document->id; ?>">
-                            <td class="column-primary">
+                            <td class="column-primary" colspan="3">
                                 <?= $name = get_name_document($document->document_id); ?>
                                 <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                             </td>
-                            <td id="<?= 'td_document_' . $document->document_id; ?>" data-colname="<?= __('Status', 'aes'); ?>">
+                            <td colspan="2" id="<?= 'td_document_' . $document->document_id; ?>" data-colname="<?= __('Status', 'aes'); ?>">
                                 <b>
                                     <?= $status = get_status_document($document->status); ?>
                                 </b>
                             </td>
-                            <td data-colname="<?= __('Actions', 'aes'); ?>">
+                            <td colspan="7" data-colname="<?= __('Actions', 'aes'); ?>">
                                 <a target="_blank" onclick='uploadDocument(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document"><span class='dashicons dashicons-upload'></span><?= __('Upload', 'aes'); ?></button></a>
                                 <?php if ($document->status > 0): ?>
                                     <a target="_blank" onclick='watchDetails(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document"><?= __('View detail', 'aes'); ?></button></a>
@@ -538,7 +538,7 @@ $grades = get_grades();
 </div>
 
 <div id='upload-modal' class='modal' style='display:none'>
-    <form id="upload-form" method="post" action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=upload_document'); ?>">
+    <form id="upload-form" method="post" action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=upload_document'); ?>" enctype="multipart/form-data">
         <div class='modal-content' style="width: 70%;">
             <div class="modal-header">
             <h3 style="font-size:20px;"><?= __('Upload Document') ?> <span id="document_upload_text"></span></h3>
@@ -546,6 +546,8 @@ $grades = get_grades();
             </div>
             <div class="modal-body" style="padding:10px;">
                 <input type="hidden" name="document_upload_id">
+                <input type="hidden" name="document_upload_name">
+                <input type="hidden" name="student_id" value="<?= $student->id; ?>">
                 <div>
                     <label for="document_upload_file">Document</label><br>
                     <input type="file" name="document_upload_file" id="document_upload_file">

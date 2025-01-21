@@ -335,7 +335,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       let htmlLoading = "";
       htmlLoading +=
-        "<td class='column-primary id column-id' colspan='3' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+        "<td class='column-primary id column-id' colspan='12' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
 
       document.getElementById("tr_document_" + document_id).innerHTML =
         htmlLoading;
@@ -374,7 +374,7 @@ document.addEventListener("DOMContentLoaded", function () {
               });
               watchButtons();
 
-              location.reload();
+              // location.reload();
             // setTimeout(() => {
             //   document.getElementById("notice-status").style.display = "none";
             // }, 2000);
@@ -460,6 +460,7 @@ function watchDetails(doc) {
 
 function uploadDocument(doc) {
   document.querySelector('input[name=document_upload_id]').value = doc.id;
+  document.querySelector('input[name=document_upload_name]').value = doc.document_id;
   document.getElementById("document_upload_text").innerHTML = doc.document_id;
 
   const modal = document.getElementById('upload-modal');
