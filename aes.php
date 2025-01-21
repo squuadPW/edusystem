@@ -17,7 +17,7 @@ if (!class_exists('WP_List_Table')) {
 require plugin_dir_path(__FILE__) . 'settings.php';
 require plugin_dir_path(__FILE__) . 'public/functions.php';
 require plugin_dir_path(__FILE__) . 'admin/functions.php';
-require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+require_once(ABSPATH . 'wp-admin/includes/upgrade.php'); 
 
 function create_tables()
 {
