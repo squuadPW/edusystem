@@ -302,6 +302,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  var modalCloseElementsUpload = document.querySelectorAll('#upload-exit-icon, #upload-exit-button');
+  if (modalCloseElementsUpload) {
+    modalCloseElementsUpload.forEach(function(element) {
+      element.addEventListener('click', function() {
+        document.getElementById('upload-form').reset();
+        document.getElementById('upload-modal').style.display = 'none';
+      });
+    });
+  }
+
   var modalCloseElementsDetail = document.querySelectorAll('#detail-exit-icon, #detail-exit-button');
   if (modalCloseElementsDetail) {
     modalCloseElementsDetail.forEach(function(element) {
@@ -445,5 +455,13 @@ function watchDetails(doc) {
   };
 
   const modal = document.getElementById('detail-modal');
+  modal.style.display = 'block';
+}
+
+function uploadDocument(doc) {
+  document.querySelector('input[name=document_upload_id]').value = doc.id;
+  document.getElementById("document_upload_text").innerHTML = doc.document_id;
+
+  const modal = document.getElementById('upload-modal');
   modal.style.display = 'block';
 }

@@ -419,6 +419,7 @@ $grades = get_grades();
                                 </b>
                             </td>
                             <td data-colname="<?= __('Actions', 'aes'); ?>">
+                                <a target="_blank" onclick='uploadDocument(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document"><span class='dashicons dashicons-upload'></span><?= __('Upload', 'aes'); ?></button></a>
                                 <?php if ($document->status > 0): ?>
                                     <a target="_blank" onclick='watchDetails(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document"><?= __('View detail', 'aes'); ?></button></a>
                                     <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>"><button type="button" class="button button-primary other-buttons-document"><?= __('View documment', 'aes'); ?></button></a>
@@ -534,6 +535,28 @@ $grades = get_grades();
             <button id="detail-exit-button" type="button" class="button button-outline-primary modal-close"><?= __('Exit','aes'); ?></button>
         </div>
 	</div>
+</div>
+
+<div id='upload-modal' class='modal' style='display:none'>
+    <form id="upload-form" method="post" action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=upload_document'); ?>">
+        <div class='modal-content' style="width: 70%;">
+            <div class="modal-header">
+            <h3 style="font-size:20px;"><?= __('Upload Document') ?> <span id="document_upload_text"></span></h3>
+                <span id="upload-exit-icon" class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+            </div>
+            <div class="modal-body" style="padding:10px;">
+                <input type="hidden" name="document_upload_id">
+                <div>
+                    <label for="document_upload_file">Document</label><br>
+                    <input type="file" name="document_upload_file" id="document_upload_file">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="upload-button" type="submit" class="button button-outline-primary modal-close"><?= __('Upload','aes'); ?></button>
+                <button id="upload-exit-button" type="button" class="button button-danger modal-close"><?= __('Exit','aes'); ?></button>
+            </div>
+        </div>
+    </form>
 </div>
 
 <script>
