@@ -653,7 +653,7 @@ function add_loginout_link($items, $args)
         $items .= '<li><div style="background-color: #091c5c87; border-radius: 16px; display: flex;" ><div style="color: white; padding: 5px 20px !important; text-align: center; border-radius: 20px; color: white !important; font-size: 14px;">' . $current_user->first_name . ' ' . $current_user->last_name . ' 
         </div><div><a class="button-primary" style="font-size:14px;" href="' . $logout_link . '">' . __('Log out', 'form-plugin') . '</a></div></div></li>';
     } elseif (!is_user_logged_in()) {
-        $items .= '<li><a class="button-primary" style="font-size:14px;" href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '">' . __('Log in', 'form-plugin') . '</a></li>';
+        $items .= '<li style="margin-bottom: 17px; !important"><a class="button-primary" style="font-size:14px;" href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '">' . __('Log in', 'form-plugin') . '</a></li>';
     }
 
     return $items;
