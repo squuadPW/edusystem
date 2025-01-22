@@ -237,7 +237,7 @@ function save_student()
     }
 
     if (isset($_GET['action']) && !empty($_GET['action']) && $_GET['action'] == 'change_payment_method') {
-        reload_all_payment_methods();
+        setcookie('payment_method_selected', '', time() - 3600, '/');
         wp_redirect(home_url('/select-payment'));
         exit;
     }

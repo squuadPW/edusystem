@@ -2406,7 +2406,6 @@ add_shortcode('users_notifications', 'users_notifications');
 
 function select_payment_aes()
 {
-    reload_all_payment_methods();
     $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
     $countries = get_countries();
     $states = get_states_by_country_code($_COOKIE['billing_country']);
@@ -2505,8 +2504,7 @@ function load_current_cut_enrollment()
 add_filter('woocommerce_available_payment_gateways', 'hide_other_payment_methods', 0);
 function hide_other_payment_methods($available_gateways) {
     $payment_method_selected = isset($_COOKIE['payment_method_selected']) ? $_COOKIE['payment_method_selected'] : '';
-    $reset_payment_methods = isset($_COOKIE['reset_payment_methods']) ? $_COOKIE['reset_payment_methods'] : '';
-    if (!empty($reset_payment_methods)) {
+    if (empty($payment_method_selected)) {
         return $available_gateways;
     }
     if (!empty($payment_method_selected) && isset($available_gateways[$payment_method_selected])) {
@@ -2514,16 +2512,4 @@ function hide_other_payment_methods($available_gateways) {
     }
 
     return $available_gateways;
-}
-
-function reload_all_payment_methods() {
-    ob_start();
-    setcookie('payment_method_selected', '', time() + 864000, '/');
-    setcookie('reset_payment_methods', '1', time() + 864000, '/');
-    $available_gateways = WC()->payment_gateways->payment_gateways();
-    $available_gateways = array_filter($available_gateways, function($gateway) {
-        return isset($gateway->settings->enabled) && $gateway->settings->enabled === 'yes';
-    });
-    apply_filters('woocommerce_available_payment_gateways', $available_gateways);
-    ob_end_flush();
 }
