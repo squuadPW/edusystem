@@ -94,6 +94,18 @@ function form_plugin_scripts()
         wp_enqueue_script('califications');
     }
 
+    if (str_contains(home_url($wp->request), 'select-payment')) {
+        wp_register_script('select-payment', plugins_url('aes') . '/public/assets/js/select-payment.js', array('jquery'), '1.0.0', true);
+        wp_localize_script(
+            'select-payment',
+            'ajax_object',
+            array(
+                'ajax_url' => admin_url('admin-ajax.php')
+            )
+        );
+        wp_enqueue_script('select-payment');
+    }
+
     wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.0', true);
     wp_localize_script(
         'student-continue',

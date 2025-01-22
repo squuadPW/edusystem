@@ -75,7 +75,8 @@
 </form>
 
 <div class="grid grid-cols-12 gap-4">
-    <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5" style="text-align:center;">
+    <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 flex justify-center space-x-4">
+        <a href="<?= home_url(); ?>"><button class="button" id="back_home"><?= __('Back', 'aes'); ?></button></a>
         <button class="submit" id="buttonsave_secondary"><?= __('Send', 'aes'); ?></button>
     </div>
 </div>

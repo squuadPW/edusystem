@@ -1281,7 +1281,6 @@ if (select_payment_methods.length > 0) { // Verifica si hay elementos selecciona
 
       // Obtener el data-id del elemento clickeado
       let paymentId = e.currentTarget.dataset.id;
-      console.log(paymentId); // Muestra el data-id en la consola
       
       // Asignar el valor al input correspondiente
       document.querySelector('input[name=payment_method_selected]').value = paymentId;

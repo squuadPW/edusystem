@@ -29,15 +29,15 @@
             <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
             <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument(); validateIDs(false)" required>
                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
-                <option value="passport"><?= __('Passport', 'aes'); ?></option>
-                <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
-                <option value="ssn"><?= __('SSN', 'aes'); ?></option>
+                <option value="passport" <?= $_COOKIE['document_type'] == 'passport' ? 'selected' : '' ?>><?= __('Passport', 'aes'); ?></option>
+                <option value="identification_document" <?= $_COOKIE['document_type'] == 'passport' ? 'selected' : '' ?>><?= __('Identification Document', 'aes'); ?></option>
+                <option value="ssn" <?= $_COOKIE['document_type'] == 'passport' ? 'selected' : '' ?>><?= __('SSN', 'aes'); ?></option>
             </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" autocomplete="off" type="text" id="id_document" name="id_document"
-                oninput="sendAjaxIdDocument(); validateIDs(false)" required>
+                oninput="sendAjaxIdDocument(); validateIDs(false)" required value="<?= $_COOKIE['id_document'] ?? '' ?>">
             <span id="exisstudentid"
                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
             <span class="sameids"
@@ -45,29 +45,29 @@
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
+            <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" value="<?= $_COOKIE['name_student'] ?? '' ?>" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="lastname"><?= __('Second name', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off" required>
+            <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off" value="<?= $_COOKIE['middle_name_student'] ?? '' ?>" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="lastname"><?= __('Last name', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
+            <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" value="<?= $_COOKIE['lastname_student'] ?? '' ?>" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="lastname"><?= __('Second last name', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
+            <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" value="<?= $_COOKIE['middle_last_name_student'] ?? '' ?>" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="phone"><?= __('Contact number', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata" type="tel" id="number_phone" name="number_phone" autocomplete="off" required>
+            <input class="formdata" type="tel" id="number_phone" name="number_phone" autocomplete="off" value="<?= $_COOKIE['phone_student'] ?? '' ?>" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-detail">
             <div id="student-email">
                 <label for="email"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata" type="email" name="email_student" autocomplete="off"
-                    oninput="sendAjaxStudentEmailDocument()" required>
+                    oninput="sendAjaxStudentEmailDocument()" value="<?= $_COOKIE['email_student'] ?? '' ?>" required>
                 <span id="existstudentemail"
                     style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'aes'); ?></span>
                 <span id="sameemailstudent"
@@ -78,20 +78,20 @@
             <label for="gender"><?= __('Gender', 'aes'); ?><span class="required">*</span></label>
             <select class="form-control" id="gender" required name="gender">
                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
-                <option value="male"><?= __('Male', 'aes'); ?></option>
-                <option value="female"><?= __('Female', 'aes'); ?></option>
+                <option value="male" <?= $_COOKIE['gender'] == 'male' ? 'selected' : '' ?>><?= __('Male', 'aes'); ?></option>
+                <option value="female" <?= $_COOKIE['gender'] == 'female' ? 'selected' : '' ?>><?= __('Female', 'aes'); ?></option>
             </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="etnia"><?= __('Ethnicity', 'aes'); ?><span class="required">*</span></label>
             <select class="form-control" id="etnia" required name="etnia">
                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
-                <option value="1"><?= __('African American', 'aes'); ?></option>
-                <option value="2"><?= __('Asian', 'aes'); ?></option>
-                <option value="3"><?= __('Caucasian', 'aes'); ?></option>
-                <option value="4"><?= __('Hispanic', 'aes'); ?></option>
-                <option value="5"><?= __('Native American', 'aes'); ?></option>
-                <option value="7"><?= __('Choose Not To Respond', 'aes'); ?></option>
+                <option value="1" <?= $_COOKIE['ethnicity'] == '1' ? 'selected' : '' ?>><?= __('African American', 'aes'); ?></option>
+                <option value="2" <?= $_COOKIE['ethnicity'] == '2' ? 'selected' : '' ?>><?= __('Asian', 'aes'); ?></option>
+                <option value="3" <?= $_COOKIE['ethnicity'] == '3' ? 'selected' : '' ?>><?= __('Caucasian', 'aes'); ?></option>
+                <option value="4" <?= $_COOKIE['ethnicity'] == '4' ? 'selected' : '' ?>><?= __('Hispanic', 'aes'); ?></option>
+                <option value="5" <?= $_COOKIE['ethnicity'] == '5' ? 'selected' : '' ?>><?= __('Native American', 'aes'); ?></option>
+                <option value="7" <?= $_COOKIE['ethnicity'] == '7' ? 'selected' : '' ?>><?= __('Choose Not To Respond', 'aes'); ?></option>
             </select>
         </div>
 
@@ -103,7 +103,7 @@
         <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date_parent"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_parent"
-                name="birth_date_parent" required>
+                name="birth_date_parent" value="<?= $_COOKIE['birth_date_parent'] ?? '' ?>" required>
         </div>
 
         <div id="parent_document_type_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -232,7 +232,7 @@
             </a>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-3" style="text-align:center;">
-            <button class="submit" id="buttonsave"><?= __('Send', 'aes'); ?></button>
+            <button class="submit" id="buttonsave"><?= __('Continue', 'aes'); ?></button>
         </div>
     </div>
 </form>
