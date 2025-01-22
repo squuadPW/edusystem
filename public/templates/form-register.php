@@ -108,7 +108,7 @@
 
         <div id="parent_document_type_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="document_type"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
-            <select name="parent_document_type" autocomplete="off" oninput="validateIDs(false)" required>
+            <select id="parent_document_type" name="parent_document_type" autocomplete="off" oninput="validateIDs(false)" required>
                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                 <option value="passport"><?= __('Passport', 'aes'); ?></option>
                 <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>

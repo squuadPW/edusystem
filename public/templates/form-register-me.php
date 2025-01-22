@@ -18,7 +18,7 @@
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
                 <select value="<?php echo get_user_meta(get_current_user_id(), 'type_document', true) ?>"
-                    name="parent_document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
+                    name="parent_document_type" id="parent_document_type"  autocomplete="off" oninput="sendAjaxIdDocument()" required>
                     <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                     <option value="passport"><?= __('Passport', 'aes'); ?></option>
                     <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
