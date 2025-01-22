@@ -1,4 +1,4 @@
-<form method="POST" action="<?= the_permalink() . '?action=new_applicant_me'; ?>" class="form-aes" id="form-me">
+<form method="POST" action="<?= the_permalink() . '?action=new_applicant_me'; ?>" class="form-aes" id="form-me" autocomplete="off">
     <div class="grid grid-cols-12 gap-4">
 
         <!-- DATOS DEL ESTUDIANTE -->
