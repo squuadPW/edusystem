@@ -4,6 +4,8 @@
     var selectedValue = 'Complete';
     var $radioInputs = $('input[type="radio"][name="option"]');
 
+    reloadTable();
+    reloadButton();
     $(document).on('updated_checkout', function() {
       reloadTable();
       reloadButton();

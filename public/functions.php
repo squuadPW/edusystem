@@ -247,6 +247,17 @@ function change_default_checkout_country($country)
 
 add_filter('default_checkout_billing_country', 'change_default_checkout_country');
 
+function change_default_checkout_state($state)
+{
+
+    if (isset($_COOKIE['billing_state']) && !empty($_COOKIE['billing_state'])) {
+        $state = $_COOKIE['billing_state'];
+    }
+    return $state;
+}
+
+add_filter('default_checkout_billing_state', 'change_default_checkout_state');
+
 function woocommerce_checkout_order_created_action($order)
 {
     $customer_id = $order->get_customer_id();
@@ -351,10 +362,6 @@ function custom_override_value_checkout_fields($fields)
         $fields['billing']['billing_city']['default'] = $_COOKIE['billing_city'];
     }
 
-    if (isset($_COOKIE['billing_state']) && !empty($_COOKIE['billing_state'])) {
-        $fields['billing']['billing_state']['default'] = $_COOKIE['billing_state'];
-    }
-
     if (isset($_COOKIE['billing_address_1']) && !empty($_COOKIE['billing_address_1'])) {
         $fields['billing']['billing_address_1']['default'] = $_COOKIE['billing_address_1'];
     }
@@ -374,6 +381,10 @@ function custom_override_value_checkout_fields($fields)
 
     if (isset($_COOKIE['email_partner']) && !empty($_COOKIE['email_partner'])) {
         $fields['billing']['billing_email']['default'] = $_COOKIE['email_partner'];
+    }
+
+    if (isset($_COOKIE['billing_state']) && !empty($_COOKIE['billing_state'])) {
+        $fields['billing']['billing_state']['default'] = $_COOKIE['billing_state'];
     }
 
     return $fields;
@@ -1056,7 +1067,7 @@ function insert_data_student($order)
     $order->save();
 }
 
-add_action('woocommerce_after_checkout_billing_form', 'payments_parts');
+add_action('woocommerce_before_checkout_billing_form', 'payments_parts');
 
 function split_payment()
 {
@@ -2395,8 +2406,10 @@ add_shortcode('users_notifications', 'users_notifications');
 
 function select_payment_aes()
 {
+    reload_all_payment_methods();
     $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
     $countries = get_countries();
+    $states = get_states_by_country_code($_COOKIE['billing_country']);
     include(plugin_dir_path(__FILE__) . 'templates/select-payment-aes.php');
 }
 
@@ -2487,4 +2500,30 @@ function load_current_cut_enrollment()
     }
 
     return ['cut' => $cut, 'code' => $code];
+}
+
+add_filter('woocommerce_available_payment_gateways', 'hide_other_payment_methods', 0);
+function hide_other_payment_methods($available_gateways) {
+    $payment_method_selected = isset($_COOKIE['payment_method_selected']) ? $_COOKIE['payment_method_selected'] : '';
+    $reset_payment_methods = isset($_COOKIE['reset_payment_methods']) ? $_COOKIE['reset_payment_methods'] : '';
+    if (!empty($reset_payment_methods)) {
+        return $available_gateways;
+    }
+    if (!empty($payment_method_selected) && isset($available_gateways[$payment_method_selected])) {
+        return [$payment_method_selected => $available_gateways[$payment_method_selected]];
+    }
+
+    return $available_gateways;
+}
+
+function reload_all_payment_methods() {
+    ob_start();
+    setcookie('payment_method_selected', '', time() + 864000, '/');
+    setcookie('reset_payment_methods', '1', time() + 864000, '/');
+    $available_gateways = WC()->payment_gateways->payment_gateways();
+    $available_gateways = array_filter($available_gateways, function($gateway) {
+        return isset($gateway->settings->enabled) && $gateway->settings->enabled === 'yes';
+    });
+    apply_filters('woocommerce_available_payment_gateways', $available_gateways);
+    ob_end_flush();
 }

@@ -16,9 +16,14 @@
   if (isset($product) && $product->is_type('variable') && !isset($_COOKIE['is_scholarship'])) {
     ?>
 
+    <div>
+      <div class="back-select-payment">
+        <a href="<?= the_permalink() . '?action=change_payment_method'; ?>"><span class='dashicons dashicons-arrow-left-alt dashiconaes'></span><?= __('Change payment method', 'aes'); ?></a>
+      </div>
+    </div>
     <?php if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) { ?>
       <div >
-        <div style="margin-bottom: 10px !important;">
+        <div style="margin-bottom: 10px !important; text-align: center">
         <?php
           $product_fee = wc_get_product(AES_FEE_INSCRIPTION);
           $product_price = $product_fee->get_price();

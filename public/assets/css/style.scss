@@ -605,7 +605,7 @@ h3{
   // fee inscription checkbox
   /* The container */
 .fee-container {
-    display: block;
+    // display: block;
     position: relative;
     padding-left: 35px;
     margin-bottom: 12px;
@@ -1129,20 +1129,34 @@ body.modal-open {
   border: 1px solid #002fbd;
 }
 
-// .woocommerce-billing-fields__field-wrapper {
-//   display: none !important;
-// }
+.woocommerce-billing-fields__field-wrapper {
+  display: none !important;
+}
 
-// .woocommerce-checkout-review-order {
-//   width: 100% !important;
-// }
+.place-order {
+  text-align: center;
+  #place_order {
+    // width: 50% !important;
+    @media (max-width: 768px) {
+      width: 100% !important;
+    }
+  }
+}
 
-// .place-order {
-//   text-align: center;
-//   #place_order {
-//     width: 50% !important;
-//     @media (max-width: 768px) {
-//       width: 100% !important;
-//     }
-//   }
-// }
+.dashiconaes {
+  margin-right: 10px !important;
+}
+
+.dashiconaes::before {
+  vertical-align: unset !important;
+}
+
+.back-select-payment {
+  color: #091c5c;
+  cursor: pointer;
+  font-style: italic;
+  padding: 10px 10px;
+  border-radius: 10px;
+  margin: 10px 0px;
+  // width: 240px;
+}

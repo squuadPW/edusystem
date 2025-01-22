@@ -36,35 +36,40 @@
             <select name="country" autocomplete="off" required id="country-select-step-two">
                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                 <?php foreach ($countries as $key => $country) { ?>
-                    <option value="<?= $key ?>"><?= $country; ?></option>
+                    <option value="<?= $key ?>" <?= $key == $_COOKIE['billing_country'] ? 'selected' : '' ?>><?= $country; ?></option>
                 <?php } ?>
             </select>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="billing_address_1"><?= __('Street address', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="billing_address_1" autocomplete="off" required>
+            <input class="formdata capitalize" type="text" name="billing_address_1" autocomplete="off" value="<?= $_COOKIE['billing_address_1'] ?? '' ?>" required>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="city"><?= __('City', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="city" autocomplete="off" required>
+            <input class="formdata capitalize" type="text" name="city" autocomplete="off" value=" <?= $_COOKIE['billing_city'] ?? '' ?>" required>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="billing_state"><?= __('State / County', 'aes'); ?><span class="required">*</span></label>
-            <select name="billing_state" id="state-select-step-two"></select>
+            <select name="billing_state" id="state-select-step-two">
+                <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                <?php foreach ($states as $key => $state) { ?>
+                    <option value="<?= $key ?>" <?= $key == $_COOKIE['billing_state'] ? 'selected' : '' ?>><?= $state; ?></option>
+                <?php } ?>
+            </select>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="billing_postcode"><?= __('Postcode / ZIP', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata" type="text" name="billing_postcode" autocomplete="off" required>
+            <input class="formdata" type="text" name="billing_postcode" autocomplete="off" value="<?= $_COOKIE['billing_postcode'] ?? '' ?>" required>
         </div>
 
         <input class="formdata capitalize" type="hidden" name="payment_method_selected" autocomplete="off" required>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-3" style="text-align:center; display: none !important">
-            <button class="submit" id="buttonsave"><?= __('Send', 'aes'); ?></button>
+            <button type="submit" class="submit" id="buttonsave"><?= __('Send', 'aes'); ?></button>
         </div>
     </div>
 </form>

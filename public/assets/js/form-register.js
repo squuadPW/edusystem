@@ -1247,7 +1247,7 @@ if (select_country_step_two) {
         // Crear una opción por defecto
         let defaultOption = document.createElement('option');
         defaultOption.value = '';
-        defaultOption.textContent = 'Select a state'; // Cambia el texto según sea necesario
+        defaultOption.textContent = 'Select an option'; // Cambia el texto según sea necesario
         select_state_step_two.appendChild(defaultOption);
 
         // Recorrer los estados y crear las opciones
@@ -1292,31 +1292,14 @@ if (select_payment_methods.length > 0) { // Verifica si hay elementos selecciona
 let buttonsave_secondary = document.getElementById('buttonsave_secondary');
 if (buttonsave_secondary) { // Verifica si hay elementos seleccionados
   buttonsave_secondary.addEventListener('click', function (e) {
-    document.getElementById('buttonsave').click();
+    const hadPaymentMethodSelected = document.querySelectorAll('.card-selected-payment');
+    if (hadPaymentMethodSelected.length > 0) {
+      document.getElementById('buttonsave').click();  
+    } else {
+        alert('Please select a payment method.');
+    }
   });
 }
-
-// setTimeout(() => {
-//   let payment_methods_checkout = document.querySelector('.wc_payment_methods');
-
-//   // Verificamos que payment_methods_checkout no sea null
-//   if (payment_methods_checkout) {
-//     // Obtenemos el valor de la cookie payment_method_selected
-//     let selectedPaymentMethod = getCookie('payment_method_selected');
-
-//     // Seleccionamos todos los elementos <li> dentro de payment_methods_checkout
-//     let payment_methods = payment_methods_checkout.querySelectorAll('li');
-
-//     // Iteramos sobre cada <li>
-//     payment_methods.forEach(method => {
-//       // Verificamos si el <li> tiene la clase que coincide con el valor de la cookie
-//       if (!method.classList.contains(selectedPaymentMethod)) {
-//         // Si no tiene la clase, le asignamos display: none
-//         method.style.display = 'none';
-//       }
-//     });
-//   }
-// }, 3500);
 
 // Función para obtener el valor de una cookie por su nombre
 function getCookie(name) {

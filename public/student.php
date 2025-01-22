@@ -111,8 +111,8 @@ function save_student()
                     setcookie('gender_parent', $gender, time() + 864000, '/');
                 }
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
-                // wp_redirect(home_url('/select-payment'));
+                // redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                wp_redirect(home_url('/select-payment'));
                 break;
 
             case 'save_student_custom':
@@ -177,8 +177,8 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
-                // wp_redirect(home_url('/select-payment'));
+                // redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                wp_redirect(home_url('/select-payment'));
                 break;
 
             default:
@@ -193,8 +193,8 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
-                // wp_redirect(home_url('/select-payment'));
+                // redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                wp_redirect(home_url('/select-payment'));
                 break;
         }
     }
@@ -225,20 +225,21 @@ function save_student()
         $billing_postcode = isset($_POST['billing_postcode']) ? strtolower($_POST['billing_postcode']) : null;
     
         // Establecer cookies
-        setcookie('payment_method_selected', 'payment_method_' . $payment_method_selected, time() + 864000, '/');
+        setcookie('payment_method_selected', $payment_method_selected, time() + 864000, '/');
         setcookie('billing_city', ucwords($city), time() + 864000, '/');
         setcookie('billing_country', strtoupper($country), time() + 864000, '/');
         setcookie('billing_address_1', ucwords($billing_address_1), time() + 864000, '/');
         setcookie('billing_state', strtoupper($billing_state), time() + 864000, '/');
         setcookie('billing_postcode', ucwords($billing_postcode), time() + 864000, '/');
     
-        // Establecer el método de pago seleccionado en la sesión de WooCommerce
-        if (class_exists('WC')) {
-            WC()->session->set('chosen_payment_method', 'payment_method_' . $payment_method_selected);
-        }
-    
         // Redirigir al checkout
         redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false);
+    }
+
+    if (isset($_GET['action']) && !empty($_GET['action']) && $_GET['action'] == 'change_payment_method') {
+        reload_all_payment_methods();
+        wp_redirect(home_url('/select-payment'));
+        exit;
     }
 }
 
