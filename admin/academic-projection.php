@@ -643,7 +643,7 @@ function get_moodle_notes()
 
                     // $total_grade = ($max_grade / $assignments_total);
                     // usamos el total, la sumatoria de las 4 que en teoria deberia ser en base a 100
-                    $total_grade = $max_grade;
+                    $total_grade = ($max_grade > 100) ? 100 : $max_grade;
                     if ($projection_student) {
                         $projection_obj = json_decode($projection_student->projection);
             
