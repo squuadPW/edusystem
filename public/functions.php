@@ -564,7 +564,7 @@ function student_unsubscribe()
             }
         }
     } catch (\Throwable $th) {
-        error_log($th);
+        
     }
 }
 
@@ -1793,9 +1793,6 @@ function sendOrderbitrix($id_bitrix, $id_order, $status)
         // Get the JSON data from the response
         $data = json_decode(wp_remote_retrieve_body($response), true);
         // Do something with the data...
-    } else {
-        // Handle the error
-        error_log('Error: ' . wp_remote_retrieve_response_message($response));
     }
 }
 
