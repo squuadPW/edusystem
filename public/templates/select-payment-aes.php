@@ -34,7 +34,7 @@
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="country"><?= __('Country', 'form-plugin'); ?><span class="required">*</span></label>
             <select name="country" autocomplete="off" required id="country-select-step-two">
-                <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                <option value="" selected><?= __('Select an option', 'aes'); ?></option>
                 <?php foreach ($countries as $key => $country) { ?>
                     <option value="<?= $key ?>"><?= $country; ?></option>
                 <?php } ?>

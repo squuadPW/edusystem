@@ -1,13 +1,21 @@
 document.addEventListener("DOMContentLoaded", function () {
-  document.querySelector("select[name=country]").value =
-    getCookie("billing_country");
+  if (getCookie("billing_country")) {
+    document.querySelector("select[name=country]").value = getCookie("billing_country"); 
     changeSelectCountry(getCookie("billing_country"));
-  document.querySelector("input[name=billing_address_1]").value =
-    getCookie("billing_address_1");
-  document.querySelector("input[name=city]").value = getCookie("billing_city");
-  document.querySelector("input[name=billing_postcode]").value =
-    getCookie("billing_postcode");
+  }
 
+  if (getCookie("billing_address_1")) {
+    document.querySelector("select[name=billing_address_1]").value = getCookie("billing_address_1"); 
+  }
+
+  if (getCookie("billing_city")) {
+    document.querySelector("select[name=city]").value = getCookie("billing_city"); 
+  }
+
+  if (getCookie("billing_postcode")) {
+    document.querySelector("select[name=billing_postcode]").value = getCookie("billing_postcode"); 
+  }
+  
   let select_country_step_two = document.getElementById(
     "country-select-step-two"
   );
