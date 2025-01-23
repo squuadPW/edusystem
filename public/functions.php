@@ -28,7 +28,7 @@ function form_plugin_scripts()
     wp_enqueue_script('int-tel', plugins_url('aes') . '/public/assets/js/int-tel.js');
 
     // PAYMENTS PARTS
-    wp_register_script('payment-parts-update', plugins_url('aes') . '/public/assets/js/payment-parts-update.js', array('jquery'), '1.0.1', true);
+    wp_register_script('payment-parts-update', plugins_url('aes') . '/public/assets/js/payment-parts-update.js', array('jquery'), '1.0.2', true);
     wp_localize_script(
         'payment-parts-update',
         'ajax_object',
