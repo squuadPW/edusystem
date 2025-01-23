@@ -143,23 +143,28 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   const fileInputs = document.querySelectorAll(".custom-file-input");
   const fileLabels = document.querySelectorAll(".custom-file-label");
-  
+
   fileInputs.forEach((fileInput, index) => {
     fileInput.addEventListener("change", () => {
       // Obtener los tipos permitidos desde el atributo data-fileallowed
-      const allowedExtensions = fileInput.getAttribute("data-fileallowed").split(",").map(ext => ext.trim());
-      
+      const allowedExtensions = fileInput
+        .getAttribute("data-fileallowed")
+        .split(",")
+        .map((ext) => ext.trim());
+
       // Mapa de extensiones a tipos MIME
       const extensionToMime = {
         ".pdf": "application/pdf",
         ".jpeg": "image/jpeg",
         ".jpg": "image/jpeg",
-        ".png": "image/png"
+        ".png": "image/png",
       };
-  
+
       // Crear un array de tipos MIME permitidos
-      const allowedTypes = allowedExtensions.map(ext => extensionToMime[ext]).filter(Boolean);
-  
+      const allowedTypes = allowedExtensions
+        .map((ext) => extensionToMime[ext])
+        .filter(Boolean);
+
       if (!allowedTypes.includes(fileInput.files[0].type)) {
         alert("Only allowed file types: " + allowedExtensions.join(", "));
         fileInput.value = "";
@@ -212,6 +217,49 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+
+  let modalContinueCheckout = document.getElementById("modal-continue-checkout");
+  if (modalContinueCheckout) {
+    let formParam = getUrlParameter('form');
+    if (
+      (getCookie("name_student") &&
+      getCookie("last_name_student") &&
+      getCookie("birth_date") &&
+      getCookie("initial_grade") &&
+      getCookie("program_id") &&
+      getCookie("email_partner") &&
+      getCookie("number_partner")) || 
+      formParam === '1'
+    ) {
+      if (formParam == 1) {
+        document.querySelector("input[name=birth_date_student]").value = getCookie("birth_date");
+        document.querySelector("select[name=document_type]").value = getCookie("document_type");
+        document.querySelector("input[name=id_document]").value = getCookie("id_document");
+        document.querySelector("input[name=name_student]").value = getCookie("name_student");
+        document.querySelector("input[name=middle_name_student]").value = getCookie("middle_name_student");
+        document.querySelector("input[name=lastname_student]").value = getCookie("last_name_student");
+        document.querySelector("input[name=middle_last_name_student]").value = getCookie("middle_last_name_student");
+        document.querySelector("input[name=number_phone]").value = getCookie("phone_student");
+        document.querySelector("input[name=email_student]").value = getCookie("email_student");
+        document.querySelector("select[name=gender]").value = getCookie("gender");
+        document.querySelector("select[name=etnia]").value = getCookie("ethnicity");
+        document.querySelector("input[name=birth_date_parent]").value = getCookie("birth_date_parent");
+        document.querySelector("select[name=parent_document_type]").value = getCookie("parent_document_type");
+        document.querySelector("input[name=id_document_parent]").value = getCookie("id_document_parent");
+        document.querySelector("input[name=agent_name]").value = getCookie("agent_name");
+        document.querySelector("input[name=agent_last_name]").value = getCookie("agent_last_name");
+        document.querySelector("input[name=number_partner]").value = getCookie("number_partner");
+        document.querySelector("select[name=gender_parent]").value = getCookie("gender_parent");
+        document.querySelector("input[name=email_partner]").value = getCookie("email_partner");
+        document.querySelector("input[name=password]").value = getCookie("password");
+        document.querySelector("select[name=grade]").value = getCookie("initial_grade");
+        document.querySelector("select[name=program]").value = getCookie("program_id");
+        document.querySelector("select[name=institute_id]").value = getCookie("institute_id");
+      } else {
+        modalContinueCheckout.style.display = "block";
+      }
+    }
+  }
 });
 
 let timer = null;
@@ -227,7 +275,9 @@ let emailPartnerInput = form?.querySelector('input[name="email_partner"]');
 let idDocument = form?.querySelector('input[name="id_document"]');
 let idDocumentParent = form?.querySelector('input[name="id_document_parent"]');
 let typeDocument = form?.querySelector('select[name="document_type"]');
-let typeDocumentParent = form?.querySelector('select[name="parent_document_type"]');
+let typeDocumentParent = form?.querySelector(
+  'select[name="parent_document_type"]'
+);
 let dont_allow_adult = document.getElementById("dont_allow_adult");
 let dontBeAdult = document.querySelector("#dontBeAdult");
 
@@ -235,21 +285,29 @@ emailStudentInput?.addEventListener("input", checkEmails);
 emailPartnerInput?.addEventListener("input", checkEmails);
 
 function validateIDs(validating = true) {
-  if (typeDocument.value && typeDocumentParent.value && idDocument.value && idDocumentParent.value) {
-    if ((typeDocument.value != typeDocumentParent.value) || (idDocument.value != idDocumentParent.value)) {
-      let samestudentsids = document.querySelectorAll('.sameids');
-      samestudentsids.forEach(element => {
-        element.style.display = 'none';
+  if (
+    typeDocument.value &&
+    typeDocumentParent.value &&
+    idDocument.value &&
+    idDocumentParent.value
+  ) {
+    if (
+      typeDocument.value != typeDocumentParent.value ||
+      idDocument.value != idDocumentParent.value
+    ) {
+      let samestudentsids = document.querySelectorAll(".sameids");
+      samestudentsids.forEach((element) => {
+        element.style.display = "none";
       });
       if (!validating) {
         buttonSave.disabled = false;
       }
       return true;
     }
-  
-    let samestudentsids = document.querySelectorAll('.sameids');
-    samestudentsids.forEach(element => {
-      element.style.display = 'block';
+
+    let samestudentsids = document.querySelectorAll(".sameids");
+    samestudentsids.forEach((element) => {
+      element.style.display = "block";
     });
     if (!validating) {
       buttonSave.disabled = true;
@@ -462,7 +520,7 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
         }
       }
     }
-  };  
+  };
 }
 
 if (document.getElementById("birth_date_student")) {
@@ -476,7 +534,6 @@ if (document.getElementById("birth_date_student")) {
       today = new Date();
       diff = diff_years(today, start);
       if (diff >= 18) {
-
         var accessDataTitle = document.getElementById("access_data");
         if (accessDataTitle) {
           accessDataTitle.innerHTML = "Platform access data of student";
@@ -623,11 +680,10 @@ if (document.getElementById("birth_date_student")) {
           }
         }
       } else {
-
         var accessDataTitle = document.getElementById("access_data");
-          if (accessDataTitle) {
-            accessDataTitle.innerHTML = "Platform access data of parent";
-          }
+        if (accessDataTitle) {
+          accessDataTitle.innerHTML = "Platform access data of parent";
+        }
 
         if (dontBeAdult) {
           dontBeAdult.style.display = "none";
@@ -1165,139 +1221,70 @@ function customFlatpickr() {
   let instances = flatpickr(".flatpickr", {
     dateFormat: "m/d/Y",
     disableMobile: "true",
-    onChange: function(selectedDates, dateStr, instance) {
-        let id = instance.input.id;
-        let date = instance.input.value;
-        let year_selected = document.getElementById(`instance${id}`).value;
-        if (date && date != '') {
-          let date_split = date.split('/');
-          instance.setDate(`${date_split[0]}/${date_split[1]}/${year_selected}`);
-        } else {
-          let currentDate = new Date();
-          let month = currentDate.getMonth(); // Mes actual (0-11)
-          let day = currentDate.getDate(); // Día actual
-          let newDate = new Date(year_selected, month, day);
-          instance.setDate(newDate);
-        }
-    }
+    onChange: function (selectedDates, dateStr, instance) {
+      let id = instance.input.id;
+      let date = instance.input.value;
+      let year_selected = document.getElementById(`instance${id}`).value;
+      if (date && date != "") {
+        let date_split = date.split("/");
+        instance.setDate(`${date_split[0]}/${date_split[1]}/${year_selected}`);
+      } else {
+        let currentDate = new Date();
+        let month = currentDate.getMonth(); // Mes actual (0-11)
+        let day = currentDate.getDate(); // Día actual
+        let newDate = new Date(year_selected, month, day);
+        instance.setDate(newDate);
+      }
+    },
   });
 
   setTimeout(() => {
-    document.querySelectorAll(".numInputWrapper").forEach(function(element) {
-      element.style.display = 'none';
+    document.querySelectorAll(".numInputWrapper").forEach(function (element) {
+      element.style.display = "none";
     });
 
-    document.querySelectorAll(".flatpickr-prev-month").forEach(function(element) {
-      element.style.display = 'none';
+    document
+      .querySelectorAll(".flatpickr-prev-month")
+      .forEach(function (element) {
+        element.style.display = "none";
+      });
+
+    document
+      .querySelectorAll(".flatpickr-next-month")
+      .forEach(function (element) {
+        element.style.display = "none";
+      });
+
+    document.querySelectorAll(".flatpickr-month").forEach(function (element) {
+      element.style.height = "40px";
     });
 
-    document.querySelectorAll(".flatpickr-next-month").forEach(function(element) {
-      element.style.display = 'none';
-    });
-
-    document.querySelectorAll(".flatpickr-month").forEach(function(element) {
-      element.style.height = '40px';
-    });
-
-    document.querySelectorAll(".flatpickr-monthDropdown-months").forEach(function(element) {
-      element.style.setProperty('padding', '0', 'important');
-    });
+    document
+      .querySelectorAll(".flatpickr-monthDropdown-months")
+      .forEach(function (element) {
+        element.style.setProperty("padding", "0", "important");
+      });
 
     let selector_months = document.querySelectorAll(".flatpickr-current-month");
     instances.forEach((instance, i) => {
       let yearSelect = document.createElement("select");
       yearSelect.classList.add("numInputWrapper");
-      yearSelect.style.setProperty('padding', '0', 'important');
-      yearSelect.style.borderRadius = '0px';
+      yearSelect.style.setProperty("padding", "0", "important");
+      yearSelect.style.borderRadius = "0px";
       yearSelect.id = `instance${instance.input.id}`;
 
       const currentYear = new Date().getFullYear() - 10;
       const startYear = 1900;
       for (let year = currentYear; year >= startYear; year--) {
-          const option = document.createElement("option");
-          option.value = year;
-          option.textContent = year;
-          yearSelect.appendChild(option);
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
       }
 
       selector_months[i].appendChild(yearSelect);
     });
   }, 1000);
-}
-
-let select_country_step_two = document.getElementById('country-select-step-two');
-let select_state_step_two = document.getElementById('state-select-step-two'); // Asegúrate de tener este select en tu HTML
-
-if (select_country_step_two) {
-  select_country_step_two.addEventListener('change', function (e) {
-    select_state_step_two.disabled = true;
-    let action = "action=get_states_country";
-    const XHR = new XMLHttpRequest();
-    XHR.open("POST", `${ajax_object.ajax_url}?${action}`, true);
-    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    XHR.responseType = "json";
-    let params = `${action}&option=${e.target.value}`;
-    XHR.send(params);
-    
-    XHR.onload = function () {
-      if (XHR.status === 200) {
-        // Limpiar el select de estados antes de llenarlo
-        select_state_step_two.innerHTML = '';
-
-        // Crear una opción por defecto
-        let defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = 'Select an option'; // Cambia el texto según sea necesario
-        select_state_step_two.appendChild(defaultOption);
-
-        // Recorrer los estados y crear las opciones
-        select_state_step_two.required = false;
-        if (XHR.response && XHR.response.states) {
-          for (let key in XHR.response.states) {
-            if (XHR.response.states.hasOwnProperty(key)) {
-              let option = document.createElement('option');
-              option.value = key; // Código del estado
-              option.textContent = XHR.response.states[key]; // Nombre del estado
-              select_state_step_two.appendChild(option);
-            }
-          }
-          select_state_step_two.disabled = false;
-          select_state_step_two.required = true;
-        }
-      }
-    };
-  });
-}
-
-let select_payment_methods = document.querySelectorAll('.card-select-payment');
-if (select_payment_methods.length > 0) { // Verifica si hay elementos seleccionados
-  select_payment_methods.forEach(payment => {
-    payment.addEventListener('click', function (e) {
-      // Remover la clase .card-selected-payment de todos los elementos
-      select_payment_methods.forEach(p => p.classList.remove('card-selected-payment'));
-      
-      // Agregar la clase .card-selected-payment al elemento que fue clickeado
-      e.currentTarget.classList.add('card-selected-payment');
-
-      // Obtener el data-id del elemento clickeado
-      let paymentId = e.currentTarget.dataset.id;
-      
-      // Asignar el valor al input correspondiente
-      document.querySelector('input[name=payment_method_selected]').value = paymentId;
-    });
-  });
-}
-
-let buttonsave_secondary = document.getElementById('buttonsave_secondary');
-if (buttonsave_secondary) { // Verifica si hay elementos seleccionados
-  buttonsave_secondary.addEventListener('click', function (e) {
-    const hadPaymentMethodSelected = document.querySelectorAll('.card-selected-payment');
-    if (hadPaymentMethodSelected.length > 0) {
-      document.getElementById('buttonsave').click();  
-    } else {
-        alert('Please select a payment method.');
-    }
-  });
 }
 
 // Función para obtener el valor de una cookie por su nombre
@@ -1313,3 +1300,11 @@ function getCookie(name) {
   // Retornamos null si no se encuentra la cookie
   return null;
 }
+
+  // Función para obtener parámetros de la URL
+  function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    let regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    let results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+  }

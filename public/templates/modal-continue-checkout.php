@@ -1,4 +1,4 @@
-<div id="modal-continue-checkout" class="modal" style="display: block; z-index: 10000">
+<div id="modal-continue-checkout" class="modal" style="display: none; z-index: 10000">
     <div class="modal-content" style="overflow: auto; padding: 0 !important">
     <div class="modal-header p-5">
         <h3 style="font-weight: 600">Previous form</h3>
@@ -6,7 +6,7 @@
       </div>
       <div class="modal-body">
           <div>
-            <p style="font-size: 12px; font-style: italic; text-align: center">We have found some information that you have used in a previous form, would you like to continue to checkout with that same information?</p>
+            <p style="font-size: 12px; font-style: italic; text-align: center">We have found that you have done a previous form, do you want to continue with the same information or do you want to start again?</p>
           </div>
 
           <!-- DATOS DEL GRADO -->

@@ -95,7 +95,7 @@ function form_plugin_scripts()
     }
 
     if (str_contains(home_url($wp->request), 'select-payment')) {
-        wp_register_script('select-payment', plugins_url('aes') . '/public/assets/js/select-payment.js', array('jquery'), '1.0.0', true);
+        wp_register_script('select-payment', plugins_url('aes') . '/public/assets/js/select-payment.js', array('jquery'), '1.0.1', true);
         wp_localize_script(
             'select-payment',
             'ajax_object',
@@ -106,7 +106,7 @@ function form_plugin_scripts()
         wp_enqueue_script('select-payment');
     }
 
-    wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.0', true);
+    wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.1', true);
     wp_localize_script(
         'student-continue',
         'ajax_object',
@@ -116,7 +116,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('student-continue');
 
-    wp_register_script('previous-form', plugins_url('aes') . '/public/assets/js/previous-form.js', array('jquery'), '1.0.0', true);
+    wp_register_script('previous-form', plugins_url('aes') . '/public/assets/js/previous-form.js', array('jquery'), '1.0.1', true);
     wp_localize_script(
         'previous-form',
         'ajax_object',
@@ -142,18 +142,7 @@ function form_asp_psp()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
-    if (
-        isset($_COOKIE['name_student']) && !empty($_COOKIE['name_student']) &&
-        isset($_COOKIE['last_name_student']) && !empty($_COOKIE['last_name_student']) &&
-        isset($_COOKIE['birth_date']) && !empty($_COOKIE['birth_date']) &&
-        isset($_COOKIE['initial_grade']) && !empty($_COOKIE['initial_grade']) &&
-        isset($_COOKIE['program_id']) && !empty($_COOKIE['program_id']) &&
-        isset($_COOKIE['email_partner']) && !empty($_COOKIE['email_partner']) &&
-        isset($_COOKIE['number_partner']) && !empty($_COOKIE['number_partner'])
-    ) {
-        add_action('wp_footer', 'modal_continue_checkout');
-    }
-
+    add_action('wp_footer', 'modal_continue_checkout');
     include(plugin_dir_path(__FILE__) . 'templates/asp-psp-registration.php');
 }
 
@@ -172,8 +161,8 @@ function use_previous_form_aes_callback()
     $use_previous_form = $_POST['use'];
     if ($use_previous_form == 1) {
         // Redirigir a la URL especificada
-        $url = redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false, true);
-        wp_send_json_success(array('redirect' => $url));
+        // $url = redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false, true);
+        wp_send_json_success(array('redirect' => 'close'));
         exit;
     } else {
         clear_all_cookies();
@@ -2420,7 +2409,6 @@ function select_payment_aes()
 {
     $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
     $countries = get_countries();
-    $states = get_states_by_country_code($_COOKIE['billing_country']);
     include(plugin_dir_path(__FILE__) . 'templates/select-payment-aes.php');
 }
 
