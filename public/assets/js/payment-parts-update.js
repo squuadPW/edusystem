@@ -119,6 +119,8 @@
           // Update the cart price
           $('#cart_totals').html(response);
           $(document.body).trigger('update_checkout');
+          reloadTable();
+          reloadButton();
         }
       });
     }
