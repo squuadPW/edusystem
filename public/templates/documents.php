@@ -123,13 +123,6 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
     </form>
 <?php endif; ?>
 
-<?php 
-if ($_GET['missing']) {
-    include('create-missing-documents.php'); 
-}
-?>
-
-
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 <script>

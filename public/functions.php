@@ -1993,9 +1993,12 @@ function modal_missing_student()
         'today' => date('Y-m-d'),
     ];
     $table_student_documents = $wpdb->prefix . 'student_documents';
-    $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE attachment_id=0 AND is_visible=1 AND is_required = 0 AND student_id={$student->id}");
+    $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE `status` != 5 AND is_visible=1 AND is_required = 0 AND student_id={$student->id}");
+    $documents_required_not_approved = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE `status` != 5 AND is_visible=1 AND is_required = 1 AND student_id={$student->id}");
     $today = date('m-d-Y');
-    include plugin_dir_path(__FILE__) . 'templates/create-missing-documents.php';
+    if (count($documents_required_not_approved) == 0) {
+        include plugin_dir_path(__FILE__) . 'templates/create-missing-documents.php';
+    }
 }
 
 function modal_fill_info()
@@ -2059,16 +2062,6 @@ function modal_enrollment_student()
         'today' => date('Y-m-d'),
     ];
     include plugin_dir_path(__FILE__) . 'templates/create-enrollment.php';
-}
-
-function modal_missing_documents($student_id)
-{
-    global $wpdb;
-    $student = get_student_detail($student_id);
-    $table_student_documents = $wpdb->prefix . 'student_documents';
-    $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE attachment_id=0 AND is_visible=1 AND student_id={$student_id}");
-    $show_parent_info = 0;
-    include plugin_dir_path(__FILE__) . 'templates/create-missing-documents.php';
 }
 
 function modal_create_password()
