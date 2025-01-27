@@ -9,7 +9,8 @@
             <div style="margin-top: 10px"><strong id="not-current-students"></strong></div>
         </div>
     </div>
-    <div style="width:100%;text-align:center;padding-top:10px;">
+    <input type="hidden" id="update_data_report_current_students"></input>
+    <!-- <div style="width:100%;text-align:center;padding-top:10px;">
     <?php if (wp_is_mobile()): ?>
                 <input type="hidden" id="update_data_report_current_students"></input>
                 <button type="button" id="export_excel_students" class="button button-success"
@@ -19,17 +20,39 @@
                 <button type="button" id="export_excel_students"
                     class="button button-success"></span><?= __('Export excel', 'aes'); ?></button>
             <?php endif; ?>
-    </div>
-    <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
-        <thead>
-            <tr>
-                <th scope="col" class=" manage-column column"><?= __('Academic period - cut', 'aes'); ?></th>
-                <th scope="col" class=" manage-column column-primary"><?= __('Student', 'aes'); ?></th>
-                <th scope="col" class=" manage-column"><?= __('Subjects', 'aes'); ?></th>
-            </tr>
-        </thead>
-        <tbody id="table-current-student">
+    </div> -->
+    <div  class="grid-container-report-2">
+        <div>
+            <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+                <thead>
+                    <tr>
+                        <th scope="col" class=" manage-column column" colspan="3" style="text-align: center"><?= __('Current students', 'aes'); ?></th>
+                    </tr>
+                    <tr>
+                        <th scope="col" class=" manage-column column"><?= __('Academic period - cut', 'aes'); ?></th>
+                        <th scope="col" class=" manage-column column-primary"><?= __('Student', 'aes'); ?></th>
+                        <th scope="col" class=" manage-column"><?= __('Subjects', 'aes'); ?></th>
+                    </tr>
+                </thead>
+                <tbody id="table-current-student">
 
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+                <thead>
+                    <tr>
+                        <th scope="col" class=" manage-column column"  style="text-align: center"><?= __('Not current students', 'aes'); ?></th>
+                    </tr>
+                    <tr>
+                        <th scope="col" class=" manage-column column-primary"><?= __('Student', 'aes'); ?></th>
+                    </tr>
+                </thead>
+                <tbody id="table-not-current-student">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

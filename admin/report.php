@@ -399,6 +399,32 @@ function get_students_current()
     }
     return $students;
 }
+
+function get_students_not_current()
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+
+    $conditions = array();
+    $params = array();
+    $load = load_current_cut();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+    $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL");
+    $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
+    $conditions[] = "condition_student = 1";
+    $params = array_merge($params, $cut_student_ids);
+
+    $query = "SELECT * FROM {$table_students}";
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $students = $wpdb->get_results($wpdb->prepare($query, $params));
+    return $students;
+}
 // GET ORDERS
 
 function get_list_orders_sales()
@@ -641,6 +667,9 @@ function list_report_current_students()
     $roles = $current_user->roles;
     $html = "";
     $students = get_students_current();
+
+    $html_not_current = "";
+    $students_not_current = get_students_not_current();
     $load = load_current_cut();
     $academic_period = $load['code'];
     $cut = $load['cut'];
@@ -672,7 +701,28 @@ function list_report_current_students()
         $html .= "</tr>";
     }
 
-    echo json_encode(['status' => 'success', 'html' => $html, 'data' => $students]);
+    
+    if (!empty($students_not_current)) {
+
+        foreach ($students_not_current as $student) {
+            $user_student = get_user_by('email', $student->email);
+
+            $html_not_current .= "<tr>";
+            if (in_array('owner', $roles) || in_array('administrator', $roles)) {
+                $html_not_current .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
+            } else {
+                $html_not_current .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
+            }
+            $html_not_current .= "</tr>";
+        }
+
+    } else {
+        $html_not_current .= "<tr>";
+        $html_not_current .= "<td colspan='3' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+        $html_not_current .= "</tr>";
+    }
+
+    echo json_encode(['status' => 'success', 'html' => $html, 'data' => $students, 'html_not_current' => $html_not_current, 'students_not_current' => $students_not_current]);
     exit;
 }
 

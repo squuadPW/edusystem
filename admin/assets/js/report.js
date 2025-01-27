@@ -325,6 +325,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("table-current-student").innerHTML = htmlLoading;
 
+    htmlLoading = "";
+    htmlLoading += "<tr>";
+    htmlLoading +=
+      "<td class='column-primary id column-id' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+    htmlLoading += "</tr>";
+    document.getElementById("table-not-current-student").innerHTML = htmlLoading;
+
     const XHR = new XMLHttpRequest();
     XHR.open("POST", list_report_current_students.url, true);
     XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -342,6 +349,11 @@ document.addEventListener("DOMContentLoaded", function () {
             result.html;
           document.getElementById("current-students").innerHTML =
             result.data.length;
+
+            document.getElementById("table-not-current-student").innerHTML =
+            result.html_not_current;
+          document.getElementById("not-current-students").innerHTML =
+            result.students_not_current.length;
           // document.getElementById("receivable").innerHTML =
           //   result.data.receivable;
         }
