@@ -429,10 +429,10 @@ add_action('woocommerce_account_califications_endpoint', function () {
 
             foreach ($inscriptions as $key => $inscription) {
                 if ($inscription->status_id == 3 || $inscription->status_id == 4) {
-                    if (isset($inscription->subject_id)) {
+                    if ($inscription->subject_id) {
                         $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$inscription->subject_id}");
                     } else {
-                        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE code_subject = {$inscription->code_subject}");
+                        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE code_subject = '{$inscription->code_subject}'");
                     }
                     array_push($formatted_assignments_history, [
                         'subject' => $subject->name,
