@@ -85,7 +85,7 @@ function aes_scripts_admin()
         ]);
     }
 
-    if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables' || $_GET['page'] == 'report-students' || $_GET['page'] == 'report-sales-product') {
+    if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables' || $_GET['page'] == 'report-students' || $_GET['page'] == 'report-current-students' || $_GET['page'] == 'report-sales-product') {
         wp_enqueue_script('report', plugins_url('aes') . '/admin/assets/js/report.js', array('jquery'), '1.0.0', true);
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js');
         wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js');
@@ -108,6 +108,11 @@ function aes_scripts_admin()
         wp_localize_script('report', 'list_report_students', [
             'url' => admin_url('admin-ajax.php'),
             'action' => 'list_report_students'
+        ]);
+
+        wp_localize_script('report', 'list_report_current_students', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'list_report_current_students'
         ]);
 
         wp_localize_script('report', 'load_chart_data', [
@@ -333,6 +338,7 @@ function add_custom_admin_page()
     add_submenu_page('add_admin_form_report_content', __('Sales', 'aes'), __('Sales', 'aes'), 'manager_sales_aes', 'report-sales', 'show_report_sales', 10);
     add_submenu_page('add_admin_form_report_content', __('Accounts receivable', 'aes'), __('Accounts receivable', 'aes'), 'manager_accounts_receivables_aes', 'report-accounts-receivables', 'show_report_accounts_receivables', 10);
     add_submenu_page('add_admin_form_report_content', __('Students', 'aes'), __('Students', 'aes'), 'manager_report_students_aes', 'report-students', 'show_report_students', 10);
+    add_submenu_page('add_admin_form_report_content', __('Current students', 'aes'), __('Current students', 'aes'), 'manager_report_current_students_aes', 'report-current-students', 'show_report_current_students', 10);
     add_submenu_page('add_admin_form_report_content', __('Sales by product', 'aes'), __('Sales by product', 'aes'), 'manager_report_sales_product', 'report-sales-product', 'show_report_sales_product', 10);
 
     add_menu_page(
@@ -371,6 +377,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_admission_aes');
     $role->add_cap('manager_report_aes');
     $role->add_cap('manager_report_students_aes');
+    $role->add_cap('manager_report_current_students_aes');
     $role->add_cap('manager_report_sales_product');
     $role->add_cap('manager_sales_aes');
     $role->add_cap('manager_accounts_receivables_aes');

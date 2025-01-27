@@ -276,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     htmlLoading += "<tr>";
     htmlLoading +=
-      "<td class='column-primary id column-id' colspan='10' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+      "<td class='column-primary id column-id' colspan='9' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
     htmlLoading += "</tr>";
 
     document.getElementById("table-institutes-payment").innerHTML = htmlLoading;
@@ -303,6 +303,44 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("table-institutes-payment").innerHTML =
             result.html;
           document.getElementById("students").innerHTML =
+            result.data.length;
+          // document.getElementById("receivable").innerHTML =
+          //   result.data.receivable;
+        }
+      }
+    };
+  }
+
+  if (document.getElementById("update_data_report_current_students")) {
+    load_report_current_students();
+  }
+
+  function load_report_current_students() {
+    let htmlLoading = "";
+
+    htmlLoading += "<tr>";
+    htmlLoading +=
+      "<td class='column-primary id column-id' colspan='3' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+    htmlLoading += "</tr>";
+
+    document.getElementById("table-current-student").innerHTML = htmlLoading;
+
+    const XHR = new XMLHttpRequest();
+    XHR.open("POST", list_report_current_students.url, true);
+    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    XHR.responseType = "text";
+    XHR.send(
+      "action=" +
+      list_report_current_students.action
+    );
+    XHR.onload = function () {
+      if (this.readyState == "4" && XHR.status === 200) {
+        let result = JSON.parse(XHR.responseText);
+
+        if (result.status == "success") {
+          document.getElementById("table-current-student").innerHTML =
+            result.html;
+          document.getElementById("current-students").innerHTML =
             result.data.length;
           // document.getElementById("receivable").innerHTML =
           //   result.data.receivable;
