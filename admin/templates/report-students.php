@@ -40,6 +40,9 @@
                     class="button button-success"></span><?= __('Export excel', 'aes'); ?></button>
             <?php endif; ?>
     </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <strong>The filter of this report applies to students with subjects enrolled within the period and cutoff consulted.</strong>
+    </div>
     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
         <thead>
             <tr>
