@@ -304,14 +304,9 @@ function get_students_report($academic_period, $grade, $cut)
 
     if (!empty($cut)) {
         $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE cut_period = '$cut'");
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut'");
         $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
         $params = array_merge($params, $cut_student_ids);
-    }
-
-    if (!empty($academic_period)) {
-        $conditions[] = "academic_period = %s";
-        $params[] = $academic_period;
     }
 
     if (!empty($grade)) {

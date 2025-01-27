@@ -351,6 +351,8 @@ function create_tables()
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_students}'") != $table_students) {
 
+    // condition_student (0 retirado, 1 activo, 2 pausado)
+    // status_id (0 pendiente, 1 aprobado, 2 documentos subidos con acceso al moodle)
     dbDelta(
       "CREATE TABLE " . $table_students . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
@@ -358,7 +360,6 @@ function create_tables()
         id_document TEXT NULL,
         ethnicity TEXT NULL,
         academic_period TEXT NULL,
-        initial_cut TEXT NULL,
         name TEXT NOT NULL,
         middle_name TEXT NULL,
         last_name TEXT NOT NULL,
@@ -376,6 +377,7 @@ function create_tables()
         program_id TEXT NOT NULL,
         partner_id INT(11) NOT NULL, 
         status_id INT(11) NOT NULL,
+        condition_student INT(11) NOT NULL,
         moodle_student_id INT(11) NULL,
         moodle_password TEXT NULL,
         updated_at DATETIME NULL,
