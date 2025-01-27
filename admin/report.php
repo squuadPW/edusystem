@@ -314,7 +314,7 @@ function get_students_report($academic_period, $grade, $cut)
 
     if (!empty($cut)) {
         $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND subject_id IS NOT NULL");
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL");
         $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
         $params = array_merge($params, $cut_student_ids);
     }
@@ -347,7 +347,7 @@ function get_students_current()
     $load = load_current_cut();
     $academic_period = $load['code'];
     $cut = $load['cut'];
-    $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND subject_id IS NOT NULL");
+    $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL");
     $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
     $params = array_merge($params, $cut_student_ids);
 
@@ -361,9 +361,32 @@ function get_students_current()
     foreach ($students as $key => $student) {
         $conditions = array();
         $params = array();
-        $subject_ids = $wpdb->get_col("SELECT subject_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND student_id = {$student->id} AND subject_id IS NOT NULL");
-        $conditions[] = "id IN (" . implode(',', array_fill(0, count($subject_ids), '%d')) . ")";
-        $params = array_merge($params, $subject_ids);
+    
+        // Obtener subject_ids
+        $subject_ids = $wpdb->get_col($wpdb->prepare(
+            "SELECT subject_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s AND status_id = 1 AND student_id = %d AND subject_id IS NOT NULL",
+            $academic_period,
+            $cut,
+            $student->id
+        ));
+    
+        if (!empty($subject_ids)) {
+            $conditions[] = "id IN (" . implode(',', array_fill(0, count($subject_ids), '%d')) . ")";
+            $params = array_merge($params, $subject_ids);
+        }
+    
+        // Obtener subject_codes
+        $subject_codes = $wpdb->get_col($wpdb->prepare(
+            "SELECT code_subject FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s AND status_id = 1 AND student_id = %d AND code_subject IS NOT NULL",
+            $academic_period,
+            $cut,
+            $student->id
+        ));
+    
+        if (!empty($subject_codes)) {
+            $conditions[] = "code_subject IN (" . implode(',', array_fill(0, count($subject_codes), '%s')) . ")";
+            $params = array_merge($params, $subject_codes);
+        }
     
         $query = "SELECT * FROM {$table_school_subjects}";
     
@@ -371,6 +394,7 @@ function get_students_current()
             $query .= " WHERE " . implode(" AND ", $conditions);
         }
     
+        // Manejo de errores
         $student->subjects = $wpdb->get_results($wpdb->prepare($query, $params));
     }
     return $students;
