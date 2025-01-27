@@ -127,10 +127,10 @@ class TT_enrollments_all_List_Table extends WP_List_Table
                         return '<div style="color: red; font-weight: 600">'. strtoupper('Unsubscribed') . '</div>';
                         break;
                     case 3:
-                        return '<div style="color: green; font-weight: 600">'. strtoupper('Completed') . '</div>';
+                        return '<div style="color: green; font-weight: 600">'. strtoupper('Approved') . '</div>';
                         break;
                     case 4:
-                        return '<div style="color: red; font-weight: 600">'. strtoupper('Failed') . '</div>';
+                        return '<div style="color: red; font-weight: 600">'. strtoupper('Reproved') . '</div>';
                         break;
                 }
             case 'view_details':

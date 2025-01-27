@@ -11,7 +11,7 @@ function add_admin_form_academic_projection_content()
             $projection_id = $_GET['projection_id'];
             $projection = get_projection_details($projection_id);
             $student = get_student_detail($projection->student_id);
-            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id}");
+            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND subject_id IS NOT NULL");
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-detail.php');
         }

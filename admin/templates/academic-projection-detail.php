@@ -126,10 +126,10 @@
                                                                 echo '<div style="color: red; font-weight: 600">'. strtoupper('Unsubscribed') . '</div>';
                                                                 break;
                                                             case 3:
-                                                                echo '<div style="color: green; font-weight: 600">'. strtoupper('Completed') . '</div>';
+                                                                echo '<div style="color: green; font-weight: 600">'. strtoupper('Approved') . '</div>';
                                                                 break;
                                                             case 4:
-                                                                echo '<div style="color: red; font-weight: 600">'. strtoupper('Failed') . '</div>';
+                                                                echo '<div style="color: red; font-weight: 600">'. strtoupper('Reproved') . '</div>';
                                                                 break;
                                                         }
                                                     ?>

@@ -97,6 +97,8 @@
                     <thead>
                         <tr>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span
+                                class="nobr"><?= __('Status', 'aes'); ?></span></th>
+                            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span
                                     class="nobr"><?= __('Code', 'aes'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                                     class="nobr"><?= __('Subject', 'aes'); ?></span></th>
@@ -112,6 +114,29 @@
 
                                 <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order"
                                     style="background-color: blue !important">
+                                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
+                                        data-title="<?= __('Status', 'aes'); ?>">
+                                        <?php
+                                            switch ($row['status_id']) {
+                                                case 0:
+                                                    echo '<div style="color: gray; font-weight: 600">'. strtoupper('To begin') . '</div>';
+                                                    break;
+                                                case 1:
+                                                    echo '<div style="color: blue; font-weight: 600">'. strtoupper('Active') . '</div>';
+                                                    break;
+                                                case 2:
+                                                    echo '<div style="color: red; font-weight: 600">'. strtoupper('Unsubscribed') . '</div>';
+                                                    break;
+                                                case 3:
+                                                    echo '<div style="color: green; font-weight: 600">'. strtoupper('Approved') . '</div>';
+                                                    break;
+                                                case 4:
+                                                    echo '<div style="color: red; font-weight: 600">'. strtoupper('Reproved') . '</div>';
+                                                    break;
+                                            }
+                                        ?>
+                                    </td>
+                                    </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                         data-title="<?= __('Code', 'aes'); ?>">
                                         <?= strtoupper($row['code_subject']) ?>
