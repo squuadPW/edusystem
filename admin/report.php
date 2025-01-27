@@ -77,6 +77,16 @@ function show_report_students()
     }
 }
 
+function show_report_current_students()
+{
+    global $current_user, $wpdb;
+    $table_academic_periods = $wpdb->prefix . 'academic_periods';
+    $table_grades = $wpdb->prefix . 'grades';
+    $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+    $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
+    include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+}
+
 // GET ORDERS
 function get_orders($start, $end)
 {
@@ -304,7 +314,7 @@ function get_students_report($academic_period, $grade, $cut)
 
     if (!empty($cut)) {
         $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1");
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND subject_id IS NOT NULL");
         $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
         $params = array_merge($params, $cut_student_ids);
     }
@@ -322,6 +332,47 @@ function get_students_report($academic_period, $grade, $cut)
 
     $students = $wpdb->get_results($wpdb->prepare($query, $params));
 
+    return $students;
+}
+
+function get_students_current()
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+
+    $conditions = array();
+    $params = array();
+    $load = load_current_cut();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+    $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND subject_id IS NOT NULL");
+    $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
+    $params = array_merge($params, $cut_student_ids);
+
+    $query = "SELECT * FROM {$table_students}";
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $students = $wpdb->get_results($wpdb->prepare($query, $params));
+    foreach ($students as $key => $student) {
+        $conditions = array();
+        $params = array();
+        $subject_ids = $wpdb->get_col("SELECT subject_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND student_id = {$student->id} AND subject_id IS NOT NULL");
+        $conditions[] = "id IN (" . implode(',', array_fill(0, count($subject_ids), '%d')) . ")";
+        $params = array_merge($params, $subject_ids);
+    
+        $query = "SELECT * FROM {$table_school_subjects}";
+    
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+    
+        $student->subjects = $wpdb->get_results($wpdb->prepare($query, $params));
+    }
     return $students;
 }
 // GET ORDERS
@@ -525,7 +576,6 @@ function list_report_students()
             $user_student = get_user_by('email', $student->email);
 
             $html .= "<tr>";
-            $html .= "<td class='column' data-colname='" . __('Academic Period', 'aes') . "'>" . $student->academic_period . "</td>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
                 $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
             } else {
@@ -548,7 +598,7 @@ function list_report_students()
 
     } else {
         $html .= "<tr>";
-        $html .= "<td colspan='10' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+        $html .= "<td colspan='9' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
         $html .= "</tr>";
     }
 
@@ -559,6 +609,51 @@ function list_report_students()
 add_action('wp_ajax_nopriv_list_report_students', 'list_report_students');
 add_action('wp_ajax_list_report_students', 'list_report_students');
 
+
+function list_report_current_students()
+{
+
+    global $current_user;
+    $roles = $current_user->roles;
+    $html = "";
+    $students = get_students_current();
+    $load = load_current_cut();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+    $url = admin_url('user-edit.php?user_id=');
+
+    if (!empty($students)) {
+
+        foreach ($students as $student) {
+            $user_student = get_user_by('email', $student->email);
+
+            $html .= "<tr>";
+            $html .= "<td class='column' data-colname='" . __('Academic Period - cut', 'aes') . "'>" . $academic_period . ' - ' . $cut . "</td>";
+            if (in_array('owner', $roles) || in_array('administrator', $roles)) {
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
+            } else {
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
+            }
+            $html .= "<td class='column' data-colname='" . __('Subjects', 'aes') . "'>";
+            foreach ($student->subjects as $key => $subject) {
+                $html .= $subject->name . ($key + 1 == count($student->subjects) ? '' : ', '); 
+            }
+            $html .= "</td>";
+            $html .= "</tr>";
+        }
+
+    } else {
+        $html .= "<tr>";
+        $html .= "<td colspan='3' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+        $html .= "</tr>";
+    }
+
+    echo json_encode(['status' => 'success', 'html' => $html, 'data' => $students]);
+    exit;
+}
+
+add_action('wp_ajax_nopriv_list_report_current_students', 'list_report_current_students');
+add_action('wp_ajax_list_report_current_students', 'list_report_current_students');
 
 function get_load_chart_data()
 {

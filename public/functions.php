@@ -2493,6 +2493,50 @@ function load_current_cut_enrollment()
     return ['cut' => $cut, 'code' => $code];
 }
 
+function load_current_cut()
+{
+    global $wpdb;
+    $table_academic_periods = $wpdb->prefix . 'academic_periods';
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+    $current_time = current_time('mysql');
+    $code = 'noperiod';
+    $cut = 'nocut';
+
+    $period_data = $wpdb->get_row($wpdb->prepare(
+        "
+        SELECT * FROM {$table_academic_periods} 
+        WHERE `start_date` <= %s 
+        AND `end_date` >= %s",
+        array($current_time, $current_time)
+    ));
+
+    if ($period_data) {
+        $code = $period_data->code;
+
+        $period_data_cut = $wpdb->get_row($wpdb->prepare(
+            "
+            SELECT * FROM {$table_academic_periods_cut} 
+            WHERE `start_date` <= %s 
+            AND `end_date` >= %s",
+            array($current_time, $current_time)
+        ));
+
+        if ($period_data_cut) {
+            $cut = $period_data_cut->cut;
+        } else {
+            $period_data_cut = $wpdb->get_row($wpdb->prepare(
+                "
+                SELECT * FROM {$table_academic_periods_cut} 
+                WHERE `start_date` >= %s",
+                array($current_time)
+            ));
+            $cut = $period_data_cut->cut;
+        }
+    }
+
+    return ['cut' => $cut, 'code' => $code];
+}
+
 add_filter('woocommerce_available_payment_gateways', 'hide_other_payment_methods', 0);
 function hide_other_payment_methods($available_gateways) {
     $payment_method_selected = isset($_COOKIE['payment_method_selected']) ? $_COOKIE['payment_method_selected'] : '';
