@@ -422,12 +422,16 @@ add_action('woocommerce_account_califications_endpoint', function () {
             ]);
         }
 
-        $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND subject_id IS NOT NULL");
+        $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND code_subject IS NOT NULL");
         if ($inscriptions) {
 
             foreach ($inscriptions as $key => $inscription) {
                 if ($inscription->status_id == 3 || $inscription->status_id == 4) {
-                    $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$inscription->subject_id}");
+                    if (isset($inscription->subject_id)) {
+                        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$inscription->subject_id}");
+                    } else {
+                        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE code_subject = {$inscription->code_subject}");
+                    }
                     array_push($formatted_assignments_history, [
                         'subject' => $subject->name,
                         'code_subject' => $subject->code_subject,
