@@ -350,6 +350,8 @@ add_action('woocommerce_account_califications_endpoint', function () {
 
     global $current_user, $wpdb;
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $roles = $current_user->roles;
     $students = [];
     $students_formatted = [];
@@ -420,19 +422,20 @@ add_action('woocommerce_account_califications_endpoint', function () {
             ]);
         }
 
-        $projection_student = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
-        if ($projection_student) {
-            $projection = json_decode($projection_student->projection);
+        $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND subject_id IS NOT NULL");
+        if ($inscriptions) {
 
-            foreach ($projection as $key => $prj) {
-                if ($prj->is_completed && !$prj->this_cut) {
+            foreach ($inscriptions as $key => $inscription) {
+                if ($inscription->status_id == 3 || $inscription->status_id == 4) {
+                    $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$inscription->subject_id}");
                     array_push($formatted_assignments_history, [
-                        'subject' => $prj->subject,
-                        'code_subject' => $prj->code_subject,
-                        'code_period' => $prj->code_period,
-                        'cut' => $prj->cut,
-                        'hc' => $prj->hc,
-                        'calification' => $prj->calification,
+                        'subject' => $subject->name,
+                        'code_subject' => $subject->code_subject,
+                        'code_period' => $inscription->code_period,
+                        'cut' => $inscription->cut_period,
+                        'hc' => $subject->hc,
+                        'calification' => $inscription->calification,
+                        'status_id' => $inscription->status_id,
                     ]);
                 }
             }
