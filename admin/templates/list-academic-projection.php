@@ -24,7 +24,7 @@
 		<form action="" id="post-filter" method="get">
 			<p class="search-box">
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','aes').':'; ?></label>
-				<input value="<?= $_GET['s'] ?>" type="search" id="search-box-id-search-input" name="s" placeholder="<?= __('Search for Student','aes'); ?>" value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
+				<input value="<?= isset($_GET['s']) ? $_GET['s'] : '' ?>" type="search" id="search-box-id-search-input" name="s" placeholder="<?= __('Search for Student','aes'); ?>" value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
 				<input type="submit" id="search-submit" class="button" value="Search">
 			</p>
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
