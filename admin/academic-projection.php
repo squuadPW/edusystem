@@ -366,19 +366,21 @@ function add_admin_form_academic_projection_content()
             $projection = get_projection_details(projection_id: $projection_id);
             $projection_obj = json_decode($projection->projection);
 
-            $subjectIds = array_column($projection_obj, 'code_subject');
-            $indexToEdit = array_search($enrollment->code_subject, $subjectIds);
-            if ($indexToEdit !== false) {
-                $projection_obj[$indexToEdit]->cut = '';
-                $projection_obj[$indexToEdit]->this_cut = false;
-                $projection_obj[$indexToEdit]->code_period = '';
-                $projection_obj[$indexToEdit]->calification = '';
-                $projection_obj[$indexToEdit]->is_completed = false;
+            if ($enrollment->status_id != 4) {
+                $subjectIds = array_column($projection_obj, 'code_subject');
+                $indexToEdit = array_search($enrollment->code_subject, $subjectIds);
+                if ($indexToEdit !== false) {
+                    $projection_obj[$indexToEdit]->cut = '';
+                    $projection_obj[$indexToEdit]->this_cut = false;
+                    $projection_obj[$indexToEdit]->code_period = '';
+                    $projection_obj[$indexToEdit]->calification = '';
+                    $projection_obj[$indexToEdit]->is_completed = false;
+                }
+    
+                $wpdb->update($table_student_academic_projection, [
+                    'projection' => json_encode($projection_obj)
+                ], ['id' => $projection->id]);
             }
-
-            $wpdb->update($table_student_academic_projection, [
-                'projection' => json_encode($projection_obj)
-            ], ['id' => $projection->id]);
 
             $wpdb->delete($table_student_period_inscriptions, ['id' => $inscription_id]);
 
