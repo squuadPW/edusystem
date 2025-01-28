@@ -94,7 +94,7 @@ function add_admin_form_academic_projection_content()
         }
     } else {
 
-        if ($_GET['action'] == 'generate_academic_projections') {
+        if (isset($_GET['action']) && $_GET['action'] == 'generate_academic_projections') {
             global $wpdb;
             $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
             $table_students = $wpdb->prefix . 'students';
@@ -115,17 +115,17 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
-        } else if ($_GET['action'] == 'generate_enrollments_moodle') {
+        } else if (isset($_GET['action']) && $_GET['action'] == 'generate_enrollments_moodle') {
             generate_enroll_student();
             setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
-        }  else if ($_GET['action'] == 'get_moodle_notes') {
+        }  else if (isset($_GET['action']) && $_GET['action'] == 'get_moodle_notes') {
             get_moodle_notes();
             setcookie('message', __('Successfully updated notes for the students.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
-        } else if ($_GET['action'] == 'save_academic_projection') {
+        } else if (isset($_GET['action']) && $_GET['action'] == 'save_academic_projection') {
             global $wpdb;
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
@@ -349,7 +349,7 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
-        } else if ($_GET['action'] == 'delete_inscription') {
+        } else if (isset($_GET['action']) && $_GET['action'] == 'delete_inscription') {
             global $wpdb;
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
@@ -627,7 +627,7 @@ function get_moodle_notes()
                 });
                 $filtered_course_student = array_values($filtered_course_student);
 
-                if ($filtered_course_student[0]) {
+                if (isset($filtered_course_student[0])) {
                     $assignments_student_filtered = $filtered_course_student[0]['grades'][0]['gradeitems'];
                     $max_grade = 0;
                     $assignments_total = 0;
@@ -651,7 +651,7 @@ function get_moodle_notes()
                         $status_id = $total_grade >= $subject->min_pass ? 3 : 4;
         
                         foreach ($projection_obj as $key => $prj) {
-                            if ($prj->this_cut && $prj->subject_id == $subject->id) {
+                            if ($prj->subject_id == $subject->id && ((isset($prj->code_period) && !empty($prj->code_period)) && (isset($prj->cut) && !empty($prj->cut)))) {
                                 $prj->calification = $total_grade;
                                 $prj->this_cut = false;
 

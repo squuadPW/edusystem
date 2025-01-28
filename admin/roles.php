@@ -218,14 +218,17 @@ add_filter('screen_options_show_screen', '__return_false');
 
 function replace_howdy( $wp_admin_bar ) {
     $my_account = $wp_admin_bar->get_node( 'my-account' );
-    $greeting = str_replace( 'Howdy,', '', $my_account->title );
-    $wp_admin_bar->add_node( array(
-    'id' => 'my-account',
-    'title' => $greeting,
-    ) );
+    
+    // Verifica si $my_account no es null antes de continuar
+    if ( $my_account ) {
+        $greeting = str_replace( 'Howdy,', '', $my_account->title );
+        $wp_admin_bar->add_node( array(
+            'id' => 'my-account',
+            'title' => $greeting,
+        ) );
+    }
 }
 add_filter( 'admin_bar_menu', 'replace_howdy', 25 );
-
 function remove_admin_bar(){
 
     global $wpdb;
