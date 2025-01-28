@@ -598,26 +598,44 @@ function insert_register_documents($student_id, $grade_id)
     }
 }
 
-function insert_period_inscriptions($student_id)
+function automatically_enrollment_new($student_id)
 {
     global $wpdb;
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_students = $wpdb->prefix . 'students';
+    $table_school_subject_matrix = $wpdb->prefix . 'school_subject_matrix';
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
     $load = load_current_cut_enrollment();
     $code = $load['code'];
     $cut = $load['cut'];
 
-    $courses = [1];
-    foreach ($courses as $key => $course) {
-        $exist = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student_id} AND code = {$code} AND cut = {$cut} ");
-        if (!$exist) {
-            $wpdb->insert($table_student_period_inscriptions, [
-                'student_id' => $student_id,
-                'code_period' => $code,
-                'cut_period' => $cut,
-                'status_id' => 1,
-            ]);
-        }
+    switch ($student->grade_id) {
+        case 1: //lower
+            $matrix = $wpdb->get_row("SELECT `matrix` FROM {$table_school_subject_matrix} WHERE `name` = 'lower'");
+            foreach ($matrix as $m) {
+                
+            }
+            break;
+        case 2: //Middle
+            # code...
+            break;
+        case 3: //Upper
+            # code...
+            break;
+        case 4: //Graduate
+            # code...
+            break;
     }
+}
+
+function automatically_enrollment_regular($student_id)
+{
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_students = $wpdb->prefix . 'students';
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+    $load = load_current_cut_enrollment();
+    $code = $load['code'];
+    $cut = $load['cut'];
 }
 
 function get_documents($student_id)

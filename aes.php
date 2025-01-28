@@ -31,6 +31,7 @@ function create_tables()
   $table_student_califications = $wpdb->prefix . 'student_califications';
   $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
   $table_academic_projection_base = $wpdb->prefix . 'academic_projection_base';
+  $table_school_subject_matrix = $wpdb->prefix . 'school_subject_matrix';
   $table_institutes = $wpdb->prefix . 'institutes';
   $table_alliances = $wpdb->prefix . 'alliances';
   $table_grades = $wpdb->prefix . 'grades';
@@ -987,6 +988,17 @@ function create_tables()
       'projection' => json_encode($graduated),
       'created_at' => date('Y-m-d H:i:s')
     ]);
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subject_matrix}'") != $table_school_subject_matrix) {
+    dbDelta(
+      "CREATE TABLE " . $table_school_subject_matrix . " (
+      id INT(11) NOT NULL AUTO_INCREMENT,
+      name TEXT NULL,
+      matrix JSON NULL,
+      created_at DATETIME NOT NULL,
+      PRIMARY KEY (id))$charset_collate;"
+    );
   }
 
 }
