@@ -229,7 +229,6 @@ function replace_howdy( $wp_admin_bar ) {
     }
 }
 add_filter( 'admin_bar_menu', 'replace_howdy', 25 );
-
 function remove_admin_bar(){
 
     global $wpdb;
