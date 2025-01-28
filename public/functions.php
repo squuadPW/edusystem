@@ -2527,3 +2527,30 @@ function load_current_cut()
 
     return ['cut' => $cut, 'code' => $code];
 }
+
+add_action('woocommerce_account_orders_endpoint', 'detect_orders_endpoint');
+function detect_orders_endpoint() {
+    global $current_user, $wpdb;
+    if ($current_user) {
+        $orders = wc_get_orders(array(
+            'status' => 'pending',
+            'customer_id' => $current_user->ID,
+        ));
+    
+        if (count($orders) > 0) {
+            $order_id = $orders[0]->get_id(); // Get the first pending order ID
+            $order = wc_get_order($order_id);
+        }
+    
+        if ($order) {
+            foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
+                if ( $item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' ) {
+                    $order->remove_item( $item_id );
+                }
+            }
+    
+            $order->calculate_totals();
+            $order->save();
+        }
+    }
+}
