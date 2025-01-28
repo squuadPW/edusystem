@@ -158,6 +158,12 @@ function add_admin_form_academic_projection_content()
                     $projection_obj[$key]->code_period = $period;
                     $projection_obj[$key]->cut = $cut;
                     $projection_obj[$key]->calification = $calification_value;
+                } else {
+                    $projection_obj[$key]->is_completed = false;
+                    $projection_obj[$key]->this_cut = false;
+                    $projection_obj[$key]->code_period = '';
+                    $projection_obj[$key]->cut = '';
+                    $projection_obj[$key]->calification = '';
                 }
 
                 if ($is_completed) {
@@ -668,7 +674,7 @@ function get_moodle_notes()
                                 $wpdb->update($table_student_period_inscriptions, [
                                     'status_id' => $status_id,
                                     'calification' => $total_grade,
-                                ], ['student_id' => $student->id, 'subject_id' => $subject->id]);
+                                ], ['student_id' => $student->id, 'subject_id' => $subject->id, 'status_id' => 1]);
                             }
                         }
 
