@@ -965,3 +965,26 @@ function daily_cuote_pendings()
 
     exit;
 }
+
+add_action('admin_init', 'detect_orders_endpoint_admin');
+function detect_orders_endpoint_admin() {
+    $orders = wc_get_orders(array(
+        'status' => 'pending'
+    ));
+
+    if (count($orders) > 0) {
+        $order_id = $orders[0]->get_id(); // Get the first pending order ID
+        $order = wc_get_order($order_id);
+    }
+
+    if ($order) {
+        foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
+            if ( $item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' ) {
+                $order->remove_item( $item_id );
+            }
+        }
+
+        $order->calculate_totals();
+        $order->save();
+    }
+}
