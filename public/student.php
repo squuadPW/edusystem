@@ -610,19 +610,13 @@ function automatically_enrollment_new($student_id)
 
     switch ($student->grade_id) {
         case 1: //lower
-            $matrix = $wpdb->get_row("SELECT `matrix` FROM {$table_school_subject_matrix} WHERE `name` = 'lower'");
-            foreach ($matrix as $m) {
-                
+            $matrix = $wpdb->get_row("SELECT * FROM {$table_school_subject_matrix} WHERE `name` = 'lower'");
+            $matrix = json_decode($matrix->matrix);
+            foreach ($matrix->matrix_period as $key => $m) {
+                if ($m->type == 1) {
+                    $subject = $matrix->matrix_subject[$key]->subject;
+                }
             }
-            break;
-        case 2: //Middle
-            # code...
-            break;
-        case 3: //Upper
-            # code...
-            break;
-        case 4: //Graduate
-            # code...
             break;
     }
 }
