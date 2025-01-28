@@ -29,7 +29,7 @@
             </tr>
             <tr>
                 <th colspan="8"><strong>PROFESSOR:</strong> <?= isset($projections_result['teacher']) ? (strtoupper($projections_result['teacher']->name) . ' ' . strtoupper($projections_result['teacher']->middle_name) . ' ' . strtoupper($projections_result['teacher']->last_name) . ' ' . strtoupper($projections_result['teacher']->middle_last_name)) : 'N/A' ?></th>
-                <th colspan="4"><strong>ID:</strong> </th>
+                <th colspan="4"><strong>ID:</strong> <?= isset($projections_result['teacher']) ? (strtoupper($projections_result['teacher']->id_document)) : 'N/A' ?></th>
             </tr>
         </thead>
     </table>
