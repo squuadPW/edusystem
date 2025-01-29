@@ -606,6 +606,10 @@ function automatically_enrollment($student_id)
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
+    $table_school_subject_matrix_elective = $wpdb->prefix . 'school_subject_matrix_elective';
+    $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular}");
+    $matrix_elective = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_elective}");
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
     $load = load_current_cut_enrollment();
     $code = $load['code'];
@@ -615,49 +619,17 @@ function automatically_enrollment($student_id)
         case 1: //lower
             $matrix = $wpdb->get_row("SELECT * FROM {$table_school_subject_matrix} WHERE `name` = 'LOWER'");
             $subject_matter = json_decode($matrix->subject_matter);
-            $subjects = json_decode($matrix->subjects);
             $enrolled = 0;
             foreach ($subject_matter as $key => $m) {
-                // validamos que ya no este al maximo de inscripcion
                 if ($enrolled == $matrix->max_subject_enrolled) {
                     break;
                 }
 
-                if ($student->current_matrix > 0) {
-                    if ($student->current_matrix >= ($key + 1)) {
-                        continue;
-                    }
-                }
-
-                // le toca materia regular
                 if ($m->type == 1) {
-                    $expected_subject = $subjects[$key];
+                    $expected_subject = $matrix_regular[$key];
 
-                    // Validamos si el ya aprobo esta materia
-                    $inscriptions = $wpdb->get_results(
-                        $wpdb->prepare(
-                            "SELECT * FROM {$table_student_period_inscriptions} 
-                            WHERE student_id = %d 
-                            AND subject_id = %d 
-                            AND (status_id = 5 OR status_id = 1)",
-                            $student->id,
-                            $expected_subject->subject_id
-                        )
-                    );
-                    if (count($inscriptions) > 0) {
-                        // ya la vio y esta aprobada, siguiente materia;
-                        continue;
-                    }
-
-                    // Validamos si puede ver esta materia
-                    $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
-                    if (count($active_inscriptions) >= 25) {
-                        // esta full, pasamos a la siguiente
-                        continue;
-                    }
-
-                    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
                     $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$expected_subject->subject_id}");
+                    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
                     $projection_obj = json_decode($projection->projection);
                     
                     $subjectIds = array_column($projection_obj, 'subject_id');
@@ -689,10 +661,6 @@ function automatically_enrollment($student_id)
                     ], ['id' => $student->id]);
                     $enrolled++;
                 }
-
-                $wpdb->update($table_students, [
-                    'current_matrix' => $key + 1
-                ], ['id' => $student->id]);
             }
             break;
     }

@@ -32,6 +32,8 @@ function create_tables()
   $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
   $table_academic_projection_base = $wpdb->prefix . 'academic_projection_base';
   $table_school_subject_matrix = $wpdb->prefix . 'school_subject_matrix';
+  $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
+  $table_school_subject_matrix_elective = $wpdb->prefix . 'school_subject_matrix_elective';
   $table_institutes = $wpdb->prefix . 'institutes';
   $table_alliances = $wpdb->prefix . 'alliances';
   $table_grades = $wpdb->prefix . 'grades';
@@ -997,131 +999,100 @@ function create_tables()
         name TEXT NOT NULL,
         max_subject_enrolled INT(11) NOT NULL,
         subject_matter JSON NULL,
-        subjects JSON NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
 
     $subject_matter = [
       [
+        "subject" => "regular",
         "type" => 1
       ],
       [
+        "subject" => "elective",
         "type" => 2
       ],
       [
+        "subject" => "regular",
         "type" => 1
       ],
       [
+        "subject" => "elective",
         "type" => 2
       ],
       [
+        "subject" => "elective",
         "type" => 2
       ],
       [
+        "subject" => "regular",
         "type" => 1
       ],
       [
+        "subject" => "elective",
         "type" => 2
       ],
       [
+        "subject" => "regular",
         "type" => 1
       ],
       [
+        "subject" => "elective",
         "type" => 2
       ],
       [
+        "subject" => "elective",
         "type" => 2
       ],
       [
+        "subject" => "regular",
         "type" => 1
       ],
       [
+        "subject" => "elective",
         "type" => 2
       ],
       [
+        "subject" => "regular",
         "type" => 1
       ],
       [
+        "subject" => "elective",
         "type" => 2
       ],
       [
+        "subject" => "elective",
         "type" => 2
       ]
-    ];
-
-    $subjects = [
-      [
-        "subject" => "history",
-        "subject_id" => 6
-      ],
-      [
-        "subject" => "",
-        "subject_id" => 1
-      ],
-      [
-        "subject" => "government",
-        "subject_id" => 5
-      ],
-      [
-        "subject" => "",
-        "subject_id" => 1
-      ],
-      [
-        "subject" => "",
-        "subject_id" => 1
-      ],
-      [
-        "subject" => "englishIII",
-        "subject_id" => 4
-      ],
-      [
-        "subject" => "",
-        "subject_id" => 1
-      ],
-      [
-        "subject" => "economic",
-        "subject_id" => 2
-      ],
-      [
-        "subject" => "",
-        "subject_id" => 1
-      ],
-      [
-        "subject" => "",
-        "subject_id" => 1
-      ],
-      [
-        "subject" => "englishIV",
-        "subject_id" => 3
-      ],
-      [
-        "subject" => "",
-        "subject_id" => 1
-      ],
-      [
-        "subject" => "pre-calc",
-        "subject_id" => 1
-      ],
-      [
-        "subject" => "",
-        "subject_id" => 1
-      ],
-      [
-        "subject" => "",
-        "subject_id" => 1
-      ],
     ];
 
     $wpdb->insert($table_school_subject_matrix, [
       'name' => 'LOWER',
       'max_subject_enrolled' => 1,
       'subject_matter' => json_encode($subject_matter),
-      'subjects' => json_encode($subjects),
       'created_at' => date('Y-m-d H:i:s')
     ]);
   }
 
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subject_matrix_regular}'") != $table_school_subject_matrix_regular) {
+    dbDelta(
+      "CREATE TABLE " . $table_school_subject_matrix_regular . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        subject TEXT NOT NULL,
+        subject_id INT(11) NOT NULL,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subject_matrix_elective}'") != $table_school_subject_matrix_elective) {
+    dbDelta(
+      "CREATE TABLE " . $table_school_subject_matrix_elective . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        subject TEXT NOT NULL,
+        subject_id INT(11) NOT NULL,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
 }
 
