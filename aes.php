@@ -17,7 +17,7 @@ if (!class_exists('WP_List_Table')) {
 require plugin_dir_path(__FILE__) . 'settings.php';
 require plugin_dir_path(__FILE__) . 'public/functions.php';
 require plugin_dir_path(__FILE__) . 'admin/functions.php';
-require_once(ABSPATH . 'wp-admin/includes/upgrade.php'); 
+require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 function create_tables()
 {
@@ -637,7 +637,7 @@ function create_tables()
     }
   }
 
-  
+
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_documents_for_teachers}'") != $table_documents_for_teachers) {
     dbDelta(
       "CREATE TABLE " . $table_documents_for_teachers . " (
@@ -661,7 +661,7 @@ function create_tables()
       'created_at' => date('Y-m-d H:i:s')
     ]);
 
-    
+
     $wpdb->insert($table_documents_for_teachers, [
       'name' => 'FORM 402',
       'type_file' => '.pdf',
@@ -993,13 +993,135 @@ function create_tables()
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subject_matrix}'") != $table_school_subject_matrix) {
     dbDelta(
       "CREATE TABLE " . $table_school_subject_matrix . " (
-      id INT(11) NOT NULL AUTO_INCREMENT,
-      name TEXT NULL,
-      matrix JSON NULL,
-      created_at DATETIME NOT NULL,
-      PRIMARY KEY (id))$charset_collate;"
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        name TEXT NOT NULL,
+        max_subject_enrolled INT(11) NOT NULL,
+        subject_matter JSON NULL,
+        subjects JSON NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
     );
+
+    $subject_matter = [
+      [
+        "type" => 1
+      ],
+      [
+        "type" => 2
+      ],
+      [
+        "type" => 1
+      ],
+      [
+        "type" => 2
+      ],
+      [
+        "type" => 2
+      ],
+      [
+        "type" => 1
+      ],
+      [
+        "type" => 2
+      ],
+      [
+        "type" => 1
+      ],
+      [
+        "type" => 2
+      ],
+      [
+        "type" => 2
+      ],
+      [
+        "type" => 1
+      ],
+      [
+        "type" => 2
+      ],
+      [
+        "type" => 1
+      ],
+      [
+        "type" => 2
+      ],
+      [
+        "type" => 2
+      ]
+    ];
+
+    $subjects = [
+      [
+        "subject" => "history",
+        "subject_id" => 6
+      ],
+      [
+        "subject" => "",
+        "subject_id" => 1
+      ],
+      [
+        "subject" => "government",
+        "subject_id" => 5
+      ],
+      [
+        "subject" => "",
+        "subject_id" => 1
+      ],
+      [
+        "subject" => "",
+        "subject_id" => 1
+      ],
+      [
+        "subject" => "englishIII",
+        "subject_id" => 4
+      ],
+      [
+        "subject" => "",
+        "subject_id" => 1
+      ],
+      [
+        "subject" => "economic",
+        "subject_id" => 2
+      ],
+      [
+        "subject" => "",
+        "subject_id" => 1
+      ],
+      [
+        "subject" => "",
+        "subject_id" => 1
+      ],
+      [
+        "subject" => "englishIV",
+        "subject_id" => 3
+      ],
+      [
+        "subject" => "",
+        "subject_id" => 1
+      ],
+      [
+        "subject" => "pre-calc",
+        "subject_id" => 1
+      ],
+      [
+        "subject" => "",
+        "subject_id" => 1
+      ],
+      [
+        "subject" => "",
+        "subject_id" => 1
+      ],
+    ];
+
+    $wpdb->insert($table_school_subject_matrix, [
+      'name' => 'LOWER',
+      'max_subject_enrolled' => 1,
+      'subject_matter' => json_encode($subject_matter),
+      'subjects' => json_encode($subjects),
+      'created_at' => date('Y-m-d H:i:s')
+    ]);
   }
+
 
 }
 

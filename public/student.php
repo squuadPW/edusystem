@@ -598,11 +598,14 @@ function insert_register_documents($student_id, $grade_id)
     }
 }
 
-function automatically_enrollment_new($student_id)
+function automatically_enrollment($student_id)
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $table_school_subject_matrix = $wpdb->prefix . 'school_subject_matrix';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
     $load = load_current_cut_enrollment();
     $code = $load['code'];
@@ -610,26 +613,89 @@ function automatically_enrollment_new($student_id)
 
     switch ($student->grade_id) {
         case 1: //lower
-            $matrix = $wpdb->get_row("SELECT * FROM {$table_school_subject_matrix} WHERE `name` = 'lower'");
-            $matrix = json_decode($matrix->matrix);
-            foreach ($matrix->matrix_period as $key => $m) {
-                if ($m->type == 1) {
-                    $subject = $matrix->matrix_subject[$key]->subject;
+            $matrix = $wpdb->get_row("SELECT * FROM {$table_school_subject_matrix} WHERE `name` = 'LOWER'");
+            $subject_matter = json_decode($matrix->subject_matter);
+            $subjects = json_decode($matrix->subjects);
+            $enrolled = 0;
+            foreach ($subject_matter as $key => $m) {
+                // validamos que ya no este al maximo de inscripcion
+                if ($enrolled == $matrix->max_subject_enrolled) {
+                    break;
                 }
+
+                if ($student->current_matrix > 0) {
+                    if ($student->current_matrix >= ($key + 1)) {
+                        continue;
+                    }
+                }
+
+                // le toca materia regular
+                if ($m->type == 1) {
+                    $expected_subject = $subjects[$key];
+
+                    // Validamos si el ya aprobo esta materia
+                    $inscriptions = $wpdb->get_results(
+                        $wpdb->prepare(
+                            "SELECT * FROM {$table_student_period_inscriptions} 
+                            WHERE student_id = %d 
+                            AND subject_id = %d 
+                            AND (status_id = 5 OR status_id = 1)",
+                            $student->id,
+                            $expected_subject->subject_id
+                        )
+                    );
+                    if (count($inscriptions) > 0) {
+                        // ya la vio y esta aprobada, siguiente materia;
+                        continue;
+                    }
+
+                    // Validamos si puede ver esta materia
+                    $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
+                    if (count($active_inscriptions) >= 25) {
+                        // esta full, pasamos a la siguiente
+                        continue;
+                    }
+
+                    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
+                    $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$expected_subject->subject_id}");
+                    $projection_obj = json_decode($projection->projection);
+                    
+                    $subjectIds = array_column($projection_obj, 'subject_id');
+                    $indexToEdit = array_search($subject->id, $subjectIds);
+                    if ($indexToEdit !== false) {
+                        $projection_obj[$indexToEdit]->cut = $cut;
+                        $projection_obj[$indexToEdit]->this_cut = true;
+                        $projection_obj[$indexToEdit]->code_period = $code;
+                        $projection_obj[$indexToEdit]->calification = '';
+                        $projection_obj[$indexToEdit]->is_completed = true;
+                    }    
+
+                    $wpdb->update($table_student_academic_projection, [
+                        'projection' => json_encode($projection_obj)
+                    ], ['id' => $projection->id]);
+
+                    $wpdb->insert($table_student_period_inscriptions, [
+                        'status_id' => 1,
+                        'student_id' => $student->id,
+                        'subject_id' => $subject->id,
+                        'code_subject' => $subject->code_subject,
+                        'code_period' => $code,
+                        'cut_period' => $cut,
+                    ]);
+                    $enrolled++;
+                } else {
+                    $wpdb->update($table_students, [
+                        'elective' => 1
+                    ], ['id' => $student->id]);
+                    $enrolled++;
+                }
+
+                $wpdb->update($table_students, [
+                    'current_matrix' => $key + 1
+                ], ['id' => $student->id]);
             }
             break;
     }
-}
-
-function automatically_enrollment_regular($student_id)
-{
-    global $wpdb;
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $table_students = $wpdb->prefix . 'students';
-    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
-    $load = load_current_cut_enrollment();
-    $code = $load['code'];
-    $cut = $load['cut'];
 }
 
 function get_documents($student_id)

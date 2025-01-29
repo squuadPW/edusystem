@@ -120,7 +120,11 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
-        }  else if (isset($_GET['action']) && $_GET['action'] == 'get_moodle_notes') {
+        } else if (isset($_GET['action']) && $_GET['action'] == 'automatically_enrollment') {
+            automatically_enrollment(student_id: $_GET['student_id']);
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            exit;
+        } else if (isset($_GET['action']) && $_GET['action'] == 'get_moodle_notes') {
             get_moodle_notes();
             setcookie('message', __('Successfully updated notes for the students.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
@@ -167,17 +171,41 @@ function add_admin_form_academic_projection_content()
                 }
 
                 if ($is_completed) {
-                    $exist = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$projection->student_id} AND code_subject = '{$projection_obj[$key]->code_subject}' AND status_id != 4");
+                    $student_id = intval($projection->student_id); // Asegúrate de que sea un entero
+                    $code_subject = $wpdb->esc_like($projection_obj[$key]->code_subject); // Escapa la cadena
+
+                    $query = $wpdb->prepare(
+                        "SELECT * FROM {$table_student_period_inscriptions} 
+                        WHERE student_id = %d 
+                        AND code_subject = %s 
+                        AND (status_id != 4 AND status_id != 3)",
+                        $student_id,
+                        $code_subject
+                    );
+
+                    $exist = $wpdb->get_row($query);
                     if (!isset($exist)) {
-                        $wpdb->insert($table_student_period_inscriptions, [
-                            'status_id' => $status_id,
-                            'student_id' => $projection->student_id,
-                            'subject_id' => $projection_obj[$key]->subject_id,
-                            'code_subject' => $projection_obj[$key]->code_subject,
-                            'code_period' => $period,
-                            'cut_period' => $cut,
-                            'calification' => $calification_value,
-                        ]);
+                        $query = $wpdb->prepare(
+                            "SELECT * FROM {$table_student_period_inscriptions} 
+                            WHERE student_id = %d 
+                            AND code_subject = %s 
+                            AND (status_id != 4 OR status_id != 3)",
+                            $student_id,
+                            $code_subject
+                        );
+
+                        $exist = $wpdb->get_row($query);
+                        if (!isset($exist)) {
+                            $wpdb->insert($table_student_period_inscriptions, [
+                                'status_id' => $status_id,
+                                'student_id' => $projection->student_id,
+                                'subject_id' => $projection_obj[$key]->subject_id,
+                                'code_subject' => $projection_obj[$key]->code_subject,
+                                'code_period' => $period,
+                                'cut_period' => $cut,
+                                'calification' => $calification_value,
+                            ]);
+                        }
                     } else {
                         $wpdb->update($table_student_period_inscriptions, [
                             'status_id' => $status_id,

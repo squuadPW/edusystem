@@ -266,7 +266,7 @@ function woocommerce_checkout_order_created_action($order)
     ) {
         $student_id = insert_student($customer_id);
         insert_register_documents($student_id, $_COOKIE['initial_grade']);
-        automatically_enrollment($student_id);
+        // automatically_enrollment($student_id);
 
         $order->update_meta_data('student_id', $student_id);
         $order->update_meta_data('id_bitrix', $_COOKIE['id_bitrix']);
@@ -1658,6 +1658,9 @@ function student_continue_callback()
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $load = load_current_cut_enrollment();
+    $code = $load['code'];
+    $cut = $load['cut'];
 
     $student_id = null;
     if (in_array('parent', $roles)) {
@@ -1677,8 +1680,8 @@ function student_continue_callback()
         'subject_id' => $subject->id,
         'subject' => $subject->name,
         'hc' => $subject->hc,
-        'cut' => "C",
-        'code_period' => "20242025",
+        'cut' => $cut,
+        'code_period' => $code,
         'calification' => "",
         'is_completed' => true,
         'this_cut' => true
@@ -1695,6 +1698,7 @@ function student_continue_callback()
     $wpdb->insert($table_student_period_inscriptions, [
         'status_id' => $projection_obj[count($projection_obj) - 1]['this_cut'] ? 1 : 3,
         'student_id' => $projection->student_id,
+        'subject_id' => $projection_obj[count($projection_obj) - 1]['subject_id'],
         'code_subject' => $projection_obj[count($projection_obj) - 1]['code_subject'],
         'code_period' => $projection_obj[count($projection_obj) - 1]['code_period'],
         'cut_period' => $projection_obj[count($projection_obj) - 1]['cut']
