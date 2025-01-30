@@ -79,6 +79,14 @@
                                         
                                     </div>
                                 <?php } ?>
+
+                                <?php if($student->elective == 1) { ?>
+                                    <div style="display: flex; width: 100%; text-align: center">
+                                        <div style="flex: 1; padding: 20px;">
+                                            <label><b><?= __('This student has yet to select an elective.', 'aes'); ?></b></label><br>
+                                        </div>
+                                    </div>
+                                <? } ?>
                             </div>
 
                             <div>

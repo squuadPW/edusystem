@@ -31,7 +31,6 @@ function create_tables()
   $table_student_califications = $wpdb->prefix . 'student_califications';
   $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
   $table_academic_projection_base = $wpdb->prefix . 'academic_projection_base';
-  $table_school_subject_matrix = $wpdb->prefix . 'school_subject_matrix';
   $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
   $table_school_subject_matrix_elective = $wpdb->prefix . 'school_subject_matrix_elective';
   $table_institutes = $wpdb->prefix . 'institutes';
@@ -988,88 +987,6 @@ function create_tables()
     $wpdb->insert($table_academic_projection_base, [
       'name' => 'Graduated',
       'projection' => json_encode($graduated),
-      'created_at' => date('Y-m-d H:i:s')
-    ]);
-  }
-
-  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subject_matrix}'") != $table_school_subject_matrix) {
-    dbDelta(
-      "CREATE TABLE " . $table_school_subject_matrix . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        name TEXT NOT NULL,
-        max_subject_enrolled INT(11) NOT NULL,
-        subject_matter JSON NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
-    );
-
-    $subject_matter = [
-      [
-        "subject" => "regular",
-        "type" => 1
-      ],
-      [
-        "subject" => "elective",
-        "type" => 2
-      ],
-      [
-        "subject" => "regular",
-        "type" => 1
-      ],
-      [
-        "subject" => "elective",
-        "type" => 2
-      ],
-      [
-        "subject" => "elective",
-        "type" => 2
-      ],
-      [
-        "subject" => "regular",
-        "type" => 1
-      ],
-      [
-        "subject" => "elective",
-        "type" => 2
-      ],
-      [
-        "subject" => "regular",
-        "type" => 1
-      ],
-      [
-        "subject" => "elective",
-        "type" => 2
-      ],
-      [
-        "subject" => "elective",
-        "type" => 2
-      ],
-      [
-        "subject" => "regular",
-        "type" => 1
-      ],
-      [
-        "subject" => "elective",
-        "type" => 2
-      ],
-      [
-        "subject" => "regular",
-        "type" => 1
-      ],
-      [
-        "subject" => "elective",
-        "type" => 2
-      ],
-      [
-        "subject" => "elective",
-        "type" => 2
-      ]
-    ];
-
-    $wpdb->insert($table_school_subject_matrix, [
-      'name' => 'LOWER',
-      'max_subject_enrolled' => 1,
-      'subject_matter' => json_encode($subject_matter),
       'created_at' => date('Y-m-d H:i:s')
     ]);
   }

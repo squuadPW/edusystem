@@ -11,6 +11,7 @@ require plugin_dir_path(__FILE__) . 'notes.php';
 require plugin_dir_path(__FILE__) . 'academic_services.php';
 require plugin_dir_path(__FILE__) . 'endpoint.php';
 require plugin_dir_path(__FILE__) . 'moodle.php';
+require plugin_dir_path(__FILE__) . 'automatically_enrollment.php';
 
 function form_plugin_scripts()
 {
@@ -1684,7 +1685,8 @@ function student_continue_callback()
         'code_period' => $code,
         'calification' => "",
         'is_completed' => true,
-        'this_cut' => true
+        'this_cut' => true,
+        'is_elective' => true
     ]);
 
     $wpdb->update($table_student_academic_projection, [
@@ -1947,9 +1949,28 @@ function verificar_contraseña()
 
 function modal_take_elective()
 {
-    global $wpdb;
+    global $wpdb, $current_user;
+    $table_students = $wpdb->prefix . 'students';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
-    $electives = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_elective=1");
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+
+    $conditions = array();
+    $params = array();
+
+    $electives_ids = $wpdb->get_col("SELECT subject_id FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND status_id != 4 AND subject_id IS NOT NULL");
+    $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
+    $conditions[] = "is_elective = 1";
+    $params = array_merge($params, $electives_ids);
+
+    $query = "SELECT * FROM {$table_school_subjects}";
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $electives = $wpdb->get_results($wpdb->prepare($query, $params));
+
     include(plugin_dir_path(__FILE__) . 'templates/modal-select-elective.php');
 }
 
