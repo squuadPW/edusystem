@@ -441,7 +441,7 @@ function load_automatically_enrollment($expected_projection, $student)
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
     $load = load_current_cut_enrollment();
     $matrix_elective = load_available_electives($student);
-    $last_inscriptions_electives_count = load_last_inscriptions_electives($student);
+    $last_inscriptions_electives_count = load_inscriptions_electives($student);
     $code = $load['code'];
     $cut = $load['cut'];
     $projection_obj = json_decode($projection->projection);
@@ -454,13 +454,8 @@ function load_automatically_enrollment($expected_projection, $student)
             break;
         }
 
-        if($count_expected_subject == 3 && $last_inscriptions_electives_count < 2) {
-
-        }
-
         if ($expected['type'] == 1) {
             $expected_subject = $matrix_regular[$count_expected_subject];
-            $count_expected_subject++;
             $inscriptions = $wpdb->get_results(
                 $wpdb->prepare(
                     "SELECT * FROM {$table_student_period_inscriptions} 
@@ -503,6 +498,14 @@ function load_automatically_enrollment($expected_projection, $student)
                 'code_period' => $code,
                 'cut_period' => $cut,
             ]);
+
+            if ($count_expected_subject == 4 && $last_inscriptions_electives_count < 2) {
+                $wpdb->update($table_students, [
+                    'elective' => 1
+                ], ['id' => $student->id]);
+            }
+
+            $count_expected_subject++;
             $student_enrolled++;
         } else {
             if (count($matrix_elective) == 0) {
@@ -514,7 +517,6 @@ function load_automatically_enrollment($expected_projection, $student)
                 continue;
             }
 
-            $count_expected_subject_elective++;
             if ($student->skip_cut) {
                 if ((isset($expected_projection['expected_matrix'][$key + 1]) && $expected_projection['expected_matrix'][$key + 1]['type'] == 2)) {
                     continue;
@@ -529,11 +531,11 @@ function load_automatically_enrollment($expected_projection, $student)
             $wpdb->update($table_students, [
                 'elective' => 1
             ], ['id' => $student->id]);
+            $count_expected_subject_elective++;
             $student_enrolled++;
         }
     }
 }
-;
 
 function load_available_electives($student)
 {
@@ -544,8 +546,10 @@ function load_available_electives($student)
     $params = array();
 
     $electives_ids = $wpdb->get_col("SELECT subject_id FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND (status_id = 3 OR status_id = 1) AND subject_id IS NOT NULL");
-    $conditions[] = "subject_id NOT IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
-    $params = array_merge($params, $electives_ids);
+    if (!empty($electives_ids)) {
+        $conditions[] = "subject_id NOT IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
+        $params = array_merge($params, $electives_ids);
+    }
 
     $query = "SELECT * FROM {$table_school_subject_matrix_elective}";
 
@@ -557,28 +561,37 @@ function load_available_electives($student)
     return $electives;
 }
 
-function load_last_inscriptions_electives($student)
+function load_inscriptions_electives($student)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $table_school_subject_matrix_elective = $wpdb->prefix . 'school_subject_matrix_elective';
+
     $matrix_elective = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_elective}");
     $electives_ids = [];
     foreach ($matrix_elective as $key => $elective) {
         array_push($electives_ids, $elective->subject_id);
     }
 
+    if (empty($electives_ids)) {
+        return 0;
+    }
+
     $conditions = array();
     $params = array();
+
+
     $conditions[] = "subject_id IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
     $params = array_merge($params, $electives_ids);
 
-    $query = "SELECT * FROM {$table_student_period_inscriptions}";
+    $conditions[] = "student_id = %d";
+    $params[] = $student->id;
 
+
+    $query = "SELECT * FROM {$table_student_period_inscriptions}";
     if (!empty($conditions)) {
         $query .= " WHERE " . implode(" AND ", $conditions);
     }
-
     $inscriptions = $wpdb->get_results($wpdb->prepare($query, $params));
     return count($inscriptions);
 }
