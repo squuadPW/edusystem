@@ -467,11 +467,13 @@ function load_automatically_enrollment($expected_projection, $student)
                 )
             );
             if (count($inscriptions) > 0) {
+                $count_expected_subject++;
                 continue;
             }
 
             $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
             if (count($active_inscriptions) >= 25) {
+                $count_expected_subject++;
                 continue;
             }
 
@@ -499,11 +501,11 @@ function load_automatically_enrollment($expected_projection, $student)
                 'cut_period' => $cut,
             ]);
 
-            if ($count_expected_subject == 4 && $last_inscriptions_electives_count < 2) {
+            if ($count_expected_subject >= 4 && $last_inscriptions_electives_count < 2) {
                 $wpdb->update($table_students, [
                     'elective' => 1
                 ], ['id' => $student->id]);
-            }
+            }    
 
             $count_expected_subject++;
             $student_enrolled++;
@@ -519,11 +521,13 @@ function load_automatically_enrollment($expected_projection, $student)
 
             if ($student->skip_cut) {
                 if ((isset($expected_projection['expected_matrix'][$key + 1]) && $expected_projection['expected_matrix'][$key + 1]['type'] == 2)) {
+                    $count_expected_subject_elective++;
                     continue;
                 } else {
                     $wpdb->update($table_students, [
                         'skip_cut' => 0
                     ], ['id' => $student->id]);
+                    $count_expected_subject_elective++;
                     continue;
                 }
             }
