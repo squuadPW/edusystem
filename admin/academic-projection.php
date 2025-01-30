@@ -124,6 +124,10 @@ function add_admin_form_academic_projection_content()
             automatically_enrollment(student_id: $_GET['student_id']);
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
+        } else if (isset($_GET['action']) && $_GET['action'] == 'clear_electives') {
+            clear_students_electives();
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'get_moodle_notes') {
             get_moodle_notes();
             setcookie('message', __('Successfully updated notes for the students.', 'aes'), time() + 3600, '/');

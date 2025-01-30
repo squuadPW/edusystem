@@ -512,6 +512,14 @@ function load_automatically_enrollment($expected_projection, $student)
                 continue;
             }
 
+            if ($student->skip_cut) {    
+                $wpdb->update($table_students, [
+                    'skip_cut' => 0
+                ], ['id' => $student->id]);
+                $count_expected_subject_elective++;
+                continue;
+            }
+
             $wpdb->update($table_students, [
                 'elective' => 1
             ], ['id' => $student->id]);

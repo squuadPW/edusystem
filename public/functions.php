@@ -2579,3 +2579,9 @@ function detect_orders_endpoint() {
         }
     }
 }
+
+function clear_students_electives() {
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $wpdb->query("UPDATE {$table_students} SET elective = 0, skip_cut = 1 WHERE elective = 1");
+}
