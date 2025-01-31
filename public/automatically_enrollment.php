@@ -442,12 +442,14 @@ function load_automatically_enrollment($expected_projection, $student)
     $load = load_current_cut_enrollment();
     $matrix_elective = load_available_electives($student);
     $last_inscriptions_electives_count = load_inscriptions_electives($student);
+    $real_electives_inscriptions_count = load_inscriptions_electives_valid($student);
     $code = $load['code'];
     $cut = $load['cut'];
     $projection_obj = json_decode($projection->projection);
     $student_enrolled = 0;
     $count_expected_subject = 0;
     $count_expected_subject_elective = 0;
+    $skip_cut = $student->skip_cut;
 
     foreach ($expected_projection['expected_matrix'] as $key => $expected) {
         if ($student_enrolled == $expected_projection['max_expected']) {
@@ -499,13 +501,14 @@ function load_automatically_enrollment($expected_projection, $student)
                 'code_subject' => $subject->code_subject,
                 'code_period' => $code,
                 'cut_period' => $cut,
+                'type' => $subject->is_elective ? 'elective' : 'regular'
             ]);
 
-            if ($count_expected_subject >= 4 && $last_inscriptions_electives_count < 2) {
+            if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2) {
                 $wpdb->update($table_students, [
                     'elective' => 1
                 ], ['id' => $student->id]);
-            }    
+            }
 
             $count_expected_subject++;
             $student_enrolled++;
@@ -519,17 +522,23 @@ function load_automatically_enrollment($expected_projection, $student)
                 continue;
             }
 
-            if ($student->skip_cut) {
-                if ((isset($expected_projection['expected_matrix'][$key + 1]) && $expected_projection['expected_matrix'][$key + 1]['type'] == 2)) {
-                    $count_expected_subject_elective++;
-                    continue;
-                } else {
-                    $wpdb->update($table_students, [
-                        'skip_cut' => 0
-                    ], ['id' => $student->id]);
-                    $count_expected_subject_elective++;
-                    continue;
-                }
+            if ($skip_cut) {
+                $wpdb->update($table_students, [
+                    'elective' => 0,
+                    'skip_cut' => 0
+                ], ['id' => $student->id]);
+
+                $wpdb->insert($table_student_period_inscriptions, [
+                    'status_id' => 2,
+                    'student_id' => $student->id,
+                    'code_period' => $code,
+                    'cut_period' => $cut,
+                    'type' => 'elective'
+                ]);
+                $count_expected_subject_elective++;
+                $last_inscriptions_electives_count++;
+                $skip_cut = false;
+                continue;
             }
 
             $wpdb->update($table_students, [
@@ -569,6 +578,28 @@ function load_inscriptions_electives($student)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+
+    $conditions = array();
+    $params = array();
+
+    $conditions[] = "student_id = %d";
+    $params[] = $student->id;
+
+    $conditions[] = "type = %s";
+    $params[] = 'elective';
+
+    $query = "SELECT * FROM {$table_student_period_inscriptions}";
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+    $inscriptions = $wpdb->get_results($wpdb->prepare($query, $params));
+    return count($inscriptions);
+}
+
+function load_inscriptions_electives_valid($student)
+{
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $table_school_subject_matrix_elective = $wpdb->prefix . 'school_subject_matrix_elective';
 
     $matrix_elective = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_elective}");
@@ -590,7 +621,6 @@ function load_inscriptions_electives($student)
 
     $conditions[] = "student_id = %d";
     $params[] = $student->id;
-
 
     $query = "SELECT * FROM {$table_student_period_inscriptions}";
     if (!empty($conditions)) {

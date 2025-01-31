@@ -208,6 +208,7 @@ function add_admin_form_academic_projection_content()
                                 'code_period' => $period,
                                 'cut_period' => $cut,
                                 'calification' => $calification_value,
+                                'type' => $subject->is_elective ? 'elective' : 'regular'
                             ]);
                         }
                     } else {
@@ -219,6 +220,7 @@ function add_admin_form_academic_projection_content()
                             'code_period' => $period,
                             'cut_period' => $cut,
                             'calification' => $calification_value,
+                            'type' => $subject->is_elective ? 'elective' : 'regular'
                         ], ['id' => $exist->id]);
                     }
                 }
