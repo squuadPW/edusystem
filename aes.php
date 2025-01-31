@@ -103,12 +103,16 @@ function create_tables()
     dbDelta(
       "CREATE TABLE " . $table_school_subjects . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
+        is_active BOOLEAN NOT NULL DEFAULT 1,
         code_subject TEXT NOT NULL,
         name TEXT NOT NULL,
         description TEXT NOT NULL,
         min_pass DOUBLE(10, 2) NOT NULL,
         hc INT(11) NOT NULL,
+        max_students INT(11) NOT NULL,
+        maxtrix_position INT(11) NOT NULL,
         moodle_course_id INT(11) NULL,
+        teacher_id INT(11) NULL,
         is_elective BOOLEAN NOT NULL DEFAULT 0,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
@@ -140,6 +144,7 @@ function create_tables()
       "CREATE TABLE " . $table_student_period_inscriptions . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         status_id INT(11) NOT NULL,
+        type TEXT NULL,
         student_id INT(11) NOT NULL,
         subject_id INT(11) NULL,
         code_subject TEXT NULL,
@@ -362,6 +367,7 @@ function create_tables()
         id_document TEXT NULL,
         ethnicity TEXT NULL,
         academic_period TEXT NULL,
+        initial_cut TEXT NULL,
         name TEXT NOT NULL,
         middle_name TEXT NULL,
         last_name TEXT NOT NULL,
@@ -379,9 +385,12 @@ function create_tables()
         program_id TEXT NOT NULL,
         partner_id INT(11) NOT NULL, 
         status_id INT(11) NOT NULL,
-        condition_student INT(11) NOT NULL,
+        condition_student BOOLEAN NOT NULL DEFAULT 1,
+        elective BOOLEAN NOT NULL DEFAULT 0,
+        skip_cut BOOLEAN NOT NULL DEFAULT 0,
         moodle_student_id INT(11) NULL,
         moodle_password TEXT NULL,
+        set_password BOOLEAN NOT NULL DEFAULT 0,
         updated_at DATETIME NULL,
         created_at DATETIME NOT NULL,
         PRIMARY KEY (id))$charset_collate;"
