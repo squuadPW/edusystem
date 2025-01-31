@@ -615,9 +615,41 @@ function load_inscriptions_electives_valid($student)
     $conditions = array();
     $params = array();
 
-
     $conditions[] = "subject_id IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
     $params = array_merge($params, $electives_ids);
+
+    $conditions[] = "student_id = %d";
+    $params[] = $student->id;
+
+    $query = "SELECT * FROM {$table_student_period_inscriptions}";
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+    $inscriptions = $wpdb->get_results($wpdb->prepare($query, $params));
+    return count($inscriptions);
+}
+
+function load_inscriptions_regular_valid($student)
+{
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
+
+    $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular}");
+    $regulars_ids = [];
+    foreach ($matrix_regular as $key => $regular) {
+        array_push($regulars_ids, $regular->subject_id);
+    }
+
+    if (empty($regulars_ids)) {
+        return 0;
+    }
+
+    $conditions = array();
+    $params = array();
+
+    $conditions[] = "subject_id IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
+    $params = array_merge($params, $regulars_ids);
 
     $conditions[] = "student_id = %d";
     $params[] = $student->id;
