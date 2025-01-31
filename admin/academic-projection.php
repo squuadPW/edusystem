@@ -160,14 +160,6 @@ function add_admin_form_academic_projection_content()
                 $calification_value = $calification[$key] ?? null;
 
                 $status_id = $is_this_cut ? 1 : ($calification_value >= $subject->min_pass ? 3 : 4);
-
-                // Verificamos si status_id es 4 y si is_elective existe y es true
-                if ($status_id == 4 && isset($projection_obj[$key]->is_elective) && $projection_obj[$key]->is_elective) {
-                    // Si se cumplen ambas condiciones, eliminamos el elemento del array
-                    unset($projection_obj[$key]);
-                    continue; // Saltamos al siguiente elemento del bucle
-                }
-
                 if ($status_id != 4) {
                     $projection_obj[$key]->is_completed = $is_completed;
                     $projection_obj[$key]->this_cut = $is_this_cut;
@@ -231,6 +223,13 @@ function add_admin_form_academic_projection_content()
                             'type' => $subject->is_elective ? 'elective' : 'regular'
                         ], ['id' => $exist->id]);
                     }
+                }
+
+                // Verificamos si status_id es 4 y si is_elective existe y es true
+                if ($status_id == 4 && isset($projection_obj[$key]->is_elective) && $projection_obj[$key]->is_elective) {
+                    // Si se cumplen ambas condiciones, eliminamos el elemento del array
+                    unset($projection_obj[$key]);
+                    continue; // Saltamos al siguiente elemento del bucle
                 }
             }
 
