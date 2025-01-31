@@ -26,7 +26,7 @@ function add_admin_form_academic_projection_content()
             $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
             $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects}");
             $projections_result = [];
-            
+
             $academic_period = $_POST['academic_period'];
             $academic_period_cut = $_POST['academic_period_cut'];
             if ((isset($academic_period) && !empty($academic_period)) && (isset($academic_period_cut) && !empty($academic_period_cut))) {
@@ -46,7 +46,7 @@ function add_admin_form_academic_projection_content()
                     }
                 }
             }
-            
+
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-validation.php');
         }
 
@@ -71,9 +71,9 @@ function add_admin_form_academic_projection_content()
                         return $item->subject_id === $subject_id && ($item->code_period == $academic_period && $item->cut == $academic_period_cut);
                     });
 
-                    if(count(array_values($filtered_arr)) > 0) {
+                    if (count(array_values($filtered_arr)) > 0) {
                         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
-                        array_push($students, ['student' => $student, 'calification' => (int)array_values($filtered_arr)[0]->calification]);
+                        array_push($students, ['student' => $student, 'calification' => (int) array_values($filtered_arr)[0]->calification]);
                     }
                 }
 
@@ -89,7 +89,7 @@ function add_admin_form_academic_projection_content()
                 'academic_period' => $academic_period_result,
                 'academic_period_cut' => $academic_period_cut
             ];
-            
+
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-validation-subject.php');
         }
     } else {
@@ -160,6 +160,14 @@ function add_admin_form_academic_projection_content()
                 $calification_value = $calification[$key] ?? null;
 
                 $status_id = $is_this_cut ? 1 : ($calification_value >= $subject->min_pass ? 3 : 4);
+
+                // Verificamos si status_id es 4 y si is_elective existe y es true
+                if ($status_id == 4 && isset($projection_obj[$key]->is_elective) && $projection_obj[$key]->is_elective) {
+                    // Si se cumplen ambas condiciones, eliminamos el elemento del array
+                    unset($projection_obj[$key]);
+                    continue; // Saltamos al siguiente elemento del bucle
+                }
+
                 if ($status_id != 4) {
                     $projection_obj[$key]->is_completed = $is_completed;
                     $projection_obj[$key]->this_cut = $is_this_cut;
@@ -224,7 +232,6 @@ function add_admin_form_academic_projection_content()
                         ], ['id' => $exist->id]);
                     }
                 }
-
             }
 
             $wpdb->update($table_student_academic_projection, [
@@ -410,7 +417,7 @@ function add_admin_form_academic_projection_content()
                     $projection_obj[$indexToEdit]->calification = '';
                     $projection_obj[$indexToEdit]->is_completed = false;
                 }
-    
+
                 $wpdb->update($table_student_academic_projection, [
                     'projection' => json_encode($projection_obj)
                 ], ['id' => $projection->id]);
@@ -658,7 +665,7 @@ function get_moodle_notes()
 
                     foreach ($assignments_student_filtered as $key => $work) {
                         if (!isset($work['cmid'])) {
-                            $max_grade = (isset($work['gradeformatted']) && $work['gradeformatted'] != '') ? (float)$work['gradeformatted'] : 0;
+                            $max_grade = (isset($work['gradeformatted']) && $work['gradeformatted'] != '') ? (float) $work['gradeformatted'] : 0;
                         } else {
                             $assignments_total = ($assignments_total + 1);
                         }
@@ -669,10 +676,10 @@ function get_moodle_notes()
                     $total_grade = $max_grade > 100 ? 100 : $max_grade;
                     if ($projection_student) {
                         $projection_obj = json_decode($projection_student->projection);
-            
+
                         $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE moodle_course_id = {$course_id}");
                         $status_id = $total_grade >= $subject->min_pass ? 3 : 4;
-        
+
                         foreach ($projection_obj as $key => $prj) {
                             if ($prj->subject_id == $subject->id && ((isset($prj->code_period) && !empty($prj->code_period)) && (isset($prj->cut) && !empty($prj->cut)))) {
                                 $prj->calification = $total_grade;
@@ -705,8 +712,9 @@ function get_moodle_notes()
     }
 }
 
-function get_literal_note($calification) {
-    if(!$calification) {
+function get_literal_note($calification)
+{
+    if (!$calification) {
         return 'N/A';
     }
     $note = 'A+';
@@ -742,8 +750,9 @@ function get_literal_note($calification) {
     return $note;
 }
 
-function get_calc_note($calification) {
-    if(!$calification) {
+function get_calc_note($calification)
+{
+    if (!$calification) {
         return 'N/A';
     }
     $note = 'abc';
