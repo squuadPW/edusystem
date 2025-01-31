@@ -24,14 +24,11 @@ require plugin_dir_path(__FILE__) . 'moodle/rest.php';
 require plugin_dir_path(__FILE__) . 'moodle.php';
 require plugin_dir_path(__FILE__) . 'laravelRequests.php';
 require plugin_dir_path(__FILE__) . 'documents.php';
-
-// modules institutes
 require plugin_dir_path(__FILE__) . '/institutes/student-registered.php';
 require plugin_dir_path(__FILE__) . '/institutes/payments.php';
-
-//modules alliance
 require plugin_dir_path(__FILE__) . 'alliance/institutes-registered.php';
 require plugin_dir_path(__FILE__) . 'alliance/payments.php';
+require plugin_dir_path(__FILE__) . 'academic-offers.php';
 
 function admin_form_plugin_scripts()
 {
@@ -286,6 +283,7 @@ function add_custom_admin_page()
     add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'aes'), __('Academic periods', 'aes'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Scholarship', 'aes'), __('Scholarship', 'aes'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'aes'), __('Enrollments', 'aes'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'aes'), __('Academic offers', 'aes'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
     remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
 
     add_menu_page(
@@ -369,6 +367,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_academic_projection_aes');
     $role->add_cap('manager_teachers_aes');
     $role->add_cap('manager_enrollments_aes');
+    $role->add_cap('manager_academic_offers_aes');
     $role->add_cap('manager_configuration_options_aes');
     $role->add_cap('manager_send_email_aes');
     $role->add_cap('manager_send_notification_aes');

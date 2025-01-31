@@ -621,6 +621,8 @@ function load_inscriptions_electives_valid($student)
     $conditions[] = "student_id = %d";
     $params[] = $student->id;
 
+    $conditions[] = "(status_id = 1 OR status_id = 3)";
+
     $query = "SELECT * FROM {$table_student_period_inscriptions}";
     if (!empty($conditions)) {
         $query .= " WHERE " . implode(" AND ", $conditions);
@@ -653,6 +655,8 @@ function load_inscriptions_regular_valid($student)
 
     $conditions[] = "student_id = %d";
     $params[] = $student->id;
+
+    $conditions[] = "(status_id = 1 OR status_id = 3)";
 
     $query = "SELECT * FROM {$table_student_period_inscriptions}";
     if (!empty($conditions)) {
