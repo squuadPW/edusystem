@@ -267,7 +267,6 @@ function woocommerce_checkout_order_created_action($order)
     ) {
         $student_id = insert_student($customer_id);
         insert_register_documents($student_id, $_COOKIE['initial_grade']);
-        // automatically_enrollment($student_id);
 
         $order->update_meta_data('student_id', $student_id);
         $order->update_meta_data('id_bitrix', $_COOKIE['id_bitrix']);
@@ -717,11 +716,13 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
         }
 
         update_status_student($student_id, 1);
+        generate_projection_student($student_id);
+        // automatically_enrollment($student_id);
 
         $email_request_documents = WC()->mailer()->get_emails()['WC_Request_Documents_Email'];
         $email_request_documents->trigger($student_id);
 
-        return $data->url;
+        return null;
     }
 }
 

@@ -648,7 +648,7 @@ function load_inscriptions_regular_valid($student)
     $conditions = array();
     $params = array();
 
-    $conditions[] = "subject_id IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
+    $conditions[] = "subject_id IN (" . implode(',', array_fill(0, count($regulars_ids), '%d')) . ")";
     $params = array_merge($params, $regulars_ids);
 
     $conditions[] = "student_id = %d";
@@ -660,4 +660,24 @@ function load_inscriptions_regular_valid($student)
     }
     $inscriptions = $wpdb->get_results($wpdb->prepare($query, $params));
     return count($inscriptions);
+}
+
+function generate_projection_student($student_id)
+{
+    global $wpdb;
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
+    $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular}");
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $projection = [];
+
+    foreach ($matrix_regular as $key => $regular) {
+        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$regular->subject_id}");
+        array_push($projection, ['code_subject' => $subject->code_subject, 'subject_id' => $subject->id, 'subject' => $subject->name, 'hc' => $subject->hc, 'cut' => "", 'code_period' => "", 'calification' => "", 'is_completed' => false, 'this_cut' => false]);
+    }
+
+    $wpdb->insert($table_student_academic_projection, [
+        'student_id' => $student_id,
+        'projection' => json_encode($projection)
+    ]);
 }
