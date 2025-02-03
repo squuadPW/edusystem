@@ -304,7 +304,7 @@ function get_products_by_order($start, $end)
 
 }
 
-function get_students_report($academic_period, $grade, $cut)
+function get_students_report($academic_period, $cut)
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
@@ -314,14 +314,9 @@ function get_students_report($academic_period, $grade, $cut)
 
     if (!empty($cut)) {
         $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL");
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND code_subject IS NOT NULL");
         $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
         $params = array_merge($params, $cut_student_ids);
-    }
-
-    if (!empty($grade)) {
-        $conditions[] = "grade_id = %s";
-        $params[] = $grade;
     }
 
     $query = "SELECT * FROM {$table_students}";
@@ -613,10 +608,10 @@ function list_report_students()
     $roles = $current_user->roles;
     $academic_period = $_POST['academic_period'] ?? '';
     $academic_period_cut = $_POST['academic_period_cut'] ?? '';
-    $grade = $_POST['period'] ?? '';
+    // $grade = $_POST['period'] ?? '';
 
     $html = "";
-    $students = get_students_report($academic_period, $grade, $academic_period_cut);
+    $students = get_students_report($academic_period, $academic_period_cut);
     $url = admin_url('user-edit.php?user_id=');
 
     if (!empty($students)) {

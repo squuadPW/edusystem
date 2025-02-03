@@ -815,12 +815,12 @@ function send_welcome_subjects($student_id)
 
     $text = '';
     $text .= '<div>
-        Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' on behalf of the academic team of American Elite School, based in the city of Doral, Florida-USA, we are pleased to announce the beginning of Period C, corresponding to the School Year 2024 – 2025.
+        Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' on behalf of the academic team of American Elite School, based in the city of Doral, Florida-USA, we are pleased to announce the beginning of Period D, corresponding to the School Year 2024 – 2025.
     </div><br>';
 
     $text .= '<div>';
-    $text .= '<div><strong>START DATE:</strong> Monday, December 2, 2024</div>';
-    $text .= '<div><strong>END DATE:</strong> Sunday, February 2, 2025</div>';
+    $text .= '<div><strong>START DATE:</strong> Monday, February 10, 2025</div>';
+    $text .= '<div><strong>END DATE:</strong> Sunday, April 6, 2025</div>';
     $text .= '</div>';
 
     $text .= '<br>';
@@ -878,13 +878,13 @@ function send_welcome_subjects($student_id)
     </div><br>';
 
     $text .= '<div>';
-    $text .= '<div><strong>FECHA DE INICIO:</strong> lunes 2 de diciembre de 2024</div>';
-    $text .= '<div><strong>FECHA DE CULMINACIÓN:</strong> domingo 2 de febrero de 2025</div>';
+    $text .= '<div><strong>FECHA DE INICIO:</strong> lunes 10 de febrero de 2025</div>';
+    $text .= '<div><strong>FECHA DE CULMINACIÓN:</strong> domingo 6 de abril de 2025</div>';
     $text .= '</div>';
 
     $text .= '<br>';
 
-    $text .= '<div> A continuación, detallamos su <strong>Carga Académica</strong> de cursos ofertados para este periodo C: </div>';
+    $text .= '<div> A continuación, detallamos su <strong>Carga Académica</strong> de cursos ofertados para este periodo D: </div>';
 
     if (count($filteredArray) > 0) {
         $text .= '<table style="margin: 20px 0px">';
