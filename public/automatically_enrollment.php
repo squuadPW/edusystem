@@ -456,7 +456,7 @@ function load_automatically_enrollment($expected_projection, $student)
             break;
         }
 
-        if (is_array($expected)) {
+        if (isset($expected[0]['type'])) {
             $expected_projection['max_expected'] = count($expected);
             if ($expected_projection['max_expected'] == 1 && ($count_expected_subject <= 4 || $count_expected_subject_elective < 2)) {
                 $expected_projection['max_expected'] = 2;
