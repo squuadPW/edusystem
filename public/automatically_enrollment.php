@@ -802,6 +802,10 @@ function send_welcome_subjects($student_id)
     });
     $filteredArray = array_values($filteredArray);
 
+    if (count($filteredArray) == 0) {
+        return;
+    }
+
     $text = '';
     $text .= '<div>
         Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' on behalf of the academic team of American Elite School, based in the city of Doral, Florida-USA, we are pleased to announce the beginning of Period C, corresponding to the School Year 2024 – 2025.
