@@ -960,7 +960,7 @@ function fix_projections($student_id)
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
     $projection_obj = json_decode($projection->projection);
     foreach ($projection_obj as $key => $value) {
-        $projection_obj[$key]->welcome_email = $projection_obj[$key]->is_completed ? true : false;
+        $projection_obj[$key]->welcome_email = $projection_obj[$key]->welcome_email ? true : ($projection_obj[$key]->is_completed && !$projection_obj[$key]->this_cut ? true : false);
     }
 
     $wpdb->update($table_student_academic_projection, [
