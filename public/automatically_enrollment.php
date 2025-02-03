@@ -791,8 +791,9 @@ function send_welcome_subjects($student_id) {
     global $wpdb;
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_students = $wpdb->prefix . 'students';
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
-    $projection = get_projection_details_by_student($student_id);
+    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
     $projection_obj = json_decode($projection->projection);
 
     $filteredArray = array_filter($projection_obj, function ($item) {
@@ -925,4 +926,18 @@ function send_welcome_subjects($student_id) {
     $user_parent = get_user_by('id', $student->partner_id);
     $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
     $email_student->trigger($user_parent, 'Welcome', $text);
+}
+
+function fix_projections($student_id) {
+    global $wpdb;
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
+    $projection_obj = json_decode($projection->projection);
+    foreach ($projection_obj as $key => $value) {
+        $projection_obj[$key]->welcome_email = $projection_obj[$key]->is_completed ? true : false;
+    }
+
+    $wpdb->update($table_student_academic_projection, [
+        'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
+    ], ['id' => $projection->id]);
 }

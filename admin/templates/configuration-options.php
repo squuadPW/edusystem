@@ -107,6 +107,10 @@
                   <div class="form-group" style="text-align: center">
                       <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=automatically_enrollment&cut=D') ?>"><button type="button" class="btn btn-primary"><?= __('Enrollment process for students of the D cut - 20242025', 'aes'); ?></button></a>
                   </div>
+                  
+                  <div class="form-group" style="text-align: center">
+                      <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=fix_projections') ?>"><button type="button" class="btn btn-primary"><?= __('Fixes projections (welcome email sent field)', 'aes'); ?></button></a>
+                  </div>
                 </div>
                 <div class="form-group" id="save-configuration" style="text-align: center">
                     <button type="submit" class="btn btn-primary"><?= __('Save settings', 'aes'); ?></button>

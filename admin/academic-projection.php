@@ -130,6 +130,24 @@ function add_admin_form_academic_projection_content()
             }
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
             exit;
+        } else if (isset($_GET['action']) && $_GET['action'] == 'send_welcome_subject_email') {
+            global $wpdb;
+            $table_students = $wpdb->prefix . 'students';
+            $students = $wpdb->get_results("SELECT * FROM {$table_students}");
+            foreach ($students as $key => $student) {
+                send_welcome_subjects($student->id);
+            }
+            wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
+            exit;
+        } else if (isset($_GET['action']) && $_GET['action'] == 'fix_projections') {
+            global $wpdb;
+            $table_students = $wpdb->prefix . 'students';
+            $students = $wpdb->get_results("SELECT * FROM {$table_students}");
+            foreach ($students as $key => $student) {
+                fix_projections($student->id);
+            }
+            wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
+            exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'clear_electives') {
             clear_students_electives();
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
@@ -274,6 +292,7 @@ function add_admin_form_academic_projection_content()
                     $projection_obj[$indexToEdit]->code_period = '';
                     $projection_obj[$indexToEdit]->calification = '';
                     $projection_obj[$indexToEdit]->is_completed = false;
+                    $projection_obj[$indexToEdit]->welcome_email = false;
                 }
 
                 $wpdb->update($table_student_academic_projection, [
@@ -463,15 +482,6 @@ function get_projection_details($projection_id)
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
 
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE id={$projection_id}");
-    return $projection;
-}
-
-function get_projection_details_by_student($student_id)
-{
-    global $wpdb;
-    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-
-    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
     return $projection;
 }
 
