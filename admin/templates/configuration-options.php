@@ -102,7 +102,10 @@
                       <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projections') ?>"><button type="button" class="btn btn-primary"><?= __('Generate pending academic projections', 'aes'); ?></button></a>
                   </div>
                   <div class="form-group" style="text-align: center">
-                      <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_welcome_subject_email') ?>"><button type="button" class="btn btn-primary"><?= __('Send welcome email', 'aes'); ?></button></a>
+                      <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_welcome_subject_email') ?>"><button type="button" class="btn btn-primary"><?= __('Send pending welcome mails with subjects', 'aes'); ?></button></a>
+                  </div>
+                  <div style="text-align: center">
+                    <span>Temporally</span>
                   </div>
                   <div class="form-group" style="text-align: center">
                       <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=automatically_enrollment&cut=C') ?>"><button type="button" class="btn btn-primary"><?= __('Enrollment process for students of the C cut - 20242025', 'aes'); ?></button></a>
