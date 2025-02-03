@@ -778,7 +778,7 @@ function generate_projection_student($student_id)
 
     foreach ($matrix_regular as $key => $regular) {
         $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$regular->subject_id}");
-        array_push($projection, ['code_subject' => $subject->code_subject, 'subject_id' => $subject->id, 'subject' => $subject->name, 'hc' => $subject->hc, 'cut' => "", 'code_period' => "", 'calification' => "", 'is_completed' => false, 'this_cut' => false]);
+        array_push($projection, ['code_subject' => $subject->code_subject, 'subject_id' => $subject->id, 'subject' => $subject->name, 'hc' => $subject->hc, 'cut' => "", 'code_period' => "", 'calification' => "", 'is_completed' => false, 'this_cut' => false, 'welcome_email' => false]);
     }
 
     $wpdb->insert($table_student_academic_projection, [
