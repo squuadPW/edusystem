@@ -495,6 +495,7 @@ function load_automatically_enrollment($expected_projection, $student)
                         $projection_obj[$indexToEdit]->code_period = $code;
                         $projection_obj[$indexToEdit]->calification = '';
                         $projection_obj[$indexToEdit]->is_completed = true;
+                        $projection_obj[$indexToEdit]->welcome_email = false;
                     }
 
                     $wpdb->update($table_student_academic_projection, [
@@ -588,6 +589,7 @@ function load_automatically_enrollment($expected_projection, $student)
                     $projection_obj[$indexToEdit]->code_period = $code;
                     $projection_obj[$indexToEdit]->calification = '';
                     $projection_obj[$indexToEdit]->is_completed = true;
+                    $projection_obj[$indexToEdit]->welcome_email = false;
                 }
 
                 $wpdb->update($table_student_academic_projection, [
