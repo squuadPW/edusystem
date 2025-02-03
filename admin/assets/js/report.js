@@ -64,8 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("tax").innerHTML = result.data.tax;
           document.getElementById("receivable").innerHTML =
             result.data.receivable;
-          document.getElementById("discount").innerHTML =
-            result.data.discount;
+          document.getElementById("discount").innerHTML = result.data.discount;
           document.getElementById("adjusted_gross").innerHTML =
             result.data.adjusted_gross;
 
@@ -84,8 +83,12 @@ document.addEventListener("DOMContentLoaded", function () {
             newElement.id = "payment-options";
             newElement.title = `Payments made with ${element[0]}`;
             newElement.innerHTML = `
-                          <div>${element[0] ? element[0] : 'Payments made with split'}</div>
-                          <div style="margin-top: 10px;"><strong id="${element[0]}">${element[1]}</strong></div>
+                          <div>${
+                            element[0] ? element[0] : "Payments made with split"
+                          }</div>
+                          <div style="margin-top: 10px;"><strong id="${
+                            element[0]
+                          }">${element[1]}</strong></div>
                         `;
             cardTotalsSales.appendChild(newElement);
           });
@@ -96,9 +99,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (document.getElementById("update_data_sales_product")) {
     load_sales_product();
-    document.getElementById("update_data_sales_product").addEventListener("click", () => {
-      load_sales_product();
-    });
+    document
+      .getElementById("update_data_sales_product")
+      .addEventListener("click", () => {
+        load_sales_product();
+      });
   }
 
   function load_sales_product() {
@@ -131,7 +136,8 @@ document.addEventListener("DOMContentLoaded", function () {
         let result = JSON.parse(XHR.responseText);
 
         if (result.status == "success") {
-          document.getElementById("table-institutes-payment").innerHTML = result.html;
+          document.getElementById("table-institutes-payment").innerHTML =
+            result.html;
         }
       }
     };
@@ -269,7 +275,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function load_report_students() {
     let academic_period = document.getElementById("academic_period").value;
-    let academic_period_cut = document.getElementById("academic_period_cut").value;
+    let academic_period_cut = document.getElementById(
+      "academic_period_cut"
+    ).value;
 
     let htmlLoading = "";
 
@@ -299,8 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (result.status == "success") {
           document.getElementById("table-institutes-payment").innerHTML =
             result.html;
-          document.getElementById("students").innerHTML =
-            result.data.length;
+          document.getElementById("students").innerHTML = result.data.length;
           // document.getElementById("receivable").innerHTML =
           //   result.data.receivable;
         }
@@ -327,16 +334,14 @@ document.addEventListener("DOMContentLoaded", function () {
     htmlLoading +=
       "<td class='column-primary id column-id' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
     htmlLoading += "</tr>";
-    document.getElementById("table-not-current-student").innerHTML = htmlLoading;
+    document.getElementById("table-not-current-student").innerHTML =
+      htmlLoading;
 
     const XHR = new XMLHttpRequest();
     XHR.open("POST", list_report_current_students.url, true);
     XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     XHR.responseType = "text";
-    XHR.send(
-      "action=" +
-      list_report_current_students.action
-    );
+    XHR.send("action=" + list_report_current_students.action);
     XHR.onload = function () {
       if (this.readyState == "4" && XHR.status === 200) {
         let result = JSON.parse(XHR.responseText);
@@ -347,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("current-students").innerHTML =
             result.data.length;
 
-            document.getElementById("table-not-current-student").innerHTML =
+          document.getElementById("table-not-current-student").innerHTML =
             result.html_not_current;
           document.getElementById("not-current-students").innerHTML =
             result.students_not_current.length;
@@ -362,36 +367,36 @@ document.addEventListener("DOMContentLoaded", function () {
   if (export_excel_students) {
     export_excel_students.addEventListener("click", () => {
       // Selecciona la tabla por su ID
-      const table = document.querySelector('#table-institutes-payment');
+      const table = document.querySelector("#table-institutes-payment");
       const data = [];
 
       // Definir los encabezados fijos
       const headers = [
-          'Academic period',
-          'Student',
-          'Student document',
-          'Student email',
-          'Parent',
-          'Parent email',
-          'Country',
-          'Grade',
-          'Program',
-          'Institute'
+        "Academic period",
+        "Student",
+        "Student document",
+        "Student email",
+        "Parent",
+        "Parent email",
+        "Country",
+        "Grade",
+        "Program",
+        "Institute",
       ];
-      
+
       data.push(headers); // Agrega los encabezados al array de datos
 
       // Itera sobre las filas de la tabla (empezando desde la primera fila de datos)
       for (let i = 0; i < table.rows.length; i++) {
-          const rowData = [];
-          const row = table.rows[i];
+        const rowData = [];
+        const row = table.rows[i];
 
-          // Itera sobre las celdas de cada fila
-          for (let j = 0; j < row.cells.length; j++) {
-              rowData.push(row.cells[j].textContent.trim()); // Obtiene el contenido de cada celda
-          }
+        // Itera sobre las celdas de cada fila
+        for (let j = 0; j < row.cells.length; j++) {
+          rowData.push(row.cells[j].textContent.trim()); // Obtiene el contenido de cada celda
+        }
 
-          data.push(rowData); // Agrega los datos de la fila al array
+        data.push(rowData); // Agrega los datos de la fila al array
       }
 
       // Crea un nuevo libro de trabajo
@@ -399,10 +404,10 @@ document.addEventListener("DOMContentLoaded", function () {
       // Convierte los datos a una hoja de cálculo
       const ws = XLSX.utils.aoa_to_sheet(data);
       // Agrega la hoja al libro
-      XLSX.utils.book_append_sheet(wb, ws, 'Report students');
+      XLSX.utils.book_append_sheet(wb, ws, "Report students");
 
       // Exporta el archivo XLSX
-      XLSX.writeFile(wb, 'report-students.xlsx');
+      XLSX.writeFile(wb, "report-students.xlsx");
     });
   }
 });
