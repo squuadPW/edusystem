@@ -53,6 +53,20 @@
                                             </div>
                                         <?php endif; ?>
                                     </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($subject) && !empty($subject)): ?>
+                                            <div>
+                                                <input type="checkbox" name="is_active" id="is_active"
+                                                <?= ($subject->is_active == 1) ? 'checked' : ''; ?>>
+                                                <label for="is_active"><b><?= __('Active', 'aes'); ?></b></label>
+                                            </div>
+                                        <?php else: ?>
+                                            <div>
+                                            <input type="checkbox" name="is_active" id="is_active">
+                                                <label for="is_active"><b><?= __('Active', 'aes'); ?></b></label>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div style="display: flex; justify-content: space-evenly; margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
@@ -87,6 +101,28 @@
                                             <label for="min_pass"><b><?= __('Minimum passing grade', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <input type="number" step="0.01"  name="min_pass" value="" required>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($subject) && !empty($subject)): ?>
+                                            <label
+                                                for="matrix_position"><b><?= __('Matrix position', 'aes'); ?></b><span class="text-danger">*</span></label><br>
+                                            <input type="number" step="0" name="matrix_position" value="<?= $subject->matrix_position; ?>" required>
+                                        <?php else: ?>
+                                            <label for="matrix_position"><b><?= __('Matrix position', 'aes'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="number" step="0"  name="matrix_position" value="" required>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($subject) && !empty($subject)): ?>
+                                            <label
+                                                for="max_students"><b><?= __('Maximum students enrolled', 'aes'); ?></b><span class="text-danger">*</span></label><br>
+                                            <input type="number" step="0" name="max_students" value="<?= $subject->max_students; ?>" required>
+                                        <?php else: ?>
+                                            <label for="max_students"><b><?= __('Maximum students enrolled', 'aes'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="number" step="0"  name="max_students" value="" required>
                                         <?php endif; ?>
                                     </div>
                                 </div>

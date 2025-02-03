@@ -3,7 +3,7 @@
 Plugin Name: Squuad for educational system
 Plugin URI: https://online.american-elite.us/wp-admin/plugins.php
 Description: The WordPress plugin for educational system is a customized tool that offers a range of functionalities for the proper functioning of the institute website
-Version: 1.3.32
+Version: 1.3.65
 Author: Squuad
 Author URI: https://online.american-elite.us/wp-admin/plugins.php
 License:      GPL2
@@ -17,7 +17,7 @@ if (!class_exists('WP_List_Table')) {
 require plugin_dir_path(__FILE__) . 'settings.php';
 require plugin_dir_path(__FILE__) . 'public/functions.php';
 require plugin_dir_path(__FILE__) . 'admin/functions.php';
-require_once(ABSPATH . 'wp-admin/includes/upgrade.php'); 
+require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 function create_tables()
 {
@@ -31,6 +31,8 @@ function create_tables()
   $table_student_califications = $wpdb->prefix . 'student_califications';
   $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
   $table_academic_projection_base = $wpdb->prefix . 'academic_projection_base';
+  $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
+  $table_school_subject_matrix_elective = $wpdb->prefix . 'school_subject_matrix_elective';
   $table_institutes = $wpdb->prefix . 'institutes';
   $table_alliances = $wpdb->prefix . 'alliances';
   $table_grades = $wpdb->prefix . 'grades';
@@ -101,12 +103,16 @@ function create_tables()
     dbDelta(
       "CREATE TABLE " . $table_school_subjects . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
+        is_active BOOLEAN NOT NULL DEFAULT 1,
         code_subject TEXT NOT NULL,
         name TEXT NOT NULL,
         description TEXT NOT NULL,
         min_pass DOUBLE(10, 2) NOT NULL,
         hc INT(11) NOT NULL,
+        max_students INT(11) NOT NULL,
+        maxtrix_position INT(11) NOT NULL,
         moodle_course_id INT(11) NULL,
+        teacher_id INT(11) NULL,
         is_elective BOOLEAN NOT NULL DEFAULT 0,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
@@ -138,6 +144,7 @@ function create_tables()
       "CREATE TABLE " . $table_student_period_inscriptions . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         status_id INT(11) NOT NULL,
+        type TEXT NULL,
         student_id INT(11) NOT NULL,
         subject_id INT(11) NULL,
         code_subject TEXT NULL,
@@ -360,6 +367,7 @@ function create_tables()
         id_document TEXT NULL,
         ethnicity TEXT NULL,
         academic_period TEXT NULL,
+        initial_cut TEXT NULL,
         name TEXT NOT NULL,
         middle_name TEXT NULL,
         last_name TEXT NOT NULL,
@@ -377,9 +385,12 @@ function create_tables()
         program_id TEXT NOT NULL,
         partner_id INT(11) NOT NULL, 
         status_id INT(11) NOT NULL,
-        condition_student INT(11) NOT NULL,
+        condition_student BOOLEAN NOT NULL DEFAULT 1,
+        elective BOOLEAN NOT NULL DEFAULT 0,
+        skip_cut BOOLEAN NOT NULL DEFAULT 0,
         moodle_student_id INT(11) NULL,
         moodle_password TEXT NULL,
+        set_password BOOLEAN NOT NULL DEFAULT 0,
         updated_at DATETIME NULL,
         created_at DATETIME NOT NULL,
         PRIMARY KEY (id))$charset_collate;"
@@ -636,7 +647,7 @@ function create_tables()
     }
   }
 
-  
+
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_documents_for_teachers}'") != $table_documents_for_teachers) {
     dbDelta(
       "CREATE TABLE " . $table_documents_for_teachers . " (
@@ -660,7 +671,7 @@ function create_tables()
       'created_at' => date('Y-m-d H:i:s')
     ]);
 
-    
+
     $wpdb->insert($table_documents_for_teachers, [
       'name' => 'FORM 402',
       'type_file' => '.pdf',
@@ -987,6 +998,26 @@ function create_tables()
       'projection' => json_encode($graduated),
       'created_at' => date('Y-m-d H:i:s')
     ]);
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subject_matrix_regular}'") != $table_school_subject_matrix_regular) {
+    dbDelta(
+      "CREATE TABLE " . $table_school_subject_matrix_regular . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        subject TEXT NOT NULL,
+        subject_id INT(11) NOT NULL,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subject_matrix_elective}'") != $table_school_subject_matrix_elective) {
+    dbDelta(
+      "CREATE TABLE " . $table_school_subject_matrix_elective . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        subject TEXT NOT NULL,
+        subject_id INT(11) NOT NULL,
+        PRIMARY KEY (id))$charset_collate;"
+    );
   }
 
 }

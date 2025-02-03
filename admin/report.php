@@ -132,7 +132,7 @@ function get_orders($start, $end)
         $discount += ($order->get_total_discount() ? $order->get_total_discount() : 0);
         if ($order->get_fees()) {
             foreach ($order->get_fees() as $fee) {
-                $fee_payment += (float)$fee->get_amount();
+                $fee_payment += (float) $fee->get_amount();
             }
         }
 
@@ -220,8 +220,8 @@ function get_orders_by_date($date)
     foreach ($orders as $order) {
         $institute_fee += (float) $order->get_meta('institute_fee');
         $alliance_fee += (float) $order->get_meta('alliance_fee');
-        $gross += ($order->get_subtotal() ? (float)$order->get_subtotal() : 0);
-        $net += ($order->get_total() ? (float)$order->get_total() : 0);
+        $gross += ($order->get_subtotal() ? (float) $order->get_subtotal() : 0);
+        $net += ($order->get_total() ? (float) $order->get_total() : 0);
     }
 
     return [
@@ -304,7 +304,7 @@ function get_products_by_order($start, $end)
 
 }
 
-function get_students_report($academic_period, $grade, $cut)
+function get_students_report($academic_period, $cut)
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
@@ -314,14 +314,9 @@ function get_students_report($academic_period, $grade, $cut)
 
     if (!empty($cut)) {
         $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL");
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND code_subject IS NOT NULL");
         $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
         $params = array_merge($params, $cut_student_ids);
-    }
-
-    if (!empty($grade)) {
-        $conditions[] = "grade_id = %s";
-        $params[] = $grade;
     }
 
     $query = "SELECT * FROM {$table_students}";
@@ -361,7 +356,7 @@ function get_students_current()
     foreach ($students as $key => $student) {
         $conditions = array();
         $params = array();
-    
+
         // Obtener subject_ids
         $subject_ids = $wpdb->get_col($wpdb->prepare(
             "SELECT subject_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s AND status_id = 1 AND student_id = %d AND subject_id IS NOT NULL",
@@ -369,12 +364,12 @@ function get_students_current()
             $cut,
             $student->id
         ));
-    
+
         if (!empty($subject_ids)) {
             $conditions[] = "id IN (" . implode(',', array_fill(0, count($subject_ids), '%d')) . ")";
             $params = array_merge($params, $subject_ids);
         }
-    
+
         // Obtener subject_codes
         $subject_codes = $wpdb->get_col($wpdb->prepare(
             "SELECT code_subject FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s AND status_id = 1 AND student_id = %d AND code_subject IS NOT NULL",
@@ -382,18 +377,18 @@ function get_students_current()
             $cut,
             $student->id
         ));
-    
+
         if (!empty($subject_codes)) {
             $conditions[] = "code_subject IN (" . implode(',', array_fill(0, count($subject_codes), '%s')) . ")";
             $params = array_merge($params, $subject_codes);
         }
-    
+
         $query = "SELECT * FROM {$table_school_subjects}";
-    
+
         if (!empty($conditions)) {
             $query .= " WHERE " . implode(" AND ", $conditions);
         }
-    
+
         // Manejo de errores
         $student->subjects = $wpdb->get_results($wpdb->prepare($query, $params));
     }
@@ -497,7 +492,7 @@ function list_sales_product()
 
         if (!empty($orders['product_quantities'])) {
 
-            uasort($orders['product_quantities'], function($a, $b) {
+            uasort($orders['product_quantities'], function ($a, $b) {
                 return $b <=> $a;
             });
 
@@ -518,7 +513,7 @@ function list_sales_product()
                 $html .= "<td class='column' data-colname='" . __('Total', 'aes') . "'><strong>" . wc_price(($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]))) . "</strong></td>";
                 $html .= "</tr>";
 
-                uasort($orders['product_quantities_variation'][$product_id], function($a, $b) {
+                uasort($orders['product_quantities_variation'][$product_id], function ($a, $b) {
                     return $b <=> $a;
                 });
                 foreach ($orders['product_quantities_variation'][$product_id] as $key => $variation) {
@@ -613,10 +608,10 @@ function list_report_students()
     $roles = $current_user->roles;
     $academic_period = $_POST['academic_period'] ?? '';
     $academic_period_cut = $_POST['academic_period_cut'] ?? '';
-    $grade = $_POST['period'] ?? '';
+    // $grade = $_POST['period'] ?? '';
 
     $html = "";
-    $students = get_students_report($academic_period, $grade, $academic_period_cut);
+    $students = get_students_report($academic_period, $academic_period_cut);
     $url = admin_url('user-edit.php?user_id=');
 
     if (!empty($students)) {
@@ -627,9 +622,9 @@ function list_report_students()
 
             $html .= "<tr>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
             } else {
-                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
             }
             $html .= "<td class='column' data-colname='" . __('Student document', 'aes') . "'>" . $student->id_document . "</td>";
             $html .= "<td class='column' data-colname='" . __('Student email', 'aes') . "'>" . $student->email . "</td>";
@@ -683,13 +678,13 @@ function list_report_current_students()
             $html .= "<tr>";
             $html .= "<td class='column' data-colname='" . __('Academic Period - cut', 'aes') . "'>" . $academic_period . ' - ' . $cut . "</td>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
             } else {
-                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
             }
             $html .= "<td class='column' data-colname='" . __('Subjects', 'aes') . "'>";
             foreach ($student->subjects as $key => $subject) {
-                $html .= $subject->name . ($key + 1 == count($student->subjects) ? '' : ', '); 
+                $html .= $subject->name . ($key + 1 == count($student->subjects) ? '' : ', ');
             }
             $html .= "</td>";
             $html .= "</tr>";
@@ -701,7 +696,7 @@ function list_report_current_students()
         $html .= "</tr>";
     }
 
-    
+
     if (!empty($students_not_current)) {
 
         foreach ($students_not_current as $student) {
@@ -709,16 +704,16 @@ function list_report_current_students()
 
             $html_not_current .= "<tr>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html_not_current .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
+                $html_not_current .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
             } else {
-                $html_not_current .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" .  $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
+                $html_not_current .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
             }
             $html_not_current .= "</tr>";
         }
 
     } else {
         $html_not_current .= "<tr>";
-        $html_not_current .= "<td colspan='3' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+        $html_not_current .= "<td style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
         $html_not_current .= "</tr>";
     }
 

@@ -600,28 +600,6 @@ function insert_register_documents($student_id, $grade_id)
     }
 }
 
-function insert_period_inscriptions($student_id)
-{
-    global $wpdb;
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $load = load_current_cut_enrollment();
-    $code = $load['code'];
-    $cut = $load['cut'];
-
-    $courses = [1];
-    foreach ($courses as $key => $course) {
-        $exist = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student_id} AND code = {$code} AND cut = {$cut} ");
-        if (!$exist) {
-            $wpdb->insert($table_student_period_inscriptions, [
-                'student_id' => $student_id,
-                'code_period' => $code,
-                'cut_period' => $cut,
-                'status_id' => 1,
-            ]);
-        }
-    }
-}
-
 function get_documents($student_id)
 {
 

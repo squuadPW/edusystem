@@ -102,6 +102,12 @@
                         </th>
                         <td style="display:table-cell;padding:3px;"><label for="manager_enrollments_aes" style="margin-left:20px;"><?= __('Enrollments','aes'); ?></label></td>
                     </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_academic_offers_aes" id="manager_academic_offers_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_academic_offers_aes'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_academic_offers_aes" style="margin-left:20px;"><?= __('Academic offers','aes'); ?></label></td>
+                    </tr>
                 </div>
                 <!-- ACADEMIC -->
 

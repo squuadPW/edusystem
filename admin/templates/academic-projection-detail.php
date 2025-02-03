@@ -1,6 +1,8 @@
 <div class="wrap">
     <?php if (isset($projection) && !empty($projection)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Academic projection of ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . ' (' . $student->id_document . ') ' . '<a href="' . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $student->id) . '" target="_blank">('. $student->id . ')</a>', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Academic projection of ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . ' (' . $student->id_document . ')', 'aes'); ?>
+            <a href="<?= admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student->id ?>" target="_blank">(View in Admission)</a>
+        </h2>
     <?php else: ?>
         <h2 style="margin-bottom:15px;"><?= __('Not found', 'aes'); ?></h2>
     <?php endif; ?>
@@ -79,6 +81,14 @@
                                         
                                     </div>
                                 <?php } ?>
+
+                                <?php if($student->elective == 1) { ?>
+                                    <div style="display: flex; width: 100%; text-align: center">
+                                        <div style="flex: 1; padding: 20px;">
+                                            <label><b><?= __('This student has yet to select an elective.', 'aes'); ?></b></label><br>
+                                        </div>
+                                    </div>
+                                <? } ?>
                             </div>
 
                             <div>

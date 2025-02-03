@@ -22,12 +22,12 @@
                 <option value="D" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'D') ? 'selected' : '') : ''; ?>>D</option>
                 <option value="E" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'E') ? 'selected' : '') : ''; ?>>E</option>
             </select>
-            <select id="grade">
+            <!-- <select id="grade">
                     <option value="" selected="selected"><?= __('Select a grade', 'aes'); ?></option>
                     <?php foreach ($grades as $grade): ?>
                         <option value="<?= $grade->id; ?>"><?= $grade->name; ?></option>
                     <?php endforeach; ?>
-                </select>
+                </select> -->
             <?php if (wp_is_mobile()): ?>
                 <button type="button" id="update_data_report_students" class="button button-primary"
                     style="width:100%;"></span><?= __('Update data', 'aes'); ?></button>

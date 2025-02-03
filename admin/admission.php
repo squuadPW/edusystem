@@ -6,10 +6,10 @@ function add_admin_form_admission_content()
     if (current_user_can('manager_admission_aes') || current_user_can('only_read_admission_aes')) {
         global $current_user, $wpdb;
         if (isset($_GET['action']) && !empty($_GET['action'])) {
-    
+
             if ($_GET['action'] == 'save_users_details') {
                 global $wpdb;
-    
+
                 //STUDENT
                 $id = $_POST['id'];
                 $program = $_POST['program'];
@@ -41,7 +41,7 @@ function add_admin_form_admission_content()
                 } else {
                     $institute_id = null;
                 }
-    
+
                 //TABLE STUDENTS
                 $table_students = $wpdb->prefix . 'students';
                 $student_exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='" . $email . "'");
@@ -66,14 +66,14 @@ function add_admin_form_admission_content()
                             'postal_code' => $postal_code,
                             'institute_id' => $institute_id,
                             'name_institute' => $name_institute,
-        
+
                         ),
                         array('ID' => $id),
                         array('%s', '%s', '%s'),
                         array('%d')
                     );
                 }
-    
+
                 //TABLE USERS
                 $table_users = $wpdb->prefix . 'users';
                 $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $old_email . "'");
@@ -91,12 +91,12 @@ function add_admin_form_admission_content()
                         array('%s', '%s', '%s'),
                         array('%d')
                     );
-    
+
                     if ($new_password && isset($user_student)) {
                         $user_id = $user_student->ID; // Replace with the ID of the user you want to update
                         wp_set_password($new_password, $user_student->ID);
                     }
-        
+
                     //METAADATA
                     update_user_meta($id, 'first_name', $first_name);
                     update_user_meta($id, 'last_name', $last_name);
@@ -105,7 +105,7 @@ function add_admin_form_admission_content()
                     update_user_meta($id, 'gender', $gender);
                     update_user_meta($id, 'billing_phone', $phone);
                 }
-    
+
                 //PARENT
                 $parent_id = $_POST['parent_id'];
                 $parent_document_type = $_POST['parent_document_type'];
@@ -122,7 +122,7 @@ function add_admin_form_admission_content()
                 $parent_old_email = $_POST['parent_old_email'];
                 $parent_phone = $_POST['parent_phone'];
                 $parent_occupation = $_POST['parent_occupation'];
-    
+
                 //TABLE USERS
                 $table_users = $wpdb->prefix . 'users';
                 $user_parent = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $parent_old_email . "'");
@@ -139,8 +139,8 @@ function add_admin_form_admission_content()
                         array('ID' => $user_parent->ID),
                         array('%s', '%s', '%s'),
                         array('%d')
-                    );    
-            
+                    );
+
                     //METAADATA
                     update_user_meta($user_parent->ID, 'first_name', $parent_first_name);
                     update_user_meta($user_parent->ID, 'billing_first_name', $parent_first_name);
@@ -158,7 +158,7 @@ function add_admin_form_admission_content()
                     update_user_meta($user_parent->ID, 'type_document', $parent_document_type);
                     update_user_meta($user_parent->ID, 'id_document', $parent_id_document);
                 }
-    
+
                 $type_document = '';
                 switch ($student_exist->type_document) {
                     case 'identification_document':
@@ -171,7 +171,7 @@ function add_admin_form_admission_content()
                         $type_document = 4;
                         break;
                 }
-    
+
                 $type_document_re = '';
                 if (get_user_meta($user_parent->ID, 'type_document', true)) {
                     switch (get_user_meta($user_parent->ID, 'type_document', true)) {
@@ -188,8 +188,8 @@ function add_admin_form_admission_content()
                 } else {
                     $type_document_re = 1;
                 }
-    
-    
+
+
                 $gender = '';
                 switch ($student_exist->gender) {
                     case 'male':
@@ -199,8 +199,8 @@ function add_admin_form_admission_content()
                         $gender = 'F';
                         break;
                 }
-    
-    
+
+
                 $gender_re = '';
                 if (get_user_meta($user_parent->ID, 'gender', true)) {
                     switch (get_user_meta($user_parent->ID, 'gender', true)) {
@@ -214,7 +214,7 @@ function add_admin_form_admission_content()
                 } else {
                     $gender_re = 'M';
                 }
-    
+
                 $grade = '';
                 switch ($student_exist->grade_id) {
                     case 1:
@@ -230,7 +230,7 @@ function add_admin_form_admission_content()
                         $grade = 12;
                         break;
                 }
-    
+
                 $data = array(
                     // DATOS DEL ESTUDIANTE
                     'id_document' => $id_document,
@@ -243,7 +243,7 @@ function add_admin_form_admission_content()
                     'grade' => $grade,
                     'gender' => $gender,
                     'etnia' => $student_exist->ethnicity,
-    
+
                     // PADRE
                     'id_document_re' => $parent_id_document,
                     'type_document_re' => $type_document_re,
@@ -253,7 +253,7 @@ function add_admin_form_admission_content()
                     'phone_re' => $parent_phone,
                     'email_re' => $parent_email,
                     'gender_re' => $parent_gender,
-    
+
                     'cod_program' => AES_PROGRAM_ID,
                     'cod_tip' => AES_TYPE_PROGRAM,
                     'cod_period' => $student_exist->academic_period,
@@ -262,9 +262,9 @@ function add_admin_form_admission_content()
                     'city' => $parent_city,
                     'postal_code' => $parent_postal_code,
                 );
-    
+
                 update_user_laravel($data);
-    
+
                 wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
                 exit;
             }
@@ -275,30 +275,30 @@ function add_admin_form_admission_content()
                 $document_name = $_POST['document_upload_name'];
                 $table_student_documents = $wpdb->prefix . 'student_documents';
 
-                if(isset($_FILES['document_upload_file']) && !empty($_FILES['document_upload_file'])){
+                if (isset($_FILES['document_upload_file']) && !empty($_FILES['document_upload_file'])) {
                     $file_temp = $_FILES['document_upload_file'];
-                }else{
+                } else {
                     $file_temp = [];
                 }
 
-                if(!empty($file_temp['tmp_name'])){
-                        
-                    $upload_data = wp_handle_upload($file_temp,array('test_form' => FALSE) );
+                if (!empty($file_temp['tmp_name'])) {
+
+                    $upload_data = wp_handle_upload($file_temp, array('test_form' => FALSE));
 
                     if ($upload_data && !is_wp_error($upload_data)) {
-                        
+
                         $attachment = array(
                             'post_mime_type' => $upload_data['type'],
                             'post_title' => $document_name,
                             'post_content' => '',
                             'post_status' => 'inherit'
                         );
-                        
+
                         $attach_id = wp_insert_attachment($attachment, $upload_data['file']);
-                        $deleted = wp_delete_attachment($upload_data['file'], true );
+                        $deleted = wp_delete_attachment($upload_data['file'], true);
                         $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
                         wp_update_attachment_metadata($attach_id, $attach_data);
-                        $wpdb->update($table_student_documents,['status' => 5,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $id,'id' => $document_id ]);
+                        $wpdb->update($table_student_documents, ['status' => 5, 'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $id, 'id' => $document_id]);
                     }
                 }
 
@@ -306,9 +306,9 @@ function add_admin_form_admission_content()
                 exit;
             }
         }
-    
+
         if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
-    
+
             /*
             if($_GET['section_tab'] == 'document_review'){
     
@@ -323,7 +323,7 @@ function add_admin_form_admission_content()
                 $list_students->prepare_items();
                 include(plugin_dir_path(__FILE__) . 'templates/list-student-documents.php');
             } else if ($_GET['section_tab'] == 'student_details') {
-    
+
                 $roles = $current_user->roles;
                 $documents = get_documents($_GET['student_id']);
                 $fee_payment_ready = get_payments($_GET['student_id'], 63);
@@ -338,7 +338,7 @@ function add_admin_form_admission_content()
                 $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $student->email . "'");
                 include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
             }
-    
+
         } else {
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
@@ -568,7 +568,7 @@ class TT_document_review_List_Table extends WP_List_Table
                 } else {
                     return $item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name'];
                 }
-    
+
             case 'program':
                 $program = get_name_program($item['program_id']);
                 return $program;
@@ -592,7 +592,7 @@ class TT_document_review_List_Table extends WP_List_Table
                     $time_now = Datetime::createFromFormat('Y-m-d H:i:s', wp_date('Y-m-d H:i:s'));
                     $diff = $updated_at->diff($time_now);
 
-                    if ($diff->days < (int)get_option('documents_ok')) {
+                    if ($diff->days < (int) get_option('documents_ok')) {
 
                         if ($diff->days == 1) {
 
@@ -611,13 +611,13 @@ class TT_document_review_List_Table extends WP_List_Table
                             ';
                         }
 
-                    } else if ($diff->days < (int)get_option('documents_warning')) {
+                    } else if ($diff->days < (int) get_option('documents_warning')) {
                         $html .= '
                             <a href="javascript:void(0)" class="button button-warning" style="border-radius:9px;">
                                 <span>' . $diff->days . ' ' . __('Days', 'aes') . '</span>
                             </a>
                         ';
-                    } else if ($diff->days >= (int)get_option('documents_red')) {
+                    } else if ($diff->days >= (int) get_option('documents_red')) {
                         $html .= '
                             <a href="javascript:void(0)" class="button button-danger" style="border-radius:9px;">
                                 <span>' . $diff->days . ' ' . __('Days', 'aes') . '</span>
@@ -683,15 +683,15 @@ class TT_document_review_List_Table extends WP_List_Table
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
-    
+
         $search = sanitize_text_field($_GET['s']);
         $period = sanitize_text_field($_GET['academic_period']);
         $date_selected = sanitize_text_field($_GET['date_selected']);
         $cut = sanitize_text_field($_GET['academic_period_cut']);
-    
+
         // Obtener los student_id que coinciden con el cut_period
         $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE initial_cut = '$cut'");
-    
+
         $today = date('Y-m-d'); // get today's date
         $filter_date = '';
         switch ($date_selected) {
@@ -705,7 +705,7 @@ class TT_document_review_List_Table extends WP_List_Table
                 $filter_date = date('Y-m-d', strtotime('-365 days', strtotime($today))); // more than 35 days ago
                 break;
         }
-    
+
         $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*,
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
@@ -724,7 +724,7 @@ class TT_document_review_List_Table extends WP_List_Table
             ORDER BY a.updated_at DESC
             LIMIT {$per_page} OFFSET {$offset}
             ", "ARRAY_A");
-    
+
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
         return ['data' => $data, 'total_count' => $total_count];
     }
@@ -874,15 +874,15 @@ class TT_all_student_List_Table extends WP_List_Table
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
-    
+
         $search = sanitize_text_field($_GET['s']);
         $period = sanitize_text_field($_GET['academic_period']);
         $date_selected = sanitize_text_field($_GET['date_selected']);
         $cut = sanitize_text_field($_GET['academic_period_cut']);
-    
+
         // Obtener los student_id que coinciden con el cut_period
         $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE initial_cut = '$cut'");
-    
+
         $today = date('Y-m-d'); // get today's date
         $filter_date = '';
         switch ($date_selected) {
@@ -896,7 +896,7 @@ class TT_all_student_List_Table extends WP_List_Table
                 $filter_date = date('Y-m-d', strtotime('-365 days', strtotime($today))); // more than 35 days ago
                 break;
         }
-    
+
         $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*,
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
@@ -915,7 +915,7 @@ class TT_all_student_List_Table extends WP_List_Table
             ORDER BY a.updated_at DESC
             LIMIT {$per_page} OFFSET {$offset}
             ", "ARRAY_A");
-    
+
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
         return ['data' => $data, 'total_count' => $total_count];
     }
@@ -976,7 +976,7 @@ class TT_all_student_List_Table extends WP_List_Table
                 $value['student'] = '<a href="' . $url . $student->ID . '" target="_blank">' . $value['last_name'] . ' ' . $value['middle_last_name'] . ' ' . $value['name'] . ' ' . $value['middle_name'] . '</a>';
                 $value['parent'] = '<a href="' . $url . $parent->ID . '" target="_blank">' . $parent->last_name . ' ' . $parent->first_name . '</a>';
             } else {
-                $value['student'] =  $value['last_name'] . ' ' . $value['middle_last_name'] . ' ' . $value['name'] . ' ' . $value['middle_name'];
+                $value['student'] = $value['last_name'] . ' ' . $value['middle_last_name'] . ' ' . $value['name'] . ' ' . $value['middle_name'];
                 $value['parent'] = $parent->last_name . ' ' . $parent->first_name;
             }
             $moodleActive = isset($value['moodle_student_id']) ? 'Yes' : 'No';
@@ -1005,329 +1005,282 @@ function get_student_detail($student_id)
     return $data;
 }
 
-function update_status_documents()
-{
+function update_status_documents() {
+    if (!isset($_POST['document_id'], $_POST['status'], $_POST['student_id']) || 
+        empty($_POST['document_id']) || empty($_POST['status']) || empty($_POST['student_id'])) {
+        exit;
+    }
 
-    if (isset($_POST['document_id']) && !empty($_POST['document_id']) && isset($_POST['status']) && !empty($_POST['status']) && isset($_POST['student_id']) && !empty($_POST['student_id'])) {
-
+    try {
         global $wpdb, $current_user;
-        $roles = $current_user->roles;
-        $table_student_documents = $wpdb->prefix . 'student_documents';
-        $student_id = $_POST['student_id'];
-        $status_id = $_POST['status'];
-        $document_id = $_POST['document_id'];
-        $description = (!$_POST['description'] || $_POST['description'] == 'null') ? null : $_POST['description'];
 
-        $student = get_student_detail($_POST['student_id']);
+        $document_id = intval($_POST['document_id']);
+        $status_id = intval($_POST['status']);
+        $student_id = intval($_POST['student_id']);
+        $description = isset($_POST['description']) && $_POST['description'] !== 'null' ? sanitize_text_field($_POST['description']) : null;
+    
+        $student = get_student_detail($student_id);
         $user_student = get_user_by('email', $student->email);
-        $table_users_notices =  $wpdb->prefix.'users_notices';
-        switch ($status_id) {
-            case 3:
-                $description = $description;
-                break;
-            case 5:
-                $description = "Document approved";
-                break;
-            default:
-                $description = "Status of document changed";
-                break;
+        $user_parent = get_user_by('email', $student->partner_id);
+    
+        if (!$user_student) {
+            exit;
         }
+    
+        $table_student_documents = $wpdb->prefix . 'student_documents';
+        $table_users_notices = $wpdb->prefix . 'users_notices';
+    
+        $description = get_status_description($status_id, $description);
+    
         $data = [
             'user_id' => $user_student->ID,
             'message' => $description,
             'importance' => $status_id == 3 ? 3 : 1,
             'type_notice' => 'documents',
         ];
-
+    
         $wpdb->insert($table_users_notices, $data);
-
-        $table_student_documents =  $wpdb->prefix.'student_documents';
-        $wpdb->update($table_student_documents, ['approved_by' => $current_user->ID, 'status' => $status_id, 'updated_at' => date('Y-m-d H:i:s'), 'description' => $description], ['id' => $document_id, 'student_id' => $student_id]);
-
+    
+        $data = [
+            'user_id' => $user_parent->ID,
+            'message' => $description,
+            'importance' => $status_id == 3 ? 3 : 1,
+            'type_notice' => 'documents',
+        ];
+    
+        $wpdb->insert($table_users_notices, $data);
+    
+        $wpdb->update($table_student_documents, [
+            'approved_by' => $current_user->ID,
+            'status' => $status_id,
+            'updated_at' => current_time('mysql'),
+            'description' => $description
+        ], ['id' => $document_id, 'student_id' => $student_id]);
+    
         if ($status_id == 3) {
-            $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
-            $email_rejected_document->trigger($student_id, $document_id);
-
-            $document_loaded = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id={$document_id}");
-            if ($document_loaded->document_id == 'ENROLLMENT') {
-                $table_users_signatures =  $wpdb->prefix.'users_signatures';
-                $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$user_student->ID} AND document_id = 'ENROLLMENT'");
-                $wpdb->delete($table_users_signatures,['id' => $signature->id]);
-    
-                $table_students = $wpdb->prefix . 'students';
-                $student_get = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_students WHERE id = %d", $student_id));
-                $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$student_get->partner_id} AND document_id = 'ENROLLMENT'");
-                $wpdb->delete($table_users_signatures,['id' => $signature->id]);
-            }
-    
-            if ($document_loaded->document_id == 'MISSING DOCUMENT') {
-                $table_users_signatures =  $wpdb->prefix.'users_signatures';
-                $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$user_student->ID}  AND document_id = 'MISSING DOCUMENT'");
-                $wpdb->delete($table_users_signatures,['id' => $signature->id]);
-    
-                $table_students = $wpdb->prefix . 'students';
-                $student_get = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_students WHERE id = %d", $student_id));
-                $signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id={$student_get->partner_id}  AND document_id = 'MISSING DOCUMENT'");
-                $wpdb->delete($table_users_signatures,['id' => $signature->id]);
-            }
+            handle_rejected_document($student_id, $document_id, $user_student->ID);
         }
-
-        // if ($status_id == 5) {
-        //     $email_rejected_document = WC()->mailer()->get_emails()['WC_Approved_Document_Email'];
-        //     $email_rejected_document->trigger($student_id, $document_id);
-        // }
-        /*
-        if($document_id == 'id_student' && $status_id == 5){
-            update_status_student($student_id,2);
-        }
-        */
-
-        $documents = get_documents($student_id);
-
-        $html = "";
-        $solvency_administrative = true;
-
-        foreach ($documents as $document) {
-
-            if ($document->status != 5) {
-                $solvency_administrative = false;
-            }
-
-            if ($document->id == $document_id) {
-                $html .= '<tr id="' . 'tr_document_' . $document->id . '">';
-                $html .= '<td class="column-primary" colspan="3">';
-                $html .= get_name_document($document->document_id);
-                $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
-                $html .= "</td>";
-
-                $html .= '<td colspan="2" id="' . 'td_document_' . $document->document_id . '" data-colname="' . __('Status', 'aes') . '">';
-                $html .= "<b>";
-                $html .= get_status_document($document->status);
-                $html .= "</b>";
-                $html .= "</td>";
-
-                $html .= '<td colspan="7" data-colname="' . __('Actions', 'aes') . '">';
-                $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(". json_encode($document) .")'><button type='button' class='button button-primary-outline other-buttons-document'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'aes') . "</button></a>";
-                if ($document->status > 0) {
-                    $html .= "<a style='margin-right: 3px;' target='_blank' onclick='watchDetails(". json_encode($document) .")'><button type='button' class='button button-primary-outline other-buttons-document'>" . __('View detail', 'aes') . "</button></a>";
-                    $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '"><button type="button" class="button button-primary other-buttons-document">' . __('View documment', 'aes') . '</button></a>';
-
-                    // Revert button
-                    if ($document->status != 1) {
-                        $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="1" class="button change-status button-warning" style="margin-left: 3px; margin-right: 3px;">' . __('Revert', 'aes') . '</button>';
-                    }
-
-                    // Approved button
-                    if ($document->status != 5 && $document->status != 3) {
-                        $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="5" class="button change-status button-success" style="margin-left: 3px; margin-right: 3px;">' . __('Approve', 'aes') . '</button>';
-                    }
-
-                    // Declined button
-                    if ($document->status != 5 && $document->status != 3) {
-                        $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="3" class="button change-status button-danger" style="margin-left: 3px; margin-right: 3px;">' . __('Decline', 'aes') . '</button>';
-                    }
-                }
-                $html .= "</td>";
-                $html .= "</tr>";
-            }
-        }
-
-        if ($solvency_administrative) {
+    
+        $html = generate_documents_html($student_id, $document_id);
+    
+        if (check_solvency_administrative($student_id)) {
             update_status_student($student_id, 3);
         }
+    
+        if (check_access_virtual($student_id)) {
+            handle_virtual_classroom_access($student_id);
+        }
+    
+        echo json_encode(['status' => 'success', 'message' => __('status changed', 'aes'), 'html' => $html]);
+        exit;
+    } catch (\Throwable $th) {
+        echo json_encode(['status' => 'error', 'message' => $th->getMessage(), 'html' => $html]);
+        exit;
+    }
+}
 
-        $table_student_documents = $wpdb->prefix . 'student_documents';
-        $table_student_payment = $wpdb->prefix . 'student_payments';
-        $table_students = $wpdb->prefix . 'students';
-        $access_virtual = true;
-        $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
-        if ($documents_student) {
-            foreach ($documents_student as $document) {
-                if ($document->status != 5) {
-                    $access_virtual = false;
+function get_status_description($status_id, $description) {
+    switch ($status_id) {
+        case 3:
+            return $description;
+        case 5:
+            return "Document approved";
+        default:
+            return "Status of document changed";
+    }
+}
+
+function handle_rejected_document($student_id, $document_id, $user_id) {
+    global $wpdb;
+
+    $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
+    $email_rejected_document->trigger($student_id, $document_id);
+
+    $document_loaded = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}student_documents WHERE id = $document_id");
+    $document_types = ['ENROLLMENT', 'MISSING DOCUMENT'];
+
+    if (in_array($document_loaded->document_id, $document_types)) {
+        $table_users_signatures = $wpdb->prefix . 'users_signatures';
+        $wpdb->delete($table_users_signatures, ['user_id' => $user_id, 'document_id' => $document_loaded->document_id]);
+
+        $student_get = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}students WHERE id = %d", $student_id));
+        $wpdb->delete($table_users_signatures, ['user_id' => $student_get->partner_id, 'document_id' => $document_loaded->document_id]);
+    }
+}
+
+function generate_documents_html($student_id, $document_id) {
+    global $wpdb;
+
+    $documents = get_documents($student_id);
+    $html = "";
+
+    foreach ($documents as $document) {
+        if ($document->id == $document_id) {
+            $html .= '<tr id="tr_document_' . $document->id . '">';
+            $html .= '<td class="column-primary" colspan="3">' . get_name_document($document->document_id) . "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
+            $html .= '<td colspan="2" id="td_document_' . $document->document_id . '" data-colname="' . __('Status', 'aes') . '"><b>' . get_status_document($document->status) . '</b></td>';
+            $html .= '<td colspan="7" data-colname="' . __('Actions', 'aes') . '">';
+            $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(". json_encode($document) .")'><button type='button' class='button button-primary-outline other-buttons-document'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'aes') . "</button></a>";
+
+            if ($document->status > 0) {
+                $html .= "<a style='margin-right: 3px;' target='_blank' onclick='watchDetails(". json_encode($document) .")'><button type='button' class='button button-primary-outline other-buttons-document'>" . __('View detail', 'aes') . "</button></a>";
+                $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '"><button type="button" class="button button-primary other-buttons-document">' . __('View documment', 'aes') . '</button></a>';
+
+                if ($document->status != 1) {
+                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="1" class="button change-status button-warning" style="margin-left: 3px; margin-right: 3px;">' . __('Revert', 'aes') . '</button>';
+                }
+
+                if ($document->status != 5 && $document->status != 3) {
+                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="5" class="button change-status button-success" style="margin-left: 3px; margin-right: 3px;">' . __('Approve', 'aes') . '</button>';
+                }
+
+                if ($document->status != 5 && $document->status != 3) {
+                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="3" class="button change-status button-danger" style="margin-left: 3px; margin-right: 3px;">' . __('Decline', 'aes') . '</button>';
                 }
             }
-
-            // VERIFICAR FEE DE INSCRIPCION
-            $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = " . AES_FEE_INSCRIPTION);
-            // VERIFICAR FEE DE INSCRIPCION
-            //virtual classroom
-            if ($access_virtual && isset($paid)) {
-                $table_name = $wpdb->prefix . 'students'; // assuming the table name is "wp_students"
-                $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
-
-                send_notification_staff('Approved student', 'We inform you that the documents of the student '. $student->name .  ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name .', with the identification ' . $student->id_document . ' have been approved and he already has access to the virtual classroom and the admin. We are waiting for him to be assigned to his corresponding course.');
-                $type_document = array(
-                    'identification_document' => 1,
-                    'passport' => 2,
-                    'ssn' => 4,
-                )[$student->type_document];
-
-                $files_to_send = array();
-
-                $type_document = '';
-                switch ($student->type_document) {
-                    case 'identification_document':
-                        $type_document = 1;
-                        break;
-                    case 'passport':
-                        $type_document = 2;
-                        break;
-                    case 'ssn':
-                        $type_document = 4;
-                        break;
-                }
-
-                $type_document_re = '';
-                if (get_user_meta($student->partner_id, 'type_document', true)) {
-                    switch (get_user_meta($student->partner_id, 'type_document', true)) {
-                        case 'identification_document':
-                            $type_document_re = 1;
-                            break;
-                        case 'passport':
-                            $type_document_re = 2;
-                            break;
-                        case 'ssn':
-                            $type_document_re = 4;
-                            break;
-                    }
-                } else {
-                    $type_document_re = 1;
-                }
-
-
-                $gender = '';
-                switch ($student->gender) {
-                    case 'male':
-                        $gender = 'M';
-                        break;
-                    case 'female':
-                        $gender = 'F';
-                        break;
-                }
-
-
-                $gender_re = '';
-                if (get_user_meta($student->partner_id, 'gender', true)) {
-                    switch (get_user_meta($student->partner_id, 'gender', true)) {
-                        case 'male':
-                            $gender_re = 'M';
-                            break;
-                        case 'female':
-                            $gender_re = 'F';
-                            break;
-                    }
-                } else {
-                    $gender_re = 'M';
-                }
-
-                $grade = '';
-                switch ($student->grade_id) {
-                    case 1:
-                        $grade = 9;
-                        break;
-                    case 2:
-                        $grade = 10;
-                        break;
-                    case 3:
-                        $grade = 11;
-                        break;
-                    case 4:
-                        $grade = 12;
-                        break;
-                }
-                $user_partner = get_user_by('id', $student->partner_id);
-                $fields_to_send = array(
-                    // DATOS DEL ESTUDIANTE
-                    'id_document' => $student->id_document,
-                    'type_document' => $type_document,
-                    'firstname' => $student->name . ' ' . $student->middle_name,
-                    'lastname' => $student->last_name . ' ' . $student->middle_last_name,
-                    'birth_date' => $student->birth_date,
-                    'phone' => $student->phone,
-                    'email' => $student->email,
-                    'etnia' => $student->ethnicity,
-                    'grade' => $grade,
-                    'gender' => $gender,
-                    'cod_period' => $student->academic_period,
-
-                    // PADRE
-                    'id_document_re' => get_user_meta($student->partner_id, 'id_document', true) ? get_user_meta($student->partner_id, 'id_document', true) : '000000',
-                    'type_document_re' => $type_document_re,
-                    'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
-                    'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
-                    'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
-                    'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
-                    'email_re' => $user_partner->user_email,
-                    'gender_re' => $gender_re,
-
-                    'cod_program' => AES_PROGRAM_ID,
-                    'cod_tip' => AES_TYPE_PROGRAM,
-                    'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
-                    'country' => get_user_meta($student->partner_id, 'billing_country', true),
-                    'city' => get_user_meta($student->partner_id, 'billing_city', true),
-                    'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true) ? get_user_meta($student->partner_id, 'billing_postcode', true) : '-',
-                );
-
-                $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
-                $documents_to_send = [];
-                foreach ($all_documents_student as $document) {
-                    if ($document->attachment_id) {
-                        array_push($documents_to_send, $document);
-                    }
-                }
-
-                foreach ($documents_to_send as $key => $doc) {
-                    $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
-                    $attachment_id = $doc->attachment_id;
-                    $attachment_path = get_attached_file($attachment_id);
-                    if ($attachment_path) {
-                        $file_name = basename($attachment_path);
-                        $file_type = mime_content_type($attachment_path);
-
-                        $files_to_send[] = array(
-                            'file' => curl_file_create($attachment_path, $file_type, $file_name),
-                            'id_requisito' => $id_requisito
-                        );
-                    }
-                }
-
-                create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
-
-                update_status_student($student_id, 2);
-
-                create_user_student($student_id);
-
-                $exist = is_search_student_by_email($student_id);
-
-                if (!$exist) {
-                    $user_created_moodle = create_user_moodle($student_id);
-                } else {
-                    $wpdb->update($table_students, ['moodle_student_id' => $exist[0]['id']], ['id' => $student_id]);
-
-                    $is_exist_password = is_password_user_moodle($student_id);
-
-                    if (!$is_exist_password) {
-                        $password = generate_password_user();
-                        $wpdb->update($table_students, ['moodle_password' => $password], ['id' => $student_id]);
-                        change_password_user_moodle($student_id);
-                    }
-                }
-            }
+            $html .= "</td></tr>";
         }
-
-        if (isset($user_created_moodle['exception'])) {
-            $table_student_documents =  $wpdb->prefix.'student_documents';
-            $wpdb->update($table_student_documents, ['approved_by' => $current_user->ID, 'status' => 1, 'updated_at' => date('Y-m-d H:i:s'), 'description' => $description], ['id' => $document_id, 'student_id' => $student_id]);
-
-            echo json_encode(['status' => 'false', 'message' => __($user_created_moodle['message'], 'aes'), 'html' => $html]);
-        } else {
-            echo json_encode(['status' => 'success', 'message' => __('status changed', 'aes'), 'html' => $html]);
-        }
-
     }
 
-    exit;
+    return $html;
+}
+
+function check_solvency_administrative($student_id) {
+    global $wpdb;
+
+    $documents = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}student_documents WHERE student_id = $student_id");
+    foreach ($documents as $document) {
+        if ($document->status != 5) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function check_access_virtual($student_id) {
+    global $wpdb;
+
+    $documents_student = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}student_documents WHERE is_required = 1 AND student_id = $student_id");
+    foreach ($documents_student as $document) {
+        if ($document->status != 5) {
+            return false;
+        }
+    }
+
+    $paid = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}student_payments WHERE student_id = $student_id AND product_id = " . AES_FEE_INSCRIPTION);
+    return isset($paid);
+}
+
+function handle_virtual_classroom_access($student_id) {
+    global $wpdb;
+
+    $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}students WHERE id = %d", $student_id));
+    send_notification_staff('Approved student', 'We inform you that the documents of the student '. $student->name .  ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name .', with the identification ' . $student->id_document . ' have been approved and he already has access to the virtual classroom and the admin. We are waiting for him to be assigned to his corresponding course.');
+
+    $fields_to_send = prepare_fields_to_send($student);
+    $files_to_send = prepare_files_to_send($student_id);
+
+    create_user_laravel(array_merge($fields_to_send, ['files' => $files_to_send]));
+    automatically_enrollment($student_id);
+    update_status_student($student_id, 2);
+    create_user_student($student_id);
+
+    $exist = is_search_student_by_email($student_id);
+    if (!$exist) {
+        $user_created_moodle = create_user_moodle($student_id);
+    } else {
+        $wpdb->update($wpdb->prefix . 'students', ['moodle_student_id' => $exist[0]['id']], ['id' => $student_id]);
+
+        if (!is_password_user_moodle($student_id)) {
+            $password = generate_password_user();
+            $wpdb->update($wpdb->prefix . 'students', ['moodle_password' => $password], ['id' => $student_id]);
+            change_password_user_moodle($student_id);
+        }
+    }
+}
+
+function prepare_fields_to_send($student) {
+    $type_document = [
+        'identification_document' => 1,
+        'passport' => 2,
+        'ssn' => 4,
+    ][$student->type_document] ?? 1;
+
+    $type_document_re = [
+        'identification_document' => 1,
+        'passport' => 2,
+        'ssn' => 4,
+    ][get_user_meta($student->partner_id, 'type_document', true)] ?? 1;
+
+    $gender = [
+        'male' => 'M',
+        'female' => 'F',
+    ][$student->gender] ?? 'M';
+
+    $gender_re = [
+        'male' => 'M',
+        'female' => 'F',
+    ][get_user_meta($student->partner_id, 'gender', true)] ?? 'M';
+
+    $grade = [
+        1 => 9,
+        2 => 10,
+        3 => 11,
+        4 => 12,
+    ][$student->grade_id] ?? 9;
+
+    $user_partner = get_user_by('id', $student->partner_id);
+
+    return [
+        'id_document' => $student->id_document,
+        'type_document' => $type_document,
+        'firstname' => $student->name . ' ' . $student->middle_name,
+        'lastname' => $student->last_name . ' ' . $student->middle_last_name,
+        'birth_date' => $student->birth_date,
+        'phone' => $student->phone,
+        'email' => $student->email,
+        'etnia' => $student->ethnicity,
+        'grade' => $grade,
+        'gender' => $gender,
+        'cod_period' => $student->academic_period,
+        'id_document_re' => get_user_meta($student->partner_id, 'id_document', true) ?: '000000',
+        'type_document_re' => $type_document_re,
+        'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
+        'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
+        'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
+        'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
+        'email_re' => $user_partner->user_email,
+        'gender_re' => $gender_re,
+        'cod_program' => AES_PROGRAM_ID,
+        'cod_tip' => AES_TYPE_PROGRAM,
+        'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
+        'country' => get_user_meta($student->partner_id, 'billing_country', true),
+        'city' => get_user_meta($student->partner_id, 'billing_city', true),
+        'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true) ?: '-',
+    ];
+}
+
+function prepare_files_to_send($student_id) {
+    global $wpdb;
+
+    $all_documents_student = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}student_documents WHERE student_id = $student_id");
+    $files_to_send = [];
+
+    foreach ($all_documents_student as $doc) {
+        if ($doc->attachment_id) {
+            $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
+            $attachment_path = get_attached_file($doc->attachment_id);
+
+            if ($attachment_path) {
+                $files_to_send[] = [
+                    'file' => curl_file_create($attachment_path, mime_content_type($attachment_path), basename($attachment_path)),
+                    'id_requisito' => $id_requisito
+                ];
+            }
+        }
+    }
+
+    return $files_to_send;
 }
 
 add_action('wp_ajax_nopriv_update_status_documents', 'update_status_documents');

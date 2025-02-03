@@ -28,7 +28,10 @@ function add_admin_form_school_subjects_content()
             $hc = $_POST['hc'];
             $moodle_course_id = $_POST['moodle_course_id'];
             $is_elective = $_POST['is_elective'];
+            $is_active = $_POST['is_active'];
             $min_pass = $_POST['min_pass'];
+            $matrix_position = $_POST['matrix_position'];
+            $max_students = $_POST['max_students'];
             $teacher_id = $_POST['teacher_id'];
 
             //update
@@ -39,10 +42,13 @@ function add_admin_form_school_subjects_content()
                     'code_subject' => $code_subject,
                     'description' => $description,
                     'min_pass' => $min_pass,
+                    'matrix_position' => $matrix_position,
+                    'max_students' => $max_students,
                     'hc' => $hc,
                     'moodle_course_id' => $moodle_course_id,
                     'teacher_id' => $teacher_id,
-                    'is_elective' => $is_elective == 'on' ? 1 : 0
+                    'is_elective' => $is_elective == 'on' ? 1 : 0,
+                    'is_active' => $is_active == 'on' ? 1 : 0
                 ], ['id' => $subject_id]);
 
                 setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
@@ -55,17 +61,52 @@ function add_admin_form_school_subjects_content()
                     'code_subject' => $code_subject,
                     'description' => $description,
                     'min_pass' => $min_pass,
+                    'matrix_position' => $matrix_position,
+                    'max_students' => $max_students,
                     'hc' => $hc,
                     'moodle_course_id' => $moodle_course_id,
                     'teacher_id' => $teacher_id,
-                    'is_elective' => $is_elective == 'on' ? 1 : 0
+                    'is_elective' => $is_elective == 'on' ? 1 : 0,
+                    'is_active' => $is_active == 'on' ? 1 : 0
                 ]);
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_school_subjects_content'));
                 exit;
 
             }
-        } else {
+        } else if ($_GET['action'] == 'update_matrices') {
+            global $wpdb;
+            $table_school_subjects = $wpdb->prefix . 'school_subjects';
+            $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
+            $table_school_subject_matrix_elective = $wpdb->prefix . 'school_subject_matrix_elective';
+            
+            // Truncar las tablas antes de hacer los inserts
+            $wpdb->query("TRUNCATE TABLE {$table_school_subject_matrix_regular}");
+            $wpdb->query("TRUNCATE TABLE {$table_school_subject_matrix_elective}");
+            
+            // Obtener los sujetos regulares y electivos
+            $subjects_regular = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1 AND is_elective = 0 ORDER BY matrix_position ASC");
+            $subjects_electives = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1 AND is_elective = 1 ORDER BY matrix_position ASC");
+            
+            // Insertar los sujetos regulares
+            foreach ($subjects_regular as $regular) {
+                $wpdb->insert($table_school_subject_matrix_regular, [
+                    'subject' => $regular->name,
+                    'subject_id' => $regular->id,
+                ]);
+            }
+            
+            // Insertar los sujetos electivos
+            foreach ($subjects_electives as $elective) {
+                $wpdb->insert($table_school_subject_matrix_elective, [
+                    'subject' => $elective->name,
+                    'subject_id' => $elective->id,
+                ]);
+            }
+
+            wp_redirect(admin_url('admin.php?page=add_admin_form_school_subjects_content'));
+            exit;
+        }  else {
             $list_school_subjects = new TT_school_subjects_all_List_Table;
             $list_school_subjects->prepare_items();
             include (plugin_dir_path(__FILE__) . 'templates/list-school-subjects.php');
