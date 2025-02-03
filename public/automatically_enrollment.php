@@ -927,6 +927,19 @@ function send_welcome_subjects($student_id)
     $user_parent = get_user_by('id', $student->partner_id);
     $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
     $email_student->trigger($user_parent, 'Welcome', $text);
+
+    foreach ($filteredArray as $key => $val) {
+        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
+        $subjectIds = array_column($projection_obj, 'code_subject');
+        $indexToEdit = array_search($subject->code_subject, $subjectIds);
+        if ($indexToEdit !== false) {
+            $projection_obj[$indexToEdit]->welcome_email = true;
+        }
+    }
+
+    $wpdb->update($table_student_academic_projection, [
+        'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
+    ], ['id' => $projection->id]);
 }
 
 function fix_projections($student_id)
