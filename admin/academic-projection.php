@@ -124,7 +124,7 @@ function add_admin_form_academic_projection_content()
             global $wpdb;
             $cut = $_GET['cut'];
             $table_students = $wpdb->prefix . 'students';
-            $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE initial_cut = '{$cut}' AND academic_period = '20242025'");
+            $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE initial_cut = '{$cut}' AND academic_period = '20242025' ORDER BY id DESC");
             foreach ($students as $key => $student) {
                 automatically_enrollment($student->id);
             }
@@ -133,7 +133,7 @@ function add_admin_form_academic_projection_content()
         } else if (isset($_GET['action']) && $_GET['action'] == 'send_welcome_subject_email') {
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
-            $students = $wpdb->get_results("SELECT * FROM {$table_students}");
+            $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
             foreach ($students as $key => $student) {
                 send_welcome_subjects($student->id);
             }
@@ -142,7 +142,7 @@ function add_admin_form_academic_projection_content()
         } else if (isset($_GET['action']) && $_GET['action'] == 'fix_projections') {
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
-            $students = $wpdb->get_results("SELECT * FROM {$table_students}");
+            $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
             foreach ($students as $key => $student) {
                 fix_projections($student->id);
             }
