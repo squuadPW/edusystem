@@ -88,7 +88,7 @@
                                             <label><b><?= __('This student has yet to select an elective.', 'aes'); ?></b></label><br>
                                         </div>
                                     </div>
-                                <? } ?>
+                                <?php } ?>
                             </div>
 
                             <div>
