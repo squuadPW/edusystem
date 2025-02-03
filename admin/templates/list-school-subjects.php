@@ -3,9 +3,9 @@
         <div style="text-align:start;">
 			<h1 class="wp-heading-line"><?= __('All School Subjects','aes'); ?></h1>
 		</div>
-		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
+		<!-- <div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 			<a href="<?= admin_url('admin.php?page=add_admin_form_school_subjects_content&action=update_matrices'); ?>" class="button button-outline-primary"><?= __('Update all matrices','aes'); ?></a>
-		</div>
+		</div> -->
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 				<a href="<?= admin_url('admin.php?page=add_admin_form_school_subjects_content&section_tab=add_subject'); ?>" class="button button-outline-primary"><?= __('Add Subject','aes'); ?></a>
 			</div>

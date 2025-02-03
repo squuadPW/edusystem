@@ -1020,6 +1020,8 @@ function create_tables()
     );
   }
 
+  update_matrices();
+
 }
 
 register_activation_hook(__FILE__, 'create_tables');
