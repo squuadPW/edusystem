@@ -713,7 +713,7 @@ function list_report_current_students()
 
     } else {
         $html_not_current .= "<tr>";
-        $html_not_current .= "<td colspan='3' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+        $html_not_current .= "<td style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
         $html_not_current .= "</tr>";
     }
 
