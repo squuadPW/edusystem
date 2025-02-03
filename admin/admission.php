@@ -1021,7 +1021,7 @@ function update_status_documents() {
     
         $student = get_student_detail($student_id);
         $user_student = get_user_by('email', $student->email);
-        $user_parent = get_user_by('email', $student->partner_id);
+        $user_parent = get_user_by('id', $student->partner_id);
     
         if (!$user_student) {
             exit;
