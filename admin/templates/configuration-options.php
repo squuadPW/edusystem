@@ -25,6 +25,7 @@
                 <div class="segment-button" data-option="administration"><?= __('Administration', 'aes'); ?></div>
                 <div class="segment-button" data-option="moodle"><?= __('Moodle', 'aes'); ?></div>
                 <div class="segment-button" data-option="offers"><?= __('Offers', 'aes'); ?></div>
+                <div class="segment-button" data-option="inscriptions"><?= __('Inscriptions', 'aes'); ?></div>
                 <div class="segment-button" data-option="notifications"><?= __('Notifications', 'aes'); ?></div>
             </section>
 
@@ -93,7 +94,21 @@
                     <input class="full-input" type="email" id="email_administration" name="email_administration" value="<?php echo get_option('email_administration') ?>" required>
                   </div>
                 </div>
-                <div class="form-group" style="text-align: center">
+                <div id="inscriptions" style="display: none">
+                  <div class="form-group" style="text-align: center">
+                      <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=clear_electives') ?>"><button type="button" class="btn btn-primary"><?= __('Disable elective selector for all students', 'aes'); ?></button></a>
+                  </div>
+                  <div class="form-group" style="text-align: center">
+                      <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projections') ?>"><button type="button" class="btn btn-primary"><?= __('Generate pending academic projections', 'aes'); ?></button></a>
+                  </div>
+                  <div class="form-group" style="text-align: center">
+                      <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=automatically_enrollment&cut=C') ?>"><button type="button" class="btn btn-primary"><?= __('Enrollment process for students of the C cut - 20242025', 'aes'); ?></button></a>
+                  </div>
+                  <div class="form-group" style="text-align: center">
+                      <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=automatically_enrollment&cut=D') ?>"><button type="button" class="btn btn-primary"><?= __('Enrollment process for students of the D cut - 20242025', 'aes'); ?></button></a>
+                  </div>
+                </div>
+                <div class="form-group" id="save-configuration" style="text-align: center">
                     <button type="submit" class="btn btn-primary"><?= __('Save settings', 'aes'); ?></button>
                 </div>
             </form>

@@ -465,6 +465,7 @@ function load_automatically_enrollment($expected_projection, $student)
             foreach ($expected as $key => $exc) {
                 if ($exc['type'] == 1) {
                     $expected_subject = $matrix_regular[$count_expected_subject];
+                    $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$expected_subject->subject_id}");
                     $inscriptions = $wpdb->get_results(
                         $wpdb->prepare(
                             "SELECT * FROM {$table_student_period_inscriptions} 
@@ -481,12 +482,11 @@ function load_automatically_enrollment($expected_projection, $student)
                     }
 
                     $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
-                    if (count($active_inscriptions) >= 25) {
+                    if (count($active_inscriptions) >= (int)$subject->max_students) {
                         $count_expected_subject++;
                         continue;
                     }
 
-                    $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$expected_subject->subject_id}");
                     $subjectIds = array_column($projection_obj, 'subject_id');
                     $indexToEdit = array_search($subject->id, $subjectIds);
                     if ($indexToEdit !== false) {
@@ -785,4 +785,144 @@ function generate_projection_student($student_id)
         'student_id' => $student_id,
         'projection' => json_encode($projection)
     ]);
+}
+
+function send_welcome_subjects($student_id) {
+    global $wpdb;
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $table_students = $wpdb->prefix . 'students';
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+    $projection = get_projection_details_by_student($student_id);
+    $projection_obj = json_decode($projection->projection);
+
+    $filteredArray = array_filter($projection_obj, function ($item) {
+        return $item->this_cut == true && $item->welcome_email == false;
+    });
+    $filteredArray = array_values($filteredArray);
+
+    $text = '';
+    $text .= '<div>
+        Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' on behalf of the academic team of American Elite School, based in the city of Doral, Florida-USA, we are pleased to announce the beginning of Period C, corresponding to the School Year 2024 – 2025.
+    </div><br>';
+
+    $text .= '<div>';
+    $text .= '<div><strong>START DATE:</strong> Monday, December 2, 2024</div>';
+    $text .= '<div><strong>END DATE:</strong> Sunday, February 2, 2025</div>';
+    $text .= '</div>';
+
+    $text .= '<br>';
+
+    $text .= '<div> Listed below is your <strong>Academic Load</strong> of mandatory courses registered for this Period C: </div>';
+
+    if (count($filteredArray) > 0) {
+        $text .= '<table style="margin: 20px 0px">';
+        $text .= '<thead>
+            <tr>
+                <th style="border: 1px solid gray;">
+                    <strong>CODE</strong>
+                </th>
+                <th style="border: 1px solid gray;">
+                    <strong>SUBJECT</strong>
+                </th>
+                <th style="border: 1px solid gray;">
+                    <strong>START DATE</strong>
+                </th>
+                <th style="border: 1px solid gray;">
+                    <strong>END DATE</strong>
+                </th>
+                <th style="border: 1px solid gray;">
+                    <strong>PERIOD</strong>
+                </th>
+            </tr>
+        </thead>';
+        $text .= '<tbody>';
+        foreach ($filteredArray as $key => $val) {
+            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
+            $text .= '<tr>';
+            $text .= '<td style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $subject->name . '</td>';
+            $text .= '<td style="border: 1px solid gray;">12/02/24</td>';
+            $text .= '<td style="border: 1px solid gray;">02/02/25</td>';
+            $text .= '<td style="border: 1px solid gray;">C</td>';
+            $text .= '</tr>';
+        }
+        $text .= '</tbody>';
+        $text .= '</table>';
+    }
+    $text .= '<br>';
+    $text .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
+
+    $text .= '<ul>';
+    $text .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+    $text .= '<li>Virtual classroom: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+    $text .= '<li>Contact us: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+    $text .= '</ul>';
+
+    $text .= '<div>On behalf of our institution, we thank you for your commitment and wish you a successful academic term.</div>';
+    $text .= '<div style="margin: 10px 0px; border-bottom: 1px solid gray;"></div>';
+    $text .= '<div>
+        Estimado(a) estudiante ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos complace anunciarle el inicio del Periodo C correspondiente al Año Escolar 2024 – 2025.
+    </div><br>';
+
+    $text .= '<div>';
+    $text .= '<div><strong>FECHA DE INICIO:</strong> lunes 2 de diciembre de 2024</div>';
+    $text .= '<div><strong>FECHA DE CULMINACIÓN:</strong> domingo 2 de febrero de 2025</div>';
+    $text .= '</div>';
+
+    $text .= '<br>';
+
+    $text .= '<div> A continuación, detallamos su <strong>Carga Académica</strong> de cursos ofertados para este periodo C: </div>';
+
+    if (count($filteredArray) > 0) {
+        $text .= '<table style="margin: 20px 0px">';
+        $text .= '<thead>
+            <tr>
+                <th style="border: 1px solid gray;">
+                   <strong>CÓDIGO</strong>
+                </th>
+                <th style="border: 1px solid gray;">
+                    <strong>MATERIA</strong>
+                </th>
+                <th style="border: 1px solid gray;">
+                    <strong>FECHA INICIO</strong>
+                </th>
+                <th style="border: 1px solid gray;">
+                    <strong>FECHA FIN</strong>
+                </th>
+                <th style="border: 1px solid gray;">
+                    <strong>PERIODO</strong>
+                </th>
+            </tr>
+        </thead>';
+        $text .= '<tbody>';
+        foreach ($filteredArray as $key => $val) {
+            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
+            $text .= '<tr>';
+            $text .= '<td style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $subject->name . '</td>';
+            $text .= '<td style="border: 1px solid gray;">12/02/24</td>';
+            $text .= '<td style="border: 1px solid gray;">02/02/25</td>';
+            $text .= '<td style="border: 1px solid gray;">C</td>';
+            $text .= '</tr>';
+        }
+        $text .= '</tbody>';
+        $text .= '</table>';
+    }
+    $text .= '<br>';
+    $text .= '<div> Dejamos a su disposición enlaces y contactos de interés: </div>';
+
+    $text .= '<ul>';
+    $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+    $text .= '<li>Aula virtual: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+    $text .= '<li>Contacto: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+    $text .= '</ul>';
+
+    $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un periodo académico lleno de logros satisfactorios.</div>';
+
+    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
+    $email_student->trigger($student, 'Welcome', $text);
+
+    $user_parent = get_user_by('id', $student->partner_id);
+    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+    $email_student->trigger($user_parent, 'Welcome', $text);
 }

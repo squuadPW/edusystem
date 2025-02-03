@@ -388,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             watchButtons();
 
-            if (confirm(`Moodle: ${result.message}`) || !confirm(`Moodle: ${result.message}`)) {
+            if (confirm(`ERROR: ${result.message}`) || !confirm(`ERROR: ${result.message}`)) {
               location.reload();
             }
           }
