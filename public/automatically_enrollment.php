@@ -802,6 +802,13 @@ function send_welcome_subjects($student_id)
     });
     $filteredArray = array_values($filteredArray);
 
+    if (count($filteredArray) > 0) {
+        $filteredArray = array_filter($projection_obj, function ($item) {
+            return $item->this_cut == true;
+        });
+        $filteredArray = array_values($filteredArray);
+    }
+
     if (count($filteredArray) == 0) {
         return;
     }
