@@ -482,7 +482,7 @@ function load_automatically_enrollment($expected_projection, $student)
                     }
 
                     $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
-                    if (count($active_inscriptions) >= (int)$subject->max_students) {
+                    if (count($active_inscriptions) >= (int) $subject->max_students) {
                         $count_expected_subject++;
                         continue;
                     }
@@ -787,7 +787,8 @@ function generate_projection_student($student_id)
     ]);
 }
 
-function send_welcome_subjects($student_id) {
+function send_welcome_subjects($student_id)
+{
     global $wpdb;
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_students = $wpdb->prefix . 'students';
@@ -928,7 +929,8 @@ function send_welcome_subjects($student_id) {
     $email_student->trigger($user_parent, 'Welcome', $text);
 }
 
-function fix_projections($student_id) {
+function fix_projections($student_id)
+{
     global $wpdb;
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
