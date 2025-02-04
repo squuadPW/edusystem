@@ -9,15 +9,6 @@
             <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
-                required>
-            <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
-                value="0">
-            <input class="formdata" autocomplete="off" type="hidden" id="is_scholarship" name="is_scholarship"
-                value="1">
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
             <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
@@ -32,6 +23,15 @@
                 oninput="sendAjaxIdDocument()" required>
             <span id="exisstudentid"
                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
+            <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
+                required>
+            <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
+                value="0">
+            <input class="formdata" autocomplete="off" type="hidden" id="is_scholarship" name="is_scholarship"
+                value="1">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>

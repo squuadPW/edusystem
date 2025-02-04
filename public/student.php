@@ -112,7 +112,7 @@ function save_student()
                     setcookie('gender_parent', $gender, time() + 864000, '/');
                 }
 
-                // redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                // redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship ? $id_document : false);
                 wp_redirect(home_url('/select-payment'));
                 break;
 
@@ -287,7 +287,25 @@ function redirect_to_checkout($program, $grade, $from_webinar = false, $is_schol
         }
 
     } else if ($is_scholarship) {
-        $woocommerce->cart->apply_coupon('Honor Excellent AES');
+        global $wpdb;
+        $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
+        $pre_scholarship = $wpdb->get_row("SELECT * FROM {$table_pre_scholarship} WHERE document_id = {$is_scholarship}");
+        if ($pre_scholarship) {
+            switch ($pre_scholarship->scholarship_type) {
+                case 'jgga':
+                    $woocommerce->cart->apply_coupon('JGGA');
+                    break;
+                case 'honnor':
+                    $woocommerce->cart->apply_coupon('Honor Excellent AES');
+                    break;
+                default:
+                    $woocommerce->cart->apply_coupon('Honor Excellent AES');
+                    break;
+            }
+        } else {
+            $woocommerce->cart->apply_coupon('Honor Excellent AES');
+        }
+
         setcookie('is_scholarship', 1, time() + 3600, '/');
     } else if ($from_webinar) {
         $woocommerce->cart->apply_coupon('100% Registration fee');

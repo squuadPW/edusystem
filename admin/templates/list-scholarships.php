@@ -12,6 +12,9 @@
 				<h1 class="wp-heading-line"><?= __('All Scholarships','aes'); ?></h1>
 			<?php endif; ?>
 		</div>
+		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
+			<button class="button button-outline-primary" id="pre-scholarship"><?= __('Add pre-scholarship','aes'); ?></button>
+		</div>
 		<form action="" id="post-filter" method="post">
 			<p class="search-box">
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','aes').':'; ?></label>
@@ -22,4 +25,36 @@
 			<?php $list_scholarships->display() ?>
 		</form>  
 	</div>
+</div>
+
+<div id='pre-scholarship-modal' class='modal' style='display:none'>
+    <form id="pre-scholarship-form" method="post" action="<?= admin_url('admin.php?page=add_admin_form_scholarships_content&action=pre_scholarship'); ?>">
+        <div class='modal-content' style="width: 70%;">
+            <div class="modal-header">
+            <h3 style="font-size:20px;"><?= __('Pre-scholarship info') ?></h3>
+                <span id="pre-scholarship-exit-icon" class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+            </div>
+            <div class="modal-body" style="padding:10px;">
+				<div class="form-group">
+					<label for="document_id">ID Document</label><br>
+					<input type="text" name="document_id" required>
+				</div>
+				<div class="form-group">
+					<label for="name">Name</label><br>
+					<input type="text" name="name" required>
+				</div>
+				<div class="form-group">
+					<label for="scholarship_type">Scholarship type</label><br>
+					<select name="scholarship_type" required>
+						<option value="jgga" selected>JGGA</option>
+						<option value="honnor">Honnor excellent AES</option>
+					</select>
+				</div>
+            </div>
+            <div class="modal-footer">
+                <button id="pre-scholarship-button" type="submit" class="button button-outline-primary modal-close"><?= __('Save','aes'); ?></button>
+                <button id="pre-scholarship-exit-button" type="button" class="button button-danger modal-close"><?= __('Exit','aes'); ?></button>
+            </div>
+        </div>
+    </form>
 </div>

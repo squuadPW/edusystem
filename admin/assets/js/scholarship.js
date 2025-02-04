@@ -17,6 +17,24 @@ document.addEventListener('DOMContentLoaded',function(){
         });
     }
 
+    pre_scholarship = document.getElementById('pre-scholarship');
+    if(pre_scholarship){
+        pre_scholarship.addEventListener('click',(e) => {
+            document.getElementById('pre-scholarship-modal').style.display = "block";
+        });
+        
+        var modalClosePreScholarship = document.querySelectorAll('#pre-scholarship-exit-icon, #pre-scholarship-exit-button');
+        if (modalClosePreScholarship) {
+            modalClosePreScholarship.forEach(function(element) {
+            element.addEventListener('click', function() {
+                document.getElementById('pre-scholarship-form').reset();
+                document.getElementById('pre-scholarship-modal').style.display = 'none';
+            });
+            });
+        }
+
+    }
+
     document.querySelectorAll('.modal-close').forEach((close) => {
         close.addEventListener('click',(e) => {
             document.getElementById('modalStatusScholarship').style.display = "none";
