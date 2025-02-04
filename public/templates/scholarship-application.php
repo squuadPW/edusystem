@@ -9,6 +9,13 @@
             <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="birth_date"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
+            <input class="formdata capitalize" autocomplete="off" type="text" id="id_document" name="id_document"
+                oninput="sendAjaxIdDocument()" required>
+            <span id="exisstudentid"
+                style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
                 required>
@@ -25,13 +32,6 @@
                 <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
                 <option value="ssn"><?= __('SSN', 'aes'); ?></option>
             </select>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="birth_date"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata capitalize" autocomplete="off" type="text" id="id_document" name="id_document"
-                oninput="sendAjaxIdDocument()" required>
-            <span id="exisstudentid"
-                style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
