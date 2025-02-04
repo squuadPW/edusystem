@@ -815,19 +815,54 @@ function send_welcome_subjects($student_id)
         return;
     }
 
+    $text = template_welcome_subjects($filteredArray, $student);
+
+    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
+    $email_student->trigger($student, 'Welcome', $text);
+
+    $user_parent = get_user_by('id', $student->partner_id);
+    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+    $email_student->trigger($user_parent, 'Welcome', $text);
+
+    foreach ($filteredArray as $key => $val) {
+        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
+        $subjectIds = array_column($projection_obj, 'code_subject');
+        $indexToEdit = array_search($subject->code_subject, $subjectIds);
+        if ($indexToEdit !== false) {
+            $projection_obj[$indexToEdit]->welcome_email = true;
+        }
+    }
+
+    $wpdb->update($table_student_academic_projection, [
+        'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
+    ], ['id' => $projection->id]);
+}
+
+function template_welcome_subjects($filteredArray, $student) {
+    global $wpdb;
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+    $load = load_current_cut_enrollment();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+    $period_cut = $wpdb->get_row("SELECT * FROM {$table_academic_periods_cut} WHERE code = '{$academic_period}' && cut = '{$cut}'");
+    $date_start = DateTime::createFromFormat('Y-m-d', $period_cut->start_date);
+    $date_end = DateTime::createFromFormat('Y-m-d', $period_cut->end_date);
+    $start_date = $date_start->format('l, F j, Y');
+    $end_date = $date_end->format('l, F j, Y');    
     $text = '';
     $text .= '<div>
-        Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' on behalf of the academic team of American Elite School, based in the city of Doral, Florida-USA, we are pleased to announce the beginning of Period D, corresponding to the School Year 2024 – 2025.
+        Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' on behalf of the academic team of American Elite School, based in the city of Doral, Florida-USA, we are pleased to announce the beginning of Period ' . $cut . ', corresponding to the School Year ' . $academic_period . '.
     </div><br>';
 
     $text .= '<div>';
-    $text .= '<div><strong>START DATE:</strong> Monday, February 10, 2025</div>';
-    $text .= '<div><strong>END DATE:</strong> Sunday, April 6, 2025</div>';
+    $text .= '<div><strong>START DATE:</strong> ' . $start_date . ' </div>';
+    $text .= '<div><strong>END DATE:</strong> ' . $end_date . ' </div>';
     $text .= '</div>';
 
     $text .= '<br>';
 
-    $text .= '<div> Listed below is your <strong>Academic Load</strong> of mandatory courses registered for this Period C: </div>';
+    $text .= '<div> Listed below is your <strong>Academic Load</strong> of mandatory courses registered for this Period ' . $cut . ': </div>';
 
     if (count($filteredArray) > 0) {
         $text .= '<table style="margin: 20px 0px">';
@@ -856,9 +891,9 @@ function send_welcome_subjects($student_id)
             $text .= '<tr>';
             $text .= '<td style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
             $text .= '<td style="border: 1px solid gray;">' . $subject->name . '</td>';
-            $text .= '<td style="border: 1px solid gray;">12/02/24</td>';
-            $text .= '<td style="border: 1px solid gray;">02/02/25</td>';
-            $text .= '<td style="border: 1px solid gray;">C</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
             $text .= '</tr>';
         }
         $text .= '</tbody>';
@@ -876,17 +911,17 @@ function send_welcome_subjects($student_id)
     $text .= '<div>On behalf of our institution, we thank you for your commitment and wish you a successful academic term.</div>';
     $text .= '<div style="margin: 10px 0px; border-bottom: 1px solid gray;"></div>';
     $text .= '<div>
-        Estimado(a) estudiante ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos complace anunciarle el inicio del Periodo C correspondiente al Año Escolar 2024 – 2025.
+        Estimado(a) estudiante ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos complace anunciarle el inicio del Periodo ' . $cut . ' correspondiente al Año Escolar ' . $academic_period . '.
     </div><br>';
 
     $text .= '<div>';
-    $text .= '<div><strong>FECHA DE INICIO:</strong> lunes 10 de febrero de 2025</div>';
-    $text .= '<div><strong>FECHA DE CULMINACIÓN:</strong> domingo 6 de abril de 2025</div>';
+    $text .= '<div><strong>FECHA DE INICIO:</strong> ' . translateDateToSpanish(dateString: $start_date) . ' </div>';
+    $text .= '<div><strong>FECHA DE CULMINACIÓN:</strong> ' . translateDateToSpanish($end_date) . ' </div>';
     $text .= '</div>';
 
     $text .= '<br>';
 
-    $text .= '<div> A continuación, detallamos su <strong>Carga Académica</strong> de cursos ofertados para este periodo D: </div>';
+    $text .= '<div> A continuación, detallamos su <strong>Carga Académica</strong> de cursos ofertados para este periodo ' . $cut . ': </div>';
 
     if (count($filteredArray) > 0) {
         $text .= '<table style="margin: 20px 0px">';
@@ -915,9 +950,9 @@ function send_welcome_subjects($student_id)
             $text .= '<tr>';
             $text .= '<td style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
             $text .= '<td style="border: 1px solid gray;">' . $subject->name . '</td>';
-            $text .= '<td style="border: 1px solid gray;">12/02/24</td>';
-            $text .= '<td style="border: 1px solid gray;">02/02/25</td>';
-            $text .= '<td style="border: 1px solid gray;">C</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
             $text .= '</tr>';
         }
         $text .= '</tbody>';
@@ -933,26 +968,41 @@ function send_welcome_subjects($student_id)
     $text .= '</ul>';
 
     $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un periodo académico lleno de logros satisfactorios.</div>';
+    return $text;
+}
 
-    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
-    $email_student->trigger($student, 'Welcome', $text);
+// Función para traducir días y meses
+function translateDateToSpanish($dateString) {
+    $days = [
+        'Monday' => 'Lunes',
+        'Tuesday' => 'Martes',
+        'Wednesday' => 'Miércoles',
+        'Thursday' => 'Jueves',
+        'Friday' => 'Viernes',
+        'Saturday' => 'Sábado',
+        'Sunday' => 'Domingo'
+    ];
 
-    $user_parent = get_user_by('id', $student->partner_id);
-    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
-    $email_student->trigger($user_parent, 'Welcome', $text);
+    $months = [
+        'January' => 'Enero',
+        'February' => 'Febrero',
+        'March' => 'Marzo',
+        'April' => 'Abril',
+        'May' => 'Mayo',
+        'June' => 'Junio',
+        'July' => 'Julio',
+        'August' => 'Agosto',
+        'September' => 'Septiembre',
+        'October' => 'Octubre',
+        'November' => 'Noviembre',
+        'December' => 'Diciembre'
+    ];
 
-    foreach ($filteredArray as $key => $val) {
-        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
-        $subjectIds = array_column($projection_obj, 'code_subject');
-        $indexToEdit = array_search($subject->code_subject, $subjectIds);
-        if ($indexToEdit !== false) {
-            $projection_obj[$indexToEdit]->welcome_email = true;
-        }
-    }
+    // Reemplazar días y meses en el string
+    $dateString = str_replace(array_keys($days), array_values($days), $dateString);
+    $dateString = str_replace(array_keys($months), array_values($months), $dateString);
 
-    $wpdb->update($table_student_academic_projection, [
-        'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
-    ], ['id' => $projection->id]);
+    return $dateString;
 }
 
 function fix_projections($student_id)
