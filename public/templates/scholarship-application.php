@@ -9,6 +9,15 @@
             <div class="subtitle text-align-center"><?= __('Student details', 'aes'); ?></div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
+            <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
+                <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                <option value="passport"><?= __('Passport', 'aes'); ?></option>
+                <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
+                <option value="ssn"><?= __('SSN', 'aes'); ?></option>
+            </select>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" autocomplete="off" type="text" id="id_document" name="id_document"
                 oninput="sendAjaxIdDocument()" required>
@@ -23,15 +32,6 @@
                 value="0">
             <input class="formdata" autocomplete="off" type="hidden" id="is_scholarship" name="is_scholarship"
                 value="1">
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
-            <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
-                <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
-                <option value="passport"><?= __('Passport', 'aes'); ?></option>
-                <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
-                <option value="ssn"><?= __('SSN', 'aes'); ?></option>
-            </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
