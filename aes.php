@@ -3,7 +3,7 @@
 Plugin Name: Squuad for educational system
 Plugin URI: https://online.american-elite.us/wp-admin/plugins.php
 Description: The WordPress plugin for educational system is a customized tool that offers a range of functionalities for the proper functioning of the institute website
-Version: 1.3.80
+Version: 1.3.81
 Author: Squuad
 Author URI: https://online.american-elite.us/wp-admin/plugins.php
 License:      GPL2
@@ -1026,6 +1026,7 @@ function create_tables()
     dbDelta(
       "CREATE TABLE " . $table_pre_scholarship . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
+        document_type TEXT NOT NULL,
         document_id TEXT NOT NULL,
         name TEXT NOT NULL,
         scholarship_type TEXT NOT NULL,

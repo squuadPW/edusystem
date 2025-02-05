@@ -10,7 +10,7 @@
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
-            <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument()" required>
+            <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument(1); checkScholarship(1)" required>
                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                 <option value="passport"><?= __('Passport', 'aes'); ?></option>
                 <option value="identification_document"><?= __('Identification Document', 'aes'); ?></option>
@@ -20,9 +20,11 @@
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" autocomplete="off" type="text" id="id_document" name="id_document"
-                oninput="sendAjaxIdDocument()" required>
+                oninput="sendAjaxIdDocument(1); checkScholarship(1)" required>
             <span id="exisstudentid"
                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'aes'); ?></span>
+            <span id="scholarship_assigned"
+                style="font-style: italic; color: gray; font-size: 12px; display: none"></span>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
