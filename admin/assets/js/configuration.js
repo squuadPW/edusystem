@@ -33,9 +33,9 @@ segmentButtons.forEach((button) => {
             saveButtonConfiguration.style.display = "block";
 
             // form notifications
-            document.querySelector('input[name="email_coordination"]').required = false;
-            document.querySelector('input[name="email_academic_management"]').required = false;
-            document.querySelector('input[name="email_manager"]').required = false;
+            // document.querySelector('input[name="email_coordination"]').required = false;
+            // document.querySelector('input[name="email_academic_management"]').required = false;
+            // document.querySelector('input[name="email_manager"]').required = false;
 
             // form administration
             document.querySelector('input[name="payment_due"]').required = false;
@@ -71,9 +71,9 @@ segmentButtons.forEach((button) => {
             saveButtonConfiguration.style.display = "block";
 
             // form notifications
-            document.querySelector('input[name="email_coordination"]').required = false;
-            document.querySelector('input[name="email_academic_management"]').required = false;
-            document.querySelector('input[name="email_manager"]').required = false;
+            // document.querySelector('input[name="email_coordination"]').required = false;
+            // document.querySelector('input[name="email_academic_management"]').required = false;
+            // document.querySelector('input[name="email_manager"]').required = false;
 
             // form administration
             document.querySelector('input[name="payment_due"]').required = true;
@@ -109,9 +109,9 @@ segmentButtons.forEach((button) => {
             saveButtonConfiguration.style.display = "block";
 
             // form notifications
-            document.querySelector('input[name="email_coordination"]').required = false;
-            document.querySelector('input[name="email_academic_management"]').required = false;
-            document.querySelector('input[name="email_manager"]').required = false;
+            // document.querySelector('input[name="email_coordination"]').required = false;
+            // document.querySelector('input[name="email_academic_management"]').required = false;
+            // document.querySelector('input[name="email_manager"]').required = false;
 
             // form administration
             document.querySelector('input[name="payment_due"]').required = false;
@@ -147,9 +147,9 @@ segmentButtons.forEach((button) => {
             saveButtonConfiguration.style.display = "block";
 
             // form notifications
-            document.querySelector('input[name="email_coordination"]').required = false;
-            document.querySelector('input[name="email_academic_management"]').required = false;
-            document.querySelector('input[name="email_manager"]').required = false;
+            // document.querySelector('input[name="email_coordination"]').required = false;
+            // document.querySelector('input[name="email_academic_management"]').required = false;
+            // document.querySelector('input[name="email_manager"]').required = false;
 
             // form administration
             document.querySelector('input[name="payment_due"]').required = false;
@@ -185,9 +185,9 @@ segmentButtons.forEach((button) => {
             saveButtonConfiguration.style.display = "none";
 
             // form notifications
-            document.querySelector('input[name="email_coordination"]').required = false;
-            document.querySelector('input[name="email_academic_management"]').required = false;
-            document.querySelector('input[name="email_manager"]').required = false;
+            // document.querySelector('input[name="email_coordination"]').required = false;
+            // document.querySelector('input[name="email_academic_management"]').required = false;
+            // document.querySelector('input[name="email_manager"]').required = false;
 
             // form administration
             document.querySelector('input[name="payment_due"]').required = false;
@@ -223,9 +223,9 @@ segmentButtons.forEach((button) => {
             saveButtonConfiguration.style.display = "block";
 
             // form notifications
-            document.querySelector('input[name="email_coordination"]').required = true;
-            document.querySelector('input[name="email_academic_management"]').required = true;
-            document.querySelector('input[name="email_manager"]').required = true;
+            // document.querySelector('input[name="email_coordination"]').required = true;
+            // document.querySelector('input[name="email_academic_management"]').required = true;
+            // document.querySelector('input[name="email_manager"]').required = true;
 
             // form administration
             document.querySelector('input[name="payment_due"]').required = false;

@@ -79,19 +79,19 @@
                 <div id="by_notifications" style="display: none">
                   <div class="form-group" style="padding: 0px 10px 10px 10px;">
                     <label for="email_coordination"><?= __('Email academic coordination and admission'); ?></label> <br>
-                    <input class="full-input" type="email" id="email_coordination" name="email_coordination" value="<?php echo get_option('email_coordination') ?>" required>
+                    <input class="full-input" type="email" id="email_coordination" name="email_coordination" value="<?php echo get_option('email_coordination') ?>">
                   </div>
                   <div class="form-group" style="padding: 0px 10px 10px 10px;">
                     <label for="email_academic_management"><?= __('Email academic management'); ?></label> <br>
-                    <input class="full-input" type="email" id="email_academic_management" name="email_academic_management" value="<?php echo get_option('email_academic_management') ?>" required>
+                    <input class="full-input" type="email" id="email_academic_management" name="email_academic_management" value="<?php echo get_option('email_academic_management') ?>">
                   </div>
                   <div class="form-group" style="padding: 0px 10px 10px 10px;">
                     <label for="email_manager"><?= __('Email national and international manager'); ?></label> <br>
-                    <input class="full-input" type="email" id="email_manager" name="email_manager" value="<?php echo get_option('email_manager') ?>" required>
+                    <input class="full-input" type="email" id="email_manager" name="email_manager" value="<?php echo get_option('email_manager') ?>">
                   </div>
                   <div class="form-group" style="padding: 0px 10px 10px 10px;">
                     <label for="email_administration"><?= __('Email administration'); ?></label> <br>
-                    <input class="full-input" type="email" id="email_administration" name="email_administration" value="<?php echo get_option('email_administration') ?>" required>
+                    <input class="full-input" type="email" id="email_administration" name="email_administration" value="<?php echo get_option('email_administration') ?>">
                   </div>
                 </div>
                 <div id="inscriptions" style="display: none">
