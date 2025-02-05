@@ -1615,6 +1615,26 @@ function exist_user_id()
     }
 }
 
+add_action('wp_ajax_nopriv_check_scholarship', 'check_scholarship');
+add_action('wp_ajax_check_scholarship', 'check_scholarship');
+function check_scholarship()
+{
+    global $wpdb;
+    $id = $_POST['option'];
+    $type = $_POST['type'];
+    $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
+
+    $pre_scholarship = $wpdb->get_row("SELECT * FROM {$table_pre_scholarship} WHERE document_type = '{$type}' AND document_id = '{$id}'");
+    if ($pre_scholarship) {
+        $scholarship = get_scholarship_details($pre_scholarship->scholarship_type);
+        echo $scholarship->name;
+        exit;
+    } else {
+        echo 0;
+        exit;
+    }
+}
+
 add_action('wp_ajax_nopriv_student_unsubscribe', 'student_unsubscribe_callback');
 add_action('wp_ajax_student_unsubscribe', 'student_unsubscribe_callback');
 function student_unsubscribe_callback()

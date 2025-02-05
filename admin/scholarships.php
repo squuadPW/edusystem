@@ -190,23 +190,29 @@ function add_admin_form_scholarships_content()
             
             // Sanitizar y validar los datos de entrada
             $document_id = sanitize_text_field($_POST['document_id']);
+            $document_type = sanitize_text_field($_POST['document_type']);
             $name = sanitize_text_field($_POST['name']);
             $scholarship_type = sanitize_text_field($_POST['scholarship_type']);
             
-            // 1. Verificar si existen registros con el mismo document_id
+            // 1. Verificar si existen registros con el mismo document_id y document_type
             $existing_records = $wpdb->get_var(
                 $wpdb->prepare(
-                    "SELECT COUNT(*) FROM $table_pre_scholarship WHERE document_id = %s",
-                    $document_id
+                    "SELECT COUNT(*) FROM $table_pre_scholarship 
+                    WHERE document_id = %s AND document_type = %s",
+                    $document_id,
+                    $document_type
                 )
             );
-            
-            // 2. Eliminar todos los registros existentes si se encontraron
+
+            // 2. Eliminar registros existentes que coincidan en ambos campos
             if ($existing_records > 0) {
                 $wpdb->delete(
                     $table_pre_scholarship,
-                    array('document_id' => $document_id),
-                    array('%s') // Formato del dato (string)
+                    array(
+                        'document_id' => $document_id,
+                        'document_type' => $document_type // Campo añadido
+                    ),
+                    array('%s', '%s') // Formatos para ambos valores (string)
                 );
             }
             
@@ -216,6 +222,7 @@ function add_admin_form_scholarships_content()
                 array(
                     'name' => $name,
                     'document_id' => $document_id,
+                    'document_type' => $document_type,
                     'scholarship_type' => $scholarship_type
                 ),
                 array('%s', '%s', '%s') // Formatos de los datos (todos strings)

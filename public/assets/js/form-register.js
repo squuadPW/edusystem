@@ -307,6 +307,23 @@ function checkEmails() {
   }
 }
 
+function checkScholarship(scholarship = 0) {
+  if (timer) {
+    clearTimeout(timer);
+  }
+  timer = setTimeout(() => {
+    if (idDocument.value && typeDocument.value) {
+      sendAjax(
+        "action=check_scholarship",
+        idDocument.value,
+        1,
+        typeDocument.value,
+        scholarship
+      );
+    }
+  }, 1000);
+}
+
 function sendAjaxIdDocument(scholarship = 0) {
   if (timer) {
     clearTimeout(timer);
@@ -459,6 +476,15 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
         } else {
           existStudentEmail.style.display = "block";
           buttonSave.disabled = true;
+        }
+      } else if (action === "action=check_scholarship") {
+        document.getElementById('scholarship_assigned').style.display = "block";
+        if (XHR.response === "0") {
+          document.getElementById('scholarship_assigned').innerText = `You do not have any scholarship assigned`;
+          document.getElementById('scholarship_assigned').style.color = "gray";
+        } else {
+          document.getElementById('scholarship_assigned').innerHTML = `We have found that you have the following scholarship assigned to you: <strong>${XHR.response}</strong>`;
+          document.getElementById('scholarship_assigned').style.color = "green";
         }
       }
     }

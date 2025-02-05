@@ -1026,6 +1026,7 @@ function create_tables()
     dbDelta(
       "CREATE TABLE " . $table_pre_scholarship . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
+        document_type TEXT NOT NULL,
         document_id TEXT NOT NULL,
         name TEXT NOT NULL,
         scholarship_type TEXT NOT NULL,
