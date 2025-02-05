@@ -289,16 +289,12 @@ function redirect_to_checkout($program, $grade, $from_webinar = false, $is_schol
         $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
         $pre_scholarship = $wpdb->get_row("SELECT * FROM {$table_pre_scholarship} WHERE document_id = {$is_scholarship}");
         if ($pre_scholarship) {
-            switch ($pre_scholarship->scholarship_type) {
-                case 'jgga':
-                    $woocommerce->cart->apply_coupon('JGGA');
-                    break;
-                case 'honnor':
-                    $woocommerce->cart->apply_coupon('Honor Excellent AES');
-                    break;
-                default:
-                    $woocommerce->cart->apply_coupon('Honor Excellent AES');
-                    break;
+            $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
+            $asigned_scholarship = $wpdb->get_row("SELECT * FROM {$table_scholarships_availables} WHERE id = {$pre_scholarship->scholarship_type}");
+
+            $coupons = json_decode($asigned_scholarship->coupons);
+            foreach ($coupons as $key => $coupon) {
+                $woocommerce->cart->apply_coupon($coupon);
             }
         } else {
             $woocommerce->cart->apply_coupon('Honor Excellent AES');

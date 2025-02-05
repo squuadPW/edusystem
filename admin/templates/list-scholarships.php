@@ -37,17 +37,18 @@
             <div class="modal-body" style="padding:10px;">
 				<div class="form-group">
 					<label for="document_id">ID Document</label><br>
-					<input type="text" name="document_id" required>
+					<input type="text" name="document_id" style="width: 250px" required>
 				</div>
 				<div class="form-group">
 					<label for="name">Name</label><br>
-					<input type="text" name="name" required>
+					<input type="text" name="name" style="width: 250px" required>
 				</div>
 				<div class="form-group">
 					<label for="scholarship_type">Scholarship type</label><br>
-					<select name="scholarship_type" required>
-						<option value="jgga" selected>JGGA</option>
-						<option value="honnor">Honnor excellent AES</option>
+					<select name="scholarship_type" style="width: 250px" required>
+						<?php foreach ($scholarships_availables as $key => $available) { ?>
+							<option value="<?= $available->id ?>" selected><?= $available->name ?></option>
+						<?php } ?>
 					</select>
 				</div>
             </div>
