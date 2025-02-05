@@ -143,23 +143,28 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   const fileInputs = document.querySelectorAll(".custom-file-input");
   const fileLabels = document.querySelectorAll(".custom-file-label");
-  
+
   fileInputs.forEach((fileInput, index) => {
     fileInput.addEventListener("change", () => {
       // Obtener los tipos permitidos desde el atributo data-fileallowed
-      const allowedExtensions = fileInput.getAttribute("data-fileallowed").split(",").map(ext => ext.trim());
-      
+      const allowedExtensions = fileInput
+        .getAttribute("data-fileallowed")
+        .split(",")
+        .map((ext) => ext.trim());
+
       // Mapa de extensiones a tipos MIME
       const extensionToMime = {
         ".pdf": "application/pdf",
         ".jpeg": "image/jpeg",
         ".jpg": "image/jpeg",
-        ".png": "image/png"
+        ".png": "image/png",
       };
-  
+
       // Crear un array de tipos MIME permitidos
-      const allowedTypes = allowedExtensions.map(ext => extensionToMime[ext]).filter(Boolean);
-  
+      const allowedTypes = allowedExtensions
+        .map((ext) => extensionToMime[ext])
+        .filter(Boolean);
+
       if (!allowedTypes.includes(fileInput.files[0].type)) {
         alert("Only allowed file types: " + allowedExtensions.join(", "));
         fileInput.value = "";
@@ -227,7 +232,9 @@ let emailPartnerInput = form?.querySelector('input[name="email_partner"]');
 let idDocument = form?.querySelector('input[name="id_document"]');
 let idDocumentParent = form?.querySelector('input[name="id_document_parent"]');
 let typeDocument = form?.querySelector('select[name="document_type"]');
-let typeDocumentParent = form?.querySelector('select[name="parent_document_type"]');
+let typeDocumentParent = form?.querySelector(
+  'select[name="parent_document_type"]'
+);
 let dont_allow_adult = document.getElementById("dont_allow_adult");
 let dontBeAdult = document.querySelector("#dontBeAdult");
 
@@ -235,21 +242,29 @@ emailStudentInput?.addEventListener("input", checkEmails);
 emailPartnerInput?.addEventListener("input", checkEmails);
 
 function validateIDs(validating = true) {
-  if (typeDocument.value && typeDocumentParent.value && idDocument.value && idDocumentParent.value) {
-    if ((typeDocument.value != typeDocumentParent.value) || (idDocument.value != idDocumentParent.value)) {
-      let samestudentsids = document.querySelectorAll('.sameids');
-      samestudentsids.forEach(element => {
-        element.style.display = 'none';
+  if (
+    typeDocument.value &&
+    typeDocumentParent.value &&
+    idDocument.value &&
+    idDocumentParent.value
+  ) {
+    if (
+      typeDocument.value != typeDocumentParent.value ||
+      idDocument.value != idDocumentParent.value
+    ) {
+      let samestudentsids = document.querySelectorAll(".sameids");
+      samestudentsids.forEach((element) => {
+        element.style.display = "none";
       });
       if (!validating) {
         buttonSave.disabled = false;
       }
       return true;
     }
-  
-    let samestudentsids = document.querySelectorAll('.sameids');
-    samestudentsids.forEach(element => {
-      element.style.display = 'block';
+
+    let samestudentsids = document.querySelectorAll(".sameids");
+    samestudentsids.forEach((element) => {
+      element.style.display = "block";
     });
     if (!validating) {
       buttonSave.disabled = true;
@@ -322,6 +337,23 @@ function checkScholarship(scholarship = 0) {
       );
     }
   }, 1000);
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get("id");
+const type = urlParams.get("type");
+
+if (id && type) {
+  const typeSelect = document.querySelector("select[name=document_type]");
+  const idInput = document.querySelector("input[name=id_document]");
+  
+  // Asignar valores
+  typeSelect.value = type;
+  idInput.value = id;
+  
+  // Disparar eventos input manualmente
+  // typeSelect.dispatchEvent(new Event('input'));
+  idInput.dispatchEvent(new Event('input'));
 }
 
 function sendAjaxIdDocument(scholarship = 0) {
@@ -478,73 +510,25 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
           buttonSave.disabled = true;
         }
       } else if (action === "action=check_scholarship") {
-        document.getElementById('scholarship_assigned').style.display = "block";
+        document.getElementById("scholarship_assigned").style.display = "block";
         if (XHR.response === "0") {
-          document.getElementById('scholarship_assigned').innerText = `You do not have any scholarship assigned`;
-          document.getElementById('scholarship_assigned').style.color = "gray";
+          document.getElementById(
+            "scholarship_assigned"
+          ).innerText = `No scholarship assigned or already signed`;
+          document.getElementById("scholarship_assigned").style.color = "gray";
 
-          document.querySelector('input[name=birth_date_student]').disabled = true;
-          document.querySelector('input[name=name_student]').disabled = true;
-          document.querySelector('input[name=middle_name_student]').disabled = true;
-          document.querySelector('input[name=lastname_student]').disabled = true;
-          document.querySelector('input[name=middle_last_name_student]').disabled = true;
-          document.querySelector('input[name=number_phone]').disabled = true;
-          document.querySelector('input[name=email_student]').disabled = true;
-          document.querySelector('select[name=gender]').disabled = true;
-          document.querySelector('select[name=etnia]').disabled = true;
-          document.querySelector('input[name=birth_date_parent]').disabled = true;
-          document.querySelector('select[name=parent_document_type]').disabled = true;
-          document.querySelector('input[name=id_document_parent]').disabled = true;
-          document.querySelector('input[name=agent_name]').disabled = true;
-          document.querySelector('input[name=agent_last_name]').disabled = true;
-          document.querySelector('input[name=number_partner]').disabled = true;
-          document.querySelector('select[name=gender_parent]').disabled = true;
-          document.querySelector('select[name=country]').disabled = true;
-          document.querySelector('input[name=city]').disabled = true;
-          document.querySelector('input[name=email_partner]').disabled = true;
-          document.querySelector('input[name=password]').disabled = true;
-          document.querySelector('select[name=grade]').disabled = true;
-          document.querySelector('select[name=program]').disabled = true;
-          document.querySelector('select[name=institute_id]').disabled = true;
-          document.querySelector('input[name=name_institute]').disabled = true;
-          document.querySelector('input[name=terms]').disabled = true;
-          document.getElementById('buttonsave').disabled = true;
-
+          changeFieldsDisabled(true);
         } else {
-          document.getElementById('scholarship_assigned').innerHTML = `We have found that you have the following scholarship assigned to you: <strong>${XHR.response}</strong>`;
-          document.getElementById('scholarship_assigned').style.color = "green";
+          document.getElementById(
+            "scholarship_assigned"
+          ).innerHTML = `We have found that you have the following scholarship assigned to you: <strong>${XHR.response}</strong>`;
+          document.getElementById("scholarship_assigned").style.color = "green";
 
-          document.querySelector('input[name=birth_date_student]').disabled = false;
-          document.querySelector('input[name=name_student]').disabled = false;
-          document.querySelector('input[name=middle_name_student]').disabled = false;
-          document.querySelector('input[name=lastname_student]').disabled = false;
-          document.querySelector('input[name=middle_last_name_student]').disabled = false;
-          document.querySelector('input[name=number_phone]').disabled = false;
-          document.querySelector('input[name=email_student]').disabled = false;
-          document.querySelector('select[name=gender]').disabled = false;
-          document.querySelector('select[name=etnia]').disabled = false;
-          document.querySelector('input[name=birth_date_parent]').disabled = false;
-          document.querySelector('select[name=parent_document_type]').disabled = false;
-          document.querySelector('input[name=id_document_parent]').disabled = false;
-          document.querySelector('input[name=agent_name]').disabled = false;
-          document.querySelector('input[name=agent_last_name]').disabled = false;
-          document.querySelector('input[name=number_partner]').disabled = false;
-          document.querySelector('select[name=gender_parent]').disabled = false;
-          document.querySelector('select[name=country]').disabled = false;
-          document.querySelector('input[name=city]').disabled = false;
-          document.querySelector('input[name=email_partner]').disabled = false;
-          document.querySelector('input[name=password]').disabled = false;
-          document.querySelector('select[name=grade]').disabled = false;
-          document.querySelector('select[name=program]').disabled = false;
-          document.querySelector('select[name=institute_id]').disabled = false;
-          document.querySelector('input[name=name_institute]').disabled = false;
-          document.querySelector('input[name=terms]').disabled = false;
-          document.getElementById('buttonsave').disabled = false;
-
+          changeFieldsDisabled(false);
         }
       }
     }
-  };  
+  };
 }
 
 if (document.getElementById("birth_date_student")) {
@@ -558,7 +542,6 @@ if (document.getElementById("birth_date_student")) {
       today = new Date();
       diff = diff_years(today, start);
       if (diff >= 18) {
-
         var accessDataTitle = document.getElementById("access_data");
         if (accessDataTitle) {
           accessDataTitle.innerHTML = "Platform access data of student";
@@ -705,11 +688,10 @@ if (document.getElementById("birth_date_student")) {
           }
         }
       } else {
-
         var accessDataTitle = document.getElementById("access_data");
-          if (accessDataTitle) {
-            accessDataTitle.innerHTML = "Platform access data of parent";
-          }
+        if (accessDataTitle) {
+          accessDataTitle.innerHTML = "Platform access data of parent";
+        }
 
         if (dontBeAdult) {
           dontBeAdult.style.display = "none";
@@ -1247,59 +1229,65 @@ function customFlatpickr() {
   let instances = flatpickr(".flatpickr", {
     dateFormat: "m/d/Y",
     disableMobile: "true",
-    onChange: function(selectedDates, dateStr, instance) {
-        let id = instance.input.id;
-        let date = instance.input.value;
-        let year_selected = document.getElementById(`instance${id}`).value;
-        if (date && date != '') {
-          let date_split = date.split('/');
-          instance.setDate(`${date_split[0]}/${date_split[1]}/${year_selected}`);
-        } else {
-          let currentDate = new Date();
-          let month = currentDate.getMonth(); // Mes actual (0-11)
-          let day = currentDate.getDate(); // Día actual
-          let newDate = new Date(year_selected, month, day);
-          instance.setDate(newDate);
-        }
-    }
+    onChange: function (selectedDates, dateStr, instance) {
+      let id = instance.input.id;
+      let date = instance.input.value;
+      let year_selected = document.getElementById(`instance${id}`).value;
+      if (date && date != "") {
+        let date_split = date.split("/");
+        instance.setDate(`${date_split[0]}/${date_split[1]}/${year_selected}`);
+      } else {
+        let currentDate = new Date();
+        let month = currentDate.getMonth(); // Mes actual (0-11)
+        let day = currentDate.getDate(); // Día actual
+        let newDate = new Date(year_selected, month, day);
+        instance.setDate(newDate);
+      }
+    },
   });
 
   setTimeout(() => {
-    document.querySelectorAll(".numInputWrapper").forEach(function(element) {
-      element.style.display = 'none';
+    document.querySelectorAll(".numInputWrapper").forEach(function (element) {
+      element.style.display = "none";
     });
 
-    document.querySelectorAll(".flatpickr-prev-month").forEach(function(element) {
-      element.style.display = 'none';
+    document
+      .querySelectorAll(".flatpickr-prev-month")
+      .forEach(function (element) {
+        element.style.display = "none";
+      });
+
+    document
+      .querySelectorAll(".flatpickr-next-month")
+      .forEach(function (element) {
+        element.style.display = "none";
+      });
+
+    document.querySelectorAll(".flatpickr-month").forEach(function (element) {
+      element.style.height = "40px";
     });
 
-    document.querySelectorAll(".flatpickr-next-month").forEach(function(element) {
-      element.style.display = 'none';
-    });
-
-    document.querySelectorAll(".flatpickr-month").forEach(function(element) {
-      element.style.height = '40px';
-    });
-
-    document.querySelectorAll(".flatpickr-monthDropdown-months").forEach(function(element) {
-      element.style.setProperty('padding', '0', 'important');
-    });
+    document
+      .querySelectorAll(".flatpickr-monthDropdown-months")
+      .forEach(function (element) {
+        element.style.setProperty("padding", "0", "important");
+      });
 
     let selector_months = document.querySelectorAll(".flatpickr-current-month");
     instances.forEach((instance, i) => {
       let yearSelect = document.createElement("select");
       yearSelect.classList.add("numInputWrapper");
-      yearSelect.style.setProperty('padding', '0', 'important');
-      yearSelect.style.borderRadius = '0px';
+      yearSelect.style.setProperty("padding", "0", "important");
+      yearSelect.style.borderRadius = "0px";
       yearSelect.id = `instance${instance.input.id}`;
 
       const currentYear = new Date().getFullYear() - 10;
       const startYear = 1900;
       for (let year = currentYear; year >= startYear; year--) {
-          const option = document.createElement("option");
-          option.value = year;
-          option.textContent = year;
-          yearSelect.appendChild(option);
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
       }
 
       selector_months[i].appendChild(yearSelect);
@@ -1307,11 +1295,13 @@ function customFlatpickr() {
   }, 1000);
 }
 
-let select_country_step_two = document.getElementById('country-select-step-two');
-let select_state_step_two = document.getElementById('state-select-step-two'); // Asegúrate de tener este select en tu HTML
+let select_country_step_two = document.getElementById(
+  "country-select-step-two"
+);
+let select_state_step_two = document.getElementById("state-select-step-two"); // Asegúrate de tener este select en tu HTML
 
 if (select_country_step_two) {
-  select_country_step_two.addEventListener('change', function (e) {
+  select_country_step_two.addEventListener("change", function (e) {
     select_state_step_two.disabled = true;
     let action = "action=get_states_country";
     const XHR = new XMLHttpRequest();
@@ -1320,16 +1310,16 @@ if (select_country_step_two) {
     XHR.responseType = "json";
     let params = `${action}&option=${e.target.value}`;
     XHR.send(params);
-    
+
     XHR.onload = function () {
       if (XHR.status === 200) {
         // Limpiar el select de estados antes de llenarlo
-        select_state_step_two.innerHTML = '';
+        select_state_step_two.innerHTML = "";
 
         // Crear una opción por defecto
-        let defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = 'Select a state'; // Cambia el texto según sea necesario
+        let defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Select a state"; // Cambia el texto según sea necesario
         select_state_step_two.appendChild(defaultOption);
 
         // Recorrer los estados y crear las opciones
@@ -1337,7 +1327,7 @@ if (select_country_step_two) {
         if (XHR.response && XHR.response.states) {
           for (let key in XHR.response.states) {
             if (XHR.response.states.hasOwnProperty(key)) {
-              let option = document.createElement('option');
+              let option = document.createElement("option");
               option.value = key; // Código del estado
               option.textContent = XHR.response.states[key]; // Nombre del estado
               select_state_step_two.appendChild(option);
@@ -1351,30 +1341,35 @@ if (select_country_step_two) {
   });
 }
 
-let select_payment_methods = document.querySelectorAll('.card-select-payment');
-if (select_payment_methods.length > 0) { // Verifica si hay elementos seleccionados
-  select_payment_methods.forEach(payment => {
-    payment.addEventListener('click', function (e) {
+let select_payment_methods = document.querySelectorAll(".card-select-payment");
+if (select_payment_methods.length > 0) {
+  // Verifica si hay elementos seleccionados
+  select_payment_methods.forEach((payment) => {
+    payment.addEventListener("click", function (e) {
       // Remover la clase .card-selected-payment de todos los elementos
-      select_payment_methods.forEach(p => p.classList.remove('card-selected-payment'));
-      
+      select_payment_methods.forEach((p) =>
+        p.classList.remove("card-selected-payment")
+      );
+
       // Agregar la clase .card-selected-payment al elemento que fue clickeado
-      e.currentTarget.classList.add('card-selected-payment');
+      e.currentTarget.classList.add("card-selected-payment");
 
       // Obtener el data-id del elemento clickeado
       let paymentId = e.currentTarget.dataset.id;
       console.log(paymentId); // Muestra el data-id en la consola
-      
+
       // Asignar el valor al input correspondiente
-      document.querySelector('input[name=payment_method_selected]').value = paymentId;
+      document.querySelector("input[name=payment_method_selected]").value =
+        paymentId;
     });
   });
 }
 
-let buttonsave_secondary = document.getElementById('buttonsave_secondary');
-if (buttonsave_secondary) { // Verifica si hay elementos seleccionados
-  buttonsave_secondary.addEventListener('click', function (e) {
-    document.getElementById('buttonsave').click();
+let buttonsave_secondary = document.getElementById("buttonsave_secondary");
+if (buttonsave_secondary) {
+  // Verifica si hay elementos seleccionados
+  buttonsave_secondary.addEventListener("click", function (e) {
+    document.getElementById("buttonsave").click();
   });
 }
 
@@ -1413,3 +1408,46 @@ function getCookie(name) {
   // Retornamos null si no se encuentra la cookie
   return null;
 }
+
+function changeFieldsDisabled(value = false) {
+  document.querySelector(
+    "input[name=birth_date_student]"
+  ).disabled = value;
+  document.querySelector("input[name=name_student]").disabled = value;
+  document.querySelector(
+    "input[name=middle_name_student]"
+  ).disabled = value;
+  document.querySelector(
+    "input[name=lastname_student]"
+  ).disabled = value;
+  document.querySelector(
+    "input[name=middle_last_name_student]"
+  ).disabled = value;
+  document.querySelector("input[name=number_phone]").disabled = value;
+  document.querySelector("input[name=email_student]").disabled = value;
+  document.querySelector("select[name=gender]").disabled = value;
+  document.querySelector("select[name=etnia]").disabled = value;
+  document.querySelector(
+    "input[name=birth_date_parent]"
+  ).disabled = value;
+  document.querySelector(
+    "select[name=parent_document_type]"
+  ).disabled = value;
+  document.querySelector(
+    "input[name=id_document_parent]"
+  ).disabled = value;
+  document.querySelector("input[name=agent_name]").disabled = value;
+  document.querySelector("input[name=agent_last_name]").disabled = value;
+  document.querySelector("input[name=number_partner]").disabled = value;
+  document.querySelector("select[name=gender_parent]").disabled = value;
+  document.querySelector("select[name=country]").disabled = value;
+  document.querySelector("input[name=city]").disabled = value;
+  document.querySelector("input[name=email_partner]").disabled = value;
+  document.querySelector("input[name=password]").disabled = value;
+  document.querySelector("select[name=grade]").disabled = value;
+  document.querySelector("select[name=program]").disabled = value;
+  document.querySelector("select[name=institute_id]").disabled = value;
+  document.querySelector("input[name=name_institute]").disabled = value;
+  document.querySelector("input[name=terms]").disabled = value;
+  document.getElementById("buttonsave").disabled = value;
+} 
