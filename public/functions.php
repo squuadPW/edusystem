@@ -1635,6 +1635,13 @@ function check_scholarship()
     $id = $_POST['option'];
     $type = $_POST['type'];
     $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
+    $table_students = $wpdb->prefix . 'students';
+
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE type_document = '{$type}' AND id_document = '{$id}'");
+    if ($student) {
+        echo 0;
+        exit;
+    }
 
     $pre_scholarship = $wpdb->get_row("SELECT * FROM {$table_pre_scholarship} WHERE document_type = '{$type}' AND document_id = '{$id}'");
     if ($pre_scholarship) {

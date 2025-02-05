@@ -227,6 +227,9 @@ function add_admin_form_scholarships_content()
                 ),
                 array('%s', '%s', '%s') // Formatos de los datos (todos strings)
             );
+
+            wp_redirect(admin_url('admin.php?page=add_admin_form_scholarships_content&section_tab=pre_scholarships'));
+            exit;
         }
     }
 
@@ -239,6 +242,14 @@ function add_admin_form_scholarships_content()
             $scholarships_availables = $wpdb->get_results("SELECT * FROM {$table_scholarships_availables} WHERE is_active = 1");
 
             $list_scholarships = new TT_scholarship_all_List_Table;
+            $list_scholarships->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/list-scholarships.php');
+        } else if ($_GET['section_tab'] == 'pre_scholarships') {
+            global $wpdb;
+            $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
+            $scholarships_availables = $wpdb->get_results("SELECT * FROM {$table_scholarships_availables} WHERE is_active = 1");
+
+            $list_scholarships = new TT_pre_scholarship_all_List_Table;
             $list_scholarships->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-scholarships.php');
         } else if ($_GET['section_tab'] == 'scholarship_detail') {
@@ -670,6 +681,134 @@ class TT_scholarship_all_List_Table extends WP_List_Table
     }
 
 }
+
+class TT_pre_scholarship_all_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(array(
+            'singular' => 'scholarship_pending',
+            'plural' => 'scholarship_pendings',
+            'ajax' => true
+        ));
+
+    }
+
+    function column_default($item, $column_name)
+    {
+
+        global $current_user;
+
+        switch ($column_name) {
+            case 'view_details':
+                return "<a target='_blank' href='" . esc_url(home_url('/student-scholarship-application/?id=' . $item['document_id'] .'&type=' . $item['document_type'])) . "' class='button button-primary'>" . __('Share link', 'aes') . "</a>";
+            default:
+                return ucwords($item[$column_name]);
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return sprintf(
+            '%1$s<a href="javascript:void(0)">%2$s</a>',
+            '<span data-id="' . $item['id'] . '" class="dashicons dashicons-menu handle" style="cursor:all-scroll;"></span>',
+            ucwords($item['name']),
+        );
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'scholarship' => __('Scholarship', 'aes'),
+            'document_type' => __('Type document', 'aes'),
+            'document_id' => __('ID Document', 'aes'),
+            'student' => __('Student', 'aes'),
+            'created_at' => __('Created at', 'aes'),
+            'view_details' => __('Actions', 'aes'),
+        );
+
+        return $columns;
+    }
+
+    function get_pre_scholarships()
+    {
+        global $wpdb;
+        $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
+
+        $scholarships = $wpdb->get_results("SELECT * FROM {$table_pre_scholarship} ORDER BY id DESC", "ARRAY_A");
+        foreach ($scholarships as $key => $scholarship) {
+            error_log($scholarship->scholarship_type);
+            $matter = get_scholarship_details(scholarship_id: $scholarship['scholarship_type']);
+            $scholarships[$key]['scholarship'] = $matter->name;
+            $scholarships[$key]['student'] = $scholarship['name'];
+        }
+        return $scholarships;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function prepare_items()
+    {
+
+        $data_scholarships = $this->get_pre_scholarships();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+        $data = $data_scholarships;
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $current_page = $this->get_pagenum();
+
+        $total_items = count($data);
+
+        $this->items = $data;
+    }
+
+}
+
 
 class TT_availables_scholarships_List_Table extends WP_List_Table
 {

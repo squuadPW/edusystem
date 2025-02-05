@@ -3,6 +3,8 @@
 		class="nav-tab <?= (!isset($_GET['section_tab'])) ? 'nav-tab-active' : ''; ?>"><?= __('Scholarships for Review', 'form-plugin'); ?></a>
 	<a href="<?= admin_url('admin.php?page=add_admin_form_scholarships_content&section_tab=all_scholarships'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'all_scholarships') ? 'nav-tab-active' : ''; ?>"><?= __('All Scholarships', 'form-plugin'); ?></a>
+	<a href="<?= admin_url('admin.php?page=add_admin_form_scholarships_content&section_tab=pre_scholarships'); ?>"
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pre_scholarships') ? 'nav-tab-active' : ''; ?>"><?= __('Pre-Scholarships', 'form-plugin'); ?></a>
 </h2>
 
 <div class="tabs-content">

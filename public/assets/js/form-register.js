@@ -382,6 +382,23 @@ function checkScholarship(scholarship = 0) {
   }, 1000);
 }
 
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get("id");
+const type = urlParams.get("type");
+
+if (id && type) {
+  const typeSelect = document.querySelector("select[name=document_type]");
+  const idInput = document.querySelector("input[name=id_document]");
+  
+  // Asignar valores
+  typeSelect.value = type;
+  idInput.value = id;
+  
+  // Disparar eventos input manualmente
+  // typeSelect.dispatchEvent(new Event('input'));
+  idInput.dispatchEvent(new Event('input'));
+}
+
 function sendAjaxIdDocument(scholarship = 0) {
   if (timer) {
     clearTimeout(timer);
@@ -536,69 +553,21 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
           buttonSave.disabled = true;
         }
       } else if (action === "action=check_scholarship") {
-        document.getElementById('scholarship_assigned').style.display = "block";
+        document.getElementById("scholarship_assigned").style.display = "block";
         if (XHR.response === "0") {
-          document.getElementById('scholarship_assigned').innerText = `You do not have any scholarship assigned`;
-          document.getElementById('scholarship_assigned').style.color = "gray";
+          document.getElementById(
+            "scholarship_assigned"
+          ).innerText = `No scholarship assigned or already signed`;
+          document.getElementById("scholarship_assigned").style.color = "gray";
 
-          document.querySelector('input[name=birth_date_student]').disabled = true;
-          document.querySelector('input[name=name_student]').disabled = true;
-          document.querySelector('input[name=middle_name_student]').disabled = true;
-          document.querySelector('input[name=lastname_student]').disabled = true;
-          document.querySelector('input[name=middle_last_name_student]').disabled = true;
-          document.querySelector('input[name=number_phone]').disabled = true;
-          document.querySelector('input[name=email_student]').disabled = true;
-          document.querySelector('select[name=gender]').disabled = true;
-          document.querySelector('select[name=etnia]').disabled = true;
-          document.querySelector('input[name=birth_date_parent]').disabled = true;
-          document.querySelector('select[name=parent_document_type]').disabled = true;
-          document.querySelector('input[name=id_document_parent]').disabled = true;
-          document.querySelector('input[name=agent_name]').disabled = true;
-          document.querySelector('input[name=agent_last_name]').disabled = true;
-          document.querySelector('input[name=number_partner]').disabled = true;
-          document.querySelector('select[name=gender_parent]').disabled = true;
-          document.querySelector('select[name=country]').disabled = true;
-          document.querySelector('input[name=city]').disabled = true;
-          document.querySelector('input[name=email_partner]').disabled = true;
-          document.querySelector('input[name=password]').disabled = true;
-          document.querySelector('select[name=grade]').disabled = true;
-          document.querySelector('select[name=program]').disabled = true;
-          document.querySelector('select[name=institute_id]').disabled = true;
-          document.querySelector('input[name=name_institute]').disabled = true;
-          document.querySelector('input[name=terms]').disabled = true;
-          document.getElementById('buttonsave').disabled = true;
-
+          changeFieldsDisabled(true);
         } else {
-          document.getElementById('scholarship_assigned').innerHTML = `We have found that you have the following scholarship assigned to you: <strong>${XHR.response}</strong>`;
-          document.getElementById('scholarship_assigned').style.color = "green";
+          document.getElementById(
+            "scholarship_assigned"
+          ).innerHTML = `We have found that you have the following scholarship assigned to you: <strong>${XHR.response}</strong>`;
+          document.getElementById("scholarship_assigned").style.color = "green";
 
-          document.querySelector('input[name=birth_date_student]').disabled = false;
-          document.querySelector('input[name=name_student]').disabled = false;
-          document.querySelector('input[name=middle_name_student]').disabled = false;
-          document.querySelector('input[name=lastname_student]').disabled = false;
-          document.querySelector('input[name=middle_last_name_student]').disabled = false;
-          document.querySelector('input[name=number_phone]').disabled = false;
-          document.querySelector('input[name=email_student]').disabled = false;
-          document.querySelector('select[name=gender]').disabled = false;
-          document.querySelector('select[name=etnia]').disabled = false;
-          document.querySelector('input[name=birth_date_parent]').disabled = false;
-          document.querySelector('select[name=parent_document_type]').disabled = false;
-          document.querySelector('input[name=id_document_parent]').disabled = false;
-          document.querySelector('input[name=agent_name]').disabled = false;
-          document.querySelector('input[name=agent_last_name]').disabled = false;
-          document.querySelector('input[name=number_partner]').disabled = false;
-          document.querySelector('select[name=gender_parent]').disabled = false;
-          document.querySelector('select[name=country]').disabled = false;
-          document.querySelector('input[name=city]').disabled = false;
-          document.querySelector('input[name=email_partner]').disabled = false;
-          document.querySelector('input[name=password]').disabled = false;
-          document.querySelector('select[name=grade]').disabled = false;
-          document.querySelector('select[name=program]').disabled = false;
-          document.querySelector('select[name=institute_id]').disabled = false;
-          document.querySelector('input[name=name_institute]').disabled = false;
-          document.querySelector('input[name=terms]').disabled = false;
-          document.getElementById('buttonsave').disabled = false;
-
+          changeFieldsDisabled(false);
         }
       }
     }
@@ -1390,3 +1359,46 @@ function getCookie(name) {
     let results = regex.exec(location.search);
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
+
+  function changeFieldsDisabled(value = false) {
+    document.querySelector(
+      "input[name=birth_date_student]"
+    ).disabled = value;
+    document.querySelector("input[name=name_student]").disabled = value;
+    document.querySelector(
+      "input[name=middle_name_student]"
+    ).disabled = value;
+    document.querySelector(
+      "input[name=lastname_student]"
+    ).disabled = value;
+    document.querySelector(
+      "input[name=middle_last_name_student]"
+    ).disabled = value;
+    document.querySelector("input[name=number_phone]").disabled = value;
+    document.querySelector("input[name=email_student]").disabled = value;
+    document.querySelector("select[name=gender]").disabled = value;
+    document.querySelector("select[name=etnia]").disabled = value;
+    document.querySelector(
+      "input[name=birth_date_parent]"
+    ).disabled = value;
+    document.querySelector(
+      "select[name=parent_document_type]"
+    ).disabled = value;
+    document.querySelector(
+      "input[name=id_document_parent]"
+    ).disabled = value;
+    document.querySelector("input[name=agent_name]").disabled = value;
+    document.querySelector("input[name=agent_last_name]").disabled = value;
+    document.querySelector("input[name=number_partner]").disabled = value;
+    document.querySelector("select[name=gender_parent]").disabled = value;
+    document.querySelector("select[name=country]").disabled = value;
+    document.querySelector("input[name=city]").disabled = value;
+    document.querySelector("input[name=email_partner]").disabled = value;
+    document.querySelector("input[name=password]").disabled = value;
+    document.querySelector("select[name=grade]").disabled = value;
+    document.querySelector("select[name=program]").disabled = value;
+    document.querySelector("select[name=institute_id]").disabled = value;
+    document.querySelector("input[name=name_institute]").disabled = value;
+    document.querySelector("input[name=terms]").disabled = value;
+    document.getElementById("buttonsave").disabled = value;
+  } 
