@@ -517,6 +517,28 @@ function redirect_to_my_account()
 }
 
 add_action('woocommerce_thankyou', 'redirect_to_my_account', 10, 1);
+add_action('woocommerce_thankyou', 'auto_complete_free_orders', 9, 1);
+
+function auto_complete_free_orders($order_id) {
+    // Obtener el objeto de la orden
+    $order = wc_get_order($order_id);
+    
+    // Verificar si es una orden válida y con total 0
+    if ($order && $order->get_total() == 0) {
+        
+        // Verificar que no esté ya completada
+        if (!$order->has_status('completed')) {
+            
+            // Actualizar estado y agregar nota
+            $order->update_status('completed', __('Orden marcada como completada automáticamente por monto cero', 'your-textdomain'));
+            
+            // Opcional: Limpiar carrito si es necesario
+            if (WC()->cart) {
+                WC()->cart->empty_cart();
+            }
+        }
+    }
+}
 
 function student_unsubscribe()
 {
