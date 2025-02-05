@@ -41,7 +41,7 @@
                         </div>
                         <h3
                             style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                            <b><?= __('Who exempts the scholarship', 'aes'); ?></b>
+                            <b><?= __('This SCHOLARSHIP applies to:', 'aes'); ?></b>
                         </h3>
                         <div class="grid-container-report-3">
                             <div class="form-group" style="text-align: center">
