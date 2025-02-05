@@ -281,7 +281,8 @@ function add_custom_admin_page()
     add_submenu_page('add_admin_form_academic_content', __('Academic projection', 'aes'), __('Academic projection', 'aes'), 'manager_academic_projection_aes', 'add_admin_form_academic_projection_content', 'add_admin_form_academic_projection_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('School subjects', 'aes'), __('School subjects', 'aes'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'aes'), __('Academic periods', 'aes'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Scholarship', 'aes'), __('Scholarship', 'aes'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Scholarship application', 'aes'), __('Scholarship application', 'aes'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Available scholarships', 'aes'), __('Available scholarships', 'aes'), 'manager_availables_scholarship_aes', 'add_admin_form_available_scholarships_content', 'add_admin_form_available_scholarships_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'aes'), __('Enrollments', 'aes'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
     // add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'aes'), __('Academic offers', 'aes'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
     remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
@@ -362,6 +363,7 @@ function add_cap_to_administrator()
     $role->add_cap('manage_administrator_aes');
     $role->add_cap('manager_departments_aes');
     $role->add_cap('manager_scholarship_aes');
+    $role->add_cap('manager_availables_scholarship_aes');
     $role->add_cap('manager_academic_periods_aes');
     $role->add_cap('manager_school_subjects_aes');
     $role->add_cap('manager_academic_projection_aes');

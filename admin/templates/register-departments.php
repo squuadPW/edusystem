@@ -94,7 +94,13 @@
                         <th scope="row" style="width:10px;padding:3px;">
                             <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_scholarship_aes" id="manager_scholarship_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_scholarship_aes'])) ? 'checked' : ''; ?>>
                         </th>
-                        <td style="display:table-cell;padding:3px;"><label for="manager_scholarship_aes" style="margin-left:20px;"><?= __('Scholarship','aes'); ?></label></td>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_scholarship_aes" style="margin-left:20px;"><?= __('Scholarship application','aes'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_availables_scholarship_aes" id="manager_availables_scholarship_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_availables_scholarship_aes'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_availables_scholarship_aes" style="margin-left:20px;"><?= __('Availables scholarships','aes'); ?></label></td>
                     </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
