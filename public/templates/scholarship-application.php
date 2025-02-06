@@ -28,12 +28,12 @@
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata" autocomplete="off" type="date" id="birth_date_student" name="birth_date_student"
-                required>
+            <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_student"
+                name="birth_date_student" required>
             <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
                 value="0">
             <input class="formdata" autocomplete="off" type="hidden" id="is_scholarship" name="is_scholarship"
-                value="1">
+            value="1">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
@@ -94,8 +94,8 @@
         </div>
         <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date_parent"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
-            <input class="formdata" autocomplete="off" type="date" id="birth_date_parent" name="birth_date_parent"
-                required>
+            <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_parent"
+                name="birth_date_parent" required>
         </div>
         <div id="parent_document_type_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
