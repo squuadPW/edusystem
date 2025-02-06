@@ -68,12 +68,20 @@
                 </div>
                 <div id="by_offers" style="display: none">
                   <div class="form-group" style="padding: 0px 10px 10px 10px;">
-                    <label for="email_coordination"><?= __('Coupon registration fee in complete payment (empty is disabled)','aes'); ?></label> <br>
-                    <input class="full-input" name="offer_complete" type="text" id="offer_complete" value="<?= get_option('offer_complete'); ?>">
+                    <label for="offer_complete"><?= __('Coupon registration fee in complete payment','aes'); ?></label> <br>
+                    <select class="full-input" name="offer_complete" id="offer_complete">
+                      <option value="" <?= get_option('offer_complete') == '' ? 'selected' : ''; ?>>Without offer</option>
+                      <option value="50% Registration fee" <?= get_option('offer_complete') == '50% Registration fee' ? 'selected' : ''; ?>>50% Registration fee</option>
+                      <option value="100% Registration fee" <?= get_option('offer_complete') == '100% Registration fee' ? 'selected' : ''; ?>>100% Registration fee</option>
+                    </select>
                   </div>
                   <div class="form-group" style="padding: 0px 10px 10px 10px;">
-                    <label for="email_academic_management"><?= __('Coupon for registration fee with installment payments (empty is disabled)','aes'); ?></label> <br>
-                    <input class="full-input" name="offer_quote" type="text" id="offer_quote" value="<?= get_option('offer_quote'); ?>">
+                    <label for="offer_quote"><?= __('Coupon for registration fee with installment payments','aes'); ?></label> <br>
+                    <select class="full-input" name="offer_quote" id="offer_quote">
+                      <option value="" <?= get_option('offer_quote') == '' ? 'selected' : ''; ?>>Without offer</option>
+                      <option value="50% Registration fee" <?= get_option('offer_quote') == '50% Registration fee' ? 'selected' : ''; ?>>50% Registration fee</option>
+                      <option value="100% Registration fee" <?= get_option('offer_quote') == '100% Registration fee' ? 'selected' : ''; ?>>100% Registration fee</option>
+                    </select>
                   </div>
                 </div>
                 <div id="by_notifications" style="display: none">
