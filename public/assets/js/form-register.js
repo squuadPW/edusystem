@@ -1317,6 +1317,7 @@ function customFlatpickr() {
       });
 
     let selector_months = document.querySelectorAll(".flatpickr-current-month");
+    instances = Array.isArray(instances) ? instances : [instances];
     instances.forEach((instance, i) => {
       let yearSelect = document.createElement("select");
       yearSelect.classList.add("numInputWrapper");
