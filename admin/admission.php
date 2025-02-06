@@ -323,7 +323,7 @@ function add_admin_form_admission_content()
                 $list_students->prepare_items();
                 include(plugin_dir_path(__FILE__) . 'templates/list-student-documents.php');
             } else if ($_GET['section_tab'] == 'student_details') {
-
+                $table_grades = $wpdb->prefix . 'grades';
                 $roles = $current_user->roles;
                 $documents = get_documents($_GET['student_id']);
                 $fee_payment_ready = get_payments($_GET['student_id'], 63);
@@ -336,6 +336,7 @@ function add_admin_form_admission_content()
                 $table_academic_periods = $wpdb->prefix . 'academic_periods';
                 $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
                 $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $student->email . "'");
+                $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
                 include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
             }
 
