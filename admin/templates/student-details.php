@@ -1,4 +1,4 @@
-<?php
+<td?php
 $countries = get_countries();
 $institutes = get_list_institutes_active();
 $grades = get_grades();
@@ -111,7 +111,7 @@ $grades = get_grades();
                             <table class="form-table" style="margin-top:0px;">
                                 <tbody>
                                     <tr>
-                                        <td scope="row" style="width: auto !important">
+                                        <td colspan="1">
                                             <label
                                                 for="document_type"><b><?php _e('Document Type', 'aes'); ?></b></label><br>
                                             <select name="document_type" id="document_type"
@@ -123,7 +123,7 @@ $grades = get_grades();
                                                 <option value="ssn" <?= ($student->type_document == 'ssn') ? 'selected' : ''; ?>><?= __('SNN', 'aes'); ?></option>
                                             </select>
                                         </td>
-                                        <td style="width: auto !important">
+                                        <td colspan="5">
                                             <label
                                                 for="id_document"><b><?php _e('ID Document', 'aes'); ?></b></label><br>
                                             <input type="text" id="id_document" name="id_document"
@@ -132,14 +132,14 @@ $grades = get_grades();
                                                 style="width:100%" required>
                                         </td>
                                         <?php if ($user_student) { ?>
-                                            <td style="width: auto !important">
+                                            <td colspan="3">
                                                 <label for="username"><b><?php _e('Username', 'aes'); ?></b></label><br>
                                                 <input type="text" id="username" name="username"
                                                     value="<?php echo $user_student->user_nicename; ?>" style="width:100%"
                                                     required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                             </td>
                                         <?php } ?>
-                                        <td style="width: auto !important">
+                                        <td colspan="3">
                                             <label for="birth_date"><b><?php _e('Birth date', 'aes'); ?></b></label><br>
                                             <input type="text" id="birth_date" name="birth_date"
                                                 value="<?php echo date('m/d/Y', strtotime($student->birth_date)); ?>"
@@ -148,23 +148,23 @@ $grades = get_grades();
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td scope="row" style="width: auto !important">
+                                        <td colspan="3">
                                             <label for="first_name"><b><?php _e('First name', 'aes'); ?></b></label><br>
                                             <input type="text" id="first_name" name="first_name"
                                                 value="<?php echo $student->name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
-                                        <td style="width: auto !important">
+                                        <td colspan="3">
                                             <label
                                                 for="middle_name"><b><?php _e('Middle name', 'aes'); ?></b></label><br>
                                             <input type="text" id="middle_name" name="middle_name"
                                                 value="<?php echo $student->middle_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
-                                        <td style="width: auto !important">
+                                        <td colspan="3">
                                             <label for="last_name"><b><?php _e('Last name', 'aes'); ?></b></label><br>
                                             <input type="text" id="last_name" name="last_name"
                                                 value="<?php echo $student->last_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
-                                        <td style="width: auto !important">
+                                        <td colspan="3">
                                             <label
                                                 for="middle_last_name"><b><?php _e('Middle last name', 'aes'); ?></b></label><br>
                                             <input type="text" id="middle_last_name" name="middle_last_name"
@@ -173,7 +173,7 @@ $grades = get_grades();
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td scope="row" style="width: auto !important">
+                                        <td colspan="3">
                                             <label for="gender"><b><?php _e('Gender', 'aes'); ?></b></label><br>
                                             <select name="gender" id="gender"
                                                 value="<?php echo get_gender($student->gender); ?>" style="width:100%"
@@ -183,7 +183,7 @@ $grades = get_grades();
                                             </select>
                                         </td>
 
-                                        <td style="width: auto !important">
+                                        <td colspan="3">
                                             <label for="country"><b><?php _e('Country', 'aes'); ?></b></label><br>
                                             <select id="country" name="country"
                                                 value="<?php echo get_name_country($student->country); ?>"
@@ -195,13 +195,13 @@ $grades = get_grades();
                                             </select>
                                         </td>
 
-                                        <td style="width: auto !important">
+                                        <td colspan="3">
                                             <label for="city"><b><?php _e('City', 'aes'); ?></b></label><br>
                                             <input type="text" id="city" name="city"
                                                 value="<?php echo $student->city; ?>" style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
 
-                                        <td style="width: auto !important">
+                                        <td colspan="3">
                                             <label
                                                 for="postal_code"><b><?php _e('Postal Code', 'aes'); ?></b></label><br>
                                             <input type="text" id="postal_code" name="postal_code"
@@ -209,20 +209,21 @@ $grades = get_grades();
                                                 required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
-                                        <td style="width: auto !important">
+                                    <tr>
+                                        <td  colspan="4">
                                             <label for="email"><b><?php _e('Email', 'aes'); ?></b></label><br>
                                             <input type="text" id="email" name="email"
                                                 value="<?php echo $student->email; ?>" style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                             <input type="hidden" id="old_email" name="old_email"
                                                 value="<?php echo $student->email; ?>" style="width:100%;">
                                         </td>
-                                        <td style="width: auto !important">
+                                        <td  colspan="4">
                                             <label for="phone"><b><?php _e('Phone', 'aes'); ?></b></label><br>
                                             <input type="text" id="phone" name="phone"
                                                 value="<?php echo $student->phone; ?>" style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
 
-                                        <td style="width: auto !important">
+                                        <!-- <td  colspan="3">
                                             <label
                                                 for="academic_period"><b><?php _e('Academic period', 'aes'); ?></b></label><br>
                                             <select name="academic_period" required style="width:100%;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -233,8 +234,8 @@ $grades = get_grades();
                                                     </option>
                                                 <?php } ?>
                                             </select>
-                                        </td>
-                                        <td style="width: auto !important">
+                                        </td> -->
+                                        <td  colspan="4">
                                             <label
                                                 for="new_password"><b><?php _e('New password for student', 'aes'); ?></label><br>
                                             <input type="password" id="new_password" name="new_password"
@@ -261,7 +262,7 @@ $grades = get_grades();
                             <table class="form-table table-customize" style="margin-top:0px;">
                                 <tbody>
                                     <tr>
-                                        <th scope="row" style="font-weight:400;">
+                                        <td colspan="4">
                                             <label
                                                 for="parent_document_type"><b><?php _e('Document Type', 'aes'); ?></b></label><br>
                                             <select name="parent_document_type" id="parent_document_type"
@@ -275,8 +276,8 @@ $grades = get_grades();
                                                 <option value="ssn"
                                                     <?= (get_user_meta($partner->ID, 'type_document', true) == 'ssn') ? 'selected' : ''; ?>><?= __('SNN', 'aes'); ?></option>
                                             </select>
-                                        </th>
-                                        <td>
+                                        </td>
+                                        <td colspan="4">
                                             <label
                                                 for="parent_id_document"><b><?php _e('ID Document', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_id_document" name="parent_id_document"
@@ -285,7 +286,7 @@ $grades = get_grades();
                                             <input type="hidden" id="parent_id" name="parent_id"
                                                 value="<?= $student->partner_id; ?>" style="width:100%" required>
                                         </td>
-                                        <td>
+                                        <td colspan="4">
                                             <label
                                                 for="parent_username"><b><?php _e('Username', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_username" name="parent_username"
@@ -294,19 +295,19 @@ $grades = get_grades();
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th scope="row" style="font-weight:400;">
+                                        <td colspan="4">
                                             <label
                                                 for="parent_first_name"><b><?php _e('First name', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_first_name" name="parent_first_name"
                                                 value="<?php echo $partner->first_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                        </th>
-                                        <td>
+                                        </td>
+                                        <td colspan="4">
                                             <label
                                                 for="parent_last_name"><b><?php _e('Last name', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_last_name" name="parent_last_name"
                                                 value="<?php echo $partner->last_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
-                                        <td>
+                                        <td colspan="4">
                                             <label
                                                 for="parent_birth_date"><b><?php _e('Birth date', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_birth_date" name="parent_birth_date"
@@ -316,7 +317,7 @@ $grades = get_grades();
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th scope="row" style="font-weight:400;">
+                                        <td colspan="4">
                                             <label for="parent_gender"><b><?php _e('Gender', 'aes'); ?></b></label><br>
                                             <select name="parent_gender" id="parent_gender"
                                                 value="<?php echo get_user_meta($partner->ID, 'gender', true); ?>"
@@ -326,8 +327,8 @@ $grades = get_grades();
                                                 <option value="female"
                                                     <?= (get_user_meta($partner->ID, 'gender', true) == 'female') ? 'selected' : ''; ?>><?= __('Female', 'aes'); ?></option>
                                             </select>
-                                        </th>
-                                        <td>
+                                        </td>
+                                        <td colspan="4">
                                             <label for="parent_country"><b><?php _e('Country', 'aes'); ?></b></label><br>
                                             <select id="parent_country" name="parent_country"
                                                 value="<?php echo get_name_country(get_user_meta($partner->ID, 'billing_country', true)); ?>"
@@ -338,7 +339,7 @@ $grades = get_grades();
                                                 <?php } ?>
                                             </select>
                                         </td>
-                                        <td>
+                                        <td colspan="4">
                                             <label for="parent_city"><b><?php _e('City', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_city" name="parent_city"
                                                 value="<?php echo get_user_meta($partner->ID, 'billing_city', true) ?>"
@@ -346,14 +347,14 @@ $grades = get_grades();
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th scope="row" style="font-weight:400;">
+                                        <td colspan="4">
                                             <label
                                                 for="parent_postal_code"><b><?php _e('Postal Code', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_postal_code" name="parent_postal_code"
                                                 value="<?php echo get_user_meta($partner->ID, 'billing_postcode', true) ?>"
                                                 style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                        </th>
-                                        <td>
+                                        </td>
+                                        <td colspan="4">
                                             <label for="parent_email"><b><?php _e('Email', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_email" name="parent_email"
                                                 value="<?php echo $partner->user_email ?>"
@@ -361,7 +362,7 @@ $grades = get_grades();
                                             <input type="hidden" id="parent_old_email" name="parent_old_email"
                                                 value="<?php echo $partner->user_email; ?>">
                                         </td>
-                                        <td>
+                                        <td colspan="4">
                                             <label for="parent_phone"><b><?php _e('Phone', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_phone" name="parent_phone"
                                                 value="<?php echo get_user_meta($partner->ID, 'billing_phone', true) ?>"
@@ -369,13 +370,13 @@ $grades = get_grades();
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th scope="row" style="font-weight:400;">
+                                        <td colspan="12">
                                             <label
                                                 for="parent_occupation"><b><?php _e('Occupation', 'aes'); ?></b></label><br>
                                             <input type="text" id="parent_occupation" name="parent_occupation"
                                                 value="<?php echo get_user_meta($partner->ID, 'occupation', true) ?>"
                                                 style="width:100%;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                        </th>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
