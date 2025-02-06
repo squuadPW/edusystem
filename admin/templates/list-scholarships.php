@@ -14,6 +14,8 @@
 				<h1 class="wp-heading-line"><?= __('Scholarships for Review', 'aes'); ?></h1>
 			<?php elseif (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'all_scholarships'): ?>
 				<h1 class="wp-heading-line"><?= __('All Scholarships', 'aes'); ?></h1>
+			<?php elseif (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pre_scholarships'): ?>
+				<h1 class="wp-heading-line"><?= __('Pre-Scholarships', 'aes'); ?></h1>
 			<?php endif; ?>
 		</div>
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
