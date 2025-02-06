@@ -323,20 +323,20 @@ function checkEmails() {
 }
 
 function checkScholarship(scholarship = 0) {
-  if (timer) {
-    clearTimeout(timer);
-  }
-  timer = setTimeout(() => {
-    if (idDocument.value && typeDocument.value) {
-      sendAjax(
-        "action=check_scholarship",
-        idDocument.value,
-        1,
-        typeDocument.value,
-        scholarship
-      );
-    }
-  }, 1000);
+  // if (timer) {
+  //   clearTimeout(timer);
+  // }
+  // timer = setTimeout(() => {
+  //   if (idDocument.value && typeDocument.value) {
+  //     sendAjax(
+  //       "action=check_scholarship",
+  //       idDocument.value,
+  //       1,
+  //       typeDocument.value,
+  //       scholarship
+  //     );
+  //   }
+  // }, 1000);
 }
 
 const urlParams = new URLSearchParams(window.location.search);
