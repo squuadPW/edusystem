@@ -298,7 +298,7 @@ function add_admin_form_admission_content()
                         $deleted = wp_delete_attachment($upload_data['file'], true);
                         $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
                         wp_update_attachment_metadata($attach_id, $attach_data);
-                        $wpdb->update($table_student_documents, ['status' => 5, 'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $id, 'id' => $document_id]);
+                        $wpdb->update($table_student_documents, ['status' => 5, 'attachment_id' => $attach_id, 'description' => 'The file was uploaded from the administration and approved immediately.', 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $id, 'id' => $document_id]);
                     }
                 }
 
