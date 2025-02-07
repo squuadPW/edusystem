@@ -16,7 +16,7 @@ function add_admin_form_admission_content()
                 $grade = $_POST['grade'];
                 $document_type = $_POST['document_type'];
                 $id_document = $_POST['id_document'];
-                $academic_period = $_POST['academic_period'];
+                // $academic_period = $_POST['academic_period'];
                 $username = $_POST['username'] ?? null;
                 $new_password = $_POST['new_password'] ?? null;
                 $first_name = $_POST['first_name'];
@@ -51,7 +51,7 @@ function add_admin_form_admission_content()
                         array(
                             'type_document' => $document_type,
                             'id_document' => $id_document,
-                            'academic_period' => $academic_period,
+                            // 'academic_period' => $academic_period,
                             'name' => $first_name,
                             'middle_name' => $middle_name,
                             'last_name' => $last_name,
