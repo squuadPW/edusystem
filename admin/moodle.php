@@ -30,7 +30,6 @@ function create_user_moodle($student_id){
 
     global $wpdb;
     $table_students = $wpdb->prefix.'students';
-    $table_users = $wpdb->prefix.'users';
 
     $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
     $address = get_user_meta($data_student->partner_id, 'billing_address_1', true);
@@ -67,7 +66,8 @@ function create_user_moodle($student_id){
             'moodle_password' => $password
         ],['id' => $student_id]);
 
-        // enroll_student($student_id, get_courses_moodle_student($data_student->grade_id));
+        generate_projection_student($student_id);
+        automatically_enrollment($student_id);
 
         return $create_user;
     }
