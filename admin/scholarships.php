@@ -747,7 +747,6 @@ class TT_pre_scholarship_all_List_Table extends WP_List_Table
 
         $scholarships = $wpdb->get_results("SELECT * FROM {$table_pre_scholarship} ORDER BY id DESC", "ARRAY_A");
         foreach ($scholarships as $key => $scholarship) {
-            error_log($scholarship->scholarship_type);
             $matter = get_scholarship_details(scholarship_id: $scholarship['scholarship_type']);
             $scholarships[$key]['scholarship'] = $matter->name;
             $scholarships[$key]['student'] = $scholarship['name'];
