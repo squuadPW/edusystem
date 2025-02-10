@@ -1186,8 +1186,6 @@ function handle_virtual_classroom_access($student_id) {
     update_status_student($student_id, 2);
     create_user_student($student_id);
     create_user_laravel(array_merge($fields_to_send, ['files' => $files_to_send]));
-    generate_projection_student($student_id);
-    automatically_enrollment($student_id);
 
     $exist = is_search_student_by_email($student_id);
     if (!$exist) {
