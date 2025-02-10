@@ -894,15 +894,6 @@ function template_welcome_subjects($filteredArray, $student) {
             <th style="border: 1px solid gray;">
                 <strong>MATERIA</strong>
             </th>
-            <th style="border: 1px solid gray;">
-                <strong>FECHA INICIO</strong>
-            </th>
-            <th style="border: 1px solid gray;">
-                <strong>FECHA FIN</strong>
-            </th>
-            <th style="border: 1px solid gray;">
-                <strong>PERIODO</strong>
-            </th>
         </tr>
     </thead>';
         $text .= '<tbody>';
@@ -911,9 +902,9 @@ function template_welcome_subjects($filteredArray, $student) {
             $text .= '<tr>';
             $text .= '<td style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
             $text .= '<td style="border: 1px solid gray;">' . $subject->name . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
+            // $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
+            // $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
+            // $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
             $text .= '</tr>';
         }
         $text .= '</tbody>';
@@ -962,15 +953,6 @@ function template_welcome_subjects($filteredArray, $student) {
                 <th style="border: 1px solid gray;">
                     <strong>SUBJECT</strong>
                 </th>
-                <th style="border: 1px solid gray;">
-                    <strong>START DATE</strong>
-                </th>
-                <th style="border: 1px solid gray;">
-                    <strong>END DATE</strong>
-                </th>
-                <th style="border: 1px solid gray;">
-                    <strong>PERIOD</strong>
-                </th>
             </tr>
         </thead>';
         $text .= '<tbody>';
@@ -979,9 +961,9 @@ function template_welcome_subjects($filteredArray, $student) {
             $text .= '<tr>';
             $text .= '<td style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
             $text .= '<td style="border: 1px solid gray;">' . $subject->name . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
+            // $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
+            // $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
+            // $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
             $text .= '</tr>';
         }
         $text .= '</tbody>';
