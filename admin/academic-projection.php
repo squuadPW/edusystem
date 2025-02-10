@@ -139,6 +139,14 @@ function add_admin_form_academic_projection_content()
             }
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
             exit;
+        } else if (isset($_GET['action']) && $_GET['action'] == 'send_not_enrolled_email') {
+            global $wpdb;
+            $students = get_students_not_current();
+            foreach ($students as $key => $student) {
+                send_not_enrolled($student->id);
+            }
+            wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
+            exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'fix_projections') {
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';

@@ -112,6 +112,9 @@
                   <div class="form-group" style="text-align: center">
                       <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_welcome_subject_email') ?>"><button type="button" class="btn btn-primary"><?= __('Send pending welcome mails with subjects', 'aes'); ?></button></a>
                   </div>
+                  <div class="form-group" style="text-align: center">
+                      <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_not_enrolled_email') ?>"><button type="button" class="btn btn-primary"><?= __('Send Send email to students without enrollment', 'aes'); ?></button></a>
+                  </div>
                   <div style="text-align: center">
                     <span>Temporally</span>
                   </div>

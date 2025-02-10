@@ -973,7 +973,7 @@ function template_welcome_subjects($filteredArray, $student) {
         $text .= '</table>';
     }
     $text .= '<br>';
-    $text .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
+    $text .= '<div> We leave at your disposal links and contacts of interest: </div>';
 
     $text .= '<ul>';
     $text .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
@@ -986,7 +986,6 @@ function template_welcome_subjects($filteredArray, $student) {
     return $text;
 }
 
-// Función para traducir días y meses
 function translateDateToSpanish($dateString)
 {
     $days = [
@@ -1019,6 +1018,79 @@ function translateDateToSpanish($dateString)
     $dateString = str_replace(array_keys($months), array_values($months), $dateString);
 
     return $dateString;
+}
+
+
+function send_not_enrolled($student_id)
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+
+    $text = template_not_enrolled($student);
+
+    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
+    $email_student->trigger($student, 'Welcome', $text);
+
+    $user_parent = get_user_by('id', $student->partner_id);
+    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+    $email_student->trigger($user_parent, 'Welcome', $text);
+}
+
+function template_not_enrolled($student) {
+    global $wpdb;
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+    $load = load_current_cut_enrollment();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+    $period_cut = $wpdb->get_row("SELECT * FROM {$table_academic_periods_cut} WHERE code = '{$academic_period}' && cut = '{$cut}'");
+    $date_start = DateTime::createFromFormat('Y-m-d', $period_cut->start_date);
+    $date_end = DateTime::createFromFormat('Y-m-d', $period_cut->end_date);
+    $start_date = $date_start->format('l, F j, Y');
+    $end_date = $date_end->format('l, F j, Y');
+    $text = '';
+    $text .= '<div>';
+    $text .= 'Estimado(a) estudiante ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos permitimos anunciarle que, durante el Periodo ' . $cut . ' correspondiente al Año Escolar ' . $academic_period . ' no le será asignada carga académica ya que cuenta actualmente con el avance académico que corresponde a su año de ingreso.';
+    $text .= '</div>';
+
+    $text .= '<br>';
+
+    $text .= '<div>';
+    $text .= 'Dado que el periodo académico ' . $cut . ' tiene fecha de inicio el ' . translateDateToSpanish(dateString: $start_date) . ' y culmina el ' . translateDateToSpanish($end_date) . ', los invitamos a estar atentos a sus correos electrónicos donde serán notificados con la carga académica correspondiente al periodo siguiente.';
+    $text .= '</div>';
+
+    $text .= '<br>';
+    $text .= '<div> Dejamos a su disposición enlaces y contactos de interés: </div>';
+
+    $text .= '<ul>';
+    $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+    $text .= '<li>Aula virtual: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+    $text .= '<li>Contacto: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+    $text .= '</ul>';
+    $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un feliz descanso durante este periodo.</div>';
+    $text .= '<div style="margin: 10px 0px; border-bottom: 1px solid gray;"></div>';
+
+    $text .= '<div>';
+    $text .= 'Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', on behalf of the academic team at American Elite School, located in Doral, Florida, USA, we would like to inform you that, during Period ' . $cut . ' of the ' . $academic_period . ' school year, no academic load will be assigned to you, as you currently have the academic progress corresponding to your year of admission.';
+    $text .= '</div>';
+
+    $text .= '<br>';
+
+    $text .= '<div>';
+    $text .= 'Since Period ' . $cut . ' starts on ' . $start_date . ' and ends on ' . $end_date . ', we invite you to stay alert to your emails where you will be notified of the academic load for the following period.';
+    $text .= '</div>';
+
+    $text .= '<br>';
+    $text .= '<div> We leave at your disposal links and contacts of interest: </div>';
+
+    $text .= '<ul>';
+    $text .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+    $text .= '<li>Virtual classroom: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+    $text .= '<li>Contact us: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+    $text .= '</ul>';
+    $text .= '<div>On behalf of our institution, we thank you for your commitment and wish you a pleasant rest during this period.</div>';
+
+    return $text;
 }
 
 function fix_projections($student_id)
