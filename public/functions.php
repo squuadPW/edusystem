@@ -738,7 +738,7 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
         }
 
         update_status_student($student_id, 1);
-        generate_projection_student($student_id);
+        // generate_projection_student($student_id);
         // automatically_enrollment($student_id);
 
         $email_request_documents = WC()->mailer()->get_emails()['WC_Request_Documents_Email'];
