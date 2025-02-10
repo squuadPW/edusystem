@@ -279,12 +279,12 @@ function add_custom_admin_page()
         4
     );
     add_submenu_page('add_admin_form_academic_content', __('Academic projection', 'aes'), __('Academic projection', 'aes'), 'manager_academic_projection_aes', 'add_admin_form_academic_projection_content', 'add_admin_form_academic_projection_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'aes'), __('Academic offers', 'aes'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('School subjects', 'aes'), __('School subjects', 'aes'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'aes'), __('Academic periods', 'aes'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Scholarship students', 'aes'), __('Scholarship students', 'aes'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Available scholarships', 'aes'), __('Available scholarships', 'aes'), 'manager_availables_scholarship_aes', 'add_admin_form_available_scholarships_content', 'add_admin_form_available_scholarships_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'aes'), __('Enrollments', 'aes'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
-    // add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'aes'), __('Academic offers', 'aes'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
     remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
 
     add_menu_page(
