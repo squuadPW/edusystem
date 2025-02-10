@@ -870,7 +870,7 @@ function template_welcome_subjects($filteredArray, $student) {
     $text .= '<br>';
 
     $text .= '<div>';
-    $text .= 'Esta actualización garantiza que nuestros estudiantes continúen recibiendo la mejor experiencia educativa con herramientas optimizadas y alineadas con los más altos estándares académicos.  el inicio del Periodo ' . $cut . ' correspondiente al Año Escolar ' . $academic_period;
+    $text .= 'Esta actualización garantiza que nuestros estudiantes continúen recibiendo la mejor experiencia educativa con herramientas optimizadas y alineadas con los más altos estándares académicos. Marcando el inicio del Periodo ' . $cut . ' correspondiente al Año Escolar ' . $academic_period;
     $text .= '</div>';
 
     $text .= '<br>';
