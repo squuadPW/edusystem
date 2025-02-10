@@ -458,6 +458,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
             case 'date':
             case 'status':
             case 'payment_method':
+            case 'student_name':
             case 'partner_name':
                 return ucwords($item[$column_name]);
             case 'total':
@@ -490,7 +491,8 @@ class TT_payment_pending_List_Table extends WP_List_Table
         $columns = array(
             'payment_id' => __('Payment ID', 'aes'),
             'date' => __('Date', 'aes'),
-            'partner_name' => __('Name', 'aes'),
+            'partner_name' => __('Parent', 'aes'),
+            'student_name' => __('Student', 'aes'),
             'total' => __('Total', 'aes'),
             'payment_method' => __('Payment Method', 'aes'),
             'status' => __('Status', 'aes'),
@@ -533,10 +535,34 @@ class TT_payment_pending_List_Table extends WP_List_Table
 
         if ($orders) {
             foreach ($orders as $order) {
+
+                $student_data = $order->get_meta('student_data');
+
+                // Si es un string JSON, decodificarlo
+                if (is_string($student_data)) {
+                    $student_data = json_decode($student_data, true);
+                }
+
+                // Verificar si es un array antes de acceder a las claves
+                if (is_array($student_data)) {
+                    $student_name = ($student_data['name_student'] ?? '') . ' ' . 
+                                ($student_data['middle_name_student'] ?? '') . ' ' . 
+                                ($student_data['last_name_student'] ?? '') . ' ' . 
+                                ($student_data['middle_last_name_student'] ?? '');
+                } else {
+                    // Manejar el caso donde no es un array (opcional)
+                    $student_name = '';
+                }
+
+                // Eliminar espacios extras
+                $student_name = trim(preg_replace('/\s+/', ' ', $student_name));
+
+
                 array_push($orders_array, [
                     'payment_id' => $order->get_id(),
                     'date' => $order->get_date_created()->format('F j, Y g:i a'),
                     'partner_name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+                    'student_name' => $student_name,
                     'total' => wc_price($order->get_total()),
                     'status' => $order->get_status(),
                     'payment_method' => $order->get_payment_method_title()
@@ -639,6 +665,7 @@ class TT_all_payments_List_Table extends WP_List_Table
             case 'date':
             case 'payment_method':
             case 'status':
+            case 'student_name':
             case 'partner_name':
                 return ucwords($item[$column_name]);
             case 'total':
@@ -671,7 +698,8 @@ class TT_all_payments_List_Table extends WP_List_Table
         $columns = array(
             'payment_id' => __('Payment ID', 'aes'),
             'date' => __('Date', 'aes'),
-            'partner_name' => __('Name', 'aes'),
+            'partner_name' => __('Parent', 'aes'),
+            'student_name' => __('Student', 'aes'),
             'total' => __('Total', 'aes'),
             'payment_method' => __('Payment Method', 'aes'),
             'status' => __('Status', 'aes'),
@@ -714,10 +742,33 @@ class TT_all_payments_List_Table extends WP_List_Table
 
         if ($orders) {
             foreach ($orders as $order) {
+
+                $student_data = $order->get_meta('student_data');
+
+                // Si es un string JSON, decodificarlo
+                if (is_string($student_data)) {
+                    $student_data = json_decode($student_data, true);
+                }
+
+                // Verificar si es un array antes de acceder a las claves
+                if (is_array($student_data)) {
+                    $student_name = ($student_data['name_student'] ?? '') . ' ' . 
+                                ($student_data['middle_name_student'] ?? '') . ' ' . 
+                                ($student_data['last_name_student'] ?? '') . ' ' . 
+                                ($student_data['middle_last_name_student'] ?? '');
+                } else {
+                    // Manejar el caso donde no es un array (opcional)
+                    $student_name = '';
+                }
+
+                // Eliminar espacios extras
+                $student_name = trim(preg_replace('/\s+/', ' ', $student_name));
+
                 array_push($orders_array, [
                     'payment_id' => $order->get_id(),
                     'date' => $order->get_date_created()->format('F j, Y g:i a'),
                     'partner_name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+                    'student_name' => $student_name,
                     'total' => wc_price($order->get_total()),
                     'status' => $order->get_status(),
                     'payment_method' => $order->get_payment_method_title()
