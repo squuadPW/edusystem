@@ -885,7 +885,7 @@ function template_welcome_subjects($filteredArray, $student) {
     $text .= '<div> A continuación, detallamos su <strong>Carga Académica</strong> de cursos ofertados para este periodo ' . $cut . ': </div>';
 
     if (count($filteredArray) > 0) {
-        $text .= '<table style="margin: 20px 0px">';
+        $text .= '<table style="margin: 20px 0px; border-collapse: collapse; width: 100%;">';
         $text .= '<thead>
         <tr>
             <th colspan="4" style="border: 1px solid gray;">
@@ -944,7 +944,7 @@ function template_welcome_subjects($filteredArray, $student) {
     $text .= '<div> Listed below is your <strong>Academic Load</strong> of mandatory courses registered for this Period ' . $cut . ': </div>';
 
     if (count($filteredArray) > 0) {
-        $text .= '<table style="margin: 20px 0px">';
+        $text .= '<table style="margin: 20px 0px; border-collapse: collapse; width: 100%;">';
         $text .= '<thead>
             <tr>
                 <th colspan="4" style="border: 1px solid gray;">
