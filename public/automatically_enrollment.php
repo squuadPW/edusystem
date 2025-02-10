@@ -449,6 +449,7 @@ function load_automatically_enrollment($expected_projection, $student)
     $count_expected_subject = 0;
     $count_expected_subject_elective = 0;
     $skip_cut = $student->skip_cut;
+    $force_skip = false;
 
     if (!$projection) {
         return;
@@ -488,9 +489,11 @@ function load_automatically_enrollment($expected_projection, $student)
                     $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
                     if (count($active_inscriptions) >= (int) $subject->max_students) {
                         $count_expected_subject++;
+                        $force_skip = true;
                         continue;
                     }
 
+                    $force_skip = false;
                     $subjectIds = array_column($projection_obj, 'subject_id');
                     $indexToEdit = array_search($subject->id, $subjectIds);
                     if ($indexToEdit !== false) {
@@ -525,6 +528,12 @@ function load_automatically_enrollment($expected_projection, $student)
                     $count_expected_subject++;
                     $student_enrolled++;
                 } else {
+                    if ($force_skip) {
+                        $count_expected_subject_elective++;
+                        $last_inscriptions_electives_count++;
+                        continue;
+                    }
+
                     if (count($matrix_elective) == 0) {
                         continue;
                     }
@@ -563,6 +572,7 @@ function load_automatically_enrollment($expected_projection, $student)
         } else {
             if ($expected['type'] == 1) {
                 $expected_subject = $matrix_regular[$count_expected_subject];
+                $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$expected_subject->subject_id}");
                 $inscriptions = $wpdb->get_results(
                     $wpdb->prepare(
                         "SELECT * FROM {$table_student_period_inscriptions} 
@@ -581,10 +591,11 @@ function load_automatically_enrollment($expected_projection, $student)
                 $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
                 if (count($active_inscriptions) >= (int) $subject->max_students) {
                     $count_expected_subject++;
+                    $force_skip = true;
                     continue;
                 }
 
-                $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$expected_subject->subject_id}");
+                $force_skip = false;
                 $subjectIds = array_column($projection_obj, 'subject_id');
                 $indexToEdit = array_search($subject->id, $subjectIds);
                 if ($indexToEdit !== false) {
@@ -619,6 +630,12 @@ function load_automatically_enrollment($expected_projection, $student)
                 $count_expected_subject++;
                 $student_enrolled++;
             } else {
+                if ($force_skip) {
+                    $count_expected_subject_elective++;
+                    $last_inscriptions_electives_count++;
+                    continue;
+                }
+
                 if (count($matrix_elective) == 0) {
                     continue;
                 }
