@@ -773,14 +773,14 @@ function generate_projection_student($student_id)
 {
     global $wpdb;
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    
+
     $existing_projection = $wpdb->get_var(
         $wpdb->prepare(
             "SELECT COUNT(*) FROM {$table_student_academic_projection} WHERE student_id = %d",
             $student_id
         )
     );
-    
+
     if ($existing_projection > 0) {
         return;
     }
@@ -861,11 +861,87 @@ function template_welcome_subjects($filteredArray, $student) {
     $date_start = DateTime::createFromFormat('Y-m-d', $period_cut->start_date);
     $date_end = DateTime::createFromFormat('Y-m-d', $period_cut->end_date);
     $start_date = $date_start->format('l, F j, Y');
-    $end_date = $date_end->format('l, F j, Y');    
+    $end_date = $date_end->format('l, F j, Y');
     $text = '';
-    $text .= '<div>
-        Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' on behalf of the academic team of American Elite School, based in the city of Doral, Florida-USA, we are pleased to announce the beginning of Period ' . $cut . ', corresponding to the School Year ' . $academic_period . '.
-    </div><br>';
+    $text .= '<div>';
+    $text .= 'Estimado(a) estudiante ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos permitimos anunciarle que, por disposición del Departamento de Educación de Florida y, dando cumplimiento a nuestro compromiso de trabajar en la mejora continua, el inicio de clases periodo ' . $cut . ' del programa Dual Diploma de American Elite School se ha reprogramado, teniendo su inicio el ' . translateDateToSpanish(dateString: $start_date);
+    $text .= '</div>';
+
+    $text .= '<br>';
+
+    $text .= '<div>';
+    $text .= 'Esta actualización garantiza que nuestros estudiantes continúen recibiendo la mejor experiencia educativa con herramientas optimizadas y alineadas con los más altos estándares académicos.  el inicio del Periodo ' . $cut . ' correspondiente al Año Escolar ' . $academic_period;
+    $text .= '</div>';
+
+    $text .= '<br>';
+
+    $text .= '<div>';
+    $text .= '<div><strong>FECHA DE INICIO:</strong> ' . translateDateToSpanish(dateString: $start_date) . ' </div>';
+    $text .= '<div><strong>FECHA DE CULMINACIÓN:</strong> ' . translateDateToSpanish($end_date) . ' </div>';
+    $text .= '</div>';
+
+    $text .= '<br>';
+
+    $text .= '<div> A continuación, detallamos su <strong>Carga Académica</strong> de cursos ofertados para este periodo ' . $cut . ': </div>';
+
+    if (count($filteredArray) > 0) {
+        $text .= '<table style="margin: 20px 0px">';
+        $text .= '<thead>
+        <tr>
+            <th style="border: 1px solid gray;">
+               <strong>CÓDIGO</strong>
+            </th>
+            <th style="border: 1px solid gray;">
+                <strong>MATERIA</strong>
+            </th>
+            <th style="border: 1px solid gray;">
+                <strong>FECHA INICIO</strong>
+            </th>
+            <th style="border: 1px solid gray;">
+                <strong>FECHA FIN</strong>
+            </th>
+            <th style="border: 1px solid gray;">
+                <strong>PERIODO</strong>
+            </th>
+        </tr>
+    </thead>';
+        $text .= '<tbody>';
+        foreach ($filteredArray as $key => $val) {
+            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
+            $text .= '<tr>';
+            $text .= '<td style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $subject->name . '</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
+            $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
+            $text .= '</tr>';
+        }
+        $text .= '</tbody>';
+        $text .= '</table>';
+    }
+    $text .= '<br>';
+    $text .= '<div> Dejamos a su disposición enlaces y contactos de interés: </div>';
+
+    $text .= '<ul>';
+    $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+    $text .= '<li>Aula virtual: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+    $text .= '<li>Contacto: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+    $text .= '</ul>';
+    $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un periodo académico lleno de logros satisfactorios.</div>';
+    $text .= '<div style="margin: 10px 0px; border-bottom: 1px solid gray;"></div>';
+
+    
+    $text .= '<div>';
+    $text .= 'Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', on behalf of the academic team at American Elite School, located in Doral, Florida, USA, we would like to inform you that, in accordance with the Florida Department of Education\'s guidelines and in compliance with our commitment to continuous improvement, the start of classes for Period ' . $cut . ' of the Dual Diploma Program at American Elite School has been rescheduled to begin on ' . $start_date;
+    $text .= '</div>';
+
+    $text .= '<br>';
+
+    $text .= '<div>';
+    $text .= 'This update ensures that our students continue to receive the best educational experience with optimized tools and aligned with the highest academic standards, marking the start of Period ' . $cut . ' for the ' . $academic_period . ' school year.';
+    $text .= '</div>';
+
+    $text .= '<br>';
 
     $text .= '<div>';
     $text .= '<div><strong>START DATE:</strong> ' . $start_date . ' </div>';
@@ -881,7 +957,7 @@ function template_welcome_subjects($filteredArray, $student) {
         $text .= '<thead>
             <tr>
                 <th style="border: 1px solid gray;">
-                    <strong>CODE</strong>
+                    <strong>COURSE CODE</strong>
                 </th>
                 <th style="border: 1px solid gray;">
                     <strong>SUBJECT</strong>
@@ -921,70 +997,13 @@ function template_welcome_subjects($filteredArray, $student) {
     $text .= '</ul>';
 
     $text .= '<div>On behalf of our institution, we thank you for your commitment and wish you a successful academic term.</div>';
-    $text .= '<div style="margin: 10px 0px; border-bottom: 1px solid gray;"></div>';
-    $text .= '<div>
-        Estimado(a) estudiante ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos complace anunciarle el inicio del Periodo ' . $cut . ' correspondiente al Año Escolar ' . $academic_period . '.
-    </div><br>';
 
-    $text .= '<div>';
-    $text .= '<div><strong>FECHA DE INICIO:</strong> ' . translateDateToSpanish(dateString: $start_date) . ' </div>';
-    $text .= '<div><strong>FECHA DE CULMINACIÓN:</strong> ' . translateDateToSpanish($end_date) . ' </div>';
-    $text .= '</div>';
-
-    $text .= '<br>';
-
-    $text .= '<div> A continuación, detallamos su <strong>Carga Académica</strong> de cursos ofertados para este periodo ' . $cut . ': </div>';
-
-    if (count($filteredArray) > 0) {
-        $text .= '<table style="margin: 20px 0px">';
-        $text .= '<thead>
-            <tr>
-                <th style="border: 1px solid gray;">
-                   <strong>CÓDIGO</strong>
-                </th>
-                <th style="border: 1px solid gray;">
-                    <strong>MATERIA</strong>
-                </th>
-                <th style="border: 1px solid gray;">
-                    <strong>FECHA INICIO</strong>
-                </th>
-                <th style="border: 1px solid gray;">
-                    <strong>FECHA FIN</strong>
-                </th>
-                <th style="border: 1px solid gray;">
-                    <strong>PERIODO</strong>
-                </th>
-            </tr>
-        </thead>';
-        $text .= '<tbody>';
-        foreach ($filteredArray as $key => $val) {
-            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
-            $text .= '<tr>';
-            $text .= '<td style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $subject->name . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
-            $text .= '</tr>';
-        }
-        $text .= '</tbody>';
-        $text .= '</table>';
-    }
-    $text .= '<br>';
-    $text .= '<div> Dejamos a su disposición enlaces y contactos de interés: </div>';
-
-    $text .= '<ul>';
-    $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
-    $text .= '<li>Aula virtual: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
-    $text .= '<li>Contacto: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
-    $text .= '</ul>';
-
-    $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un periodo académico lleno de logros satisfactorios.</div>';
     return $text;
 }
 
 // Función para traducir días y meses
-function translateDateToSpanish($dateString) {
+function translateDateToSpanish($dateString)
+{
     $days = [
         'Monday' => 'Lunes',
         'Tuesday' => 'Martes',
