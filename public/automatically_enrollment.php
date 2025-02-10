@@ -888,10 +888,10 @@ function template_welcome_subjects($filteredArray, $student) {
         $text .= '<table style="margin: 20px 0px">';
         $text .= '<thead>
         <tr>
-            <th style="border: 1px solid gray;">
+            <th colspan="4" style="border: 1px solid gray;">
                <strong>CÓDIGO</strong>
             </th>
-            <th style="border: 1px solid gray;">
+            <th colspan="8" style="border: 1px solid gray;">
                 <strong>MATERIA</strong>
             </th>
         </tr>
@@ -900,8 +900,8 @@ function template_welcome_subjects($filteredArray, $student) {
         foreach ($filteredArray as $key => $val) {
             $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
             $text .= '<tr>';
-            $text .= '<td style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $subject->name . '</td>';
+            $text .= '<td colspan="4" style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
+            $text .= '<td colspan="8" style="border: 1px solid gray;">' . $subject->name . '</td>';
             // $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
             // $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
             // $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
@@ -947,10 +947,10 @@ function template_welcome_subjects($filteredArray, $student) {
         $text .= '<table style="margin: 20px 0px">';
         $text .= '<thead>
             <tr>
-                <th style="border: 1px solid gray;">
+                <th colspan="4" style="border: 1px solid gray;">
                     <strong>COURSE CODE</strong>
                 </th>
-                <th style="border: 1px solid gray;">
+                <th colspan="8" style="border: 1px solid gray;">
                     <strong>SUBJECT</strong>
                 </th>
             </tr>
@@ -959,8 +959,8 @@ function template_welcome_subjects($filteredArray, $student) {
         foreach ($filteredArray as $key => $val) {
             $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
             $text .= '<tr>';
-            $text .= '<td style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
-            $text .= '<td style="border: 1px solid gray;">' . $subject->name . '</td>';
+            $text .= '<td colspan="4" style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
+            $text .= '<td colspan="8" style="border: 1px solid gray;">' . $subject->name . '</td>';
             // $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
             // $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
             // $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
