@@ -773,6 +773,18 @@ function generate_projection_student($student_id)
 {
     global $wpdb;
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    
+    $existing_projection = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(*) FROM {$table_student_academic_projection} WHERE student_id = %d",
+            $student_id
+        )
+    );
+    
+    if ($existing_projection > 0) {
+        return;
+    }
+
     $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
     $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular}");
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
