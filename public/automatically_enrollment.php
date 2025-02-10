@@ -847,7 +847,7 @@ function send_welcome_subjects($student_id)
         $filteredArray = array_values($filteredArray);
     }
 
-    if (count($filteredArray) == 0) {
+    if (count($filteredArray) == 0 && !$student->elective) {
         return;
     }
 
@@ -860,18 +860,20 @@ function send_welcome_subjects($student_id)
     $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
     $email_student->trigger($user_parent, 'Welcome', $text);
 
-    foreach ($filteredArray as $key => $val) {
-        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
-        $subjectIds = array_column($projection_obj, 'code_subject');
-        $indexToEdit = array_search($subject->code_subject, $subjectIds);
-        if ($indexToEdit !== false) {
-            $projection_obj[$indexToEdit]->welcome_email = true;
+    if (count($filteredArray) > 0) {
+        foreach ($filteredArray as $key => $val) {
+            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
+            $subjectIds = array_column($projection_obj, 'code_subject');
+            $indexToEdit = array_search($subject->code_subject, $subjectIds);
+            if ($indexToEdit !== false) {
+                $projection_obj[$indexToEdit]->welcome_email = true;
+            }
         }
+    
+        $wpdb->update($table_student_academic_projection, [
+            'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
+        ], ['id' => $projection->id]);
     }
-
-    $wpdb->update($table_student_academic_projection, [
-        'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
-    ], ['id' => $projection->id]);
 }
 
 function template_welcome_subjects($filteredArray, $student) {
@@ -934,7 +936,16 @@ function template_welcome_subjects($filteredArray, $student) {
         $text .= '</tbody>';
         $text .= '</table>';
     }
+
     $text .= '<br>';
+
+    if ($student->elective) {
+        $text .= '<div>';
+        $text .= '<strong>ELECTIVA CONFORME A SU ELECCIÓN</strong>';
+        $text .= '</div>';
+        $text .= '<br>';
+    }
+
     $text .= '<div> Dejamos a su disposición enlaces y contactos de interés: </div>';
 
     $text .= '<ul>';
@@ -993,7 +1004,16 @@ function template_welcome_subjects($filteredArray, $student) {
         $text .= '</tbody>';
         $text .= '</table>';
     }
+
     $text .= '<br>';
+
+    if ($student->elective) {
+        $text .= '<div>';
+        $text .= '<strong>ELECTIVE ACCORDING TO YOUR SELECTION</strong>';
+        $text .= '</div>';
+        $text .= '<br>';
+    }
+
     $text .= '<div> We leave at your disposal links and contacts of interest: </div>';
 
     $text .= '<ul>';
