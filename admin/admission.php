@@ -576,7 +576,7 @@ class TT_document_review_List_Table extends WP_List_Table
                 $program = get_name_program($item['program_id']);
                 return $program;
             case 'grade':
-                $grade = get_name_grade($item['grade_id']);
+                $grade = get_name_grade($item['grade_id']) . ' - ' . $item['initial_cut'];
                 return $grade;
             case 'pending_documents':
                 return $item['count_pending_documents'];
@@ -665,7 +665,7 @@ class TT_document_review_List_Table extends WP_List_Table
         $columns = array(
             'full_name' => __('Full name', 'aes'),
             'program' => __('Program', 'aes'),
-            'grade' => __('Grade', 'aes'),
+            'grade' => __('Grade - Initial cut', 'aes'),
             'pending_documents' => __('Pending', 'aes'),
             'pending_review_documents' => __('for Review', 'aes'),
             'approved_documents' => __('Approved', 'aes'),
