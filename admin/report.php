@@ -417,6 +417,8 @@ function get_students_not_current()
         $query .= " WHERE " . implode(" AND ", $conditions);
     }
 
+    $query .= " ORDER BY id DESC";
+
     $students = $wpdb->get_results($wpdb->prepare($query, $params));
     return $students;
 }
