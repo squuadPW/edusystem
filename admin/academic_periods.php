@@ -102,6 +102,7 @@ function add_admin_form_academic_periods_content()
                         'code' => $code,
                         'cut' => $cut,
                         'start_date' => $start_date,
+                        'end_date' => $end_date,
                         'max_date' => $max_date,
                     ], ['code' => $old_code, 'cut' => $cut]);
                 }
