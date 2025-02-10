@@ -136,6 +136,7 @@ function add_admin_form_academic_projection_content()
             $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
             foreach ($students as $key => $student) {
                 send_welcome_subjects($student->id);
+                break;
             }
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
             exit;
