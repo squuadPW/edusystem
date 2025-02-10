@@ -445,12 +445,16 @@ function load_automatically_enrollment($expected_projection, $student)
     $real_electives_inscriptions_count = load_inscriptions_electives_valid($student);
     $code = $load['code'];
     $cut = $load['cut'];
-    $projection_obj = json_decode($projection->projection);
     $student_enrolled = 0;
     $count_expected_subject = 0;
     $count_expected_subject_elective = 0;
     $skip_cut = $student->skip_cut;
 
+    if (!$projection) {
+        return;
+    }
+
+    $projection_obj = json_decode($projection->projection);
     foreach ($expected_projection['expected_matrix'] as $key => $expected) {
         if ($student_enrolled == $expected_projection['max_expected']) {
             break;
@@ -575,7 +579,7 @@ function load_automatically_enrollment($expected_projection, $student)
                 }
 
                 $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
-                if (count($active_inscriptions) >= 25) {
+                if (count($active_inscriptions) >= (int) $subject->max_students) {
                     $count_expected_subject++;
                     continue;
                 }
