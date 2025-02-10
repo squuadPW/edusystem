@@ -809,6 +809,9 @@ function send_welcome_subjects($student_id)
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
+    if (!$projection) {
+        return;
+    }
     $projection_obj = json_decode($projection->projection);
 
     $filteredArray = array_filter($projection_obj, function ($item) {
