@@ -128,6 +128,12 @@ function add_admin_form_academic_projection_content()
             }
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
             exit;
+        }  else if (isset($_GET['action']) && $_GET['action'] == 'auto_enroll') {
+            global $wpdb;
+            $student_id = $_GET['student_id'];
+            automatically_enrollment($student_id);
+            wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
+            exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'send_welcome_email') {
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
