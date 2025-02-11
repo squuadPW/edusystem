@@ -50,6 +50,7 @@
             <tr>
                 <th scope="col" class=" manage-column column-primary"><?= __('Payment ID','aes'); ?></th>
                 <th scope="col" class=" manage-column column-email"><?= __('Customer','aes'); ?></th>
+                <th scope="col" class=" manage-column column-email"><?= __('Student','aes'); ?></th>
                 <th scope="col" class=" manage-column column-phone"><?= __('Fee','aes'); ?></th>
                 <th scope="col" class=" manage-column column"><?= __('Created','aes'); ?></th>
                 <th scope="col" class=" manage-column column"><?= __('Actions','aes'); ?></th>
