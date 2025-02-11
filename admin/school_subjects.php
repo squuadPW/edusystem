@@ -280,10 +280,12 @@ function update_matrices() {
     
     // Insertar los sujetos electivos
     foreach ($subjects_electives as $elective) {
-        $wpdb->insert($table_school_subject_matrix_elective, [
-            'subject' => $elective->name,
-            'subject_id' => $elective->id,
-        ]);
+        if ($elective->is_open) {
+            $wpdb->insert($table_school_subject_matrix_elective, [
+                'subject' => $elective->name,
+                'subject_id' => $elective->id,
+            ]);
+        }
     }
 }
 
