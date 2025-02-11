@@ -33,12 +33,15 @@ function add_admin_form_academic_projection_content()
                 foreach ($subjects as $subject) {
                     $count = 0; // Inicializa el contador para cada subject
                     foreach ($projections as $projection) {
-                        $projection_obj = json_decode($projection->projection);
-                        $history_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut, $subject) {
-                            return $item->subject_id === $subject->id && ($item->code_period == $academic_period && $item->cut == $academic_period_cut);
-                        });
-                        // Sumar la cantidad si hay coincidencias
-                        $count += count(array_values($history_arr));
+                        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
+                        if ($student) {
+                            $projection_obj = json_decode($projection->projection);
+                            $history_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut, $subject) {
+                                return $item->subject_id === $subject->id && ($item->code_period == $academic_period && $item->cut == $academic_period_cut);
+                            });
+                            // Sumar la cantidad si hay coincidencias
+                            $count += count(array_values($history_arr));
+                        }
                     }
                     // Solo agregar al resultado si hay coincidencias
                     if ($count > 0) {
@@ -73,7 +76,9 @@ function add_admin_form_academic_projection_content()
 
                     if (count(array_values($filtered_arr)) > 0) {
                         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
-                        array_push($students, ['student' => $student, 'calification' => (int) array_values($filtered_arr)[0]->calification]);
+                        if ($student) {
+                            array_push($students, ['student' => $student, 'calification' => (int) array_values($filtered_arr)[0]->calification]);
+                        }
                     }
                 }
 
