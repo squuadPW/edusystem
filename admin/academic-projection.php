@@ -135,6 +135,16 @@ function add_admin_form_academic_projection_content()
             automatically_enrollment($student_id);
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id='.$projection_id));
             exit;
+        }  else if (isset($_GET['action']) && $_GET['action'] == 'activate_elective') {
+            global $wpdb;
+            $table_students = $wpdb->prefix . 'students';
+            $student_id = $_GET['student_id'];
+            $projection_id = $_GET['projection_id'];
+            $wpdb->update($table_students, [
+                'elective' => 1
+            ], ['id' => $student_id]);
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id='.$projection_id));
+            exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'send_welcome_email') {
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
