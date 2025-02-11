@@ -228,9 +228,31 @@ function get_order_institutes($start, $end, $id = "")
 
         if ($order->get_meta('institute_id') == $institute_id) {
 
+            $student_data = $order->get_meta('student_data');
+
+            // Si es un string JSON, decodificarlo
+            if (is_string($student_data)) {
+                $student_data = json_decode($student_data, true);
+            }
+
+            // Verificar si es un array antes de acceder a las claves
+            if (is_array($student_data)) {
+                $student_name = ($student_data['name_student'] ?? '') . ' ' . 
+                            ($student_data['middle_name_student'] ?? '') . ' ' . 
+                            ($student_data['last_name_student'] ?? '') . ' ' . 
+                            ($student_data['middle_last_name_student'] ?? '');
+            } else {
+                // Manejar el caso donde no es un array (opcional)
+                $student_name = '';
+            }
+
+            // Eliminar espacios extras
+            $student_name = trim(preg_replace('/\s+/', ' ', $student_name));
+
             array_push($data_fees, [
                 'order_id' => $order->get_id(),
                 'customer' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+                'student' => $student_name,
                 'fee' => $order->get_meta('institute_fee'),
                 'created_at' => $order->get_date_created()->format('F j, Y g:i a')
             ]);
