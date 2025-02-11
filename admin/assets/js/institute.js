@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded',function(){
         let htmlLoading = "";
 
         htmlLoading += "<tr>";
-        htmlLoading += "<td class='column-primary id column-id' colspan='5' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+        htmlLoading += "<td class='column-primary id column-id' colspan='6' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
         htmlLoading += "</tr>";
             
         if (document.getElementById('table-institutes-payment')) {

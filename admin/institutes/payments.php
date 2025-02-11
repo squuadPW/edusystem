@@ -298,9 +298,11 @@ function get_invoices_institutes($start, $end, $id = "")
 
         if ($order->get_meta('institute_id') == $institute_id) {
 
+            $student = get_student_detail($order->get_meta('student_id'));
             array_push($data_fees, [
                 'order_id' => $order->get_id(),
                 'customer' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+                'student' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
                 'fee' => $order->get_meta('institute_fee'),
                 'created_at' => $order->get_date_created()->format('F j, Y g:i a')
             ]);
@@ -466,6 +468,7 @@ function get_invoices_institute()
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
                 $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>" . $order['customer'] . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . $order['student'] . "</td>";
                 $html .= "<td class='column' data-colname='" . __('Fee', 'aes') . "'>" . wc_price($order['fee']) . "</td>";
                 $html .= "<td class='column' data-colname='" . __('Created', 'aes') . "'><b>" . $order['created_at'] . "</b></td>";
                 $html .= "<td class='column' data-colname='" . __('Action', 'aes') . "'>";
@@ -487,7 +490,7 @@ function get_invoices_institute()
 
         } else {
             $html .= "<tr>";
-            $html .= "<td colspan='5' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html .= "<td colspan='6' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
             $html .= "</tr>";
         }
 
