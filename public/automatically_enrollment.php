@@ -848,10 +848,10 @@ function send_welcome_subjects($student_id)
     }
 
     if (count($filteredArray) == 0 && !$student->elective) {
-        return;
+        $text = template_not_enrolled($student);
+    } else {
+        $text = template_welcome_subjects($filteredArray, $student);
     }
-
-    $text = template_welcome_subjects($filteredArray, $student);
 
     $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
     $email_student->trigger($student, 'Welcome', $text);
@@ -1059,23 +1059,6 @@ function translateDateToSpanish($dateString)
     $dateString = str_replace(array_keys($months), array_values($months), $dateString);
 
     return $dateString;
-}
-
-
-function send_not_enrolled($student_id)
-{
-    global $wpdb;
-    $table_students = $wpdb->prefix . 'students';
-    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
-
-    $text = template_not_enrolled($student);
-
-    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
-    $email_student->trigger($student, 'Welcome', $text);
-
-    $user_parent = get_user_by('id', $student->partner_id);
-    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
-    $email_student->trigger($user_parent, 'Welcome', $text);
 }
 
 function template_not_enrolled($student) {
