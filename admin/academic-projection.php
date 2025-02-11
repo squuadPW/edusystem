@@ -99,17 +99,10 @@ function add_admin_form_academic_projection_content()
             $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
             $table_students = $wpdb->prefix . 'students';
 
-            $students = $wpdb->get_results("SELECT * FROM {$table_students}");
+            $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
 
             foreach ($students as $key => $student) {
-                $exists = $wpdb->get_var($wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$table_student_academic_projection} WHERE student_id = %d",
-                    $student->id
-                ));
-
-                if ($exists == 0) {
-                    generate_projection_student($student->id);
-                }
+                generate_projection_student($student->id);
             }
 
             setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
@@ -514,7 +507,7 @@ function get_moodle_notes()
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
-    $students = $wpdb->get_results("SELECT * FROM {$table_students}");
+    $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
