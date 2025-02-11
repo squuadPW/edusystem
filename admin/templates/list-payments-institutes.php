@@ -64,6 +64,7 @@
                             <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                         </td>
                         <td class="column" data-colname="<?= __('Customer','aes'); ?>"><?= $order['customer']; ?></td>
+                        <td class="column" data-colname="<?= __('Student','aes'); ?>"><?= $order['student']; ?></td>
                         <td class="column" data-colname="<?= __('Fee','aes'); ?>"><?= get_woocommerce_currency_symbol().number_format($order['fee'],2,'.',','); ?></td>
                         <td class="column" data-colname="<?= __('Created','aes'); ?>"><b><?= $order['created_at']; ?></b></td>
                         <td class="column" data-colname="<?= __('Action','aes'); ?>">
