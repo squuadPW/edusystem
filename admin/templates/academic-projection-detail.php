@@ -9,7 +9,7 @@
         <h2 style="margin-bottom:15px;"><?= __('Academic projection of ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . ' (' . $student->id_document . ')', 'aes'); ?>
             <a href="<?= admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student->id ?>" target="_blank">(View in Admission)</a>
             <?php if (in_array('administrator', $roles)) { ?>
-                <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=auto_enroll&student_id=') . $student->id ?>" target="_blank">Auto-enroll</a>
+                <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=auto_enroll&student_id=') . $student->id . '&projection_id='.$projection->id ?>">Auto-enroll</a>
             <?php } ?>
         </h2>
     <?php else: ?>
