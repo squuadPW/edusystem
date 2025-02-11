@@ -29,6 +29,7 @@ function add_admin_form_school_subjects_content()
             $moodle_course_id = $_POST['moodle_course_id'];
             $is_elective = $_POST['is_elective'];
             $is_active = $_POST['is_active'];
+            $is_open = $_POST['is_open'];
             $min_pass = $_POST['min_pass'];
             $matrix_position = $_POST['matrix_position'];
             $max_students = $_POST['max_students'];
@@ -47,7 +48,8 @@ function add_admin_form_school_subjects_content()
                     'moodle_course_id' => $moodle_course_id,
                     'teacher_id' => $teacher_id,
                     'is_elective' => $is_elective == 'on' ? 1 : 0,
-                    'is_active' => $is_active == 'on' ? 1 : 0
+                    'is_active' => $is_active == 'on' ? 1 : 0,
+                    'is_open' => $is_open == 'on' ? 1 : 0
                 ], ['id' => $subject_id]);
             } else {
                 $wpdb->insert($table_school_subjects, [
@@ -61,7 +63,8 @@ function add_admin_form_school_subjects_content()
                     'moodle_course_id' => $moodle_course_id,
                     'teacher_id' => $teacher_id,
                     'is_elective' => $is_elective == 'on' ? 1 : 0,
-                    'is_active' => $is_active == 'on' ? 1 : 0
+                    'is_active' => $is_active == 'on' ? 1 : 0,
+                    'is_open' => $is_open == 'on' ? 1 : 0
                 ]);
             }
 

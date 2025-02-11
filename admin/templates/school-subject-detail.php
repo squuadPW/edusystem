@@ -67,6 +67,20 @@
                                             </div>
                                         <?php endif; ?>
                                     </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <?php if (isset($subject) && !empty($subject)): ?>
+                                            <div>
+                                                <input type="checkbox" name="is_open" id="is_open"
+                                                <?= ($subject->is_open == 1) ? 'checked' : ''; ?>>
+                                                <label for="is_open"><b><?= __('Open', 'aes'); ?></b></label>
+                                            </div>
+                                        <?php else: ?>
+                                            <div>
+                                            <input type="checkbox" name="is_open" id="is_open">
+                                                <label for="is_open"><b><?= __('Open', 'aes'); ?></b></label>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div style="display: flex; justify-content: space-evenly; margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
