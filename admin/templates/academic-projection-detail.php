@@ -103,7 +103,7 @@
                                     <div style="display: flex; width: 100%; text-align: center">
                                         <div style="flex: 1; padding: 20px;">
                                             <a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=activate_elective&student_id=') . $student->id . '&projection_id='.$projection->id ?>" class="button button-outline-primary" onclick="return confirm('Are you sure to activate the elective for this student?');">
-                                                <button type="button" class="button button-success"><?= __('Activate student elective', 'aes'); ?></button>
+                                                <?= __('Activate student elective','aes'); ?>
                                             </a>
                                         </div>
                                     </div>
