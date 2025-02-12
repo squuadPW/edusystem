@@ -732,17 +732,17 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
         create_user_student($student_id);
 
         $query = $wpdb->prepare("
-            UPDATE {$table_student_payment} AS a
+            UPDATE {$table_student_payment} AS main
             INNER JOIN (
-                SELECT MIN(id) AS min_id
+                SELECT product_id, MIN(id) AS min_id
                 FROM {$table_student_payment}
                 WHERE student_id = %d
                 AND status_id = 0
                 GROUP BY product_id
-            ) AS b ON a.id = b.min_id
-            SET a.status_id = 1
+            ) AS sub ON main.product_id = sub.product_id AND main.id = sub.min_id
+            SET main.status_id = 1
         ", $student_id);
-
+        
         $wpdb->query($query);
 
         if ($order->get_meta('id_bitrix')) {
@@ -750,8 +750,7 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
         }
 
         update_status_student($student_id, 1);
-        // generate_projection_student($student_id);
-        // automatically_enrollment($student_id);
+        set_max_date_student($student_id);
 
         $email_request_documents = WC()->mailer()->get_emails()['WC_Request_Documents_Email'];
         $email_request_documents->trigger($student_id);
