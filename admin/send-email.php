@@ -93,7 +93,7 @@ function send_pending_payments_email() {
                 $email_user->trigger(
                     $user_customer, 
                     'You have pending payments', 
-                    'We invite you to log in to our platform as soon as possible so you can see your pending payments.'
+                    'We invite you to log in to our platform as soon as possible to make your pending payments and avoid being suspended from the virtual classroom.'
                 );
                 
                 // Registrar al cliente como notificado
