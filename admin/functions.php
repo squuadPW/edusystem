@@ -843,6 +843,13 @@ function monthly_invoice_alliance()
     exit;
 }
 
+add_action('create_pending_payment_email_weekly', 'weekly_pending_payment');
+function weekly_pending_payment()
+{
+    send_pending_payments_email();
+    exit;
+}
+
 add_action('send_email_remember_documents_student', 'send_email_remember_documents_student');
 function send_email_remember_documents_student()
 {
