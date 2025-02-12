@@ -816,5 +816,9 @@ function set_max_date_student($student_id) {
         $wpdb->update($table_students, [
             'max_access_date' => $max_date
         ], ['id' => $student_id]);
+    } else {
+        $wpdb->update($table_students, [
+            'max_access_date' => NULL
+        ], ['id' => $student_id]);
     }
 }
