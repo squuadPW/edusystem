@@ -436,7 +436,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
             ]);
         }
 
-        $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND code_subject IS NOT NULL");
+        $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND code_subject IS NOT NULL AND code_subject <> ''");
         if ($inscriptions) {
 
             foreach ($inscriptions as $key => $inscription) {
