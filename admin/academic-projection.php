@@ -539,7 +539,27 @@ function get_moodle_notes()
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
-    $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
+    $load = load_current_cut();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+
+    $conditions = array();
+    $params = array();
+
+    if (!empty($cut)) {
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND code_subject IS NOT NULL AND code_subject <> ''");
+        $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
+        $params = array_merge($params, $cut_student_ids);
+    }
+
+    $query = "SELECT * FROM {$table_students}";
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $students = $wpdb->get_results($wpdb->prepare($query, $params));
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
@@ -548,13 +568,13 @@ function get_moodle_notes()
         $moodle_student_id = $student->moodle_student_id;
 
         if ($moodle_student_id) {
+            $projection_student = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
             $assignments = student_assignments_moodle($student->id);
             $assignments_course = $assignments['assignments'];
             $assignments_student = $assignments['grades'];
             $formatted_assignments = [];
 
             foreach ($assignments_course as $key => $assignment_c) {
-                $projection_student = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
                 $course_id = (int) $assignment_c['id'];
                 $filtered_course_student = array_filter($assignments_student, function ($entry) use ($course_id) {
                     return $entry['course_id'] == $course_id;
