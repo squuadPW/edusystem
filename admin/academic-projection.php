@@ -76,7 +76,7 @@ function add_admin_form_academic_projection_content()
                     if ($student) {
                         // Verificar si el estudiante ya fue agregado
                         if (!in_array($student->id, $added_student_ids)) {
-                            array_push($students, ['student' => $student, 'calification' => $inscription->calification]);
+                            array_push($students, ['student' => $student, 'calification' => $inscription->calification ?? 0]);
                             $added_student_ids[] = $student->id; // Registrar el ID del estudiante
                         }
                     }
