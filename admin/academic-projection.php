@@ -55,34 +55,33 @@ function add_admin_form_academic_projection_content()
 
         if ($_GET['section_tab'] == 'validate_enrollment_subject') {
             global $wpdb;
-            $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+            $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
             $table_students = $wpdb->prefix . 'students';
             $table_teachers = $wpdb->prefix . 'teachers';
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $table_school_subjects = $wpdb->prefix . 'school_subjects';
-            $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
             $projections_result = [];
             $students = [];
 
             $academic_period = $_GET['academic_period'];
             $academic_period_cut = $_GET['academic_period_cut'];
             $subject_id = $_GET['subject_id'];
-            if ((isset($academic_period) && !empty($academic_period)) && (isset($academic_period_cut) && !empty($academic_period_cut))) {
-                foreach ($projections as $projection) {
-                    $projection_obj = json_decode($projection->projection);
-                    $filtered_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut, $subject_id) {
-                        return $item->subject_id === $subject_id && ($item->code_period == $academic_period && $item->cut == $academic_period_cut);
-                    });
+            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$subject_id}");
 
-                    if (count(array_values($filtered_arr)) > 0) {
-                        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
-                        if ($student) {
-                            array_push($students, ['student' => $student, 'calification' => (int) array_values($filtered_arr)[0]->calification]);
+            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$academic_period_cut}' AND (status_id = 4 OR status_id = 3) AND (subject_id = {$subject_id} OR code_subject = '{$subject->code_subject}')");
+            if ((isset($academic_period) && !empty($academic_period)) && (isset($academic_period_cut) && !empty($academic_period_cut))) {
+                $added_student_ids = array(); // Array para rastrear IDs de estudiantes agregados
+                foreach ($inscriptions as $key => $inscription) {
+                    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$inscription->student_id}");
+                    if ($student) {
+                        // Verificar si el estudiante ya fue agregado
+                        if (!in_array($student->id, $added_student_ids)) {
+                            array_push($students, ['student' => $student, 'calification' => $inscription->calification]);
+                            $added_student_ids[] = $student->id; // Registrar el ID del estudiante
                         }
                     }
                 }
-
-                $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$subject_id}");
+            
                 $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id = {$subject->teacher_id}");
                 $academic_period_result = $wpdb->get_row("SELECT * FROM {$table_academic_periods} WHERE code = {$academic_period}");
             }
@@ -606,7 +605,7 @@ function get_moodle_notes()
                         $status_id = $total_grade >= $subject->min_pass ? 3 : 4;
 
                         foreach ($projection_obj as $key => $prj) {
-                            if ($prj->subject_id == $subject->id && ((isset($prj->code_period) && !empty($prj->code_period)) && (isset($prj->cut) && !empty($prj->cut)))) {
+                            if ($prj->subject_id == $subject->id) {
                                 $prj->calification = $total_grade;
                                 $prj->this_cut = false;
 
