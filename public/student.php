@@ -793,7 +793,28 @@ function view_access_classroom()
         return;
     }
 
+    $today = date('Y-m-d');
+    if ($data->max_access_date && $data->max_access_date < $today) {
+        return;
+    }
+
     include(plugin_dir_path(__FILE__) . 'templates/student-access-classroom.php');
 }
 
 add_action('woocommerce_account_dashboard', 'view_access_classroom');
+
+
+function set_max_date_student($student_id) {
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+    $next_payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE status_id = 0 AND student_id = {$student_id} AND date_payment IS NULL ORDER BY cuote ASC");
+    if ($next_payment) {
+        $date = $next_payment->date_next_payment;
+        $days = (int) get_option('payment_due');
+        $max_date = date('Y-m-d', strtotime("$date + $days days"));
+        $wpdb->update($table_students, [
+            'max_access_date' => $max_date
+        ], ['id' => $student_id]);
+    }
+}
