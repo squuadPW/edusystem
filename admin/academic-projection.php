@@ -128,14 +128,14 @@ function add_admin_form_academic_projection_content()
             }
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
             exit;
-        }  else if (isset($_GET['action']) && $_GET['action'] == 'auto_enroll') {
+        } else if (isset($_GET['action']) && $_GET['action'] == 'auto_enroll') {
             global $wpdb;
             $student_id = $_GET['student_id'];
             $projection_id = $_GET['projection_id'];
             automatically_enrollment($student_id);
-            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id='.$projection_id));
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
-        }  else if (isset($_GET['action']) && $_GET['action'] == 'activate_elective') {
+        } else if (isset($_GET['action']) && $_GET['action'] == 'activate_elective') {
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
             $student_id = $_GET['student_id'];
@@ -143,7 +143,7 @@ function add_admin_form_academic_projection_content()
             $wpdb->update($table_students, [
                 'elective' => 1
             ], ['id' => $student_id]);
-            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id='.$projection_id));
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'send_welcome_email') {
             global $wpdb;
@@ -539,7 +539,27 @@ function get_moodle_notes()
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
-    $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
+    $load = load_current_cut();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+
+    $conditions = array();
+    $params = array();
+
+    if (!empty($cut)) {
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND code_subject IS NOT NULL AND code_subject <> ''");
+        $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
+        $params = array_merge($params, $cut_student_ids);
+    }
+
+    $query = "SELECT * FROM {$table_students}";
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $students = $wpdb->get_results($wpdb->prepare($query, $params));
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
@@ -548,13 +568,13 @@ function get_moodle_notes()
         $moodle_student_id = $student->moodle_student_id;
 
         if ($moodle_student_id) {
+            $projection_student = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
             $assignments = student_assignments_moodle($student->id);
             $assignments_course = $assignments['assignments'];
             $assignments_student = $assignments['grades'];
             $formatted_assignments = [];
 
             foreach ($assignments_course as $key => $assignment_c) {
-                $projection_student = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
                 $course_id = (int) $assignment_c['id'];
                 $filtered_course_student = array_filter($assignments_student, function ($entry) use ($course_id) {
                     return $entry['course_id'] == $course_id;
@@ -601,10 +621,22 @@ function get_moodle_notes()
                                     $prj->welcome_email = true;
                                 }
 
-                                $wpdb->update($table_student_period_inscriptions, [
-                                    'status_id' => $status_id,
-                                    'calification' => $total_grade,
-                                ], ['student_id' => $student->id, 'subject_id' => $subject->id, 'status_id' => 1]);
+                                $query = $wpdb->prepare(
+                                    "UPDATE {$table_student_period_inscriptions} 
+                                    SET status_id = %d, 
+                                        calification = %d 
+                                    WHERE student_id = %d 
+                                        AND status_id = %d 
+                                        AND (subject_id = %d OR code_subject = %s)",
+                                    $status_id,
+                                    $total_grade,
+                                    $student->id,
+                                    1,
+                                    $subject->id,
+                                    $subject->code_subject
+                                );
+
+                                $wpdb->query($query);
                             }
                         }
 
