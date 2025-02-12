@@ -64,9 +64,41 @@ function add_admin_form_send_email_content()
                 }
             }
 
+        } else if($_GET['action'] == 'send_pending_payments_email') {
+            send_pending_payments_email();
+            wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
         }
     }
 
     $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
     include (plugin_dir_path(__FILE__) . 'templates/send-email.php');
+}
+
+function send_pending_payments_email() {
+    $orders = wc_get_orders(array(
+        'status' => 'pending'
+    ));
+    
+    $sent_customers = array(); // Almacena IDs de clientes ya notificados
+    
+    foreach ($orders as $key => $order) {
+        $customer_id = $order->get_customer_id();
+        
+        // Verificar si ya se notificó a este cliente
+        if (!in_array($customer_id, $sent_customers)) {
+            $user_customer = get_user_by('id', $customer_id);
+            
+            if ($user_customer) {
+                $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                $email_user->trigger(
+                    $user_customer, 
+                    'You have pending payments', 
+                    'We invite you to log in to our platform as soon as possible so you can see your pending payments.'
+                );
+                
+                // Registrar al cliente como notificado
+                $sent_customers[] = $customer_id;
+            }
+        }
+    }
 }

@@ -107,14 +107,17 @@
                       <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=clear_electives') ?>"><button type="button" class="btn btn-primary"><?= __('Deactivate the elective selector and mark that they did not see electives during this period <br> that were not their turn (this will bring them forward in the projection)', 'aes'); ?></button></a>
                   </div>
                   <div class="form-group" style="text-align: center">
-                      <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_welcome_email') ?>"><button type="button" class="btn btn-primary"><?= __('Send welcome mailing to all students (including those with or without academic load)', 'aes'); ?></button></a>
-                  </div>
-                  <div class="form-group" style="text-align: center">
                       <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projections') ?>"><button type="button" class="btn btn-primary"><?= __('Generate pending academic projections', 'aes'); ?></button></a>
                   </div>
-                  <!-- <div class="form-group" style="text-align: center">
-                      <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_not_enrolled_email') ?>"><button type="button" class="btn btn-primary"><?= __('Send Send email to students without enrollment', 'aes'); ?></button></a>
-                  </div> -->
+                  <div style="text-align: center; margin-bottom: 10px">
+                    <span>Emails</span>
+                  </div>
+                  <div class="form-group" style="text-align: center">
+                      <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_welcome_email') ?>"><button type="button" class="btn btn-success"><?= __('Send welcome mailing to all students (including those with or without academic load)', 'aes'); ?></button></a>
+                  </div>
+                  <div class="form-group" style="text-align: center">
+                      <a href="<?= admin_url('admin.php?page=add_admin_form_send_email_content&action=send_pending_payments_email') ?>"><button type="button" class="btn btn-success"><?= __('Send pending payment mail', 'aes'); ?></button></a>
+                  </div>
                   <div style="text-align: center; margin-bottom: 10px">
                     <span>Temporally</span>
                   </div>
