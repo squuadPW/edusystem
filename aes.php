@@ -395,6 +395,7 @@ function create_tables()
         set_password BOOLEAN NOT NULL DEFAULT 0,
         updated_at DATETIME NULL,
         created_at DATETIME NOT NULL,
+        max_access_date DATE NULL,
         PRIMARY KEY (id))$charset_collate;"
     );
   }

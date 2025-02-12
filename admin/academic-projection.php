@@ -326,6 +326,16 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
+        } else if (isset($_GET['action']) && $_GET['action'] == 'set_max_access_date') {
+            global $wpdb;
+            $table_students = $wpdb->prefix . 'students';
+
+            $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
+            foreach ($students as $key => $student) {
+                set_max_date_student($student->id);
+            }
+            wp_redirect(admin_url('/admin.php?page=add_admin_form_configuration_options_content'));
+            exit;
         } else {
             $list_academic_projection = new TT_academic_projection_all_List_Table;
             $list_academic_projection->prepare_items();

@@ -62,6 +62,13 @@
             <span>></span><input type="number" id="payment-due" name="payment_due"
               value="<?php echo get_option('payment_due') ?>" required>
           </div>
+          <div class="form-group">
+            <a style="margin: 5px"
+              href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=set_max_access_date') ?>"
+              class="button button-outline-primary" onclick="return confirm('Are you sure?');">
+              <?= __('Update max date students', 'aes'); ?>
+            </a>
+          </div>
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="student-continue" name="student_continue" <?php echo get_option('student_continue') == 'on' ? 'checked' : '' ?>>
             <label
@@ -173,6 +180,13 @@
                 href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=fix_projections') ?>"
                 class="button button-outline-primary" onclick="return confirm('Are you sure?');">
                 <?= __('Fixes projections (welcome email sent field)', 'aes'); ?>
+              </a>
+            </div>
+            <div>
+              <a style="margin: 5px"
+                href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=set_max_access_date') ?>"
+                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
+                <?= __('Set max date students', 'aes'); ?>
               </a>
             </div>
           </div>
