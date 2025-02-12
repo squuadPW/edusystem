@@ -539,9 +539,10 @@ function get_moodle_notes()
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
-    $load = load_current_cut();
+    $load = load_last_cut();
     $academic_period = $load['code'];
     $cut = $load['cut'];
+    error_log('cut ' . $cut);
 
     $conditions = array();
     $params = array();
