@@ -19,6 +19,7 @@ function add_admin_form_academic_projection_content()
         if ($_GET['section_tab'] == 'validate_enrollments') {
             global $wpdb;
             $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+            $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
             $table_students = $wpdb->prefix . 'students';
             $table_school_subjects = $wpdb->prefix . 'school_subjects';
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
@@ -31,18 +32,20 @@ function add_admin_form_academic_projection_content()
             $academic_period_cut = $_POST['academic_period_cut'];
             if ((isset($academic_period) && !empty($academic_period)) && (isset($academic_period_cut) && !empty($academic_period_cut))) {
                 foreach ($subjects as $subject) {
-                    $count = 0; // Inicializa el contador para cada subject
-                    foreach ($projections as $projection) {
-                        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$projection->student_id}");
+                    $count = 0;
+                    $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$academic_period_cut}' AND (subject_id = {$subject->id} OR code_subject = '{$subject->code_subject}')");
+                    $added_student_ids = array(); // Array para rastrear IDs de estudiantes agregados
+                    foreach ($inscriptions as $key => $inscription) {
+                        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$inscription->student_id}");
                         if ($student) {
-                            $projection_obj = json_decode($projection->projection);
-                            $history_arr = array_filter($projection_obj, function ($item) use ($academic_period, $academic_period_cut, $subject) {
-                                return $item->subject_id === $subject->id && ($item->code_period == $academic_period && $item->cut == $academic_period_cut);
-                            });
-                            // Sumar la cantidad si hay coincidencias
-                            $count += count(array_values($history_arr));
+                            // Verificar si el estudiante ya fue agregado
+                            if (!in_array($student->id, $added_student_ids)) {
+                                $count++;
+                                $added_student_ids[] = $student->id; // Registrar el ID del estudiante
+                            }
                         }
                     }
+
                     // Solo agregar al resultado si hay coincidencias
                     if ($count > 0) {
                         $projections_result[$subject->name] = ['count' => $count, 'subject_id' => $subject->id, 'academic_period' => $academic_period, 'academic_period_cut' => $academic_period_cut]; // Usa el nombre del subject como clave
@@ -653,8 +656,9 @@ function get_moodle_notes()
 function get_literal_note($calification)
 {
     if (!$calification) {
-        return 'N/A';
+        return 0;
     }
+    $calification = (int)$calification;
     $note = 'A+';
     switch ($calification) {
         case $calification >= 95:
@@ -691,8 +695,9 @@ function get_literal_note($calification)
 function get_calc_note($calification)
 {
     if (!$calification) {
-        return 'N/A';
+        return 0;
     }
+    $calification = (int)$calification;
     $note = 'abc';
     switch ($calification) {
         case $calification >= 95:
