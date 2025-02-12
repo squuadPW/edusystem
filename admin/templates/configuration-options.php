@@ -177,13 +177,6 @@
             </div>
             <div>
               <a style="margin: 5px"
-                href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=fix_projections') ?>"
-                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Fixes projections (welcome email sent field)', 'aes'); ?>
-              </a>
-            </div>
-            <div>
-              <a style="margin: 5px"
                 href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=set_max_access_date') ?>"
                 class="button button-outline-primary" onclick="return confirm('Are you sure?');">
                 <?= __('Set max date students', 'aes'); ?>
