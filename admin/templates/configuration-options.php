@@ -36,7 +36,7 @@
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
             <label for="documents-ok"><?= __('Days elapsed to display documents in green (less than)'); ?></label> <br>
             <span>
-              << /span><input type="number" id="documents-ok" name="documents_ok"
+              < </span><input type="number" id="documents-ok" name="documents_ok"
                   value="<?php echo get_option('documents_ok') ?>" required>
           </div>
           <div class="form-group" style="padding: 10px">
@@ -44,7 +44,7 @@
               for="documents-warning"><?= __('Days elapsed to display documents in warning (less than)'); ?></label>
             <br>
             <span>
-              << /span><input type="number" id="documents-warning" name="documents_warning"
+              < </span><input type="number" id="documents-warning" name="documents_warning"
                   value="<?php echo get_option('documents_warning') ?>" required>
           </div>
           <div class="form-group" style="padding: 10px">
