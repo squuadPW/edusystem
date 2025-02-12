@@ -68,7 +68,7 @@ function add_admin_form_academic_projection_content()
             $subject_id = $_GET['subject_id'];
             $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$subject_id}");
 
-            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$academic_period_cut}' AND (status_id = 4 OR status_id = 3) AND (subject_id = {$subject_id} OR code_subject = '{$subject->code_subject}')");
+            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$academic_period_cut}' AND (subject_id = {$subject_id} OR code_subject = '{$subject->code_subject}')");
             if ((isset($academic_period) && !empty($academic_period)) && (isset($academic_period_cut) && !empty($academic_period_cut))) {
                 $added_student_ids = array(); // Array para rastrear IDs de estudiantes agregados
                 foreach ($inscriptions as $key => $inscription) {
