@@ -1116,7 +1116,7 @@ function template_not_enrolled($student) {
 
     $text .= '<br>';
     $text .= '<div>';
-    $text .= 'Si anteriormente recibió un correo electrónico con su carga académica, se debió a una actualización del sistema y le pedimos disculpas. Aquí está su carga académica correcta.';
+    $text .= 'Si anteriormente recibió un correo electrónico con su carga académica, se debió a una actualización del sistema y le pedimos disculpas.';
     $text .= '</div>';
 
     $text .= '<br>';
@@ -1142,7 +1142,7 @@ function template_not_enrolled($student) {
 
     $text .= '<br>';
     $text .= '<div>';
-    $text .= 'If you previously received an email with your academic load, it was due to a system update and we apologize. Here is your correct academic load.';
+    $text .= 'If you previously received an email with your academic load, it was due to a system update and we apologize.';
     $text .= '</div>';
 
     $text .= '<br>';
