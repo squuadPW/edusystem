@@ -2022,6 +2022,12 @@ function verificar_contraseña()
 function modal_take_elective()
 {
     global $wpdb, $current_user;
+
+    $roles = $current_user->roles;
+    if (!in_array('student', $roles)) {
+        return;
+    }
+
     $table_students = $wpdb->prefix . 'students';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
