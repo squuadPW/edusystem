@@ -846,6 +846,8 @@ function send_welcome_subjects($student_id)
         return;
     }
     $projection_obj = json_decode($projection->projection);
+    $load = load_current_cut();
+    $cut = $load['cut'];
 
     $filteredArray = array_filter($projection_obj, function ($item) {
         return $item->this_cut == true && $item->welcome_email == false;
@@ -861,7 +863,7 @@ function send_welcome_subjects($student_id)
 
     $text = '';
     if (count($filteredArray) == 0 && !$student->elective) {
-        if ($student->initial_cut != 'D') {
+        if ($student->initial_cut != $cut) {
             $text = template_not_enrolled($student);
         }
     } else {
