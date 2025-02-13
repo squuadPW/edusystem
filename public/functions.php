@@ -2036,8 +2036,10 @@ function modal_take_elective()
     $conditions = array();
     $params = array();
 
-    $electives_ids = $wpdb->get_col("SELECT subject_id FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND status_id != 4 AND subject_id IS NOT NULL");
-    $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
+    $electives_ids = $wpdb->get_col("SELECT subject_id FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND status_id != 4 AND code_subject IS NOT NULL AND code_subject <> '' AND subject_id IS NOT NULL AND subject_id <> ''");
+    if ($electives_ids) {
+        $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
+    }
     $conditions[] = "is_elective = 1";
     $conditions[] = "is_open = 1";
     $params = array_merge($params, $electives_ids);
