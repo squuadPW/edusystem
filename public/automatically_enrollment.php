@@ -859,10 +859,17 @@ function send_welcome_subjects($student_id)
         $filteredArray = array_values($filteredArray);
     }
 
+    $text = '';
     if (count($filteredArray) == 0 && !$student->elective) {
-        $text = template_not_enrolled($student);
+        if ($student->initial_cut != 'D') {
+            $text = template_not_enrolled($student);
+        }
     } else {
         $text = template_welcome_subjects($filteredArray, $student);
+    }
+
+    if (empty($text)) {
+        return;
     }
 
     $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
