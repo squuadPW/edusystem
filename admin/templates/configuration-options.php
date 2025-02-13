@@ -74,6 +74,11 @@
             <label
               for="student-continue"><?= __('Show button for students to register for the next academic cut'); ?></label>
           </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="virtual-access" name="virtual_access" <?php echo get_option('virtual_access') == 'on' ? 'checked' : '' ?>>
+            <label
+              for="virtual-access"><?= __('Show button for virtual classroom'); ?></label>
+          </div>
         </div>
         <div id="by_moodle" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
