@@ -6,6 +6,7 @@
 
 <div class="wrap">
     <?php if (isset($projection) && !empty($projection)): ?>
+        <h2 style="margin-bottom:15px;"><?= __('Academic projection', 'aes'); ?></h2>
     <?php else: ?>
         <h2 style="margin-bottom:15px;"><?= __('Not found', 'aes'); ?></h2>
     <?php endif; ?>
@@ -22,15 +23,18 @@
         </div>
         <?php setcookie('message-error', '', time(), '/'); ?>
     <?php } ?>
-    <div style="display:flex;width:100%;">
-        <a class="button button-outline-primary"
-            href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content'); ?>"><?= __('Back', 'aes'); ?></a>
+    <div>
+        <div style="display:flex; justify-content: start;">
+            <a class="button button-outline-primary" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content'); ?>"><?= __('Back', 'aes'); ?></a>
+        </div>
+        <div style="display:flex; justify-content: end;">
             <?php 
                 include(plugin_dir_path(__FILE__).'connections-student.php');
             ?>
             <?php if (in_array('administrator', $roles)) { ?>
                 <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=auto_enroll&student_id=') . $student->id . '&projection_id='.$projection->id ?>" class="button button-outline-primary" onclick="return confirm('Estas seguro de inscribir en base a la matriz de proyeccion academica?');"><?= __('Auto-enroll','aes'); ?></a>
             <?php } ?>
+        </div>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder">
