@@ -1778,7 +1778,9 @@ function student_continue_callback()
         'cut_period' => $projection_obj[count($projection_obj) - 1]['cut']
     ]);
 
-    enroll_student($projection->student_id, [$subject->moodle_course_id]);
+    if(get_option('auto_enroll_elective')) {
+        enroll_student($projection->student_id, [$subject->moodle_course_id]);
+    }
 
     wp_send_json(array('success' => true));
     exit;
