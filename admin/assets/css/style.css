@@ -468,4 +468,8 @@ div#application-passwords-section {
 .projection-report-template:hover {
   transform: scale(1.02) !important;
   transition: 100ms;
+}
+
+.text-uppercase {
+  text-transform: uppercase !important;
 }/*# sourceMappingURL=style.css.map */
