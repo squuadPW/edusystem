@@ -1,0 +1,22 @@
+<?php
+    $student_id = $student->id;
+    $email = $student->email;
+    $projection = get_projection_by_student($student_id);
+?>
+
+<div style="margin-left: 5px; margin-right: 5px;">
+    <?php if($projection) { ?>
+        <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=') . $projection->id ?>"
+            class="button button-outline-primary">
+            <?= __('Academic projection', 'aes'); ?>
+        </a>
+    <?php } ?>
+    <a href="<?= admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id; ?>"
+        class="button button-outline-primary">
+        <?= __('Admission', 'aes'); ?>
+    </a>
+    <a href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=') . $email ?>"
+        class="button button-outline-primary">
+        <?= __('Payments', 'aes'); ?>
+    </a>
+</div>

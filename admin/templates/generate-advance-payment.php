@@ -16,6 +16,11 @@
 		<div style="text-align:start;">
 			<h1 class="wp-heading-line"><?= __('Generate user invoice', 'aes'); ?></h1>
 		</div>
+		<div style="display:flex;width:100%;justify-content:end">
+            <?php 
+                include(plugin_dir_path(__FILE__).'connections-student.php');
+            ?>
+    	</div>
 		<form method="post"
 			action="<?= admin_url('admin.php?page=add_admin_form_payments_content&action=generate_payment'); ?>">
 			<div class="form-group" style="padding: 0px 10px 10px 10px; text-align: center">

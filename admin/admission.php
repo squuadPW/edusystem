@@ -567,9 +567,9 @@ class TT_document_review_List_Table extends WP_List_Table
 
                 if (in_array('owner', $roles) || in_array('administrator', $roles)) {
                     $user_student = get_user_by('email', $item['email']);
-                    return '<a href="' . $url . $user_student->ID . '" target="_blank">' . $item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name'] . '</a>';
+                    return '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name']) . '</a>';
                 } else {
-                    return $item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name'];
+                    return strtoupper($item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name']);
                 }
 
             case 'program':
@@ -819,11 +819,11 @@ class TT_all_student_List_Table extends WP_List_Table
             case 'index':
                 return $item['index'];
             case 'student':
-                return $item['student'];
+                return strtoupper($item['student']);
             case 'email':
                 return $item['email'];
             case 'parent':
-                return $item['parent'];
+                return strtoupper($item['parent']);
             case 'program':
                 $program = get_name_program($item['program_id']);
                 return $program;

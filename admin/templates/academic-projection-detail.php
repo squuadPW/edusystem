@@ -6,12 +6,6 @@
 
 <div class="wrap">
     <?php if (isset($projection) && !empty($projection)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Academic projection of ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . ' (' . $student->id_document . ')', 'aes'); ?>
-            <a href="<?= admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student->id ?>" target="_blank">(View in Admission)</a>
-            <?php if (in_array('administrator', $roles)) { ?>
-                <a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=auto_enroll&student_id=') . $student->id . '&projection_id='.$projection->id ?>" class="button button-outline-primary" onclick="return confirm('Estas seguro de inscribir en base a la matriz de proyeccion academica?');"><?= __('Auto-enroll','aes'); ?></a>
-            <?php } ?>
-        </h2>
     <?php else: ?>
         <h2 style="margin-bottom:15px;"><?= __('Not found', 'aes'); ?></h2>
     <?php endif; ?>
@@ -31,6 +25,12 @@
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary"
             href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content'); ?>"><?= __('Back', 'aes'); ?></a>
+            <?php 
+                include(plugin_dir_path(__FILE__).'connections-student.php');
+            ?>
+            <?php if (in_array('administrator', $roles)) { ?>
+                <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=auto_enroll&student_id=') . $student->id . '&projection_id='.$projection->id ?>" class="button button-outline-primary" onclick="return confirm('Estas seguro de inscribir en base a la matriz de proyeccion academica?');"><?= __('Auto-enroll','aes'); ?></a>
+            <?php } ?>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder">
@@ -38,6 +38,30 @@
             <div id="normal-sortables">
                 <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
                     <div class="inside">
+
+                        <table class="form-table table-customize" style="margin-top:0px;">
+                            <tbody>
+                                <tr>
+                                    <p style="text-align: center; padding: 12px !important">
+                                        <label for="grade" style="font-size: 24px;"><b><?= strtoupper(__($student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name, 'aes')); ?></b></label>
+                                    </p>
+                                </tr>
+                                <tr>
+                                    <th scope="row" style="font-weight:400; text-align: center">
+                                        <label for="grade"><b><?php _e('Grade', 'aes'); ?></b></label><br>
+                                        <?php foreach ($grades as $grade): ?>
+                                            <?php if($student->grade_id == $grade->id) { ?>
+                                                <label for="grade"><b><?= $grade->name; ?> <?= $grade->description; ?></b></label>
+                                            <?php } ?>
+                                        <?php endforeach; ?>
+                                    </th>
+                                    <th scope="row" style="font-weight:400; text-align: center">
+                                        <label for="grade"><b><?php _e('Initial period and cut', 'aes'); ?></b></label><br>
+                                        <label for="grade"><b><?= $student->academic_period . ' - ' . $student->initial_cut ?></b></label>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
 
                         <form method="post"
                             action="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=save_academic_projection'); ?>">
