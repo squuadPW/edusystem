@@ -849,25 +849,29 @@ function send_welcome_subjects($student_id)
     $load = load_current_cut();
     $cut = $load['cut'];
 
-    $filteredArray = array_filter($projection_obj, function ($item) {
+    $subjectsPendingWelcome = array_filter($projection_obj, function ($item) {
         return $item->this_cut == true && $item->welcome_email == false;
+    });
+    $subjectsPendingWelcome = array_values($subjectsPendingWelcome);
+
+    $filteredArray = array_filter($projection_obj, function ($item) {
+        return $item->this_cut == true;
     });
     $filteredArray = array_values($filteredArray);
 
-    if (count($filteredArray) > 0) {
-        $filteredArray = array_filter($projection_obj, function ($item) {
-            return $item->this_cut == true;
-        });
-        $filteredArray = array_values($filteredArray);
-    }
-
     $text = '';
-    if (count($filteredArray) == 0 && !$student->elective) {
-        if ($student->initial_cut != $cut) {
-            $text = template_not_enrolled($student);
-        }
-    } else {
+    if (count($subjectsPendingWelcome) > 0) {
         $text = template_welcome_subjects($filteredArray, $student);
+    } else {
+        if (count($filteredArray) == 0) {
+            if ($student->elective) {
+                $text = template_welcome_subjects($filteredArray, $student);
+            } else {
+                if ($student->initial_cut != $cut) {
+                    $text = template_not_enrolled($student);
+                }
+            }
+        }
     }
 
     if (empty($text)) {
