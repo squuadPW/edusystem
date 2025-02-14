@@ -1,4 +1,6 @@
 <?php
+    global $current_user;
+    $roles = $current_user->roles;
     $student_id = $student->id;
     $email = $student->email;
     $projection = get_projection_by_student($student_id);
@@ -15,8 +17,10 @@
         class="button button-outline-primary">
         <?= __('Admission', 'aes'); ?>
     </a>
-    <a href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=') . $email ?>"
-        class="button button-outline-primary">
-        <?= __('Payments', 'aes'); ?>
-    </a>
+    <?php if (in_array('administration', $roles) || in_array('administrator', $roles) || in_array('owner', $roles) || in_array('administrador', $roles)) { ?>
+        <a href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=') . $email ?>"
+            class="button button-outline-primary">
+            <?= __('Payments', 'aes'); ?>
+        </a>
+    <?php } ?>
 </div>
