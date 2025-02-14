@@ -8,11 +8,13 @@ function add_admin_form_academic_projection_content()
             global $wpdb;
             $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
+            $table_grades = $wpdb->prefix . 'grades';
             $projection_id = $_GET['projection_id'];
             $projection = get_projection_details($projection_id);
             $student = get_student_detail($projection->student_id);
             $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND code_subject IS NOT NULL AND code_subject <> ''");
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+            $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-detail.php');
         }
 
@@ -513,6 +515,17 @@ function get_projection_details($projection_id)
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE id={$projection_id}");
     return $projection;
 }
+
+
+function get_projection_by_student($student_id)
+{
+    global $wpdb;
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+
+    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
+    return $projection;
+}
+
 
 function generate_enroll_student()
 {
