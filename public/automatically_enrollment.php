@@ -911,13 +911,7 @@ function template_welcome_subjects($filteredArray, $student) {
     $end_date = $date_end->format('l, F j, Y');
     $text = '';
     $text .= '<div>';
-    $text .= 'Estimado(a) estudiante ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos permitimos anunciarle que, por disposición del Departamento de Educación de Florida y, dando cumplimiento a nuestro compromiso de trabajar en la mejora continua, el inicio de clases periodo ' . $cut . ' del programa Dual Diploma de American Elite School se ha reprogramado, teniendo su inicio el ' . translateDateToSpanish(dateString: $start_date);
-    $text .= '</div>';
-
-    $text .= '<br>';
-
-    $text .= '<div>';
-    $text .= 'Esta actualización garantiza que nuestros estudiantes continúen recibiendo la mejor experiencia educativa con herramientas optimizadas y alineadas con los más altos estándares académicos. Marcando el inicio del Periodo ' . $cut . ' correspondiente al Año Escolar ' . $academic_period;
+    $text .= 'Estimado(a) estudiante ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos complace anunciarle el inicio del Periodo ' . $cut . ', correspondiente al Año Escolar ' . $academic_period;
     $text .= '</div>';
 
     $text .= '<br>';
@@ -979,13 +973,7 @@ function template_welcome_subjects($filteredArray, $student) {
 
     
     $text .= '<div>';
-    $text .= 'Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', on behalf of the academic team at American Elite School, located in Doral, Florida, USA, we would like to inform you that, in accordance with the Florida Department of Education\'s guidelines and in compliance with our commitment to continuous improvement, the start of classes for Period ' . $cut . ' of the Dual Diploma Program at American Elite School has been rescheduled to begin on ' . $start_date;
-    $text .= '</div>';
-
-    $text .= '<br>';
-
-    $text .= '<div>';
-    $text .= 'This update ensures that our students continue to receive the best educational experience with optimized tools and aligned with the highest academic standards, marking the start of Period ' . $cut . ' for the ' . $academic_period . ' school year.';
+    $text .= 'Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', on behalf of the academic team of American Elite School, based in the city of Doral, Florida-USA, we are pleased to announce the beginning of Period ' . $cut . ', corresponding to the School Year ' . $academic_period;
     $text .= '</div>';
 
     $text .= '<br>';
@@ -1105,11 +1093,6 @@ function template_not_enrolled($student) {
     $text .= '</div>';
 
     $text .= '<br>';
-    $text .= '<div>';
-    $text .= 'Si anteriormente recibió un correo electrónico con su carga académica, se debió a una actualización del sistema y le pedimos disculpas.';
-    $text .= '</div>';
-
-    $text .= '<br>';
     $text .= '<div> Dejamos a su disposición enlaces y contactos de interés: </div>';
 
     $text .= '<ul>';
@@ -1128,11 +1111,6 @@ function template_not_enrolled($student) {
 
     $text .= '<div>';
     $text .= 'Since Period ' . $cut . ' starts on ' . $start_date . ' and ends on ' . $end_date . ', we invite you to stay alert to your emails where you will be notified of the academic load for the following period.';
-    $text .= '</div>';
-
-    $text .= '<br>';
-    $text .= '<div>';
-    $text .= 'If you previously received an email with your academic load, it was due to a system update and we apologize.';
     $text .= '</div>';
 
     $text .= '<br>';
