@@ -43,7 +43,7 @@
                             <tbody>
                                 <tr>
                                     <p style="text-align: center; padding: 12px !important">
-                                        <label for="grade" style="font-size: 24px;"><b><?= strtoupper(__($student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name, 'aes')); ?></b></label>
+                                        <label for="grade" style="font-size: 24px;" class="text-uppercase"><b><?= strtoupper(__($student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name, 'aes')); ?></b></label>
                                     </p>
                                 </tr>
                                 <tr>

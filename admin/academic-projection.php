@@ -374,7 +374,7 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
             case 'student':
             case 'grade_id':
             case 'initial_cut':
-                return strtoupper($item[$column_name]);
+                return '<label class="text-uppercase">'.strtoupper($item[$column_name]).'</label>';
             case 'view_details':
                 return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $item['academic_projection_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
             default:
