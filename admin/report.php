@@ -159,33 +159,35 @@ function get_orders($start, $end)
     $cuotes_array = array();
     foreach ($cuotes as $cuote) {
         $student = get_student_detail($cuote->student_id);
-        $customer = get_user_by('id', $student->partner_id);
-        $user_student = get_user_by('email', $student->email);
-
-        $cuote->student = (array) $student;
-        $cuote->customer = (array) $customer;
-        $cuote->student_id = $user_student ? $user_student->ID : null;
-
-        $product = wc_get_product($cuote->variation_id ? $cuote->variation_id : $cuote->product_id);
-        $cuote->product = $product->get_name();
-
-        // for fix
-        if ($cuote->product_id != AES_FEE_INSCRIPTION) {
-            $created_at = $cuote->created_at;
-            $month = date('n', strtotime($created_at)); // extract month from date string
-            if ($month == 8) { // August is the 8th month
-                $order_id = $cuote->order_id;
-                $order = wc_get_order($order_id);
-                if ($order) {
-                    $discount_order = $order->get_total_discount();
-                    $value = ($cuote->amount - $discount_order);
-                    $cuote->amount = $value < 0 ? $cuote->amount : $value;
+        if ($student) {
+            $customer = get_user_by('id', $student->partner_id);
+            $user_student = get_user_by('email', $student->email);
+    
+            $cuote->student = (array) $student;
+            $cuote->customer = (array) $customer;
+            $cuote->student_id = $user_student ? $user_student->ID : null;
+    
+            $product = wc_get_product($cuote->variation_id ? $cuote->variation_id : $cuote->product_id);
+            $cuote->product = $product->get_name();
+    
+            // for fix
+            if ($cuote->product_id != AES_FEE_INSCRIPTION) {
+                $created_at = $cuote->created_at;
+                $month = date('n', strtotime($created_at)); // extract month from date string
+                if ($month == 8) { // August is the 8th month
+                    $order_id = $cuote->order_id;
+                    $order = wc_get_order($order_id);
+                    if ($order) {
+                        $discount_order = $order->get_total_discount();
+                        $value = ($cuote->amount - $discount_order);
+                        $cuote->amount = $value < 0 ? $cuote->amount : $value;
+                    }
                 }
             }
+    
+            $cuotes_array[] = $cuote;
+            $receivable += $cuote->amount;
         }
-
-        $cuotes_array[] = $cuote;
-        $receivable += $cuote->amount;
     }
 
     $total_fees = (((($institute_fee + $alliance_fee) + $tax) + $fee_payment) + $fee_system);
