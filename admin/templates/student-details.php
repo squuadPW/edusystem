@@ -22,6 +22,9 @@ $grades = get_grades();
     <?php endif; ?>
     </div>
     <div style="display:flex;width:100%;justify-content:end;">
+        <?php 
+            include(plugin_dir_path(__FILE__).'connections-student.php');
+        ?>
         <button data-id="<?= $student->id; ?>" id="button-export-xlsx"
             class="button button-primary"><?= __('Export Excel', 'aes'); ?></button>
         <!-- <?php 
@@ -66,6 +69,10 @@ $grades = get_grades();
                                                     <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>><?= $grade->name; ?> <?= $grade->description; ?></option>
                                                 <?php endforeach; ?>
                                             </select>
+                                        </th>
+                                        <th scope="row" style="font-weight:400; text-align: center">
+                                            <label for="grade"><b><?php _e('Initial period and cut', 'aes'); ?></b></label><br>
+                                            <input style="width: 100%;" type="text" name="intial_cut_hidden" value="<?= $student->academic_period . ' - ' . $student->initial_cut ?>" disabled>
                                         </th>
                                         <th scope="row" style="font-weight:400; text-align: center">
                                             <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>

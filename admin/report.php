@@ -572,12 +572,12 @@ function list_accounts_receivables()
             foreach ($orders['cuotes'] as $order) {
                 $html .= "<tr>";
                 if ($order->customer['data']) {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true) . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . strtoupper(get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true)) . "</a></td>";
                 } else {
                     $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>N/A</td>";
                 }
                 if ($order->student) {
-                    $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . $order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '') . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . strtoupper($order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '')) . "</a></td>";
                 } else {
                     $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>N/A</td>";
                 }
@@ -624,16 +624,16 @@ function list_report_students()
 
             $html .= "<tr>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</a></td>";
             } else {
-                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</td>";
             }
             $html .= "<td class='column' data-colname='" . __('Student document', 'aes') . "'>" . $student->id_document . "</td>";
             $html .= "<td class='column' data-colname='" . __('Student email', 'aes') . "'>" . $student->email . "</td>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column' data-colname='" . __('Parent', 'aes') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true) . "</a></td>";
+                $html .= "<td class='column' data-colname='" . __('Parent', 'aes') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</a></td>";
             } else {
-                $html .= "<td class='column' data-colname='" . __('Parent', 'aes') . "'>" . get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true) . "</a></td>";
+                $html .= "<td class='column' data-colname='" . __('Parent', 'aes') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</a></td>";
             }
             $html .= "<td class='column' data-colname='" . __('Parent email', 'aes') . "'>" . $parent->user_email . "</td>";
             $html .= "<td class='column' data-colname='" . __('Country', 'aes') . "'>" . $student->country . "</td>";
@@ -680,9 +680,9 @@ function list_report_current_students()
             $html .= "<tr>";
             $html .= "<td class='column' data-colname='" . __('Academic Period - cut', 'aes') . "'>" . $academic_period . ' - ' . $cut . "</td>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</a></td>";
             } else {
-                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</td>";
             }
             $html .= "<td class='column' data-colname='" . __('Subjects', 'aes') . "'>";
             foreach ($student->subjects as $key => $subject) {
@@ -706,9 +706,9 @@ function list_report_current_students()
 
             $html_not_current .= "<tr>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html_not_current .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</a></td>";
+                $html_not_current .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</a></td>";
             } else {
-                $html_not_current .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . "</td>";
+                $html_not_current .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</td>";
             }
             $html_not_current .= "</tr>";
         }
