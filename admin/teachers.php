@@ -98,7 +98,7 @@ function add_admin_form_teachers_content()
                 }
 
 
-                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
+                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_teachers_content&section_tab=teacher_details&teacher_id=' . $teacher_id));
                 exit;
             } else {
@@ -213,7 +213,7 @@ function add_admin_form_teachers_content()
                 }    
             }
 
-            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
+            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_teachers_content&section_tab=teacher_details&teacher_id=' . $teacher_id));
             exit;
         } else {
@@ -396,7 +396,7 @@ function get_teacher_details($teacher_id)
     global $wpdb;
     $table_teachers = $wpdb->prefix . 'teachers';
 
-    $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id='{$teacher_id}' OR email='{$teacher_id}'");
+    $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id='{$teacher_id}' OR id='{$teacher_id}'");
     return $teacher;
 }
 

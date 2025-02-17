@@ -440,7 +440,7 @@ function load_automatically_enrollment($expected_projection, $student)
     $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular}");
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
     $load = load_current_cut_enrollment();
-    $matrix_elective = load_available_electives($student);
+    $matrix_elective = load_available_electives($student, $load['code'], cut: $load['cut']);
     $last_inscriptions_electives_count = load_inscriptions_electives($student);
     $real_electives_inscriptions_count = load_inscriptions_electives_valid($student);
     $code = $load['code'];
@@ -486,14 +486,15 @@ function load_automatically_enrollment($expected_projection, $student)
                         continue;
                     }
 
-                    $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
-                    if (count($active_inscriptions) >= (int) $subject->max_students) {
+                    $offer = get_offer_filtered($subject->id, $code, $cut);
+                    if (!$offer) {
                         $count_expected_subject++;
                         $force_skip = true;
                         continue;
                     }
 
-                    if (!$subject->is_open) {
+                    $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
+                    if (count($active_inscriptions) >= (int) $offer->max_students) {
                         $count_expected_subject++;
                         $force_skip = true;
                         continue;
@@ -594,14 +595,15 @@ function load_automatically_enrollment($expected_projection, $student)
                     continue;
                 }
 
-                $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
-                if (count($active_inscriptions) >= (int) $subject->max_students) {
+                $offer = get_offer_filtered($subject->id, $code, $cut);
+                if (!$offer) {
                     $count_expected_subject++;
                     $force_skip = true;
                     continue;
                 }
 
-                if (!$subject->is_open) {
+                $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
+                if (count($active_inscriptions) >= (int) $offer->max_students) {
                     $count_expected_subject++;
                     $force_skip = true;
                     continue;
@@ -686,7 +688,7 @@ function load_automatically_enrollment($expected_projection, $student)
     }
 }
 
-function load_available_electives($student)
+function load_available_electives($student, $code, $cut)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
@@ -707,7 +709,14 @@ function load_available_electives($student)
     }
 
     $electives = $wpdb->get_results($wpdb->prepare($query, $params));
-    return $electives;
+    $available_electives = [];
+    foreach ($electives as $key => $elective) {
+        $offer = get_offer_filtered($elective->id, $code, $cut);
+        if ($offer) {
+            array_push($available_electives, $elective);
+        }
+    }
+    return $available_electives;
 }
 
 function load_inscriptions_electives($student)

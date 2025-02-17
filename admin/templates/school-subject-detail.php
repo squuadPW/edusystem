@@ -67,7 +67,8 @@
                                             </div>
                                         <?php endif; ?>
                                     </div>
-                                    <div style="font-weight:400; text-align: center">
+                                    <input type="hidden" name="is_open" id="is_open" value="<?= isset($subject) ? $subject->is_open : '' ?>">
+                                    <!-- <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <div>
                                                 <input type="checkbox" name="is_open" id="is_open"
@@ -80,7 +81,7 @@
                                                 <label for="is_open"><b><?= __('Open', 'aes'); ?></b></label>
                                             </div>
                                         <?php endif; ?>
-                                    </div>
+                                    </div> -->
                                 </div>
                                 <div style="display: flex; justify-content: space-evenly; margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
@@ -128,7 +129,8 @@
                                             <input type="number" step="0"  name="matrix_position" value="" required>
                                         <?php endif; ?>
                                     </div>
-                                    <div style="font-weight:400; text-align: center">
+                                    <input type="hidden" name="max_students" value="<?= isset($subject) ? $subject->max_students : ''; ?>">
+                                    <!-- <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
                                                 for="max_students"><b><?= __('Maximum students enrolled', 'aes'); ?></b><span class="text-danger">*</span></label><br>
@@ -138,7 +140,7 @@
                                                     class="text-danger">*</span></label><br>
                                             <input type="number" step="0"  name="max_students" value="" required>
                                         <?php endif; ?>
-                                    </div>
+                                    </div> -->
                                 </div>
                                 <div style="display: flex; justify-content: space-evenly; margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
@@ -164,7 +166,8 @@
                                         <?php endif; ?>
                                     </div>
                                     
-                                    <div style="font-weight:400; text-align: center">
+                                    <input type="hidden" name="moodle_course_id" value="<?= isset($subject) ? $subject->moodle_course_id : ''; ?>">
+                                    <!-- <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
                                                 for="hc"><b><?= __('Moodle course ID', 'aes'); ?></b><span class="text-danger">*</span></label><br>
@@ -174,9 +177,10 @@
                                                     class="text-danger">*</span></label><br>
                                             <input type="text" name="moodle_course_id" value="" required>
                                         <?php endif; ?>
-                                    </div>
+                                    </div> -->
 
-                                    <div style="font-weight:400; text-align: center">
+                                    <input type="hidden" name="teacher_id" value="<?= isset($subject) ? $subject->teacher_id : ''; ?>">
+                                    <!-- <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
                                                 for="hc"><b><?= __('Teacher', 'aes'); ?></b></label><br>
@@ -199,7 +203,7 @@
                                                     <?php } ?>
                                                 </select>
                                         <?php endif; ?>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
 

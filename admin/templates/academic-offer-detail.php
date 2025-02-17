@@ -1,8 +1,8 @@
 <div class="wrap">
-    <?php if (isset($subject) && !empty($subject)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Subject Details', 'aes'); ?></h2>
+    <?php if (isset($offer) && !empty($offer)): ?>
+        <h2 style="margin-bottom:15px;"><?= __('Offer Details', 'aes'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Add Subject', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Add Offer', 'aes'); ?></h2>
     <?php endif; ?>
 
     <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
@@ -19,177 +19,95 @@
     <?php } ?>
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary"
-            href="<?= admin_url('admin.php?page=add_admin_form_school_subjects_content'); ?>"><?= __('Back', 'aes'); ?></a>
+            href="<?= admin_url('admin.php?page=add_admin_form_academic_offers_content'); ?>"><?= __('Back', 'aes'); ?></a>
     </div>
 
-    <div id="dashboard-widgets" class="metabox-holder">
+    <div id="dashboard-widgets" class="metabox-holder admin-add-offer">
         <div id="postbox-container-1" style="width:100% !important;">
             <div id="normal-sortables">
                 <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
                     <div class="inside">
 
                         <form method="post"
-                            action="<?= admin_url('admin.php?page=add_admin_form_school_subjects_content&action=save_subject_details'); ?>">
+                            action="<?= admin_url('admin.php?page=add_admin_form_academic_offers_content&action=save_offer_details'); ?>">
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Subject Information', 'aes'); ?></b>
+                                    <b><?= __('Offer Information', 'aes'); ?></b>
                                 </h3>
-                                <div style="text-align: center; margin: 18px">
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <input type="hidden" name="subject_id" id="subject_id"
-                                                value="<?= $subject->id; ?>">
-                                            <div>
-                                                <input type="checkbox" name="is_elective" id="is_elective"
-                                                <?= ($subject->is_elective == 1) ? 'checked' : ''; ?>>
-                                                <label for="is_elective"><b><?= __('Is elective', 'aes'); ?></b></label>
-                                            </div>
-                                        <?php else: ?>
-                                            <input type="hidden" name="subject_id" id="subject_id" value="">
-                                            <div>
-                                            <input type="checkbox" name="is_elective" id="is_elective">
-                                                <label for="is_elective"><b><?= __('Is elective', 'aes'); ?></b></label>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <div>
-                                                <input type="checkbox" name="is_active" id="is_active"
-                                                <?= ($subject->is_active == 1) ? 'checked' : ''; ?>>
-                                                <label for="is_active"><b><?= __('Active', 'aes'); ?></b></label>
-                                            </div>
-                                        <?php else: ?>
-                                            <div>
-                                            <input type="checkbox" name="is_active" id="is_active">
-                                                <label for="is_active"><b><?= __('Active', 'aes'); ?></b></label>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div style="display: flex; justify-content: space-evenly; margin: 18px;">
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="name"><b><?= __('Subject', 'aes'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="text" name="name" value="<?= ucwords($subject->name); ?>">
-                                        <?php else: ?>
-                                            <label for="name"><b><?= __('Subject', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <input type="text" name="name" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="code_subject"><b><?= __('Subject code (the same as moodle)', 'aes'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="text" name="code_subject" value="<?= ucwords($subject->code_subject); ?>">
-                                        <?php else: ?>
-                                            <label for="code_subject"><b><?= __('Subject code (the same as moodle)', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <input type="text" name="code_subject" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="min_pass"><b><?= __('Minimum passing grade', 'aes'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="number" step="0.01" name="min_pass" value="<?= ucwords($subject->min_pass); ?>" required>
-                                        <?php else: ?>
-                                            <label for="min_pass"><b><?= __('Minimum passing grade', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <input type="number" step="0.01"  name="min_pass" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="matrix_position"><b><?= __('Matrix position', 'aes'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="number" step="0" name="matrix_position" value="<?= $subject->matrix_position; ?>" required>
-                                        <?php else: ?>
-                                            <label for="matrix_position"><b><?= __('Matrix position', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <input type="number" step="0"  name="matrix_position" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="max_students"><b><?= __('Maximum students enrolled', 'aes'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="number" step="0" name="max_students" value="<?= $subject->max_students; ?>" required>
-                                        <?php else: ?>
-                                            <label for="max_students"><b><?= __('Maximum students enrolled', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <input type="number" step="0"  name="max_students" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div style="display: flex; justify-content: space-evenly; margin: 18px;">
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="description"><b><?= __('Description', 'aes'); ?></b></label><br>
-                                            <textarea name="description"><?= $subject->description; ?></textarea>
-                                        <?php else: ?>
-                                            <label for="description"><b><?= __('Description', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <textarea name="description"></textarea>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="hc"><b><?= __('HC', 'aes'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="text" name="hc" value="<?= ucwords($subject->hc); ?>">
-                                        <?php else: ?>
-                                            <label for="hc"><b><?= __('HC', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <input type="text" name="hc" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="hc"><b><?= __('Moodle course ID', 'aes'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="text" name="moodle_course_id" value="<?= ucwords($subject->moodle_course_id); ?>">
-                                        <?php else: ?>
-                                            <label for="hc"><b><?= __('Moodle course ID', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <input type="text" name="moodle_course_id" value="" required>
-                                        <?php endif; ?>
+
+                                <div style="margin: 18px;">
+                                    <input type="hidden" name="offer_id" value="<?= $offer->id ?>">
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label for="hc"><b><?= __('Subject', 'aes'); ?></b></label><br>
+                                        <select name="subject_id">
+                                            <option value="" selected>Assigns a subject to the offer</option>
+                                            <?php foreach ($subjects as $subject) { ?>
+                                                <option value="<?php echo $subject->id; ?>" <?= ($offer->subject_id == $subject->id) ? 'selected' : ''; ?>>
+                                                   <?= $subject->name ?> (<?= $subject->code_subject ?>)
+                                                </option>
+                                            <?php } ?>
+                                        </select>
                                     </div>
 
-                                    <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="hc"><b><?= __('Teacher', 'aes'); ?></b></label><br>
-                                                <select name="teacher_id">
-                                                    <option value="" selected>Assigns a teacher to the subject</option>
-                                                    <?php foreach ($teachers as $teacher) { ?>
-                                                        <option value="<?php echo $teacher->id; ?>" <?= ($subject->teacher_id == $teacher->id) ? 'selected' : ''; ?>>
-                                                            <?php echo $teacher->name; ?> <?php echo $teacher->middle_name; ?> <?php echo $teacher->last_name; ?> <?php echo $teacher->middle_last_name; ?> 
-                                                        </option>
-                                                    <?php } ?>
-                                                </select>
-                                        <?php else: ?>
-                                            <label for="hc"><b><?= __('Teacher', 'aes'); ?></b></label><br>
-                                                    <select name="teacher_id">
-                                                    <option value="" selected>Assigns a teacher to the subject</option>
-                                                    <?php foreach ($teachers as $teacher) { ?>
-                                                        <option value="<?php echo $teacher->id; ?>" <?= ($subject->teacher_id == $teacher->id) ? 'selected' : ''; ?>>
-                                                            <?php echo $teacher->name; ?> <?php echo $teacher->middle_name; ?> <?php echo $teacher->last_name; ?> <?php echo $teacher->middle_last_name; ?> 
-                                                        </option>
-                                                    <?php } ?>
-                                                </select>
-                                        <?php endif; ?>
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label for="hc"><b><?= __('Year school', 'aes'); ?></b></label><br>
+                                        <select name="code_period">
+                                            <option value="" selected>Assigns a year school to the offer</option>
+                                            <?php foreach ($periods as $period) { ?>
+                                                <option value="<?php echo $period->code; ?>"
+                                                    <?= ($offer->code_period == $period->code) ? 'selected' : ''; ?>>
+                                                    <?= $period->name ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label for="hc"><b><?= __('Cut', 'aes'); ?></b></label><br>
+                                        <select name="cut_period">
+                                            <option value="">Assigns a cut to the offer</option>
+                                            <option value="A" <?= (($offer->cut_period == 'A') ? 'selected' : '') ?>>A</option>
+                                            <option value="B" <?= (($offer->cut_period == 'B') ? 'selected' : '') ?>>B</option>
+                                            <option value="C" <?= (($offer->cut_period == 'C') ? 'selected' : '') ?>>C</option>
+                                            <option value="D" <?= (($offer->cut_period == 'D') ? 'selected' : '') ?>>D</option>
+                                            <option value="E" <?= (($offer->cut_period == 'E') ? 'selected' : '') ?>>E</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label for="hc"><b><?= __('Teacher or person responsible', 'aes'); ?></b></label><br>
+                                        <select name="teacher_id">
+                                            <option value="" selected>Assigns a teacher to the offer</option>
+                                            <?php foreach ($teachers as $teacher) { ?>
+                                                <option value="<?php echo $teacher->id; ?>"
+                                                    <?= ($offer->teacher_id == $teacher->id) ? 'selected' : ''; ?>>
+                                                    <?php echo $teacher->name; ?>     <?php echo $teacher->middle_name; ?>
+                                                    <?php echo $teacher->last_name; ?>
+                                                    <?php echo $teacher->middle_last_name; ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label
+                                            for="max_students"><b><?= __('Maximum students enrolled', 'aes'); ?></b><span
+                                                class="text-danger">*</span></label><br>
+                                        <input type="number" step="0" name="max_students"
+                                            value="<?= $offer->max_students; ?>" required>
+                                    </div>
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label
+                                            for="moodle_course_id"><b><?= __('Moodle course ID', 'aes'); ?></b><span
+                                                class="text-danger">*</span></label><br>
+                                        <input type="number" step="0" name="moodle_course_id"
+                                            value="<?= $offer->moodle_course_id; ?>" required>
                                     </div>
                                 </div>
                             </div>
 
-                            <?php if (isset($subject) && !empty($subject)): ?>
+                            <?php if (isset($offer) && !empty($offer)): ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
                                         class="button button-primary"><?= __('Saves changes', 'aes'); ?></button>
@@ -197,7 +115,7 @@
                             <?php else: ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Add subject', 'aes'); ?></button>
+                                        class="button button-primary"><?= __('Add offer', 'aes'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

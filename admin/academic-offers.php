@@ -4,74 +4,75 @@ function add_admin_form_academic_offers_content()
 {
 
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
-        if ($_GET['section_tab'] == 'subject_details') {
-            $subject_id = $_GET['subject_id'];
-            $subject = get_subject_details($subject_id);
+        if ($_GET['section_tab'] == 'offer_details') {
+            global $wpdb;
+            $offer_id = $_GET['offer_id'];
+            $table_school_subjects = $wpdb->prefix . 'school_subjects';
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
+            $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1");
+            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             $teachers = get_teachers_active();
+            $offer = get_academic_offer_details($offer_id);
             include (plugin_dir_path(__FILE__) . 'templates/academic-offer-detail.php');
-        }
-        if ($_GET['section_tab'] == 'add_subject') {
+        } else if ($_GET['section_tab'] == 'add_offer') {
+            global $wpdb;
+            $table_school_subjects = $wpdb->prefix . 'school_subjects';
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
+            $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1");
+            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             $teachers = get_teachers_active();
             include (plugin_dir_path(__FILE__) . 'templates/academic-offer-detail.php');
         }
 
     } else {
 
-        if ($_GET['action'] == 'save_subject_details') {
+        if ($_GET['action'] == 'save_offer_details') {
             global $wpdb;
-            $table_school_subjects = $wpdb->prefix . 'school_subjects';
+            $table_academic_offers = $wpdb->prefix . 'academic_offers';
 
-            $subject_id = $_POST['subject_id'];
-            $name = strtoupper($_POST['name']);
-            $code_subject = strtoupper($_POST['code_subject']) ?? null;
-            $description = $_POST['description'];
-            $hc = $_POST['hc'];
-            $moodle_course_id = $_POST['moodle_course_id'];
-            $is_elective = $_POST['is_elective'];
-            $is_active = $_POST['is_active'];
-            $min_pass = $_POST['min_pass'];
-            $matrix_position = $_POST['matrix_position'];
-            $max_students = $_POST['max_students'];
-            $teacher_id = $_POST['teacher_id'];
+            $offer_id = sanitize_text_field($_POST['offer_id']);
+            $subject_id = sanitize_text_field($_POST['subject_id']);
+            $code_period = sanitize_text_field($_POST['code_period']);
+            $cut_period = sanitize_text_field($_POST['cut_period']);
+            $teacher_id = sanitize_text_field($_POST['teacher_id']);
+            $max_students = sanitize_text_field($_POST['max_students']);
+            $moodle_course_id = sanitize_text_field($_POST['moodle_course_id']);
 
-            //update
-            if (isset($subject_id) && !empty($subject_id)) {
-                $wpdb->update($table_school_subjects, [
-                    'name' => $name,
-                    'code_subject' => $code_subject,
-                    'description' => $description,
-                    'min_pass' => $min_pass,
-                    'matrix_position' => $matrix_position,
-                    'max_students' => $max_students,
-                    'hc' => $hc,
-                    'moodle_course_id' => $moodle_course_id,
+            if (isset($offer_id) && !empty($offer_id)) {
+                $wpdb->update($table_academic_offers, [
+                    'subject_id' => $subject_id,
+                    'code_period' => $code_period,
+                    'cut_period' => $cut_period,
                     'teacher_id' => $teacher_id,
-                    'is_elective' => $is_elective == 'on' ? 1 : 0,
-                    'is_active' => $is_active == 'on' ? 1 : 0
-                ], ['id' => $subject_id]);
+                    'max_students' => $max_students,
+                    'moodle_course_id' => $moodle_course_id,
+                ], ['id' => $offer_id]);
             } else {
-                $wpdb->insert($table_school_subjects, [
-                    'name' => $name,
-                    'code_subject' => $code_subject,
-                    'description' => $description,
-                    'min_pass' => $min_pass,
-                    'matrix_position' => $matrix_position,
-                    'max_students' => $max_students,
-                    'hc' => $hc,
-                    'moodle_course_id' => $moodle_course_id,
+                $wpdb->insert($table_academic_offers, [
+                    'subject_id' => $subject_id,
+                    'code_period' => $code_period,
+                    'cut_period' => $cut_period,
                     'teacher_id' => $teacher_id,
-                    'is_elective' => $is_elective == 'on' ? 1 : 0,
-                    'is_active' => $is_active == 'on' ? 1 : 0
+                    'max_students' => $max_students,
+                    'moodle_course_id' => $moodle_course_id,
                 ]);
             }
 
-            update_matrices();
-            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
-            wp_redirect(admin_url('admin.php?page=add_admin_form_school_subjects_content'));
+            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_offers_content'));
+            exit;
+        } else if($_GET['action'] == 'offer_delete') {
+            global $wpdb;
+            $table_academic_offers = $wpdb->prefix . 'academic_offers';
+            $offer_id = $_GET['offer_id'];
+            $wpdb->delete($table_academic_offers, ['id' => $offer_id]);
+
+            setcookie('message', __('Offer deleted.', 'aes'), time() + 10, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_offers_content'));
             exit;
         } else {
-            $list_school_subjects = new TT_Academic_Offers_List_Table;
-            $list_school_subjects->prepare_items();
+            $list_academic_offers = new TT_Academic_Offers_List_Table;
+            $list_academic_offers->prepare_items();
             include (plugin_dir_path(__FILE__) . 'templates/list-academic-offer.php');
         }
     }
@@ -99,24 +100,13 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
         global $current_user;
 
         switch ($column_name) {
-            case 'code_subject':
-                return ucwords($item[$column_name]);
-            case 'name':
-                return ucwords($item[$column_name]);
-            case 'is_elective':
-                switch ($item[$column_name]) {
-                    case 1:
-                        return 'Yes';
-                        break;
-
-                    default:
-                        return 'No';
-                        break;
-                }
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_school_subjects_content&section_tab=subject_details&subject_id=' . $item['school_subject_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&section_tab=offer_details&offer_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                $buttons .= "<a style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&action=offer_delete&offer_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'aes') . "</a>";
+                return $buttons;
             default:
-                return ucwords($item[$column_name]);
+                return strtoupper($item[$column_name]);
         }
     }
 
@@ -135,20 +125,20 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'code_subject' => __('Subject code (the same as moodle)', 'aes'),
-            'name' => __('Name', 'aes'),
-            'hc' => __('HC', 'aes'),
-            'is_elective' => __('Is elective', 'aes'),
+            'subject' => __('Subject', 'aes'),
+            'period' => __('Offer period', 'aes'),
+            'teacher' => __('Teacher', 'aes'),
+            'max' => __('Max. students', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
 
         return $columns;
     }
 
-    function get_school_subject_pendings()
+    function get_academic_offers()
     {
         global $wpdb;
-        $school_subjects_array = [];
+        $academic_offers_array = [];
 
         // PAGINATION
         $per_page = 20; // number of items per page
@@ -156,39 +146,26 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
 
-        $query_search = "";
-        if (isset($_GET['s']) && !empty($_GET['s'])) {
-            $search = $_GET['s'];
-            $query_search  = "WHERE (`name` LIKE '%{$search}%' || code_subject LIKE '%{$search}%')";
-        }
-
-        $query_electives = "";
-        if (isset($_GET['subject_type']) && $_GET['subject_type'] != '') {
-            $search = $_GET['subject_type'];
-            if ($query_search != '') {
-                $query_electives  = "AND (`is_elective` = {$search})";
-            } else {
-                $query_electives  = "WHERE (`is_elective` = {$search})";
-            }
-        }
-
-        $school_subjects = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM wp_school_subjects {$query_search} {$query_electives} ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        $table_academic_offers = $wpdb->prefix . 'academic_offers';
+        $academic_offers = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_academic_offers} ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
 
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
-        if ($school_subjects) {
-            foreach ($school_subjects as $subject) {
-                array_push($school_subjects_array, [
-                    'code_subject' => $subject['code_subject'],
-                    'school_subject_id' => $subject['id'],
-                    'name' => $subject['name'],
-                    'hc' => $subject['hc'],
-                    'is_elective' => $subject['is_elective'],
+        if ($academic_offers) {
+            foreach ($academic_offers as $offer) {
+                $subject = get_subject_details($offer['subject_id']);
+                $teacher = get_teacher_details($offer['teacher_id']);
+                array_push($academic_offers_array, [
+                    'id' => $offer['id'],
+                    'subject' => $subject->name . ' (' . $subject->code_subject . ')',
+                    'period' => $offer['code_period'] . ' - ' . $offer['cut_period'],
+                    'max' => $offer['max_students'],
+                    'teacher' => $teacher->last_name . ' ' . $teacher->middle_last_name . ' ' . $teacher->name . ' ' . $teacher->middle_name,
                 ]);
             }
         }
 
-        return ['data' => $school_subjects_array, 'total_count' => $total_count];
+        return ['data' => $academic_offers_array, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -215,7 +192,7 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
     function prepare_items()
     {
 
-        $data_school_subjects = $this->get_school_subject_pendings();
+        $data_academic_offers = $this->get_academic_offers();
 
         $per_page = 10;
 
@@ -227,8 +204,8 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
         
-        $data = $data_school_subjects['data'];
-        $total_count = (int) $data_school_subjects['total_count'];
+        $data = $data_academic_offers['data'];
+        $total_count = (int) $data_academic_offers['total_count'];
 
         function usort_reorder($a, $b)
         {
@@ -247,4 +224,32 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
         $this->items = $data;
     }
 
+}
+
+
+function get_academic_offer_details($offer_id)
+{
+    global $wpdb;
+    $table_academic_offers = $wpdb->prefix . 'academic_offers';
+
+    $offer = $wpdb->get_row("SELECT * FROM {$table_academic_offers} WHERE id={$offer_id}");
+    return $offer;
+}
+
+function get_offer_filtered($subject_id, $code, $cut)
+{
+    global $wpdb;
+    $table_academic_offers = $wpdb->prefix . 'academic_offers';
+
+    $offer = $wpdb->get_row("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}'");
+    return $offer;
+}
+
+function get_offer_by_moodle($moodle_course_id)
+{
+    global $wpdb;
+    $table_academic_offers = $wpdb->prefix . 'academic_offers';
+
+    $offer = $wpdb->get_row("SELECT * FROM {$table_academic_offers} WHERE moodle_course_id={$moodle_course_id}");
+    return $offer;
 }
