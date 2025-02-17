@@ -40,7 +40,7 @@
                                     <input type="hidden" name="offer_id" value="<?= $offer->id ?>">
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="hc"><b><?= __('Subject', 'aes'); ?></b></label><br>
-                                        <select name="subject_id">
+                                        <select name="subject_id" required>
                                             <option value="" selected>Assigns a subject to the offer</option>
                                             <?php foreach ($subjects as $subject) { ?>
                                                 <option value="<?php echo $subject->id; ?>" <?= ($offer->subject_id == $subject->id) ? 'selected' : ''; ?>>
@@ -52,7 +52,7 @@
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="hc"><b><?= __('Year school', 'aes'); ?></b></label><br>
-                                        <select name="code_period">
+                                        <select name="code_period" required>
                                             <option value="" selected>Assigns a year school to the offer</option>
                                             <?php foreach ($periods as $period) { ?>
                                                 <option value="<?php echo $period->code; ?>"
@@ -65,7 +65,7 @@
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="hc"><b><?= __('Cut', 'aes'); ?></b></label><br>
-                                        <select name="cut_period">
+                                        <select name="cut_period" required>
                                             <option value="">Assigns a cut to the offer</option>
                                             <option value="A" <?= (($offer->cut_period == 'A') ? 'selected' : '') ?>>A</option>
                                             <option value="B" <?= (($offer->cut_period == 'B') ? 'selected' : '') ?>>B</option>
@@ -77,7 +77,7 @@
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="hc"><b><?= __('Teacher or person responsible', 'aes'); ?></b></label><br>
-                                        <select name="teacher_id">
+                                        <select name="teacher_id" required>
                                             <option value="" selected>Assigns a teacher to the offer</option>
                                             <?php foreach ($teachers as $teacher) { ?>
                                                 <option value="<?php echo $teacher->id; ?>"
