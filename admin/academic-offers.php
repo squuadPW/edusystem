@@ -40,6 +40,7 @@ function add_admin_form_academic_offers_content()
 
             if (isset($offer_id) && !empty($offer_id)) {
                 $wpdb->update($table_academic_offers, [
+                    // 'section' => 1,
                     'subject_id' => $subject_id,
                     'code_period' => $code_period,
                     'cut_period' => $cut_period,
@@ -48,7 +49,9 @@ function add_admin_form_academic_offers_content()
                     'moodle_course_id' => $moodle_course_id,
                 ], ['id' => $offer_id]);
             } else {
+                $offers = get_offer_filtered_all($subject_id, $code_period, $cut_period);
                 $wpdb->insert($table_academic_offers, [
+                    'section' => count($offers) + 1,
                     'subject_id' => $subject_id,
                     'code_period' => $code_period,
                     'cut_period' => $cut_period,
@@ -126,6 +129,7 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
 
         $columns = array(
             'subject' => __('Subject', 'aes'),
+            'section' => __('Section', 'aes'),
             'period' => __('Offer period', 'aes'),
             'teacher' => __('Teacher', 'aes'),
             'max' => __('Max. students', 'aes'),
@@ -158,6 +162,7 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
                 array_push($academic_offers_array, [
                     'id' => $offer['id'],
                     'subject' => $subject->name . ' (' . $subject->code_subject . ')',
+                    'section' => $offer['section'],
                     'period' => $offer['code_period'] . ' - ' . $offer['cut_period'],
                     'max' => $offer['max_students'],
                     'teacher' => $teacher->last_name . ' ' . $teacher->middle_last_name . ' ' . $teacher->name . ' ' . $teacher->middle_name,
@@ -242,6 +247,16 @@ function get_offer_filtered($subject_id, $code, $cut)
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
 
     $offer = $wpdb->get_row("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}'");
+    return $offer;
+}
+
+
+function get_offer_filtered_all($subject_id, $code, $cut)
+{
+    global $wpdb;
+    $table_academic_offers = $wpdb->prefix . 'academic_offers';
+
+    $offer = $wpdb->get_results("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}'");
     return $offer;
 }
 

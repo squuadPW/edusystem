@@ -127,7 +127,7 @@ function create_tables()
     dbDelta(
       "CREATE TABLE " . $table_academic_offers . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
-        section INT(11) NOT NULL AUTO_INCREMENT,
+        section INT(11) NULL,
         subject_id INT(11) NOT NULL,
         code_period TEXT NOT NULL,
         cut_period TEXT NOT NULL,
