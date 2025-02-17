@@ -39,8 +39,9 @@ function add_admin_form_academic_offers_content()
             $moodle_course_id = sanitize_text_field($_POST['moodle_course_id']);
 
             if (isset($offer_id) && !empty($offer_id)) {
+                $offers = get_offer_filtered_all($subject_id, $code_period, $cut_period);
                 $wpdb->update($table_academic_offers, [
-                    // 'section' => 1,
+                    'section' => count($offers) + 1,
                     'subject_id' => $subject_id,
                     'code_period' => $code_period,
                     'cut_period' => $cut_period,
