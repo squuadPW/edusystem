@@ -37,11 +37,12 @@ function add_admin_form_academic_offers_content()
             $teacher_id = sanitize_text_field($_POST['teacher_id']);
             $max_students = sanitize_text_field($_POST['max_students']);
             $moodle_course_id = sanitize_text_field($_POST['moodle_course_id']);
+            $offers = get_offer_filtered_all($subject_id, $code_period, $cut_period);
+            $section = count($offers) + 1;
 
             if (isset($offer_id) && !empty($offer_id)) {
-                $offers = get_offer_filtered_all($subject_id, $code_period, $cut_period);
                 $wpdb->update($table_academic_offers, [
-                    'section' => count($offers) + 1,
+                    'section' => $section,
                     'subject_id' => $subject_id,
                     'code_period' => $code_period,
                     'cut_period' => $cut_period,
@@ -50,9 +51,8 @@ function add_admin_form_academic_offers_content()
                     'moodle_course_id' => $moodle_course_id,
                 ], ['id' => $offer_id]);
             } else {
-                $offers = get_offer_filtered_all($subject_id, $code_period, $cut_period);
                 $wpdb->insert($table_academic_offers, [
-                    'section' => count($offers) + 1,
+                    'section' => $section,
                     'subject_id' => $subject_id,
                     'code_period' => $code_period,
                     'cut_period' => $cut_period,
