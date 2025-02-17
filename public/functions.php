@@ -1715,7 +1715,6 @@ function student_continue_callback()
     $elective = $_POST['elective'];
     $table_students = $wpdb->prefix . 'students';
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $load = load_current_cut_enrollment();
@@ -1756,9 +1755,13 @@ function student_continue_callback()
     $wpdb->update($table_students, [
         'elective' => 0,
     ], ['id' => $student_id]);
+    
+    $section = load_section_available($subject->id, $code, $cut);
 
     $wpdb->insert($table_student_period_inscriptions, [
         'status_id' => $projection_obj[count($projection_obj) - 1]['this_cut'] ? 1 : 3,
+        'type' => 'elective',
+        'section' => $section,
         'student_id' => $projection->student_id,
         'subject_id' => $projection_obj[count($projection_obj) - 1]['subject_id'],
         'code_subject' => $projection_obj[count($projection_obj) - 1]['code_subject'],

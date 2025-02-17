@@ -38,6 +38,7 @@
 
                                 <div style="margin: 18px;">
                                     <input type="hidden" name="offer_id" value="<?= $offer->id ?>">
+                                    <input type="hidden" name="old_subject_id" value="<?= $offer->subject_id ?>">
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="hc"><b><?= __('Subject', 'aes'); ?></b></label><br>
                                         <select name="subject_id" required>

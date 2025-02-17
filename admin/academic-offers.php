@@ -32,13 +32,14 @@ function add_admin_form_academic_offers_content()
 
             $offer_id = sanitize_text_field($_POST['offer_id']);
             $subject_id = sanitize_text_field($_POST['subject_id']);
+            $old_subject_id = sanitize_text_field($_POST['old_subject_id']);
             $code_period = sanitize_text_field($_POST['code_period']);
             $cut_period = sanitize_text_field($_POST['cut_period']);
             $teacher_id = sanitize_text_field($_POST['teacher_id']);
             $max_students = sanitize_text_field($_POST['max_students']);
             $moodle_course_id = sanitize_text_field($_POST['moodle_course_id']);
-            $offers = get_offer_filtered_all($subject_id, $code_period, $cut_period);
-            $section = count($offers) + 1;
+            $new_section = ($subject_id != $old_subject_id ? true : false);
+            $section = load_next_section($subject_id, $code_period, $cut_period, $offer_id, $new_section);
 
             if (isset($offer_id) && !empty($offer_id)) {
                 $wpdb->update($table_academic_offers, [
@@ -257,7 +258,7 @@ function get_offer_filtered_all($subject_id, $code, $cut)
     global $wpdb;
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
 
-    $offer = $wpdb->get_results("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}'");
+    $offer = $wpdb->get_results("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}' ORDER BY section ASC");
     return $offer;
 }
 
@@ -268,4 +269,59 @@ function get_offer_by_moodle($moodle_course_id)
 
     $offer = $wpdb->get_row("SELECT * FROM {$table_academic_offers} WHERE moodle_course_id={$moodle_course_id}");
     return $offer;
+}
+
+function load_section_available($subject_id, $code, $cut) {
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $section = 1;
+    $all_offers = get_offer_filtered_all($subject_id, $code, $cut);
+    if (count($all_offers) > 1) {
+        foreach ($all_offers as $key => $offer) {
+            $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$subject_id} AND status_id = 1");
+            if (count($active_inscriptions) >= (int) $offer->max_students) {
+                continue;
+            } else {
+                $section = $offer->section;
+                break;
+            }
+        }
+    }
+
+    return $section;
+}
+
+function offer_available_to_enroll($subject_id, $code, $cut) {
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $available = true;
+    $all_offers = get_offer_filtered_all($subject_id, $code, $cut);
+    if (!$all_offers) {
+        $available = false;
+    }
+
+    foreach ($all_offers as $key => $offer) {
+        $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE section = {$offer->section} WHERE subject_id = {$subject_id} AND status_id = 1");
+        if (count($active_inscriptions) < (int) $offer->max_students) {
+            $available = true;
+            break;
+        } else {
+            $available = false;
+        }
+    }
+
+    return $available;
+}
+
+function load_next_section($subject_id, $code, $cut, $offer_id, $new_section) {
+    global $wpdb;
+    $all_offers = get_offer_filtered_all($subject_id, $code, $cut);
+    if ($offer_id) {
+        $offer = get_academic_offer_details($offer_id);
+        $section = $new_section ? (count($all_offers) + 1) : $offer->section;
+    } else {
+        $section = count($all_offers) + 1;
+    }
+
+    return $section;
 }

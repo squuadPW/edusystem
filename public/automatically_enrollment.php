@@ -478,7 +478,7 @@ function load_automatically_enrollment($expected_projection, $student)
                             AND subject_id = %d 
                             AND (status_id = 3 OR status_id = 1)",
                             $student->id,
-                            $expected_subject->subject_id
+                            $subject->id
                         )
                     );
                     if (count($inscriptions) > 0) {
@@ -486,19 +486,12 @@ function load_automatically_enrollment($expected_projection, $student)
                         continue;
                     }
 
-                    $offer = get_offer_filtered($subject->id, $code, $cut);
-                    if (!$offer) {
+                    $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
+                    if (!$offer_available_to_enroll) {
                         $count_expected_subject++;
                         $force_skip = true;
                         continue;
-                    }
-
-                    $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
-                    if (count($active_inscriptions) >= (int) $offer->max_students) {
-                        $count_expected_subject++;
-                        $force_skip = true;
-                        continue;
-                    }
+                    }    
 
                     $force_skip = false;
                     $subjectIds = array_column($projection_obj, 'subject_id');
@@ -516,8 +509,10 @@ function load_automatically_enrollment($expected_projection, $student)
                         'projection' => json_encode($projection_obj)
                     ], ['id' => $projection->id]);
 
+                    $section = load_section_available($subject->id, $code, $cut);
                     $wpdb->insert($table_student_period_inscriptions, [
                         'status_id' => 1,
+                        'section' => $section,
                         'student_id' => $student->id,
                         'subject_id' => $subject->id,
                         'code_subject' => $subject->code_subject,
@@ -587,7 +582,7 @@ function load_automatically_enrollment($expected_projection, $student)
                         AND subject_id = %d 
                         AND (status_id = 3 OR status_id = 1)",
                         $student->id,
-                        $expected_subject->subject_id
+                        $subject->id
                     )
                 );
                 if (count($inscriptions) > 0) {
@@ -595,15 +590,8 @@ function load_automatically_enrollment($expected_projection, $student)
                     continue;
                 }
 
-                $offer = get_offer_filtered($subject->id, $code, $cut);
-                if (!$offer) {
-                    $count_expected_subject++;
-                    $force_skip = true;
-                    continue;
-                }
-
-                $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$expected_subject->subject_id} AND status_id = 1");
-                if (count($active_inscriptions) >= (int) $offer->max_students) {
+                $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
+                if (!$offer_available_to_enroll) {
                     $count_expected_subject++;
                     $force_skip = true;
                     continue;
@@ -625,8 +613,10 @@ function load_automatically_enrollment($expected_projection, $student)
                     'projection' => json_encode($projection_obj)
                 ], ['id' => $projection->id]);
 
+                $section = load_section_available($subject->id, $code, $cut);
                 $wpdb->insert($table_student_period_inscriptions, [
                     'status_id' => 1,
+                    'section' => $section,
                     'student_id' => $student->id,
                     'subject_id' => $subject->id,
                     'code_subject' => $subject->code_subject,
