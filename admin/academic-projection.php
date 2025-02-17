@@ -119,7 +119,7 @@ function add_admin_form_academic_projection_content()
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'generate_enrollments_moodle') {
             generate_enroll_student();
-            setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
+            setcookie('message', __('Students successfully enrolled in moodle.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'automatically_enrollment') {
