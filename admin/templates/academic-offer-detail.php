@@ -51,9 +51,9 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="hc"><b><?= __('Year school', 'aes'); ?></b></label><br>
+                                        <label for="hc"><b><?= __('School year', 'aes'); ?></b></label><br>
                                         <select name="code_period" required>
-                                            <option value="" selected>Assigns a year school to the offer</option>
+                                            <option value="" selected>Assigns a school year to the offer</option>
                                             <?php foreach ($periods as $period) { ?>
                                                 <option value="<?php echo $period->code; ?>"
                                                     <?= ($offer->code_period == $period->code) ? 'selected' : ''; ?>>
