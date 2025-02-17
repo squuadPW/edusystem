@@ -914,128 +914,139 @@ function template_welcome_subjects($filteredArray, $student) {
     $start_date = $date_start->format('l, F j, Y');
     $end_date = $date_end->format('l, F j, Y');
     $text = '';
-    $text .= '<div>';
-    $text .= 'Estimado(a) estudiante ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos complace anunciarle el inicio del Periodo ' . $cut . ', correspondiente al Año Escolar ' . $academic_period;
-    $text .= '</div>';
 
-    $text .= '<br>';
+     /// biegin Ingles
+     $text .= '<div>';
+     $text .= 'Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', on behalf of the academic team of American Elite School, based in the city of Doral, Florida-USA, we are pleased to announce the beginning of Period ' . $cut . ', corresponding to the School Year ' . substr($academic_period, 0, 4) . '-' . substr($academic_period, 4) ;
+     $text .= '</div>';
+ 
+     $text .= '<br>';
+ 
+     $text .= '<div>';
+     $text .= '<div><strong>START DATE:</strong> ' . $start_date . ' </div>';
+     $text .= '<div><strong>END DATE:</strong> ' . $end_date . ' </div>';
+     $text .= '</div>';
+ 
+     $text .= '<br>';
+ 
+     $text .= '<div> Listed below is your <strong>Academic Load</strong> of mandatory courses registered for this Period ' . $cut . ': </div>';
+ 
+     if (count($filteredArray) > 0) {
+         $text .= '<table style="margin: 20px 0px; border-collapse: collapse; width: 100%;">';
+         $text .= '<thead>
+             <tr>
+                 <th colspan="4" style="border: 1px solid gray;">
+                     <strong>COURSE CODE</strong>
+                 </th>
+                 <th colspan="8" style="border: 1px solid gray;">
+                     <strong>SUBJECT</strong>
+                 </th>
+             </tr>
+         </thead>';
+         $text .= '<tbody>';
+         foreach ($filteredArray as $key => $val) {
+             $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
+             $text .= '<tr>';
+             $text .= '<td colspan="4" style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
+             $text .= '<td colspan="8" style="border: 1px solid gray;">' . $subject->name . '</td>';
+             // $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
+             // $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
+             // $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
+             $text .= '</tr>';
+         }
+         $text .= '</tbody>';
+         $text .= '</table>';
+     }
+ 
+     $text .= '<br>';
+ 
+     if ($student->elective) {
+         $text .= '<div>';
+         $text .= '<strong>ELECTIVE ACCORDING TO YOUR SELECTION</strong>';
+         $text .= '</div>';
+         $text .= '<br>';
+     }
+ 
+     $text .= '<div> We leave at your disposal links and contacts of interest: </div>';
+ 
+     $text .= '<ul>';
+     $text .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+     $text .= '<li>Virtual classroom: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+     $text .= '<li>Contact us: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+     $text .= '</ul>';
+ 
+     $text .= '<div>On behalf of our institution, we thank you for your commitment and wish you a successful academic term.</div>';
+ 
+     // End en
 
-    $text .= '<div>';
-    $text .= '<div><strong>FECHA DE INICIO:</strong> ' . translateDateToSpanish(dateString: $start_date) . ' </div>';
-    $text .= '<div><strong>FECHA DE CULMINACIÓN:</strong> ' . translateDateToSpanish($end_date) . ' </div>';
-    $text .= '</div>';
-
-    $text .= '<br>';
-
-    $text .= '<div> A continuación, detallamos su <strong>Carga Académica</strong> de cursos ofertados para este periodo ' . $cut . ': </div>';
-
-    if (count($filteredArray) > 0) {
-        $text .= '<table style="margin: 20px 0px; border-collapse: collapse; width: 100%;">';
-        $text .= '<thead>
-        <tr>
-            <th colspan="4" style="border: 1px solid gray;">
-               <strong>CÓDIGO</strong>
-            </th>
-            <th colspan="8" style="border: 1px solid gray;">
-                <strong>MATERIA</strong>
-            </th>
-        </tr>
-    </thead>';
-        $text .= '<tbody>';
-        foreach ($filteredArray as $key => $val) {
-            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
-            $text .= '<tr>';
-            $text .= '<td colspan="4" style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
-            $text .= '<td colspan="8" style="border: 1px solid gray;">' . $subject->name . '</td>';
-            // $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
-            // $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
-            // $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
-            $text .= '</tr>';
-        }
-        $text .= '</tbody>';
-        $text .= '</table>';
-    }
-
-    $text .= '<br>';
-
-    if ($student->elective) {
-        $text .= '<div>';
-        $text .= '<strong>ELECTIVA CONFORME A SU ELECCIÓN</strong>';
-        $text .= '</div>';
-        $text .= '<br>';
-    }
-
-    $text .= '<div> Dejamos a su disposición enlaces y contactos de interés: </div>';
-
-    $text .= '<ul>';
-    $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
-    $text .= '<li>Aula virtual: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
-    $text .= '<li>Contacto: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
-    $text .= '</ul>';
-    $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un periodo académico lleno de logros satisfactorios.</div>';
+    // Begin Divider
     $text .= '<div style="margin: 10px 0px; border-bottom: 1px solid gray;"></div>';
-
+    //End Divider
     
-    $text .= '<div>';
-    $text .= 'Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', on behalf of the academic team of American Elite School, based in the city of Doral, Florida-USA, we are pleased to announce the beginning of Period ' . $cut . ', corresponding to the School Year ' . $academic_period;
-    $text .= '</div>';
+     // Begin Es
+     $text .= '<div>';
+     $text .= 'Estimado(a) estudiante ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', en nombre del equipo académico de American Elite School, con sede en la ciudad del Doral, Florida-EEUU, nos complace anunciarle el inicio del Periodo ' . $cut . ', correspondiente al Año Escolar ' . substr($academic_period, 0, 4) . '-' . substr($academic_period, 4);
+     $text .= '</div>';
+ 
+     $text .= '<br>';
+ 
+     $text .= '<div>';
+     $text .= '<div><strong>FECHA DE INICIO:</strong> ' . translateDateToSpanish(dateString: $start_date) . ' </div>';
+     $text .= '<div><strong>FECHA DE CULMINACIÓN:</strong> ' . translateDateToSpanish($end_date) . ' </div>';
+     $text .= '</div>';
+ 
+     $text .= '<br>';
+ 
+     $text .= '<div> A continuación, detallamos su <strong>Carga Académica</strong> de cursos ofertados para este periodo ' . $cut . ': </div>';
+ 
+     if (count($filteredArray) > 0) {
+         $text .= '<table style="margin: 20px 0px; border-collapse: collapse; width: 100%;">';
+         $text .= '<thead>
+         <tr>
+             <th colspan="4" style="border: 1px solid gray;">
+                <strong>CÓDIGO</strong>
+             </th>
+             <th colspan="8" style="border: 1px solid gray;">
+                 <strong>MATERIA</strong>
+             </th>
+         </tr>
+     </thead>';
+         $text .= '<tbody>';
+         foreach ($filteredArray as $key => $val) {
+             $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
+             $text .= '<tr>';
+             $text .= '<td colspan="4" style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
+             $text .= '<td colspan="8" style="border: 1px solid gray;">' . $subject->name . '</td>';
+             // $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
+             // $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
+             // $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
+             $text .= '</tr>';
+         }
+         $text .= '</tbody>';
+         $text .= '</table>';
+     }
+ 
+     $text .= '<br>';
+ 
+     if ($student->elective) {
+         $text .= '<div>';
+         $text .= '<strong>ELECTIVA CONFORME A SU ELECCIÓN</strong>';
+         $text .= '</div>';
+         $text .= '<br>';
+     }
+ 
+     $text .= '<div> Dejamos a su disposición enlaces y contactos de interés: </div>';
+ 
+     $text .= '<ul>';
+     $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+     $text .= '<li>Aula virtual: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
+     $text .= '<li>Contacto: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+     $text .= '</ul>';
+     $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un periodo académico lleno de logros satisfactorios.</div>';
+ 
+     // End es
 
-    $text .= '<br>';
-
-    $text .= '<div>';
-    $text .= '<div><strong>START DATE:</strong> ' . $start_date . ' </div>';
-    $text .= '<div><strong>END DATE:</strong> ' . $end_date . ' </div>';
-    $text .= '</div>';
-
-    $text .= '<br>';
-
-    $text .= '<div> Listed below is your <strong>Academic Load</strong> of mandatory courses registered for this Period ' . $cut . ': </div>';
-
-    if (count($filteredArray) > 0) {
-        $text .= '<table style="margin: 20px 0px; border-collapse: collapse; width: 100%;">';
-        $text .= '<thead>
-            <tr>
-                <th colspan="4" style="border: 1px solid gray;">
-                    <strong>COURSE CODE</strong>
-                </th>
-                <th colspan="8" style="border: 1px solid gray;">
-                    <strong>SUBJECT</strong>
-                </th>
-            </tr>
-        </thead>';
-        $text .= '<tbody>';
-        foreach ($filteredArray as $key => $val) {
-            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$val->subject_id}");
-            $text .= '<tr>';
-            $text .= '<td colspan="4" style="border: 1px solid gray;">' . $subject->code_subject . '</td>';
-            $text .= '<td colspan="8" style="border: 1px solid gray;">' . $subject->name . '</td>';
-            // $text .= '<td style="border: 1px solid gray;">' . $date_start->format('m-d-y') . '</td>';
-            // $text .= '<td style="border: 1px solid gray;">' . $date_end->format('m-d-y') . '</td>';
-            // $text .= '<td style="border: 1px solid gray;">' . $cut . '</td>';
-            $text .= '</tr>';
-        }
-        $text .= '</tbody>';
-        $text .= '</table>';
-    }
-
-    $text .= '<br>';
-
-    if ($student->elective) {
-        $text .= '<div>';
-        $text .= '<strong>ELECTIVE ACCORDING TO YOUR SELECTION</strong>';
-        $text .= '</div>';
-        $text .= '<br>';
-    }
-
-    $text .= '<div> We leave at your disposal links and contacts of interest: </div>';
-
-    $text .= '<ul>';
-    $text .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
-    $text .= '<li>Virtual classroom: <a href="https://online.american-elite.us/" target="_blank">https://online.american-elite.us/</a></li>';
-    $text .= '<li>Contact us: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
-    $text .= '</ul>';
-
-    $text .= '<div>On behalf of our institution, we thank you for your commitment and wish you a successful academic term.</div>';
+     
 
     return $text;
 }
