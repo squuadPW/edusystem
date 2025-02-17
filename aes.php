@@ -165,7 +165,7 @@ function create_tables()
         id INT(11) NOT NULL AUTO_INCREMENT,
         status_id INT(11) NOT NULL,
         type TEXT NULL,
-        academic_offer_id INT(11) NULL,
+        section INT(11) NULL DEFAULT 1,
         student_id INT(11) NOT NULL,
         subject_id INT(11) NULL,
         code_subject TEXT NULL,
