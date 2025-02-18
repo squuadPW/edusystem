@@ -86,7 +86,7 @@ function add_admin_form_academic_projection_content()
                         }
                     }
                 }
-            
+
                 $academic_period_result = $wpdb->get_row("SELECT * FROM {$table_academic_periods} WHERE code = {$academic_period}");
                 $offer = get_offer_filtered($subject_id, $academic_period, $academic_period_cut);
                 if ($offer) {
@@ -378,7 +378,7 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
             case 'student':
             case 'grade_id':
             case 'initial_cut':
-                return '<label class="text-uppercase">'.strtoupper($item[$column_name]).'</label>';
+                return '<label class="text-uppercase">' . strtoupper($item[$column_name]) . '</label>';
             case 'view_details':
                 return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $item['academic_projection_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
             default:
@@ -681,7 +681,7 @@ function get_literal_note($calification)
     if (!$calification) {
         return 0;
     }
-    $calification = (int)$calification;
+    $calification = (int) $calification;
     $note = 'A+';
     switch ($calification) {
         case $calification >= 95:
@@ -720,7 +720,7 @@ function get_calc_note($calification)
     if (!$calification) {
         return 0;
     }
-    $calification = (int)$calification;
+    $calification = (int) $calification;
     $note = 'abc';
     switch ($calification) {
         case $calification >= 95:
