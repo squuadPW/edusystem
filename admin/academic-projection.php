@@ -568,7 +568,6 @@ function get_moodle_notes()
     $load = load_last_cut();
     $academic_period = $load['code'];
     $cut = $load['cut'];
-    error_log('cut ' . $cut);
 
     $conditions = array();
     $params = array();
@@ -588,7 +587,6 @@ function get_moodle_notes()
 
     $students = $wpdb->get_results($wpdb->prepare($query, $params));
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
     foreach ($students as $key => $student) {
