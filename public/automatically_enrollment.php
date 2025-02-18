@@ -806,6 +806,7 @@ function generate_projection_student($student_id, $force = false)
     global $wpdb;
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_students = $wpdb->prefix . 'students';
 
     $existing_projection = $wpdb->get_var(
         $wpdb->prepare(
@@ -816,6 +817,10 @@ function generate_projection_student($student_id, $force = false)
 
     if ($existing_projection > 0) {
         if ($force) {
+            $wpdb->update($table_students, [
+                'elective' => 1
+            ], ['id' => $student_id]);
+
             $wpdb->delete($table_student_academic_projection, ['student_id' => $student_id]);
             $wpdb->delete($table_student_period_inscriptions, ['student_id' => $student_id]);
         } else {
