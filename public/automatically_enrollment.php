@@ -818,7 +818,7 @@ function generate_projection_student($student_id, $force = false)
     if ($existing_projection > 0) {
         if ($force) {
             $wpdb->update($table_students, [
-                'elective' => 1
+                'elective' => 0
             ], ['id' => $student_id]);
 
             $wpdb->delete($table_student_academic_projection, ['student_id' => $student_id]);
