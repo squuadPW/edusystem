@@ -59,6 +59,11 @@ function aes_scripts_admin()
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_email_content') {
         wp_enqueue_script('send-email', plugins_url('aes') . '/admin/assets/js/send-email.js', array('jquery'), '1.0.0', true);
+
+        wp_localize_script('send-email', 'summary_email', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'summary_email'
+        ]);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_notification_content') {

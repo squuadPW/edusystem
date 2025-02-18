@@ -23,7 +23,7 @@ function add_admin_form_send_email_content()
                 $subject = wp_kses_post($_POST['subject']);
                 $message = wp_kses_post($_POST['message']);
 
-                $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE academic_period = '" . $_POST['academic_period'] . "' AND id IN (" . implode(',', $cut_student_ids) . ")");
+                $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', $cut_student_ids) . ")");
                 $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
                 $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
 
@@ -112,3 +112,35 @@ function set_variables_message($message, $student)
     $name = strtoupper($student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name);
     return str_replace('{{student}}', $name, $message);
 }
+
+function get_summary_email()
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+
+    $academic_period = $_POST['academic_period'];
+    $cut = $_POST['cut'];
+    $filter = $_POST['filter'];
+    $email_student = $_POST['email_student'];
+    $type = $_POST['type'];
+    $students = [];
+
+    if ($type == 1) {
+        if ($filter == 1) {
+            $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE initial_cut = '$cut'");
+        } else {
+            $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$cut}'");
+            $cut_student_ids = array_merge($cut_student_ids, $wpdb->get_col("SELECT id FROM {$table_students} WHERE elective = 1"));
+        }
+        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', $cut_student_ids) . ")");
+    } else {
+        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE email = '{$email_student}'");
+    }
+
+    wp_send_json(array('success' => true, 'students' => $students));
+    die();
+}
+
+add_action('wp_ajax_nopriv_summary_email', 'get_summary_email');
+add_action('wp_ajax_summary_email', 'get_summary_email');
