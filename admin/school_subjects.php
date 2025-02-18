@@ -69,7 +69,7 @@ function add_admin_form_school_subjects_content()
             }
 
             update_matrices();
-            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
+            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_school_subjects_content'));
             exit;
         } else if ($_GET['action'] == 'update_matrices') {

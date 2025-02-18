@@ -72,7 +72,7 @@ function add_admin_form_academic_projection_content()
             $academic_period_cut = $_GET['academic_period_cut'];
             $subject_id = $_GET['subject_id'];
             $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$subject_id}");
-
+            $teacher = null;
             $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$academic_period_cut}' AND (subject_id = {$subject_id} OR code_subject = '{$subject->code_subject}')");
             if ((isset($academic_period) && !empty($academic_period)) && (isset($academic_period_cut) && !empty($academic_period_cut))) {
                 $added_student_ids = array(); // Array para rastrear IDs de estudiantes agregados
@@ -86,9 +86,12 @@ function add_admin_form_academic_projection_content()
                         }
                     }
                 }
-            
-                $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id = {$subject->teacher_id}");
+
                 $academic_period_result = $wpdb->get_row("SELECT * FROM {$table_academic_periods} WHERE code = {$academic_period}");
+                $offer = get_offer_filtered($subject_id, $academic_period, $academic_period_cut);
+                if ($offer) {
+                    $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id = {$offer->teacher_id}");
+                }
             }
 
             $projections_result = [
@@ -105,7 +108,6 @@ function add_admin_form_academic_projection_content()
 
         if (isset($_GET['action']) && $_GET['action'] == 'generate_academic_projections') {
             global $wpdb;
-            $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
             $table_students = $wpdb->prefix . 'students';
 
             $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
@@ -117,20 +119,17 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
+        } else if (isset($_GET['action']) && $_GET['action'] == 'generate_academic_projection_student') {
+            $student_id = $_GET['student_id'];
+            generate_projection_student($student_id, true);
+
+            setcookie('message', __('Successfully generated academic projections for the student.', 'aes'), time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
+            exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'generate_enrollments_moodle') {
             generate_enroll_student();
             setcookie('message', __('Students successfully enrolled in moodle.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
-            exit;
-        } else if (isset($_GET['action']) && $_GET['action'] == 'automatically_enrollment') {
-            global $wpdb;
-            $cut = $_GET['cut'];
-            $table_students = $wpdb->prefix . 'students';
-            $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE initial_cut = '{$cut}' AND academic_period = '20242025' ORDER BY id DESC");
-            foreach ($students as $key => $student) {
-                automatically_enrollment($student->id);
-            }
-            wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'auto_enroll') {
             global $wpdb;
@@ -139,13 +138,14 @@ function add_admin_form_academic_projection_content()
             automatically_enrollment($student_id);
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
-        } else if (isset($_GET['action']) && $_GET['action'] == 'activate_elective') {
+        } else if (isset($_GET['action']) && $_GET['action'] == 'student_elective_change') {
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
             $student_id = $_GET['student_id'];
             $projection_id = $_GET['projection_id'];
+            $status = $_GET['status'];
             $wpdb->update($table_students, [
-                'elective' => 1
+                'elective' => $status
             ], ['id' => $student_id]);
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
@@ -290,7 +290,7 @@ function add_admin_form_academic_projection_content()
             $student = get_student_detail($projection->student_id);
             $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id}");
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
-            setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 3600, '/');
+            setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 10, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'delete_inscription') {
@@ -327,7 +327,7 @@ function add_admin_form_academic_projection_content()
             $student = get_student_detail($projection->student_id);
             $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id}");
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
-            setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 3600, '/');
+            setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 10, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'set_max_access_date') {
@@ -374,7 +374,7 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
             case 'student':
             case 'grade_id':
             case 'initial_cut':
-                return '<label class="text-uppercase">'.strtoupper($item[$column_name]).'</label>';
+                return '<label class="text-uppercase">' . strtoupper($item[$column_name]) . '</label>';
             case 'view_details':
                 return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $item['academic_projection_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
             default:
@@ -531,8 +531,11 @@ function generate_enroll_student()
 {
     global $wpdb;
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $load = load_current_cut_enrollment();
+    $code = $load['code'];
+    $cut = $load['cut'];
 
+    $enrollments = [];
     $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
     foreach ($projections as $key => $projection) {
         $projection_obj = json_decode($projection->projection);
@@ -543,10 +546,14 @@ function generate_enroll_student()
         $filteredArray = array_values($filteredArray);
 
         foreach ($filteredArray as $key => $projection_filtered) {
-            $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_filtered->subject_id}");
-            enroll_student($projection->student_id, [(int) $subject->moodle_course_id]);
+            $offer = get_offer_filtered($projection_filtered->subject_id, $code, $cut);
+            if ($offer) {
+                $enrollments = array_merge($enrollments, courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id]));
+            }
         }
     }
+
+    enroll_student($enrollments);
 }
 
 
@@ -557,7 +564,6 @@ function get_moodle_notes()
     $load = load_last_cut();
     $academic_period = $load['code'];
     $cut = $load['cut'];
-    error_log('cut ' . $cut);
 
     $conditions = array();
     $params = array();
@@ -577,7 +583,6 @@ function get_moodle_notes()
 
     $students = $wpdb->get_results($wpdb->prepare($query, $params));
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
     foreach ($students as $key => $student) {
@@ -617,7 +622,8 @@ function get_moodle_notes()
                     if ($projection_student) {
                         $projection_obj = json_decode($projection_student->projection);
 
-                        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE moodle_course_id = {$course_id}");
+                        $offer = get_offer_by_moodle($course_id);
+                        $subject = get_subject_details($offer->subject_id);
                         $status_id = $total_grade >= $subject->min_pass ? 3 : 4;
 
                         foreach ($projection_obj as $key => $prj) {
@@ -671,7 +677,7 @@ function get_literal_note($calification)
     if (!$calification) {
         return 0;
     }
-    $calification = (int)$calification;
+    $calification = (int) $calification;
     $note = 'A+';
     switch ($calification) {
         case $calification >= 95:
@@ -710,7 +716,7 @@ function get_calc_note($calification)
     if (!$calification) {
         return 0;
     }
-    $calification = (int)$calification;
+    $calification = (int) $calification;
     $note = 'abc';
     switch ($calification) {
         case $calification >= 95:

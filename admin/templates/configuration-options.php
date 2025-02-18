@@ -174,25 +174,6 @@
               </a>
             </div>
           </div>
-          <div style="text-align: center; margin-top: 5px">
-            <span>Temporally</span>
-          </div>
-          <div style="text-align: center;">
-            <div>
-              <a style="margin: 5px"
-                href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=automatically_enrollment&cut=C') ?>"
-                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Enrollment process for students of the C cut - 20242025', 'aes'); ?>
-              </a>
-            </div>
-            <div>
-              <a style="margin: 5px"
-                href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=set_max_access_date') ?>"
-                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Set max date students', 'aes'); ?>
-              </a>
-            </div>
-          </div>
         </div>
         <div class="form-group" id="save-configuration" style="text-align: center">
           <button type="submit" class="btn btn-primary"><?= __('Save settings', 'aes'); ?></button>

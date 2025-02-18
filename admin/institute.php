@@ -84,7 +84,7 @@ function add_admin_institutes_content()
                     'updated_at' => date('Y-m-d H:i:s')
                 ], ['id' => $institute_id]);
 
-                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
+                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id=' . $institute_id));
                 exit;
 

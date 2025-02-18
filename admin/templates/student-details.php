@@ -1,8 +1,10 @@
-<td?php
-$countries = get_countries();
-$institutes = get_list_institutes_active();
-$grades = get_grades();
+<?php
+    global $current_user;
+    $roles = $current_user->roles;
 
+    $countries = get_countries();
+    $institutes = get_list_institutes_active();
+    $grades = get_grades();
 ?>
 
 <div class="wrap">
@@ -25,7 +27,10 @@ $grades = get_grades();
         <?php 
             include(plugin_dir_path(__FILE__).'connections-student.php');
         ?>
-        <button data-id="<?= $student->id; ?>" id="button-export-xlsx"
+        <?php if (in_array('administrator', $roles)) { ?>
+            <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projection_student&student_id=') . $student->id . '&projection_id='.$projection->id ?>" class="button button-outline-primary" onclick="return confirm('Estas seguro de volver a generar proyeccion academica?');"><?= __('Re-generate projection','aes'); ?></a>
+        <?php } ?>
+        <button style="margin-left: 5px;" data-id="<?= $student->id; ?>" id="button-export-xlsx"
             class="button button-primary"><?= __('Export Excel', 'aes'); ?></button>
         <!-- <?php 
             global $current_user;

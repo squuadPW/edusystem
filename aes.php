@@ -3,7 +3,7 @@
 Plugin Name: Squuad for educational system
 Plugin URI: https://online.american-elite.us/wp-admin/plugins.php
 Description: The WordPress plugin for educational system is a customized tool that offers a range of functionalities for the proper functioning of the institute website
-Version: 1.4.66
+Version: 1.4.85
 Author: Squuad
 Author URI: https://online.american-elite.us/wp-admin/plugins.php
 License:      GPL2
@@ -49,6 +49,7 @@ function create_tables()
   $table_user_notices = $wpdb->prefix . 'users_notices';
   $table_tickets_created = $wpdb->prefix . 'tickets_created';
   $table_school_subjects = $wpdb->prefix . 'school_subjects';
+  $table_academic_offers = $wpdb->prefix . 'academic_offers';
   $table_teachers = $wpdb->prefix . 'teachers';
   $table_teacher_documents = $wpdb->prefix . 'teacher_documents';
   $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
@@ -106,6 +107,7 @@ function create_tables()
       "CREATE TABLE " . $table_school_subjects . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         is_active BOOLEAN NOT NULL DEFAULT 1,
+        is_open BOOLEAN NOT NULL DEFAULT 1,
         code_subject TEXT NOT NULL,
         name TEXT NOT NULL,
         description TEXT NOT NULL,
@@ -116,6 +118,22 @@ function create_tables()
         moodle_course_id INT(11) NULL,
         teacher_id INT(11) NULL,
         is_elective BOOLEAN NOT NULL DEFAULT 0,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_academic_offers}'") != $table_academic_offers) {
+    dbDelta(
+      "CREATE TABLE " . $table_academic_offers . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        section INT(11) NULL,
+        subject_id INT(11) NOT NULL,
+        code_period TEXT NOT NULL,
+        cut_period TEXT NOT NULL,
+        teacher_id INT(11) NULL,
+        max_students INT(11) NOT NULL,
+        moodle_course_id INT(11) NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
@@ -147,6 +165,7 @@ function create_tables()
         id INT(11) NOT NULL AUTO_INCREMENT,
         status_id INT(11) NOT NULL,
         type TEXT NULL,
+        section INT(11) NULL DEFAULT 1,
         student_id INT(11) NOT NULL,
         subject_id INT(11) NULL,
         code_subject TEXT NULL,

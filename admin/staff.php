@@ -57,7 +57,7 @@ function add_admin_form_staff_content()
                 update_user_meta($staff_id, 'first_name', $first_name);
                 update_user_meta($staff_id, 'last_name', $last_name);
                 update_user_meta($staff_id, 'billing_email', $email);
-                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
+                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_staff_content&section_tab=staff_details&staff_id=' . $staff_id));
                 exit;
             } else {

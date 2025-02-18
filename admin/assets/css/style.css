@@ -472,4 +472,20 @@ div#application-passwords-section {
 
 .text-uppercase {
   text-transform: uppercase !important;
+}
+
+.admin-add-offer {
+  width: 460px;
+  margin: auto;
+}
+@media screen and (max-width: 782px) {
+  .admin-add-offer {
+    width: 100% !important;
+  }
+}
+.admin-add-offer input, .admin-add-offer select {
+  width: 100%;
+}
+.admin-add-offer .space-offer {
+  margin: 10px 0px 10px 0px;
 }/*# sourceMappingURL=style.css.map */

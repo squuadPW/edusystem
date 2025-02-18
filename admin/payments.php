@@ -557,14 +557,13 @@ class TT_payment_pending_List_Table extends WP_List_Table
                 // Eliminar espacios extras
                 $student_name = trim(preg_replace('/\s+/', ' ', $student_name));
 
-
                 array_push($orders_array, [
                     'payment_id' => $order->get_id(),
                     'date' => $order->get_date_created()->format('F j, Y g:i a'),
                     'partner_name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
                     'student_name' => $student_name,
                     'total' => wc_price($order->get_total()),
-                    'status' => $order->get_status(),
+                    'status' => ($order->get_status() == 'pending') ? 'Payment pending' : $order->get_status(),
                     'payment_method' => $order->get_payment_method_title()
                 ]);
             }
@@ -770,7 +769,7 @@ class TT_all_payments_List_Table extends WP_List_Table
                     'partner_name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
                     'student_name' => $student_name,
                     'total' => wc_price($order->get_total()),
-                    'status' => $order->get_status(),
+                    'status' => ($order->get_status() == 'pending') ? 'Payment pending' : $order->get_status(),
                     'payment_method' => $order->get_payment_method_title()
                 ]);
             }

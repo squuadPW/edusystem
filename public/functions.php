@@ -1727,7 +1727,6 @@ function student_continue_callback()
     $elective = $_POST['elective'];
     $table_students = $wpdb->prefix . 'students';
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $load = load_current_cut_enrollment();
@@ -1768,9 +1767,13 @@ function student_continue_callback()
     $wpdb->update($table_students, [
         'elective' => 0,
     ], ['id' => $student_id]);
+    
+    $section = load_section_available($subject->id, $code, $cut);
 
     $wpdb->insert($table_student_period_inscriptions, [
         'status_id' => $projection_obj[count($projection_obj) - 1]['this_cut'] ? 1 : 3,
+        'type' => 'elective',
+        'section' => $section,
         'student_id' => $projection->student_id,
         'subject_id' => $projection_obj[count($projection_obj) - 1]['subject_id'],
         'code_subject' => $projection_obj[count($projection_obj) - 1]['code_subject'],
@@ -1779,7 +1782,10 @@ function student_continue_callback()
     ]);
 
     if(get_option('auto_enroll_elective')) {
-        enroll_student($projection->student_id, [$subject->moodle_course_id]);
+        $offer = get_offer_filtered($subject->id, $code, $cut);
+        $enrollments = [];
+        $enrollments = array_merge($enrollments, courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id]));
+        enroll_student($enrollments);
     }
 
     wp_send_json(array('success' => true));
@@ -2032,8 +2038,12 @@ function modal_take_elective()
 
     $table_students = $wpdb->prefix . 'students';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $table_academic_offers = $wpdb->prefix . 'academic_offers';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+    $load = load_current_cut_enrollment();
+    $code = $load['code'];
+    $cut = $load['cut'];
 
     $conditions = array();
     $params = array();
@@ -2043,7 +2053,6 @@ function modal_take_elective()
         $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
     }
     $conditions[] = "is_elective = 1";
-    $conditions[] = "is_open = 1";
     $params = array_merge($params, $electives_ids);
 
     $query = "SELECT * FROM {$table_school_subjects}";
@@ -2053,7 +2062,19 @@ function modal_take_elective()
     }
 
     $electives = $wpdb->get_results($wpdb->prepare($query, $params));
+    $available_electives = [];
+    foreach ($electives as $key => $elective) {
+        $offer = get_offer_filtered($elective->id, $code, $cut);
+        if ($offer) {
+            array_push($available_electives, $elective);
+        }
+    }
 
+    if (count($available_electives) == 0) {
+        return;
+    }
+
+    $electives = $available_electives;
     include(plugin_dir_path(__FILE__) . 'templates/modal-select-elective.php');
 }
 

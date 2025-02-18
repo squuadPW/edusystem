@@ -53,7 +53,7 @@ function add_admin_form_enrollments_content()
                     'type' => $subject->is_elective ? 'elective' : 'regular'
                 ], ['id' => $enrollment_id]);
 
-                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
+                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_enrollments_content&section_tab=enrollment_details&enrollment_id=' . $enrollment_id));
                 exit;
             } else {

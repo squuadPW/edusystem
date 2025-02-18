@@ -365,7 +365,7 @@ function add_admin_form_available_scholarships_content()
             }
 
             if (isset($scholarship_id) && !empty($scholarship_id)) {
-                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 3600, '/');
+                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_available_scholarships_content&section_tab=available_scholarship_detail&scholarship_id='.$scholarship_id));
             } else {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_available_scholarships_content'));

@@ -331,14 +331,11 @@ function add_admin_form_admission_content()
                 $product_ready = get_payments($_GET['student_id']);
                 $fee_graduation_ready = false;
                 $student = get_student_detail($_GET['student_id']);
-                $countries = get_countries();
                 $partner = get_userdata($student->partner_id);
                 $table_users = $wpdb->prefix . 'users';
                 $table_academic_periods = $wpdb->prefix . 'academic_periods';
                 $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
                 $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $student->email . "'");
-                $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
-                $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes}");
                 include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
             }
 
