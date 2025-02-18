@@ -538,6 +538,7 @@ function generate_enroll_student()
     $code = $load['code'];
     $cut = $load['cut'];
 
+    $enrollments = [];
     $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
     foreach ($projections as $key => $projection) {
         $projection_obj = json_decode($projection->projection);
@@ -550,10 +551,12 @@ function generate_enroll_student()
         foreach ($filteredArray as $key => $projection_filtered) {
             $offer = get_offer_filtered($projection_filtered->subject_id, $code, $cut);
             if ($offer) {
-                enroll_student($projection->student_id, [(int) $offer->moodle_course_id]);
+                $enrollments = array_merge($enrollments, courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id]));
             }
         }
     }
+
+    enroll_student($enrollments);
 }
 
 

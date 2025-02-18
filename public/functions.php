@@ -1771,7 +1771,9 @@ function student_continue_callback()
 
     if(get_option('auto_enroll_elective')) {
         $offer = get_offer_filtered($subject->id, $code, $cut);
-        enroll_student($projection->student_id, [$offer->moodle_course_id]);
+        $enrollments = [];
+        $enrollments = array_merge($enrollments, courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id]));
+        enroll_student($enrollments);
     }
 
     wp_send_json(array('success' => true));
