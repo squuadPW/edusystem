@@ -120,9 +120,14 @@
                                 <?php } ?>
 
                                 <?php if($student->elective == 1) { ?>
-                                    <div style="display: flex; width: 100%; text-align: center">
+                                    <div style="display: block; width: 100%; text-align: center">
                                         <div style="flex: 1; padding: 20px;">
                                             <label><b><?= __('This student has yet to select an elective.', 'aes'); ?></b></label><br>
+                                        </div>
+                                        <div>
+                                            <a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=student_elective_change&student_id=') . $student->id . '&projection_id='.$projection->id . '&status=0' ?>" class="button button-danger" onclick="return confirm('Are you sure to desactivate the elective for this student?');">
+                                                <?= __('Desactivate student elective','aes'); ?>
+                                            </a>
                                         </div>
                                     </div>
                                 <?php } ?>
@@ -130,7 +135,7 @@
                                 <?php if($student->elective == 0) { ?>
                                     <div style="display: flex; width: 100%; text-align: center">
                                         <div style="flex: 1; padding: 20px;">
-                                            <a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=activate_elective&student_id=') . $student->id . '&projection_id='.$projection->id ?>" class="button button-outline-primary" onclick="return confirm('Are you sure to activate the elective for this student?');">
+                                            <a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=student_elective_change&student_id=') . $student->id . '&projection_id='.$projection->id . '&status=1' ?>" class="button button-outline-primary" onclick="return confirm('Are you sure to activate the elective for this student?');">
                                                 <?= __('Activate student elective','aes'); ?>
                                             </a>
                                         </div>
