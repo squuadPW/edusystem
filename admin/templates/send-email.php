@@ -14,7 +14,7 @@
         <?php setcookie('message-error', '', time(), '/'); ?>
     <?php endif; ?>
 
-    <div class="card">
+    <div class="card" style="min-width: 100% !important;">
         <div class="card-header">
             <h3><?= __('Send email for students', 'aes'); ?></h3>
         </div>
@@ -31,7 +31,8 @@
                 <div class="form-group" id="by_group">
                     <div class="form-group">
                         <label for="academic_period"><?= __('Academic period of students to send', 'aes'); ?></label>
-                        <select name="academic_period" style="width: 100%">
+                        <select name="academic_period" style="width: 100%" >
+                            <option value="">Select an option</option>
                             <?php foreach ($periods as $key => $period): ?>
                                 <option value="<?php echo $period->code; ?>"><?php echo $period->name; ?></option>
                             <?php endforeach; ?>
@@ -39,14 +40,16 @@
                     </div>
                     <div class="form-group">
                         <label for="academic_period"><?= __('Academic cut-off filter to be applied', 'aes'); ?></label>
-                        <select name="academic_period_cut_filter" style="width: 100%">
+                        <select name="academic_period_cut_filter" style="width: 100%" >
+                            <option value="">Select an option</option>
                             <option value="1">Initial</option>
                             <option value="2">Current enrollment (and electives)</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="academic_period"><?= __('Academic period cut-off', 'aes'); ?></label>
-                        <select name="academic_period_cut" style="width: 100%">
+                        <select name="academic_period_cut" style="width: 100%" >
+                            <option value="">Select an option</option>
                             <option value="A">A</option>
                             <option value="B">B</option>
                             <option value="C">C</option>
@@ -85,9 +88,29 @@
                         for="email_parent"><?= __('Send the same email to the parent', 'aes'); ?></label>
                 </div>
                 <div class="form-group" style="text-align: center">
-                    <button type="submit" class="btn btn-primary"><?= __('Send', 'aes'); ?></button>
+                    <button type="button" id="summary-email" class="btn btn-primary"><?= __('Send', 'aes'); ?></button>
+                    <button type="submit" id="summary-email-send" class="btn btn-primary" style="display: none"><?= __('Send', 'aes'); ?></button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div id='summary-email-modal' class='modal' style='display:none'>
+    <div class='modal-content' style="width: 70%;">
+        <div class="modal-header">
+        <h3 style="font-size:20px;"><?= __('Summary') ?></h3>
+            <span id="summary-email-exit-icon" class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+        </div>
+        <div class="modal-body" style="padding:10px; overflow: auto; max-height: 400px;">
+            <b>List of students to send email:</b>
+            <ul id="list-students-email">
+                <li>Loading...</li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button id="summary-email-button" type="submit" class="button button-outline-primary modal-close"><?= __('Send','aes'); ?></button>
+            <button id="summary-email-exit-button" type="button" class="button button-danger modal-close"><?= __('Cancel','aes'); ?></button>
         </div>
     </div>
 </div>
