@@ -41,7 +41,7 @@
                         <label for="academic_period"><?= __('Academic cut-off filter to be applied', 'aes'); ?></label>
                         <select name="academic_period_cut_filter" style="width: 100%">
                             <option value="1">Initial</option>
-                            <option value="2">Current enrollment</option>
+                            <option value="2">Current enrollment (and electives)</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -66,8 +66,18 @@
                     <input type="text" name="subject" id="subject" required>
                 </div>
                 <div class="form-group">
-                    <label for="message"><?= __('Message (accept HTML)', 'aes'); ?></label>
-                    <textarea name="message" id="message" required></textarea>
+                    <label for="message"><?= __('Message', 'aes'); ?></label>
+                    <ul>
+                        <li>For the student's full name use: <strong>{{student}}</strong></li>
+                    </ul>
+                    <?= wp_editor('',
+                        'message',      // ID del editor
+                        array(
+                            'textarea_name' => 'message', // Nombre del campo
+                            'media_buttons' => false, // Botón de subir archivos
+                            'teeny' => true, // Editor completo (true para versión simplificada)
+                        )
+                    ); ?>
                 </div>
                 <div class="form-group" style="display: flex">
                     <input style="margin: auto 6px auto 6px;" type="checkbox" name="email_parent" id="email_parent">
