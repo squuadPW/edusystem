@@ -103,7 +103,7 @@
             <span id="summary-email-exit-icon" class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
         </div>
         <div class="modal-body" style="padding:10px; overflow: auto; max-height: 400px;">
-            <b>List of students to send email:</b>
+            <b>List of students to send email: (<span id="total-send">0</span>)</b>
             <ul id="list-students-email">
                 <li>Loading...</li>
             </ul>

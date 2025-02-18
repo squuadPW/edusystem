@@ -60,6 +60,8 @@ if (summaryEmailButton) {
         var li = document.createElement('li');
         li.innerText = `Loading...`;
         studentsSend.appendChild(li);
+        var total_send = document.getElementById('total-send');
+        total_send.innerText = 0;
 
         let academic_period = document.querySelector('select[name="academic_period"]').value;
         let cut = document.querySelector('select[name="academic_period_cut"]').value;
@@ -87,6 +89,9 @@ if (summaryEmailButton) {
               li.innerText = `No students found.`;
               studentsSend.appendChild(li);
             }
+
+            var total_send = document.getElementById('total-send');
+            total_send.innerText = students.length;
           }
         };
     });
