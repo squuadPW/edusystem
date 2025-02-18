@@ -801,10 +801,11 @@ function load_inscriptions_regular_valid($student)
     return count($inscriptions);
 }
 
-function generate_projection_student($student_id)
+function generate_projection_student($student_id, $force = false)
 {
     global $wpdb;
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
     $existing_projection = $wpdb->get_var(
         $wpdb->prepare(
@@ -814,7 +815,12 @@ function generate_projection_student($student_id)
     );
 
     if ($existing_projection > 0) {
-        return;
+        if ($force) {
+            $wpdb->delete($table_student_academic_projection, ['student_id' => $student_id]);
+            $wpdb->delete($table_student_period_inscriptions, ['student_id' => $student_id]);
+        } else {
+            return;
+        }
     }
 
     $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';

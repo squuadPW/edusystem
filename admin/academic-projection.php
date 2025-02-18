@@ -108,7 +108,6 @@ function add_admin_form_academic_projection_content()
 
         if (isset($_GET['action']) && $_GET['action'] == 'generate_academic_projections') {
             global $wpdb;
-            $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
             $table_students = $wpdb->prefix . 'students';
 
             $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
@@ -119,6 +118,13 @@ function add_admin_form_academic_projection_content()
 
             setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            exit;
+        } else if (isset($_GET['action']) && $_GET['action'] == 'generate_academic_projection_student') {
+            $student_id = $_GET['student_id'];
+            generate_projection_student($student_id, true);
+
+            setcookie('message', __('Successfully generated academic projections for the student.', 'aes'), time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'generate_enrollments_moodle') {
             generate_enroll_student();
