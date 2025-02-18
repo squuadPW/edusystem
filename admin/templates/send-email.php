@@ -102,7 +102,7 @@
         <h3 style="font-size:20px;"><?= __('Summary') ?></h3>
             <span id="summary-email-exit-icon" class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
         </div>
-        <div class="modal-body" style="padding:10px; overflow: auto; height: 400px;">
+        <div class="modal-body" style="padding:10px; overflow: auto; max-height: 400px;">
             <b>List of students to send email:</b>
             <ul id="list-students-email">
                 <li>Loading...</li>
