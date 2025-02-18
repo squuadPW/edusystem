@@ -14,7 +14,7 @@ function add_admin_form_send_email_content()
                 $academic_period = $_POST['academic_period'];
                 $cut = $_POST['academic_period_cut'];
                 if ($_POST['academic_period_cut_filter'] == 1) {
-                    $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE code_period = '{$academic_period}' AND initial_cut = '$cut'");
+                    $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE academic_period = '{$academic_period}' AND initial_cut = '$cut'");
                 } else {
                     $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$cut}'");
                     $cut_student_ids = array_merge($cut_student_ids, $wpdb->get_col("SELECT id FROM {$table_students} WHERE elective = 1"));
@@ -128,7 +128,7 @@ function get_summary_email()
 
     if ($type == 1) {
         if ($filter == 1) {
-            $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE code_period = '{$academic_period}' AND initial_cut = '$cut'");
+            $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE academic_period = '{$academic_period}' AND initial_cut = '$cut'");
         } else {
             $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$cut}'");
             $cut_student_ids = array_merge($cut_student_ids, $wpdb->get_col("SELECT id FROM {$table_students} WHERE elective = 1"));
