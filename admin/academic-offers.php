@@ -133,7 +133,7 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
             'subject' => __('Subject', 'aes'),
             'section' => __('Section', 'aes'),
             'period' => __('Offer period', 'aes'),
-            'teacher' => __('Teacher', 'aes'),
+            'teacher' => __('Teacher or person responsible', 'aes'),
             'max' => __('Max. students', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
