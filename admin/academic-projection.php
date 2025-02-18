@@ -125,16 +125,6 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Students successfully enrolled in moodle.', 'aes'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
-        } else if (isset($_GET['action']) && $_GET['action'] == 'automatically_enrollment') {
-            global $wpdb;
-            $cut = $_GET['cut'];
-            $table_students = $wpdb->prefix . 'students';
-            $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE initial_cut = '{$cut}' AND academic_period = '20242025' ORDER BY id DESC");
-            foreach ($students as $key => $student) {
-                automatically_enrollment($student->id);
-            }
-            wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
-            exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'auto_enroll') {
             global $wpdb;
             $student_id = $_GET['student_id'];
