@@ -470,7 +470,7 @@ function load_automatically_enrollment($expected_projection, $student)
             foreach ($expected as $key => $exc) {
                 if ($exc['type'] == 1) {
                     $expected_subject = $matrix_regular[$count_expected_subject];
-                    $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$expected_subject->subject_id}");
+                    $subject = get_subject_details($expected_subject->subject_id);
                     $inscriptions = $wpdb->get_results(
                         $wpdb->prepare(
                             "SELECT * FROM {$table_student_period_inscriptions} 
@@ -574,7 +574,7 @@ function load_automatically_enrollment($expected_projection, $student)
         } else {
             if ($expected['type'] == 1) {
                 $expected_subject = $matrix_regular[$count_expected_subject];
-                $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$expected_subject->subject_id}");
+                $subject = get_subject_details($expected_subject->subject_id);
                 $inscriptions = $wpdb->get_results(
                     $wpdb->prepare(
                         "SELECT * FROM {$table_student_period_inscriptions} 
@@ -815,27 +815,74 @@ function generate_projection_student($student_id, $force = false)
         )
     );
 
-    if ($existing_projection > 0) {
-        if ($force) {
-            $wpdb->update($table_students, [
-                'elective' => 0
-            ], ['id' => $student_id]);
-
-            $wpdb->delete($table_student_academic_projection, ['student_id' => $student_id]);
-            $wpdb->delete($table_student_period_inscriptions, ['student_id' => $student_id]);
-        } else {
-            return;
-        }
+    if ($existing_projection > 0 && !$force) {
+        return;
     }
 
     $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
     $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular}");
-    $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $projection = [];
 
+    if ($force) {
+        $current_projection = get_projection_by_student($student_id);
+        $projection_obj = json_decode($current_projection->projection);
+    }
+
     foreach ($matrix_regular as $key => $regular) {
-        $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$regular->subject_id}");
-        array_push($projection, ['code_subject' => $subject->code_subject, 'subject_id' => $subject->id, 'subject' => $subject->name, 'hc' => $subject->hc, 'cut' => "", 'code_period' => "", 'calification' => "", 'is_completed' => false, 'this_cut' => false, 'welcome_email' => false]);
+        $filteredArray = [];
+        if ($force && $current_projection) {
+            $filteredArray = array_filter($projection_obj, function ($item) use ($regular) {
+                return $item->subject_id == $regular->subject_id && $item->is_completed && !$item->this_cut && $item->calification;
+            });
+            $filteredArray = array_values($filteredArray);
+        }
+
+        if (count($filteredArray) > 0) {
+            $payload = $filteredArray[0];
+        } else {
+            $subject = get_subject_details($regular->subject_id);
+            $payload = [
+                'code_subject' => $subject->code_subject, 
+                'subject_id' => $subject->id, 
+                'subject' => $subject->name, 
+                'hc' => $subject->hc, 
+                'cut' => "", 
+                'code_period' => "", 
+                'calification' => "", 
+                'is_completed' => false, 
+                'this_cut' => false, 
+                'welcome_email' => false
+            ];
+        }
+
+        array_push($projection, $payload);
+    }
+
+    if ($force) {
+        $wpdb->update($table_students, [
+            'elective' => 0
+        ], ['id' => $student_id]);
+    
+        $wpdb->delete($table_student_academic_projection, ['student_id' => $student_id]);
+        $wpdb->delete($table_student_period_inscriptions, ['student_id' => $student_id]);
+
+        foreach ($projection as $key => $prj) {
+            if ($prj->is_completed && !$prj->this_cut && $prj->calification) {
+                $subject = get_subject_details($prj->subject_id);
+                $section = load_section_available($prj->subject_id, $prj->code_period, $prj->cut);
+                $wpdb->insert($table_student_period_inscriptions, [
+                    'status_id' => 3,
+                    'section' => $section,
+                    'calification' => $prj->calification,
+                    'student_id' => $student_id,
+                    'subject_id' => $subject->id,
+                    'code_subject' => $subject->code_subject,
+                    'code_period' => $prj->code_period,
+                    'cut_period' => $prj->cut,
+                    'type' => $subject->is_elective ? 'elective' : 'regular'
+                ]);
+            }
+        }
     }
 
     $wpdb->insert($table_student_academic_projection, [
