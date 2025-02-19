@@ -21,7 +21,7 @@ function add_admin_form_send_notification_content()
 }
 
 function send_notification_staff($subject, $message) {
-    for ($i=0; $i < 3; $i++) { 
+    for ($i=0; $i < 5; $i++) { 
         $email = '';
         switch ($i) {
             case 0:
@@ -33,9 +33,17 @@ function send_notification_staff($subject, $message) {
             case 2:
                 $email = get_option('email_manager');
                 break;
+            case 3:
+                $email = get_option('email_administration');
+                break;
+            case 4:
+                $email = get_option('email_admission');
+                break;
         }
-        $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
-        $sender_email->trigger($email, $subject, $message);
+        if ($email && !empty($email)) {
+            $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
+            $sender_email->trigger($email, $subject, $message);
+        }
     }
 }
 
@@ -54,7 +62,12 @@ function send_notification_staff_particular($subject, $message, $i) {
         case 3:
             $email = get_option('email_administration');
             break;
+        case 4:
+            $email = get_option('email_admission');
+            break;
     }
-    $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
-    $sender_email->trigger($email, $subject, $message);
+    if ($email && !empty($email)) {
+        $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
+        $sender_email->trigger($email, $subject, $message);
+    }
 }
