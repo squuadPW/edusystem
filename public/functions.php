@@ -2745,3 +2745,17 @@ function hide_other_payment_methods($available_gateways) {
 
     return $available_gateways;
 }
+
+function send_notification_user($user_id, $description, $importance, $type) {
+    global $wpdb;
+    $table_users_notices = $wpdb->prefix . 'users_notices';
+
+    $data = [
+        'user_id' => $user_id,
+        'message' => $description,
+        'importance' => $importance,
+        'type_notice' => $type,
+    ];
+
+    $wpdb->insert($table_users_notices, $data);
+}

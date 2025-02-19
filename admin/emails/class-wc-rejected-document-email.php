@@ -32,15 +32,19 @@ class WC_Rejected_Document_Email extends WC_Email {
      * @since 0.1
      * @param int $order_id
      */
-    public function trigger($student_id,$document_id){
+    public function trigger($student_id,$document_id, $parent = false){
 
         global $wpdb;
         $table_student_documents = $wpdb->prefix.'student_documents';
         $table_students = $wpdb->prefix.'students';
-
-        $this->object = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE document_id='{$document_id}' AND student_id={$student_id}");
+        $this->object = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id={$document_id}");
         $this->student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
-        $this->recipient = $this->student->email;
+        if ($parent) {
+            $user_parent = get_user_by('id', $this->student->partner_id);
+            $this->recipient = $user_parent->user_email;
+        } else {
+            $this->recipient = $this->student->email;
+        }
         $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
     }
 
