@@ -1087,14 +1087,19 @@ function get_status_description($status_id, $description, $document_changed = fa
 function handle_rejected_document($student_id, $document_id, $user_id)
 {
     global $wpdb;
+    $table_student_documents = $wpdb->prefix . 'student_documents';
 
-    $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
-    $email_rejected_document->trigger($student_id, $document_id);
+    try {
+        $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
+        $email_rejected_document->trigger($student_id, $document_id);
+    
+        $email_rejected_document_parent = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
+        $email_rejected_document_parent->trigger($student_id, $document_id, true);
+    } catch (\Throwable $th) {
+        //throw $th;
+    }
 
-    $email_rejected_document_parent = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
-    $email_rejected_document_parent->trigger($student_id, $document_id, true);
-
-    $document_loaded = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}student_documents WHERE id = $document_id");
+    $document_loaded = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id = $document_id");
     $document_types = ['ENROLLMENT', 'MISSING DOCUMENT'];
 
     if (in_array($document_loaded->document_id, $document_types)) {
