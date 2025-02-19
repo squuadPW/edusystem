@@ -286,10 +286,6 @@ function add_admin_form_academic_projection_content()
                 send_welcome_subjects($projection->student_id);
             }
 
-            $projection = get_projection_details($projection_id);
-            $student = get_student_detail($projection->student_id);
-            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id}");
-            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 10, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
@@ -321,12 +317,17 @@ function add_admin_form_academic_projection_content()
                 ], ['id' => $projection->id]);
             }
 
+            if ($enrollment->status_id = 1) {
+                $enrollments = [];
+                $offer = get_offer_filtered($enrollment->subject_id, $enrollment->code_period, $enrollment->cut_period);
+                if ($offer) {
+                    $enrollments = array_merge($enrollments, courses_unenroll_student($enrollment->student_id, (int) $offer->moodle_course_id));
+                    unenroll_student($enrollments);
+                }
+            }
+
             $wpdb->delete($table_student_period_inscriptions, ['id' => $inscription_id]);
 
-            $projection = get_projection_details($projection_id);
-            $student = get_student_detail($projection->student_id);
-            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id}");
-            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 10, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;

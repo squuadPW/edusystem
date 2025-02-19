@@ -248,32 +248,31 @@ function enroll_student($enrollments = []) {
     }
 }
 
-function unenroll_student($student_id, $courses = []) {
+function courses_unenroll_student($student_id, $course_id) {
     global $wpdb;
     $table_students = $wpdb->prefix.'students';
     $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+    $enrollments = [];
+
+    if (!empty($data_student) && $data_student->moodle_student_id) {
+        array_push($enrollments, [
+            'userid' => $data_student->moodle_student_id,
+            'courseid' => $course_id
+        ]);
+    }
+
+    return $enrollments;
+}
+
+function unenroll_student($enrollments = []) {
     $moodle_url = get_option('moodle_url');
     $moodle_token = get_option('moodle_token');
 
-    if (!empty($data_student)) {
-        if (!empty($moodle_url) && !empty($moodle_token)) {
-            $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);
-
-            $enrollments = [];
-            foreach ($courses as $key => $course_id) {    
-                array_push($enrollments, [
-                    'userid' => $data_student->moodle_student_id,
-                    'courseid' => $course_id,
-                    'roleid' => ROLE_ID_STUDENT_MOODLE,
-                ]);
-            }
-
-            $enrolled_courses = $MoodleRest->request('enrol_manual_unenrol_users', ['enrolments' => $enrollments]);
-            if (empty($enrolled_courses)) {
-                return [];
-            } else {
-                return $enrolled_courses;
-            }
-        }
+    $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);
+    $unenrolled_courses = $MoodleRest->request('enrol_manual_unenrol_users', ['enrolments' => $enrollments]);
+    if (empty($unenrolled_courses)) {
+        return [];
+    } else {
+        return $unenrolled_courses;
     }
 }
