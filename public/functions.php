@@ -2720,3 +2720,17 @@ function clear_students_electives() {
     $table_students = $wpdb->prefix . 'students';
     $wpdb->query("UPDATE {$table_students} SET elective = 0, skip_cut = 1 WHERE elective = 1");
 }
+
+function send_notification_user($user_id, $description, $importance, $type) {
+    global $wpdb;
+    $table_users_notices = $wpdb->prefix . 'users_notices';
+
+    $data = [
+        'user_id' => $user_id,
+        'message' => $description,
+        'importance' => $importance,
+        'type_notice' => $type,
+    ];
+
+    $wpdb->insert($table_users_notices, $data);
+}

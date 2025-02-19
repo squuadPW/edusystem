@@ -1029,27 +1029,13 @@ function update_status_documents()
         }
 
         $table_student_documents = $wpdb->prefix . 'student_documents';
-        $table_users_notices = $wpdb->prefix . 'users_notices';
+        $document_changed = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id = {$document_id}");
+        $description = get_status_description($status_id, $description, $document_changed);
 
-        $description = get_status_description($status_id, $description);
-
-        $data = [
-            'user_id' => $user_student->ID,
-            'message' => $description,
-            'importance' => $status_id == 3 ? 3 : 1,
-            'type_notice' => 'documents',
-        ];
-
-        $wpdb->insert($table_users_notices, $data);
-
-        $data = [
-            'user_id' => $user_parent->ID,
-            'message' => $description,
-            'importance' => $status_id == 3 ? 3 : 1,
-            'type_notice' => 'documents',
-        ];
-
-        $wpdb->insert($table_users_notices, $data);
+        if ($status_id == 3 || $status_id == 5) {
+            send_notification_user($user_student->ID, $description, ($status_id == 3 ? 3 : 1), 'documents');
+            send_notification_user($user_parent->ID, $description, ($status_id == 3 ? 3 : 1), 'documents');
+        }
 
         $wpdb->update($table_student_documents, [
             'approved_by' => $current_user->ID,
@@ -1058,18 +1044,23 @@ function update_status_documents()
             'description' => $description
         ], ['id' => $document_id, 'student_id' => $student_id]);
 
-        if ($status_id == 3) {
-            handle_rejected_document($student_id, $document_id, $user_student->ID);
-        }
-
         $html = generate_documents_html($student_id, $document_id);
 
-        if (check_solvency_administrative($student_id)) {
-            update_status_student($student_id, 3);
-        }
-
-        if (check_access_virtual($student_id)) {
-            handle_virtual_classroom_access($student_id);
+        if ($status_id == 3) {
+            handle_rejected_document($student_id, $document_id, $user_student->ID);
+            if ($document_changed->is_required) {
+                update_status_student($student_id, 1);
+            }
+        } else {
+            if (check_solvency_administrative($student_id)) {
+                update_status_student($student_id, 3);
+            }
+    
+            if ($document_changed->is_required) {
+                if (check_access_virtual($student_id)) {
+                    handle_virtual_classroom_access($student_id);
+                }
+            }
         }
 
         echo json_encode(['status' => 'success', 'message' => __('status changed', 'aes'), 'html' => $html]);
@@ -1080,15 +1071,16 @@ function update_status_documents()
     }
 }
 
-function get_status_description($status_id, $description)
+function get_status_description($status_id, $description, $document_changed = false)
 {
+    $name_document = $document_changed ? $document_changed->document_id.': ' : '';
     switch ($status_id) {
         case 3:
-            return $description;
+            return $name_document . $description;
         case 5:
-            return "Document approved";
+            return $name_document . "Document approved";
         default:
-            return "Status of document changed";
+            return $name_document . "Status of document changed";
     }
 }
 
@@ -1098,6 +1090,9 @@ function handle_rejected_document($student_id, $document_id, $user_id)
 
     $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
     $email_rejected_document->trigger($student_id, $document_id);
+
+    $email_rejected_document_parent = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
+    $email_rejected_document_parent->trigger($student_id, $document_id, true);
 
     $document_loaded = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}student_documents WHERE id = $document_id");
     $document_types = ['ENROLLMENT', 'MISSING DOCUMENT'];

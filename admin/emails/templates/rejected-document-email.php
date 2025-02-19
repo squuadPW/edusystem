@@ -5,9 +5,7 @@
 do_action( 'woocommerce_email_header', $email_heading, $email ); 
 
 ?>
-    <p><?php printf( esc_html__( 'I am writing to inform you that your document, %s, has been rejected.
-
-We carefully reviewed your document and determined that it does not meet our current requirements.', 'aes' ),get_name_document($document->document_id)); ?></p>
+    <p>We inform you that the document <?= $document->document_id ?> has been rejected, we invite you to enter the platform to the notification area for more details.</p>
 
 <?php 
 /**
