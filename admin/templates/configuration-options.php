@@ -118,7 +118,7 @@
         </div>
         <div id="by_notifications" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
-            <label for="email_coordination"><?= __('Email academic coordination and admission'); ?></label> <br>
+            <label for="email_coordination"><?= __('Email academic coordination'); ?></label> <br>
             <input class="full-input" type="email" id="email_coordination" name="email_coordination"
               value="<?php echo get_option('email_coordination') ?>">
           </div>
@@ -138,7 +138,7 @@
               value="<?php echo get_option('email_administration') ?>">
           </div>
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
-            <label for="email_admission"><?= __('Admission'); ?></label> <br>
+            <label for="email_admission"><?= __('Email admission'); ?></label> <br>
             <input class="full-input" type="email" id="email_admission" name="email_admission"
               value="<?php echo get_option('email_admission') ?>">
           </div>
