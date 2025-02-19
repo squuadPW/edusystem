@@ -1047,10 +1047,11 @@ function update_status_documents()
         $html = generate_documents_html($student_id, $document_id);
 
         if ($status_id == 3) {
-            handle_rejected_document($student_id, $document_id, $user_student->ID);
             if ($document_changed->is_required) {
                 update_status_student($student_id, 1);
             }
+
+            handle_rejected_document($student_id, $document_id, $user_student->ID);
         } else {
             if (check_solvency_administrative($student_id)) {
                 update_status_student($student_id, 3);
