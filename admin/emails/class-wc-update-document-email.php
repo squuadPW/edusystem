@@ -48,7 +48,7 @@ class WC_Update_Document_Email extends WC_Email {
         $this->object = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id} AND status = 1");
 
         if(!empty($this->object)){
-
+            $this->recipient = get_option('email_admission');
             $this->student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
             $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
         }

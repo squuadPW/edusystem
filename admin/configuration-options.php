@@ -36,14 +36,16 @@ function add_admin_form_configuration_options_content()
             update_option('offer_quote', $offer_quote);
 
             // notifications
-            $email_coordination = sanitize_text_field($_POST['email_coordination']) ?? get_option('email_coordination');
-            $email_administration = sanitize_text_field($_POST['email_administration']) ?? get_option('email_administration');
-            $email_academic_management = sanitize_text_field($_POST['email_academic_management']) ?? get_option('email_academic_management');
-            $email_manager = sanitize_text_field($_POST['email_manager']) ?? get_option('email_manager');
+            $email_coordination = sanitize_text_field($_POST['email_coordination']);
+            $email_administration = sanitize_text_field($_POST['email_administration']);
+            $email_academic_management = sanitize_text_field($_POST['email_academic_management']);
+            $email_manager = sanitize_text_field($_POST['email_manager']);
+            $email_admission = sanitize_text_field($_POST['email_admission']);
             update_option('email_coordination', $email_coordination);
             update_option('email_administration', $email_administration);
             update_option('email_academic_management', $email_academic_management);
             update_option('email_manager', $email_manager);
+            update_option('email_admission', $email_admission);
         
             // Redirect to the same page with a success message
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content&success=true'));

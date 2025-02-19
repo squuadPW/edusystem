@@ -137,6 +137,11 @@
             <input class="full-input" type="email" id="email_administration" name="email_administration"
               value="<?php echo get_option('email_administration') ?>">
           </div>
+          <div class="form-group" style="padding: 0px 10px 10px 10px;">
+            <label for="email_admission"><?= __('Admission'); ?></label> <br>
+            <input class="full-input" type="email" id="email_admission" name="email_admission"
+              value="<?php echo get_option('email_admission') ?>">
+          </div>
         </div>
         <div id="inscriptions" style="display: none">
           <div style="text-align: center;">
