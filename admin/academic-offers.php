@@ -301,7 +301,7 @@ function offer_available_to_enroll($subject_id, $code, $cut) {
     }
 
     foreach ($all_offers as $key => $offer) {
-        $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE section = {$offer->section} WHERE subject_id = {$subject_id} AND status_id = 1");
+        $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE section = {$offer->section} AND subject_id = {$subject_id} AND status_id = 1");
         if (count($active_inscriptions) < (int) $offer->max_students) {
             $available = true;
             break;
