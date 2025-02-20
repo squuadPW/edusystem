@@ -315,54 +315,6 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 
-  if (document.getElementById("update_data_report_current_students")) {
-    load_report_current_students();
-  }
-
-  function load_report_current_students() {
-    let htmlLoading = "";
-
-    htmlLoading += "<tr>";
-    htmlLoading +=
-      "<td class='column-primary id column-id' colspan='3' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
-    htmlLoading += "</tr>";
-
-    document.getElementById("table-current-student").innerHTML = htmlLoading;
-
-    htmlLoading = "";
-    htmlLoading += "<tr>";
-    htmlLoading +=
-      "<td class='column-primary id column-id' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
-    htmlLoading += "</tr>";
-    document.getElementById("table-not-current-student").innerHTML =
-      htmlLoading;
-
-    const XHR = new XMLHttpRequest();
-    XHR.open("POST", list_report_current_students.url, true);
-    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    XHR.responseType = "text";
-    XHR.send("action=" + list_report_current_students.action);
-    XHR.onload = function () {
-      if (this.readyState == "4" && XHR.status === 200) {
-        let result = JSON.parse(XHR.responseText);
-
-        if (result.status == "success") {
-          document.getElementById("table-current-student").innerHTML =
-            result.html;
-          document.getElementById("current-students").innerHTML =
-            result.data.length;
-
-          document.getElementById("table-not-current-student").innerHTML =
-            result.html_not_current;
-          document.getElementById("not-current-students").innerHTML =
-            result.students_not_current.length;
-          // document.getElementById("receivable").innerHTML =
-          //   result.data.receivable;
-        }
-      }
-    };
-  }
-
   export_excel_students = document.getElementById("export_excel_students");
   if (export_excel_students) {
     export_excel_students.addEventListener("click", () => {

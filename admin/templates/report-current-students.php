@@ -1,58 +1,17 @@
-<div class="wrap">
-    <div id="card-totals-sales" class="grid-container-report-2">
-        <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
-            <div>Students currently enrolled</div>
-            <div style="margin-top: 10px"><strong id="current-students"></strong></div>
-        </div>
-        <div class="card-report-sales tooltip" title="All orders" style="background-color: #ff9797;">
-            <div>Students not currently enrolled</div>
-            <div style="margin-top: 10px"><strong id="not-current-students"></strong></div>
-        </div>
-    </div>
-    <input type="hidden" id="update_data_report_current_students"></input>
-    <!-- <div style="width:100%;text-align:center;padding-top:10px;">
-    <?php if (wp_is_mobile()): ?>
-                <input type="hidden" id="update_data_report_current_students"></input>
-                <button type="button" id="export_excel_students" class="button button-success"
-                    style="width:100%;"></span><?= __('Export excel', 'aes'); ?></button>
-            <?php else: ?>
-                <input type="hidden" id="update_data_report_current_students"></input>
-                <button type="button" id="export_excel_students"
-                    class="button button-success"></span><?= __('Export excel', 'aes'); ?></button>
-            <?php endif; ?>
-    </div> -->
-    <div  class="grid-container-report-2">
-        <div>
-            <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
-                <thead>
-                    <tr>
-                        <th scope="col" class=" manage-column column" colspan="3" style="text-align: center"><?= __('Current students', 'aes'); ?></th>
-                    </tr>
-                    <tr>
-                        <th scope="col" class=" manage-column column"><?= __('Academic period - cut', 'aes'); ?></th>
-                        <th scope="col" class=" manage-column column-primary"><?= __('Student', 'aes'); ?></th>
-                        <th scope="col" class=" manage-column"><?= __('Subjects', 'aes'); ?></th>
-                    </tr>
-                </thead>
-                <tbody id="table-current-student">
+<h2 class="nav-tab-wrapper">
+	<a href="<?= admin_url('admin.php?page=report-current-students') ?>" class="nav-tab <?= (!isset($_GET['section_tab'])) ? 'nav-tab-active' : ''; ?>"><?= __('Current','form-plugin'); ?> (<strong><?= $total_count_current ?></strong>)</a>
+	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=pending_electives'); ?>" class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending_electives') ? 'nav-tab-active' : ''; ?>"><?= __('Pending electives','form-plugin'); ?> (<strong><?= $total_count_pending_electives ?></strong>)</a>
+    <a href="<?= admin_url('admin.php?page=report-current-students&section_tab=non-enrolled'); ?>" class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'non-enrolled') ? 'nav-tab-active' : ''; ?>"><?= __('Non-enrolled students','form-plugin'); ?> (<strong><?= $total_count_non_enrolled ?></strong>)</a>
+</h2>
 
-                </tbody>
-            </table>
-        </div>
-        <div>
-            <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
-                <thead>
-                    <tr>
-                        <th scope="col" class=" manage-column column"  style="text-align: center"><?= __('Not current students', 'aes'); ?></th>
-                    </tr>
-                    <tr>
-                        <th scope="col" class=" manage-column column-primary"><?= __('Student', 'aes'); ?></th>
-                    </tr>
-                </thead>
-                <tbody id="table-not-current-student">
-
-                </tbody>
-            </table>
-        </div>
-    </div>
+<div class="tabs-content">
+	<div class="wrap">
+        <div style="text-align:start;">
+			<h1 class="wp-heading-line"><?= __('Current students of','aes'); ?> <?= $academic_period ?> - <?= $cut ?></h1>
+		</div>
+		<form action="" id="post-filter" method="get">
+			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+			<?php $list_students->display() ?>
+		</form>  
+	</div>
 </div>
