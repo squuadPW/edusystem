@@ -54,6 +54,21 @@ function create_tables()
   $table_teacher_documents = $wpdb->prefix . 'teacher_documents';
   $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
   $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
+  $table_requests = $wpdb->prefix . 'requests';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_requests}'") != $table_requests) {
+    dbDelta(
+      "CREATE TABLE " . $table_requests . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        partner_id INT(11) NOT NULL,
+        student_id INT(11) NOT NULL,
+        description TEXT NULL,
+        type TEXT NULL,
+        status_id INT(11) NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_academic_projection}'") != $table_student_academic_projection) {
     dbDelta(

@@ -29,6 +29,7 @@ require plugin_dir_path(__FILE__) . '/institutes/payments.php';
 require plugin_dir_path(__FILE__) . 'alliance/institutes-registered.php';
 require plugin_dir_path(__FILE__) . 'alliance/payments.php';
 require plugin_dir_path(__FILE__) . 'academic-offers.php';
+require plugin_dir_path(__FILE__) . 'requests.php';
 
 function admin_form_plugin_scripts()
 {
@@ -131,6 +132,10 @@ function aes_scripts_admin()
             'url' => admin_url('admin-ajax.php'),
             'action' => 'list_fee_alliance'
         ]);
+    }
+
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_requests_content') {
+        wp_enqueue_script('request', plugins_url('aes') . '/admin/assets/js/request.js', array('jquery'), '1.0.0', true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_department_content') {
@@ -286,6 +291,7 @@ function add_custom_admin_page()
     add_submenu_page('add_admin_form_academic_content', __('Academic projection', 'aes'), __('Academic projection', 'aes'), 'manager_academic_projection_aes', 'add_admin_form_academic_projection_content', 'add_admin_form_academic_projection_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'aes'), __('Academic periods', 'aes'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'aes'), __('Academic offers', 'aes'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Requests', 'aes'), __('Requests', 'aes'), 'manager_requests_aes', 'add_admin_form_requests_content', 'add_admin_form_requests_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'aes'), __('Enrollments', 'aes'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('School subjects', 'aes'), __('School subjects', 'aes'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Scholarship students', 'aes'), __('Scholarship students', 'aes'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
@@ -375,6 +381,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_teachers_aes');
     $role->add_cap('manager_enrollments_aes');
     $role->add_cap('manager_academic_offers_aes');
+    $role->add_cap('manager_requests_aes');
     $role->add_cap('manager_configuration_options_aes');
     $role->add_cap('manager_send_email_aes');
     $role->add_cap('manager_send_notification_aes');

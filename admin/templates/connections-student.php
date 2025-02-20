@@ -1,13 +1,11 @@
 <?php
-    global $current_user;
-    $roles = $current_user->roles;
     $student_id = $student->id;
     $email = $student->email;
     $projection = get_projection_by_student($student_id);
 ?>
 
 <div style="margin-left: 5px; margin-right: 5px;">
-    <?php if($projection) { ?>
+    <?php if($projection && current_user_can('manager_academic_projection_aes')) { ?>
         <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=') . $projection->id ?>"
             class="button button-outline-primary">
             <?= __('Academic projection', 'aes'); ?>
@@ -17,7 +15,7 @@
         class="button button-outline-primary">
         <?= __('Admission', 'aes'); ?>
     </a>
-    <?php if (in_array('administration', $roles) || in_array('administrator', $roles) || in_array('owner', $roles) || in_array('administrador', $roles)) { ?>
+    <?php if (current_user_can('manager_payments_aes')) { ?>
         <a href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=') . $email ?>"
             class="button button-outline-primary">
             <?= __('Payments', 'aes'); ?>

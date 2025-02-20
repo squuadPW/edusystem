@@ -1,5 +1,5 @@
 <div style="text-align: center">
-  <button type="button" class="btn button-danger" id="unsubscribe">Unsubscribe student</button>
+  <button type="button" class="btn button-danger" id="unsubscribe">Request to unsubscribe</button>
 </div>
 
 <div id="modal-unsubscribe" class="modal" style="display: none">
@@ -16,12 +16,13 @@
             <div>
               <label for="reason"><?= __('Reason', 'aes'); ?><span class="required">*</span></label>
               <textarea class="formdata" name="reason" autocomplete="off" required></textarea>
+              <input type="hidden" name="student_id" value="<?= $student_id ?>">
             </div>
           </div>
 
           <!-- DATOS DEL GRADO -->
           <div style="text-align:center; margin-top: 3rem">
-            <button type="button" class="submit button-danger" id="send-unsubscribe"><?= __('Unsubscribe', 'aes'); ?></button>
+            <button type="button" class="submit button-danger" id="send-unsubscribe"><?= __('Unsubscription request', 'aes'); ?></button>
           </div>
       </div>
     </div>

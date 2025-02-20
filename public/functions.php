@@ -70,7 +70,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('create-enrollment');
 
-    if (str_contains(home_url($wp->request), 'edit-account')) {
+    if (str_contains(home_url($wp->request), 'my-account/student-details')) {
         wp_register_script('student-unsubscribe', plugins_url('aes') . '/public/assets/js/student-unsubscribe.js', array('jquery'), '1.0.0', true);
         wp_localize_script(
             'student-unsubscribe',
@@ -528,57 +528,44 @@ function auto_complete_free_orders($order_id) {
     }
 }
 
-function student_unsubscribe()
+function student_unsubscribe($student_id)
 {
-    try {
-        global $current_user, $wpdb;
-        $table_students = $wpdb->prefix . 'students';
-        $roles = $current_user->roles;
+    global $current_user;
+    $roles = $current_user->roles;
 
-        if (in_array('parent', $roles)) {
+    if (in_array('parent', $roles)) {
 
-            $student_id = null;
-            $student = null;
+        $student = get_student_detail($student_id);
 
-            if (in_array('parent', $roles) && !in_array('student', $roles)) {
-                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
-                $student_id = $student->id;
-            } else if (in_array('parent', $roles) && in_array('student', $roles)) {
-                $student_id = get_user_meta($current_user->ID, 'student_id', true);
-                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
-            }
+        $started_course = false;
+        $enrolled = is_enrolled_in_courses($student_id);
+        $moodle_student_id = $student->moodle_student_id;
+        $filtered_grades = [];
+        $total_evaluated = 0;
+        foreach ($enrolled as $key => $enroll) {
+            $grades = course_grade($enroll['id']);
+            $grades = $grades['usergrades'];
+            $filtered_grades = array_filter($grades, function ($entry) use ($moodle_student_id) {
+                return $entry['userid'] == $moodle_student_id;
+            });
+            $filtered_grades = array_values($filtered_grades);
 
-            $started_course = false;
-            $enrolled = is_enrolled_in_courses($student_id);
-            $moodle_student_id = $student->moodle_student_id;
-            $filtered_grades = [];
-            $total_evaluated = 0;
-            foreach ($enrolled as $key => $enroll) {
-                $grades = course_grade($enroll['id']);
-                $grades = $grades['usergrades'];
-                $filtered_grades = array_filter($grades, function ($entry) use ($moodle_student_id) {
-                    return $entry['userid'] == $moodle_student_id;
-                });
-                $filtered_grades = array_values($filtered_grades);
-
-                $grade_items = $filtered_grades[0]['gradeitems'];
-                $filtered_grade_items = array_filter($grade_items, function ($entry) {
-                    return $entry['id'] == 1;
-                });
-                $filtered_grade_items = array_values($filtered_grade_items);
+            $grade_items = $filtered_grades[0]['gradeitems'];
+            $filtered_grade_items = array_filter($grade_items, function ($entry) {
+                return $entry['id'] == 1;
+            });
+            $filtered_grade_items = array_values($filtered_grade_items);
+            if (count($filtered_grade_items) > 0) {
                 $total_evaluated += $filtered_grade_items[0]['graderaw'];
             }
-
-            if (count($enrolled) > 0 && $total_evaluated == 0) {
-                // include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
-            }
         }
-    } catch (\Throwable $th) {
-        
+
+        $request_unsubscribe = get_requests_user($current_user->ID, $student_id, 'Unsubscription request', 0, 3);
+        if ((count($enrolled) > 0 && $total_evaluated == 0) && count($request_unsubscribe) == 0) {
+            include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
+        }
     }
 }
-
-add_action('woocommerce_edit_account_form_start', 'student_unsubscribe');
 
 function student_continue()
 {
@@ -1646,63 +1633,24 @@ add_action('wp_ajax_student_unsubscribe', 'student_unsubscribe_callback');
 function student_unsubscribe_callback()
 {
     global $current_user, $wpdb;
-    $table_students = $wpdb->prefix . 'students';
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $roles = $current_user->roles;
-    $student_id = null;
-    $student = null;
-    $id_document = null;
     $reason = $_POST['reason'];
-
-    // SI ES PADRE CARGAMOS AL ESTUDIANTE POR EL PARTNER ID
-    if (in_array('parent', $roles) && !in_array('student', $roles)) {
-        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
-        $id_document = $student->id_document;
-        $student_id = $student->id;
-    } else if (in_array('parent', $roles) && in_array('student', $roles)) {
-        // SI ES ESTUDIANTE MAYOR DE EDAD CARGAMOS AL ESTUDIANTE POR EL MISMO USUARIO
-        $student_id = get_user_meta($current_user->ID, 'student_id', true);
-        $id_document = get_user_meta($current_user->ID, 'id_document', true);
-        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
-    }
-
-    // OBTENEMOS LA ULTTMA INSCRIPCION DEL ESTUDIANTE
-    $period = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id={$student_id} ORDER BY id DESC");
-    // OBTENEMOS LA ULTTMA INSCRIPCION DEL ESTUDIANTE
-
-    // DAMOS DE BAJA EN MOODLE Y OBTENEMOS LOS CURSOS A DAR DE BAJA
-    $courses = student_unsubscribe_moodle($student_id);
-    // DAMOS DE BAJA EN MOODLE Y OBTENEMOS LOS CURSOS A DAR DE BAJA
-
-    // DAMOS DE BAJA EN EL ADMIN
-    $data = array(
-        'id_document' => $id_document,
-        'courses' => json_encode($courses),
-        'period' => $period->code_period
-    );
-    student_unsubscribe_admin($data);
-    // DAMOS DE BAJA EN EL ADMIN
-
-    // GUARDAMOS LA RAZON DE LA BAJA DEL ESTUDIANTE
+    $student_id = $_POST['student_id'];
+    $student = get_student_detail($student_id);
+    $description = 'Unsubscription request: ' . $reason;
     $user_student = get_user_by('email', $student->email);
-    $table_users_notices = $wpdb->prefix . 'users_notices';
-    $data = [
-        'user_id' => $user_student->ID,
-        'read' => 1,
-        'message' => 'Reason of unsubscribe: ' . $reason,
-        'importance' => 3,
-        'type_notice' => 'unsubscribe',
-    ];
-    $wpdb->insert($table_users_notices, $data);
-    // GUARDAMOS LA RAZON DE LA BAJA DEL ESTUDIANTE
+    $user_parent = get_user_by('id', $student->partner_id);
+    send_notification_user($user_student->ID, $description, 3, 'unsubscribe');
+    send_notification_user($user_parent->ID, $description, 3, 'unsubscribe');
 
-    // TODAS LAS INSCRIPCIONES DE ESE CORTE SE DAN DE BAJA
-    $wpdb->update($table_student_period_inscriptions, [
-        'status_id' => 2,
-    ], ['cut_period' => $period->cut_period, 'student_id' => $student_id]);
-    // TODAS LAS INSCRIPCIONES DE ESE CORTE SE DAN DE BAJA
-
-    wp_send_json(array('success' => true, 'unenroll' => $data));
+    $table_requests = $wpdb->prefix . 'requests';
+    $wpdb->insert($table_requests, [
+        'partner_id' => $user_parent->ID,
+        'student_id' => $student_id,
+        'description' => $reason,
+        'type' => 'Unsubscription request',
+        'status_id' => 0,
+    ]);
+    wp_send_json(array('success' => true));
     exit;
 }
 
