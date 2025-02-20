@@ -1051,7 +1051,7 @@ function update_status_documents()
                 update_status_student($student_id, 1);
             }
 
-            handle_rejected_document($student_id, $document_id, $user_student->ID);
+            handle_rejected_document($student_id, $document_id, $user_student->ID, $description);
         } else {
             if (check_solvency_administrative($student_id)) {
                 update_status_student($student_id, 3);
@@ -1085,17 +1085,17 @@ function get_status_description($status_id, $description, $document_changed = fa
     }
 }
 
-function handle_rejected_document($student_id, $document_id, $user_id)
+function handle_rejected_document($student_id, $document_id, $user_id, $description)
 {
     global $wpdb;
     $table_student_documents = $wpdb->prefix . 'student_documents';
 
     try {
         $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
-        $email_rejected_document->trigger($student_id, $document_id);
+        $email_rejected_document->trigger($student_id, $document_id, $description);
     
         $email_rejected_document_parent = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
-        $email_rejected_document_parent->trigger($student_id, $document_id, true);
+        $email_rejected_document_parent->trigger($student_id, $document_id, $description, true);
     } catch (\Throwable $th) {
         //throw $th;
     }
