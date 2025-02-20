@@ -79,12 +79,28 @@ function show_report_students()
 
 function show_report_current_students()
 {
-    global $current_user, $wpdb;
-    $table_academic_periods = $wpdb->prefix . 'academic_periods';
-    $table_grades = $wpdb->prefix . 'grades';
-    $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
-    $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
-    include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+    $total_count_current = (int)get_students_current_count();
+    $total_count_pending_electives = (int)get_students_pending_elective_count();
+    $total_count_non_enrolled = (int)get_students_non_enrolled_count();
+    $load = load_current_cut();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+
+    if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
+        if ($_GET['section_tab'] == 'pending_electives') {
+            $list_students = new TT_Pending_Elective_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'non-enrolled') {
+            $list_students = new TT_Non_Enrolled_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        }
+    } else {
+        $list_students = new TT_Current_Student_List_Table;
+        $list_students->prepare_items();
+        include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+    }
 }
 
 // GET ORDERS
@@ -331,99 +347,6 @@ function get_students_report($academic_period, $cut)
 
     return $students;
 }
-
-function get_students_current()
-{
-    global $wpdb;
-    $table_students = $wpdb->prefix . 'students';
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $table_school_subjects = $wpdb->prefix . 'school_subjects';
-
-    $conditions = array();
-    $params = array();
-    $load = load_current_cut();
-    $academic_period = $load['code'];
-    $cut = $load['cut'];
-    $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL AND code_subject <> ''");
-    $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
-    $params = array_merge($params, $cut_student_ids);
-
-    $query = "SELECT * FROM {$table_students}";
-
-    if (!empty($conditions)) {
-        $query .= " WHERE " . implode(" AND ", $conditions);
-    }
-
-    $students = $wpdb->get_results($wpdb->prepare($query, $params));
-    foreach ($students as $key => $student) {
-        $conditions = array();
-        $params = array();
-
-        // Obtener subject_ids
-        $subject_ids = $wpdb->get_col($wpdb->prepare(
-            "SELECT subject_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s AND status_id = 1 AND student_id = %d AND subject_id IS NOT NULL",
-            $academic_period,
-            $cut,
-            $student->id
-        ));
-
-        if (!empty($subject_ids)) {
-            $conditions[] = "id IN (" . implode(',', array_fill(0, count($subject_ids), '%d')) . ")";
-            $params = array_merge($params, $subject_ids);
-        }
-
-        // Obtener subject_codes
-        $subject_codes = $wpdb->get_col($wpdb->prepare(
-            "SELECT code_subject FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s AND status_id = 1 AND student_id = %d AND code_subject IS NOT NULL AND code_subject <> ''",
-            $academic_period,
-            $cut,
-            $student->id
-        ));
-
-        if (!empty($subject_codes)) {
-            $conditions[] = "code_subject IN (" . implode(',', array_fill(0, count($subject_codes), '%s')) . ")";
-            $params = array_merge($params, $subject_codes);
-        }
-
-        $query = "SELECT * FROM {$table_school_subjects}";
-
-        if (!empty($conditions)) {
-            $query .= " WHERE " . implode(" AND ", $conditions);
-        }
-
-        // Manejo de errores
-        $student->subjects = $wpdb->get_results($wpdb->prepare($query, $params));
-    }
-    return $students;
-}
-
-function get_students_not_current()
-{
-    global $wpdb;
-    $table_students = $wpdb->prefix . 'students';
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-
-    $conditions = array();
-    $params = array();
-    $load = load_current_cut();
-    $academic_period = $load['code'];
-    $cut = $load['cut'];
-    $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL AND code_subject <> ''");
-    $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
-    $conditions[] = "condition_student = 1";
-    $params = array_merge($params, $cut_student_ids);
-
-    $query = "SELECT * FROM {$table_students}";
-
-    if (!empty($conditions)) {
-        $query .= " WHERE " . implode(" AND ", $conditions);
-    }
-
-    $query .= " ORDER BY id DESC";
-
-    $students = $wpdb->get_results($wpdb->prepare($query, $params));
-    return $students;
-}
 // GET ORDERS
 
 function get_list_orders_sales()
@@ -658,76 +581,6 @@ function list_report_students()
 add_action('wp_ajax_nopriv_list_report_students', 'list_report_students');
 add_action('wp_ajax_list_report_students', 'list_report_students');
 
-
-function list_report_current_students()
-{
-
-    global $current_user;
-    $roles = $current_user->roles;
-    $html = "";
-    $students = get_students_current();
-
-    $html_not_current = "";
-    $students_not_current = get_students_not_current();
-    $load = load_current_cut();
-    $academic_period = $load['code'];
-    $cut = $load['cut'];
-    $url = admin_url('user-edit.php?user_id=');
-
-    if (!empty($students)) {
-
-        foreach ($students as $student) {
-            $user_student = get_user_by('email', $student->email);
-
-            $html .= "<tr>";
-            $html .= "<td class='column' data-colname='" . __('Academic Period - cut', 'aes') . "'>" . $academic_period . ' - ' . $cut . "</td>";
-            if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</a></td>";
-            } else {
-                $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'aes') . "'>" . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</td>";
-            }
-            $html .= "<td class='column' data-colname='" . __('Subjects', 'aes') . "'>";
-            foreach ($student->subjects as $key => $subject) {
-                $html .= $subject->name . ($key + 1 == count($student->subjects) ? '' : ', ');
-            }
-            $html .= "</td>";
-            $html .= "</tr>";
-        }
-
-    } else {
-        $html .= "<tr>";
-        $html .= "<td colspan='3' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
-        $html .= "</tr>";
-    }
-
-
-    if (!empty($students_not_current)) {
-
-        foreach ($students_not_current as $student) {
-            $user_student = get_user_by('email', $student->email);
-
-            $html_not_current .= "<tr>";
-            if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html_not_current .= "<td class='column text-uppercase' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</a></td>";
-            } else {
-                $html_not_current .= "<td class='column text-uppercase' data-colname='" . __('Student', 'aes') . "'>" . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</td>";
-            }
-            $html_not_current .= "</tr>";
-        }
-
-    } else {
-        $html_not_current .= "<tr>";
-        $html_not_current .= "<td style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
-        $html_not_current .= "</tr>";
-    }
-
-    echo json_encode(['status' => 'success', 'html' => $html, 'data' => $students, 'html_not_current' => $html_not_current, 'students_not_current' => $students_not_current]);
-    exit;
-}
-
-add_action('wp_ajax_nopriv_list_report_current_students', 'list_report_current_students');
-add_action('wp_ajax_list_report_current_students', 'list_report_current_students');
-
 function get_load_chart_data()
 {
     if (isset($_POST['filter']) && !empty($_POST['filter'])) {
@@ -783,3 +636,553 @@ function get_load_chart_data()
 
 add_action('wp_ajax_nopriv_load_chart_data', 'get_load_chart_data');
 add_action('wp_ajax_load_chart_data', 'get_load_chart_data');
+
+class TT_Pending_Elective_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'pending_elective',
+                'plural' => 'pending_electives',
+                'ajax' => true
+            ));
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        return $item[$column_name];
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'student' => __('Student', 'aes'),
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_students_pending_elective_report()
+    {
+        global $wpdb;
+        $students_array = [];
+
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+
+        $table_students = $wpdb->prefix . 'students';
+        $students = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE elective = 1 ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        if ($students) {
+            $url = admin_url('user-edit.php?user_id=');
+            foreach ($students as $student) {
+                $user_student = get_user_by('email', $student['email']);
+                array_push($students_array, [
+                    'student' => '<a href="' . $url . $user_student->ID . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
+                ]);
+            }
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
+    function prepare_items()
+    {
+
+        $data_student = $this->get_students_pending_elective_report();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+        
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Current_Student_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'pending_elective',
+                'plural' => 'pending_electives',
+                'ajax' => true
+            ));
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        return $item[$column_name];
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'student' => __('Student', 'aes'),
+            'subjects' => __('Subjects', 'aes'),
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_students_current_report()
+    {
+        global $wpdb;
+        $table_students = $wpdb->prefix . 'students';
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+        $table_school_subjects = $wpdb->prefix . 'school_subjects';
+        $students_array = [];
+        $conditions = array();
+        $params = array();
+        $load = load_current_cut();
+        $academic_period = $load['code'];
+        $cut = $load['cut'];
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL AND code_subject <> ''");
+        $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
+        $params = array_merge($params, $cut_student_ids);
+
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+
+        $query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students}";
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $query .= "ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}";
+
+        $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        $url = admin_url('user-edit.php?user_id=');
+        foreach ($students as $key => $student) {
+            $conditions = array();
+            $params = array();
+
+            // Obtener subject_ids
+            $subject_ids = $wpdb->get_col($wpdb->prepare(
+                "SELECT subject_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s AND status_id = 1 AND student_id = %d AND subject_id IS NOT NULL",
+                $academic_period,
+                $cut,
+                $student['id']
+            ));
+
+            if (!empty($subject_ids)) {
+                $conditions[] = "id IN (" . implode(',', array_fill(0, count($subject_ids), '%d')) . ")";
+                $params = array_merge($params, $subject_ids);
+            }
+
+            // Obtener subject_codes
+            $subject_codes = $wpdb->get_col($wpdb->prepare(
+                "SELECT code_subject FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s AND status_id = 1 AND student_id = %d AND code_subject IS NOT NULL AND code_subject <> ''",
+                $academic_period,
+                $cut,
+                $student['id']
+            ));
+
+            if (!empty($subject_codes)) {
+                $conditions[] = "code_subject IN (" . implode(',', array_fill(0, count($subject_codes), '%s')) . ")";
+                $params = array_merge($params, $subject_codes);
+            }
+
+            $query = "SELECT * FROM {$table_school_subjects}";
+
+            if (!empty($conditions)) {
+                $query .= " WHERE " . implode(" AND ", $conditions);
+            }
+
+            // Manejo de errores
+            $subjects = $wpdb->get_results($wpdb->prepare($query, $params));
+            $subjects_text = '';
+            foreach ($subjects as $key => $subject) {
+                $separator = (($key + 1) == count($subjects)) ? '' : ', ';
+                $subjects_text .= $subject->name . $separator;
+            }
+            $user_student = get_user_by('email', $student['email']);
+            array_push($students_array, [
+                'student' => '<a href="' . $url . $user_student->ID . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
+                'subjects' => '<span class="text-upper">' . $subjects_text . '</span>'
+            ]);
+        }
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
+    function prepare_items()
+    {
+
+        $data_student = $this->get_students_current_report();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+        
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Non_Enrolled_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'pending_elective',
+                'plural' => 'pending_electives',
+                'ajax' => true
+            ));
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        return $item[$column_name];
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'student' => __('Student', 'aes'),
+        );
+
+        return $columns;
+    }
+
+    function get_students_non_enrolled_report()
+    {    
+        global $wpdb;
+        $table_students = $wpdb->prefix . 'students';
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+        $students_array = [];
+        $conditions = array();
+        $params = array();
+        $load = load_current_cut();
+        $academic_period = $load['code'];
+        $cut = $load['cut'];
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL AND code_subject <> ''");
+        $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
+        $conditions[] = "condition_student = 1";
+        $conditions[] = "elective = 0";
+        $params = array_merge($params, $cut_student_ids);
+
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+
+        $query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students}";
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $query .= " ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}";
+
+        $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+        if ($students) {
+            $url = admin_url('user-edit.php?user_id=');
+            foreach ($students as $student) {
+                $user_student = get_user_by('email', $student['email']);
+                array_push($students_array, [
+                    'student' => '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '')) . '</a>'
+                ]);
+            }
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function prepare_items()
+    {
+
+        $data_student = $this->get_students_non_enrolled_report();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+        
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
+function get_students_pending_elective_count()
+{
+    global $wpdb;
+    $students_array = [];
+
+    // PAGINATION
+    $per_page = 20; // number of items per page
+    $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+    $offset = (($pagenum - 1) * $per_page);
+    // PAGINATION
+
+    $table_students = $wpdb->prefix . 'students';
+    $students = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE elective = 1 ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+    $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+    return $total_count;
+}
+
+function get_students_current_count()
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $conditions = array();
+    $params = array();
+    $load = load_current_cut();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+    $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL AND code_subject <> ''");
+    $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
+    $params = array_merge($params, $cut_student_ids);
+
+    // PAGINATION
+    $per_page = 20; // number of items per page
+    $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+    $offset = (($pagenum - 1) * $per_page);
+    // PAGINATION
+
+    $query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students}";
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $query .= "ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}";
+
+    $students = $wpdb->get_results($wpdb->prepare($query, $params));
+    $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+    return $total_count;
+}
+
+function get_students_non_enrolled_count()
+{    
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $students_array = [];
+    $conditions = array();
+    $params = array();
+    $load = load_current_cut();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+    $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL AND code_subject <> ''");
+    $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
+    $conditions[] = "condition_student = 1";
+    $conditions[] = "elective = 0";
+    $params = array_merge($params, $cut_student_ids);
+
+    // PAGINATION
+    $per_page = 20; // number of items per page
+    $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+    $offset = (($pagenum - 1) * $per_page);
+    // PAGINATION
+
+    $query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students}";
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $query .= " ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}";
+
+    $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
+    $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+    return $total_count;
+}
