@@ -96,7 +96,7 @@
                                     }
                                     ?>
                                     <tr id="institute_down" style="<?php echo $style_dos ?>">
-                                        <th scope="row" colspan="3" style="font-weight:400; text-align: center">
+                                        <th scope="row" colspan="4" style="font-weight:400; text-align: center">
                                             <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
                                             <input type="text" id="name_institute" name="name_institute"
                                                 value="<?php echo strtoupper($student->name_institute); ?>"
