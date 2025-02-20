@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded',function(){
     if(document.getElementById('send-unsubscribe')){
       document.getElementById('send-unsubscribe').addEventListener('click', function(event) {
         let reason = document.querySelector('textarea[name="reason"]').value;
+        let student_id = document.querySelector('input[name="student_id"]').value;
         if (!reason) {
           alert('To continue you must write the reason why you are unsubscribing.');
           return;
@@ -22,6 +23,9 @@ document.addEventListener('DOMContentLoaded',function(){
         let params = `action=student_unsubscribe`;
         if (reason) {
           params += `&reason=${reason}`;
+        }
+        if (student_id) {
+          params += `&student_id=${student_id}`;
         }
         XHR.send(params);
         XHR.onload = function () {
