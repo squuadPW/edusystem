@@ -55,6 +55,17 @@ function create_tables()
   $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
   $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
   $table_requests = $wpdb->prefix . 'requests';
+  $table_type_requests = $wpdb->prefix . 'type_requests';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_type_requests}'") != $table_type_requests) {
+    dbDelta(
+      "CREATE TABLE " . $table_type_requests . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        type TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_requests}'") != $table_requests) {
     dbDelta(
