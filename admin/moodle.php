@@ -242,12 +242,23 @@ function enroll_student($enrollments = []) {
     $moodle_token = get_option('moodle_token');
 
     $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);
-    $enrolled_courses = $MoodleRest->request('enrol_manual_enrol_users', ['enrolments' => $enrollments]);
-    if (empty($enrolled_courses)) {
+    
+    // Dividir el array en chunks de 50 elementos
+    $chunks = array_chunk($enrollments, 50);
+    $all_responses = [];
+
+    foreach ($chunks as $chunk) {
+        $response = $MoodleRest->request('enrol_manual_enrol_users', ['enrolments' => $chunk]);
+        if (!empty($response)) {
+            $all_responses = array_merge($all_responses, $response);
+        }
+    }
+
+    if (empty($all_responses)) {
         return [];
     } else {
         update_count_moodle_pending(0);
-        return $enrolled_courses;
+        return $all_responses;
     }
 }
 
