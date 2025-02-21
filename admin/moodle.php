@@ -241,13 +241,12 @@ function enroll_student($enrollments = []) {
     $moodle_url = get_option('moodle_url');
     $moodle_token = get_option('moodle_token');
 
-    update_count_moodle_pending(0);
-
     $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);
     $enrolled_courses = $MoodleRest->request('enrol_manual_enrol_users', ['enrolments' => $enrollments]);
     if (empty($enrolled_courses)) {
         return [];
     } else {
+        update_count_moodle_pending(0);
         return $enrolled_courses;
     }
 }
