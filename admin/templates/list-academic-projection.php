@@ -35,6 +35,10 @@
 				foreach ($pending_emails_students as $key => $student) {
 					$text_students .= $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . '<br>';
 				}
+
+				if (count($pending_emails_students)) {
+					$text_students = 'No students pending';
+				}
 			?>
 			<a data-tippy-content="<?= $text_students ?>"
 			style="margin-left: 10px; <?= $style_pending_email ?>"
