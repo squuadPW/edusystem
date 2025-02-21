@@ -254,10 +254,10 @@ function enroll_student($enrollments = []) {
         }
     }
 
+    update_count_moodle_pending(0);
     if (empty($all_responses)) {
         return [];
     } else {
-        update_count_moodle_pending(0);
         return $all_responses;
     }
 }
