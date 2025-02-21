@@ -36,7 +36,7 @@
 					$text_students .= $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . '<br>';
 				}
 
-				if (count($pending_emails_students)) {
+				if (count($pending_emails_students) == 0) {
 					$text_students = 'No students pending';
 				}
 			?>
