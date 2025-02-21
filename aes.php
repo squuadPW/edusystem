@@ -54,6 +54,20 @@ function create_tables()
   $table_teacher_documents = $wpdb->prefix . 'teacher_documents';
   $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
   $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
+  $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_count_pending_student}'") != $table_count_pending_student) {
+    dbDelta(
+      "CREATE TABLE " . $table_count_pending_student . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        count INT(11) NOT NULL DEFAULT 0,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+
+    $wpdb->insert($table_count_pending_student, [
+      'count' => 0
+    ]);
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_academic_projection}'") != $table_student_academic_projection) {
     dbDelta(

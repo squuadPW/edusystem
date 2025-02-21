@@ -138,6 +138,10 @@ function add_admin_form_academic_projection_content()
             automatically_enrollment($student_id);
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
+        } else if (isset($_GET['action']) && $_GET['action'] == 'update_count_pending') {
+            update_count_moodle_pending();
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'student_elective_change') {
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
@@ -757,6 +761,33 @@ function get_calc_note($calification)
 }
 
 function get_count_moodle_pending() {
+    global $wpdb;
+    $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
+    $pending = $wpdb->get_row("SELECT * FROM {$table_count_pending_student} WHERE id = 1");
+    return $pending->count;
+}
+
+function update_count_moodle_pending() {
+    global $wpdb;
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
+    $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
     $count = 0;
-    return $count;
+
+    foreach ($projections as $key => $projection) {
+        $projection_obj = json_decode($projection->projection);
+        $filteredArray = array_filter($projection_obj, function ($item) {
+            return $item->this_cut === true;
+        });
+        $filteredArray = array_values($filteredArray);
+
+        $courses_enrolled = is_enrolled_in_courses($projection->student_id);
+        if (count($filteredArray) > 0 && count($courses_enrolled) == 0) {
+            $count++;
+        }
+    }
+
+    $wpdb->update($table_count_pending_student, [
+        'count' => $count
+    ], ['id' => 1]);
 }

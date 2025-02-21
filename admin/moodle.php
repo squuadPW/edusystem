@@ -30,6 +30,7 @@ function create_user_moodle($student_id){
 
     global $wpdb;
     $table_students = $wpdb->prefix.'students';
+    $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
 
     $data_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
     $address = get_user_meta($data_student->partner_id, 'billing_address_1', true);
@@ -65,6 +66,11 @@ function create_user_moodle($student_id){
             'moodle_student_id' => $create_user[0]['id'],
             'moodle_password' => $password
         ],['id' => $student_id]);
+
+        $count = get_count_moodle_pending();
+        $wpdb->update($table_count_pending_student, [
+            'count' => ($count + 1)
+        ], ['id' => 1]);
 
         generate_projection_student($student_id);
         automatically_enrollment($student_id);
@@ -236,8 +242,15 @@ function courses_enroll_student($student_id, $courses = []) {
 }
 
 function enroll_student($enrollments = []) {
+    global $wpdb;
+    $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
+
     $moodle_url = get_option('moodle_url');
     $moodle_token = get_option('moodle_token');
+
+    $wpdb->update($table_count_pending_student, [
+        'count' => 0
+    ], ['id' => 1]);
 
     $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);
     $enrolled_courses = $MoodleRest->request('enrol_manual_enrol_users', ['enrolments' => $enrollments]);
