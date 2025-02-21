@@ -757,22 +757,6 @@ function get_calc_note($calification)
 }
 
 function get_count_moodle_pending() {
-    global $wpdb;
-    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
     $count = 0;
-
-    foreach ($projections as $key => $projection) {
-        $projection_obj = json_decode($projection->projection);
-        $filteredArray = array_filter($projection_obj, function ($item) {
-            return $item->this_cut === true;
-        });
-        $filteredArray = array_values($filteredArray);
-
-        $courses_enrolled = is_enrolled_in_courses($projection->student_id);
-        if (count($filteredArray) > 0 && count($courses_enrolled) == 0) {
-            $count++;
-        }
-    }
     return $count;
 }
