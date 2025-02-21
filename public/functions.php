@@ -1745,7 +1745,7 @@ function student_continue_callback()
         'is_completed' => true,
         'this_cut' => true,
         'is_elective' => true,
-        'welcome_email' => false,
+        'welcome_email' => true,
     ]);
 
     $wpdb->update($table_student_academic_projection, [
