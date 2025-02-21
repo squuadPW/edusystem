@@ -178,13 +178,6 @@
                 <?= __('Send pending payment mail', 'aes'); ?>
               </a>
             </div>
-            <div>
-              <a style="margin: 5px"
-                href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=update_count_pending') ?>"
-                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Update pending students', 'aes'); ?>
-              </a>
-            </div>
           </div>
         </div>
         <div class="form-group" id="save-configuration" style="text-align: center">
