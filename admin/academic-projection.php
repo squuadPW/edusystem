@@ -357,7 +357,9 @@ function add_admin_form_academic_projection_content()
             exit;
         } else {
             $enroll_moodle_count = get_count_moodle_pending();
-            $pending_emails_count = get_count_email_pending();
+            $pending_emails = get_count_email_pending();
+            $pending_emails_count = $pending_emails['count'];
+            $pending_emails_students = $pending_emails['students'];
             $list_academic_projection = new TT_academic_projection_all_List_Table;
             $list_academic_projection->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-academic-projection.php');
@@ -782,6 +784,7 @@ function get_count_email_pending() {
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
     $count = 0;
+    $students = [];
 
     foreach ($projections as $key => $projection) {
         $projection_obj = json_decode($projection->projection);
@@ -792,10 +795,11 @@ function get_count_email_pending() {
 
         if (count($filteredArray) > 0) {
             $count++;
+            array_push($students, get_student_detail($projection->student_id));
         }
     }
 
-    return $count;
+    return ['count' => $count, 'students' => $students];
 }
 
 function update_count_moodle_pending($count_fixed = '') {

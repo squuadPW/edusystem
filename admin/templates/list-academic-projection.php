@@ -30,9 +30,16 @@
 			<a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollments'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to validate enrollments?');"><?= __('Enrollment history','aes'); ?></a>
 			<a style="margin-left: 10px; <?= $style_pending ?>" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_enrollments_moodle'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to generate enrollments in Moodle?');"><?= __('Enroll in moodle','aes'); ?> (<?= $enroll_moodle_count ?>)</a>
 			<a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=get_moodle_notes'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to update the notes from Moodle?');"><?= __('Download moodle notes','aes'); ?></a>
-			<a style="margin-left: 10px; <?= $style_pending_email ?>"
+			<?php
+				$text_students = '';
+				foreach ($pending_emails_students as $key => $student) {
+					$text_students .= $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . '<br>';
+				}
+			?>
+			<a data-tippy-content="<?= $text_students ?>"
+			style="margin-left: 10px; <?= $style_pending_email ?>"
                 href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_welcome_email') ?>"
-                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
+                class="button button-outline-primary help-tooltip" onclick="return confirm('Are you sure?');">
                 <?= __('Send welcome mailing', 'aes'); ?> (<?= $pending_emails_count ?>)
 			</a>
 		</div>
@@ -47,3 +54,14 @@
 		</form>  
 	</div>
 </div>
+
+
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script>
+      // With the above scripts loaded, you can call `tippy()` with a CSS
+      // selector and a `content` prop:
+      tippy('.help-tooltip', {
+        allowHTML: true
+      });
+</script>
