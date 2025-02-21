@@ -63,6 +63,6 @@
       // selector and a `content` prop:
       tippy('.help-tooltip', {
         allowHTML: true,
-		flip: false
+		placement: 'bottom'
       });
 </script>
