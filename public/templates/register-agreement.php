@@ -85,7 +85,7 @@
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <input type="checkbox" id="terms" name="terms" required>
             <?= __('Accept ','aes');?>
-            <a href="https://online.american-elite.us/terms-and-conditions/" target="_blank" style="text-decoration: underline!important; color: #0a1c5c;">
+            <a href="https://portal.american-elite.us/terms-and-conditions/" target="_blank" style="text-decoration: underline!important; color: #0a1c5c;">
                 <?= __('Terms and Conditions','aes');?>
             </a>
         </div>
