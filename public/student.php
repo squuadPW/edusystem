@@ -385,7 +385,7 @@ add_action('woocommerce_account_my-requests_endpoint', function () {
         $student_id = $student->id;
     }
 
-    $requests = $wpdb->get_results("SELECT * FROM {$table_requests} WHERE partner_id = {$partner_id}");
+    $requests = $wpdb->get_results("SELECT * FROM {$table_requests} WHERE partner_id = {$partner_id} ORDER BY id DESC");
     $types = $wpdb->get_results("SELECT * FROM {$table_type_requests}");
 
     include(plugin_dir_path(__FILE__) . 'templates/my-requests.php');
