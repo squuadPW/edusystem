@@ -31,7 +31,7 @@
                         $class = 'notification-urgent';
                         break;
                 }
-                if ($value->type_notice != 'unsubscribe') {
+                if ($value->type_notice == 'documents') {
                     global $current_user;
                     $roles = $current_user->roles; ?>
                     <a
@@ -42,12 +42,20 @@
                             <p><?php echo $value->message ?></p>
                         </div>
                     </a>
+                <?php } else if ($value->type_notice == 'requests') { ?>
+                        <a href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-requests' ?>">
+                            <div class="notification-card <?php echo $class ?>">
+                                <p><strong><?php echo $importance ?></strong> <span
+                                        style="font-size: 12px; float: right"><?php echo $value->created_at ?></span></p>
+                                <p><?php echo $value->message ?></p>
+                            </div>
+                        </a>
                 <?php } else { ?>
-                    <div class="notification-card <?php echo $class ?>">
-                        <p><strong><?php echo $importance ?></strong> <span
-                                style="font-size: 12px; float: right"><?php echo $value->created_at ?></span></p>
-                        <p><?php echo $value->message ?></p>
-                    </div>
+                        <div class="notification-card <?php echo $class ?>">
+                            <p><strong><?php echo $importance ?></strong> <span
+                                    style="font-size: 12px; float: right"><?php echo $value->created_at ?></span></p>
+                            <p><?php echo $value->message ?></p>
+                        </div>
                 <?php } ?>
             <?php } ?>
         <?php } else { ?>

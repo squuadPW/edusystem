@@ -360,6 +360,36 @@ add_action('woocommerce_account_my-tickets_endpoint', function () {
     include(plugin_dir_path(__FILE__) . 'templates/my-tickets.php');
 });
 
+add_action('woocommerce_account_my-requests_endpoint', function () {
+
+    global $current_user, $wpdb;
+    $roles = $current_user->roles;
+    $table_requests = $wpdb->prefix . 'requests';
+    $table_students = $wpdb->prefix . 'students';
+    $table_type_requests = $wpdb->prefix . 'type_requests';
+
+    $partner_id = null;
+    $student_id = null;
+    $students = [];
+    if (in_array('parent', $roles) && !in_array('student', $roles)) {
+        $partner_id = $current_user->ID;
+        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id='{$partner_id}'");
+    } else if (in_array('parent', $roles) && in_array('student', $roles)) {
+        $partner_id = $current_user->ID;
+        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id='{$partner_id}'");
+    } else if (!in_array('parent', $roles) && in_array('student', $roles)) {
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+        $partner_id = $student->partner_id;
+        $student_id = $student->id;
+    }
+
+    $requests = $wpdb->get_results("SELECT * FROM {$table_requests} WHERE partner_id = {$partner_id}");
+    $types = $wpdb->get_results("SELECT * FROM {$table_type_requests}");
+
+    include(plugin_dir_path(__FILE__) . 'templates/my-requests.php');
+});
+
+
 add_action('woocommerce_account_califications_endpoint', function () {
 
     global $current_user, $wpdb;

@@ -4,10 +4,6 @@
     <a href="<?= wc_get_account_endpoint_url('student') ?>" class="button button-primary" style="width:auto"><?= __('Back','aes'); ?></a>
 </div>
 
-<div>
-	<?= student_unsubscribe($student->id) ?>
-</div>
-
 <form action="" method="post" style="margin-top:20px;" >
 	<h3 style="font-size:20px;"><?= __('General Information','aes'); ?></h3>
 	<p class="woocommerce-form-row woocommerce-form-row--first form-row form-row-first">

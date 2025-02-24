@@ -1,6 +1,4 @@
-<?php // Constants: Folder directories/uri's
-	// site configuration plugin
-	define('SITE_CONFIGURATION', 'AES');
+<?php
 
     // AWS & DREAM HOST
 	define('AES_FEE_INSCRIPTION', '63'); // Product registration fee
@@ -13,14 +11,8 @@
 	define('AES_DUAL_DEFAULT_VARIABLE','60'); // Product variable (upper)
 	define('ROLES_OF_STAFF', array('owner', 'administrador', 'admision', 'admission', 'alliance', 'administration', 'allied', 'webinar-aliance'));
 
-	// Moodle
-	define('LOWER_COURSES_MOODLE', array(2, 3));
-	define('MIDDLE_COURSES_MOODLE', array(2, 3));
-	define('UPPER_COURSES_MOODLE', array(2, 3));
-
 	// FOR ALL USERS, DONT COMMENT
 	define('AES_PROGRAM_ID', 'HSD-01'); // AES program for endpoint for laravel create user and move documents
-	define('AES_PERIOD', '20242025'); // AES period for endpoint for laravel create user and move documents
 	define('AES_TYPE_PROGRAM', '0'); // AES type of program for endpoint for laravel create user and move documents
 	define('URL_LARAVEL_PPADMIN', 'https://ppadmin.american-elite.us/'); 
 	define('ROLE_ID_STUDENT_MOODLE', 5); 
