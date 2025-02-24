@@ -436,7 +436,6 @@ function load_automatically_enrollment($expected_projection, $student)
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
     $table_students = $wpdb->prefix . 'students';
-    $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular}");
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
     $load = load_current_cut_enrollment();
@@ -450,6 +449,7 @@ function load_automatically_enrollment($expected_projection, $student)
     $count_expected_subject_elective = 0;
     $skip_cut = $student->skip_cut;
     $force_skip = false;
+    $regular_enrolled = false;
 
     if (!$projection) {
         return;
@@ -458,6 +458,9 @@ function load_automatically_enrollment($expected_projection, $student)
     $projection_obj = json_decode($projection->projection);
     foreach ($expected_projection['expected_matrix'] as $key => $expected) {
         if ($student_enrolled == $expected_projection['max_expected']) {
+            if ($regular_enrolled) {
+                update_count_moodle_pending();
+            }
             break;
         }
 
@@ -527,6 +530,7 @@ function load_automatically_enrollment($expected_projection, $student)
                         ], ['id' => $student->id]);
                     }
 
+                    $regular_enrolled = true;
                     $count_expected_subject++;
                     $student_enrolled++;
                 } else {
@@ -631,6 +635,7 @@ function load_automatically_enrollment($expected_projection, $student)
                     ], ['id' => $student->id]);
                 }
 
+                $regular_enrolled = true;
                 $count_expected_subject++;
                 $student_enrolled++;
             } else {

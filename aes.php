@@ -3,7 +3,7 @@
 Plugin Name: Squuad for educational system
 Plugin URI: https://online.american-elite.us/wp-admin/plugins.php
 Description: The WordPress plugin for educational system is a customized tool that offers a range of functionalities for the proper functioning of the institute website
-Version: 1.5.5
+Version: 1.5.20
 Author: Squuad
 Author URI: https://online.american-elite.us/wp-admin/plugins.php
 License:      GPL2
@@ -54,6 +54,7 @@ function create_tables()
   $table_teacher_documents = $wpdb->prefix . 'teacher_documents';
   $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
   $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
+  $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
   $table_requests = $wpdb->prefix . 'requests';
   $table_type_requests = $wpdb->prefix . 'type_requests';
 
@@ -79,6 +80,19 @@ function create_tables()
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_count_pending_student}'") != $table_count_pending_student) {
+    dbDelta(
+      "CREATE TABLE " . $table_count_pending_student . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        count INT(11) NOT NULL DEFAULT 0,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+
+    $wpdb->insert($table_count_pending_student, [
+      'count' => 0
+    ]);
   }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_academic_projection}'") != $table_student_academic_projection) {
