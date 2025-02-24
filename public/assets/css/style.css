@@ -1078,4 +1078,8 @@ body.modal-open {
 .card-selected-payment {
   transform: scale(1.05);
   border: 1px solid #002fbd;
+}
+
+.text-uppercase {
+  text-transform: uppercase !important;
 }/*# sourceMappingURL=style.css.map */
