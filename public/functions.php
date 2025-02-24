@@ -1705,7 +1705,7 @@ function student_continue_callback()
         'is_completed' => true,
         'this_cut' => true,
         'is_elective' => true,
-        'welcome_email' => false,
+        'welcome_email' => true,
     ]);
 
     $wpdb->update($table_student_academic_projection, [
@@ -1734,6 +1734,8 @@ function student_continue_callback()
         $enrollments = [];
         $enrollments = array_merge($enrollments, courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id]));
         enroll_student($enrollments);
+    } else {
+        update_count_moodle_pending();
     }
 
     wp_send_json(array('success' => true));

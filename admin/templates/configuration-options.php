@@ -166,13 +166,6 @@
           <div style="text-align: center;">
             <div>
               <a style="margin: 5px"
-                href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_welcome_email') ?>"
-                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Send welcome mailing to all students (including those with or without academic load)', 'aes'); ?>
-              </a>
-            </div>
-            <div>
-              <a style="margin: 5px"
                 href="<?= admin_url('admin.php?page=add_admin_form_send_email_content&action=send_pending_payments_email') ?>"
                 class="button button-outline-primary" onclick="return confirm('Are you sure?');">
                 <?= __('Send pending payment mail', 'aes'); ?>

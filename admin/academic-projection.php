@@ -156,7 +156,7 @@ function add_admin_form_academic_projection_content()
             foreach ($students as $key => $student) {
                 send_welcome_subjects($student->id);
             }
-            wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'fix_projections') {
             global $wpdb;
@@ -191,6 +191,14 @@ function add_admin_form_academic_projection_content()
             $action = $_POST['action'] ?? 'save';
             $projection = get_projection_details(projection_id: $projection_id);
             $projection_obj = json_decode($projection->projection);
+            $old_count_enroll = 0;
+            $count_enroll = 0;
+
+            foreach ($projection_obj as $key => $value) {
+                if ($projection_obj[$key]->this_cut) {
+                    $old_count_enroll++;
+                }
+            }
 
             // Procesar los datos
             foreach ($projection_obj as $key => $value) {
@@ -266,9 +274,11 @@ function add_admin_form_academic_projection_content()
                             'type' => $subject->is_elective ? 'elective' : 'regular'
                         ], ['id' => $exist->id]);
                     }
-                }
 
-                // $projection_obj[$key]->welcome_email = $projection_obj[$key]->welcome_email ? $projection_obj[$key]->welcome_email : ($status_id != 4 ? true : false);
+                    if ($is_this_cut) {
+                        $count_enroll++;
+                    }
+                }
 
                 // Verificamos si status_id es 4 y si is_elective existe y es true
                 if ($status_id == 4 && isset($projection_obj[$key]->is_elective) && $projection_obj[$key]->is_elective) {
@@ -276,6 +286,10 @@ function add_admin_form_academic_projection_content()
                     unset($projection_obj[$key]);
                     continue; // Saltamos al siguiente elemento del bucle
                 }
+            }
+
+            if ($count_enroll != $old_count_enroll) {
+                update_count_moodle_pending();
             }
 
             $wpdb->update($table_student_academic_projection, [
@@ -342,6 +356,10 @@ function add_admin_form_academic_projection_content()
             wp_redirect(admin_url('/admin.php?page=add_admin_form_configuration_options_content'));
             exit;
         } else {
+            $enroll_moodle_count = get_count_moodle_pending();
+            $pending_emails = get_count_email_pending();
+            $pending_emails_count = $pending_emails['count'];
+            $pending_emails_students = $pending_emails['students'];
             $list_academic_projection = new TT_academic_projection_all_List_Table;
             $list_academic_projection->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-academic-projection.php');
@@ -517,7 +535,6 @@ function get_projection_details($projection_id)
     return $projection;
 }
 
-
 function get_projection_by_student($student_id)
 {
     global $wpdb;
@@ -526,7 +543,6 @@ function get_projection_by_student($student_id)
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
     return $projection;
 }
-
 
 function generate_enroll_student()
 {
@@ -556,7 +572,6 @@ function generate_enroll_student()
 
     enroll_student($enrollments);
 }
-
 
 function get_moodle_notes()
 {
@@ -756,3 +771,42 @@ function get_calc_note($calification)
     }
     return $note;
 }
+
+function get_count_moodle_pending() {
+    global $wpdb;
+    $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
+    $pending = $wpdb->get_row("SELECT * FROM {$table_count_pending_student} WHERE id = 1");
+    return $pending->count;
+}
+
+function get_count_email_pending() {
+    global $wpdb;
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
+    $count = 0;
+    $students = [];
+
+    foreach ($projections as $key => $projection) {
+        $projection_obj = json_decode($projection->projection);
+        $filteredArray = array_filter($projection_obj, function ($item) {
+            return $item->this_cut === true && !$item->welcome_email;
+        });
+        $filteredArray = array_values($filteredArray);
+
+        if (count($filteredArray) > 0) {
+            $count++;
+            array_push($students, get_student_detail($projection->student_id));
+        }
+    }
+
+    return ['count' => $count, 'students' => $students];
+}
+
+function update_count_moodle_pending($count_fixed = '') {
+    global $wpdb;
+    $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
+    $count = $count_fixed != '' ? $count_fixed : (get_count_moodle_pending() + 1) ;
+    $wpdb->update($table_count_pending_student, [
+        'count' => $count
+    ], ['id' => 1]);
+} 
