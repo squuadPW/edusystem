@@ -1034,7 +1034,7 @@ function template_welcome_subjects($filteredArray, $student)
 
     $text .= '<ul>';
     $text .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
-    $text .= '<li>Virtual classroom: <a href="https://portal.american-elite.us/" target="_blank">https://portal.american-elite.us/</a></li>';
+    $text .= '<li>Virtual classroom: <a href="https://portal.american-elite.school/" target="_blank">https://portal.american-elite.school/</a></li>';
     $text .= '<li>Contact us: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
     $text .= '</ul>';
 
@@ -1102,7 +1102,7 @@ function template_welcome_subjects($filteredArray, $student)
 
     $text .= '<ul>';
     $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
-    $text .= '<li>Aula virtual: <a href="https://portal.american-elite.us/" target="_blank">https://portal.american-elite.us/</a></li>';
+    $text .= '<li>Aula virtual: <a href="https://portal.american-elite.school/" target="_blank">https://portal.american-elite.school/</a></li>';
     $text .= '<li>Contacto: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
     $text .= '</ul>';
     $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un periodo académico lleno de logros satisfactorios.</div>';
@@ -1177,7 +1177,7 @@ function template_not_enrolled($student)
 
     $text .= '<ul>';
     $text .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
-    $text .= '<li>Virtual classroom: <a href="https://portal.american-elite.us/" target="_blank">https://portal.american-elite.us/</a></li>';
+    $text .= '<li>Virtual classroom: <a href="https://portal.american-elite.school/" target="_blank">https://portal.american-elite.school/</a></li>';
     $text .= '<li>Contact us: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
     $text .= '</ul>';
     $text .= '<div>On behalf of our institution, we thank you for your commitment and wish you a pleasant rest during this period.</div>';
@@ -1199,7 +1199,7 @@ function template_not_enrolled($student)
 
     $text .= '<ul>';
     $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
-    $text .= '<li>Aula virtual: <a href="https://portal.american-elite.us/" target="_blank">https://portal.american-elite.us/</a></li>';
+    $text .= '<li>Aula virtual: <a href="https://portal.american-elite.school/" target="_blank">https://portal.american-elite.school/</a></li>';
     $text .= '<li>Contacto: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
     $text .= '</ul>';
     $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un feliz descanso durante este periodo.</div>';
