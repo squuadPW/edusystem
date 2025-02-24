@@ -857,21 +857,9 @@ function set_max_date_student($student_id) {
     }
 }
 
-function helper_get_student() {
+function helper_get_student_logged() {
     global $wpdb, $current_user;
-    $roles = $current_user->roles;
     $table_students = $wpdb->prefix . 'students';
-
-    if (in_array('parent', $roles) && !in_array('student', $roles)) {
-        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
-        $student_id = $student->id;
-    } else if (in_array('parent', $roles) && in_array('student', $roles)) {
-        $student_id = get_user_meta($current_user->ID, 'student_id', true);
-        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
-    } else if (!in_array('parent', $roles) && in_array('student', $roles)) {
-        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
-        $student_id = $student->id;
-    }
-
-    return ['student' => $student, 'student_id' => $student_id];
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+    return $student;
 }
