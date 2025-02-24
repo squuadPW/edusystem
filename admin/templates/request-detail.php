@@ -19,20 +19,24 @@
                             <tbody>
                                 <tr>
                                     <th scope="row" ><label for="input_id"><?= __('Request ID','aes').':'; ?></label></th>
-                                    <td>
-                                        <?= strtoupper($request->id) . ' - ' . strtoupper($request->type); ?>
+                                    <td class="text-uppercase">
+                                        <?= $request->id . ' - ' . get_type_request_details($request->type_id)->type; ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row" ><label for="input_id"><?= __('Partner','aes').':'; ?></label></th>
-                                    <td>
+                                    <td class="text-uppercase">
                                         <?= strtoupper($partner->first_name) . ' ' . strtoupper($partner->last_name); ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row" ><label for="input_id"><?= __('Student','aes').':'; ?></label></th>
-                                    <td>
-                                        <?= strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name); ?>
+                                    <td class="text-uppercase">
+                                        <?php if ($student) { ?>
+                                            <?= strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ' ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name); ?>
+                                        <?php } else { ?>
+                                            N/A
+                                        <?php } ?>
                                     </td>
                                 </tr>
                                 <tr>

@@ -34,28 +34,23 @@ function add_admin_form_requests_content()
             $request_id = sanitize_text_field($_POST['request_id']);
             $description = sanitize_text_field($_POST['description']);
             $status_id = sanitize_text_field($_POST['status_id']);
-            $request = get_request_details($request_id);
 
             if (isset($request_id) && !empty($request_id)) {
                 $wpdb->update($table_requests, [
                     'status_id' => $status_id,
+                    'response' => $description ?? 'N/A'
                 ], ['id' => $request_id]);
-            } else {
-                $wpdb->insert($table_requests, [
-                    'status_id' => $status_id,
-                ]);
-            }
-            $title = '';
-            switch ($request->type) {
-                case 'Unsubscription request':
-                    $title = 'Unsubscription request: ';
-                    break;
             }
 
+            $title = 'Response to request: ';
+            $request = get_request_details($request_id);
+            send_notification_user($request->partner_id, $title . $description, ($status_id == 2 ? 3 : 1), 'requests');
+
             $student = get_student_detail($request->student_id);
-            $user_student = get_user_by('email', $student->email);
-            send_notification_user($request->partner_id, $title . $description, ($status_id == 2 ? 3 : 1), 'unsubscribe');
-            send_notification_user($user_student->ID, $title . $description, ($status_id == 2 ? 3 : 1), 'unsubscribe');
+            if ($student) {
+                $user_student = get_user_by('email', $student->email);
+                send_notification_user($user_student->ID, $title . $description, ($status_id == 2 ? 3 : 1), 'requests');
+            }
 
             setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_requests_content'));
@@ -175,9 +170,9 @@ class TT_Pending_Requests_List_Table extends WP_List_Table
                 $student = get_student_detail($request['student_id']);
                 array_push($requests_array, [
                     'id' => $request['id'],
-                    'type' => $request['type'],
+                    'type' => get_type_request_details($request['type_id'])->type,
                     'partner' => $user->first_name . ' ' . $user->last_name,
-                    'student' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
+                    'student' => $student ? $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name : 'N/A',
                     'created_at' => $request['created_at'],
                 ]);
             }

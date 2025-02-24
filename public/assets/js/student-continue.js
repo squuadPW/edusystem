@@ -12,10 +12,10 @@ document.addEventListener('DOMContentLoaded',function(){
         document.getElementById('send-continue').innerText = 'Loading...';
         let elective = document.querySelector('select[name="elective"]').value;
         const XHR = new XMLHttpRequest();
-        XHR.open("POST", `${ajax_object.ajax_url}?action=student_continue`, true);
+        XHR.open("POST", `${ajax_object.ajax_url}?action=select_elective`, true);
         XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         XHR.responseType = "text";
-        let params = `action=student_continue`;
+        let params = `action=select_elective`;
         if (elective) {
           params += `&elective=${elective}`;
         }
