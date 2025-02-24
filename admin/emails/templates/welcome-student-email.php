@@ -20,7 +20,7 @@ $email_template = '
     <p>Links:</p>
     <ul>
       <li>Website: <a href="https://american-elite.us/">https://american-elite.us/</a></li>
-      <li>Virtual classroom: <a href="https://online.american-elite.us/">https://online.american-elite.us/</a></li>
+      <li>Virtual classroom: <a href="https://portal.american-elite.us/">https://portal.american-elite.us/</a></li>
     </ul>
 
     <p>Enter here to create your password:</p>
@@ -54,7 +54,7 @@ $email_template_es = '
     <p>Enlaces:</p>
     <ul>
       <li>Sitio web: <a href="https://american-elite.us/">https://american-elite.us/</a></li>
-      <li>Aula virtual: <a href="https://online.american-elite.us/">https://online.american-elite.us/</a></li>
+      <li>Aula virtual: <a href="https://portal.american-elite.us/">https://portal.american-elite.us/</a></li>
     </ul>
 
     <p>Ingresa aqui para crear tu contraseña:</p>
