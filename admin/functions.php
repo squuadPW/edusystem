@@ -559,8 +559,8 @@ function save_num_cuotes($variation_id, $i)
 
 function add_logo_dashboard()
 {
-    $url = 'https://portal.american-elite.school/wp-content/uploads/2025/01/cropped-cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-COLOR-3.png';
-    $url_small = 'https://portal.american-elite.school/wp-content/uploads/2025/01/cropped-cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-COLOR-3.png';
+    $url = 'https://portal.americanelite.school/wp-content/uploads/2025/01/cropped-cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-COLOR-3.png';
+    $url_small = 'https://portal.americanelite.school/wp-content/uploads/2025/01/cropped-cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-COLOR-3.png';
     echo '<style>
     @media screen and (min-width:992px){
         #toplevel_page_logo_based_menu {
@@ -612,7 +612,7 @@ add_action('admin_enqueue_scripts', 'add_logo_dashboard');
 function custom_login_store()
 {
     if (get_option('blog_img_logo')) {
-        $url = 'https://portal.american-elite.school/wp-content/uploads/2025/01/cropped-cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-COLOR-3.png';
+        $url = 'https://portal.americanelite.school/wp-content/uploads/2025/01/cropped-cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-COLOR-3.png';
         echo '
     <style type="text/css">
         #login h1 a, .login h1 a {
@@ -662,7 +662,7 @@ function aes_change_login_logo()
 { ?>
     <style type="text/css">
         #login h1 a {
-            background: url('https://portal.american-elite.school/wp-content/uploads/2024/06/cropped-cropped-cropped-American-elite-LOGO-1-600x188-1-2-1.png') no-repeat center center;
+            background: url('https://portal.americanelite.school/wp-content/uploads/2024/06/cropped-cropped-cropped-American-elite-LOGO-1-600x188-1-2-1.png') no-repeat center center;
             background-size: 100px;
             height: 100px;
             margin: 0 auto;
@@ -674,7 +674,7 @@ function aes_change_login_logo()
 add_filter('login_headerurl', 'aes_login_redirect_url');
 function aes_login_redirect_url()
 {
-    return 'https://portal.american-elite.school/'; // Replace with your desired URL
+    return 'https://portal.americanelite.school/'; // Replace with your desired URL
 }
 
 // Add a custom action to the user list
