@@ -69,19 +69,6 @@ function form_plugin_scripts()
         )
     );
     wp_enqueue_script('create-enrollment');
-
-    if (str_contains(home_url($wp->request), 'my-account/student-details')) {
-        wp_register_script('student-unsubscribe', plugins_url('aes') . '/public/assets/js/student-unsubscribe.js', array('jquery'), '1.0.1', true);
-        wp_localize_script(
-            'student-unsubscribe',
-            'ajax_object',
-            array(
-                'ajax_url' => admin_url('admin-ajax.php')
-            )
-        );
-        wp_enqueue_script('student-unsubscribe');
-    }
-
     
     if (str_contains(home_url($wp->request), 'califications')) {
         wp_register_script('califications', plugins_url('aes') . '/public/assets/js/califications.js', array('jquery'), '1.0.1', true);
@@ -95,19 +82,33 @@ function form_plugin_scripts()
         wp_enqueue_script('califications');
     }
 
+<<<<<<< HEAD
     if (str_contains(home_url($wp->request), 'select-payment')) {
         wp_register_script('select-payment', plugins_url('aes') . '/public/assets/js/select-payment.js', array('jquery'), '1.0.2', true);
         wp_localize_script(
             'select-payment',
+=======
+    if (str_contains(home_url($wp->request), 'my-requests')) {
+        wp_register_script('requests', plugins_url('aes') . '/public/assets/js/requests.js', array('jquery'), '1.0.0', true);
+        wp_localize_script(
+            'requests',
+>>>>>>> main
             'ajax_object',
             array(
                 'ajax_url' => admin_url('admin-ajax.php')
             )
         );
+<<<<<<< HEAD
         wp_enqueue_script('select-payment');
     }
 
     wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.2', true);
+=======
+        wp_enqueue_script('requests');
+    }
+
+    wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.0', true);
+>>>>>>> main
     wp_localize_script(
         'student-continue',
         'ajax_object',
@@ -170,6 +171,43 @@ function use_previous_form_aes_callback()
         wp_send_json_success(array('success' => true));
         exit;
     }
+}
+
+add_action('wp_ajax_send_request', 'send_request_callback');
+add_action('wp_ajax_nopriv_send_request', 'send_request_callback');
+
+function send_request_callback()
+{
+    global $wpdb, $current_user;
+    $roles = $current_user->roles;
+    $table_students = $wpdb->prefix . 'students';
+    $table_requests = $wpdb->prefix . 'requests';
+    
+    $type_id = sanitize_text_field($_POST['type_id']);
+    $reason = sanitize_text_field($_POST['reason']);
+    $student_id = sanitize_text_field($_POST['student_id']);
+    $partner_id = sanitize_text_field($_POST['partner_id']);
+
+    if (!$partner_id) {
+        if (in_array('parent', $roles) && !in_array('student', $roles)) {
+            $partner_id = $current_user->ID;
+        } else if (in_array('parent', $roles) && in_array('student', $roles)) {
+            $partner_id = $current_user->ID;
+        } else if (!in_array('parent', $roles) && in_array('student', $roles)) {
+            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+            $partner_id = $student->partner_id;
+        }    
+    }
+
+    $wpdb->insert($table_requests, [
+        'partner_id' => $partner_id,
+        'student_id' => $student_id,
+        'description' => $reason,
+        'type_id' => $type_id,
+        'status_id' => 0,
+    ]);
+    wp_send_json_success(array('success' => true));
+    exit;
 }
 
 function one_time_payment()
@@ -482,7 +520,11 @@ function remove_my_account_links($menu_links)
             + array_slice($menu_links, 2, NULL, true);
 
         $menu_links = array_slice($menu_links, 0, 4, true)
-            + array('my-tickets' => __('My Tickets', 'form-plugin'))
+            + array('my-tickets' => __('Tickets', 'form-plugin'))
+            + array_slice($menu_links, 4, NULL, true);
+
+        $menu_links = array_slice($menu_links, 0, 4, true)
+            + array('my-requests' => __('Requests', 'form-plugin'))
             + array_slice($menu_links, 4, NULL, true);
 
         $menu_links = array_slice($menu_links, 0, 4, true)
@@ -499,6 +541,7 @@ add_action('init', function () {
     add_rewrite_endpoint('student-details', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('student', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('my-tickets', EP_ROOT | EP_PAGES);
+    add_rewrite_endpoint('my-requests', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('califications', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('notes', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('academic-services', EP_ROOT | EP_PAGES);
@@ -539,71 +582,6 @@ function auto_complete_free_orders($order_id) {
         }
     }
 }
-
-function student_unsubscribe($student_id)
-{
-    global $current_user;
-    $roles = $current_user->roles;
-
-    if (in_array('parent', $roles)) {
-
-        $student = get_student_detail($student_id);
-
-        $started_course = false;
-        $enrolled = is_enrolled_in_courses($student_id);
-        $moodle_student_id = $student->moodle_student_id;
-        $filtered_grades = [];
-        $total_evaluated = 0;
-        foreach ($enrolled as $key => $enroll) {
-            $grades = course_grade($enroll['id']);
-            $grades = $grades['usergrades'];
-            $filtered_grades = array_filter($grades, function ($entry) use ($moodle_student_id) {
-                return $entry['userid'] == $moodle_student_id;
-            });
-            $filtered_grades = array_values($filtered_grades);
-
-            $grade_items = $filtered_grades[0]['gradeitems'];
-            $filtered_grade_items = array_filter($grade_items, function ($entry) {
-                return $entry['id'] == 1;
-            });
-            $filtered_grade_items = array_values($filtered_grade_items);
-            if (count($filtered_grade_items) > 0) {
-                $total_evaluated += $filtered_grade_items[0]['graderaw'];
-            }
-        }
-
-        $request_unsubscribe = get_requests_user($current_user->ID, $student_id, 'Unsubscription request', 0, 3);
-        if ((count($enrolled) > 0 && $total_evaluated == 0) && count($request_unsubscribe) == 0) {
-            include(plugin_dir_path(__FILE__) . 'templates/student-unsubscribe.php');
-        }
-    }
-}
-
-function student_continue()
-{
-    global $current_user, $wpdb;
-    $roles = $current_user->roles;
-    $table_students = $wpdb->prefix . 'students';
-    $table_school_subjects = $wpdb->prefix . 'school_subjects';
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-
-    $student_id = null;
-    if (in_array('parent', $roles) && !in_array('student', $roles)) {
-        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
-        $student_id = $student->id;
-    } else if (in_array('parent', $roles) && in_array('student', $roles)) {
-        $student_id = get_user_meta($current_user->ID, 'student_id', true);
-    }
-
-    $next_cut_enrollment = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id={$student_id} AND status_id = 0 ORDER BY id DESC");
-    if (get_option('student_continue') == 'on' && !$next_cut_enrollment) {
-        $electives = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_elective=1");
-        include(plugin_dir_path(__FILE__) . 'templates/student-continue.php');
-    }
-}
-
-add_action('woocommerce_edit_account_form_start', 'student_continue');
-
 
 function create_ticket($email, $ticket_id, $subject, $message)
 {
@@ -669,6 +647,7 @@ function add_loginout_link($items, $args)
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'form-plugin') . '</a></li>';
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account details', 'form-plugin') . '</a></li>';
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('My tickets', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-requests">' . __('My requests', 'form-plugin') . '</a></li>';
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'form-plugin') . '</a></li>';
         }
 
@@ -1666,9 +1645,9 @@ function student_unsubscribe_callback()
     exit;
 }
 
-add_action('wp_ajax_nopriv_student_continue', 'student_continue_callback');
-add_action('wp_ajax_student_continue', 'student_continue_callback');
-function student_continue_callback()
+add_action('wp_ajax_nopriv_select_elective', 'select_elective_callback');
+add_action('wp_ajax_select_elective', 'select_elective_callback');
+function select_elective_callback()
 {
     global $current_user, $wpdb;
     $roles = $current_user->roles;

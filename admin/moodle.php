@@ -75,17 +75,6 @@ function create_user_moodle($student_id){
     return;
 }
 
-function get_courses_moodle_student($grade) {
-    $courses = [];
-    switch ($grade) {
-        case 1:
-            $courses = LOWER_COURSES_MOODLE;
-            break;
-    }
-
-    return $courses;
-}
-
 /**
  * status: 
  * 1) nologin - can not access

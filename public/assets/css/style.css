@@ -1107,4 +1107,8 @@ body.modal-open {
   padding: 10px 10px;
   border-radius: 10px;
   margin: 10px 0px;
+}
+
+.text-uppercase {
+  text-transform: uppercase !important;
 }/*# sourceMappingURL=style.css.map */
