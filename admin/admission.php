@@ -1029,6 +1029,7 @@ function update_status_documents()
         }
 
         $table_student_documents = $wpdb->prefix . 'student_documents';
+        $table_students = $wpdb->prefix . 'students';
         $document_changed = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id = {$document_id}");
         $description = get_status_description($status_id, $description, $document_changed);
 
@@ -1051,8 +1052,24 @@ function update_status_documents()
                 update_status_student($student_id, 1);
             }
 
+            if ($document_changed->document_id == 'PHOTO OF STUDENT CARD' || $document_changed->document_id == "STUDENT'S PHOTO") {                
+                $wpdb->update($table_students, [
+                    'profile_picture' => NULL,
+                ], ['id' => $student_id]);
+            }
+
             handle_rejected_document($student_id, $document_id, $user_student->ID, $description);
         } else {
+
+            error_log($document_changed->document_id);
+            error_log($document_changed->attachment_id);
+            error_log($student_id);
+            if ($document_changed->document_id == 'PHOTO OF STUDENT CARD' || $document_changed->document_id == "STUDENT'S PHOTO") {                
+                $wpdb->update($table_students, [
+                    'profile_picture' => $document_changed->attachment_id,
+                ], ['id' => $student_id]);
+            }
+
             if (check_solvency_administrative($student_id)) {
                 update_status_student($student_id, 3);
             }

@@ -3,7 +3,7 @@
 Plugin Name: Squuad for educational system
 Plugin URI: https://portal.americanelite.school/wp-admin/plugins.php
 Description: The WordPress plugin for educational system is a customized tool that offers a range of functionalities for the proper functioning of the institute website
-Version: 1.5.27
+Version: 1.5.30
 Author: Squuad
 Author URI: https://portal.americanelite.school/wp-admin/plugins.php
 License:      GPL2
@@ -431,6 +431,7 @@ function create_tables()
         ethnicity TEXT NULL,
         academic_period TEXT NULL,
         initial_cut TEXT NULL,
+        profile_picture INT(11) NULL,
         name TEXT NOT NULL,
         middle_name TEXT NULL,
         last_name TEXT NOT NULL,
