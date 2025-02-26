@@ -662,7 +662,7 @@ function aes_change_login_logo()
 { ?>
     <style type="text/css">
         #login h1 a {
-            background: url('https://portal.americanelite.school/wp-content/uploads/2024/06/cropped-cropped-cropped-American-elite-LOGO-1-600x188-1-2-1.png') no-repeat center center;
+            background: url('https://portal.americanelite.school/wp-content/uploads/2025/01/cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-VERTICAL_COLOR.png') no-repeat center center;
             background-size: 100px;
             height: 100px;
             margin: 0 auto;
