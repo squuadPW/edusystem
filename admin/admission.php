@@ -1003,6 +1003,15 @@ function get_student_detail($student_id)
     return $data;
 }
 
+function get_student_detail_email($email)
+{
+
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $data = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email={$email}");
+    return $data;
+}
+
 function update_status_documents()
 {
     if (
