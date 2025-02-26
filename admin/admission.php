@@ -1008,7 +1008,7 @@ function get_student_detail_email($email)
 
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
-    $data = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email={$email}");
+    $data = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$email}'");
     return $data;
 }
 
