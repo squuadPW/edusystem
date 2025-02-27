@@ -82,33 +82,19 @@ function form_plugin_scripts()
         wp_enqueue_script('califications');
     }
 
-<<<<<<< HEAD
-    if (str_contains(home_url($wp->request), 'select-payment')) {
-        wp_register_script('select-payment', plugins_url('aes') . '/public/assets/js/select-payment.js', array('jquery'), '1.0.2', true);
-        wp_localize_script(
-            'select-payment',
-=======
     if (str_contains(home_url($wp->request), 'my-requests')) {
         wp_register_script('requests', plugins_url('aes') . '/public/assets/js/requests.js', array('jquery'), '1.0.0', true);
         wp_localize_script(
             'requests',
->>>>>>> main
             'ajax_object',
             array(
                 'ajax_url' => admin_url('admin-ajax.php')
             )
         );
-<<<<<<< HEAD
-        wp_enqueue_script('select-payment');
-    }
-
-    wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.2', true);
-=======
         wp_enqueue_script('requests');
     }
 
     wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.0', true);
->>>>>>> main
     wp_localize_script(
         'student-continue',
         'ajax_object',
@@ -1059,7 +1045,7 @@ function insert_data_student($order)
     $order->save();
 }
 
-add_action('woocommerce_before_checkout_billing_form', 'payments_parts');
+add_action('woocommerce_after_checkout_billing_form', 'payments_parts');
 
 function split_payment() {
     $cart = WC()->cart;
@@ -2662,18 +2648,18 @@ function clear_students_electives() {
     $wpdb->query("UPDATE {$table_students} SET elective = 0, skip_cut = 1 WHERE elective = 1");
 }
 
-add_filter('woocommerce_available_payment_gateways', 'hide_other_payment_methods', 0);
-function hide_other_payment_methods($available_gateways) {
-    $payment_method_selected = isset($_COOKIE['payment_method_selected']) ? $_COOKIE['payment_method_selected'] : '';
-    if (empty($payment_method_selected)) {
-        return $available_gateways;
-    }
-    if (!empty($payment_method_selected) && isset($available_gateways[$payment_method_selected])) {
-        return [$payment_method_selected => $available_gateways[$payment_method_selected]];
-    }
+// add_filter('woocommerce_available_payment_gateways', 'hide_other_payment_methods', 0);
+// function hide_other_payment_methods($available_gateways) {
+//     $payment_method_selected = isset($_COOKIE['payment_method_selected']) ? $_COOKIE['payment_method_selected'] : '';
+//     if (empty($payment_method_selected)) {
+//         return $available_gateways;
+//     }
+//     if (!empty($payment_method_selected) && isset($available_gateways[$payment_method_selected])) {
+//         return [$payment_method_selected => $available_gateways[$payment_method_selected]];
+//     }
 
-    return $available_gateways;
-}
+//     return $available_gateways;
+// }
 
 function send_notification_user($user_id, $description, $importance, $type) {
     global $wpdb;
