@@ -3,7 +3,7 @@
 <div style="margin-top: 18px">
     <div style="display: flex; justify-content: space-evenly;">
         <div style="display: flex">
-            <div style="background-color: #091c5c26; width: 24px; border-radius: 50%; margin-right: 10px"></div> Notice
+            <div style="background-color: #002fbd26; width: 24px; border-radius: 50%; margin-right: 10px"></div> Notice
         </div>
         <div style="display: flex">
             <div style="background-color: #ebf177; width: 24px; border-radius: 50%; margin-right: 10px"></div> Warning

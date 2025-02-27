@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-$primary: #083896;
+$primary: #002fbd;
 
 body{
  font-family: "Poppins", sans-serif !important;
@@ -137,7 +137,7 @@ input,textarea {
     width: 50%;
     padding: 10px 20px !important;
     text-align: center;
-    background-color: #091c5c !important;
+    background-color: #002fbd !important;
     border-radius: 4px;
     color: white;
     font-size: 18px;
@@ -211,7 +211,7 @@ input,textarea {
 }
 
 .select2-container--default .select2-results__option--highlighted[aria-selected], .select2-container--default .select2-results__option--highlighted[data-selected]{
-    background-color: #091c5c !important;
+    background-color: #002fbd !important;
 }
 
 .select2-selection__arrow{
@@ -309,7 +309,7 @@ input,textarea {
     width: 100%;
     padding: 5px 20px !important;
     text-align: center;
-    background-color:  #091c5c  !important;
+    background-color:  #002fbd  !important;
     border-radius: 20px;
     color: white !important;
     font-size: 18px;
@@ -360,8 +360,8 @@ input,textarea {
 }
 
 .flatpickr-day.selected{
-    background:  #091c5c !important;
-    border-color: #091c5c !important;
+    background:  #002fbd !important;
+    border-color: #002fbd !important;
 }
 
 .hentry .entry-content a{
@@ -378,14 +378,14 @@ input,textarea {
 }
 
 .color-link{
-    color: #091c5c !important
+    color: #002fbd !important
 }
 
 #terms{
 
     &:checked{
-        background-color:  #091c5c !important;
-        color: #091c5c !important;
+        background-color:  #002fbd !important;
+        color: #002fbd !important;
     }
 }
 
@@ -411,7 +411,7 @@ input,textarea {
 
     width: 100%;
     text-align: center;
-    background-color: #091c5c !important;
+    background-color: #002fbd !important;
     border-radius: 4px;
     color: white;
     margin-bottom:3px;
@@ -425,7 +425,7 @@ input,textarea {
 }
 
 .woocommerce-info{
-    background-color: #091c5c !important;
+    background-color: #002fbd !important;
 }
 
 fieldset{
@@ -458,7 +458,7 @@ fieldset{
 button.alt{
 
     border-radius: 20px !important;
-    background-color:  #091c5c !important;
+    background-color:  #002fbd !important;
     color: white !important;
 }
 
@@ -471,7 +471,7 @@ button.alt{
 }
 
 input[type=radio]:first-child:checked+label:before{
-    color: #091c5c !important;
+    color: #002fbd !important;
 }
 
 .button{
@@ -488,7 +488,7 @@ h3{
 }
 
 .powered-by-text{
-    color: #091c5c !important;
+    color: #002fbd !important;
     font-weight: 600;
 }
 
@@ -559,9 +559,9 @@ h3{
   }
   
   .radio-input input[type=radio]:checked + label {
-    background-color: #091c5c;
+    background-color: #002fbd;
     color: #fff;
-    border: 1px solid #091c5c;
+    border: 1px solid #002fbd;
   }
   
   .radio-input input[type=radio]:checked + label::before {
@@ -577,7 +577,7 @@ h3{
   
   #apply-scholarship-btn {
     /* Color de fondo */
-    // background-color: #091c5c;
+    // background-color: #002fbd;
     background-color: #4abf47;
     
     /* Color de texto */
@@ -642,7 +642,7 @@ h3{
   
   /* When the checkbox is checked, add a blue background */
   .fee-container input:checked ~ .checkmark {
-    background-color: #091c5c;
+    background-color: #002fbd;
   }
   
   /* Create the checkmark/indicator (hidden when not checked) */

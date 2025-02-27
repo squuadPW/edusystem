@@ -25,7 +25,7 @@
                         <input type="hidden" name="show_parent_info" value="<?php echo $show_parent_info ?>">
                         <input type="hidden" name="document_id" value="MISSING DOCUMENT">
                         <!-- <h4
-                            style="background-color: #091c5c; color: white; padding: 4px; text-align: center; font-weight: 600;">
+                            style="background-color: #002fbd; color: white; padding: 4px; text-align: center; font-weight: 600;">
                             STUDENT PERSONAL INFORMATION</h4> -->
 
                         <div style="font-size: 15px">

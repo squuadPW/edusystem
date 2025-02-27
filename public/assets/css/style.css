@@ -121,7 +121,7 @@ input, textarea {
   width: 50%;
   padding: 10px 20px !important;
   text-align: center;
-  background-color: #091c5c !important;
+  background-color: #002fbd !important;
   border-radius: 4px;
   color: white;
   font-size: 18px;
@@ -194,7 +194,7 @@ input, textarea {
 }
 
 .select2-container--default .select2-results__option--highlighted[aria-selected], .select2-container--default .select2-results__option--highlighted[data-selected] {
-  background-color: #091c5c !important;
+  background-color: #002fbd !important;
 }
 
 .select2-selection__arrow {
@@ -290,7 +290,7 @@ input, textarea {
   width: 100%;
   padding: 5px 20px !important;
   text-align: center;
-  background-color: #091c5c !important;
+  background-color: #002fbd !important;
   border-radius: 20px;
   color: white !important;
   font-size: 18px;
@@ -337,8 +337,8 @@ input, textarea {
 }
 
 .flatpickr-day.selected {
-  background: #091c5c !important;
-  border-color: #091c5c !important;
+  background: #002fbd !important;
+  border-color: #002fbd !important;
 }
 
 .hentry .entry-content a {
@@ -355,12 +355,12 @@ input, textarea {
 }
 
 .color-link {
-  color: #091c5c !important;
+  color: #002fbd !important;
 }
 
 #terms:checked {
-  background-color: #091c5c !important;
-  color: #091c5c !important;
+  background-color: #002fbd !important;
+  color: #002fbd !important;
 }
 
 .hentry .entry-content .woocommerce-MyAccount-navigation ul {
@@ -381,7 +381,7 @@ input, textarea {
 .hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active {
   width: 100%;
   text-align: center;
-  background-color: #091c5c !important;
+  background-color: #002fbd !important;
   border-radius: 4px;
   color: white;
   margin-bottom: 3px;
@@ -393,7 +393,7 @@ input, textarea {
 }
 
 .woocommerce-info {
-  background-color: #091c5c !important;
+  background-color: #002fbd !important;
 }
 
 fieldset {
@@ -420,7 +420,7 @@ fieldset {
 
 button.alt {
   border-radius: 20px !important;
-  background-color: #091c5c !important;
+  background-color: #002fbd !important;
   color: white !important;
 }
 
@@ -433,7 +433,7 @@ button.alt {
 }
 
 input[type=radio]:first-child:checked + label:before {
-  color: #091c5c !important;
+  color: #002fbd !important;
 }
 
 .button {
@@ -450,7 +450,7 @@ h3 {
 }
 
 .powered-by-text {
-  color: #091c5c !important;
+  color: #002fbd !important;
   font-weight: 600;
 }
 
@@ -519,9 +519,9 @@ h3 {
 }
 
 .radio-input input[type=radio]:checked + label {
-  background-color: #091c5c;
+  background-color: #002fbd;
   color: #fff;
-  border: 1px solid #091c5c;
+  border: 1px solid #002fbd;
 }
 
 .radio-input input[type=radio]:checked + label::before {
@@ -593,7 +593,7 @@ h3 {
 
 /* When the checkbox is checked, add a blue background */
 .fee-container input:checked ~ .checkmark {
-  background-color: #091c5c;
+  background-color: #002fbd;
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
@@ -1008,7 +1008,7 @@ body.modal-open {
   padding: 10px;
 }
 .container-content .container-content-text .container-content-text-title {
-  color: #083896;
+  color: #002fbd;
 }
 .container-content .container-content-text .container-content-text-content {
   color: black;
@@ -1027,7 +1027,7 @@ body.modal-open {
 }
 .card .header-select-payment {
   display: flex;
-  background-color: #083896;
+  background-color: #002fbd;
   border-radius: 10px 10px 0px 0px;
 }
 .card .header-select-payment .letter-select-payment {

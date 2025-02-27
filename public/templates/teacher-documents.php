@@ -45,7 +45,7 @@ $teacher = get_teacher_details($current_user->user_email);
 
                             <span class="help-tooltip"
                                 data-tippy-content="<?php echo get_help_info_document($document->document_id) ?>">
-                                <span style="color: #091c5c; margin-top: -5px;" class="dashicons dashicons-editor-help"></span>
+                                <span style="color: #002fbd; margin-top: -5px;" class="dashicons dashicons-editor-help"></span>
                             </span>
                         </td>
                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
