@@ -80,20 +80,21 @@ function get_list_institutes_active()
     return $list_institutes;
 }
 
-function set_institute_in_order($order)
+function set_institute_in_order($order, $id = NULL)
 {
 
-    if (isset($_COOKIE['institute_id']) && !empty($_COOKIE['institute_id'])) {
+    $institute_id = $id ? $id : $_COOKIE['institute_id'];
+    if (isset($institute_id) && !empty($institute_id)) {
 
         global $wpdb;
         $table_institutes = $wpdb->prefix . 'institutes';
         $table_alliances = $wpdb->prefix . 'alliances';
 
-        $data = $wpdb->get_row("SELECT id,fee,alliance_id FROM {$table_institutes} WHERE id={$_COOKIE['institute_id']}");
+        $data = $wpdb->get_row("SELECT id,fee,alliance_id FROM {$table_institutes} WHERE id={$institute_id}");
 
         if ($data) {
 
-            $order->update_meta_data('institute_id', $_COOKIE['institute_id']);
+            $order->update_meta_data('institute_id', $institute_id);
 
             $fee_institute = $data->fee;
             $coupons = $order->get_coupons();

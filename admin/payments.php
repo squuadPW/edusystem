@@ -203,6 +203,7 @@ function add_admin_form_payments_content()
                 $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
                 $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
                 $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
+                $new_order->add_meta_data('student_data', $order_old->get_meta('student_data'));
                 $new_order->add_meta_data('cuote_payment', 1);
                 $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin');
                 $product = $first_item->get_product();
@@ -224,6 +225,7 @@ function add_admin_form_payments_content()
                     $new_order->set_billing_phone($billing_address['phone']);
                 }
                 $new_order->save();
+                set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
 
                 // hacemos el envio del email al email del customer, es decir, al que paga.
                 $user_customer = get_user_by('id', $customer_id);
