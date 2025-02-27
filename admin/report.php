@@ -907,7 +907,7 @@ class TT_Current_Student_List_Table extends WP_List_Table
                 $subjects_text .= $subject->name . $separator;
             }
             array_push($students_array, [
-                'student' => '<a href="' . $url . $student->['id'] . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
+                'student' => '<a href="' . $url . $student['id'] . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
                 'subjects' => '<span class="text-upper">' . $subjects_text . '</span>'
             ]);
         }
