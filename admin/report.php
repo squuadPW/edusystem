@@ -717,11 +717,10 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
         if ($students) {
-            $url = admin_url('user-edit.php?user_id=');
+            $url = admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=');
             foreach ($students as $student) {
-                $user_student = get_user_by('email', $student['email']);
                 array_push($students_array, [
-                    'student' => '<a href="' . $url . $user_student->ID . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
+                    'student' => '<a href="' . $url . $student['id'] . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
                 ]);
             }
         }
@@ -863,7 +862,7 @@ class TT_Current_Student_List_Table extends WP_List_Table
         $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
-        $url = admin_url('user-edit.php?user_id=');
+        $url = admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=');
         foreach ($students as $key => $student) {
             $conditions = array();
             $params = array();
@@ -907,9 +906,8 @@ class TT_Current_Student_List_Table extends WP_List_Table
                 $separator = (($key + 1) == count($subjects)) ? '' : ', ';
                 $subjects_text .= $subject->name . $separator;
             }
-            $user_student = get_user_by('email', $student['email']);
             array_push($students_array, [
-                'student' => '<a href="' . $url . $user_student->ID . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
+                'student' => '<a href="' . $url . $student->['id'] . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
                 'subjects' => '<span class="text-upper">' . $subjects_text . '</span>'
             ]);
         }
@@ -1029,11 +1027,10 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
         $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
         if ($students) {
-            $url = admin_url('user-edit.php?user_id=');
+            $url = admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=');
             foreach ($students as $student) {
-                $user_student = get_user_by('email', $student['email']);
                 array_push($students_array, [
-                    'student' => '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '')) . '</a>'
+                    'student' => '<a href="' . $url . $student['id'] . '" target="_blank">' . strtoupper($student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '')) . '</a>'
                 ]);
             }
         }
