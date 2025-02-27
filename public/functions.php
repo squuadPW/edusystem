@@ -622,7 +622,7 @@ function add_loginout_link($items, $args)
             $color = '#12e354 !important';
             $count = "(" . sizeof($notices) . ")";
         } else {
-            $color = '#091c5c !important';
+            $color = '#002fbd !important';
             $count = "";
         }
         if ($args->theme_location == 'primary') {
@@ -652,7 +652,7 @@ function add_loginout_link($items, $args)
         }
 
         $logout_link = wp_logout_url(get_home_url());
-        $items .= '<li><div style="background-color: #091c5c87; border-radius: 16px; display: flex;" ><div style="color: white; padding: 5px 20px !important; text-align: center; border-radius: 20px; color: white !important; font-size: 14px;">' . $current_user->first_name . ' ' . $current_user->last_name . ' 
+        $items .= '<li><div style="background-color: #002fbd87; border-radius: 16px; display: flex;" ><div style="color: white; padding: 5px 20px !important; text-align: center; border-radius: 20px; color: white !important; font-size: 14px;">' . $current_user->first_name . ' ' . $current_user->last_name . ' 
         </div><div><a class="button-primary" style="font-size:14px;" href="' . $logout_link . '">' . __('Log out', 'form-plugin') . '</a></div></div></li>';
     } elseif (!is_user_logged_in()) {
         $items .= '<li style="margin-bottom: 17px; !important"><a class="button-primary" style="font-size:14px;" href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '">' . __('Log in', 'form-plugin') . '</a></li>';
@@ -2481,7 +2481,7 @@ function custom_new_user_notification($send, $user)
     $content .= '<li><strong>Email</strong>: ' . $user->user_email . '</li>';
     $content .= '<li><strong>Password</strong>: ' . $password . '</li>';
     $content .= '</ul>';
-    $content .= '<div style="text-align: center"><a href="https://portal.americanelite.school/my-account" target="_blank"><button style="border: 0; background: none; border-color: #43454b; cursor: pointer; text-decoration: none; font-weight: 600; text-shadow: none; display: inline-block; -webkit-appearance: none; padding: 5px 20px !important; text-align: center; background-color: #091c5c !important; border-radius: 20px; color: white !important; font-size: 18px; cursor: pointer !important">My Account</button></a></div><br>';
+    $content .= '<div style="text-align: center"><a href="https://portal.americanelite.school/my-account" target="_blank"><button style="border: 0; background: none; border-color: #43454b; cursor: pointer; text-decoration: none; font-weight: 600; text-shadow: none; display: inline-block; -webkit-appearance: none; padding: 5px 20px !important; text-align: center; background-color: #002fbd !important; border-radius: 20px; color: white !important; font-size: 18px; cursor: pointer !important">My Account</button></a></div><br>';
     $content .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
     $content .= '<ul>';
     $content .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';

@@ -7,7 +7,7 @@
                         <h4 style="font-size:20px;text-align:center;">
                             <?= __('Pending Documents for ' . $student->name . ' ' . $student->last_name, 'aes'); ?> 
                             <br>
-                            <a style="text-decoration: underline !important; color: #091c5c; font-size: 14px;" 
+                            <a style="text-decoration: underline !important; color: #002fbd; font-size: 14px;" 
                             href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
                                 Upload documents here
                             </a>

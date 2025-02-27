@@ -9,7 +9,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
 <?php if (!$student->moodle_password) { ?>
     <div class="text-center info-box">
         <h2 style="font-size:24px;text-align:center;"><?= __('Documents', 'aes'); ?></h2>
-        <p>To access the <a style="text-decoration: underline !important; color: #091c5c;"
+        <p>To access the <a style="text-decoration: underline !important; color: #002fbd;"
                 href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student' ?>">virtual
                 classroom</a>, please ensure you complete the following steps:</p>
         <ul class="info-list">
@@ -67,7 +67,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <?= $name; ?>
 
                                     <span class="help-tooltip" data-tippy-content="<?php echo get_help_info_document($document->document_id) ?>">
-                                        <span style="color: #091c5c; margin-top: -5px;" class="dashicons dashicons-editor-help"></span>
+                                        <span style="color: #002fbd; margin-top: -5px;" class="dashicons dashicons-editor-help"></span>
                                     </span>
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"

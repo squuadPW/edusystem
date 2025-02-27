@@ -26,7 +26,7 @@ if (in_array('student', $roles)) {
             <li>
                 <i class="fas fa-upload"></i>
                 <?= __('Upload all required documents marked with an asterisk (*)', 'form-plugin'); ?> <a
-                    style="text-decoration: underline !important; color: #091c5c;"
+                    style="text-decoration: underline !important; color: #002fbd;"
                     href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents' ?>"><?= __('here', 'form-plugin'); ?></a>
             </li>
             <li>

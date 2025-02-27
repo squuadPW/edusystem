@@ -99,7 +99,7 @@
             <div class="subtitle text-align-center"><?= __('Degree details', 'aes'); ?></div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="grade" id="grade_tooltip"><?= __('Grade', 'aes'); ?> <span style="color: #091c5c"
+            <label for="grade" id="grade_tooltip"><?= __('Grade', 'aes'); ?> <span style="color: #002fbd"
                     class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
             <select name="grade" autocomplete="off" required>
                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>

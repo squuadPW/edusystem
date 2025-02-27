@@ -20,7 +20,7 @@
                 <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                         data-title="<?= __('Ticket ID', 'aes'); ?>">
-                        <a href="https://soporte.american-elite.us/view.php" target="blank" style="text-decoration: underline !important; color: #091c5c;"><?= $row->ticket_id; ?></a>
+                        <a href="https://soporte.american-elite.us/view.php" target="blank" style="text-decoration: underline !important; color: #002fbd;"><?= $row->ticket_id; ?></a>
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
                         data-title="<?= __('Email', 'aes'); ?>">

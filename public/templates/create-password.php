@@ -47,13 +47,13 @@
     .modal-content {
         background-color: #f9f9f9;
         padding: 20px;
-        /* border: 1px solid #091c5c; */
+        /* border: 1px solid #002fbd; */
         width: 80%;
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
 
     .modal-header {
-        border-bottom: 1px solid #091c5c29;
+        border-bottom: 1px solid #002fbd29;
     }
 
     .modal-header h2 {
@@ -70,12 +70,12 @@
     }
 
     .form-control:focus {
-        border-color: #091c5c;
+        border-color: #002fbd;
         box-shadow: 0 0 10px rgba(9,28,92,0.5);
     }
 
     .btn {
-        background-color: #091c5c;
+        background-color: #002fbd;
         color: #fff;
         padding: 10px 20px;
         border: none;

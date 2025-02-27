@@ -22,7 +22,7 @@
                         <input type="hidden" name="parent_user_id" value="<?php echo $partner_id ?>">
                         <input type="hidden" name="show_parent_info" value="<?php echo $show_parent_info ?>">
                         <h4
-                            style="background-color: #091c5c; color: white; padding: 4px; text-align: center; font-weight: 600;">
+                            style="background-color: #002fbd; color: white; padding: 4px; text-align: center; font-weight: 600;">
                             STUDENT PERSONAL INFORMATION</h4>
                         <div style="display: flex">
                             <div style="flex: 50%; border: 1px solid gray; padding: 8px;"><strong>Complete
@@ -94,7 +94,7 @@
                 <div id="part2" style="font-size: 12px; color: #000">
                     <div>
                         <h4
-                            style="background-color: #091c5c; color: white; padding: 4px; text-align: center; font-weight: 600;">
+                            style="background-color: #002fbd; color: white; padding: 4px; text-align: center; font-weight: 600;">
                             SCHOOL INFORMATION</h4>
                         <div style="display: flex">
                             <div style="flex: auto; border: 1px solid gray; padding: 8px;">
@@ -139,7 +139,7 @@
                     </div>
                     <div>
                         <h4
-                            style="background-color: #091c5c; color: white; padding: 4px; text-align: center; font-weight: 600;">
+                            style="background-color: #002fbd; color: white; padding: 4px; text-align: center; font-weight: 600;">
                             METHOD OF TUITION PAYMENT</h4>
                         <div style="display: flex">
                             <div style="flex: auto; border: 1px solid gray; padding: 8px;">
@@ -155,7 +155,7 @@
                     </div>
                     <div>
                         <h4
-                            style="background-color: #091c5c; color: white; padding: 4px; text-align: center; font-weight: 600;">
+                            style="background-color: #002fbd; color: white; padding: 4px; text-align: center; font-weight: 600;">
                             METHOD OF TUITION PAYMENT</h4>
                         <div style="display: flex">
                             <div style="flex: auto; border: 1px solid gray; padding: 8px;">
