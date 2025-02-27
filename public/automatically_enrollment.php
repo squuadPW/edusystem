@@ -1033,9 +1033,9 @@ function template_welcome_subjects($filteredArray, $student)
     $text .= '<div> We leave at your disposal links and contacts of interest: </div>';
 
     $text .= '<ul>';
-    $text .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+    $text .= '<li>Website: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
     $text .= '<li>Virtual classroom: <a href="https://portal.americanelite.school/" target="_blank">https://portal.americanelite.school/</a></li>';
-    $text .= '<li>Contact us: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+    $text .= '<li>Contact us: <a href="https://support.americanelite.school" target="_blank">https://support.americanelite.school</a></li>';
     $text .= '</ul>';
 
     $text .= '<div>On behalf of our institution, we thank you for your commitment and wish you a successful academic term.</div>';
@@ -1101,9 +1101,9 @@ function template_welcome_subjects($filteredArray, $student)
     $text .= '<div> Dejamos a su disposición enlaces y contactos de interés: </div>';
 
     $text .= '<ul>';
-    $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+    $text .= '<li>Página web: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
     $text .= '<li>Aula virtual: <a href="https://portal.americanelite.school/" target="_blank">https://portal.americanelite.school/</a></li>';
-    $text .= '<li>Contacto: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+    $text .= '<li>Contacto: <a href="https://support.americanelite.school" target="_blank">https://support.americanelite.school</a></li>';
     $text .= '</ul>';
     $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un periodo académico lleno de logros satisfactorios.</div>';
 
@@ -1176,9 +1176,9 @@ function template_not_enrolled($student)
     $text .= '<div> We leave at your disposal links and contacts of interest: </div>';
 
     $text .= '<ul>';
-    $text .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+    $text .= '<li>Website: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
     $text .= '<li>Virtual classroom: <a href="https://portal.americanelite.school/" target="_blank">https://portal.americanelite.school/</a></li>';
-    $text .= '<li>Contact us: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+    $text .= '<li>Contact us: <a href="https://support.americanelite.school" target="_blank">https://support.americanelite.school</a></li>';
     $text .= '</ul>';
     $text .= '<div>On behalf of our institution, we thank you for your commitment and wish you a pleasant rest during this period.</div>';
 
@@ -1198,9 +1198,9 @@ function template_not_enrolled($student)
     $text .= '<div> Dejamos a su disposición enlaces y contactos de interés: </div>';
 
     $text .= '<ul>';
-    $text .= '<li>Página web: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+    $text .= '<li>Página web: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
     $text .= '<li>Aula virtual: <a href="https://portal.americanelite.school/" target="_blank">https://portal.americanelite.school/</a></li>';
-    $text .= '<li>Contacto: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+    $text .= '<li>Contacto: <a href="https://support.americanelite.school" target="_blank">https://support.americanelite.school</a></li>';
     $text .= '</ul>';
     $text .= '<div>En nombre de nuestra institución, le agradecemos por su compromiso y le deseamos un feliz descanso durante este periodo.</div>';
 

@@ -2470,9 +2470,9 @@ function custom_new_user_notification($send, $user)
     $content .= '<div style="text-align: center"><a href="https://portal.americanelite.school/my-account" target="_blank"><button style="border: 0; background: none; border-color: #43454b; cursor: pointer; text-decoration: none; font-weight: 600; text-shadow: none; display: inline-block; -webkit-appearance: none; padding: 5px 20px !important; text-align: center; background-color: #002fbd !important; border-radius: 20px; color: white !important; font-size: 18px; cursor: pointer !important">My Account</button></a></div><br>';
     $content .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
     $content .= '<ul>';
-    $content .= '<li>Website: <a href="https://american-elite.us/" target="_blank">https://american-elite.us/</a></li>';
+    $content .= '<li>Website: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
     $content .= '<li>Virtual classroom: <a href="https://portal.americanelite.school/" target="_blank">https://portal.americanelite.school/</a></li>';
-    $content .= '<li>Contact us: <a href="https://soporte.american-elite.us" target="_blank">https://soporte.american-elite.us</a></li>';
+    $content .= '<li>Contact us: <a href="https://support.americanelite.school" target="_blank">https://support.americanelite.school</a></li>';
     $content .= '</ul>';
     $content .= '<div>Best regards.</div>';
 
