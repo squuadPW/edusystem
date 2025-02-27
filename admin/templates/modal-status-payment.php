@@ -35,8 +35,8 @@
 							?>
 						</select>
 					</div><br>
-				<?php } 
-				
+				<?php }
+
 				$table_student_payments = $wpdb->prefix . 'student_payments';
 				$payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$order->get_meta('student_id')} AND status_id = 0");
 				array_shift($payments);
@@ -68,6 +68,43 @@
 						</div>
 					</div><br>
 				<?php } ?>
+
+				<?php
+				if ($order->get_status() == 'pending') { ?>
+					<?php
+
+					$payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+					$filteredArray = [];
+					if ($payment_gateways) {
+						$filteredArray = array_filter($payment_gateways, function ($item) {
+							return $item->id != 'woo_squuad_stripe';
+						});
+						$filteredArray = array_values($filteredArray);
+					}
+
+					?>
+					<div>
+						<label for="payment_selected">Select the payment method used:</label><br>
+						<select name="payment_selected" id="payment_selected" style="width: 100%">
+							<?php foreach ($filteredArray as $key => $gateway) { ?>
+								<option value="<?= $gateway->id ?>">
+									<?= esc_html($gateway->get_title()) ?>
+								</option>
+								<?php
+							}
+							?>
+						</select>
+					</div>
+					<div id="other-payments" style="display: none;">
+						<label for="other_payments">Payment method used:</label><br>
+						<input type="text" name="other_payments"  style="width: 100%">
+					</div>
+					<div id="transaction-id">
+						<label for="transaction_id">Transaction ID:</label><br>
+						<input type="text" name="transaction_id"  style="width: 100%">
+					</div><br>
+				<?php } ?>
+
 				<div class="display:flex">
 					<div>
 						<label for="description">You can add a description about the payment <strong><span

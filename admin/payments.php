@@ -18,6 +18,9 @@ function add_admin_form_payments_content()
             $paid_more = $_POST['paid_more'] ?? null;
             $cuote_credit = $_POST['cuote_credit'] ?? null;
             $amount_credit = (float)$_POST['amount_credit'] ?? null;
+            $payment_selected = $_POST['payment_selected'] ?? null;
+            $other_payments = $_POST['other_payments'] ?? null;
+            $transaction_id = $_POST['transaction_id'] ?? null;
             $order = wc_get_order($order_id);
 
             if ($status_id == 'completed') {
@@ -72,6 +75,11 @@ function add_admin_form_payments_content()
 
                     if (!$on_hold_found) {
                         if ((float) $order->get_meta('pending_payment') <= 0) {
+
+                            if ($order->get_status() == 'pending') {
+                                update_order_pending_approved($order, $payment_selected, $transaction_id, $other_payments);
+                            }
+
                             $order->update_status('completed');
                         } else {
                             $order->update_status('pending-payment');
@@ -90,10 +98,19 @@ function add_admin_form_payments_content()
                             $split->status = 'completed';
                         }
 
+                        if ($order->get_status() == 'pending') {
+                            update_order_pending_approved($order, $payment_selected, $transaction_id, $other_payments);
+                        }
+
                         $order->update_meta_data('split_method', json_encode($split_method_updated));
                         $order->update_status('completed');
                     }
                 } else {
+
+                    if ($order->get_status() == 'pending') {
+                        update_order_pending_approved($order, $payment_selected, $transaction_id, $other_payments);
+                    }
+
                     $order->update_status('completed');
                     $order->add_order_note('Payment verified by ' . $name . '. Description: ' . ($description != '' ? $description : 'N/A'), 2); // 2 = admin note
                     $order->update_meta_data('payment_approved_by', $current_user->ID);
@@ -415,6 +432,27 @@ function add_admin_form_payments_content()
         $list_payments->prepare_items();
         include(plugin_dir_path(__FILE__) . 'templates/list-payments.php');
     }
+}
+
+function update_order_pending_approved($order, $payment_selected, $transaction_id, $other_payments) {
+    $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+    $filteredArray = [];
+    if ($payment_gateways) {
+        $filteredArray = array_filter($payment_gateways, function ($item) use($payment_selected) {
+            return $item->id == $payment_selected;
+        });
+        $filteredArray = array_values($filteredArray);
+    }
+
+    $order->set_payment_method($payment_selected);
+    $order->update_meta_data('transaction_id', $transaction_id);
+    $order->set_payment_method_title($filteredArray[0]->get_title());
+
+    if($payment_selected == 'other_payment') {
+        $order->update_meta_data('payment_method', $other_payments);
+    }
+
+    $order->save();
 }
 
 function success_advance_payment()

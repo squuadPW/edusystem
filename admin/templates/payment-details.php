@@ -230,6 +230,16 @@
                                             <?php } ?>
                                         </div>
                                     <?php } ?>
+
+                                    <?php if($order->get_status() == 'pending'){ ?>
+                                        <div>
+                                            <?php if(wp_is_mobile()){ ?>
+                                                <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" style="width:100%;" class="button button-success"><?= __('Approve','aes'); ?></button>
+                                            <?php }else{ ?>
+                                                <button data-message="<?= __('Do you want to approve this payment?','aes'); ?>" data-title="<?= __('Approve','aes'); ?>" data-id="<?= $order->get_id(); ?>" id="approved_payment" class="button button-success"><?= __('Approve','aes'); ?></button>
+                                            <?php } ?>
+                                        </div>
+                                    <?php } ?>
                                 </div>
                             <?php } ?>
                         <?php endif; ?>

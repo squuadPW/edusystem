@@ -57,6 +57,19 @@ document.addEventListener('DOMContentLoaded',function(){
         });
     }
 
+    payment_selected = document.querySelector('select[name=payment_selected]');
+
+    if(payment_selected){
+
+        payment_selected.addEventListener('change',(e) => {
+            if (e.target.value == 'other_payment') {
+                document.getElementById('other-payments').style.display = "block";
+            } else {
+                document.getElementById('other-payments').style.display = "none";
+            }
+        });
+    }
+
     
     generate_order_split = document.getElementById('generate_order_split');
 
