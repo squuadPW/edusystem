@@ -1070,9 +1070,6 @@ function update_status_documents()
             handle_rejected_document($student_id, $document_id, $user_student->ID, $description);
         } else {
 
-            error_log($document_changed->document_id);
-            error_log($document_changed->attachment_id);
-            error_log($student_id);
             if ($document_changed->document_id == 'PHOTO OF STUDENT CARD' || $document_changed->document_id == "STUDENT'S PHOTO") {                
                 $wpdb->update($table_students, [
                     'profile_picture' => $document_changed->attachment_id,
