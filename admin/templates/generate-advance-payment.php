@@ -8,7 +8,7 @@
 	<a href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=invoices_institutes'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'invoices_institutes') ? 'nav-tab-active' : ''; ?>"><?= __('Invoices for institutes', 'form-plugin'); ?></a>
 	<a href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'generate_advance_payment') ? 'nav-tab-active' : ''; ?>"><?= __('Generate quota', 'form-plugin'); ?></a>
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'generate_advance_payment') ? 'nav-tab-active' : ''; ?>"><?= __('Manage payments', 'form-plugin'); ?></a>
 </h2>
 
 <div class="tabs-content">
@@ -153,6 +153,42 @@
 											</tr>
 										</tbody>
 									<?php } ?>
+								<?php } ?>
+							</table>
+						</div>
+					<?php } ?>
+
+					<?php if (count($completed_payments) > 1) { ?>
+						<div style="padding: 10px">
+							<table class="wp-list-table widefat fixed posts striped">
+								<thead>
+									<tr>
+										<th>Completed payments (<?php echo (count($completed_payments) - 1) ?>)</th>
+										<th></th>
+										<th></th>
+										<th></th>
+									</tr>
+									<tr>
+										<th>Cuote</th>
+										<th>Date of payment</th>
+										<th>Order</th>
+										<th>Amount</th>
+									</tr>
+								</thead>
+								<?php foreach ($completed_payments as $key => $payment) { ?>
+									<tbody>
+										<tr>
+											<td><?= $payment->cuote ?>
+											</td>
+											<td><?= $payment->date_payment ?>
+											</td>
+											<td>
+												<a target="_blank" href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id='.$payment->order_id) ?>"><?= $payment->order_id ?></a>
+											</td>
+											<td><?= wc_price($payment->amount) ?>
+											</td>
+										</tr>
+									</tbody>
 								<?php } ?>
 							</table>
 						</div>

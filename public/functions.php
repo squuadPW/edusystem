@@ -692,8 +692,8 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
                 AND status_id = 0
                 GROUP BY product_id
             ) AS sub ON main.product_id = sub.product_id AND main.id = sub.min_id
-            SET main.status_id = 1
-        ", $student_id);
+            SET main.status_id = 1, main.order_id = %d, main.date_payment = CURDATE()
+        ", $student_id, $order_id);
         
         $wpdb->query($query);
 

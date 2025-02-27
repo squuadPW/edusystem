@@ -38,8 +38,8 @@ function save_student()
         $email_partner = isset($_POST['email_partner']) ? strtolower($_POST['email_partner']) : null;
 
         // DATOS EXTRAS
-        // $country = isset($_POST['country']) ? $_POST['country'] : null;
-        // $city = isset($_POST['city']) ? strtolower($_POST['city']) : null;
+        $country = isset($_POST['country']) ? $_POST['country'] : null;
+        $city = isset($_POST['city']) ? strtolower($_POST['city']) : null;
         $program = isset($_POST['program']) ? $_POST['program'] : null;
         $grade = isset($_POST['grade']) ? $_POST['grade'] : null;
         $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
@@ -59,8 +59,8 @@ function save_student()
 
         setcookie('is_older', '', time() + 864000, '/');
         setcookie('ethnicity', $ethnicity, time() + 864000, '/');
-        // setcookie('billing_city', ucwords($city), time() + 864000, '/');
-        // setcookie('billing_country', $country, time() + 864000, '/');
+        setcookie('billing_city', ucwords($city), time() + 864000, '/');
+        setcookie('billing_country', $country, time() + 864000, '/');
         setcookie('initial_grade', $grade, time() + 864000, '/');
         setcookie('program_id', $program, time() + 864000, '/');
         setcookie('phone_student', $number_phone, time() + 864000, '/');

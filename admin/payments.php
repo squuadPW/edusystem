@@ -424,6 +424,7 @@ function add_admin_form_payments_content()
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}' OR email='{$id_document}'");
             if ($student) {
                 $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' AND status_id = 0 ORDER BY cuote ASC");
+                $completed_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' AND status_id = 1 ORDER BY cuote ASC");
             }
             include(plugin_dir_path(__FILE__) . 'templates/generate-advance-payment.php');
         }
