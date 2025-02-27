@@ -787,7 +787,7 @@ h3 {
 }
 
 .segment-button.active {
-  background-color: #2c2e88;
+  background-color: #002fbd;
   color: #fff;
 }
 
@@ -871,7 +871,7 @@ h3 {
 }
 .loader {
   border: 16px solid #f3f3f3;
-  border-top: 16px solid #2c2e88;
+  border-top: 16px solid #002fbd;
   border-radius: 50%;
   width: 120px;
   height: 120px;

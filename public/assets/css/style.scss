@@ -137,7 +137,7 @@ input,textarea {
     width: 50%;
     padding: 10px 20px !important;
     text-align: center;
-    background-color: #002fbd !important;
+    background-color: $primary !important;
     border-radius: 4px;
     color: white;
     font-size: 18px;
@@ -211,7 +211,7 @@ input,textarea {
 }
 
 .select2-container--default .select2-results__option--highlighted[aria-selected], .select2-container--default .select2-results__option--highlighted[data-selected]{
-    background-color: #002fbd !important;
+    background-color: $primary !important;
 }
 
 .select2-selection__arrow{
@@ -309,7 +309,7 @@ input,textarea {
     width: 100%;
     padding: 5px 20px !important;
     text-align: center;
-    background-color:  #002fbd  !important;
+    background-color:  $primary  !important;
     border-radius: 20px;
     color: white !important;
     font-size: 18px;
@@ -360,8 +360,8 @@ input,textarea {
 }
 
 .flatpickr-day.selected{
-    background:  #002fbd !important;
-    border-color: #002fbd !important;
+    background:  $primary !important;
+    border-color: $primary !important;
 }
 
 .hentry .entry-content a{
@@ -378,14 +378,14 @@ input,textarea {
 }
 
 .color-link{
-    color: #002fbd !important
+    color: $primary !important
 }
 
 #terms{
 
     &:checked{
-        background-color:  #002fbd !important;
-        color: #002fbd !important;
+        background-color:  $primary !important;
+        color: $primary !important;
     }
 }
 
@@ -411,7 +411,7 @@ input,textarea {
 
     width: 100%;
     text-align: center;
-    background-color: #002fbd !important;
+    background-color: $primary !important;
     border-radius: 4px;
     color: white;
     margin-bottom:3px;
@@ -425,7 +425,7 @@ input,textarea {
 }
 
 .woocommerce-info{
-    background-color: #002fbd !important;
+    background-color: $primary !important;
 }
 
 fieldset{
@@ -458,7 +458,7 @@ fieldset{
 button.alt{
 
     border-radius: 20px !important;
-    background-color:  #002fbd !important;
+    background-color:  $primary !important;
     color: white !important;
 }
 
@@ -471,7 +471,7 @@ button.alt{
 }
 
 input[type=radio]:first-child:checked+label:before{
-    color: #002fbd !important;
+    color: $primary !important;
 }
 
 .button{
@@ -488,7 +488,7 @@ h3{
 }
 
 .powered-by-text{
-    color: #002fbd !important;
+    color: $primary !important;
     font-weight: 600;
 }
 
@@ -559,9 +559,9 @@ h3{
   }
   
   .radio-input input[type=radio]:checked + label {
-    background-color: #002fbd;
+    background-color: $primary;
     color: #fff;
-    border: 1px solid #002fbd;
+    border: 1px solid $primary;
   }
   
   .radio-input input[type=radio]:checked + label::before {
@@ -577,7 +577,7 @@ h3{
   
   #apply-scholarship-btn {
     /* Color de fondo */
-    // background-color: #002fbd;
+    // background-color: $primary;
     background-color: #4abf47;
     
     /* Color de texto */
@@ -642,7 +642,7 @@ h3{
   
   /* When the checkbox is checked, add a blue background */
   .fee-container input:checked ~ .checkmark {
-    background-color: #002fbd;
+    background-color: $primary;
   }
   
   /* Create the checkmark/indicator (hidden when not checked) */
@@ -840,7 +840,7 @@ h3{
   }
   
   .segment-button.active {
-    background-color: #2c2e88;
+    background-color: $primary;
     color: #fff;
     // box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
@@ -927,7 +927,7 @@ h3{
 
   .loader {
     border: 16px solid #f3f3f3;
-    border-top: 16px solid #2c2e88;
+    border-top: 16px solid $primary;
     border-radius: 50%;
     width: 120px;
     height: 120px;
@@ -1107,7 +1107,7 @@ body.modal-open {
       font-size: 38px;
       font-weight: bold;
       font-family: emoji;
-      color: #002fbd;
+      color: $primary;
     }
 
     .card-content-divisor {
@@ -1126,7 +1126,7 @@ body.modal-open {
 
 .card-selected-payment {
   transform: scale(1.05);
-  border: 1px solid #002fbd;
+  border: 1px solid $primary;
 }
 
 // .woocommerce-billing-fields__field-wrapper {
