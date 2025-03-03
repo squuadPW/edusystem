@@ -1449,25 +1449,18 @@ function update_coupon_label_individually($coupon_html, $coupon)
 // Apply the hook
 add_filter('woocommerce_cart_totals_coupon_label', 'update_coupon_label_individually', 10, 2);
 
-function custom_login_redirect($redirect_to, $request, $user)
-{
-    $roles = isset($user->roles) ? $user->roles : [];
-
-    if (in_array('admision', $roles, true)) {
-        $redirect_to = admin_url('admin.php?page=add_admin_form_admission_content'); // Redirect admision to a custom dashboard
+function redirect_after_login($redirect_to, $request, $user) {
+    if (isset($user->roles) && is_array($user->roles)) {
+        if (!in_array('student', $user->roles) || !in_array('parent', $user->roles) || !in_array('teacher', $user->roles)) {
+            return admin_url();
+        } else {
+            return home_url();
+        }
     }
-
-    if (in_array('administration', $roles, true)) {
-        $redirect_to = admin_url('admin.php?page=add_admin_form_payments_content'); // Redirect admision to a custom dashboard
-    }
-
-    // if (in_array('administration', $roles, true)) {
-    //     $redirect_to = admin_url('admin.php?page=add_admin_institutes_content'); // Redirect admision to a custom dashboard
-    // }
-
     return $redirect_to;
 }
-add_filter('login_redirect', 'custom_login_redirect', 10, 3);
+
+add_filter('login_redirect', 'redirect_after_login', 10, 3);
 
 function custom_logout_redirect($redirect_to, $request, $user)
 {
