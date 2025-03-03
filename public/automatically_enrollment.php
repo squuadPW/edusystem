@@ -738,11 +738,11 @@ function load_inscriptions_electives_valid($student)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $table_school_subject_matrix_elective = $wpdb->prefix . 'school_subject_matrix_elective';
+    $table_academic_offers = $wpdb->prefix . 'academic_offers';
 
-    $matrix_elective = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_elective}");
+    $offers = $wpdb->get_results("SELECT * FROM {$table_academic_offers} WHERE `type` = 'elective'");
     $electives_ids = [];
-    foreach ($matrix_elective as $key => $elective) {
+    foreach ($offers as $key => $elective) {
         array_push($electives_ids, $elective->subject_id);
     }
 

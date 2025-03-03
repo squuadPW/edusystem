@@ -40,11 +40,14 @@ function add_admin_form_academic_offers_content()
             $moodle_course_id = sanitize_text_field($_POST['moodle_course_id']);
             $new_section = ($subject_id != $old_subject_id ? true : false);
             $section = load_next_section($subject_id, $code_period, $cut_period, $offer_id, $new_section);
+            $subject = get_subject_details($subject_id);
+            $type = $subject->is_elective ? 'elective' : 'regular';
 
             if (isset($offer_id) && !empty($offer_id)) {
                 $wpdb->update($table_academic_offers, [
                     'section' => $section,
                     'subject_id' => $subject_id,
+                    'type' => $type,
                     'code_period' => $code_period,
                     'cut_period' => $cut_period,
                     'teacher_id' => $teacher_id,
@@ -55,6 +58,7 @@ function add_admin_form_academic_offers_content()
                 $wpdb->insert($table_academic_offers, [
                     'section' => $section,
                     'subject_id' => $subject_id,
+                    'type' => $type,
                     'code_period' => $code_period,
                     'cut_period' => $cut_period,
                     'teacher_id' => $teacher_id,

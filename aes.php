@@ -171,6 +171,7 @@ function create_tables()
         id INT(11) NOT NULL AUTO_INCREMENT,
         section INT(11) NULL,
         subject_id INT(11) NOT NULL,
+        type TEXT NOT NULL,
         code_period TEXT NOT NULL,
         cut_period TEXT NOT NULL,
         teacher_id INT(11) NULL,
