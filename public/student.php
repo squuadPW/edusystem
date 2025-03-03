@@ -617,6 +617,15 @@ function update_status_student($student_id, $status_id)
     ], ['id' => $student_id]);
 }
 
+function update_elective_student($student_id, $status_id)
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $wpdb->update($table_students, [
+        'elective' => $status_id
+    ], ['id' => $student_id]);
+}
+
 function insert_register_documents($student_id, $grade_id)
 {
 

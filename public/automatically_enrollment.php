@@ -494,9 +494,7 @@ function load_automatically_enrollment($expected_projection, $student)
                         $count_expected_subject++;
                         $force_skip = true;
                         if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0)) {
-                            $wpdb->update($table_students, [
-                                'elective' => 1
-                            ], ['id' => $student->id]);
+                            update_elective_student($student->id, 1);
                         }
                         continue;
                     }
@@ -530,9 +528,7 @@ function load_automatically_enrollment($expected_projection, $student)
                     ]);
 
                     if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2) {
-                        $wpdb->update($table_students, [
-                            'elective' => 1
-                        ], ['id' => $student->id]);
+                        update_elective_student($student->id, 1);
                     }
 
                     $regular_enrolled = true;
@@ -573,9 +569,7 @@ function load_automatically_enrollment($expected_projection, $student)
                         continue;
                     }
 
-                    $wpdb->update($table_students, [
-                        'elective' => 1
-                    ], ['id' => $student->id]);
+                    update_elective_student($student->id, 1);
                     $count_expected_subject_elective++;
                     $student_enrolled++;
                 }
@@ -604,9 +598,7 @@ function load_automatically_enrollment($expected_projection, $student)
                     $count_expected_subject++;
                     $force_skip = true;
                     if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0)) {
-                        $wpdb->update($table_students, [
-                            'elective' => 1
-                        ], ['id' => $student->id]);
+                        update_elective_student($student->id, 1);
                     }
                     continue;
                 }
@@ -640,9 +632,7 @@ function load_automatically_enrollment($expected_projection, $student)
                 ]);
 
                 if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2) {
-                    $wpdb->update($table_students, [
-                        'elective' => 1
-                    ], ['id' => $student->id]);
+                    update_elective_student($student->id, 1);
                 }
 
                 $regular_enrolled = true;
@@ -683,9 +673,7 @@ function load_automatically_enrollment($expected_projection, $student)
                     continue;
                 }
 
-                $wpdb->update($table_students, [
-                    'elective' => 1
-                ], ['id' => $student->id]);
+                update_elective_student($student->id, 1);
                 $count_expected_subject_elective++;
                 $student_enrolled++;
             }
