@@ -32,7 +32,6 @@ function create_tables()
   $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
   $table_academic_projection_base = $wpdb->prefix . 'academic_projection_base';
   $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
-  $table_school_subject_matrix_elective = $wpdb->prefix . 'school_subject_matrix_elective';
   $table_institutes = $wpdb->prefix . 'institutes';
   $table_alliances = $wpdb->prefix . 'alliances';
   $table_grades = $wpdb->prefix . 'grades';
@@ -1069,16 +1068,6 @@ function create_tables()
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subject_matrix_regular}'") != $table_school_subject_matrix_regular) {
     dbDelta(
       "CREATE TABLE " . $table_school_subject_matrix_regular . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        subject TEXT NOT NULL,
-        subject_id INT(11) NOT NULL,
-        PRIMARY KEY (id))$charset_collate;"
-    );
-  }
-
-  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subject_matrix_elective}'") != $table_school_subject_matrix_elective) {
-    dbDelta(
-      "CREATE TABLE " . $table_school_subject_matrix_elective . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         subject TEXT NOT NULL,
         subject_id INT(11) NOT NULL,

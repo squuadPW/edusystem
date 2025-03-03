@@ -684,18 +684,20 @@ function load_automatically_enrollment($expected_projection, $student)
 function load_available_electives($student, $code, $cut)
 {
     global $wpdb;
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $table_school_subject_matrix_elective = $wpdb->prefix . 'school_subject_matrix_elective';
+
     $conditions = array();
     $params = array();
 
-    $electives_ids = $wpdb->get_col("SELECT subject_id FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND (status_id = 3 OR status_id = 1) AND subject_id IS NOT NULL");
-    if (!empty($electives_ids)) {
-        $conditions[] = "subject_id NOT IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
-        $params = array_merge($params, $electives_ids);
+    $electives_ids = $wpdb->get_col("SELECT subject_id FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND status_id != 4 AND code_subject IS NOT NULL AND code_subject <> '' AND subject_id IS NOT NULL AND subject_id <> ''");
+    if ($electives_ids) {
+        $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
     }
+    $conditions[] = "is_elective = 1";
+    $params = array_merge($params, $electives_ids);
 
-    $query = "SELECT * FROM {$table_school_subject_matrix_elective}";
+    $query = "SELECT * FROM {$table_school_subjects}";
 
     if (!empty($conditions)) {
         $query .= " WHERE " . implode(" AND ", $conditions);
@@ -709,6 +711,7 @@ function load_available_electives($student, $code, $cut)
             array_push($available_electives, $elective);
         }
     }
+
     return $available_electives;
 }
 

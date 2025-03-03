@@ -260,15 +260,12 @@ function update_matrices() {
     global $wpdb;
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
-    // $table_school_subject_matrix_elective = $wpdb->prefix . 'school_subject_matrix_elective';
     
     // Truncar las tablas antes de hacer los inserts
     $wpdb->query("TRUNCATE TABLE {$table_school_subject_matrix_regular}");
-    // $wpdb->query("TRUNCATE TABLE {$table_school_subject_matrix_elective}");
     
-    // Obtener los sujetos regulares y electivos
+    // Obtener los sujetos regulares
     $subjects_regular = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1 AND is_elective = 0 ORDER BY matrix_position ASC");
-    // $subjects_electives = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1 AND is_elective = 1 ORDER BY matrix_position ASC");
     
     // Insertar los sujetos regulares
     foreach ($subjects_regular as $regular) {
@@ -277,16 +274,6 @@ function update_matrices() {
             'subject_id' => $regular->id,
         ]);
     }
-    
-    // Insertar los sujetos electivos
-    // foreach ($subjects_electives as $elective) {
-    //     if ($elective->is_open) {
-    //         $wpdb->insert($table_school_subject_matrix_elective, [
-    //             'subject' => $elective->name,
-    //             'subject_id' => $elective->id,
-    //         ]);
-    //     }
-    // }
 }
 
 function get_subject_details($subject_id)
