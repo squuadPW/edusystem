@@ -95,7 +95,7 @@
 									<input type="hidden" id="amount" name="amount"
 										value="<?php echo $order_amount ?>" required>
 									<input type="hidden" id="product_id" name="product_id"
-										value="<?php echo $porder_variation_id ? $porder_variation_id : $order_product_id ?>"
+										value="<?php echo $order_variation_id ? $order_variation_id : $order_product_id ?>"
 										required>
 								</th>
 							</tr>
