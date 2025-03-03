@@ -1449,18 +1449,21 @@ function update_coupon_label_individually($coupon_html, $coupon)
 // Apply the hook
 add_filter('woocommerce_cart_totals_coupon_label', 'update_coupon_label_individually', 10, 2);
 
-function redirect_after_login($redirect_to, $request, $user) {
-    if (isset($user->roles) && is_array($user->roles)) {
-        if (!in_array('student', $user->roles) || !in_array('parent', $user->roles) || !in_array('teacher', $user->roles)) {
-            return admin_url();
-        } else {
-            return home_url();
-        }
+function redirect_after_login($redirect_to, $user) {
+    if (is_wp_error($user) || !isset($user->roles)) {
+        return $redirect_to;
     }
-    return $redirect_to;
+
+    $roles = $user->roles;
+    // Redirigir a home_url() si tiene AL MENOS UNO de estos roles
+    if (in_array('student', $roles) || in_array('parent', $roles) || in_array('teacher', $roles)) {
+        return home_url('my-account'); // Usuarios no-admin
+    } else {
+        return admin_url(); // Administradores/editores/otros roles
+    }
 }
 
-add_filter('login_redirect', 'redirect_after_login', 10, 3);
+add_filter('woocommerce_login_redirect', 'redirect_after_login', 999, 2);
 
 function custom_logout_redirect($redirect_to, $request, $user)
 {
