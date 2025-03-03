@@ -40,26 +40,26 @@ add_action('wp_enqueue_scripts', 'admin_form_plugin_scripts');
 
 function aes_scripts_admin()
 {
-
+    $version = '1.5.0';
     wp_enqueue_style('flatpickr', plugins_url('aes') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('aes') . '/public/assets/css/intlTelInput.css');
     wp_enqueue_style('style-admin', plugins_url('aes') . '/admin/assets/css/style.css');
-    wp_enqueue_script('xlsx-js', plugins_url('aes') . '/admin/assets/js/xlsx.full.min.js', array('jquery'), '1.0.1', true);
-    wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js', array('jquery'), '1.0.1', true);
-    wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js', array('jquery'), '1.0.1', true);
+    wp_enqueue_script('xlsx-js', plugins_url('aes') . '/admin/assets/js/xlsx.full.min.js', array('jquery'), $version, true);
+    wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js', array('jquery'), $version, true);
+    wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js', array('jquery'), $version, true);
     wp_enqueue_script('intel-js', plugins_url('aes') . '/public/assets/js/intlTelInput.min.js');
     wp_enqueue_script('masker-js', plugins_url('aes') . '/public/assets/js/vanilla-masker.min.js');
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_payments_content') {
-        wp_enqueue_script('student-payment', plugins_url('aes') . '/admin/assets/js/payment.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('student-payment', plugins_url('aes') . '/admin/assets/js/payment.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_scholarships_content') {
-        wp_enqueue_script('student-payment', plugins_url('aes') . '/admin/assets/js/scholarship.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('student-payment', plugins_url('aes') . '/admin/assets/js/scholarship.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_email_content') {
-        wp_enqueue_script('send-email', plugins_url('aes') . '/admin/assets/js/send-email.js', array('jquery'), '1.0.0', true);
+        wp_enqueue_script('send-email', plugins_url('aes') . '/admin/assets/js/send-email.js', array('jquery'), $version, true);
 
         wp_localize_script('send-email', 'summary_email', [
             'url' => admin_url('admin-ajax.php'),
@@ -68,19 +68,19 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_notification_content') {
-        wp_enqueue_script('send-notification', plugins_url('aes') . '/admin/assets/js/send-notification.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('send-notification', plugins_url('aes') . '/admin/assets/js/send-notification.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_configuration_options_content') {
-        wp_enqueue_script('configuration', plugins_url('aes') . '/admin/assets/js/configuration.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('configuration', plugins_url('aes') . '/admin/assets/js/configuration.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_teachers_content') {
-        wp_enqueue_script('teacher', plugins_url('aes') . '/admin/assets/js/teacher.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('teacher', plugins_url('aes') . '/admin/assets/js/teacher.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')) {
-        wp_enqueue_script('institute', plugins_url('aes') . '/admin/assets/js/institute.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('institute', plugins_url('aes') . '/admin/assets/js/institute.js', array('jquery'), $version, true);
 
         wp_localize_script('institute', 'list_fee_institute', [
             'url' => admin_url('admin-ajax.php'),
@@ -89,7 +89,7 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables' || $_GET['page'] == 'report-students' || $_GET['page'] == 'report-current-students' || $_GET['page'] == 'report-sales-product') {
-        wp_enqueue_script('report', plugins_url('aes') . '/admin/assets/js/report.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('report', plugins_url('aes') . '/admin/assets/js/report.js', array('jquery'), $version, true);
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js');
         wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js');
 
@@ -125,7 +125,7 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_partners_content' || isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'list_admin_partner_payments_content' || $_GET['page'] == 'list_admin_partner_invoice_content') {
-        wp_enqueue_script('alliance', plugins_url('aes') . '/admin/assets/js/alliance.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('alliance', plugins_url('aes') . '/admin/assets/js/alliance.js', array('jquery'), $version, true);
 
 
         wp_localize_script('alliance', 'list_fee_alliance', [
@@ -135,15 +135,15 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_requests_content') {
-        wp_enqueue_script('request', plugins_url('aes') . '/admin/assets/js/request.js', array('jquery'), '1.0.0', true);
+        wp_enqueue_script('request', plugins_url('aes') . '/admin/assets/js/request.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_department_content') {
-        wp_enqueue_script('department', plugins_url('aes') . '/admin/assets/js/department.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('department', plugins_url('aes') . '/admin/assets/js/department.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_enrollments_content') {
-        wp_enqueue_script('enrollment', plugins_url('aes') . '/admin/assets/js/enrollment.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('enrollment', plugins_url('aes') . '/admin/assets/js/enrollment.js', array('jquery'), $version, true);
 
         wp_localize_script('enrollment', 'search_student_id_document', [
             'url' => admin_url('admin-ajax.php'),
@@ -152,7 +152,7 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_admission_content') {
-        wp_enqueue_script('student-documents', plugins_url('aes') . '/admin/assets/js/document.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('student-documents', plugins_url('aes') . '/admin/assets/js/document.js', array('jquery'), $version, true);
 
         wp_localize_script('student-documents', 'update_status_documents', [
             'url' => admin_url('admin-ajax.php'),
@@ -181,7 +181,7 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')) {
-        wp_enqueue_script('institute', plugins_url('aes') . '/admin/assets/js/institute.js', array('jquery'), '1.0.1', true);
+        wp_enqueue_script('institute', plugins_url('aes') . '/admin/assets/js/institute.js', array('jquery'), $version, true);
 
         wp_localize_script('institute', 'list_fee_institute', [
             'url' => admin_url('admin-ajax.php'),

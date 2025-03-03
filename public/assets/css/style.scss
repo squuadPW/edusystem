@@ -981,7 +981,7 @@ h3{
 
   .modal-enrollment {
     border-radius: 0px !important;
-    width: 70% !important;
+    width: 210mm !important;
     overflow: auto;
     @media screen and (max-width: 767px){
       width: 100% !important;
@@ -1163,4 +1163,18 @@ body.modal-open {
 
 .text-uppercase {
   text-transform: uppercase !important;
+}
+
+.signatures_squares {
+  display: flex;
+  .signature_square_field {
+    flex: 50%
+  }
+
+  @media screen and (max-width: 900px){
+    display: block !important;
+    .signature_square_field {
+      flex: auto !important;
+    } 
+ }
 }

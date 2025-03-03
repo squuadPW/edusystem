@@ -16,6 +16,7 @@ require plugin_dir_path(__FILE__) . 'automatically_enrollment.php';
 function form_plugin_scripts()
 {
     global $wp;
+    $version = '1.5.0';
     wp_enqueue_style('dashicons');
     wp_enqueue_style('admin-flatpickr', plugins_url('aes') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('aes') . '/public/assets/css/intlTelInput.css');
@@ -29,7 +30,7 @@ function form_plugin_scripts()
     wp_enqueue_script('int-tel', plugins_url('aes') . '/public/assets/js/int-tel.js');
 
     // PAYMENTS PARTS
-    wp_register_script('payment-parts-update', plugins_url('aes') . '/public/assets/js/payment-parts-update.js', array('jquery'), '1.0.2', true);
+    wp_register_script('payment-parts-update', plugins_url('aes') . '/public/assets/js/payment-parts-update.js', array('jquery'), $version, true);
     wp_localize_script(
         'payment-parts-update',
         'ajax_object',
@@ -40,7 +41,7 @@ function form_plugin_scripts()
     wp_enqueue_script('payment-parts-update');
 
     // form-register
-    wp_register_script('form-register', plugins_url('aes') . '/public/assets/js/form-register.js', array('jquery'), '1.0.3', true);
+    wp_register_script('form-register', plugins_url('aes') . '/public/assets/js/form-register.js', array('jquery'), $version, true);
     wp_localize_script(
         'form-register',
         'ajax_object',
@@ -50,7 +51,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('form-register');
 
-    wp_register_script('create-password', plugins_url('aes') . '/public/assets/js/create-password.js', array('jquery'), '1.0.1', true);
+    wp_register_script('create-password', plugins_url('aes') . '/public/assets/js/create-password.js', array('jquery'), $version, true);
     wp_localize_script(
         'create-password',
         'ajax_object',
@@ -60,7 +61,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('create-password');
 
-    wp_register_script('create-enrollment', plugins_url('aes') . '/public/assets/js/create-enrollment.js', array('jquery'), '1.0.7', true);
+    wp_register_script('create-enrollment', plugins_url('aes') . '/public/assets/js/create-enrollment.js', array('jquery'), $version, true);
     wp_localize_script(
         'create-enrollment',
         'ajax_object',
@@ -71,7 +72,7 @@ function form_plugin_scripts()
     wp_enqueue_script('create-enrollment');
     
     if (str_contains(home_url($wp->request), 'califications')) {
-        wp_register_script('califications', plugins_url('aes') . '/public/assets/js/califications.js', array('jquery'), '1.0.1', true);
+        wp_register_script('califications', plugins_url('aes') . '/public/assets/js/califications.js', array('jquery'), $version, true);
         wp_localize_script(
             'califications',
             'ajax_object',
@@ -83,7 +84,7 @@ function form_plugin_scripts()
     }
 
     if (str_contains(home_url($wp->request), 'my-requests')) {
-        wp_register_script('requests', plugins_url('aes') . '/public/assets/js/requests.js', array('jquery'), '1.0.0', true);
+        wp_register_script('requests', plugins_url('aes') . '/public/assets/js/requests.js', array('jquery'), $version, true);
         wp_localize_script(
             'requests',
             'ajax_object',
@@ -94,7 +95,7 @@ function form_plugin_scripts()
         wp_enqueue_script('requests');
     }
 
-    wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), '1.0.0', true);
+    wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), $version, true);
     wp_localize_script(
         'student-continue',
         'ajax_object',
@@ -104,7 +105,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('student-continue');
 
-    wp_register_script('previous-form', plugins_url('aes') . '/public/assets/js/previous-form.js', array('jquery'), '1.0.2', true);
+    wp_register_script('previous-form', plugins_url('aes') . '/public/assets/js/previous-form.js', array('jquery'), $version, true);
     wp_localize_script(
         'previous-form',
         'ajax_object',

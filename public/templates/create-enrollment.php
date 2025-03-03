@@ -6,7 +6,8 @@
 <div class="modal-content modal-enrollment" id="modal-content">
     <div id="modal-contraseña" class="modal" style="overflow: auto; padding: 0 !important">
         <div class="modal-content modal-enrollment">
-            <span id="close-modal-enrollment" style="float: right; cursor: pointer"><span class='dashicons dashicons-no-alt'></span></span>
+            <span id="close-modal-enrollment" style="float: right; cursor: pointer"><span
+                    class='dashicons dashicons-no-alt'></span></span>
             <div class="modal-body" id="content-pdf">
                 <div id="part1" style="font-size: 12px; color: #000">
                     <div style="padding: 0 !important; text-align: center; border: 1px solid gray;">
@@ -21,6 +22,7 @@
                         <input type="hidden" name="student_user_id" value="<?php echo $student_id ?>">
                         <input type="hidden" name="parent_user_id" value="<?php echo $partner_id ?>">
                         <input type="hidden" name="show_parent_info" value="<?php echo $show_parent_info ?>">
+                        <input class="formdata" autocomplete="off" type="hidden" id="modal_open" name="modal_open" value="1">
                         <h4
                             style="background-color: #002fbd; color: white; padding: 4px; text-align: center; font-weight: 600;">
                             STUDENT PERSONAL INFORMATION</h4>
@@ -59,7 +61,7 @@
                             <div style="flex: auto; border: 1px solid gray; padding: 8px;"><strong>Cell:</strong>
                                 <br> <?php echo $user['student_phone'] ?>
                             </div>
-                            <?php if($show_parent_info == 1) { ?> 
+                            <?php if ($show_parent_info == 1) { ?>
                                 <div style="flex: auto; border: 1px solid gray; padding: 8px;"><strong>Parent cell:</strong>
                                     <br> <?php echo $user['parent_cell'] ?>
                                 </div>
@@ -67,7 +69,7 @@
                         </div>
                         <div style="display: flex">
                             <div style="flex: auto; border: 1px solid gray; padding: 8px;">
-                                <?php if($show_parent_info == 1) { ?> 
+                                <?php if ($show_parent_info == 1) { ?>
                                     <strong>Identification # or
                                         Passport # of parent:</strong>
                                     <br> <?php echo $user['parent_identification'] ?>
@@ -78,7 +80,7 @@
                                 <br> <?php echo $user['student_identification'] ?>
                             </div>
                         </div>
-                        <?php if($show_parent_info == 1) { ?> 
+                        <?php if ($show_parent_info == 1) { ?>
                             <div style="display: flex">
                                 <div style="flex: auto; border: 1px solid gray; padding: 8px;"><strong>Parent/Legal Guardian
                                         Full Name:</strong>
@@ -132,7 +134,8 @@
                                         )</span>
                                     12th Grade</span>
                                 <br><br>
-                                <strong id="please_select_grade" style="color: red; display: none">Please select a grade to
+                                <strong id="please_select_grade" style="color: red; display: none">Please select a grade
+                                    to
                                     continue</strong>
                             </div>
                         </div>
@@ -182,106 +185,66 @@
                                     acceptance to the program. Failure to do so will result in
                                     being dropped from the program and you will have to reapply for admission.</p><br>
 
-                                <?php if (!wp_is_mobile()) { ?>
-                                    <input type="hidden" name="auto_signature_student" value="0">
-                                    <div style="display: flex">
-                                        <div style="flex: 50%">
-                                            <div>
-                                                <div style="padding: 8px;"><strong>Applicant Full Name:</strong>
-                                                    <br> <?php echo $user['student_full_name'] ?>
-                                                </div>
+                                <input type="hidden" name="auto_signature_student" value="0">
+                                <div class="signatures_squares">
+                                    <div class="signature_square_field">
+                                        <div>
+                                            <div style="padding: 8px;"><strong>Applicant Full Name:</strong>
+                                                <br> <?php echo $user['student_full_name'] ?>
                                             </div>
-                                            <div style="position: relative; padding: 8px;" id="signature-pad-student">
-                                                <canvas id="signature-student" width="100%" height="200"
-                                                    style="border: 1px solid gray; margin: auto !important; background-color: #ffff005c"></canvas>
-                                                <div id="sign-here-student"
-                                                    style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
-                                                    <span>SIGN HERE</span>
-                                                </div>
-                                            </div>
-                                            <button id="clear-student" style="width: 100%;">Clear</button>
-                                            <button id="generate-signature-student" style="width: 100%;" onclick="autoSignature('signature-pad-student', 'signature-text-student', 'generate-signature-student', 'clear-student')">Generate signature automatically</button>
-                                            <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none" id="signature-text-student">
-                                                <div style="bottom: 0; position: absolute; text-align: center; width: 100%;"><?php echo $user['student_signature'] ?></div>
-                                            </div>
-                                            <button id="clear-student-signature" style="width: 100%; display: none">Cancel</button>
                                         </div>
-                                        <?php if($show_parent_info == 1) { ?> 
-                                            <input type="hidden" name="auto_signature_parent" value="0">
-                                            <div style="flex: 50%">
-                                                <div>
-                                                    <div style="padding: 8px;"><strong>Parent/Legal Guardian Full Name:</strong>
-                                                        <br> <?php echo $user['parent_full_name'] ?>
-                                                    </div>
-                                                </div>
-                                                <div style="position: relative; padding: 8px;" id="signature-pad-parent">
-                                                    <canvas id="signature-parent" width="100%" height="200"
-                                                        style="border: 1px solid gray; margin: auto !important;  background-color: #ffff005c"></canvas>
-                                                    <div id="sign-here-parent"
-                                                        style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
-                                                        <span>SIGN HERE</span>
-                                                    </div>
-                                                </div>
-                                                <button id="clear-parent" style="width: 100%;">Clear</button>
-                                                <button id="generate-signature-parent" style="width: 100%;" onclick="autoSignature('signature-pad-parent', 'signature-text-parent', 'generate-signature-parent', 'clear-parent')">Generate signature automatically</button>
-                                                <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none" id="signature-text-parent">
-                                                    <div style="bottom: 0; position: absolute; text-align: center; width: 100%;"><?php echo $user['parent_full_name'] ?></div>
-                                                </div>
-                                                <button id="clear-parent-signature" style="width: 100%; display: none">Cancel</button>
+                                        <div style="position: relative; padding: 8px;" id="signature-pad-student">
+                                            <canvas id="signature-student" width="100%" height="200"
+                                                style="border: 1px solid gray; margin: auto !important; background-color: #ffff005c"></canvas>
+                                            <div id="sign-here-student"
+                                                style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
+                                                <span>SIGN HERE</span>
                                             </div>
-                                        <?php } ?>
+                                        </div>
+                                        <button id="clear-student" style="width: 100%;">Clear</button>
+                                        <button id="generate-signature-student" style="width: 100%;"
+                                            onclick="autoSignature('signature-pad-student', 'signature-text-student', 'generate-signature-student', 'clear-student')">Generate
+                                            signature automatically</button>
+                                        <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none"
+                                            id="signature-text-student">
+                                            <div
+                                                style="bottom: 0; position: absolute; text-align: center; width: 100%;">
+                                                <?php echo $user['student_signature'] ?></div>
+                                        </div>
+                                        <button id="clear-student-signature"
+                                            style="width: 100%; display: none">Cancel</button>
                                     </div>
-                                <?php } else { ?>
-                                    <input type="hidden" name="auto_signature_student" value="0">
-                                    <div style="display: block">
-                                        <div style="flex: auto">
+                                    <?php if ($show_parent_info == 1) { ?>
+                                        <input type="hidden" name="auto_signature_parent" value="0">
+                                        <div class="signature_square_field">
                                             <div>
-                                                <div style="padding: 8px;"><strong>Applicant Full Name:</strong>
-                                                    <br> <?php echo $user['student_full_name'] ?>
+                                                <div style="padding: 8px;"><strong>Parent/Legal Guardian Full Name:</strong>
+                                                    <br> <?php echo $user['parent_full_name'] ?>
                                                 </div>
                                             </div>
-                                            <div style="position: relative; padding: 8px;" id="signature-pad-student">
-                                                <canvas id="signature-student" width="100%" height="200"
+                                            <div style="position: relative; padding: 8px;" id="signature-pad-parent">
+                                                <canvas id="signature-parent" width="100%" height="200"
                                                     style="border: 1px solid gray; margin: auto !important;  background-color: #ffff005c"></canvas>
-                                                <div id="sign-here-student"
+                                                <div id="sign-here-parent"
                                                     style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
                                                     <span>SIGN HERE</span>
                                                 </div>
                                             </div>
-                                            <button id="clear-student" style="width: 100%;">Clear</button>
-                                            <button id="generate-signature-student" style="width: 100%;" onclick="autoSignature('signature-pad-student', 'signature-text-student', 'generate-signature-student', 'clear-student')">Generate signature automatically</button>
-                                            <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none" id="signature-text-student">
-                                                <div style="bottom: 0; position: absolute; text-align: center; width: 100%;"><?php echo $user['student_signature'] ?></div>
+                                            <button id="clear-parent" style="width: 100%;">Clear</button>
+                                            <button id="generate-signature-parent" style="width: 100%;"
+                                                onclick="autoSignature('signature-pad-parent', 'signature-text-parent', 'generate-signature-parent', 'clear-parent')">Generate
+                                                signature automatically</button>
+                                            <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none"
+                                                id="signature-text-parent">
+                                                <div
+                                                    style="bottom: 0; position: absolute; text-align: center; width: 100%;">
+                                                    <?php echo $user['parent_full_name'] ?></div>
                                             </div>
-                                            <button id="clear-student-signature" style="width: 100%; display: none">Cancel</button>
+                                            <button id="clear-parent-signature"
+                                                style="width: 100%; display: none">Cancel</button>
                                         </div>
-                                        <?php if($show_parent_info == 1) { ?> 
-                                            <input type="hidden" name="auto_signature_parent" value="0">
-                                            <div style="flex: auto">
-                                                <div>
-                                                    <div style="padding: 8px;"><strong>Parent/Legal Guardian Full Name:</strong>
-                                                        <br> <?php echo $user['parent_full_name'] ?>
-                                                    </div>
-                                                </div>
-                                                <div style="position: relative; padding: 8px;" id="signature-pad-parent">
-                                                    <canvas id="signature-parent" width="100%" height="200"
-                                                        style="border: 1px solid gray; margin: auto !important;  background-color: #ffff005c"></canvas>
-                                                    <div id="sign-here-parent"
-                                                        style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
-                                                        <span>SIGN HERE</span>
-                                                    </div>
-                                                </div>
-                                                <button id="clear-parent" style="width: 100%;">Clear</button>
-                                                <button id="generate-signature-parent" style="width: 100%;" onclick="autoSignature('signature-pad-parent', 'signature-text-parent', 'generate-signature-parent', 'clear-parent')">Generate signature automatically</button>
-                                                <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none" id="signature-text-parent">
-                                                    <div style="bottom: 0; position: absolute; text-align: center; width: 100%;"><?php echo $user['parent_full_name'] ?></div>
-                                                </div>
-                                                <button id="clear-parent-signature" style="width: 100%; display: none">Cancel</button>
-                                            </div>
-                                        <?php  } ?>
-
-                                    </div>
-                                <?php } ?>
+                                    <?php } ?>
+                                </div>
                                 <div style="display: flex">
                                     <div style="flex: auto; padding: 8px;"><strong>Date:</strong>
                                         <br> <?php echo $user['today'] ?>

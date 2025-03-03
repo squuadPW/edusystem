@@ -4,16 +4,20 @@ let gradeSelected = null;
 let downloading = false;
 let first_time = false;
 
-function resizeCanvas(canvasId) {
+if (document.getElementById("modal_open")) {
+  window.scrollTo(0,0);
+  document.body.classList.add("modal-open");
+}
+
+function resizeCanvas(canvasId, timmeout) {
   const canvas = document.getElementById(canvasId);
   if (canvas && !downloading) {
     const ratio = Math.max(window.devicePixelRatio || 1, 1);
     let width, height;
 
     setTimeout(() => {
-      width = canvas.parentNode
-        ? canvas.parentNode.offsetWidth * 0.7
-        : window.innerWidth;
+      let multiply = canvas.parentNode ? (canvas.parentNode.offsetWidth < 500 ? 0.6 : 0.8) : 0.8
+      width = canvas.parentNode ? canvas.parentNode.offsetWidth * multiply : window.innerWidth;
       height = 120;
 
       canvas.width = width * ratio;
@@ -23,36 +27,27 @@ function resizeCanvas(canvasId) {
       canvas.getContext("2d").scale(ratio, ratio);
 
       loadSignatures();
-    }, 1500);
+    }, timmeout);
   }
 }
 
-// window.addEventListener("resize", function () {
-//   if (!first_time) {
-//     first_time = true;
-//     resizeCanvas("signature-student");
-//     resizeCanvas("signature-parent");
-//   }
-// });
+window.addEventListener("resize", function () {
+  resizeCanvas("signature-student", 100);
+  resizeCanvas("signature-parent", 100);
+});
 
 // window.addEventListener("orientationchange", function () {
-//   if (!first_time) {
-//     first_time = true;
-//     resizeCanvas("signature-student");
-//     resizeCanvas("signature-parent");
-//   }
+//   console.log('rezise 2')
+
+//   resizeCanvas("signature-student", 0);
+//   resizeCanvas("signature-parent", 0);
 // });
 
-resizeCanvas("signature-student");
-resizeCanvas("signature-parent");
-
-if (document.getElementById("modal_open")) {
-  document.body.classList.add("modal-open");
-}
+resizeCanvas("signature-student", 2500);
+resizeCanvas("signature-parent", 2500);
 
 // Create the SignaturePad objects after the canvas elements have been resized
 if (document.getElementById("signature-student")) {
-  document.body.classList.add("modal-open");
   const studentElement = document.getElementById("signature-student");
   const parentElement = document.getElementById("signature-parent");
 
