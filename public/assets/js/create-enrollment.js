@@ -31,10 +31,20 @@ function resizeCanvas(canvasId, timmeout) {
   }
 }
 
-window.addEventListener("resize", function () {
-  resizeCanvas("signature-student", 100);
-  resizeCanvas("signature-parent", 100);
-});
+// Función para detectar si es un dispositivo táctil
+function isTouchDevice() {
+  return 'ontouchstart' in window 
+    || navigator.maxTouchPoints > 0 
+    || navigator.msMaxTouchPoints > 0;
+}
+
+// Ejecutar solo en dispositivos NO táctiles
+if (!isTouchDevice()) {
+  window.addEventListener("resize", function () {
+    resizeCanvas("signature-student", 100);
+    resizeCanvas("signature-parent", 100);
+  });
+}
 
 // window.addEventListener("orientationchange", function () {
 //   console.log('rezise 2')
