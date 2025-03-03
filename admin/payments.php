@@ -422,9 +422,19 @@ function add_admin_form_payments_content()
             $table_students = $wpdb->prefix . 'students';
             $table_student_payments = $wpdb->prefix . 'student_payments';
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}' OR email='{$id_document}'");
+            $order_amount = 0;
+            $order_variation_id = 0;
+            $order_product_id = 0;
             if ($student) {
-                $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' AND status_id = 0 ORDER BY cuote ASC");
-                $completed_payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' AND status_id = 1 ORDER BY cuote ASC");
+                $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY cuote ASC");
+                foreach ($payments as $key => $payment) {
+                    if ($payment->status_id == 0) {
+                        $order_amount = $payment->amount;
+                        $order_variation_id = $payment->variation_id;
+                        $order_product_id = $payment->product_id;
+                        break;
+                    }
+                }
             }
             include(plugin_dir_path(__FILE__) . 'templates/generate-advance-payment.php');
         }

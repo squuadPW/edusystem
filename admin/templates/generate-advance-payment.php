@@ -17,10 +17,10 @@
 			<h1 class="wp-heading-line"><?= __('Generate user invoice', 'aes'); ?></h1>
 		</div>
 		<div style="display:flex;width:100%;justify-content:end">
-            <?php 
-                include(plugin_dir_path(__FILE__).'connections-student.php');
-            ?>
-    	</div>
+			<?php
+			include(plugin_dir_path(__FILE__) . 'connections-student.php');
+			?>
+		</div>
 		<form method="post"
 			action="<?= admin_url('admin.php?page=add_admin_form_payments_content&action=generate_payment'); ?>">
 			<div class="form-group" style="padding: 0px 10px 10px 10px; text-align: center">
@@ -84,127 +84,55 @@
 					</table>
 				</div>
 
-				<?php if (isset($payments) && count($payments) > 0) { ?>
-					<div style="padding: 10px">
-						<table class="wp-list-table widefat fixed posts striped">
-							<thead>
+				<div style="padding: 10px">
+					<table class="wp-list-table widefat fixed posts striped">
+						<thead>
+							<tr>
+								<th>Payments</th>
+								<th colspan="5" style="text-align: end">
+									<button type="submit" class="button button-primary"
+										style="margin: 10px">Generate next quota order</button>
+									<input type="hidden" id="amount" name="amount"
+										value="<?php echo $order_amount ?>" required>
+									<input type="hidden" id="product_id" name="product_id"
+										value="<?php echo $porder_variation_id ? $porder_variation_id : $order_product_id ?>"
+										required>
+								</th>
+							</tr>
+							<tr>
+								<th>Cuote</th>
+								<th>Expected payment date</th>
+								<th>Date of payment made</th>
+								<th>Amount</th>
+								<th>Status</th>
+								<th>Order ID</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ($payments as $key => $payment) { ?>
 								<tr>
-									<th>Invoice to generate</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td><span style="margin-top: -6px;" class='dashicons dashicons-saved'></span> Cuote:
-										<?php echo $payments[0]->cuote ?>
+									<td><?= $payment->cuote ?>
 									</td>
-								</tr>
-								<tr>
-									<td><span style="margin-top: -6px;" class='dashicons dashicons-clock'></span> Date of
-										payment:
-										<?php echo $payments[0]->date_next_payment ?>
+									<td><?= $payment->product_id == AES_FEE_INSCRIPTION ? $payment->date_payment : $payment->date_next_payment; ?>
 									</td>
-								</tr>
-								<tr>
-									<td><span style="margin-top: -6px;" class='dashicons dashicons-money-alt'></span> Amount:
-										<?php echo wc_price($payments[0]->amount) ?>
+									<td><?= $payment->status_id == 1 ? $payment->date_payment : 'N/A'; ?>
 									</td>
-								</tr>
-								<tr>
-									<td style="text-align: center">
-										<?php if ($_GET['student_available'] && isset($payments)) { ?>
-											<button type="submit" class="button button-primary"
-												style="margin: 10px"><?php echo $_GET['student_available'] && isset($payments) ? 'Generate order' : 'Search student' ?></button>
+									<td><?= wc_price($payment->amount) ?>
+									</td>
+									<td><?= $payment->status_id == 1 ? 'Completed' : 'Pending'; ?></td>
+									<td>
+										<?php if($payment->status_id == 1) { ?>
+											<a target="_blank"
+											href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $payment->order_id) ?>"><?= $payment->order_id ?></a>
+										<?php } else { ?>
+											N/A
 										<?php } ?>
 									</td>
 								</tr>
-							</tbody>
-						</table>
-						<input type="hidden" id="amount" name="amount" value="<?php echo $payments[0]->amount ?>" required>
-						<input type="hidden" id="product_id" name="product_id"
-							value="<?php echo $payments[0]->variation_id ? $payments[0]->variation_id : $payments[0]->product_id ?>"
-							required>
-					</div>
-
-					<?php if (count($payments) > 1) { ?>
-						<div style="padding: 10px">
-							<table class="wp-list-table widefat fixed posts striped">
-								<thead>
-									<tr>
-										<th>Next payments (<?php echo (count($payments) - 1) ?> remaining quotas)</th>
-										<th></th>
-										<th></th>
-									</tr>
-									<tr>
-										<th>Cuote</th>
-										<th>Date of payment</th>
-										<th>Amount</th>
-									</tr>
-								</thead>
-								<?php foreach ($payments as $key => $payment) { ?>
-									<?php if ($key > 0) { ?>
-										<tbody>
-											<tr>
-												<td><?php echo $payment->cuote ?>
-												</td>
-												<td><?php echo $payment->date_next_payment ?>
-												</td>
-												<td><?php echo wc_price($payment->amount) ?>
-												</td>
-											</tr>
-										</tbody>
-									<?php } ?>
-								<?php } ?>
-							</table>
-						</div>
-					<?php } ?>
-
-					<?php if (count($completed_payments) > 1) { ?>
-						<div style="padding: 10px">
-							<table class="wp-list-table widefat fixed posts striped">
-								<thead>
-									<tr>
-										<th>Completed payments (<?php echo (count($completed_payments) - 1) ?>)</th>
-										<th></th>
-										<th></th>
-										<th></th>
-									</tr>
-									<tr>
-										<th>Cuote</th>
-										<th>Date of payment</th>
-										<th>Order</th>
-										<th>Amount</th>
-									</tr>
-								</thead>
-								<?php foreach ($completed_payments as $key => $payment) { ?>
-									<tbody>
-										<tr>
-											<td><?= $payment->cuote ?>
-											</td>
-											<td><?= $payment->date_payment ?>
-											</td>
-											<td>
-												<a target="_blank" href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id='.$payment->order_id) ?>"><?= $payment->order_id ?></a>
-											</td>
-											<td><?= wc_price($payment->amount) ?>
-											</td>
-										</tr>
-									</tbody>
-								<?php } ?>
-							</table>
-						</div>
-					<?php } ?>
-				<?php } else { ?>
-					<div style="padding: 10px">
-						<table class="wp-list-table widefat fixed posts striped">
-							<tr>
-								<th>Payment info</th>
-							</tr>
-							<tr>
-								<td style="text-align: center">No pending payments</td>
-							</tr>
-						</table>
-					</div>
-				<?php } ?>
+							<?php } ?>
+						</tbody>
+					</table>
+				</div>
 			<?php } else if (!$_GET['student_available'] && $_GET['id_document']) { ?>
 					<div style="padding: 10px">
 						<table class="wp-list-table widefat fixed posts striped">
