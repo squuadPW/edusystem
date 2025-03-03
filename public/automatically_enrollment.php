@@ -493,6 +493,11 @@ function load_automatically_enrollment($expected_projection, $student)
                     if (!$offer_available_to_enroll) {
                         $count_expected_subject++;
                         $force_skip = true;
+                        if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0)) {
+                            $wpdb->update($table_students, [
+                                'elective' => 1
+                            ], ['id' => $student->id]);
+                        }
                         continue;
                     }
 
@@ -598,6 +603,11 @@ function load_automatically_enrollment($expected_projection, $student)
                 if (!$offer_available_to_enroll) {
                     $count_expected_subject++;
                     $force_skip = true;
+                    if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0)) {
+                        $wpdb->update($table_students, [
+                            'elective' => 1
+                        ], ['id' => $student->id]);
+                    }
                     continue;
                 }
 
@@ -847,15 +857,15 @@ function generate_projection_student($student_id, $force = false)
         } else {
             $subject = get_subject_details($regular->subject_id);
             $payload = [
-                'code_subject' => $subject->code_subject, 
-                'subject_id' => $subject->id, 
-                'subject' => $subject->name, 
-                'hc' => $subject->hc, 
-                'cut' => "", 
-                'code_period' => "", 
-                'calification' => "", 
-                'is_completed' => false, 
-                'this_cut' => false, 
+                'code_subject' => $subject->code_subject,
+                'subject_id' => $subject->id,
+                'subject' => $subject->name,
+                'hc' => $subject->hc,
+                'cut' => "",
+                'code_period' => "",
+                'calification' => "",
+                'is_completed' => false,
+                'this_cut' => false,
                 'welcome_email' => false
             ];
         }
@@ -867,7 +877,7 @@ function generate_projection_student($student_id, $force = false)
         $wpdb->update($table_students, [
             'elective' => 0
         ], ['id' => $student_id]);
-    
+
         $wpdb->delete($table_student_academic_projection, ['student_id' => $student_id]);
         $wpdb->delete($table_student_period_inscriptions, ['student_id' => $student_id]);
 
@@ -1161,7 +1171,7 @@ function template_not_enrolled($student)
     $start_date = $date_start->format('l, F j, Y');
     $end_date = $date_end->format('l, F j, Y');
     $text = '';
-    
+
     $text .= '<div>';
     $text .= 'Dear student ' . strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ', ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name) . ', on behalf of the academic team at American Elite School, located in Doral, Florida, USA, we would like to inform you that, during Period ' . $cut . ' of the ' . $academic_period . ' school year, no academic load will be assigned to you, as you currently have the academic progress corresponding to your year of admission.';
     $text .= '</div>';
