@@ -174,6 +174,17 @@
                                         <?php endif; ?>
                                     <?php } ?>
                                 <?php } ?>
+                                <?php
+                                    $student = get_student_detail_partner($order->get_customer_id());
+                                ?>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;">
+                                        <a target="_blank" href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=') . $student->email ?>"
+                                            class="button button-outline-primary">
+                                            <?= __('Manage payments', 'aes'); ?>
+                                        </a>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                         <?php if(!in_array('institutes',$roles) && !in_array('alliance',$roles)): ?>

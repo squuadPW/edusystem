@@ -1012,6 +1012,15 @@ function get_student_detail_email($email)
     return $data;
 }
 
+function get_student_detail_partner($partner_id)
+{
+
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $data = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$partner_id}'");
+    return $data;
+}
+
 function update_status_documents()
 {
     if (
