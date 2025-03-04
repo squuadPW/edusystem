@@ -1178,3 +1178,45 @@ body.modal-open {
     } 
  }
 }
+
+#progressButton {
+  width: 50%;
+  @media screen and (max-width: 900px){
+    width: 100% !important;
+  }
+  height: 47px;
+  padding: 10px 20px !important;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  color: white !important;
+  background-color: $primary;
+  margin: auto;
+}
+
+#progressButton:hover {
+  color: white !important;
+  opacity: 0.75;
+}
+
+#progressBar {
+  width: 0%;
+  height: 100%;
+  background: #0f834d;
+  transition: width 0.3s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#buttonText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  z-index: 1;
+  pointer-events: none;
+  font-size: 18px;
+}

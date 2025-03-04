@@ -29,9 +29,10 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
 
 <?php if (!empty($students)): ?>
 
-    <form method="post"
+    <form id="send-documents-student" method="post"
         action="<?= wc_get_endpoint_url('student-documents', '', get_permalink(get_option('woocommerce_myaccount_page_id'))) . '?actions=save_documents'; ?>"
         enctype="multipart/form-data">
+        <input type="hidden" name="action" value="save_documents">
         <?php foreach ($students as $student): ?>
             <input type="hidden" name="students[]" value="<?= $student->id; ?>">
             <table
@@ -118,17 +119,14 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
             </table>
         <?php endforeach; ?>
         <div style="display:block;text-align:center;">
-            <button class="submit" type="submit"><?= __('Send Documents', 'aes'); ?></button>
+            <button class="submit" type="submit" style="display: none" id="send_real"><?= __('Send Documents', 'aes'); ?></button>
+            <div id="progressButton">
+                <div id="progressBar"></div>
+                <div id="buttonText">Send Documents</div>
+            </div>
         </div>
     </form>
 <?php endif; ?>
 
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
-<script>
-      // With the above scripts loaded, you can call `tippy()` with a CSS
-      // selector and a `content` prop:
-      tippy('.help-tooltip', {
-        allowHTML: true
-      });
-</script>

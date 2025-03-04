@@ -16,7 +16,7 @@ require plugin_dir_path(__FILE__) . 'automatically_enrollment.php';
 function form_plugin_scripts()
 {
     global $wp;
-    $version = '1.5.1';
+    $version = '1.5.5';
     wp_enqueue_style('dashicons');
     wp_enqueue_style('admin-flatpickr', plugins_url('aes') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('aes') . '/public/assets/css/intlTelInput.css');
@@ -81,6 +81,14 @@ function form_plugin_scripts()
             )
         );
         wp_enqueue_script('califications');
+    }
+
+    if (str_contains(home_url($wp->request), 'student-documents')) {
+        wp_enqueue_script('document', plugins_url('aes') . '/public/assets/js/document.js', array('jquery'), $version, true);
+        wp_localize_script('document', 'save_documents', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'save_documents'
+        ]);
     }
 
     if (str_contains(home_url($wp->request), 'my-requests')) {

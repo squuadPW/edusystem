@@ -1096,4 +1096,48 @@ body.modal-open {
   .signatures_squares .signature_square_field {
     flex: auto !important;
   }
+}
+
+#progressButton {
+  width: 50%;
+  height: 47px;
+  padding: 10px 20px !important;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  color: white !important;
+  background-color: #002fbd;
+  margin: auto;
+}
+@media screen and (max-width: 900px) {
+  #progressButton {
+    width: 100% !important;
+  }
+}
+
+#progressButton:hover {
+  color: white !important;
+  opacity: 0.75;
+}
+
+#progressBar {
+  width: 0%;
+  height: 100%;
+  background: #0f834d;
+  transition: width 0.3s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#buttonText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  z-index: 1;
+  pointer-events: none;
+  font-size: 18px;
 }/*# sourceMappingURL=style.css.map */

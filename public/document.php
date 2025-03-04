@@ -428,6 +428,277 @@ function save_document(){
 add_action('wp_loaded','save_document');
 
 
+add_action('wp_ajax_nopriv_save_documents', 'save_documents');
+add_action('wp_ajax_save_documents', 'save_documents');
+function save_documents()
+{
+    global $wpdb,$current_user;
+    $roles = $current_user->roles;
+    $table_student_documents = $wpdb->prefix.'student_documents';
+    $table_students = $wpdb->prefix.'students';
+    $table_users_signatures = $wpdb->prefix.'users_signatures';
+    // $missing_documents = [];
+    // $user_signature = null;
+    // $pending_required_documents = false;
+    if(isset($_POST['students']) && !empty($_POST['students'])){
+
+        $students = $_POST['students'];
+
+        /* foreach student */
+        foreach($students as $student_id){
+            $files = $_POST['file_student_'.$student_id.'_id'];
+
+            foreach($files as $file_id){
+                
+                $status = $_POST['status_file_'.$file_id.'_student_id_'.$student_id];
+
+                if(isset($_FILES['document_'.$file_id.'_student_id_'.$student_id]) && !empty($_FILES['document_'.$file_id.'_student_id_'.$student_id])){
+                    $file_temp = $_FILES['document_'.$file_id.'_student_id_'.$student_id];
+                }else{
+                    $file_temp = [];
+                }
+
+                if($status == 0 || $status == 3 || $status == 4){
+
+                    if(!empty($file_temp['tmp_name'])){
+                        
+                        $upload_data = wp_handle_upload($file_temp,array('test_form' => FALSE) );
+                    
+                        if ($upload_data && !is_wp_error($upload_data)) {
+                            
+                            $attachment = array(
+                                'post_mime_type' => $upload_data['type'],
+                                'post_title' => $file_id,
+                                'post_content' => '',
+                                'post_status' => 'inherit'
+                            );
+                            
+                            $attach_id = wp_insert_attachment($attachment, $upload_data['file']);
+                            $deleted = wp_delete_attachment($upload_data['file'], true );
+                            $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
+                            wp_update_attachment_metadata($attach_id, $attach_data);
+                            $wpdb->update($table_student_documents,['status' => 1,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $student_id,'id' => $file_id ]);
+                        }
+                    } else {
+                        $file_is_required = $_POST['file_is_required'.$file_id.'_student_id_'.$student_id];
+                        // if ($file_is_required == 1 && !$pending_required_documents) {
+                        //     $pending_required_documents = true;
+                        // }
+
+                        // if (!in_array($student_id, $missing_documents)) {
+                        //     array_push($missing_documents, $student_id);
+                        // }
+
+                    }
+                }
+            }
+
+            // if (sizeof($missing_documents) > 0) {
+            //     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+            //     $user_student = get_user_by('email', $student->email);
+            //     $user_signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id = {$user_student->ID} AND document_id='MISSING DOCUMENTS'");
+            // } else {
+                $email_update_document = WC()->mailer()->get_emails()['WC_Update_Document_Email'];
+                $email_update_document->trigger($student_id);
+
+                $access_virtual = true;
+
+                $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
+
+                if($documents_student){
+                    foreach($documents_student as $document){
+                        if($document->status != 5){
+                            $access_virtual = false;
+                        }
+                    }
+
+                    // VER  IFICAR FEE DE INSCRIPCION
+                    global $wpdb;
+                    $table_student_payment = $wpdb->prefix.'student_payments';
+                    $table_students = $wpdb->prefix.'students';
+                    $partner_id = get_current_user_id();
+                    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
+                    $student_id = $student->id;
+                    $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = ". AES_FEE_INSCRIPTION);
+                    // VERIFICAR FEE DE INSCRIPCION
+
+                    //virtual classroom
+                    if($access_virtual && isset($paid)){
+                        $table_name = $wpdb->prefix . 'students'; // assuming the table name is "wp_students"
+                        $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
+                        $type_document = array(
+                            'identification_document' => 1,
+                            'passport' => 2,
+                            'ssn' => 4,
+                        )[$student->type_document];
+        
+                        $files_to_send = array();
+
+                        $type_document = '';
+                        switch ($student->type_document) {
+                            case 'identification_document':
+                                $type_document = 1;
+                                break;
+                            case 'passport':
+                                $type_document = 2;
+                                break;
+                            case 'ssn':
+                                $type_document = 4;
+                                break;
+                        }
+        
+                        $type_document_re = '';
+                        if (get_user_meta($student->partner_id, 'type_document', true)) {
+                            switch (get_user_meta($student->partner_id, 'type_document', true)) {
+                                case 'identification_document':
+                                    $type_document_re = 1;
+                                    break;
+                                case 'passport':
+                                    $type_document_re = 2;
+                                    break;
+                                case 'ssn':
+                                    $type_document_re = 4;
+                                    break;
+                            }
+                        } else {
+                            $type_document_re = 1;
+                        }
+        
+        
+                        $gender = '';
+                        switch ($student->gender) {
+                            case 'male':
+                                $gender = 'M';
+                                break;
+                            case 'female':
+                                $gender = 'F';
+                                break;
+                        }
+        
+        
+                        $gender_re = '';
+                        if (get_user_meta($student->partner_id, 'gender', true)) {
+                            switch (get_user_meta($student->partner_id, 'gender', true)) {
+                                case 'male':
+                                    $gender_re = 'M';
+                                    break;
+                                case 'female':
+                                    $gender_re = 'F';
+                                    break;
+                            }
+                        } else {
+                            $gender_re = 'M';
+                        }
+        
+                        $grade = '';
+                        switch ($student->grade_id) {
+                            case 1:
+                                $grade = 9;
+                                break;
+                            case 2:
+                                $grade = 10;
+                                break;
+                            case 3:
+                                $grade = 11;
+                                break;
+                            case 4:
+                                $grade = 12;
+                                break;
+                        }
+                        $user_partner = get_user_by('id', $student->partner_id);
+                        $fields_to_send = array(
+                            // DATOS DEL ESTUDIANTE
+                            'id_document' => $student->id_document,
+                            'type_document' => $type_document,
+                            'firstname' => $student->name . ' ' . $student->middle_name,
+                            'lastname' => $student->last_name . ' ' . $student->middle_last_name,
+                            'birth_date' => $student->birth_date,
+                            'phone' => $student->phone,
+                            'email' => $student->email,
+                            'etnia' => $student->ethnicity,
+                            'grade' => $grade,
+                            'gender' => $gender,
+                            'cod_period' => $student->academic_period,
+        
+                            // PADRE
+                            'id_document_re' => get_user_meta($student->partner_id, 'id_document', true) ? get_user_meta($student->partner_id, 'id_document', true) : '000000',
+                            'type_document_re' => $type_document_re,
+                            'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
+                            'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
+                            'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
+                            'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
+                            'email_re' => $user_partner->user_email,
+                            'gender_re' => $gender_re,
+        
+                            'cod_program' => AES_PROGRAM_ID,
+                            'cod_tip' => AES_TYPE_PROGRAM,
+                            'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
+                            'country' => get_user_meta($student->partner_id, 'billing_country', true),
+                            'city' => get_user_meta($student->partner_id, 'billing_city', true),
+                            'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true) ? get_user_meta($student->partner_id, 'billing_postcode', true) : '-',
+                        );
+        
+                        $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
+                        $documents_to_send = [];
+                        foreach ($all_documents_student as $document) {
+                            if ($document->attachment_id) {
+                                array_push($documents_to_send, $document);
+                            }
+                        }
+        
+                        foreach ($documents_to_send as $key => $doc) {
+                            $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
+                            $attachment_id = $doc->attachment_id;
+                            $attachment_path = get_attached_file($attachment_id);
+                            if ($attachment_path) {
+                                $file_name = basename($attachment_path);
+                                $file_type = mime_content_type($attachment_path);
+        
+                                $files_to_send[] = array(
+                                    'file' => curl_file_create($attachment_path, $file_type, $file_name),
+                                    'id_requisito' => $id_requisito
+                                );
+                            }
+                        }
+        
+                        create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
+        
+                        update_status_student($student_id, 2);
+
+                        if(in_array('parent',$roles) && !in_array('student',$roles)){
+                            create_user_student($student_id);
+                        }
+
+                        $exist = is_search_student_by_email($student_id);
+                    
+                        if(!$exist){
+                            create_user_moodle($student_id);
+                        }else{
+                            $wpdb->update($table_students,['moodle_student_id' => $exist[0]['id']],['id' => $student_id]);
+
+                            $is_exist_password = is_password_user_moodle($student_id);
+
+                            if(!$is_exist_password){
+                                
+                                $password = generate_password_user();
+                                $wpdb->update($table_students,['moodle_password' => $password],['id' => $student_id]);
+                                change_password_user_moodle($student_id);
+                            }
+                        }
+                    }
+                }
+            // }
+
+        }
+
+        
+    }
+
+    wc_add_notice( __( 'Documents saved successfully.', 'form-plugin' ), 'success' );
+    wp_send_json(array('success' => true));
+    exit;
+}
+
 function view_pending_documents(){
     
     global $current_user;
