@@ -1038,6 +1038,7 @@ function update_status_documents()
         $student_id = intval($_POST['student_id']);
         $description = isset($_POST['description']) && $_POST['description'] !== 'null' ? sanitize_text_field($_POST['description']) : null;
 
+        $rejected_document = false;
         $student = get_student_detail($student_id);
         $user_student = get_user_by('email', $student->email);
         $user_parent = get_user_by('id', $student->partner_id);
@@ -1076,6 +1077,12 @@ function update_status_documents()
                 ], ['id' => $student_id]);
             }
 
+            $rejected_document = [
+                'student_id' => $student_id,
+                'document_id' => $document_id,
+                'description' => $description,
+            ];
+
             handle_rejected_document($student_id, $document_id, $user_student->ID, $description);
         } else {
 
@@ -1096,7 +1103,7 @@ function update_status_documents()
             }
         }
 
-        echo json_encode(['status' => 'success', 'message' => __('status changed', 'aes'), 'html' => $html]);
+        echo json_encode(['status' => 'success', 'message' => __('status changed', 'aes'), 'html' => $html, 'rejected_document' => $rejected_document]);
         exit;
     } catch (\Throwable $th) {
         echo json_encode(['status' => 'error', 'message' => $th->getMessage(), 'html' => $html]);
@@ -1122,15 +1129,15 @@ function handle_rejected_document($student_id, $document_id, $user_id, $descript
     global $wpdb;
     $table_student_documents = $wpdb->prefix . 'student_documents';
 
-    try {
-        $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
-        $email_rejected_document->trigger($student_id, $document_id, $description);
+    // try {
+    //     $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
+    //     $email_rejected_document->trigger($student_id, $document_id, $description);
     
-        $email_rejected_document_parent = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
-        $email_rejected_document_parent->trigger($student_id, $document_id, $description, true);
-    } catch (\Throwable $th) {
-        //throw $th;
-    }
+    //     $email_rejected_document_parent = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
+    //     $email_rejected_document_parent->trigger($student_id, $document_id, $description, true);
+    // } catch (\Throwable $th) {
+    //     //throw $th;
+    // }
 
     $document_loaded = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id = $document_id");
     $document_types = ['ENROLLMENT', 'MISSING DOCUMENT'];
@@ -1142,6 +1149,23 @@ function handle_rejected_document($student_id, $document_id, $user_id, $descript
         $student_get = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}students WHERE id = %d", $student_id));
         $wpdb->delete($table_users_signatures, ['user_id' => $student_get->partner_id, 'document_id' => $document_loaded->document_id]);
     }
+}
+
+add_action('wp_ajax_nopriv_rejected_document_emails', 'rejected_document_emails_callback');
+add_action('wp_ajax_rejected_document_emails', 'rejected_document_emails_callback');
+function rejected_document_emails_callback()
+{
+    $student_id = $_POST['student_id'];
+    $document_id = $_POST['document_id'];
+    $description = $_POST['description'];
+
+    $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
+    $email_rejected_document->trigger($student_id, $document_id, $description);
+
+    $email_rejected_document_parent = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
+    $email_rejected_document_parent->trigger($student_id, $document_id, $description, true);
+    wp_send_json_success();
+    die();
 }
 
 function generate_documents_html($student_id, $document_id)

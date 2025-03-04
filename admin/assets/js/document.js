@@ -374,6 +374,11 @@ document.addEventListener("DOMContentLoaded", function () {
               });
               watchButtons();
 
+              if (result.rejected_document) {
+                let rejected = result.rejected_document;
+                rejected_documents(rejected.student_id, rejected.document_id, rejected.description);
+              }
+
               // location.reload();
             // setTimeout(() => {
             //   document.getElementById("notice-status").style.display = "none";
@@ -403,6 +408,31 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       };
   }
+
+  function rejected_documents(student_id, document_id, description) {
+
+    const XHR = new XMLHttpRequest();
+    XHR.open("POST", update_status_documents.url, true);
+    XHR.setRequestHeader(
+      "Content-type",
+      "application/x-www-form-urlencoded"
+    );
+    XHR.responseType = "text";
+    XHR.send(
+      "action=rejected_document_emails" +
+        "&student_id=" +
+        student_id +
+        "&document_id=" +
+        document_id +
+        "&description=" +
+        description
+    );
+    XHR.onload = function () {
+      if (this.readyState == "4" && XHR.status === 200) {
+
+      }
+    };
+}
 
   const moodleActiveElements = document.querySelectorAll('.moodle-active');
   moodleActiveElements.forEach(function(element) {
