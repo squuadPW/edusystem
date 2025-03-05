@@ -571,9 +571,12 @@ class TT_document_review_List_Table extends WP_List_Table
                     return '<label class="text-uppercase">'. strtoupper($item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name']) . '</label>';
                 }
 
-            case 'program':
-                $program = get_name_program($item['program_id']);
-                return $program;
+            // case 'program':
+            //     $program = get_name_program($item['program_id']);
+            //     return $program;
+            // case 'access_classroom':
+            //     $status_id = $item['status_id'];
+            //     return $status_id < 2 ? 'No' : 'Yes';
             case 'grade':
                 $grade = get_name_grade($item['grade_id']) . ' - ' . $item['initial_cut'];
                 return $grade;
@@ -663,13 +666,14 @@ class TT_document_review_List_Table extends WP_List_Table
 
         $columns = array(
             'full_name' => __('Full name', 'aes'),
-            'program' => __('Program', 'aes'),
-            'grade' => __('Grade - Initial cut', 'aes'),
+            // 'program' => __('Program', 'aes'),
+            'grade' => __('Income', 'aes'),
             'pending_documents' => __('Pending', 'aes'),
-            'pending_review_documents' => __('for Review', 'aes'),
+            'pending_review_documents' => __('For review', 'aes'),
             'approved_documents' => __('Approved', 'aes'),
             'rejected_documents' => __('Rejected', 'aes'),
-            'moodle_active' => __('Moodle', 'aes'),
+            // 'access_classroom' => __('Classroom', 'aes'),
+            'moodle_active' => __('Classroom', 'aes'),
             'waiting_time' => __('Waiting Time', 'aes'),
             'view_details' => __('Actions', 'aes'),
         );
@@ -778,8 +782,9 @@ class TT_document_review_List_Table extends WP_List_Table
         foreach ($data_categories as $key => $value) {
             $value['index'] = $key + 1;
             $moodleActive = isset($value['moodle_student_id']) ? 'Yes' : 'No';
-            $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px; cursor: not-allowed"';
-            $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" ' . $moodleActiveStyle . '>' . $moodleActive . '</span>';
+            $moodleActiveText = $moodleActive == 'Yes' ? $value['status_id'] < 2 ? $moodleActive . ' - No access' : $moodleActive . ' - Full access' : $moodleActive;
+            $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; font-size: 10px; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px; cursor: not-allowed; font-size: 10px;"';
+            $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" ' . $moodleActiveStyle . '>' . $moodleActiveText . '</span>';
             $data[] = $value;
         }
 
