@@ -472,6 +472,7 @@ function create_tables()
         attachment_id BIGINT NOT NULL,
         approved_by INT(11) NULL,
         status INT(11) NOT NULL,
+        description TEXT NULL,
         is_required INT(11) NOT NULL DEFAULT 0,
         is_visible BOOLEAN NOT NULL DEFAULT 1,
         upload_at DATETIME NULL,
