@@ -62,12 +62,6 @@
                                     </tr>
                                     <tr>
                                         <th scope="row" style="font-weight:400; text-align: center">
-                                            <label for="program"><b><?php _e('Program', 'aes'); ?></b></label><br>
-                                            <input readonly type="text" id="program" name="program"
-                                                value="<?php echo get_name_program($student->program_id); ?>"
-                                                style="width:100%">
-                                        </th>
-                                        <th scope="row" style="font-weight:400; text-align: center">
                                             <label for="grade"><b><?php _e('Grade', 'aes'); ?></b></label><br>
                                             <select name="grade" autocomplete="off" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($grades as $grade): ?>
@@ -76,8 +70,30 @@
                                             </select>
                                         </th>
                                         <th scope="row" style="font-weight:400; text-align: center">
-                                            <label for="grade"><b><?php _e('Initial period and cut', 'aes'); ?></b></label><br>
-                                            <input style="width: 100%;" type="text" name="intial_cut_hidden" value="<?= $student->academic_period . ' - ' . $student->initial_cut ?>" disabled>
+                                            <label for="academic_period"><b><?php _e('School Year', 'aes'); ?></b></label><br>
+                                            <select name="academic_period" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                <?php foreach ($periods as $key => $period) { ?>
+                                                    <option value="<?= $period->code ?>" <?= $student->academic_period == $period->code ? 'selected' : '' ?>><?= $period->name ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </th>
+                                        <th scope="row" style="font-weight:400; text-align: center">
+                                            <label for="academic_period_cut"><b><?php _e('Student\'s entry cut', 'aes'); ?></b></label><br>
+                                            <select name="academic_period_cut" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                <option value="A" <?= $student->initial_cut == 'A' ? 'selected' : '' ?>>A</option>
+                                                <option value="B" <?= $student->initial_cut == 'B' ? 'selected' : '' ?>>B</option>
+                                                <option value="C" <?= $student->initial_cut == 'C' ? 'selected' : '' ?>>C</option>
+                                                <option value="D" <?= $student->initial_cut == 'D' ? 'selected' : '' ?>>D</option>
+                                                <option value="E" <?= $student->initial_cut == 'E' ? 'selected' : '' ?>>E</option>
+                                            </select>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2" style="font-weight:400; text-align: center">
+                                            <label for="program"><b><?php _e('Program', 'aes'); ?></b></label><br>
+                                            <input readonly type="text" id="program" name="program"
+                                                value="<?php echo get_name_program($student->program_id); ?>"
+                                                style="width:100%">
                                         </th>
                                         <th scope="row" style="font-weight:400; text-align: center">
                                             <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
