@@ -55,9 +55,10 @@
                                         <p style="text-align: center; padding: 12px !important">
                                             <?php 
                                                 $moodleActive = isset($student->moodle_student_id) ? 'Yes' : 'No';
+                                                $moodleActiveText = $moodleActive == 'Yes' ? $student->status_id < 2 ? 'With moodle access - No access' :  'With moodle access - Full access' : 'No moodle access';
                                                 $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 8px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 8px; cursor: not-allowed"';
                                             ?>
-                                            <span class="moodle-active" data-moodle="<?php echo $moodleActive ?>" data-student_id="<?php $student->id ?>" <?php echo $moodleActiveStyle ?>><?php echo $moodleActive == 'Yes' ? 'This student has access to moodle' : 'This student does not have moodle' ?></span>
+                                            <span class="moodle-active" data-moodle="<?php echo $moodleActive ?>" data-student_id="<?php $student->id ?>" <?php echo $moodleActiveStyle ?>><?= $moodleActiveText ?></span>
                                         </p>
                                     </tr>
                                     <tr>
