@@ -2,7 +2,7 @@
 /*
 Plugin Name: Squuad for educational system
 Description: The WordPress plugin for educational system is a customized tool that offers a range of functionalities for the proper functioning of the institute website
-Version: 1.5.65
+Version: 1.5.66
 Author: Squuad
 Author URI: https://squuad.com/
 License:      GPL2
