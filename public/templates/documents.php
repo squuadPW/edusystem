@@ -77,7 +77,8 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                         value="<?= $document->status; ?>">
                                     <input type="hidden" name="<?= 'file_is_required' . $document->id . '_student_id_' . $student->id; ?>"
                                         value="<?= $document->is_required; ?>">
-                                    <?= $status = get_status_document($document->status); ?>
+                                        <?php $status = get_status_document($document->status); ?>
+                                        <?= $status == 'No sent' ? 'Pending' : $status ?>
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                     data-title="<?= __('Action', 'aes'); ?>">
@@ -105,7 +106,8 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
                                     data-title="<?= __('Status', 'aes'); ?>">
-                                    <?= $status = get_status_document($document->status); ?>
+                                    <?php $status = get_status_document($document->status); ?>
+                                    <?= $status == 'No sent' ? 'Pending' : $status ?>
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                     data-title="<?= __('Action', 'aes'); ?>">
