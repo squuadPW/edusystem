@@ -1171,4 +1171,11 @@ body.modal-open {
 .woocommerce-MyAccount-navigation li {
   padding-left: 10px;
   color: #333333 !important;
+}
+
+.logout-button-container {
+  background-color: rgba(0, 47, 189, 0.5294117647);
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
 }/*# sourceMappingURL=style.css.map */
