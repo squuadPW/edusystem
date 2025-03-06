@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 $primary: #002fbd;
+$secondary: #E71F3B;
 
 body{
  font-family: "Poppins", sans-serif !important;
@@ -408,20 +409,39 @@ input,textarea {
 }
 
 .hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active{
-
     width: 100%;
-    text-align: center;
-    background-color: $primary !important;
-    border-radius: 4px;
-    color: white;
-    margin-bottom:3px;
-    border-radius: 20px;
-
+    text-align: left;
+    background-color: $secondary !important;
+    color: white !important;
 
     &:hover{
         color: white !important;
         opacity: 0.75;
     }
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li:first-child {
+  border-radius: 10px 10px 0px 0px !important;
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li:last-child {
+  border-radius: 0px 0px 10px 10px !important;
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li {
+  &:hover{
+    background-color: $secondary !important;
+    opacity: 0.75;
+    color: white !important;
+  }
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active:first-child{
+  border-radius: 10px 10px 0px 0px;
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active:last-child{
+  border-radius: 0px 0px 10px 10px;
 }
 
 .woocommerce-info{
@@ -1219,4 +1239,17 @@ body.modal-open {
   z-index: 1;
   pointer-events: none;
   font-size: 18px;
+}
+
+.woocommerce-MyAccount-navigation {
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: left !important;
+
+  li {
+    padding-left: 10px;
+    color: #333333 !important;
+  }
 }

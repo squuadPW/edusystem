@@ -380,16 +380,35 @@ input, textarea {
 
 .hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active {
   width: 100%;
-  text-align: center;
-  background-color: #002fbd !important;
-  border-radius: 4px;
-  color: white;
-  margin-bottom: 3px;
-  border-radius: 20px;
+  text-align: left;
+  background-color: #E71F3B !important;
+  color: white !important;
 }
 .hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active:hover {
   color: white !important;
   opacity: 0.75;
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li:first-child {
+  border-radius: 10px 10px 0px 0px !important;
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li:last-child {
+  border-radius: 0px 0px 10px 10px !important;
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li:hover {
+  background-color: #E71F3B !important;
+  opacity: 0.75;
+  color: white !important;
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active:first-child {
+  border-radius: 10px 10px 0px 0px;
+}
+
+.hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active:last-child {
+  border-radius: 0px 0px 10px 10px;
 }
 
 .woocommerce-info {
@@ -1140,4 +1159,16 @@ body.modal-open {
   z-index: 1;
   pointer-events: none;
   font-size: 18px;
+}
+
+.woocommerce-MyAccount-navigation {
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: left !important;
+}
+.woocommerce-MyAccount-navigation li {
+  padding-left: 10px;
+  color: #333333 !important;
 }/*# sourceMappingURL=style.css.map */
