@@ -470,6 +470,7 @@ function remove_my_account_links($menu_links)
     unset($menu_links['downloads']);
     unset($menu_links['edit-address']);
     unset($menu_links['payment-methods']);
+    unset($menu_links['customer-logout']);
 
     if (in_array('parent', $roles)) {
         $menu_links['orders'] = __('Payments', 'form-plugin');
