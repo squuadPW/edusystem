@@ -713,11 +713,11 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
         $student = get_student_detail($student_id);
         if ($student->status_id < 2) {
             update_status_student($student_id, 1);
+            $email_request_documents = WC()->mailer()->get_emails()['WC_Request_Documents_Email'];
+            $email_request_documents->trigger($student_id);
         }
-        set_max_date_student($student_id);
 
-        $email_request_documents = WC()->mailer()->get_emails()['WC_Request_Documents_Email'];
-        $email_request_documents->trigger($student_id);
+        set_max_date_student($student_id);
 
         return null;
     }
