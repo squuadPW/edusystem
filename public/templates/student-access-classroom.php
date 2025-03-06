@@ -4,9 +4,9 @@
 ?>
 <div class="content-dashboard">
     <?php if(count($access) == 0) { ?>
-        <h4 style="font-size:18px;text-align:center; margin-bottom: 20px"><?= __('You will soon be assigned your corresponding courses and will have access to','aes'); ?></h4>
+        <h4 style="font-size:18px;text-align:center; margin-bottom: 10px"><?= __('You will soon be assigned your corresponding courses and will have access to','aes'); ?></h4>
     <?php } else { ?>
-        <h4 style="font-size:18px;text-align:center; margin-bottom: 20px"><?= __('Access','aes'); ?></h4>
+        <h4 style="font-size:18px;text-align:center; margin-bottom: 10px"><?= __('Access','aes'); ?></h4>
     <?php } ?>
     <div style="display:flex">
         <div style="width: 100%; text-align: center">
