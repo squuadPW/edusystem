@@ -413,7 +413,7 @@ class TT_Types_Requests_List_Table extends WP_List_Table
             case 'view_details':
                 $buttons = '';
                 $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_requests_content&section_tab=type_details&type_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
-                $buttons .= "<a style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_requests_content&action=delete_type&type_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'aes') . "</a>";
+                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_requests_content&action=delete_type&type_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'aes') . "</a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);

@@ -125,7 +125,7 @@
                                             <label><b><?= __('This student has yet to select an elective.', 'aes'); ?></b></label><br>
                                         </div>
                                         <div>
-                                            <a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=student_elective_change&student_id=') . $student->id . '&projection_id='.$projection->id . '&status=0' ?>" class="button button-danger" onclick="return confirm('Are you sure to desactivate the elective for this student?');">
+                                            <a onclick="return confirm('Are you sure?');" style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=student_elective_change&student_id=') . $student->id . '&projection_id='.$projection->id . '&status=0' ?>" class="button button-danger" onclick="return confirm('Are you sure to desactivate the elective for this student?');">
                                                 <?= __('Desactivate student elective','aes'); ?>
                                             </a>
                                         </div>
@@ -135,7 +135,7 @@
                                 <?php if($student->elective == 0) { ?>
                                     <div style="display: flex; width: 100%; text-align: center">
                                         <div style="flex: 1; padding: 20px;">
-                                            <a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=student_elective_change&student_id=') . $student->id . '&projection_id='.$projection->id . '&status=1' ?>" class="button button-outline-primary" onclick="return confirm('Are you sure to activate the elective for this student?');">
+                                            <a onclick="return confirm('Are you sure?');" style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=student_elective_change&student_id=') . $student->id . '&projection_id='.$projection->id . '&status=1' ?>" class="button button-outline-primary" onclick="return confirm('Are you sure to activate the elective for this student?');">
                                                 <?= __('Activate student elective','aes'); ?>
                                             </a>
                                         </div>
@@ -211,7 +211,7 @@
                                                 </td>
                                                 <td style="text-align: end">
                                                     <?php if(current_user_can('manager_enrollments_aes')) { ?>
-                                                        <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=delete_inscription&inscription_id=' . $inscription->id . '&projection_id=' . $projection->id); ?>" class="button button-danger"> <span class='dashicons dashicons-trash'></span> </a>
+                                                        <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=delete_inscription&inscription_id=' . $inscription->id . '&projection_id=' . $projection->id); ?>" class="button button-danger" onclick="return confirm('Are you sure?');"><span class='dashicons dashicons-trash'></span> </a>
                                                     <?php } ?>
                                                 </td>
                                             </tr>
@@ -223,9 +223,9 @@
                             <?php if (isset($projection) && !empty($projection)): ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                 <button type="submit"
-                                    class="button button-primary" name="action" value="send_email"><?= __('Save and send email', 'aes'); ?></button>
+                                    class="button button-primary" name="action" value="send_email" onclick="return confirm('Are you sure?');"><?= __('Save and send email', 'aes'); ?></button>
                                     <button type="submit"
-                                        class="button button-success" name="action" value="save"><?= __('Only saves changes', 'aes'); ?></button>
+                                        class="button button-success" name="action" value="save" onclick="return confirm('Are you sure?');"><?= __('Only saves changes', 'aes'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

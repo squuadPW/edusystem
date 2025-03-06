@@ -91,7 +91,7 @@
 								<th>Payments</th>
 								<th colspan="5" style="text-align: end">
 									<button type="submit" class="button button-primary"
-										style="margin: 10px">Generate next quota order</button>
+										style="margin: 10px" onclick="return confirm('Are you sure?');">Generate next quota order</button>
 									<input type="hidden" id="amount" name="amount"
 										value="<?php echo $order_amount ?>" required>
 									<input type="hidden" id="product_id" name="product_id"

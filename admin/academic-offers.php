@@ -112,7 +112,7 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
             case 'view_details':
                 $buttons = '';
                 $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&section_tab=offer_details&offer_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
-                $buttons .= "<a style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&action=offer_delete&offer_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'aes') . "</a>";
+                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&action=offer_delete&offer_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'aes') . "</a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);
