@@ -496,10 +496,18 @@ div#application-passwords-section {
 
 .row-projection {
   display: flex;
-  width: 100%;
+  border: 1px solid #b2b2b2;
+  padding: 5px;
+  margin: 10px;
+  border-radius: 10px;
+  transition: 0.3s;
 }
 @media screen and (max-width: 900px) {
   .row-projection {
     display: block !important;
+    text-align: center;
+  }
+  .row-projection select, .row-projection input:not([type=checkbox]) {
+    width: 100%;
   }
 }/*# sourceMappingURL=style.css.map */

@@ -518,12 +518,19 @@ div#application-passwords-section {
 .current-period {
   background-color: rgb(23 119 74 / 20%) !important;
 }
-
 .row-projection {
-  display: flex; 
-  width: 100%;
+  display: flex;
+  border: 1px solid #b2b2b2;
+  padding: 5px;
+  margin: 10px;
+  border-radius: 10px;
+  transition: 0.3s;
 
   @media screen and (max-width: 900px) {
     display: block !important; 
+    text-align: center;
+    select, input:not([type="checkbox"]) {
+      width: 100%;
+    }
   }
 }
