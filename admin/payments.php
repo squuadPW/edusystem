@@ -1188,3 +1188,68 @@ class TT_Invoices_Institutes_List_Table extends WP_List_Table
     }
 
 }
+
+
+add_action('wp_ajax_nopriv_generate_quote_public', 'generate_quote_public_callback');
+add_action('wp_ajax_generate_quote_public', 'generate_quote_public_callback');
+function generate_quote_public_callback() {
+    global $wpdb;
+    $amount = $_POST['amount'];
+    $student_id = $_POST['student_id'];
+
+    $student = get_student_detail($student_id);
+    $customer_id = $student->partner_id;
+
+    $orders_customer = wc_get_orders(array(
+        'customer_id' => $customer_id,
+        'limit' => 1,
+        'orderby' => 'date',
+        'order' => 'ASC' // Para obtener la primera orden
+    ));
+    $order_old = $orders_customer[0];
+    $order_id = $order_old->get_id();
+    $old_order_items = $order_old->get_items();
+    $first_item = reset($old_order_items);
+
+    $order_args = array(
+        'customer_id' => $customer_id,
+        'status' => 'pending-payment',
+    );
+
+    $new_order = wc_create_order($order_args);
+    $new_order->add_meta_data('old_order_primary', $order_id);
+    $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
+    $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
+    $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
+    $new_order->add_meta_data('student_data', $order_old->get_meta('student_data'));
+    $new_order->add_meta_data('cuote_payment', 1);
+    $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin');
+    $product = $first_item->get_product();
+    $product->set_price($amount);
+    $new_order->add_product($product, $first_item->get_quantity());
+    $new_order->calculate_totals();
+    if ($order_old->get_address('billing')) {
+        $billing_address = $order_old->get_address('billing');
+        $new_order->set_billing_first_name($billing_address['first_name']);
+        $new_order->set_billing_last_name($billing_address['last_name']);
+        $new_order->set_billing_company($billing_address['company']);
+        $new_order->set_billing_address_1($billing_address['address_1']);
+        $new_order->set_billing_address_2($billing_address['address_2']);
+        $new_order->set_billing_city($billing_address['city']);
+        $new_order->set_billing_state($billing_address['state']);
+        $new_order->set_billing_postcode($billing_address['postcode']);
+        $new_order->set_billing_country($billing_address['country']);
+        $new_order->set_billing_email($billing_address['email']);
+        $new_order->set_billing_phone($billing_address['phone']);
+    }
+    $new_order->save();
+    set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
+
+    // hacemos el envio del email al email del customer, es decir, al que paga.
+    $user_customer = get_user_by('id', $customer_id);
+    $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+    $email_user->trigger($user_customer, 'You have pending payments', 'We invite you to log in to our platform as soon as possible so you can see your pending payments.');
+
+    wp_send_json_success();
+    die();
+}

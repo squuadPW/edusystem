@@ -1321,7 +1321,17 @@ body.modal-open {
   margin-right: 8px;
 }
 
-
 .woocommerce-MyAccount-navigation-link--edit-account a:before {
   margin-right: 8px;
+}
+
+.generate-next-quote {
+  text-align: center;
+    button {
+      width: 30%;
+      margin: 0px 0px 20px 0px;
+      @media screen and (max-width: 900px){
+        width: 100% !important;
+      }
+  }
 }

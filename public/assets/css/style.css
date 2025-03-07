@@ -1239,4 +1239,17 @@ body.modal-open {
 
 .woocommerce-MyAccount-navigation-link--edit-account a:before {
   margin-right: 8px;
+}
+
+.generate-next-quote {
+  text-align: center;
+}
+.generate-next-quote button {
+  width: 30%;
+  margin: 0px 0px 20px 0px;
+}
+@media screen and (max-width: 900px) {
+  .generate-next-quote button {
+    width: 100% !important;
+  }
 }/*# sourceMappingURL=style.css.map */

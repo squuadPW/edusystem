@@ -91,6 +91,13 @@ function form_plugin_scripts()
         ]);
     }
 
+    if (str_contains(home_url($wp->request), 'orders')) {
+        wp_enqueue_script('next-payment', plugins_url('aes') . '/public/assets/js/next-payment.js', array('jquery'), $version, true);
+        wp_localize_script('next-payment', 'ajax_object', [
+            'url' => admin_url('admin-ajax.php')
+        ]);
+    }
+
     if (str_contains(home_url($wp->request), 'my-requests')) {
         wp_register_script('requests', plugins_url('aes') . '/public/assets/js/requests.js', array('jquery'), $version, true);
         wp_localize_script(
@@ -2256,7 +2263,7 @@ function get_student_missing_documents_callback()
 add_action('woocommerce_after_account_orders', 'custom_content_after_orders');
 function custom_content_after_orders()
 {
-    global $wpdb;
+    global $wpdb, $current_user;
     $pending_payments = [];
     $payments = [];
     $table_student_payments = $wpdb->prefix . 'student_payments';
@@ -2272,6 +2279,8 @@ function custom_content_after_orders()
             $student_payments[$student->id] = $payments;
         }
     }
+
+    $pending_orders = customer_pending_orders($current_user->ID);
 
     include(plugin_dir_path(__FILE__) . 'templates/next-payments.php');
 }
@@ -2671,4 +2680,33 @@ function send_notification_user($user_id, $description, $importance, $type) {
     ];
 
     $wpdb->insert($table_users_notices, $data);
+}
+
+/**
+ * Verifica si un usuario tiene órdenes con estado "pending-payment".
+ *
+ * @param int $user_id (opcional) ID del usuario. Si no se proporciona, usa el usuario actual.
+ * @return bool
+ */
+function customer_pending_orders($user_id = null) {
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+
+    // Si no hay usuario, retornar falso
+    if ($user_id === 0) {
+        return false;
+    }
+
+    // Argumentos para buscar órdenes
+    $args = array(
+        'customer_id' => $user_id,
+        'status'      => 'pending',
+        'limit'       => 1, // Solo necesitamos al menos 1 orden
+        'return'      => 'ids',
+    );
+
+    // Obtener órdenes
+    $orders = wc_get_orders($args);
+    return !empty($orders);
 }
