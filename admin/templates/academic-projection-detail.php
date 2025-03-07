@@ -75,24 +75,26 @@
                                     <b><?= __('Academic projection', 'aes'); ?></b>
                                 </h3>
 
-                                <input type="hidden" name="projection_id" value="<?php echo $projection->id ?>">
+                                <input type="hidden" name="projection_id" value="<?= $projection->id ?>">
+                                <input type="hidden" name="current_period" value="<?= $current_period ?>">
+                                <input type="hidden" name="current_cut" value="<?= $current_cut ?>">
 
                                 <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
-                                    <div style="display: flex; width: 100%;">
+                                    <div id="row[<?=$key?>]" style="display: flex; width: 100%;" <?= ($projection_for->this_cut) ? 'class="current-period"' : ''; ?>>
                                         <div style="flex: 1; padding: 5px; align-content: center;">
                                             <input type="checkbox" name="completed[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'checked style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                             <label for="input_id"><b><?= __($projection_for->subject, 'aes'); ?></b></label><br>
 
-                                            <input type="checkbox" name="this_cut[<?= $key ?>]" <?php echo $projection_for->this_cut ? 'checked' : '' ?>  <?php echo $projection_for->is_completed && !$projection_for->this_cut ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
-                                            <label for="input_id"><b><?= __('During this period', 'aes'); ?></b></label><br>
+                                            <input type="hidden" name="this_cut[<?= $key ?>]" value="<?= $projection_for->this_cut ? 1 : 0 ?>">
+                                            <!-- <label for="input_id"><b><?= __('During this period', 'aes'); ?></b></label><br> -->
                                         </div>
                                         
                                         <div style="flex: 1; padding: 5px;">
                                             <label for="input_id"><b><?= __('Period', 'aes'); ?></b></label><br>
-                                            <select name="academic_period[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
+                                            <select onchange="academic_period_changed(<?= $key ?>)" name="academic_period[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                                 <option value="" selected>Select academic period to filter</option>
                                                 <?php foreach ($periods as $period) { ?>
-                                                    <option value="<?php echo $period->code; ?>" <?= ($projection_for->code_period == $period->code) ? 'selected' : ''; ?>>
+                                                    <option <?= ($period->code == $current_period) ? 'class="current-period"' : ''; ?> value="<?php echo $period->code; ?>" <?= ($projection_for->code_period == $period->code) ? 'selected' : ''; ?>>
                                                         <?php echo $period->name; ?>
                                                     </option>
                                                 <?php } ?>
@@ -101,13 +103,13 @@
                                         
                                         <div style="flex: 1; padding: 5px;">
                                             <label for="input_id"><b><?= __('Cut', 'aes'); ?></b></label><br>
-                                            <select name="academic_period_cut[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
+                                            <select onchange="academic_period_changed(<?= $key ?>)" name="academic_period_cut[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                                 <option value="">Select academic period cut</option>
-                                                <option value="A" <?= ($projection_for->cut == 'A') ? 'selected' : ''; ?>>A</option>
-                                                <option value="B" <?= ($projection_for->cut == 'B') ? 'selected' : ''; ?>>B</option>
-                                                <option value="C" <?= ($projection_for->cut == 'C') ? 'selected' : ''; ?>>C</option>
-                                                <option value="D" <?= ($projection_for->cut == 'D') ? 'selected' : ''; ?>>D</option>
-                                                <option value="E" <?= ($projection_for->cut == 'E') ? 'selected' : ''; ?>>E</option>
+                                                <option <?= ($current_cut == 'A') ? 'class="current-period"' : ''; ?> value="A" <?= ($projection_for->cut == 'A') ? 'selected' : ''; ?>>A</option>
+                                                <option <?= ($current_cut == 'B') ? 'class="current-period"' : ''; ?> value="B" <?= ($projection_for->cut == 'B') ? 'selected' : ''; ?>>B</option>
+                                                <option <?= ($current_cut == 'C') ? 'class="current-period"' : ''; ?> value="C" <?= ($projection_for->cut == 'C') ? 'selected' : ''; ?>>C</option>
+                                                <option <?= ($current_cut == 'D') ? 'class="current-period"' : ''; ?> value="D" <?= ($projection_for->cut == 'D') ? 'selected' : ''; ?>>D</option>
+                                                <option <?= ($current_cut == 'E') ? 'class="current-period"' : ''; ?> value="E" <?= ($projection_for->cut == 'E') ? 'selected' : ''; ?>>E</option>
                                             </select>
                                         </div>
 

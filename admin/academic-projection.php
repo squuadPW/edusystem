@@ -15,6 +15,10 @@ function add_admin_form_academic_projection_content()
             $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND code_subject IS NOT NULL AND code_subject <> ''");
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
+            $load = load_current_cut_enrollment();
+            $current_period = $load['code'];
+            $current_cut = $load['cut'];
+
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-detail.php');
         }
 
@@ -206,10 +210,14 @@ function add_admin_form_academic_projection_content()
                 $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_obj[$key]->subject_id}");
 
                 $is_completed = isset($completed[$key]) ? true : false;
-                $is_this_cut = isset($this_cut[$key]) ? true : false;
+                $is_this_cut = $this_cut[$key] ?? false;
                 $period = $academic_period[$key] ?? null;
                 $cut = $academic_period_cut[$key] ?? null;
                 $calification_value = $calification[$key] ?? null;
+
+                if ($calification_value) {
+                    $is_this_cut = false;
+                }
 
                 if ($is_completed && $is_this_cut) {
                     $offer_available_to_enroll = offer_available_to_enroll($subject->id, $period, $cut);
@@ -242,9 +250,10 @@ function add_admin_form_academic_projection_content()
                         "SELECT * FROM {$table_student_period_inscriptions} 
                         WHERE student_id = %d 
                         AND code_subject = %s 
-                        AND (status_id != 4 AND status_id != 3)",
+                        AND status_id = %d",
                         $student_id,
-                        $code_subject
+                        $code_subject,
+                        1
                     );
 
                     $exist = $wpdb->get_row($query);
@@ -253,13 +262,13 @@ function add_admin_form_academic_projection_content()
                             "SELECT * FROM {$table_student_period_inscriptions} 
                             WHERE student_id = %d 
                             AND code_subject = %s 
-                            AND (status_id != 4 OR status_id != 3)",
+                            AND status_id = %d",
                             $student_id,
-                            $code_subject
+                            $code_subject,
+                            $status_id
                         );
-
                         $exist = $wpdb->get_row($query);
-                        if (!isset($exist)) {
+                        if (!isset($exist)) { 
                             $wpdb->insert($table_student_period_inscriptions, [
                                 'status_id' => $status_id,
                                 'student_id' => $projection->student_id,

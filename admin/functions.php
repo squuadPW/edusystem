@@ -189,6 +189,14 @@ function aes_scripts_admin()
         ]);
     }
 
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_academic_projection_content') {
+        wp_enqueue_script('academic-projection', plugins_url('aes') . '/admin/assets/js/academic-projection.js', array('jquery'), $version, true);
+
+        wp_localize_script('academic-projection', 'ajax_object', [
+            'url' => admin_url('admin-ajax.php')
+        ]);
+    }
+
 }
 
 add_action('admin_enqueue_scripts', 'aes_scripts_admin', 3);

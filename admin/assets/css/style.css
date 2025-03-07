@@ -488,4 +488,8 @@ div#application-passwords-section {
 }
 .admin-add-offer .space-offer {
   margin: 10px 0px 10px 0px;
+}
+
+.current-period {
+  background-color: rgba(23, 119, 74, 0.2) !important;
 }/*# sourceMappingURL=style.css.map */
