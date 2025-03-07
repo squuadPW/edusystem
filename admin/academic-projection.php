@@ -193,6 +193,7 @@ function add_admin_form_academic_projection_content()
             $projection_obj = json_decode($projection->projection);
             $old_count_enroll = 0;
             $count_enroll = 0;
+            $errors = '';
 
             foreach ($projection_obj as $key => $value) {
                 if ($projection_obj[$key]->this_cut) {
@@ -209,6 +210,14 @@ function add_admin_form_academic_projection_content()
                 $period = $academic_period[$key] ?? null;
                 $cut = $academic_period_cut[$key] ?? null;
                 $calification_value = $calification[$key] ?? null;
+
+                if ($is_completed && $is_this_cut) {
+                    $offer_available_to_enroll = offer_available_to_enroll($subject->id, $period, $cut);
+                    if (!$offer_available_to_enroll) {
+                        $errors .= $subject->name . ' could not be enrolled because no academic offers were found for the selected period and cut-off, or there is no space available. <br>';
+                        continue;
+                    }
+                }
 
                 $status_id = $is_this_cut ? 1 : ($calification_value >= $subject->min_pass ? 3 : 4);
                 if ($status_id != 4) {
@@ -301,6 +310,7 @@ function add_admin_form_academic_projection_content()
             }
 
             setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 10, '/');
+            setcookie('message-error', $errors, time() + 3600, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'delete_inscription') {
@@ -356,6 +366,10 @@ function add_admin_form_academic_projection_content()
             wp_redirect(admin_url('/admin.php?page=add_admin_form_configuration_options_content'));
             exit;
         } else {
+            $load = load_current_cut_enrollment();
+            $code = $load['code'];
+            $cut = $load['cut'];
+            $current_enroll_text = 'Current period and cutoff ' . $code . ' - ' . $cut;
             $enroll_moodle_count = get_count_moodle_pending();
             $pending_emails = get_count_email_pending();
             $pending_emails_count = $pending_emails['count'];
@@ -554,6 +568,7 @@ function generate_enroll_student()
 
     $enrollments = [];
     $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
+    $errors = '';
     foreach ($projections as $key => $projection) {
         $projection_obj = json_decode($projection->projection);
 
@@ -566,11 +581,17 @@ function generate_enroll_student()
             $offer = get_offer_filtered($projection_filtered->subject_id, $code, $cut);
             if ($offer) {
                 $enrollments = array_merge($enrollments, courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id]));
+            } else {
+                $student = get_student_detail($projection->student_id);
+                if ($student) {
+                    $errors .= 'The student ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . ' could not be enrolled because no offers were found for the current period (' . $cut . ') <br>';
+                }
             }
         }
     }
 
     enroll_student($enrollments);
+    setcookie('message-error', $errors, time() + 3600, '/');
 }
 
 function get_moodle_notes()

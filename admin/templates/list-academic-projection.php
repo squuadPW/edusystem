@@ -29,7 +29,7 @@
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 			<?php if(current_user_can('manager_enrollments_aes')) { ?>
 				<a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollments'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to validate enrollments?');"><?= __('Enrollment history','aes'); ?></a>
-				<a style="margin-left: 10px; <?= $style_pending ?>" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_enrollments_moodle'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to generate enrollments in Moodle?');"><?= __('Enroll in moodle','aes'); ?> (<?= $enroll_moodle_count ?>)</a>
+				<a data-tippy-content="<?= $current_enroll_text ?>" style="margin-left: 10px; <?= $style_pending ?>" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_enrollments_moodle'); ?>" class="button button-outline-primary  help-tooltip" onclick="return confirm('Are you sure you want to generate enrollments in Moodle?');"><?= __('Enroll in moodle','aes'); ?> (<?= $enroll_moodle_count ?>)</a>
 				<a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=get_moodle_notes'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to update the notes from Moodle?');"><?= __('Download moodle notes','aes'); ?></a>
 				<?php
 					$text_students = '';
