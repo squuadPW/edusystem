@@ -80,7 +80,7 @@
                                 <input type="hidden" name="current_cut" value="<?= $current_cut ?>">
 
                                 <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
-                                    <div id="row[<?=$key?>]" style="display: flex; width: 100%;" <?= ($projection_for->this_cut) ? 'class="current-period"' : ''; ?>>
+                                    <div id="row[<?=$key?>]" <?= ($projection_for->this_cut) ? 'class="current-period row-projection"' : 'class="row-projection"'; ?>>
                                         <div style="flex: 1; padding: 5px; align-content: center;">
                                             <input type="checkbox" name="completed[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'checked style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                             <label for="input_id"><b><?= __($projection_for->subject, 'aes'); ?></b></label><br>

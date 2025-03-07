@@ -518,3 +518,12 @@ div#application-passwords-section {
 .current-period {
   background-color: rgb(23 119 74 / 20%) !important;
 }
+
+.row-projection {
+  display: flex; 
+  width: 100%;
+
+  @media screen and (max-width: 900px) {
+    display: block !important; 
+  }
+}
