@@ -47,8 +47,6 @@ if (!isTouchDevice()) {
 }
 
 // window.addEventListener("orientationchange", function () {
-//   console.log('rezise 2')
-
 //   resizeCanvas("signature-student", 0);
 //   resizeCanvas("signature-parent", 0);
 // });

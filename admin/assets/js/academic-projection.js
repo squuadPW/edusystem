@@ -14,5 +14,4 @@ function academic_period_changed(key) {
         document.querySelector(`input[name="calification[${key}]"]`).required = true;
         document.getElementById(`row[${key}]`).classList.remove('current-period');
     }
-    console.log(document.querySelector(`input[name="this_cut[${key}]"]`).value)
 }
