@@ -224,7 +224,7 @@ function courses_enroll_student($student_id, $courses = []) {
     return $enrollments;
 }
 
-function enroll_student($enrollments = []) {
+function enroll_student($enrollments = [], $errors_count = '') {
     global $wpdb;
 
     $moodle_url = get_option('moodle_url');
@@ -243,7 +243,7 @@ function enroll_student($enrollments = []) {
         }
     }
 
-    update_count_moodle_pending(0);
+    update_count_moodle_pending($errors_count);
     if (empty($all_responses)) {
         return [];
     } else {

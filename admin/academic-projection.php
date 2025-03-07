@@ -578,6 +578,7 @@ function generate_enroll_student()
     $enrollments = [];
     $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
     $errors = '';
+    $errors_count = 0;
     foreach ($projections as $key => $projection) {
         $projection_obj = json_decode($projection->projection);
 
@@ -594,12 +595,13 @@ function generate_enroll_student()
                 $student = get_student_detail($projection->student_id);
                 if ($student) {
                     $errors .= 'The student ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . ' could not be enrolled because no offers were found for the current period (' . $cut . ') <br>';
+                    $errors_count++;
                 }
             }
         }
     }
 
-    enroll_student($enrollments);
+    enroll_student($enrollments, $errors_count);
     setcookie('message-error', $errors, time() + 3600, '/');
 }
 
