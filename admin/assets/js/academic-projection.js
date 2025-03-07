@@ -3,6 +3,7 @@ function academic_period_changed(key) {
     let current_cut = document.querySelector(`input[name="current_cut"]`).value;
     let selected_period = document.querySelector(`select[name="academic_period[${key}]"]`).value;
     let selected_cut = document.querySelector(`select[name="academic_period_cut[${key}]"]`).value;
+    document.querySelector(`input[name="completed[${key}]"]`).checked = true;
 
     if (current_period == selected_period && current_cut == selected_cut) {
         document.querySelector(`input[name="this_cut[${key}]"]`).value = 1;
