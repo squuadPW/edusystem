@@ -461,72 +461,53 @@ add_filter('woocommerce_account_menu_items', 'remove_my_account_links');
 
 function remove_my_account_links($menu_links)
 {
-
     global $current_user;
     $roles = $current_user->roles;
     $user_id = $current_user->ID;
 
-    $menu_links['dashboard'] = __('Dashboard', 'form-plugin');
+    // Definir el orden base del menú
+    $menu_links = [
+        'dashboard' => __('Dashboard', 'form-plugin'),
+    ];
+
+    // Eliminar enlaces no deseados
     unset($menu_links['downloads']);
     unset($menu_links['edit-address']);
     unset($menu_links['payment-methods']);
     unset($menu_links['customer-logout']);
 
+    // Agregar "Payments" para el rol "parent"
     if (in_array('parent', $roles)) {
         $menu_links['orders'] = __('Payments', 'form-plugin');
-    } else {
-        unset($menu_links['orders']);
     }
 
+    // Agregar "Documents" para el rol "teacher"
     if (in_array('teacher', $roles)) {
-        $menu_links = array_slice($menu_links, 0, 1, true)
-        + array('teacher-documents' => __('Documents', 'form-plugin'))
-        + array_slice($menu_links, 1, NULL, true);
+        $menu_links['teacher-documents'] = __('Documents', 'form-plugin');
     }
 
+    // Lógica para roles "parent" y "student"
     if (in_array('parent', $roles) || in_array('student', $roles)) {
-
-        if (in_array('parent', $roles) && in_array('student', $roles)) {
-
-            if (get_user_meta($user_id, 'status_register', true) == 1 || get_user_meta($user_id, 'status_register', true) == '1') {
-
-                $menu_links = array_slice($menu_links, 0, 2, true)
-                    + array('student-documents' => __('Documents', 'form-plugin'))
-                    + array_slice($menu_links, 2, NULL, true);
-            }
-
-        } else if (in_array('parent', $roles) && !in_array('student', $roles)) {
-
-            if (get_user_meta($user_id, 'status_register', true) == 1 || get_user_meta($user_id, 'status_register', true) == '1') {
-
-                $menu_links = array_slice($menu_links, 0, 2, true)
-                    + array('student-documents' => __('Documents', 'form-plugin'))
-                    + array_slice($menu_links, 2, NULL, true);
-            }
-
-        } else if (!in_array('parent', $roles) && in_array('student', $roles)) {
-
-            $menu_links = array_slice($menu_links, 0, 1, true)
-                + array('student-documents' => __('Documents', 'aes'))
-                + array_slice($menu_links, 1, NULL, true);
+        // Agregar "Documents" si el usuario tiene el estado de registro correcto
+        if (get_user_meta($user_id, 'status_register', true) == 1) {
+            $menu_links['student-documents'] = __('Documents', 'form-plugin');
         }
 
-        $menu_links = array_slice($menu_links, 0, 2, true)
-            + array('student' => __('Student Information', 'aes'))
-            + array_slice($menu_links, 2, NULL, true);
+        // Agregar "Student Information"
+        $menu_links['student'] = __('Student Information', 'aes');
 
-        $menu_links = array_slice($menu_links, 0, 4, true)
-            + array('my-tickets' => __('Tickets', 'form-plugin'))
-            + array_slice($menu_links, 4, NULL, true);
+        // Agregar "Califications"
+        $menu_links['califications'] = __('Califications', 'form-plugin');
 
-        $menu_links = array_slice($menu_links, 0, 4, true)
-            + array('my-requests' => __('Requests', 'form-plugin'))
-            + array_slice($menu_links, 4, NULL, true);
+        // Agregar "Requests"
+        $menu_links['my-requests'] = __('Requests', 'form-plugin');
 
-        $menu_links = array_slice($menu_links, 0, 4, true)
-            + array('califications' => __('Califications', 'form-plugin'))
-            + array_slice($menu_links, 4, NULL, true);
+        // Agregar "Tickets"
+        $menu_links['my-tickets'] = __('Tickets', 'form-plugin');
     }
+
+    // Agregar "Account Details" al final
+    $menu_links['edit-account'] = __('Account Details', 'woocommerce');
 
     return $menu_links;
 }
