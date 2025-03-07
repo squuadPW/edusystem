@@ -403,9 +403,9 @@ input,textarea {
 
     font-weight: 600;
 
-    &:before{
-        content: "" !important;
-    }
+    // &:before{
+    //     content: "" !important;
+    // }
 }
 
 .hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active{
@@ -1259,4 +1259,62 @@ body.modal-open {
   border-radius: 16px;
   display: flex;
   justify-content: space-between;
+}
+
+.woocommerce-error::before {
+  font-family: "Dashicons" !important;
+  content: "\f14c" !important;
+}
+
+/* Iconos Dashicons */
+.woocommerce-MyAccount-navigation-link--dashboard a:before {
+  font-family: "Dashicons" !important;
+  content: "\f102" !important;
+  margin-right: 8px;
+}
+
+.woocommerce-MyAccount-navigation-link--orders a:before {
+  font-family: "Dashicons" !important;
+  content: "\f18e" !important;
+  margin-right: 8px;
+}
+
+.woocommerce-MyAccount-navigation-link--teacher-documents a:before {
+  font-family: "Dashicons" !important;
+  content: "\f497" !important;
+  margin-right: 8px;
+}
+
+.woocommerce-MyAccount-navigation-link--student-documents a:before {
+  font-family: "Dashicons" !important;
+  content: "\f497" !important;
+  margin-right: 8px;
+}
+
+.woocommerce-MyAccount-navigation-link--student a:before {
+  font-family: "Dashicons" !important;
+  content: "\f12e" !important;
+  margin-right: 8px;
+}
+
+.woocommerce-MyAccount-navigation-link--my-tickets a:before {
+  font-family: "Dashicons" !important;
+  content: "\f546" !important;
+  margin-right: 8px;
+}
+
+.woocommerce-MyAccount-navigation-link--my-requests a:before {
+  font-family: "Dashicons" !important;
+  content: "\f14c" !important;
+  margin-right: 8px;
+}
+
+.woocommerce-MyAccount-navigation-link--califications a:before {
+  font-family: "Dashicons" !important;
+  content: "\f535" !important;
+  margin-right: 8px;
+}
+
+.woocommerce-MyAccount-navigation-link--edit-account a:before {
+  margin-right: 8px;
 }
