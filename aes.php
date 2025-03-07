@@ -2,7 +2,7 @@
 /*
 Plugin Name: Educational system
 Description: The WordPress plugin for educational system is a customized tool that offers a range of functionalities for the proper functioning of the institute website
-Version: 1.5.81
+Version: 1.5.82
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
