@@ -232,7 +232,7 @@
                             <?php endif; ?>
                         </form>
 
-                        <div>
+                        <!-- <div>
                             <strong>Step-by-step registration process</strong><br>
                             <ul>
                                 <li>1. Check the checkmark to the left of the subject name, this indicates that it <strong>will be selected.</strong></li>
@@ -259,7 +259,7 @@
                                     <li>1. In the previous screen, at the top right we have the button “update notes from moodle” this will download the current notes from moodle, and will apply the same process as if it were manual, validate the minimum passing grade, to pass or fail the subject, close or leave open the subject, besides this will update the grades with the ones coming from moodle.</li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
 
                     </div>
                 </div>
