@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded',function(){
               document.querySelector("input[name=number_phone]").value = getCookie("phone_student");
               document.querySelector("input[name=email_student]").value = getCookie("email_student");
               document.querySelector("select[name=gender]").value = getCookie("gender");
+              document.querySelector("select[name=country]").value = getCookie("billing_country");
+              document.querySelector("input[name=city]").value = getCookie("billing_city");
               document.querySelector("select[name=etnia]").value = getCookie("ethnicity");
               document.querySelector("input[name=birth_date_parent]").value = getCookie("birth_date_parent");
               document.querySelector("select[name=parent_document_type]").value = getCookie("parent_document_type");
