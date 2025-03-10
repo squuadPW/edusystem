@@ -21,11 +21,11 @@ foreach ($student_payments as $student_id => $payments) { ?>
             <?php foreach ($payments as $key => $payment) { ?>
                 <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-pending">
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-quota" data-title="Cuote">
-                        <?php echo $payment->cuote ?></td>
+                        #<?= $payment->cuote ?></td>
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date" data-title="Date">
-                        <?php echo date('F d, Y', strtotime($payment->date_next_payment)) ?></td>
+                        <?= date('F d, Y', strtotime($payment->date_next_payment)) ?></td>
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="Total">
-                        <?php echo wc_price($payment->amount) ?></td>
+                        <?= wc_price($payment->amount) ?></td>
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-action" data-title="Action" style="text-align: end">
                         <?php if($key == 0 && !$pending_orders) { ?>
                             <button style="width: 70px;" type="button" class="button button-primary" id="generate-quote" data-id="<?= $student_id ?>" data-amount="<?= $payment->amount ?>">Pay</button>
