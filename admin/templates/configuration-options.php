@@ -79,6 +79,11 @@
             <label
               for="virtual-access"><?= __('Auto enroll elective student'); ?></label>
           </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="aditional-electives" name="use_elective_aditional" <?php echo get_option('use_elective_aditional') == 'on' ? 'checked' : '' ?>>
+            <label
+              for="virtual-access"><?= __('Use aditional electives'); ?></label>
+          </div>
         </div>
         <div id="by_moodle" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">

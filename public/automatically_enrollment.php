@@ -12,420 +12,29 @@ function automatically_enrollment($student_id)
 
 function load_expected_projection($initial_cut, $grade)
 {
-    $electives = 0;
+    global $wpdb;
+    $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
+
     $max_expected = 0;
     $expected_matrix = [];
     switch ($grade) {
-        // LOWER
         case 1:
-            $max_expected = 1;
-            switch ($initial_cut) {
-                case 'A':
-                    $electives = 9;
-                    $expected_matrix = [
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                    ];
-                    break;
-                case 'B':
-                    $electives = 8;
-                    $expected_matrix = [
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ]
-                    ];
-                    break;
-                case 'C':
-                    $electives = 7;
-                    $expected_matrix = [
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ]
-                    ];
-                    break;
-                case 'D':
-                    $electives = 6;
-                    $expected_matrix = [
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ]
-                    ];
-                    break;
-                case 'E':
-                    $electives = 5;
-                    $expected_matrix = [
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ]
-                    ];
-                    break;
-            }
+            $row = $wpdb->get_row("SELECT * FROM {$table_expected_matrix} WHERE grade_id = {$grade} AND initial_cut = '{$initial_cut}'");
+            $max_expected = $row->max_expected;
+            $expected_matrix = explode(',', $row->expected_sequence);
             break;
-        // MIDDKE
-        case 2:
-            $max_expected = 1;
-            $electives = 4;
-            switch ($initial_cut) {
-                case 'A':
-                case 'B':
-                case 'C':
-                case 'D':
-                case 'E':
-                    $expected_matrix = [
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'regular',
-                            'type' => 1 // regular
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ],
-                        [
-                            'subject' => 'elective',
-                            'type' => 2 // elective
-                        ]
-                    ];
-                    break;
-            }
-            break;
-        // UPPER AND GRADUATED
-        case 3:
-        case 4:
-            $max_expected = 2;
-            $electives = 2;
-            switch ($initial_cut) {
-                case 'A':
-                case 'B':
-                case 'C':
-                case 'D':
-                case 'E':
-                    $expected_matrix = [
-                        [
-                            [
-                                'subject' => 'regular',
-                                'type' => 1 // regular
-                            ],
-                            [
-                                'subject' => 'regular',
-                                'type' => 1 // regular
-                            ]
-                        ],
-                        [
-                            [
-                                'subject' => 'regular',
-                                'type' => 1 // regular
-                            ],
-                            [
-                                'subject' => 'elective',
-                                'type' => 2 // elective
-                            ]
-                        ],
-                        [
-                            [
-                                'subject' => 'regular',
-                                'type' => 1 // regular
-                            ],
-                            [
-                                'subject' => 'elective',
-                                'type' => 2 // elective
-                            ]
-                        ],
-                        [
-                            [
-                                'subject' => 'regular',
-                                'type' => 1 // regular
-                            ]
-                        ],
-                        [
-                            [
-                                'subject' => 'regular',
-                                'type' => 1 // regular
-                            ]
-                        ],
-                    ];
-                    break;
-            }
+        
+        default:
+            $row = $wpdb->get_row("SELECT * FROM {$table_expected_matrix} WHERE grade_id = {$grade}");
+            $max_expected = $row->max_expected;
+            $expected_matrix = explode(',', $row->expected_sequence);
             break;
     }
 
     return [
         'expected_matrix' => $expected_matrix,
         'max_expected' => $max_expected,
-        'electives' => $electives
+        'grade_id' => $grade
     ];
 }
 
@@ -457,6 +66,10 @@ function load_automatically_enrollment($expected_projection, $student)
 
     $projection_obj = json_decode($projection->projection);
     foreach ($expected_projection['expected_matrix'] as $key => $expected) {
+        if ($expected_projection['grade_id'] > 2 && $count_expected_subject >= 4) {
+            $expected_projection['max_expected'] = 1;
+        }
+
         if ($student_enrolled == $expected_projection['max_expected']) {
             if ($regular_enrolled) {
                 update_count_moodle_pending();
@@ -464,219 +77,123 @@ function load_automatically_enrollment($expected_projection, $student)
             break;
         }
 
-        if (isset($expected[0]['type'])) {
-            $expected_projection['max_expected'] = count($expected);
-            if ($expected_projection['max_expected'] == 1 && ($count_expected_subject <= 4 || $count_expected_subject_elective < 2)) {
-                $expected_projection['max_expected'] = 2;
+        if ($expected == 'R') {
+            $expected_subject = $matrix_regular[$count_expected_subject];
+            $subject = get_subject_details($expected_subject->subject_id);
+            $inscriptions = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM {$table_student_period_inscriptions} 
+                    WHERE student_id = %d 
+                    AND subject_id = %d 
+                    AND (status_id = 3 OR status_id = 1)",
+                    $student->id,
+                    $subject->id
+                )
+            );
+            if (count($inscriptions) > 0) {
+                $count_expected_subject++;
+                continue;
             }
 
-            foreach ($expected as $key => $exc) {
-                if ($exc['type'] == 1) {
-                    $expected_subject = $matrix_regular[$count_expected_subject];
-                    $subject = get_subject_details($expected_subject->subject_id);
-                    $inscriptions = $wpdb->get_results(
-                        $wpdb->prepare(
-                            "SELECT * FROM {$table_student_period_inscriptions} 
-                            WHERE student_id = %d 
-                            AND subject_id = %d 
-                            AND (status_id = 3 OR status_id = 1)",
-                            $student->id,
-                            $subject->id
-                        )
-                    );
-                    if (count($inscriptions) > 0) {
-                        $count_expected_subject++;
-                        continue;
-                    }
-
-                    $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
-                    if (!$offer_available_to_enroll) {
-                        $count_expected_subject++;
-                        $force_skip = true;
-                        if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0)) {
-                            update_elective_student($student->id, 1);
-                        }
-                        continue;
-                    }
-
-                    $force_skip = false;
-                    $subjectIds = array_column($projection_obj, 'subject_id');
-                    $indexToEdit = array_search($subject->id, $subjectIds);
-                    if ($indexToEdit !== false) {
-                        $projection_obj[$indexToEdit]->cut = $cut;
-                        $projection_obj[$indexToEdit]->this_cut = true;
-                        $projection_obj[$indexToEdit]->code_period = $code;
-                        $projection_obj[$indexToEdit]->calification = '';
-                        $projection_obj[$indexToEdit]->is_completed = true;
-                        $projection_obj[$indexToEdit]->welcome_email = false;
-                    }
-
-                    $wpdb->update($table_student_academic_projection, [
-                        'projection' => json_encode($projection_obj)
-                    ], ['id' => $projection->id]);
-
-                    $section = load_section_available($subject->id, $code, $cut);
-                    $wpdb->insert($table_student_period_inscriptions, [
-                        'status_id' => 1,
-                        'section' => $section,
-                        'student_id' => $student->id,
-                        'subject_id' => $subject->id,
-                        'code_subject' => $subject->code_subject,
-                        'code_period' => $code,
-                        'cut_period' => $cut,
-                        'type' => $subject->is_elective ? 'elective' : 'regular'
-                    ]);
-
-                    if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2) {
-                        update_elective_student($student->id, 1);
-                    }
-
-                    $regular_enrolled = true;
-                    $count_expected_subject++;
-                    $student_enrolled++;
-                } else {
-                    if ($force_skip) {
-                        $count_expected_subject_elective++;
-                        $last_inscriptions_electives_count++;
-                        continue;
-                    }
-
-                    if (count($matrix_elective) == 0) {
-                        continue;
-                    }
-
-                    if ($last_inscriptions_electives_count > $count_expected_subject_elective) {
-                        $count_expected_subject_elective++;
-                        continue;
-                    }
-
-                    if ($skip_cut) {
-                        $wpdb->update($table_students, [
-                            'elective' => 0,
-                            'skip_cut' => 0
-                        ], ['id' => $student->id]);
-
-                        $wpdb->insert($table_student_period_inscriptions, [
-                            'status_id' => 2,
-                            'student_id' => $student->id,
-                            'code_period' => $code,
-                            'cut_period' => $cut,
-                            'type' => 'elective'
-                        ]);
-                        $count_expected_subject_elective++;
-                        $last_inscriptions_electives_count++;
-                        $skip_cut = false;
-                        continue;
-                    }
-
+            $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
+            if (!$offer_available_to_enroll) {
+                $count_expected_subject++;
+                $force_skip = true;
+                if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0)) {
                     update_elective_student($student->id, 1);
-                    $count_expected_subject_elective++;
-                    $student_enrolled++;
                 }
+                continue;
             }
+
+            $force_skip = false;
+            $subjectIds = array_column($projection_obj, 'subject_id');
+            $indexToEdit = array_search($subject->id, $subjectIds);
+            if ($indexToEdit !== false) {
+                $projection_obj[$indexToEdit]->cut = $cut;
+                $projection_obj[$indexToEdit]->this_cut = true;
+                $projection_obj[$indexToEdit]->code_period = $code;
+                $projection_obj[$indexToEdit]->calification = '';
+                $projection_obj[$indexToEdit]->is_completed = true;
+                $projection_obj[$indexToEdit]->welcome_email = false;
+            }
+
+            $wpdb->update($table_student_academic_projection, [
+                'projection' => json_encode($projection_obj)
+            ], ['id' => $projection->id]);
+
+            $section = load_section_available($subject->id, $code, $cut);
+            $wpdb->insert($table_student_period_inscriptions, [
+                'status_id' => 1,
+                'section' => $section,
+                'student_id' => $student->id,
+                'subject_id' => $subject->id,
+                'code_subject' => $subject->code_subject,
+                'code_period' => $code,
+                'cut_period' => $cut,
+                'type' => $subject->is_elective ? 'elective' : 'regular'
+            ]);
+
+            if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2) {
+                update_elective_student($student->id, 1);
+            }
+
+            $regular_enrolled = true;
+            $count_expected_subject++;
+            $student_enrolled++;
         } else {
-            if ($expected['type'] == 1) {
-                $expected_subject = $matrix_regular[$count_expected_subject];
-                $subject = get_subject_details($expected_subject->subject_id);
-                $inscriptions = $wpdb->get_results(
-                    $wpdb->prepare(
-                        "SELECT * FROM {$table_student_period_inscriptions} 
-                        WHERE student_id = %d 
-                        AND subject_id = %d 
-                        AND (status_id = 3 OR status_id = 1)",
-                        $student->id,
-                        $subject->id
-                    )
-                );
-                if (count($inscriptions) > 0) {
-                    $count_expected_subject++;
-                    continue;
-                }
+            if ($force_skip) {
+                $count_expected_subject_elective++;
+                $last_inscriptions_electives_count++;
+                continue;
+            }
 
-                $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
-                if (!$offer_available_to_enroll) {
-                    $count_expected_subject++;
-                    $force_skip = true;
-                    if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0)) {
-                        update_elective_student($student->id, 1);
-                    }
-                    continue;
-                }
+            if (count($matrix_elective) == 0) {
+                continue;
+            }
 
-                $force_skip = false;
-                $subjectIds = array_column($projection_obj, 'subject_id');
-                $indexToEdit = array_search($subject->id, $subjectIds);
-                if ($indexToEdit !== false) {
-                    $projection_obj[$indexToEdit]->cut = $cut;
-                    $projection_obj[$indexToEdit]->this_cut = true;
-                    $projection_obj[$indexToEdit]->code_period = $code;
-                    $projection_obj[$indexToEdit]->calification = '';
-                    $projection_obj[$indexToEdit]->is_completed = true;
-                    $projection_obj[$indexToEdit]->welcome_email = false;
-                }
+            if ($last_inscriptions_electives_count > $count_expected_subject_elective) {
+                $count_expected_subject_elective++;
+                continue;
+            }
 
-                $wpdb->update($table_student_academic_projection, [
-                    'projection' => json_encode($projection_obj)
-                ], ['id' => $projection->id]);
+            if ($skip_cut) {
+                $wpdb->update($table_students, [
+                    'elective' => 0,
+                    'skip_cut' => 0
+                ], ['id' => $student->id]);
 
-                $section = load_section_available($subject->id, $code, $cut);
                 $wpdb->insert($table_student_period_inscriptions, [
-                    'status_id' => 1,
-                    'section' => $section,
+                    'status_id' => 2,
                     'student_id' => $student->id,
-                    'subject_id' => $subject->id,
-                    'code_subject' => $subject->code_subject,
                     'code_period' => $code,
                     'cut_period' => $cut,
-                    'type' => $subject->is_elective ? 'elective' : 'regular'
+                    'type' => 'elective'
                 ]);
-
-                if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2) {
-                    update_elective_student($student->id, 1);
-                }
-
-                $regular_enrolled = true;
-                $count_expected_subject++;
-                $student_enrolled++;
-            } else {
-                if ($force_skip) {
-                    $count_expected_subject_elective++;
-                    $last_inscriptions_electives_count++;
-                    continue;
-                }
-
-                if (count($matrix_elective) == 0) {
-                    continue;
-                }
-
-                if ($last_inscriptions_electives_count > $count_expected_subject_elective) {
-                    $count_expected_subject_elective++;
-                    continue;
-                }
-
-                if ($skip_cut) {
-                    $wpdb->update($table_students, [
-                        'elective' => 0,
-                        'skip_cut' => 0
-                    ], ['id' => $student->id]);
-
-                    $wpdb->insert($table_student_period_inscriptions, [
-                        'status_id' => 2,
-                        'student_id' => $student->id,
-                        'code_period' => $code,
-                        'cut_period' => $cut,
-                        'type' => 'elective'
-                    ]);
-                    $count_expected_subject_elective++;
-                    $last_inscriptions_electives_count++;
-                    $skip_cut = false;
-                    continue;
-                }
-
-                update_elective_student($student->id, 1);
                 $count_expected_subject_elective++;
-                $student_enrolled++;
+                $last_inscriptions_electives_count++;
+                $skip_cut = false;
+                continue;
             }
+
+            if ($expected == 'EA' && !get_option('use_elective_aditional')) {
+                $wpdb->update($table_students, [
+                    'elective' => 0,
+                    'skip_cut' => 0
+                ], ['id' => $student->id]);
+
+                $wpdb->insert($table_student_period_inscriptions, [
+                    'status_id' => 2,
+                    'student_id' => $student->id,
+                    'code_period' => $code,
+                    'cut_period' => $cut,
+                    'type' => 'elective'
+                ]);
+                break;
+            }
+
+            update_elective_student($student->id, 1);
+            $count_expected_subject_elective++;
+            $student_enrolled++;
         }
     }
 }
@@ -1221,4 +738,65 @@ function fix_projections($student_id)
     $wpdb->update($table_student_academic_projection, [
         'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
     ], ['id' => $projection->id]);
+}
+
+function default_templates_expected_grade() {
+    global $wpdb;
+    $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
+
+    $wpdb->insert($table_expected_matrix, [
+        'grade_id' => 1,
+        'initial_cut' => 'A',
+        'max_expected' => 1,
+        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R,EA,EA'
+    ]);
+
+    $wpdb->insert($table_expected_matrix,[
+        'grade_id' => 1,
+        'initial_cut' => 'B',
+        'max_expected' => 1,
+        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R,EA'
+    ]);
+
+    $wpdb->insert($table_expected_matrix,[
+        'grade_id' => 1,
+        'initial_cut' => 'C',
+        'max_expected' => 1,
+        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R'
+    ]);
+
+    $wpdb->insert($table_expected_matrix,[
+        'grade_id' => 1,
+        'initial_cut' => 'D',
+        'max_expected' => 1,
+        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,R'
+    ]);
+
+    $wpdb->insert($table_expected_matrix,[
+        'grade_id' => 1,
+        'initial_cut' => 'E',
+        'max_expected' => 1,
+        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EP,R,R'
+    ]);
+
+    $wpdb->insert($table_expected_matrix,[
+        'grade_id' => 2,
+        'initial_cut' => 'A-E',
+        'max_expected' => 1,
+        'expected_sequence' => 'R,R,R,EA,EP,R,R,R,EA,EP'
+    ]);
+
+    $wpdb->insert($table_expected_matrix,[
+        'grade_id' => 3,
+        'initial_cut' => 'A-E',
+        'max_expected' => 2,
+        'expected_sequence' => 'R,R,R,EP,R,EP,R,R'
+    ]);
+
+    $wpdb->insert($table_expected_matrix,[
+        'grade_id' => 4,
+        'initial_cut' => 'A-E',
+        'max_expected' => 2,
+        'expected_sequence' => 'R,R,R,EP,R,EP,R,R'
+    ]);
 }

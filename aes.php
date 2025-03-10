@@ -55,6 +55,22 @@ function create_tables()
   $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
   $table_requests = $wpdb->prefix . 'requests';
   $table_type_requests = $wpdb->prefix . 'type_requests';
+  $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_expected_matrix}'") != $table_expected_matrix) {
+    dbDelta(
+      "CREATE TABLE " . $table_expected_matrix . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        grade_id INT(11) NOT NULL,
+        initial_cut TEXT NOT NULL,
+        max_expected INT(11) NOT NULL,
+        expected_sequence TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+
+    default_templates_expected_grade();
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_type_requests}'") != $table_type_requests) {
     dbDelta(
