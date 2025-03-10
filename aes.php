@@ -57,21 +57,6 @@ function create_tables()
   $table_type_requests = $wpdb->prefix . 'type_requests';
   $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
 
-  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_expected_matrix}'") != $table_expected_matrix) {
-    dbDelta(
-      "CREATE TABLE " . $table_expected_matrix . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        grade_id INT(11) NOT NULL,
-        initial_cut TEXT NOT NULL,
-        max_expected INT(11) NOT NULL,
-        expected_sequence TEXT NOT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
-    );
-
-    default_templates_expected_grade();
-  }
-
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_type_requests}'") != $table_type_requests) {
     dbDelta(
       "CREATE TABLE " . $table_type_requests . " (
@@ -1121,6 +1106,75 @@ function create_tables()
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_expected_matrix}'") != $table_expected_matrix) {
+    dbDelta(
+      "CREATE TABLE " . $table_expected_matrix . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        grade_id INT(11) NOT NULL,
+        initial_cut TEXT NOT NULL,
+        max_expected INT(11) NOT NULL,
+        expected_sequence TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+
+    $wpdb->insert($table_expected_matrix, [
+      'grade_id' => 1,
+      'initial_cut' => 'A',
+      'max_expected' => 1,
+      'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R,EA,EA'
+    ]);
+
+    $wpdb->insert($table_expected_matrix, [
+      'grade_id' => 1,
+      'initial_cut' => 'B',
+      'max_expected' => 1,
+      'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R,EA'
+    ]);
+
+    $wpdb->insert($table_expected_matrix, [
+      'grade_id' => 1,
+      'initial_cut' => 'C',
+      'max_expected' => 1,
+      'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R'
+    ]);
+
+    $wpdb->insert($table_expected_matrix, [
+      'grade_id' => 1,
+      'initial_cut' => 'D',
+      'max_expected' => 1,
+      'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,R'
+    ]);
+
+    $wpdb->insert($table_expected_matrix, [
+      'grade_id' => 1,
+      'initial_cut' => 'E',
+      'max_expected' => 1,
+      'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EP,R,R'
+    ]);
+
+    $wpdb->insert($table_expected_matrix, [
+      'grade_id' => 2,
+      'initial_cut' => 'A-E',
+      'max_expected' => 1,
+      'expected_sequence' => 'R,R,R,EA,EP,R,R,R,EA,EP'
+    ]);
+
+    $wpdb->insert($table_expected_matrix, [
+      'grade_id' => 3,
+      'initial_cut' => 'A-E',
+      'max_expected' => 2,
+      'expected_sequence' => 'R,R,R,EP,R,EP,R,R'
+    ]);
+
+    $wpdb->insert($table_expected_matrix, [
+      'grade_id' => 4,
+      'initial_cut' => 'A-E',
+      'max_expected' => 2,
+      'expected_sequence' => 'R,R,R,EP,R,EP,R,R'
+    ]);
   }
 
 }

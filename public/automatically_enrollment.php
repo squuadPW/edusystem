@@ -23,7 +23,7 @@ function load_expected_projection($initial_cut, $grade)
             $max_expected = $row->max_expected;
             $expected_matrix = explode(',', $row->expected_sequence);
             break;
-        
+
         default:
             $row = $wpdb->get_row("SELECT * FROM {$table_expected_matrix} WHERE grade_id = {$grade}");
             $max_expected = $row->max_expected;
@@ -738,65 +738,4 @@ function fix_projections($student_id)
     $wpdb->update($table_student_academic_projection, [
         'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
     ], ['id' => $projection->id]);
-}
-
-function default_templates_expected_grade() {
-    global $wpdb;
-    $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
-
-    $wpdb->insert($table_expected_matrix, [
-        'grade_id' => 1,
-        'initial_cut' => 'A',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R,EA,EA'
-    ]);
-
-    $wpdb->insert($table_expected_matrix,[
-        'grade_id' => 1,
-        'initial_cut' => 'B',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R,EA'
-    ]);
-
-    $wpdb->insert($table_expected_matrix,[
-        'grade_id' => 1,
-        'initial_cut' => 'C',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R'
-    ]);
-
-    $wpdb->insert($table_expected_matrix,[
-        'grade_id' => 1,
-        'initial_cut' => 'D',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,R'
-    ]);
-
-    $wpdb->insert($table_expected_matrix,[
-        'grade_id' => 1,
-        'initial_cut' => 'E',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EP,R,R'
-    ]);
-
-    $wpdb->insert($table_expected_matrix,[
-        'grade_id' => 2,
-        'initial_cut' => 'A-E',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,R,R,EA,EP,R,R,R,EA,EP'
-    ]);
-
-    $wpdb->insert($table_expected_matrix,[
-        'grade_id' => 3,
-        'initial_cut' => 'A-E',
-        'max_expected' => 2,
-        'expected_sequence' => 'R,R,R,EP,R,EP,R,R'
-    ]);
-
-    $wpdb->insert($table_expected_matrix,[
-        'grade_id' => 4,
-        'initial_cut' => 'A-E',
-        'max_expected' => 2,
-        'expected_sequence' => 'R,R,R,EP,R,EP,R,R'
-    ]);
 }
