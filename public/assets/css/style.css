@@ -1252,4 +1252,8 @@ body.modal-open {
   .generate-next-quote button {
     width: 100% !important;
   }
+}
+
+.grecaptcha-badge {
+  display: none;
 }/*# sourceMappingURL=style.css.map */
