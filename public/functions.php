@@ -1160,7 +1160,14 @@ function woocommerce_update_cart()
 
     // Aplicar los cupones restantes en la matriz $applied_coupons
     foreach ($applied_coupons as $key => $coupon) {
-        $woocommerce->cart->apply_coupon($coupon);
+        if ($coupon == strtolower(get_option('offer_complete')) || $coupon == strtolower(get_option('offer_quote'))) {
+            $max_date_timestamp = get_option('max_date_offer');
+            if ($max_date_timestamp >= current_time('timestamp')) {
+                $woocommerce->cart->apply_coupon($coupon);
+            }
+        } else {
+            $woocommerce->cart->apply_coupon($coupon);
+        }
     }
 
     // Calculate totals

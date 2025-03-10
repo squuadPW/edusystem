@@ -71,18 +71,15 @@
           </div>
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="virtual-access" name="virtual_access" <?php echo get_option('virtual_access') == 'on' ? 'checked' : '' ?>>
-            <label
-              for="virtual-access"><?= __('Show button for virtual classroom'); ?></label>
+            <label for="virtual-access"><?= __('Show button for virtual classroom'); ?></label>
           </div>
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="virtual-access" name="auto_enroll_elective" <?php echo get_option('auto_enroll_elective') == 'on' ? 'checked' : '' ?>>
-            <label
-              for="virtual-access"><?= __('Auto enroll elective student'); ?></label>
+            <label for="virtual-access"><?= __('Auto enroll elective student'); ?></label>
           </div>
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="aditional-electives" name="use_elective_aditional" <?php echo get_option('use_elective_aditional') == 'on' ? 'checked' : '' ?>>
-            <label
-              for="virtual-access"><?= __('Use aditional electives'); ?></label>
+            <label for="virtual-access"><?= __('Use aditional electives'); ?></label>
           </div>
         </div>
         <div id="by_moodle" style="display: none">
@@ -114,6 +111,11 @@
               <option value="50% Registration fee" <?= get_option('offer_quote') == '50% Registration fee' ? 'selected' : ''; ?>>50% Registration fee</option>
               <option value="100% Registration fee" <?= get_option('offer_quote') == '100% Registration fee' ? 'selected' : ''; ?>>100% Registration fee</option>
             </select>
+          </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="date" id="max-date-offer" name="max_date_offer"
+              value="<?= !empty(get_option('max_date_offer')) ? esc_attr(date('Y-m-d', get_option('max_date_offer'))) : '' ?>">
+            <label for="virtual-access"><?= __('Max date'); ?></label>
           </div>
         </div>
         <div id="by_notifications" style="display: none">

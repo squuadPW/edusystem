@@ -281,8 +281,13 @@ function redirect_to_checkout($program, $grade, $from_webinar = false, $is_schol
     }
 
     if (!$from_webinar && !$is_scholarship) {
-        // $woocommerce->cart->apply_coupon('Registration fee discount');
-        if (!empty(get_option('offer_complete'))) {
+
+        // Obtener la fecha máxima desde las opciones
+        $max_date_timestamp = get_option('max_date_offer');
+
+        // Verificar si el cupón está vigente
+        if (!empty(get_option('offer_complete')) && $max_date_timestamp >= current_time('timestamp')) {
+            // Aplicar cupón si NO ha expirado
             $woocommerce->cart->apply_coupon(get_option('offer_complete'));
         }
 

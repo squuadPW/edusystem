@@ -32,8 +32,29 @@ function add_admin_form_configuration_options_content()
             // offers
             $offer_complete = sanitize_text_field($_POST['offer_complete']) ?? get_option('offer_complete');
             $offer_quote = sanitize_text_field($_POST['offer_quote']) ?? get_option('offer_quote');
+            $max_date_offer = sanitize_text_field($_POST['max_date_offer']) ?? get_option('max_date_offer');
             update_option('offer_complete', $offer_complete);
             update_option('offer_quote', $offer_quote);
+            // Obtener la zona horaria de WordPress
+            $timezone = new DateTimeZone(wp_timezone_string());
+
+            // Crear DateTime con la fecha máxima y zona horaria del sitio
+            $expiration_date = DateTime::createFromFormat('Y-m-d', $max_date_offer, $timezone);
+            $expiration_date->setTime(23, 59, 59); // Establecer al final del día
+
+            // Actualizar los cupones
+            if ($offer_complete) {
+              $coupon = new WC_Coupon($offer_complete);
+              $coupon->set_date_expires($expiration_date->getTimestamp()); // Usar timestamp corregido
+              $coupon->save();
+            }
+
+            if ($offer_quote) {
+              $coupon = new WC_Coupon($offer_quote);
+              $coupon->set_date_expires($expiration_date->getTimestamp()); // Mismo timestamp
+              $coupon->save();
+            }
+            update_option('max_date_offer', $expiration_date->getTimestamp());
 
             // notifications
             $email_coordination = sanitize_text_field($_POST['email_coordination']);
