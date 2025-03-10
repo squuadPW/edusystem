@@ -1,6 +1,7 @@
 let generate_quote = document.getElementById("generate-quote");
 if (generate_quote) {
   generate_quote.addEventListener("click", (e) => {
+    generate_quote.style.width = '100px';
     document.getElementById("generate-quote").disabled = true;
     document.getElementById("generate-quote").innerText = "Loading...";
 
@@ -14,7 +15,7 @@ if (generate_quote) {
       true
     );
     XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    XHR.responseType = "text";
+    XHR.responseType = "json";
 
     let params = `action=generate_quote_public`;
     if (student_id) {
@@ -27,10 +28,12 @@ if (generate_quote) {
     XHR.send(params);
     XHR.onload = function () {
       if (XHR.status === 200) {
-        location.reload();
+        let data = XHR.response.data;
+        window.location.href = data.url;
       } else {
         document.getElementById("generate-quote").disabled = false;
-        document.getElementById("generate-quote").innerText = "Generate next quota order";
+        document.getElementById("generate-quote").innerText = "Pay";
+        generate_quote.style.width = '70px';
       }
     };
   });

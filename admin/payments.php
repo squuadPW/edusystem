@@ -1249,7 +1249,8 @@ function generate_quote_public_callback() {
     $user_customer = get_user_by('id', $customer_id);
     $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
     $email_user->trigger($user_customer, 'You have pending payments', 'We invite you to log in to our platform as soon as possible so you can see your pending payments.');
+    $checkout_url = wc_get_checkout_url() . 'order-pay/' . $new_order->get_id() . '/?pay_for_order=true&key=' . $new_order->get_order_key();
 
-    wp_send_json_success();
+    wp_send_json_success(array('url' => $checkout_url));
     die();
 }
