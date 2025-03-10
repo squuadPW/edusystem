@@ -1,7 +1,7 @@
 let generate_quote = document.getElementById("generate-quote");
 if (generate_quote) {
   generate_quote.addEventListener("click", (e) => {
-    generate_quote.style.width = '100px';
+    generate_quote.style.width = '140px';
     document.getElementById("generate-quote").disabled = true;
     document.getElementById("generate-quote").innerText = "Loading...";
 
