@@ -40,10 +40,10 @@ add_action('wp_enqueue_scripts', 'admin_form_plugin_scripts');
 
 function aes_scripts_admin()
 {
-    $version = '1.9.0';
+    $version = '1.9.2';
     wp_enqueue_style('flatpickr', plugins_url('aes') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('aes') . '/public/assets/css/intlTelInput.css');
-    wp_enqueue_style('style-admin', plugins_url('aes') . '/admin/assets/css/style.css');
+    wp_enqueue_style('style-admin', plugins_url('aes') . '/admin/assets/css/style.css', array(), $version, 'all');
     wp_enqueue_script('xlsx-js', plugins_url('aes') . '/admin/assets/js/xlsx.full.min.js', array('jquery'), $version, true);
     wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js', array('jquery'), $version, true);
     wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js', array('jquery'), $version, true);

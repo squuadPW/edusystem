@@ -20,7 +20,7 @@ function form_plugin_scripts()
     wp_enqueue_style('dashicons');
     wp_enqueue_style('admin-flatpickr', plugins_url('aes') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('aes') . '/public/assets/css/intlTelInput.css');
-    wp_enqueue_style('style-public', plugins_url('aes') . '/public/assets/css/style.css', '1.0', 'all');
+    wp_enqueue_style('style-public', plugins_url('aes') . '/public/assets/css/style.css', array(), $version, 'all');
     wp_enqueue_script('tailwind', 'https://cdn.tailwindcss.com');
     wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js');
     wp_enqueue_script('masker-js', plugins_url('aes') . '/public/assets/js/vanilla-masker.min.js');
