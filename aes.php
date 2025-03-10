@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Educational system
+Plugin Name: EduSystem
 Description: The WordPress plugin for educational system is a customized tool that offers a range of functionalities for the proper functioning of the institute website
 Version: 1.6.1
 Author: EduSof
