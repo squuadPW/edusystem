@@ -510,4 +510,16 @@ div#application-passwords-section {
   .row-projection select, .row-projection input:not([type=checkbox]) {
     width: 100%;
   }
+}
+
+#wp-admin-bar-wp-logo {
+  display: none;
+}
+
+#wp-admin-bar-comments {
+  display: none;
+}
+
+#wp-admin-bar-new-content {
+  display: none;
 }/*# sourceMappingURL=style.css.map */
