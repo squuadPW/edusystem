@@ -26,7 +26,6 @@ $teacher = get_teacher_details($current_user->user_email);
                         class="nobr"><?= __('action', 'aes'); ?></span></th>
         </thead>
         <tbody>
-            <?php print_r(get_type_file_document_teacher($document->document_id)) ?>
             <?php $documents = get_teacher_documents($teacher->id); ?>
             <?php foreach ($documents as $document): ?>
                 <?php if ($document->is_visible) { ?>

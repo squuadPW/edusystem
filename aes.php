@@ -664,6 +664,16 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
+          'name' => 'STUDENT\'S PHOTO ORIGINAL',
+          'type_file' => '.pdf, .png, .jpeg',
+          'grade_id' => $grade->id,
+          'is_required' => 1,
+          'id_requisito' => 'FP',
+          'is_visible' => 0,
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        $wpdb->insert($table_documents, [
           'name' => 'PROOF OF GRADE',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,

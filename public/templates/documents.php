@@ -65,7 +65,6 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                 class="nobr"><?= __('action', 'aes'); ?></span></th>
                 </thead>
                 <tbody>
-                    <?php print_r(get_type_file_document($document->document_id)) ?>
                     <?php $documents = get_documents($student->id); ?>
                     <?php foreach ($documents as $document): ?>
                         <?php if ($document->is_visible) { ?>
@@ -121,7 +120,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                             value="<?= $document->id; ?>">
                                     <?php $name = get_name_document($document->document_id); ?>
 
-                                        <strong><?= $name; ?> AGREEMENT</strong>
+                                        <strong><?= $name; ?></strong>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
                                         data-title="<?= __('Status', 'aes'); ?>">
