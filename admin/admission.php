@@ -1036,94 +1036,152 @@ function get_student_detail_partner($partner_id)
     return $data;
 }
 
-function update_status_documents()
-{
-    if (
-        !isset($_POST['document_id'], $_POST['status'], $_POST['student_id']) ||
-        empty($_POST['document_id']) || empty($_POST['status']) || empty($_POST['student_id'])
-    ) {
-        exit;
-    }
-
+function update_status_documents() {
     try {
+        validate_required_params(['document_id', 'status', 'student_id']);
+        
         global $wpdb, $current_user;
+        $params = sanitize_input_params();
+        extract($params);
 
-        $document_id = intval($_POST['document_id']);
-        $status_id = intval($_POST['status']);
-        $student_id = intval($_POST['student_id']);
-        $description = isset($_POST['description']) && $_POST['description'] !== 'null' ? sanitize_text_field($_POST['description']) : null;
-
-        $rejected_document = false;
         $student = get_student_detail($student_id);
-        $user_student = get_user_by('email', $student->email);
-        $user_parent = get_user_by('id', $student->partner_id);
+        $users = get_related_users($student);
+        $document = get_document_details($document_id);
 
-        if (!$user_student) {
-            exit;
-        }
+        $description = build_status_description($status_id, $description, $document);
+        
+        update_document_status($document_id, $student_id, $status_id, $description);
+        handle_status_notifications($status_id, $users, $description);
+        
+        $response = [
+            'html' => generate_documents_html($student_id, $document_id),
+            'rejected_document' => handle_status_specific_actions($status_id, $student_id, $document, $users)
+        ];
 
-        $table_student_documents = $wpdb->prefix . 'student_documents';
-        $table_students = $wpdb->prefix . 'students';
-        $document_changed = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id = {$document_id}");
-        $description = get_status_description($status_id, $description, $document_changed);
-
-        if ($status_id == 3 || $status_id == 5) {
-            send_notification_user($user_student->ID, $description, ($status_id == 3 ? 3 : 1), 'documents');
-            send_notification_user($user_parent->ID, $description, ($status_id == 3 ? 3 : 1), 'documents');
-        }
-
-        $wpdb->update($table_student_documents, [
-            'approved_by' => $current_user->ID,
-            'status' => $status_id,
-            'updated_at' => current_time('mysql'),
-            'description' => $description
-        ], ['id' => $document_id, 'student_id' => $student_id]);
-
-        $html = generate_documents_html($student_id, $document_id);
-
-        if ($status_id == 3) {
-            if ($document_changed->is_required) {
-                update_status_student($student_id, 1);
-            }
-
-            if ($document_changed->document_id == 'PHOTO OF STUDENT CARD' || $document_changed->document_id == "STUDENT'S PHOTO") {                
-                $wpdb->update($table_students, [
-                    'profile_picture' => NULL,
-                ], ['id' => $student_id]);
-            }
-
-            $rejected_document = [
-                'student_id' => $student_id,
-                'document_id' => $document_id,
-                'description' => $description,
-            ];
-
-            handle_rejected_document($student_id, $document_id, $user_student->ID, $description);
-        } else {
-
-            if ($document_changed->document_id == 'PHOTO OF STUDENT CARD' || $document_changed->document_id == "STUDENT'S PHOTO") {                
-                $wpdb->update($table_students, [
-                    'profile_picture' => $document_changed->attachment_id,
-                ], ['id' => $student_id]);
-            }
-
-            if (check_solvency_administrative($student_id)) {
-                update_status_student($student_id, 3);
-            }
-    
-            if ($document_changed->is_required) {
-                if (check_access_virtual($student_id)) {
-                    handle_virtual_classroom_access($student_id);
-                }
-            }
-        }
-
-        echo json_encode(['status' => 'success', 'message' => __('status changed', 'aes'), 'html' => $html, 'rejected_document' => $rejected_document]);
-        exit;
+        send_json_response($response);
     } catch (\Throwable $th) {
-        echo json_encode(['status' => 'error', 'message' => $th->getMessage(), 'html' => $html]);
-        exit;
+        log_error($th);
+        send_json_response(['error' => $th->getMessage()], 500);
     }
+}
+
+/* Helper Functions */
+function validate_required_params($required) {
+    foreach ($required as $param) {
+        if (empty($_POST[$param])) throw new Exception("Missing parameter: $param");
+    }
+}
+
+function sanitize_input_params() {
+    return [
+        'document_id' => intval($_POST['document_id']),
+        'status_id' => intval($_POST['status']),
+        'student_id' => intval($_POST['student_id']),
+        'description' => $_POST['description'] !== 'null' ? sanitize_text_field($_POST['description']) : null
+    ];
+}
+
+function get_related_users($student) {
+    return [
+        'student' => get_user_by('email', $student->email),
+        'parent' => get_user_by('id', $student->partner_id)
+    ];
+}
+
+function get_document_details($document_id) {
+    global $wpdb;
+    return $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}student_documents WHERE id = %d", 
+        $document_id
+    ));
+}
+
+function build_status_description($status_id, $description, $document) {
+    $status_map = [
+        3 => 'Document rejected: ',
+        5 => 'Document approved: '
+    ];
+    
+    return $status_map[$status_id] . ($description ?: $document->description);
+}
+
+function update_document_status($document_id, $student_id, $status_id, $description) {
+    global $wpdb, $current_user;
+    
+    $wpdb->update("{$wpdb->prefix}student_documents", [
+        'approved_by' => $current_user->ID,
+        'status' => $status_id,
+        'updated_at' => current_time('mysql'),
+        'description' => $description
+    ], ['id' => $document_id, 'student_id' => $student_id]);
+}
+
+function handle_status_notifications($status_id, $users, $description) {
+    if (in_array($status_id, [3, 5])) {
+        $priority = ($status_id === 3) ? 3 : 1;
+        array_walk($users, function($user) use ($description, $priority) {
+            send_notification_user($user->ID, $description, $priority, 'documents');
+        });
+    }
+}
+
+function handle_status_specific_actions($status_id, $student_id, $document, $users) {
+    if ($status_id === 3) {
+        handle_document_rejection($student_id, $document);
+        return [
+            'student_id' => $student_id,
+            'document_id' => $document->id,
+            'description' => $document->description
+        ];
+    }
+    
+    handle_document_approval($student_id, $document);
+    return null;
+}
+
+function handle_document_rejection($student_id, $document) {
+    global $wpdb;
+    
+    if ($document->is_required) {
+        update_status_student($student_id, 1);
+    }
+    
+    if (in_array($document->document_id, ['PHOTO OF STUDENT CARD', "STUDENT'S PHOTO"])) {
+        $wpdb->update("{$wpdb->prefix}students", ['profile_picture' => null], ['id' => $student_id]);
+    }
+    
+    handle_rejected_document(
+        $student_id, 
+        $document->id, 
+        get_student_detail($student_id)->partner_id,
+        $document->description
+    );
+}
+
+function handle_document_approval($student_id, $document) {
+    global $wpdb;
+    
+    if (in_array($document->document_id, ['PHOTO OF STUDENT CARD', "STUDENT'S PHOTO"])) {
+        $wpdb->update("{$wpdb->prefix}students", 
+            ['profile_picture' => $document->attachment_id], 
+            ['id' => $student_id]
+        );
+    }
+    
+    if (check_solvency_administrative($student_id)) {
+        update_status_student($student_id, 3);
+    }
+    
+    if ($document->is_required && check_access_virtual($student_id)) {
+        handle_virtual_classroom_access($student_id);
+    }
+}
+
+function send_json_response($data, $status_code = 200) {
+    wp_send_json(array_merge(
+        ['status' => $status_code === 200 ? 'success' : 'error'],
+        $data
+    ), $status_code);
 }
 
 function get_status_description($status_id, $description, $document_changed = false)
