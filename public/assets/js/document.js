@@ -38,77 +38,141 @@ progressButton.addEventListener("click", function () {
 
 // Variables globales
 let cropper;
-const $result = document.getElementById('result');
+let originalFile; // Variable para guardar la imagen original
+const $result = document.getElementById("result");
 
-document.getElementById('student_photo').addEventListener('change', function(e) {
+document
+  .getElementById("student_photo")
+  .addEventListener("change", function (e) {
     const file = e.target.files[0];
-    
     if (file) {
-        if (!file.type.match(/^image\//)) {
-            alert("Tipo de archivo inválido! Por favor selecciona una imagen.");
-            return;
+      if (!file.type.match(/^image\//)) {
+        alert("Tipo de archivo inválido! Por favor selecciona una imagen.");
+        return;
+      }
+
+      // Guardar la imagen original
+      originalFile = file;
+
+      const reader = new FileReader();
+      const imagePreview = document.getElementById("imagePreview");
+
+      reader.onload = function (evt) {
+        // Limpiar instancia anterior de Cropper
+        if (cropper) {
+          cropper.destroy();
         }
 
-        const reader = new FileReader();
-        const imagePreview = document.getElementById('imagePreview');
+        imagePreview.src = evt.target.result;
+        // Inicializar Cropper
+        cropper = new Cropper(imagePreview, {
+          aspectRatio: 1 / 1,
+          viewMode: 1,
+          autoCropArea: 1,
+          responsive: true,
+          restore: false,
+        });
+      };
 
-        reader.onload = function(evt) {
-            // Limpiar instancia anterior de Cropper
-            if (cropper) {
-                cropper.destroy();
-            }
-
-            imagePreview.src = evt.target.result;
-            // Inicializar Cropper
-            cropper = new Cropper(imagePreview, {
-                aspectRatio: 16 / 9,
-                viewMode: 1,
-                autoCropArea: 1,
-                responsive: true,
-                restore: false
-            });
-        };
-        
-        reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
+      document.body.classList.add("modal-open");
+      document.getElementById("modal-cropperjs").style.display = "block";
     } else {
-        alert('No se seleccionó ningún archivo.');
+      alert("No se seleccionó ningún archivo.");
     }
-});
+  });
 
 // Manejar botón de recorte
-document.getElementById('btnCrop').addEventListener('click', function() {
+document.getElementById("btnCrop").addEventListener("click", function () {
   if (cropper) {
-      const croppedCanvas = cropper.getCroppedCanvas();
-      
-      // Convertir el canvas a Blob
-      croppedCanvas.toBlob((blob) => {
-          // Crear un File a partir del Blob
-          const file = new File([blob], 'imagen_recortada.png', {
-              type: 'image/png'
-          });
+    const croppedCanvas = cropper.getCroppedCanvas();
 
-          // Crear un DataTransfer para asignar el archivo al input
-          const dataTransfer = new DataTransfer();
-          dataTransfer.items.add(file);
-          
-          // Asignar los archivos al input
-          document.getElementById('student_photo').files = dataTransfer.files;
+    // Convertir el canvas a Blob
+    croppedCanvas.toBlob((blob) => {
+      // Crear un File a partir del Blob
+      const file = new File([blob], "imagen_recortada.png", {
+        type: "image/png",
+      });
 
-          // Mostrar previsualización
-          const croppedImage = document.createElement('img');
-          croppedImage.src = URL.createObjectURL(blob);
-          $result.appendChild(croppedImage);
-          
-          // Limpiar cropper si es necesario
-          cropper.destroy();
-      }, 'image/png');
+      // Crear un DataTransfer para asignar el archivo al input
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+
+      // Asignar los archivos al input
+      document.getElementById("student_photo").files = dataTransfer.files;
+
+      // Mostrar previsualización
+      const croppedImage = document.createElement("img");
+      croppedImage.src = URL.createObjectURL(blob);
+      $result.innerHTML = ""; // Limpiar contenido anterior
+      $result.appendChild(croppedImage);
+
+      // Limpiar cropper si es necesario
+      cropper.destroy();
+      document.getElementById("pre-image").style.display = "none";
+      document.getElementById("preview").style.display = "block";
+
+      document.getElementById("pre-image-buttons").style.display = "none";
+      document.getElementById("preview-buttons").style.display = "flex";
+    }, "image/png");
   }
 });
 
 // Manejar botón de restauración
-document.getElementById('btnRestore').addEventListener('click', function() {
-    if (cropper) {
-        cropper.reset();
-        $result.innerHTML = '';
-    }
+document.getElementById("btnRestore").addEventListener("click", function () {
+  if (cropper) {
+    cropper.reset();
+    $result.innerHTML = "";
+  }
+});
+
+document.getElementById("btnConfirm").addEventListener("click", function () {
+  document.getElementById("modal-cropperjs").style.display = "none";
+  document.body.classList.remove("modal-open");
+});
+
+document.getElementById("btnBack").addEventListener("click", function () {
+  const fileInput = document.getElementById("student_photo");
+
+  // Restaurar la imagen original
+  if (originalFile) {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(originalFile);
+    fileInput.files = dataTransfer.files;
+  }
+
+  // Disparar el evento change
+  const event = new Event("change");
+  fileInput.dispatchEvent(event);
+
+  document.getElementById("pre-image").style.display = "block";
+  document.getElementById("preview").style.display = "none";
+
+  document.getElementById("pre-image-buttons").style.display = "flex";
+  document.getElementById("preview-buttons").style.display = "none";
+});
+
+document.querySelector(".modal-close").addEventListener("click", function () {
+  const fileInput = document.getElementById("student_photo");
+
+  // Resetear el input de tipo file
+  fileInput.value = ""; // Esto elimina cualquier archivo seleccionado
+
+  // También puedes usar DataTransfer para asegurarte de que no haya archivos
+  const dataTransfer = new DataTransfer();
+  fileInput.files = dataTransfer.files;
+
+  document.getElementById("modal-cropperjs").style.display = "none";
+  document.body.classList.remove("modal-open");
+
+  // Limpiar el resultado del recorte si existe
+  $result.innerHTML = "";
+
+  // Limpiar la instancia de Cropper si existe
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+
+  document.getElementById("student_photo_label_input").textContent = "Select file";
 });

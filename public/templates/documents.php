@@ -105,7 +105,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                                 name="<?= 'document_' . $document->id . '_student_id_' . $student->id; ?>"
                                                 accept="<?php echo get_type_file_document($document->document_id) ?>"
                                                 data-fileallowed="<?php echo get_type_file_document($document->document_id) ?>">
-                                            <span class="custom-file-label">Select file</span>
+                                            <span class="custom-file-label" <?= $document_name_complete == 'PHOTO OF STUDENT CARD' || $document_name_complete == 'STUDENT\'S PHOTO' ? 'id=student_photo_label_input' : '' ?>>Select file</span>
                                         </div>
                                     <?php } else { ?>
                                         <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" type="button"
@@ -140,14 +140,6 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
             </table>
         <?php endforeach; ?>
 
-        <p>
-            <!-- Below are a series of inputs which allow file selection and interaction with the cropper api -->
-            <img id="imagePreview" src="#" alt="Preview">
-            <button type="button" id="btnCrop">Recortar</button>
-            <button type="button" id="btnRestore">Restaurar</button>
-            <div id="result"></div>
-        </p>
-
         <div style="display:block;text-align:center;">
             <button class="submit" type="submit" style="display: none"
                 id="send_real"><?= __('Send Documents', 'aes'); ?></button>
@@ -163,3 +155,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
 <script src="https://unpkg.com/tippy.js@6"></script>
 <link href="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.css" rel="stylesheet">
 <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>
+
+<?php
+    include('modal-cropperjs.php');
+?>

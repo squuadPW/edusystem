@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .map((ext) => extensionToMime[ext])
         .filter(Boolean);
 
-      if (!allowedTypes.includes(fileInput.files[0].type)) {
+      if (!allowedTypes.includes(fileInput.files[0]?.type)) {
         alert("Only allowed file types: " + allowedExtensions.join(", "));
         fileInput.value = "";
         fileLabels[index].textContent = "Select file";

@@ -1256,4 +1256,8 @@ body.modal-open {
 
 .grecaptcha-badge {
   display: none;
+}
+
+#result img {
+  margin: auto;
 }/*# sourceMappingURL=style.css.map */

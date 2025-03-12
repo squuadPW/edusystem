@@ -276,6 +276,7 @@ function add_admin_form_admission_content()
                 $document_id = $_POST['document_upload_id'];
                 $document_name = $_POST['document_upload_name'];
                 $table_student_documents = $wpdb->prefix . 'student_documents';
+                $table_students = $wpdb->prefix . 'students';
 
                 if (isset($_FILES['document_upload_file']) && !empty($_FILES['document_upload_file'])) {
                     $file_temp = $_FILES['document_upload_file'];
@@ -301,6 +302,13 @@ function add_admin_form_admission_content()
                         $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
                         wp_update_attachment_metadata($attach_id, $attach_data);
                         $wpdb->update($table_student_documents, ['status' => 5, 'attachment_id' => $attach_id, 'description' => 'The file was uploaded from the administration and approved immediately.', 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $id, 'id' => $document_id]);
+            
+                        $document_changed = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id = {$document_id}");
+                        if ($document_changed->document_id == 'PHOTO OF STUDENT CARD' || $document_changed->document_id == "STUDENT'S PHOTO") {                
+                            $wpdb->update($table_students, [
+                                'profile_picture' => $document_changed->attachment_id,
+                            ], ['id' => $id]);
+                        }
                     }
                 }
 
