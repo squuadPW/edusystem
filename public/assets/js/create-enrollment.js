@@ -7,7 +7,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
   if (document.getElementById("modal_open")) {
     document.body.classList.add("modal-open");
-    window.scrollTo(0, 0);
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 1000);
   }
 
   function resizeCanvas(canvasId, timmeout) {
