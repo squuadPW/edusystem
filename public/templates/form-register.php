@@ -19,14 +19,14 @@
                 <select id="year-select" class="year-select"></select>
             </div> -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="birth_date"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
+            <label for="birth_date_student"><?= __('Date of birth', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_student"
                 name="birth_date_student" required>
             <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
                 value="0">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="birth_date"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
+            <label for="document_type"><?= __('Type document', 'aes'); ?><span class="required">*</span></label>
             <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument(); validateIDs(false)" required>
                 <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
                 <option value="passport"><?= __('Passport', 'aes'); ?></option>
@@ -35,7 +35,7 @@
             </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="birth_date"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
+            <label for="id_document"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" autocomplete="off" type="text" id="id_document" name="id_document"
                 oninput="sendAjaxIdDocument(); validateIDs(false)" required>
             <span id="exisstudentid"
@@ -44,28 +44,28 @@
                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same ID as the student', 'aes'); ?></span>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
+            <label for="name_student"><?= __('Name', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Second name', 'aes'); ?><span class="required">*</span></label>
+            <label for="middle_name_student"><?= __('Second name', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Last name', 'aes'); ?><span class="required">*</span></label>
+            <label for="lastname_student"><?= __('Last name', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Second last name', 'aes'); ?><span class="required">*</span></label>
+            <label for="middle_last_name_student"><?= __('Second last name', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="phone"><?= __('Contact number', 'aes'); ?><span class="required">*</span></label>
+            <label for="number_phone"><?= __('Contact number', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="tel" id="number_phone" name="number_phone" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="student-email-detail">
             <div id="student-email">
-                <label for="email"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
+                <label for="email_student"><?= __('Email address', 'aes'); ?><span class="required">*</span></label>
                 <input class="formdata" type="email" name="email_student" autocomplete="off"
                     oninput="sendAjaxStudentEmailDocument()" required>
                 <span id="existstudentemail"
@@ -116,7 +116,7 @@
             </select>
         </div>
 
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+        <div id="parent_id_document_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="id_document_parent"><?= __('ID document', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" autocomplete="off" type="text" id="id_document_parent" name="id_document_parent"
                 oninput="validateIDs(false)" required>
@@ -129,12 +129,12 @@
                 required>
         </div>
         <div id="parent-lastname-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="agent_name"><?= __('Last name', 'aes'); ?><span class="required">*</span></label>
+            <label for="agent_last_name"><?= __('Last name', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="agent_last_name" autocomplete="off"
                 id="agent_last_name" required>
         </div>
         <div id="parent-phone-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="phone"><?= __('Contact number', 'aes'); ?><span class="required">*</span></label>
+            <label for="number_partner"><?= __('Contact number', 'aes'); ?><span class="required">*</span></label>
             <input class="formdata" type="tel" id="number_partner" autocomplete="off" id="number_partner"
                 name="number_partner" required>
         </div>
