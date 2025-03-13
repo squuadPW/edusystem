@@ -960,6 +960,8 @@ h3 {
 
 body.modal-open {
   overflow: hidden;
+  top: 0;
+  position: relative;
 }
 
 .notification-card {

@@ -1011,8 +1011,8 @@ h3{
 
 body.modal-open {
   overflow: hidden;
-    // top: 0 !important;
-    // position: absolute;
+  top: 0;
+  position: relative;
 }
 
 .notification-card {
