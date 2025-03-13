@@ -1098,7 +1098,8 @@ function get_document_details($document_id) {
 
 function build_status_description($status_id, $description, $document) {
     $status_map = [
-        3 => 'Document rejected: '
+        3 => 'Document rejected: ',
+        5 => 'Document approved'
     ];
     
     return $status_map[$status_id] . ($description ?: $document->description);
