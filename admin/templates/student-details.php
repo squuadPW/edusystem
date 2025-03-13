@@ -547,7 +547,7 @@
                     <th scope="col" class=" manage-column column-primary"><?= __('Date upload documents', 'aes'); ?></th>
                     <th scope="col" class=" manage-column column-email"><?= __('Date status change', 'aes'); ?></th>
                     <th scope="col" class=" manage-column column-email"><?= __('Status changed by', 'aes'); ?></th>
-                    <th scope="col" class=" manage-column column-email"><?= __('Reason of decline', 'aes'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Message', 'aes'); ?></th>
                 </tr>
             </thead>
             <tbody>
