@@ -1254,10 +1254,10 @@ function generate_documents_html($student_id, $document_id)
             $html .= '<td class="column-primary" colspan="3">' . get_name_document($document->document_id) . "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
             $html .= '<td colspan="2" id="td_document_' . $document->document_id . '" data-colname="' . __('Status', 'aes') . '"><b>' . get_status_document($document->status) . '</b></td>';
             $html .= '<td colspan="7" data-colname="' . __('Actions', 'aes') . '">';
-            $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(" . json_encode($document) . ")'><button type='button' class='button button-primary-outline other-buttons-document'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'aes') . "</button></a>";
+            $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'aes') . "</button></a>";
 
             if ($document->status > 0) {
-                $html .= "<a style='margin-right: 3px;' target='_blank' onclick='watchDetails(" . json_encode($document) . ")'><button type='button' class='button button-primary-outline other-buttons-document'>" . __('View detail', 'aes') . "</button></a>";
+                $html .= "<a style='margin-right: 3px;' target='_blank' onclick='watchDetails(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'>" . __('View detail', 'aes') . "</button></a>";
                 $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '"><button type="button" class="button button-primary other-buttons-document">' . __('View documment', 'aes') . '</button></a>';
 
                 if ($document->status != 1) {
