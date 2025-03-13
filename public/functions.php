@@ -495,7 +495,13 @@ function remove_my_account_links($menu_links)
 
     // Lógica para roles "parent" y "student"
     if (in_array('parent', $roles) || in_array('student', $roles)) {
-        // Agregar "Documents" si el usuario tiene el estado de registro correcto
+        
+        // Agregar "Student Information"
+        $menu_links['student'] = __('Student Information', 'aes');
+
+        // Agregar "Califications"
+        $menu_links['califications'] = __('Califications', 'form-plugin');
+
         if (in_array('parent', $roles)) {
             if (get_user_meta($user_id, 'status_register', true) == 1) {
                 $menu_links['student-documents'] = __('Documents', 'form-plugin');
@@ -509,22 +515,14 @@ function remove_my_account_links($menu_links)
                 $menu_links['student-documents'] = __('Documents', 'form-plugin');
             }
         }
-
-        // Agregar "Student Information"
-        $menu_links['student'] = __('Student Information', 'aes');
-
-        // Agregar "Califications"
-        $menu_links['califications'] = __('Califications', 'form-plugin');
-
-        // Agregar "Requests"
-        $menu_links['my-requests'] = __('Requests', 'form-plugin');
-
-        // Agregar "Tickets"
-        $menu_links['my-tickets'] = __('Tickets', 'form-plugin');
     }
 
-    // Agregar "Account Details" al final
-    $menu_links['edit-account'] = __('Account Details', 'woocommerce');
+    $menu_links['edit-account'] = __('Account', 'woocommerce');
+
+    if (in_array('parent', $roles) || in_array('student', $roles)) {
+        $menu_links['my-tickets'] = __('Support Tickets', 'form-plugin');
+        $menu_links['my-requests'] = __('Requests', 'form-plugin');
+    }
 
     return $menu_links;
 }
@@ -621,11 +619,9 @@ function add_loginout_link($items, $args)
         }
         if ($args->theme_location == 'primary') {
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications"><span style="vertical-align: baseline; font-size: 28px; width: 26px; color: ' . $color . '; cursor: pointer;" class="dashicons dashicons-bell"></span>' . $count . '</a></li>';
-        } else {
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications">' . __('Notifications', 'form-plugin') . '</a></li>';
         }
-
-
+        
+        
         $birthday = get_user_meta($current_user->ID, 'birth_date', true);
         $age = floor((time() - strtotime($birthday)) / 31556926);
         if ($age >= 18) {
@@ -633,16 +629,23 @@ function add_loginout_link($items, $args)
         }
 
         $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '">' . __('Dashboard', 'form-plugin') . '</a></li>';
+
+
+        if ($args->theme_location != 'primary') {
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications">' . __('Notifications', 'form-plugin') . '</a></li>';
+        }
+
+        
         if ($args->theme_location != 'primary') {
             if ($age >= 18) {
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/orders">' . __('Payments', 'form-plugin') . '</a></li>';
             }
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Students information', 'form-plugin') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'form-plugin') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account details', 'form-plugin') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('My tickets', 'form-plugin') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-requests">' . __('My requests', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'form-plugin') . '</a></li>';
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('Suppor tickets', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-requests">' . __('Requests', 'form-plugin') . '</a></li>';
         }
 
         $logout_link = wp_logout_url(get_home_url());

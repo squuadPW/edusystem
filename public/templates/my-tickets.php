@@ -1,4 +1,4 @@
-<h2 style="font-size:24px;text-align:center;"><?= __('My tickets', 'form-plugin'); ?></h2>
+<h2 style="font-size:24px;text-align:center;"><?= __('Support tickets', 'form-plugin'); ?></h2>
 <table
     class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
     style="margin-top:20px;">
