@@ -111,6 +111,8 @@ div#application-passwords-section {
   background-color: rgba(0, 0, 0, 0.5);
   padding: 20px;
   box-sizing: border-box;
+  backdrop-filter: blur(5px); /* Desenfoque */
+  -webkit-backdrop-filter: blur(5px); /* Para Safari */
 }
 
 .modal-content {
