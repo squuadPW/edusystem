@@ -93,8 +93,24 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <input type="hidden"
                                         name="<?= 'file_is_required' . $document->id . '_student_id_' . $student->id; ?>"
                                         value="<?= $document->is_required; ?>">
-                                    <?php $status = get_status_document($document->status); ?>
-                                    <?= $status == 'No sent' ? 'Pending' : $status ?>
+                                    <?php
+                                    $status = get_status_document($document->status);
+                                    $style = '';
+                                    switch ($status) {
+                                        case 'Sent':
+                                        case 'Processing':
+                                            $style = 'color: blue';
+                                            break;
+                                        case 'Declined':
+                                        case 'Expired':
+                                            $style = 'color: red';
+                                            break;
+                                        case 'Approved':
+                                            $style = 'color: green';
+                                            break;
+                                    }
+                                    ?>
+                                    <span style="<?= $style ?>"><?= $status == 'No sent' ? 'Pending' : $status ?></span>
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                     data-title="<?= __('Action', 'aes'); ?>">
@@ -104,7 +120,8 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                                 name="<?= 'document_' . $document->id . '_student_id_' . $student->id; ?>"
                                                 accept="<?php echo get_type_file_document($document->document_id) ?>"
                                                 data-fileallowed="<?php echo get_type_file_document($document->document_id) ?>">
-                                            <span class="custom-file-label" <?= $document_name_complete == 'PHOTO OF STUDENT CARD' || $document_name_complete == 'STUDENT\'S PHOTO' ? 'id=student_photo_label_input' : '' ?>>Select file</span>
+                                            <span class="custom-file-label" <?= $document_name_complete == 'PHOTO OF STUDENT CARD' || $document_name_complete == 'STUDENT\'S PHOTO' ? 'id=student_photo_label_input' : '' ?>>Select
+                                                file</span>
                                         </div>
                                     <?php } else { ?>
                                         <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" type="button"
@@ -122,10 +139,27 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
 
                                         <strong><?= $name; ?></strong>
                                     </td>
+                                <?php
+                                $status = get_status_document($document->status);
+                                $style = '';
+                                switch ($status) {
+                                    case 'Sent':
+                                    case 'Processing':
+                                        $style = 'color: blue';
+                                        break;
+                                    case 'Declined':
+                                    case 'Expired':
+                                        $style = 'color: red';
+                                        break;
+                                    case 'Approved':
+                                        $style = 'color: green';
+                                        break;
+                                }
+                                ?>
+
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
                                         data-title="<?= __('Status', 'aes'); ?>">
-                                    <?php $status = get_status_document($document->status); ?>
-                                    <?= $status == 'No sent' ? 'Pending' : $status ?>
+                                        <span style="<?= $style ?>"><?= $status == 'No sent' ? 'Pending' : $status ?></span>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                         data-title="<?= __('Action', 'aes'); ?>">
@@ -156,5 +190,5 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
 <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>
 
 <?php
-    include('modal-cropperjs.php');
+include('modal-cropperjs.php');
 ?>

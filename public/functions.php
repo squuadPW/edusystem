@@ -16,7 +16,7 @@ require plugin_dir_path(__FILE__) . 'automatically_enrollment.php';
 function form_plugin_scripts()
 {
     global $wp;
-    $version = '1.9.4';
+    $version = '1.9.7';
     wp_enqueue_style('dashicons');
     wp_enqueue_style('admin-flatpickr', plugins_url('aes') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('aes') . '/public/assets/css/intlTelInput.css');
@@ -496,8 +496,18 @@ function remove_my_account_links($menu_links)
     // Lógica para roles "parent" y "student"
     if (in_array('parent', $roles) || in_array('student', $roles)) {
         // Agregar "Documents" si el usuario tiene el estado de registro correcto
-        if (get_user_meta($user_id, 'status_register', true) == 1) {
-            $menu_links['student-documents'] = __('Documents', 'form-plugin');
+        if (in_array('parent', $roles)) {
+            if (get_user_meta($user_id, 'status_register', true) == 1) {
+                $menu_links['student-documents'] = __('Documents', 'form-plugin');
+            }
+        }
+
+        if (in_array('student', $roles)) {
+            $student_id = get_user_meta($user_id, 'student_id', true);
+            $student = get_student_detail($student_id);
+            if (get_user_meta($student->partner_id, 'status_register', true) == 1) {
+                $menu_links['student-documents'] = __('Documents', 'form-plugin');
+            }
         }
 
         // Agregar "Student Information"

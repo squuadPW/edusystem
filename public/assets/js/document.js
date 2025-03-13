@@ -66,7 +66,7 @@ document
         imagePreview.src = evt.target.result;
         // Inicializar Cropper
         cropper = new Cropper(imagePreview, {
-          aspectRatio: 1 / 1,
+          aspectRatio: 37 / 45,
           viewMode: 1,
           autoCropArea: 1,
           responsive: true,
@@ -129,6 +129,8 @@ document.getElementById("btnRestore").addEventListener("click", function () {
 document.getElementById("btnConfirm").addEventListener("click", function () {
   document.getElementById("modal-cropperjs").style.display = "none";
   document.body.classList.remove("modal-open");
+
+  clearCropper();
 });
 
 document.getElementById("btnBack").addEventListener("click", function () {
@@ -162,6 +164,19 @@ document.querySelector(".modal-close").addEventListener("click", function () {
   const dataTransfer = new DataTransfer();
   fileInput.files = dataTransfer.files;
 
+  document.getElementById("student_photo_label_input").textContent = "Select file";
+
+  clearCropper();
+});
+
+function clearCropper() {
+
+  document.getElementById("pre-image").style.display = "block";
+  document.getElementById("preview").style.display = "none";
+
+  document.getElementById("pre-image-buttons").style.display = "flex";
+  document.getElementById("preview-buttons").style.display = "none";
+
   document.getElementById("modal-cropperjs").style.display = "none";
   document.body.classList.remove("modal-open");
 
@@ -173,6 +188,4 @@ document.querySelector(".modal-close").addEventListener("click", function () {
     cropper.destroy();
     cropper = null;
   }
-
-  document.getElementById("student_photo_label_input").textContent = "Select file";
-});
+}
