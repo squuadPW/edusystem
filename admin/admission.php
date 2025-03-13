@@ -1112,7 +1112,7 @@ function update_document_status($document_id, $student_id, $status_id, $descript
         'approved_by' => $current_user->ID,
         'status' => $status_id,
         'updated_at' => current_time('mysql'),
-        'description' => $description
+        'description' => $status_id == 1 ? null : $description
     ], ['id' => $document_id, 'student_id' => $student_id]);
 }
 
