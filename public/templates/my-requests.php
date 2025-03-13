@@ -1,4 +1,4 @@
-<h2 style="font-size:24px;text-align:center;"><?= __('My requests', 'form-plugin'); ?></h2>
+<h2 style="font-size:24px;text-align:center;"><?= __('Requests', 'form-plugin'); ?></h2>
 <div style="text-align: center; margin: 30px;">
     <span><button type="button" class="submit" style="width: 180px !important" id="add_new_request">New
             request</button></span>
