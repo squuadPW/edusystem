@@ -958,11 +958,8 @@ h3 {
   }
 }
 
-/* When the modal is open, set the overflow property of the body element to hidden */
 body.modal-open {
   overflow: hidden;
-  top: 0 !important;
-  position: absolute;
 }
 
 .notification-card {
