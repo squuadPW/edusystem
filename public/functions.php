@@ -2735,8 +2735,7 @@ add_action('template_redirect', 'redirect_admins_from_my_account_to_admin');
 
 function redirect_admins_from_my_account_to_admin() {
     // Verificar si estamos en la página "My Account" de WooCommerce
-    if (is_page(wc_get_page_id('myaccount'))) {
-        
+    if(is_account_page()){
         if (is_user_logged_in()) {
             global $current_user;
             $roles = $current_user->roles;
