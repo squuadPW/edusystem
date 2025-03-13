@@ -463,18 +463,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
     };
   }
 
-  function updateGrade(id) {
-    const gradeSpans = document.querySelectorAll('[id^="grade"]');
-    gradeSpans.forEach((span) => {
-      span.textContent = "( )"; // reset all spans to blank space
-    });
-    const selectedSpan = document.getElementById(id);
-    selectedSpan.textContent = "(✓)"; // set the selected span to "✓"
-    gradeSelected = id;
-    document.getElementById("please_select_grade").style.display = "none";
-    document.getElementById("select_grade").style.color = "#000";
-  }
-
   function loadSignatures() {
     const XHR = new XMLHttpRequest();
     XHR.open("POST", ajax_object.ajax_url, true);
@@ -570,25 +558,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
     };
   }
 
-  function autoSignature(hide, show, button_hide, clear_hide = null) {
-    document.getElementById(hide).style.display = "none";
-    document.getElementById(show).style.display = "block";
-    document.getElementById(button_hide).style.display = "none";
-
-    if (button_hide == "generate-signature-student") {
-      document.querySelector('input[name="auto_signature_student"]').value = 1;
-      document.getElementById("clear-student-signature").style.display =
-        "block";
-    } else {
-      document.querySelector('input[name="auto_signature_parent"]').value = 1;
-      document.getElementById("clear-parent-signature").style.display = "block";
-    }
-
-    if (clear_hide) {
-      document.getElementById(clear_hide).style.display = "none";
-    }
-  }
-
   function returnButtonTitle() {
     let document_id = "ENROLLMENT";
     if (document.querySelector("input[name=document_id]")) {
@@ -602,3 +571,34 @@ document.addEventListener("DOMContentLoaded", (event) => {
     }
   }
 });
+
+function updateGrade(id) {
+  const gradeSpans = document.querySelectorAll('[id^="grade"]');
+  gradeSpans.forEach((span) => {
+    span.textContent = "( )"; // reset all spans to blank space
+  });
+  const selectedSpan = document.getElementById(id);
+  selectedSpan.textContent = "(✓)"; // set the selected span to "✓"
+  gradeSelected = id;
+  document.getElementById("please_select_grade").style.display = "none";
+  document.getElementById("select_grade").style.color = "#000";
+}
+
+function autoSignature(hide, show, button_hide, clear_hide = null) {
+  document.getElementById(hide).style.display = "none";
+  document.getElementById(show).style.display = "block";
+  document.getElementById(button_hide).style.display = "none";
+
+  if (button_hide == "generate-signature-student") {
+    document.querySelector('input[name="auto_signature_student"]').value = 1;
+    document.getElementById("clear-student-signature").style.display =
+      "block";
+  } else {
+    document.querySelector('input[name="auto_signature_parent"]').value = 1;
+    document.getElementById("clear-parent-signature").style.display = "block";
+  }
+
+  if (clear_hide) {
+    document.getElementById(clear_hide).style.display = "none";
+  }
+}
