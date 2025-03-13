@@ -24,6 +24,7 @@
                         <input type="hidden" name="parent_user_id" value="<?php echo $partner_id ?>">
                         <input type="hidden" name="show_parent_info" value="<?php echo $show_parent_info ?>">
                         <input type="hidden" name="document_id" value="MISSING DOCUMENT">
+                        <input class="formdata" autocomplete="off" type="hidden" id="modal_open" name="modal_open" value="1">
                         <!-- <h4
                             style="background-color: #002fbd; color: white; padding: 4px; text-align: center; font-weight: 600;">
                             STUDENT PERSONAL INFORMATION</h4> -->
