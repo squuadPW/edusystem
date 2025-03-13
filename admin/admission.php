@@ -1209,25 +1209,15 @@ function handle_rejected_document($student_id, $document_id, $user_id, $descript
     global $wpdb;
     $table_student_documents = $wpdb->prefix . 'student_documents';
 
-    // try {
-    //     $email_rejected_document = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
-    //     $email_rejected_document->trigger($student_id, $document_id, $description);
-    
-    //     $email_rejected_document_parent = WC()->mailer()->get_emails()['WC_Rejected_Document_Email'];
-    //     $email_rejected_document_parent->trigger($student_id, $document_id, $description, true);
-    // } catch (\Throwable $th) {
-    //     //throw $th;
-    // }
-
     $document_loaded = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id = $document_id");
     $document_types = ['ENROLLMENT', 'MISSING DOCUMENT'];
 
     if (in_array($document_loaded->document_id, $document_types)) {
         $table_users_signatures = $wpdb->prefix . 'users_signatures';
-        $wpdb->delete($table_users_signatures, ['user_id' => $user_id, 'document_id' => $document_loaded->document_id]);
-
-        $student_get = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}students WHERE id = %d", $student_id));
-        $wpdb->delete($table_users_signatures, ['user_id' => $student_get->partner_id, 'document_id' => $document_loaded->document_id]);
+        $student = get_student_detail($student_id);
+        $user_student = get_user_by('email', $student->email);
+        $wpdb->delete($table_users_signatures, ['user_id' => $user_student->ID, 'document_id' => $document_loaded->document_id]); // estudiante
+        $wpdb->delete($table_users_signatures, ['user_id' => $user_id, 'document_id' => $document_loaded->document_id]); // padre
     }
 }
 
