@@ -1082,12 +1082,19 @@ function sanitize_input_params() {
 }
 
 function get_related_users($student) {
+    $student_user = get_user_by('email', $student->email);
+    $parent_user = get_user_by('id', $student->partner_id);
+
+    // Check if parent is the same as the student
+    if ($parent_user && $student_user && $parent_user->ID === $student_user->ID) {
+        $parent_user = null; // Invalidate parent to avoid duplication
+    }
+
     return [
-        'student' => get_user_by('email', $student->email),
-        'parent' => get_user_by('id', $student->partner_id)
+        'student' => $student_user,
+        'parent' => $parent_user
     ];
 }
-
 function get_document_details($document_id) {
     global $wpdb;
     return $wpdb->get_row($wpdb->prepare(
