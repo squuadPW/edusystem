@@ -1,10 +1,10 @@
-document.addEventListener("DOMContentLoaded", (event) => {
-  let signaturePadStudent;
-  let signaturePadParent;
-  let gradeSelected = null;
-  let downloading = false;
-  let first_time = false;
+let signaturePadStudent;
+let signaturePadParent;
+let gradeSelected = null;
+let downloading = false;
+let first_time = false;
 
+document.addEventListener("DOMContentLoaded", (event) => {
   if (document.getElementById("modal_open")) {
     document.body.classList.add("modal-open");
     setTimeout(() => {
