@@ -437,9 +437,9 @@ function sendSignatures(doc = null) {
 
   XHR.onload = function () {
     if (XHR.status === 200) {
-      document.getElementById("modal-contraseña").style.display = "none";
-      document.getElementById("modal-content").style.display = "none";
-      document.body.classList.remove("modal-open");
+      // document.getElementById("modal-contraseña").style.display = "none";
+      // document.getElementById("modal-content").style.display = "none";
+      // document.body.classList.remove("modal-open");
 
       location.reload();
     }
