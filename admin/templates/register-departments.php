@@ -120,6 +120,12 @@
                         </th>
                         <td style="display:table-cell;padding:3px;"><label for="manager_requests_aes" style="margin-left:20px;"><?= __('Requests','aes'); ?></label></td>
                     </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_equivalence_matrix_aes" id="manager_equivalence_matrix_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_equivalence_matrix_aes'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_equivalence_matrix_aes" style="margin-left:20px;"><?= __('Equivalency matrix','aes'); ?></label></td>
+                    </tr>
                 </div>
                 <!-- ACADEMIC -->
 

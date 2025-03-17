@@ -56,6 +56,19 @@ function create_tables()
   $table_requests = $wpdb->prefix . 'requests';
   $table_type_requests = $wpdb->prefix . 'type_requests';
   $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
+  $table_equivalence_matrix = $wpdb->prefix . 'equivalence_matrix';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_equivalence_matrix}'") != $table_equivalence_matrix) {
+    dbDelta(
+      "CREATE TABLE " . $table_equivalence_matrix . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        name TEXT NOT NULL,
+        matrix JSON NULL,
+        institute_id INT(11) NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_type_requests}'") != $table_type_requests) {
     dbDelta(
