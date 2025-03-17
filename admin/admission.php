@@ -735,7 +735,7 @@ class TT_document_review_List_Table extends WP_List_Table
                 AND (" . ($period ? "a.academic_period = '$period'" : "1=1") . ")
             )
             GROUP BY a.id
-            ORDER BY a.updated_at DESC
+            ORDER BY review_pending_documents DESC, a.updated_at DESC
             LIMIT {$per_page} OFFSET {$offset}
             ", "ARRAY_A");
 
