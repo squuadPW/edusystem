@@ -70,3 +70,10 @@ function get_list_grades_documents($grade_id = ""){
     $documents = $wpdb->get_results("SELECT * FROM {$table_documents}");
     return $documents;
 }
+
+function get_status_approved($document_id = "", $student_id = ""){
+    global $wpdb;
+    $table_student_documents = $wpdb->prefix.'student_documents';
+    $document = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id} AND document_id='{$document_id}'");
+    return $document->status == 5 ? true : false;
+}

@@ -18,6 +18,7 @@ function add_admin_form_academic_projection_content()
             $load = load_current_cut_enrollment();
             $current_period = $load['code'];
             $current_cut = $load['cut'];
+            $download_grades = get_status_approved('CERTIFIED NOTES HIGH SCHOOL', $student->id);
 
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-detail.php');
         }

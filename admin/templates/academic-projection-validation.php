@@ -1,6 +1,3 @@
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
-
 <div>
     <form method="post"
         action="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollments'); ?>">
@@ -58,32 +55,3 @@
         <?php } ?>
     </div>
 </div>
-
-<!-- <script>
-    document.getElementById('download').addEventListener('click', function() {
-        const { jsPDF } = window.jspdf;
-
-        // Use html2canvas to take a screenshot of the table
-        html2canvas(document.getElementById('history')).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF();
-            const imgWidth = 190; // Adjust width as needed
-            const pageHeight = pdf.internal.pageSize.height;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            const heightLeft = imgHeight;
-
-            let position = 0;
-
-            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-            position += heightLeft;
-
-            // Add a new page if the content is too long
-            if (heightLeft >= pageHeight) {
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-            }
-
-            pdf.save('table.pdf');
-        });
-    });
-</script> -->
