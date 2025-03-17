@@ -18,8 +18,7 @@
         <?php setcookie('message-error', '', time(), '/'); ?>
     <?php } ?>
     <div style="display:flex;width:100%;">
-        <a class="button button-outline-primary"
-            href="<?= admin_url('admin.php?page=add_admin_form_school_subjects_content'); ?>"><?= __('Back', 'aes'); ?></a>
+        <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder">
@@ -29,7 +28,7 @@
                     <div class="inside">
 
                         <form method="post"
-                            action="<?= admin_url('admin.php?page=add_admin_form_school_subjects_content&action=save_subject_details'); ?>">
+                            action="<?= admin_url('admin.php?page=add_admin_form_school_subjects_content&action=save_subject_details&equivalence=') . $equivalence; ?>">
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
@@ -37,21 +36,16 @@
                                 </h3>
                                 <div style="text-align: center; margin: 18px">
                                     <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($subject) && !empty($subject)): ?>
-                                            <input type="hidden" name="subject_id" id="subject_id"
-                                                value="<?= $subject->id; ?>">
+                                        <input type="hidden" name="subject_id" id="subject_id" value="<?= $subject->id; ?>">
+                                        <?php if(!$equivalence) { ?>
                                             <div>
                                                 <input type="checkbox" name="is_elective" id="is_elective"
                                                 <?= ($subject->is_elective == 1) ? 'checked' : ''; ?>>
                                                 <label for="is_elective"><b><?= __('Is elective', 'aes'); ?></b></label>
                                             </div>
-                                        <?php else: ?>
-                                            <input type="hidden" name="subject_id" id="subject_id" value="">
-                                            <div>
-                                            <input type="checkbox" name="is_elective" id="is_elective">
-                                                <label for="is_elective"><b><?= __('Is elective', 'aes'); ?></b></label>
-                                            </div>
-                                        <?php endif; ?>
+                                        <?php } else { ?>
+                                            <input type="hidden" name="is_elective" id="is_elective" value="0">
+                                        <?php } ?>
                                     </div>
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
@@ -98,10 +92,10 @@
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
-                                                for="code_subject"><b><?= __('Subject code (the same as moodle)', 'aes'); ?></b><span class="text-danger">*</span></label><br>
+                                                for="code_subject"><b><?= __('Subject codes', 'aes'); ?></b><span class="text-danger">*</span></label><br>
                                             <input type="text" name="code_subject" value="<?= ucwords($subject->code_subject); ?>">
                                         <?php else: ?>
-                                            <label for="code_subject"><b><?= __('Subject code (the same as moodle)', 'aes'); ?></b><span
+                                            <label for="code_subject"><b><?= __('Subject codes', 'aes'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <input type="text" name="code_subject" value="" required>
                                         <?php endif; ?>
