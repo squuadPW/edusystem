@@ -6,26 +6,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<div id="tableprueba" style="display: none;">
-<table>
-  <tr>
-    <th>Company</th>
-    <th>Contact</th>
-    <th>Country</th>
-  </tr>
-  <tr>
-    <td>Alfreds Futterkiste</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-  </tr>
-  <tr>
-    <td>Centro comercial Moctezuma</td>
-    <td>Francisco Chang</td>
-    <td>Mexico</td>
-  </tr>
-</table>
-</div>
-
+<?php include(plugin_dir_path(__FILE__) . 'table-download-grades.php'); ?>
+<?php include(plugin_dir_path(__FILE__) . 'table-download-grades-loading.php'); ?>
 <div class="wrap">
     <?php if (isset($projection) && !empty($projection)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Academic projection', 'aes'); ?></h2>
