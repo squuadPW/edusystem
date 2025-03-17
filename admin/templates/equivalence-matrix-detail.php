@@ -27,7 +27,8 @@
                 <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
                     <div class="inside">
 
-                        <form method="post" action="<?= admin_url('admin.php?page=add_admin_form_equivalence_matrix_content&action=save_equivalence_details'); ?>">
+                        <form method="post"
+                            action="<?= admin_url('admin.php?page=add_admin_form_equivalence_matrix_content&action=save_equivalence_details'); ?>">
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
@@ -35,16 +36,39 @@
                                 </h3>
                                 <div style="display: flex; justify-content: space-evenly; margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
-                                        <?php if (isset($equivalence) && !empty($equivalence)): ?>
-                                            <input type="hidden" name="equivalence_id" id="equivalence_id" value="<?= $equivalence->id; ?>">
-                                            <label
-                                                for="name"><b><?= __('Name', 'aes'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="text" name="name" value="<?= ucwords($equivalence->name); ?>">
-                                        <?php else: ?>
-                                            <label for="name"><b><?= __('Name', 'aes'); ?></b><span
-                                                    class="text-danger">*</span></label><br>
-                                            <input type="text" name="name" value="" required>
-                                        <?php endif; ?>
+                                        <input type="hidden" name="equivalence_id" id="equivalence_id"
+                                            value="<?= $equivalence->id; ?>">
+                                        <label for="name"><b><?= __('Name', 'aes'); ?></b><span
+                                                class="text-danger">*</span></label><br>
+                                        <input type="text" name="name" value="<?= strtoupper($equivalence->name); ?>">
+                                    </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <label for="hc"><b><?= __('Subjects', 'aes'); ?></b>
+                                            <span>(optional)</span></label><br>
+                                        <select class="js-example-basic-multiple" name="subjects[]" multiple="multiple">
+                                            <?php
+                                            $selected_subjects = isset($equivalence->matrix) ? json_decode($equivalence->matrix) : array();
+                                            foreach ($subjects as $subject) {
+                                                $selected = in_array($subject->id, $selected_subjects) ? 'selected' : '';
+                                                ?>
+                                                <option value="<?= $subject->id; ?>" <?= $selected ?>>
+                                                    <?= $subject->name; ?> (<?= $subject->code_subject ?>)
+                                                </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <label for="hc"><b><?= __('Institute', 'aes'); ?></b>
+                                            <span>(optional)</span></label><br>
+                                        <select name="institute_id">
+                                            <option value="" selected>No institution</option>
+                                            <?php foreach ($institutes as $institute) { ?>
+                                                <option value="<?php echo $institute->id; ?>"
+                                                    <?= ($equivalence->institute_id == $institute->id) ? 'selected' : ''; ?>>
+                                                    <?php echo $institute->name; ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
                                     </div>
                                 </div>
                             </div>

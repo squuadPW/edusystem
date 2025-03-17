@@ -5,37 +5,46 @@ function add_admin_form_equivalence_matrix_content()
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         if ($_GET['section_tab'] == 'equivalence_matrix_details') {
             global $wpdb;
+            $table_institutes = $wpdb->prefix . 'institutes';
+            $table_school_subjects = $wpdb->prefix . 'school_subjects';
             $equivalence_id = $_GET['equivalence_id'];
             $equivalence = get_equivalence_details($equivalence_id);
+            $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status = 1");
+            $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1");
             include(plugin_dir_path(__FILE__) . 'templates/equivalence-matrix-detail.php');
         }
     } else {
         if ($_GET['action'] == 'save_equivalence_details') {
             global $wpdb;
             $table_equivalence_matrix = $wpdb->prefix . 'equivalence_matrix';
-            $equivalence_id = sanitize_text_field($_POST['equivalence_id']);
+            
+            // Sanitizar valores
+            $equivalence_id = isset($_POST['equivalence_id']) ? sanitize_text_field($_POST['equivalence_id']) : '';
+            $subjects = isset($_POST['subjects']) ? array_map('sanitize_text_field', $_POST['subjects']) : array(); // Array sanitizado
             $name = strtoupper(sanitize_text_field($_POST['name']));
-            $institute_id = sanitize_text_field($_POST['institute_id']) ?? NULL;
-            $matrix = [];
-
-            if (isset($equivalence_id) && !empty($equivalence_id)) {
+            $institute_id = isset($_POST['institute_id']) ? sanitize_text_field($_POST['institute_id']) : null;
+            
+            // Si necesitas los subjects en matrix
+            $matrix = $subjects; // <-- Aquí asignas los subjects al matrix
+            error_log(json_encode($matrix));
+            if (!empty($equivalence_id)) {
                 $wpdb->update($table_equivalence_matrix, [
                     'name' => $name,
-                    'matrix' => json_encode($matrix),
+                    'matrix' => json_encode($matrix), // Codifica el array a JSON
                     'institute_id' => $institute_id,
                 ], ['id' => $equivalence_id]);
             } else {
                 $wpdb->insert($table_equivalence_matrix, [
                     'name' => $name,
-                    'matrix' => json_encode($matrix),
+                    'matrix' => json_encode($matrix), // Codifica el array a JSON
                     'institute_id' => $institute_id
                 ]);
             }
-
+            
             setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_equivalence_matrix_content'));
             exit;
-        }else {
+        } else {
             $list_equivalence = new TT_All_Equivalence_Matrix_List_Table;
             $list_equivalence->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-equivalence-matrix.php');
