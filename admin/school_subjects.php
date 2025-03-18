@@ -304,3 +304,11 @@ function only_matrix_regular()
     $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular} WHERE `type` = 'regular' ORDER BY id ASC");
     return $matrix_regular;
 }
+
+function all_matrix_regular()
+{
+    global $wpdb;
+    $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
+    $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular} ORDER BY id ASC");
+    return $matrix_regular;
+}

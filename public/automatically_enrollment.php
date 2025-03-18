@@ -340,7 +340,7 @@ function generate_projection_student($student_id, $force = false)
         return;
     }
 
-    $matrix_regular = only_matrix_regular();
+    $matrix_regular = all_matrix_regular();
     $projection = [];
 
     if ($force) {
