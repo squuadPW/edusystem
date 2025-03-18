@@ -47,7 +47,8 @@ document
     const file = e.target.files[0];
     if (file) {
       if (!file.type.match(/^image\//)) {
-        alert("Tipo de archivo inválido! Por favor selecciona una imagen.");
+        // alert("Tipo de archivo inválido! Por favor selecciona una imagen.");
+        closeSelectorPhoto();
         return;
       }
 
@@ -155,6 +156,10 @@ document.getElementById("btnBack").addEventListener("click", function () {
 });
 
 document.querySelector(".modal-close").addEventListener("click", function () {
+  closeSelectorPhoto()
+});
+
+function closeSelectorPhoto() {
   const fileInput = document.getElementById("student_photo");
 
   // Resetear el input de tipo file
@@ -167,7 +172,7 @@ document.querySelector(".modal-close").addEventListener("click", function () {
   document.getElementById("student_photo_label_input").textContent = "Select file";
 
   clearCropper();
-});
+}
 
 function clearCropper() {
 
