@@ -309,6 +309,17 @@ function get_period_details($period_id)
     return $period;
 }
 
+
+function get_period_details_code($code)
+{
+
+    global $wpdb;
+    $table_periods = $wpdb->prefix . 'academic_periods';
+
+    $period = $wpdb->get_row("SELECT * FROM {$table_periods} WHERE code={$code}");
+    return $period;
+}
+
 function get_period_details_cuts($code)
 {
 

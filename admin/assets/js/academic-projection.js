@@ -37,62 +37,60 @@ if (download_grades) {
         
         const { jsPDF } = window.jspdf;
         const table = document.getElementById("template_certificate");
-    
-        // 1. Mostrar temporalmente la tabla
+
+        // 1. Mostrar tabla temporalmente
         const originalDisplay = table.style.display;
         table.style.display = "block";
-    
-        // 2. Capturar como imagen
-        const canvas = await html2canvas(table, { scale: 3 });
-        const imgData = canvas.toDataURL("image/png", 1.0);
-    
-        // 3. Crear PDF en A4 portrait
-        const doc = new jsPDF({
-            orientation: "portrait",  // Cambiado a vertical
-            unit: "mm",
-            format: "a4"
+
+        // 2. Captura optimizada
+        const canvas = await html2canvas(table, {
+            scale: 1.5,
+            useCORS: true,
+            logging: false,
+            backgroundColor: "#FFFFFF"
         });
-    
-        // 4. Configuración de márgenes y dimensiones para portrait
-        const pageWidth = 210;   // Ancho A4 portrait (mm)
-        const pageHeight = 297;  // Alto A4 portrait (mm)
-        const margin = 10;       // Márgenes de 10mm
-    
-        // Convertir píxeles a mm (96dpi)
-        let imgWidth = canvas.width * 0.264583;
-        let imgHeight = canvas.height * 0.264583;
-    
-        // Área disponible para el contenido
-        const maxWidth = pageWidth - (2 * margin);
-        const maxHeight = pageHeight - (2 * margin);
-    
-        // Ajustar al ancho máximo manteniendo relación de aspecto
-        if (imgWidth > maxWidth) {
-            const ratio = maxWidth / imgWidth;
-            imgWidth = maxWidth;
-            imgHeight *= ratio;
-        }
-    
-        // Ajustar altura si aún excede el máximo
-        if (imgHeight > maxHeight) {
-            const ratio = maxHeight / imgHeight;
-            imgHeight = maxHeight;
-            imgWidth *= ratio;
-        }
-    
-        // Posición en la parte superior
-        const xPos = margin; // Margen izquierdo
-        const yPos = margin; // Margen superior
-    
-        // 5. Añadir imagen al PDF
-        doc.addImage(imgData, "PNG", xPos, yPos, imgWidth, imgHeight);
-        doc.save("tabla.pdf");
-    
-        // 6. Restaurar visibilidad original
+
+        // 3. Conversión a JPEG comprimido
+        const imgData = canvas.toDataURL("image/jpeg", 0.7);
+
+        // 4. Crear PDF con compresión
+        const doc = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a4",
+            compress: true
+        });
+
+        // 5. Cálculo de dimensiones y posición
+        const pageWidth = 210;
+        const margin = 5;
+        const maxContentWidth = pageWidth - (2 * margin);
+
+        // Calcular dimensiones manteniendo relación de aspecto
+        const imgRatio = canvas.width / canvas.height;
+        let imgWidth = maxContentWidth;
+        let imgHeight = maxContentWidth / imgRatio;
+
+        // Posición superior izquierda con márgenes
+        const xPos = margin;
+        const yPos = margin;
+
+        // 6. Añadir imagen en posición superior
+        doc.addImage(
+            imgData,
+            "JPEG",
+            xPos,       // Posición horizontal desde izquierda
+            yPos,       // Posición vertical desde arriba
+            imgWidth,  // Ancho ajustado
+            imgHeight   // Alto proporcional
+        );
+
+        doc.save("calificaciones.pdf");
+
+        // 7. Restaurar estado original
         table.style.display = originalDisplay;
         modalGeneratingGrades.style.display = 'none';
         download_grades.disabled = false;
         document.body.classList.remove("modal-open");
-        location.reload();
     });
 }

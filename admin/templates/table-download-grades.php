@@ -52,14 +52,16 @@
         </thead>
         <tbody>
             <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
+                <?php $subject = get_subject_details($projection_for->subject_id); ?>
+                <?php $period = get_period_details_code($projection_for->code_period); ?>
                 <tr>
                     <td colspan="2"><?= $projection_for->code_subject ?></td>
                     <td colspan="4"><?= $projection_for->subject ?>     <?= $projection_for->is_elective ? '(ELECTIVE)' : '' ?>
                     </td>
-                    <td colspan="1"><?= $projection_for->hc ?></td>
+                    <td colspan="1"><?= $subject->type != 'equivalence' ? $projection_for->hc : 'TR' ?></td>
                     <td colspan="1"><?= $projection_for->calification ?></td>
-                    <td colspan="1"><?= get_calc_note($projection_for->calification) ?></td>
-                    <td colspan="3"><?= $projection_for->code_period ?></td>
+                    <td colspan="1"><?= $subject->type != 'equivalence' ? get_calc_note($projection_for->calification) : 'TR' ?></td>
+                    <td colspan="3"><?= $period->name ?></td>
                 </tr>
             <?php } ?>
         </tbody>

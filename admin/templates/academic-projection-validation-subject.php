@@ -78,54 +78,63 @@
 
 <script>
     document.getElementById('download').addEventListener('click', function () {
-        const { jsPDF } = window.jspdf;
-        document.getElementById('download').disabled = true;
-        html2canvas(document.getElementById('template_subject'), {
-            scale: 3,
-            useCORS: true,
-            allowTaint: true
-        }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png', 1.0);
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
+    const downloadBtn = document.getElementById('download');
+    const { jsPDF } = window.jspdf;
+    downloadBtn.disabled = true;
 
-            // Dimensiones de la página A4 en mm
-            const pageWidth = 210;
-            const pageHeight = 297;
+    // 1. Mostrar elemento temporalmente si está oculto
+    const element = document.getElementById('template_subject');
+    const originalDisplay = element.style.display;
+    element.style.display = 'block';
 
-            // Márgenes
-            const margin = 10;
-            const contentWidth = pageWidth - 2 * margin;
-            const contentHeight = pageHeight - 2 * margin;
+    // 2. Configuración optimizada de html2canvas
+    html2canvas(element, {
+        scale: 1.5, // Reducido de 3 a 1.5
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#FFFFFF" // Fondo blanco para mejor compresión
+    }).then(canvas => {
+        // 3. Convertir a JPEG con compresión
+        const imgData = canvas.toDataURL('image/jpeg', 0.7); // 70% calidad
 
-            // Calcular dimensiones manteniendo relación de aspecto
-            let imgWidth = canvas.width * 0.264583;
-            let imgHeight = canvas.height * 0.264583;
-
-            // Ajustar al ancho máximo del contenido
-            if (imgWidth > contentWidth) {
-                const ratio = contentWidth / imgWidth;
-                imgWidth = contentWidth;
-                imgHeight = imgHeight * ratio;
-            }
-
-            // Ajustar altura si es necesario (priorizando el ancho)
-            if (imgHeight > contentHeight) {
-                const ratio = contentHeight / imgHeight;
-                imgHeight = contentHeight;
-                imgWidth = imgWidth * ratio;
-            }
-
-            // Posición en la parte superior con margen
-            const xPos = margin; // Margen izquierdo
-            const yPos = margin; // Margen superior
-
-            pdf.addImage(imgData, 'PNG', xPos, yPos, imgWidth, imgHeight);
-            pdf.save(`${document.querySelector('input[name=name_document]').value}.pdf`);
-            document.getElementById('download').disabled = false;
+        // 4. Crear PDF con compresión habilitada
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+            compress: true // Compresión interna del PDF
         });
+
+        // 5. Configuración de dimensiones inteligentes
+        const pageWidth = 210; // Ancho A4 en mm
+        const margin = 5; // Márgenes reducidos de 10 a 5mm
+        const maxContentWidth = pageWidth - (2 * margin);
+
+        // Calcular relación de aspecto
+        const imgRatio = canvas.width / canvas.height;
+        let imgWidth = maxContentWidth;
+        let imgHeight = maxContentWidth / imgRatio;
+
+        // 6. Posicionamiento superior con margen
+        const xPos = margin; // Alineación izquierda
+        const yPos = margin; // Posición superior
+
+        pdf.addImage(
+            imgData,
+            'JPEG', // Cambiado de PNG a JPEG
+            xPos,
+            yPos,
+            imgWidth,
+            imgHeight
+        );
+
+        // 7. Nombre del archivo desde input
+        const fileName = document.querySelector('input[name=name_document]').value;
+        pdf.save(`${fileName}.pdf`);
+        
+        // Restaurar estado original
+        element.style.display = originalDisplay;
+        downloadBtn.disabled = false;
     });
+});
 </script>
