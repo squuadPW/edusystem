@@ -342,6 +342,7 @@ function generate_projection_student($student_id, $force = false)
 
     $matrix_regular = all_matrix_regular();
     $projection = [];
+    $projection_obj = [];
 
     if ($force) {
         $current_projection = get_projection_by_student($student_id);
@@ -377,6 +378,13 @@ function generate_projection_student($student_id, $force = false)
         }
 
         array_push($projection, $payload);
+    }
+
+    foreach ($projection_obj as $key => $prj) {
+        $subject = get_subject_details($prj->subject_id);
+        if ($subject->type == 'elective') {
+            array_push($projection, $prj);
+        }
     }
 
     if ($force) {
