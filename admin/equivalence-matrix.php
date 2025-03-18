@@ -207,3 +207,27 @@ function get_equivalence_details($id)
     $equivalence = $wpdb->get_row("SELECT * FROM {$table_equivalence_matrix} WHERE id={$id}");
     return $equivalence;
 }
+
+
+function get_pensum_student($student_id)
+{
+    global $wpdb;
+    $table_equivalence_matrix = $wpdb->prefix . 'equivalence_matrix';
+    $student = get_student_detail($student_id);
+
+    $equivalence_institute = $wpdb->get_row("SELECT * FROM {$table_equivalence_matrix} WHERE institute_id={$student->institute_id}");
+    if ($equivalence_institute) {
+        $matrix = json_decode($equivalence_institute->matrix);
+    } else {
+        $equivalence_institute = $wpdb->get_row("SELECT * FROM {$table_equivalence_matrix} WHERE institute_id IS NULL");
+        $matrix = json_decode($equivalence_institute->matrix);
+    }
+
+    $subjects = [];
+    foreach ($matrix as $key => $m) {
+        $subject = get_subject_details($m);
+        array_push($subjects, $subject);
+    }
+
+    return $subjects;
+}

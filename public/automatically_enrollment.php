@@ -340,7 +340,7 @@ function generate_projection_student($student_id, $force = false)
         return;
     }
 
-    $matrix_regular = all_matrix_regular();
+    $matrix_regular = get_pensum_student($student_id);
     $projection = [];
     $projection_obj = [];
 
@@ -353,7 +353,7 @@ function generate_projection_student($student_id, $force = false)
         $filteredArray = [];
         if ($force && $current_projection) {
             $filteredArray = array_filter($projection_obj, function ($item) use ($regular) {
-                return $item->subject_id == $regular->subject_id && $item->is_completed && !$item->this_cut && $item->calification;
+                return $item->subject_id == $regular->id && $item->is_completed && !$item->this_cut && $item->calification;
             });
             $filteredArray = array_values($filteredArray);
         }
@@ -361,7 +361,7 @@ function generate_projection_student($student_id, $force = false)
         if (count($filteredArray) > 0) {
             $payload = $filteredArray[0];
         } else {
-            $subject = get_subject_details($regular->subject_id);
+            $subject = get_subject_details($regular->id);
             $payload = [
                 'code_subject' => $subject->code_subject,
                 'subject_id' => $subject->id,
