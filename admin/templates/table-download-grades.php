@@ -13,12 +13,34 @@
         </div>
     </div>
 
-    <br>
     <table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px">
         <thead>
             <tr>
-                <th colspan="12" style="text-align: center"><strong>STUDENT DATA</strong></th>
+                <th colspan="12" class="text-uppercase">
+                    <strong>Complete Name:</strong>
+                    <?= strtoupper(__($student->last_name . ' ' . $student->middle_last_name . ', ' . $student->name . ' ' . $student->middle_name, 'aes')); ?>
+                </th>
             </tr>
+            <tr>
+                <th colspan="12" class="text-uppercase">
+                    <strong>Student ID:</strong> <?= $student->id_document; ?>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="12" class="text-uppercase">
+                    <strong>Date issue:</strong> <?= date('m/d/Y'); ?>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="12" class="text-uppercase">
+                    <strong>Program:</strong> <?= get_name_program($student->program_id); ?>
+                </th>
+            </tr>
+        </thead>
+    </table>
+    <br>
+    <table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px">
+        <thead>
             <tr>
                 <th colspan="2">CODE</th>
                 <th colspan="4">COURSE</th>
@@ -31,12 +53,13 @@
         <tbody>
             <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
                 <tr>
-                  <td colspan="2"><?= $projection_for->code_subject ?></td>
-                  <td colspan="4"><?= $projection_for->subject ?> <?= $projection_for->is_elective ? '(ELECTIVE)' : '' ?></td>
-                  <td colspan="1"><?= $projection_for->hc ?></td>
-                  <td colspan="1"><?= $projection_for->calification ?></td>
-                  <td colspan="1"><?= get_calc_note($projection_for->calification) ?></td>
-                  <td colspan="3"><?= $projection_for->code_period ?></td>
+                    <td colspan="2"><?= $projection_for->code_subject ?></td>
+                    <td colspan="4"><?= $projection_for->subject ?>     <?= $projection_for->is_elective ? '(ELECTIVE)' : '' ?>
+                    </td>
+                    <td colspan="1"><?= $projection_for->hc ?></td>
+                    <td colspan="1"><?= $projection_for->calification ?></td>
+                    <td colspan="1"><?= get_calc_note($projection_for->calification) ?></td>
+                    <td colspan="3"><?= $projection_for->code_period ?></td>
                 </tr>
             <?php } ?>
         </tbody>
