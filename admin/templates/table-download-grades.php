@@ -9,8 +9,7 @@
             <div>Miami, Florida</div>
         </div>
         <div style="text-align: center; margin-right: 10px">
-            <div>Score Record P.A.:</div>
-            <div>Cod. Val.: </div>
+            <div>Academic summary</div>
         </div>
     </div>
 
@@ -21,15 +20,23 @@
                 <th colspan="12" style="text-align: center"><strong>STUDENT DATA</strong></th>
             </tr>
             <tr>
-                <th colspan="6">SUBJECT</th>
-                <th colspan="6">CALIFICATION</th>
+                <th colspan="2">CODE</th>
+                <th colspan="4">COURSE</th>
+                <th colspan="1">CH</th>
+                <th colspan="1">0-100</th>
+                <th colspan="1">0-4</th>
+                <th colspan="3">PERIOD</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
                 <tr>
-                  <td colspan="6"><?= $projection_for->subject ?> <?= $projection_for->is_elective ? '(ELECTIVE)' : '' ?></td>
-                  <td colspan="6"><?= $projection_for->calification ?></td>
+                  <td colspan="2"><?= $projection_for->code_subject ?></td>
+                  <td colspan="4"><?= $projection_for->subject ?> <?= $projection_for->is_elective ? '(ELECTIVE)' : '' ?></td>
+                  <td colspan="1"><?= $projection_for->hc ?></td>
+                  <td colspan="1"><?= $projection_for->calification ?></td>
+                  <td colspan="1"><?= get_calc_note($projection_for->calification) ?></td>
+                  <td colspan="3"><?= $projection_for->code_period ?></td>
                 </tr>
             <?php } ?>
         </tbody>
