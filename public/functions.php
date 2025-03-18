@@ -2107,7 +2107,7 @@ function modal_enrollment_student()
     $user = [
         'student_full_name' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
         'student_signature' => $student->name . ' ' . $student->last_name,
-        'student_created_at' => $student->created_at,
+        'student_created_at' => date('Y-m-d', strtotime($student->created_at)),
         'student_grade' => $student->grade_id,
         'student_payment' => $payment->type_payment,
         'student_birth_date' => $student->birth_date,

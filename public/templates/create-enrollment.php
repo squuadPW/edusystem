@@ -247,7 +247,7 @@
                                 </div>
                                 <div style="display: flex">
                                     <div style="flex: auto; padding: 8px;"><strong>Date:</strong>
-                                        <br> <?php echo $user['today'] ?>
+                                        <br><?php echo $user['student_created_at'] ?>
                                     </div>
                                 </div>
 
