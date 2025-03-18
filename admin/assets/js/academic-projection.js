@@ -36,7 +36,7 @@ if (download_grades) {
         download_grades.disabled = true;
         
         const { jsPDF } = window.jspdf;
-        const table = document.getElementById("tableprueba");
+        const table = document.getElementById("template_certificate");
     
         // 1. Mostrar temporalmente la tabla
         const originalDisplay = table.style.display;
@@ -93,5 +93,6 @@ if (download_grades) {
         modalGeneratingGrades.style.display = 'none';
         download_grades.disabled = false;
         document.body.classList.remove("modal-open");
+        location.reload();
     });
 }
