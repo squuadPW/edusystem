@@ -264,13 +264,14 @@ function update_matrices() {
     $wpdb->query("TRUNCATE TABLE {$table_school_subject_matrix_regular}");
     
     // Obtener los sujetos regulares
-    $subjects_regular = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1 AND `type` = 'regular' ORDER BY matrix_position ASC");
+    $subjects_regular = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1 AND `type` <> 'elective' ORDER BY matrix_position ASC");
     
     // Insertar los sujetos regulares
     foreach ($subjects_regular as $regular) {
         $wpdb->insert($table_school_subject_matrix_regular, [
             'subject' => $regular->name,
             'subject_id' => $regular->id,
+            'type' => $regular->type
         ]);
     }
 }
@@ -296,3 +297,10 @@ function get_subject_details_code($code_subject)
     return $subject;
 }
 
+function only_matrix_regular()
+{
+    global $wpdb;
+    $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
+    $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular} WHERE `type` = 'regular' ORDER BY id ASC");
+    return $matrix_regular;
+}

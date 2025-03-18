@@ -43,9 +43,8 @@ function load_automatically_enrollment($expected_projection, $student)
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
     $table_students = $wpdb->prefix . 'students';
-    $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular}");
+    $matrix_regular = only_matrix_regular();
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
     $load = load_current_cut_enrollment();
     $matrix_elective = load_available_electives($student, $load['code'], cut: $load['cut']);
@@ -293,9 +292,8 @@ function load_inscriptions_regular_valid($student)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
+    $matrix_regular = only_matrix_regular();
 
-    $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular}");
     $regulars_ids = [];
     foreach ($matrix_regular as $key => $regular) {
         array_push($regulars_ids, $regular->subject_id);
@@ -342,8 +340,7 @@ function generate_projection_student($student_id, $force = false)
         return;
     }
 
-    $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
-    $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular}");
+    $matrix_regular = only_matrix_regular();
     $projection = [];
 
     if ($force) {
@@ -374,7 +371,8 @@ function generate_projection_student($student_id, $force = false)
                 'calification' => "",
                 'is_completed' => false,
                 'this_cut' => false,
-                'welcome_email' => false
+                'welcome_email' => false,
+                'type' => $subject->type
             ];
         }
 

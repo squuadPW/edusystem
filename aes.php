@@ -1085,6 +1085,7 @@ function create_tables()
         id INT(11) NOT NULL AUTO_INCREMENT,
         subject TEXT NOT NULL,
         subject_id INT(11) NOT NULL,
+        type TEXT NOT NULL,
         PRIMARY KEY (id))$charset_collate;"
     );
   }
