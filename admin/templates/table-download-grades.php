@@ -28,7 +28,7 @@
         <tbody>
             <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
                 <tr>
-                  <td colspan="6"><?= $projection_for->subject ?></td>
+                  <td colspan="6"><?= $projection_for->subject ?> <?= $projection_for->is_elective ? '(ELECTIVE)' : '' ?></td>
                   <td colspan="6"><?= $projection_for->calification ?></td>
                 </tr>
             <?php } ?>
