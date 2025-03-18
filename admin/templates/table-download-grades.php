@@ -1,19 +1,14 @@
 <div id="tableprueba" style="display: none;">
 <table>
   <tr>
-    <th>Company</th>
-    <th>Contact</th>
-    <th>Country</th>
+    <th>Subject</th>
+    <th>Calification</th>
   </tr>
-  <tr>
-    <td>Alfreds Futterkiste</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-  </tr>
-  <tr>
-    <td>Centro comercial Moctezuma</td>
-    <td>Francisco Chang</td>
-    <td>Mexico</td>
-  </tr>
+  <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
+    <tr>
+      <td><?= $projection_for->subject ?></td>
+      <td><?= $projection_for->calification ?></td>
+    </tr>
+  <?php } ?>
 </table>
 </div>

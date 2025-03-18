@@ -1174,6 +1174,10 @@ function handle_document_approval($student_id, $document) {
             ['id' => $student_id]
         );
     }
+
+    if (in_array($document->document_id, ['CERTIFIED NOTES HIGH SCHOOL'])) {
+        update_equivalence_califications($student_id);
+    }
     
     if (check_solvency_administrative($student_id)) {
         update_status_student($student_id, 3);
