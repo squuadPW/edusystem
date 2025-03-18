@@ -1992,7 +1992,7 @@ function modal_take_elective()
     if ($electives_ids) {
         $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
     }
-    $conditions[] = "is_elective = 1";
+    $conditions[] = "type = 'elective'";
     $params = array_merge($params, $electives_ids);
 
     $query = "SELECT * FROM {$table_school_subjects}";

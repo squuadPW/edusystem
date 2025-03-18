@@ -35,19 +35,7 @@
                                     <b><?= __('Subject Information', 'aes'); ?></b>
                                 </h3>
                                 <div style="text-align: center; margin: 18px">
-                                    <div style="font-weight:400; text-align: center">
-                                        <input type="hidden" name="subject_id" id="subject_id" value="<?= $subject->id; ?>">
-                                        <?php if(!$equivalence) { ?>
-                                            <div>
-                                                <input type="checkbox" name="is_elective" id="is_elective"
-                                                <?= ($subject->is_elective == 1) ? 'checked' : ''; ?>>
-                                                <label for="is_elective"><b><?= __('Is elective', 'aes'); ?></b></label>
-                                            </div>
-                                        <?php } else { ?>
-                                            <input type="hidden" name="is_elective" id="is_elective" value="0">
-                                        <?php } ?>
-                                    </div>
-                                    <div style="font-weight:400; text-align: center">
+                                    <div style="font-weight:400; text-align: center; margin-bottom: 10px;">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <div>
                                                 <input type="checkbox" name="is_active" id="is_active"
@@ -60,6 +48,16 @@
                                                 <label for="is_active"><b><?= __('Active', 'aes'); ?></b></label>
                                             </div>
                                         <?php endif; ?>
+                                    </div>
+                                    <div style="font-weight:400; text-align: center">
+                                        <input type="hidden" name="subject_id" id="subject_id" value="<?= $subject->id; ?>">
+                                        <label for="hc"><b><?= __('Type', 'aes'); ?></b></label><br>
+                                        <select name="type">
+                                            <option value="" selected>Select a type</option>
+                                            <option value="regular" <?= ($subject->type == 'regular') ? 'selected' : ''; ?>>Regular</option>
+                                            <option value="elective" <?= ($subject->type == 'elective') ? 'selected' : ''; ?>>Elective</option>
+                                            <option value="equivalence" <?= ($subject->type == 'equivalence') ? 'selected' : ''; ?>>Equivalence</option>
+                                        </select>
                                     </div>
                                     <input type="hidden" name="is_open" id="is_open" value="<?= isset($subject) ? $subject->is_open : '' ?>">
                                     <!-- <div style="font-weight:400; text-align: center">

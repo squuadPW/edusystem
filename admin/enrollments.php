@@ -50,7 +50,7 @@ function add_admin_form_enrollments_content()
                     'code_period' => $code_period,
                     'cut_period' => $cut_period,
                     'calification' => $calification,
-                    'type' => $subject->is_elective ? 'elective' : 'regular'
+                    'type' => $subject->type
                 ], ['id' => $enrollment_id]);
 
                 setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
@@ -66,7 +66,7 @@ function add_admin_form_enrollments_content()
                     'code_period' => $code_period,
                     'cut_period' => $cut_period,
                     'calification' => $calification,
-                    'type' => $subject->is_elective ? 'elective' : 'regular'
+                    'type' => $subject->type
                 ]);
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_enrollments_content'));

@@ -57,28 +57,6 @@ function create_tables()
   $table_type_requests = $wpdb->prefix . 'type_requests';
   $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
   $table_equivalence_matrix = $wpdb->prefix . 'equivalence_matrix';
-  $table_equivalence_subjects = $wpdb->prefix . 'equivalence_subjects';
-
-  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_equivalence_subjects}'") != $table_equivalence_subjects) {
-    dbDelta(
-      "CREATE TABLE " . $table_equivalence_subjects . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        is_active BOOLEAN NOT NULL DEFAULT 1,
-        is_open BOOLEAN NOT NULL DEFAULT 1,
-        code_subject TEXT NOT NULL,
-        name TEXT NOT NULL,
-        description TEXT NOT NULL,
-        min_pass DOUBLE(10, 2) NOT NULL,
-        hc INT(11) NOT NULL,
-        max_students INT(11) NOT NULL,
-        matrix_position INT(11) NOT NULL,
-        moodle_course_id INT(11) NULL,
-        teacher_id INT(11) NULL,
-        is_elective BOOLEAN NOT NULL DEFAULT 0,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
-    );
-  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_equivalence_matrix}'") != $table_equivalence_matrix) {
     dbDelta(
@@ -193,7 +171,7 @@ function create_tables()
         maxtrix_position INT(11) NOT NULL,
         moodle_course_id INT(11) NULL,
         teacher_id INT(11) NULL,
-        is_elective BOOLEAN NOT NULL DEFAULT 0,
+        type TEXT NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );

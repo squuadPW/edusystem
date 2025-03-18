@@ -41,7 +41,7 @@ function add_admin_form_academic_offers_content()
             $new_section = ($subject_id != $old_subject_id ? true : false);
             $section = load_next_section($subject_id, $code_period, $cut_period, $offer_id, $new_section);
             $subject = get_subject_details($subject_id);
-            $type = $subject->is_elective ? 'elective' : 'regular';
+            $type = $subject->type;
 
             if (isset($offer_id) && !empty($offer_id)) {
                 $wpdb->update($table_academic_offers, [

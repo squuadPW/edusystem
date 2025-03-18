@@ -130,7 +130,7 @@ function load_automatically_enrollment($expected_projection, $student)
                 'code_subject' => $subject->code_subject,
                 'code_period' => $code,
                 'cut_period' => $cut,
-                'type' => $subject->is_elective ? 'elective' : 'regular'
+                'type' => $subject->type
             ]);
 
             if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2) {
@@ -211,7 +211,7 @@ function load_available_electives($student, $code, $cut)
     if ($electives_ids) {
         $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
     }
-    $conditions[] = "is_elective = 1";
+    $conditions[] = "type = 'elective'";
     $params = array_merge($params, $electives_ids);
 
     $query = "SELECT * FROM {$table_school_subjects}";
@@ -402,7 +402,7 @@ function generate_projection_student($student_id, $force = false)
                     'code_subject' => $subject->code_subject,
                     'code_period' => $prj->code_period,
                     'cut_period' => $prj->cut,
-                    'type' => $subject->is_elective ? 'elective' : 'regular'
+                    'type' => $subject->type
                 ]);
             }
         }
