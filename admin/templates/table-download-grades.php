@@ -54,8 +54,10 @@
             <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
                 <?php 
                     $subject = get_subject_details($projection_for->subject_id);
+                    $period_name = '';
                     if ($projection_for->is_completed) {
-                        $period = get_period_details_code($projection_for->code_period); 
+                        $period = get_period_details_code($projection_for->code_period);
+                        $period_name = $period->name;
                     }
                 ?>
                 <tr>
@@ -65,7 +67,7 @@
                     <td colspan="1"><?= $subject->type != 'equivalence' ? $projection_for->hc : 'TR' ?></td>
                     <td colspan="1"><?= isset($projection_for->calification) && !empty($projection_for->calification) ? $projection_for->calification : ($subject->type != 'equivalence' ? 0 : 'TR') ?></td>
                     <td colspan="1"><?= $subject->type != 'equivalence' ? get_calc_note($projection_for->calification) : 'TR' ?></td>
-                    <td colspan="3"><?= $period->name ?? 'N/A' ?></td>
+                    <td colspan="3"><?= $period_name ?? 'N/A' ?></td>
                 </tr>
             <?php } ?>
         </tbody>
