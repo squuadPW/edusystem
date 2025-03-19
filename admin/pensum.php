@@ -36,6 +36,7 @@ function add_admin_form_pensum_content()
             $program_id = isset($_POST['program_id']) ? sanitize_text_field($_POST['program_id']) : null;
             $institute_id = isset($_POST['institute_id']) ? sanitize_text_field($_POST['institute_id']) : null;
             $subjects = isset($_POST['subjects']) ? array_map('sanitize_text_field', $_POST['subjects']) : array(); // Array sanitizado
+            $type = $program_institute ? 'institute' : 'program';
             $matrix = [];
 
             foreach ($subjects as $key => $subject) {
@@ -55,7 +56,7 @@ function add_admin_form_pensum_content()
                 $wpdb->update(
                     $table_pensum, // Nombre de la tabla
                     array('status' => 0), // Datos a actualizar
-                    array('status' => 1) // Condición (opcional, si quieres actualizar solo donde status es 1)
+                    array('status' => 1, 'type' => $type) // Condición (opcional, si quieres actualizar solo donde status es 1)
                 );
             }
 
@@ -63,7 +64,7 @@ function add_admin_form_pensum_content()
                 $wpdb->update($table_pensum, [
                     'name' => $name,
                     'matrix' => json_encode($matrix), // Codifica el array a JSON
-                    'type' => $program_institute ? 'institute' : 'program',
+                    'type' => $type,
                     'institute_id' => $institute_id,
                     'program_id' => $program_id,
                     'status' => $status
@@ -72,7 +73,7 @@ function add_admin_form_pensum_content()
                 $wpdb->insert($table_pensum, [
                     'name' => $name,
                     'matrix' => json_encode($matrix), // Codifica el array a JSON
-                    'type' => $program_institute ? 'institute' : 'program',
+                    'type' => $type,
                     'institute_id' => $institute_id,
                     'program_id' => $program_id,
                     'status' => $status
