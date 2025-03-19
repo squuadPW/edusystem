@@ -724,7 +724,7 @@ function get_moodle_notes()
 function get_literal_note($calification)
 {
     if (!$calification) {
-        return 0;
+        return '-';
     }
     $calification = (int) $calification;
     $note = 'A+';
@@ -763,7 +763,7 @@ function get_literal_note($calification)
 function get_calc_note($calification)
 {
     if (!$calification) {
-        return 0;
+        return '-';
     }
     $calification = (int) $calification;
     $note = 'abc';

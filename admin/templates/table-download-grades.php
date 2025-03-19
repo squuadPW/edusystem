@@ -53,6 +53,7 @@
         <tbody>
             <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
                 <?php 
+                    $download_grades = get_status_approved('CERTIFIED NOTES HIGH SCHOOL', $student->id);
                     $subject = get_subject_details($projection_for->subject_id);
                     $period_name = '';
                     $period = get_period_details_code($projection_for->code_period);
@@ -62,10 +63,10 @@
                     <td colspan="2"><?= $projection_for->code_subject ?></td>
                     <td colspan="4"><?= $projection_for->subject ?> <?= isset($projection_for->is_elective) ? ($projection_for->is_elective ? '(ELECTIVE)' : '') : '' ?>
                     </td>
-                    <td colspan="1"><?= $subject->type != 'equivalence' ? $projection_for->hc : 'TR' ?></td>
-                    <td colspan="1"><?= isset($projection_for->calification) && !empty($projection_for->calification) ? $projection_for->calification : ($subject->type != 'equivalence' ? 0 : 'TR') ?></td>
-                    <td colspan="1"><?= $subject->type != 'equivalence' ? get_calc_note($projection_for->calification) : 'TR' ?></td>
-                    <td colspan="3"><?= $period_name ?? 'N/A' ?></td>
+                    <td colspan="1"><?= $subject->type != 'equivalence' ? $projection_for->hc : ($download_grades ? 'TR' : '-') ?></td>
+                    <td colspan="1"><?= isset($projection_for->calification) && !empty($projection_for->calification) ? $projection_for->calification : ($subject->type != 'equivalence' ? '-' : ($download_grades ? 'TR' : '-')) ?></td>
+                    <td colspan="1"><?= $subject->type != 'equivalence' ? get_calc_note($projection_for->calification) : ($download_grades ? 'TR' : '-') ?></td>
+                    <td colspan="3"><?= isset($period_name) && !empty($period_name) ? $period_name : '-' ?></td>
                 </tr>
             <?php } ?>
         </tbody>

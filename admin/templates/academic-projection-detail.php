@@ -236,7 +236,7 @@
                                     </tbody>
                                 </table>
 
-                                <?php if($download_grades) { ?>
+                                
                                     <div style="display: flex; width: 100%; text-align: center">
                                         <div style="flex: 1; padding: 20px;">
                                             <button type="button" class="button button-outline-primary" id="download-grades">
@@ -244,7 +244,7 @@
                                             </button>
                                         </div>
                                     </div>
-                                <?php } ?>
+                                
                             </div>
 
                             <?php if (isset($projection) && !empty($projection)): ?>
