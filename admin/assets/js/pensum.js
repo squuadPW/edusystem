@@ -89,4 +89,29 @@ jQuery(document).ready(function ($) {
             $(subjectSelect).val(null).trigger('change'); // Esto limpia el select2
         });
     }
+
+    // Inicializar SortableJS
+    const sortableList = document.getElementById('sortable-list');
+    if (Sortable) {
+        Sortable.create(sortableList, {
+            animation: 150, // Duración de la animación en milisegundos
+            ghostClass: 'sortable-ghost', // Clase CSS para el elemento fantasma
+            chosenClass: 'sortable-chosen', // Clase CSS para el elemento seleccionado
+            dragClass: 'sortable-drag', // Clase CSS para el elemento arrastrado
+            onEnd: function (evt) {
+                // Obtener el nuevo orden de los elementos en el DOM
+                let newOrder = Array.from(sortableList.querySelectorAll('tr')).map(tr => tr.dataset.subjectId);
+    
+                // Actualizar el arreglo subjects[] con el nuevo orden
+                subjects = newOrder;
+    
+                // Actualizar los inputs ocultos en el mismo orden
+                sortableList.querySelectorAll('input[name="subjects[]"]').forEach((input, index) => {
+                    input.value = subjects[index];
+                });
+    
+                console.log('Nuevo orden:', subjects); // Para depuración
+            },
+        });
+    }
 });

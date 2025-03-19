@@ -81,7 +81,7 @@ function add_admin_form_pensum_content()
             
             setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
             if ($program_institute) {
-                wp_redirect(admin_url('admin.php?page=add_admin_form_pensum_content?section_tab=pensum_institute'));
+                wp_redirect(admin_url('admin.php?page=add_admin_form_pensum_content&section_tab=pensum_institute'));
             } else {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_pensum_content'));
             }

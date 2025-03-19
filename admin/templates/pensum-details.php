@@ -1,3 +1,5 @@
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
 <div class="wrap">
     <?php if (isset($pensum) && !empty($pensum)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Pensum details', 'aes'); ?></h2>
@@ -111,9 +113,9 @@
                                                     <th colspan="2" style="text-align: end">Action</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody id="sortable-list">
                                                 <?php foreach (json_decode($pensum->matrix) as $key => $subject) { ?>
-                                                    <tr data-subject-id="<?= $subject->id ?>">
+                                                    <tr data-subject-id="<?= $subject->id ?>" style="cursor: move">
                                                         <th colspan="4"><?= $subject->name ?></th>
                                                         <th colspan="4"><?= $subject->code_subject ?></th>
                                                         <th colspan="2"><?= $subject->type ?></th>
