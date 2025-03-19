@@ -309,6 +309,10 @@ function add_admin_form_admission_content()
                                 'profile_picture' => $document_changed->attachment_id,
                             ], ['id' => $id]);
                         }
+
+                        if ($document_changed->document_id == 'CERTIFIED NOTES HIGH SCHOOL') {
+                            update_equivalence_califications($student_id);
+                        }
                     }
                 }
 
