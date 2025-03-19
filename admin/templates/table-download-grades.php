@@ -63,7 +63,7 @@
                     <td colspan="4"><?= $projection_for->subject ?>     <?= $projection_for->is_elective ? '(ELECTIVE)' : '' ?>
                     </td>
                     <td colspan="1"><?= $subject->type != 'equivalence' ? $projection_for->hc : 'TR' ?></td>
-                    <td colspan="1"><?= isset($projection_for->calification) && !empty($projection_for->calification) ? $projection_for->calification : 0 ?></td>
+                    <td colspan="1"><?= isset($projection_for->calification) && !empty($projection_for->calification) ? $projection_for->calification : ($subject->type != 'equivalence' ? 0 : 'TR') ?></td>
                     <td colspan="1"><?= $subject->type != 'equivalence' ? get_calc_note($projection_for->calification) : 'TR' ?></td>
                     <td colspan="3"><?= $period->name ?? 'N/A' ?></td>
                 </tr>
