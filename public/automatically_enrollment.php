@@ -78,9 +78,7 @@ function load_automatically_enrollment($expected_projection, $student)
 
         if ($expected == 'R') {
             $expected_subject = $matrix_regular[$count_expected_subject];
-            error_log('expected '. $expected_subject->subject_id);
             $subject = get_subject_details($expected_subject->subject_id);
-            error_log('subject '. json_encode($subject));
 
             $inscriptions = $wpdb->get_results(
                 $wpdb->prepare(
@@ -97,8 +95,6 @@ function load_automatically_enrollment($expected_projection, $student)
                 continue;
             }
 
-            error_log('no la ha visto');
-
             $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
             if (!$offer_available_to_enroll) {
                 $count_expected_subject++;
@@ -108,8 +104,6 @@ function load_automatically_enrollment($expected_projection, $student)
                 }
                 continue;
             }
-
-            error_log('hay ofertas disponibles');
 
             $force_skip = false;
             $subjectIds = array_column($projection_obj, 'subject_id');
@@ -353,7 +347,7 @@ function generate_projection_student($student_id, $force = false)
 
     if ($force) {
         $current_projection = get_projection_by_student($student_id);
-        $projection_obj = json_decode($current_projection->projection);
+        $projection_obj = $current_projection ? json_decode($current_projection->projection) : [];
     }
 
     foreach ($matrix_regular as $key => $regular) {

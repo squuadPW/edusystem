@@ -555,7 +555,7 @@ class TT_document_review_List_Table extends WP_List_Table
             $style = 'style="background-color: #c6c5e0 !important;"';
         }
 
-        echo '<tr id="user_' . $item->ID . '" class="' . $row_class . '" ' . $style . '>';
+        echo '<tr class="' . $row_class . '" ' . $style . '>';
         $this->single_row_columns($item);
         echo '</tr>';
     }
@@ -1109,7 +1109,7 @@ function build_status_description($status_id, $description, $document) {
         5 => 'Document approved'
     ];
     
-    return $status_map[$status_id] . ($description ?: $document->description);
+    return $status_map[$status_id] ?? '' . ($description ?: $document->description);
 }
 
 function update_document_status($document_id, $student_id, $status_id, $description) {
