@@ -843,22 +843,3 @@ function update_count_moodle_pending($count_fixed = '') {
         'count' => $count
     ], ['id' => 1]);
 } 
-
-function update_equivalence_califications($student_id) {
-    global $wpdb;
-    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $projection = get_projection_by_student($student_id);
-    $projection_obj = json_decode($projection->projection);
-    $load = load_current_cut_enrollment();
-    $current_period = $load['code'];
-    foreach ($projection_obj as $key => $value) {
-        if ($projection_obj[$key]->type == 'equivalence') {
-            $projection_obj[$key]->calification = 'TR';
-            $projection_obj[$key]->code_period = $current_period;
-        }
-    }
-    
-    $wpdb->update($table_student_academic_projection, [
-        'projection' => json_encode($projection_obj),
-    ], ['id' => $projection->id]);
-}

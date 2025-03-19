@@ -454,3 +454,44 @@ function only_pensum_regular($program_id)
 
     return $subjects;
 }
+
+function pensum_institute($institute_id)
+{
+    global $wpdb;
+    $table_pensum = $wpdb->prefix . 'pensum';
+    $pensum = $wpdb->get_row("SELECT * FROM {$table_pensum} WHERE `type`='institute' AND `status` = 1 AND institute_id = '{$institute_id}'");
+    $matrix = json_decode($pensum->matrix);
+    return $matrix;
+}
+
+function update_equivalence_califications($student_id) {
+    global $wpdb;
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $student = get_student_detail($student_id);
+    $pensum_institute = pensum_institute($student->institute_id);
+    $projection = get_projection_by_student($student_id);
+    $load = load_current_cut_enrollment();
+
+    $projection_obj = json_decode($projection->projection);
+    $current_period = $load['code'];
+
+    if (!$pensum_institute) {
+        foreach ($projection_obj as $key => $value) {
+            if ($projection_obj[$key]->type == 'equivalence') {
+                $projection_obj[$key]->calification = 'TR';
+                $projection_obj[$key]->code_period = $current_period;
+            }
+        }
+    } else {
+        foreach ($projection_obj as $key => $value) {
+            if ($projection_obj[$key]->type == 'equivalence') {
+                $projection_obj[$key]->calification = 'TR';
+                $projection_obj[$key]->code_period = $current_period;
+            }
+        }
+    }
+    
+    $wpdb->update($table_student_academic_projection, [
+        'projection' => json_encode($projection_obj),
+    ], ['id' => $projection->id]);
+}
