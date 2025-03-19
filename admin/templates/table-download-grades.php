@@ -55,10 +55,8 @@
                 <?php 
                     $subject = get_subject_details($projection_for->subject_id);
                     $period_name = '';
-                    if ($projection_for->is_completed) {
-                        $period = get_period_details_code($projection_for->code_period);
-                        $period_name = $period->name;
-                    }
+                    $period = get_period_details_code($projection_for->code_period);
+                    $period_name = $period ? $period->name : '';
                 ?>
                 <tr>
                     <td colspan="2"><?= $projection_for->code_subject ?></td>
