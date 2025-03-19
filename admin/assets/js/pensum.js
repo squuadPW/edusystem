@@ -42,7 +42,7 @@ jQuery(document).ready(function ($) {
 
             // Verificar si la materia ya fue agregada
             if (subjects.includes(subject_id)) {
-                alert('Esta materia ya ha sido agregada.');
+                alert('This subject has already been added.');
                 return;
             }
 
