@@ -60,7 +60,7 @@
                 ?>
                 <tr>
                     <td colspan="2"><?= $projection_for->code_subject ?></td>
-                    <td colspan="4"><?= $projection_for->subject ?>     <?= $projection_for->is_elective ? '(ELECTIVE)' : '' ?>
+                    <td colspan="4"><?= $projection_for->subject ?> <?= isset($projection_for->is_elective) ? ($projection_for->is_elective ? '(ELECTIVE)' : '') : '' ?>
                     </td>
                     <td colspan="1"><?= $subject->type != 'equivalence' ? $projection_for->hc : 'TR' ?></td>
                     <td colspan="1"><?= isset($projection_for->calification) && !empty($projection_for->calification) ? $projection_for->calification : ($subject->type != 'equivalence' ? 0 : 'TR') ?></td>
