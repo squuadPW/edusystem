@@ -13,11 +13,11 @@ class WC_Rejected_Institution_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_rejected_institution';
-        $this->title = __('Rejected Institution','aes');
-        $this->description = __('Institution rejection notification emails are produced when an institution is rejected for approval.','aes');
+        $this->title = __('Rejected Institution','edusystem');
+        $this->description = __('Institution rejection notification emails are produced when an institution is rejected for approval.','edusystem');
 
-        $this->heading = __('Rejected Institution','aes');
-        $this->subject = __('Rejected Institution','aes');
+        $this->heading = __('Rejected Institution','edusystem');
+        $this->subject = __('Rejected Institution','edusystem');
         $this->customer_email = true;
         $this->manual = true;
         $this->template_html  = 'templates/rejected-institution-email.php';

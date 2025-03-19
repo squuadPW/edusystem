@@ -97,15 +97,15 @@ function validated_account_details_required_fields( $required_fields ){
 
     if(in_array('parent',$roles) && !in_array('student',$roles)){
 
-        $required_fields['billing_city'] = __('Billing city','aes');
-        $required_fields['billing_country'] = __('Billing country','aes');
-        $required_fields['number_phone_account'] = __('Number phone','aes');
-        $required_fields['gender'] = __('Gender','aes');
-        $required_fields['birth_date'] = __('Birth Date','aes');
-        $required_fields['id_document'] = __('ID Document','aes');
-        $required_fields['document_type'] = __('Type document','aes');
-        $required_fields['billing_postcode'] = __('Post Code','aes');
-        $required_fields['occupation'] = __('Occupation','aes');
+        $required_fields['billing_city'] = __('Billing city','edusystem');
+        $required_fields['billing_country'] = __('Billing country','edusystem');
+        $required_fields['number_phone_account'] = __('Number phone','edusystem');
+        $required_fields['gender'] = __('Gender','edusystem');
+        $required_fields['birth_date'] = __('Birth Date','edusystem');
+        $required_fields['id_document'] = __('ID Document','edusystem');
+        $required_fields['document_type'] = __('Type document','edusystem');
+        $required_fields['billing_postcode'] = __('Post Code','edusystem');
+        $required_fields['occupation'] = __('Occupation','edusystem');
 
     }
 

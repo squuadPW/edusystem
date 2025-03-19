@@ -16,17 +16,17 @@
 
   <div class="card" style="max-width: 90% !important;">
     <div class="card-header">
-      <h3><?= __('Settings for AES', 'aes'); ?></h3>
+      <h3><?= __('Settings for AES', 'edusystem'); ?></h3>
     </div>
     <div class="card-body-configuration">
 
       <section class="segment" style="display: flex; margin: 0px 20px 30px 20px;">
-        <div class="segment-button active" data-option="admission"><?= __('Admission', 'aes'); ?></div>
-        <div class="segment-button" data-option="administration"><?= __('Administration', 'aes'); ?></div>
-        <div class="segment-button" data-option="moodle"><?= __('Moodle', 'aes'); ?></div>
-        <div class="segment-button" data-option="offers"><?= __('Offers', 'aes'); ?></div>
-        <div class="segment-button" data-option="inscriptions"><?= __('Inscriptions', 'aes'); ?></div>
-        <div class="segment-button" data-option="notifications"><?= __('Notifications', 'aes'); ?></div>
+        <div class="segment-button active" data-option="admission"><?= __('Admission', 'edusystem'); ?></div>
+        <div class="segment-button" data-option="administration"><?= __('Administration', 'edusystem'); ?></div>
+        <div class="segment-button" data-option="moodle"><?= __('Moodle', 'edusystem'); ?></div>
+        <div class="segment-button" data-option="offers"><?= __('Offers', 'edusystem'); ?></div>
+        <div class="segment-button" data-option="inscriptions"><?= __('Inscriptions', 'edusystem'); ?></div>
+        <div class="segment-button" data-option="notifications"><?= __('Notifications', 'edusystem'); ?></div>
       </section>
 
       <form method="post"
@@ -66,7 +66,7 @@
             <a style="margin: 5px"
               href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=set_max_access_date') ?>"
               class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-              <?= __('Update max date students', 'aes'); ?>
+              <?= __('Update max date students', 'edusystem'); ?>
             </a>
           </div>
           <div class="form-group" style="padding: 10px">
@@ -88,19 +88,19 @@
         </div>
         <div id="by_moodle" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
-            <label for="email_coordination"><?= __('Moodle URL', 'aes'); ?></label> <br>
+            <label for="email_coordination"><?= __('Moodle URL', 'edusystem'); ?></label> <br>
             <input class="full-input" name="moodle_url" type="text" id="moodle_url"
               value="<?= get_option('moodle_url'); ?>" required>
           </div>
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
-            <label for="email_academic_management"><?= __('Moodle Token', 'aes'); ?></label> <br>
+            <label for="email_academic_management"><?= __('Moodle Token', 'edusystem'); ?></label> <br>
             <input class="full-input" name="moodle_token" type="text" id="moodle_token"
               value="<?= get_option('moodle_token'); ?>" required>
           </div>
         </div>
         <div id="by_offers" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
-            <label for="offer_complete"><?= __('Coupon registration fee in complete payment', 'aes'); ?></label> <br>
+            <label for="offer_complete"><?= __('Coupon registration fee in complete payment', 'edusystem'); ?></label> <br>
             <select class="full-input" name="offer_complete" id="offer_complete">
               <option value="" <?= get_option('offer_complete') == '' ? 'selected' : ''; ?>>Without offer</option>
               <option value="50% Registration fee" <?= get_option('offer_complete') == '50% Registration fee' ? 'selected' : ''; ?>>50% Registration fee</option>
@@ -108,7 +108,7 @@
             </select>
           </div>
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
-            <label for="offer_quote"><?= __('Coupon for registration fee with installment payments', 'aes'); ?></label>
+            <label for="offer_quote"><?= __('Coupon for registration fee with installment payments', 'edusystem'); ?></label>
             <br>
             <select class="full-input" name="offer_quote" id="offer_quote">
               <option value="" <?= get_option('offer_quote') == '' ? 'selected' : ''; ?>>Without offer</option>
@@ -155,14 +155,14 @@
               <a style="margin: 5px"
                 href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=clear_electives') ?>"
                 class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Deactivate the elective selector and mark that they did not see electives during this period <br> that were not their turn (this will bring them forward in the projection)', 'aes'); ?>
+                <?= __('Deactivate the elective selector and mark that they did not see electives during this period <br> that were not their turn (this will bring them forward in the projection)', 'edusystem'); ?>
               </a>
             </div>
             <div>
               <a style="margin: 5px"
                 href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projections') ?>"
                 class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Generate pending academic projections', 'aes'); ?>
+                <?= __('Generate pending academic projections', 'edusystem'); ?>
               </a>
             </div>
           </div>
@@ -174,13 +174,13 @@
               <a style="margin: 5px"
                 href="<?= admin_url('admin.php?page=add_admin_form_send_email_content&action=send_pending_payments_email') ?>"
                 class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Send pending payment mail', 'aes'); ?>
+                <?= __('Send pending payment mail', 'edusystem'); ?>
               </a>
             </div>
           </div>
         </div>
         <div class="form-group" id="save-configuration" style="text-align: center">
-          <button type="submit" class="btn btn-primary"><?= __('Save settings', 'aes'); ?></button>
+          <button type="submit" class="btn btn-primary"><?= __('Save settings', 'edusystem'); ?></button>
         </div>
       </form>
     </div>

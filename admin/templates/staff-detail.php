@@ -1,5 +1,5 @@
 <div class="wrap staff-module">
-    <h2 class="staff-title"><?= __('Staff Details', 'aes'); ?></h2>
+    <h2 class="staff-title"><?= __('Staff Details', 'edusystem'); ?></h2>
 
     <?php if(isset($_COOKIE['message']) && !empty($_COOKIE['message'])){ ?>
         <div class="notice notice-success is-dismissible"><p><?= $_COOKIE['message']; ?></p></div>
@@ -12,7 +12,7 @@
 
     <div class="staff-toolbar">
         <a class="button button-outline-primary"
-            href="<?= admin_url('admin.php?page=add_admin_form_staff_content'); ?>"><?= __('Back', 'aes'); ?></a>
+            href="<?= admin_url('admin.php?page=add_admin_form_staff_content'); ?>"><?= __('Back', 'edusystem'); ?></a>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder staff-content">
@@ -27,26 +27,26 @@
                                     <tr>
                                         <td style="font-weight:400;">
                                             <?php if (isset($staff) && !empty($staff)): ?>
-                                                <label for="input_id"><b><?= __('User login', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('User login', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="user_login"
                                                     value="<?= $staff->user_login; ?>" readonly>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('User login', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('User login', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="user_login" value="" required>
                                             <?php endif; ?>
                                         </td>
                                         <td style="font-weight:400;">
                                             <?php if (isset($staff) && !empty($staff)): ?>
-                                                <label for="input_id"><b><?= __('Email', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('Email', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="email"
                                                     value="<?= $staff->user_email; ?>">
                                                 <input type="hidden" name="staff_id" id="staff_id"
                                                     value="<?= $staff->ID; ?>">
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Email', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('Email', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="email" value="" required>
                                                 <input type="hidden" name="staff_id" id="staff_id" value="">
@@ -55,32 +55,32 @@
 
                                         <td style="font-weight:400;">
                                             <label
-                                                for="input_id"><b><?= __('Password', 'aes'); ?></b><?php !$staff ? '<span class="text-danger">*</span>' : '' ?></label><br>
+                                                for="input_id"><b><?= __('Password', 'edusystem'); ?></b><?php !$staff ? '<span class="text-danger">*</span>' : '' ?></label><br>
                                             <input type="password" name="password" value="" <?php !$staff ? 'required' : '' ?>>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="font-weight:400;">
                                             <?php if (isset($staff) && !empty($staff)): ?>
-                                                <label for="input_id"><b><?= __('First name', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('First name', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="first_name"
                                                     value="<?= get_user_meta($staff->ID, 'first_name', true); ?>">
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('First name', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('First name', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="first_name" value="" required>
                                             <?php endif; ?>
                                         </td>
                                         <td style="font-weight:400;">
                                             <?php if (isset($staff) && !empty($staff)): ?>
-                                                <label for="input_id"><b><?= __('Last name', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('Last name', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="last_name"
                                                     value="<?= get_user_meta($staff->ID, 'last_name', true); ?>">
 
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Last name', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('Last name', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="last_name" value="" required>
 
@@ -88,12 +88,12 @@
                                         </td>
                                         <td style="font-weight:400;">
                                             <?php if (isset($staff) && !empty($staff)): ?>
-                                                <label for="input_id"><b><?= __('Display name', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('Display name', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="display_name" value="<?= $staff->display_name; ?>">
 
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Display name', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('Display name', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="display_name" value="" required>
 
@@ -103,7 +103,7 @@
                                     <tr>
                                         <td style="font-weight:400;">
                                             <?php if (isset($staff) && !empty($staff)): ?>
-                                                <label for="input_id"><b><?= __('Roles', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('Roles', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <?php
                                                 $user_data = get_userdata($staff->ID);
@@ -117,7 +117,7 @@
                                                     <?php endforeach; ?>
                                                 </select>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Roles', 'aes'); ?></b><span
+                                                <label for="input_id"><b><?= __('Roles', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <?php
                                                 $roles = wp_roles()->get_names();
@@ -137,12 +137,12 @@
                             <?php if (isset($staff) && !empty($staff)): ?>
                                 <div class="staff-actions">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Save changes', 'aes'); ?></button>
+                                        class="button button-primary"><?= __('Save changes', 'edusystem'); ?></button>
                                 </div>
                             <?php else: ?>
                                 <div class="staff-actions">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Add staff', 'aes'); ?></button>
+                                        class="button button-primary"><?= __('Add staff', 'edusystem'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

@@ -15,10 +15,10 @@ class WC_Update_Document_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_update_document';
-        $this->title = __('Update Document(s)','aes');
-        $this->description = __('Document update notification e-mails are when a student submits a document for revision to admission.','aes');
-        $this->heading = __('Updated Document(s)','aes');
-        $this->subject = __('Updated Document(s)','aes');
+        $this->title = __('Update Document(s)','edusystem');
+        $this->description = __('Document update notification e-mails are when a student submits a document for revision to admission.','edusystem');
+        $this->heading = __('Updated Document(s)','edusystem');
+        $this->subject = __('Updated Document(s)','edusystem');
 
         $this->template_html  = 'templates/update-document-email.php';
         $this->template_plain = 'templates/update-document-email.php';

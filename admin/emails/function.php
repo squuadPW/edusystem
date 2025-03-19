@@ -39,7 +39,7 @@ function add_expedited_order_woocommerce_email( $email_classes ){
 add_filter( 'woocommerce_email_classes', 'add_expedited_order_woocommerce_email' );
 
 function change_email_heading_order($email_heading, $order ){
-    $email_heading = __('New Payment has been received','aes'); 
+    $email_heading = __('New Payment has been received','edusystem'); 
     return $email_heading;
 } 
 
@@ -47,7 +47,7 @@ add_filter('woocommerce_email_heading_new_order','change_email_heading_order',10
 add_filter('woocommerce_email_heading_customer_processing_order','change_email_heading_order',1,2);
 
 function change_email_heading_order_completed($email_heading, $order ){
-    $email_heading = __('Your Payment has been completed','aes'); 
+    $email_heading = __('Your Payment has been completed','edusystem'); 
     return $email_heading;
 }
 
@@ -56,7 +56,7 @@ add_filter('woocommerce_email_heading_customer_completed_order','change_email_he
 
 
 function change_admin_email_subject_new_order($subject, $order ){
-    $subject = __('New Payment','aes');
+    $subject = __('New Payment','edusystem');
     return $subject;
 }
 

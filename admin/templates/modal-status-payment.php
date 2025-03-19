@@ -131,8 +131,8 @@
 				<?php } ?>
 			</div>
 			<div class="modal-footer">
-				<button type="submit" class="button button-primary"><?= __('Yes', 'aes'); ?></button>
-				<button type="button" class="button button-outline-primary modal-close"><?= __('No', 'aes'); ?></button>
+				<button type="submit" class="button button-primary"><?= __('Yes', 'edusystem'); ?></button>
+				<button type="button" class="button button-outline-primary modal-close"><?= __('No', 'edusystem'); ?></button>
 			</div>
 		</form>
 	</div>

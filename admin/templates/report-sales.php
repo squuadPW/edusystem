@@ -61,13 +61,13 @@
             <?php } else { ?>
                 <select id="typeFilter" name="typeFilter" autocomplete="off">
                 <?php } ?>
-                <option value="today"><?= __('Today', 'aes'); ?></option>
-                <option value="yesterday"><?= __('yesterday', 'aes'); ?></option>
-                <option value="this-week"><?= __('This week', 'aes'); ?></option>
-                <option value="last-week"><?= __('Last week', 'aes'); ?></option>
-                <option value="this-month" selected><?= __('This month', 'aes'); ?></option>
-                <option value="last-month"><?= __('Last month', 'aes'); ?></option>
-                <option value="custom"><?= __('Custom', 'aes'); ?></option>
+                <option value="today"><?= __('Today', 'edusystem'); ?></option>
+                <option value="yesterday"><?= __('yesterday', 'edusystem'); ?></option>
+                <option value="this-week"><?= __('This week', 'edusystem'); ?></option>
+                <option value="last-week"><?= __('Last week', 'edusystem'); ?></option>
+                <option value="this-month" selected><?= __('This month', 'edusystem'); ?></option>
+                <option value="last-month"><?= __('Last month', 'edusystem'); ?></option>
+                <option value="custom"><?= __('Custom', 'edusystem'); ?></option>
             </select>
             <?php if (wp_is_mobile()) { ?>
                 <input type="text" value="<?= $start_date; ?>" id="inputStartDate"
@@ -77,22 +77,22 @@
             <?php } ?>
             <?php if (wp_is_mobile()): ?>
                 <button type="button" id="update_data" class="button button-primary"
-                    style="width:100%;"></span><?= __('Update data', 'aes'); ?></button>
+                    style="width:100%;"></span><?= __('Update data', 'edusystem'); ?></button>
             <?php else: ?>
                 <button type="button" id="update_data"
-                    class="button button-primary"></span><?= __('Update data', 'aes'); ?></button>
+                    class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
             <?php endif; ?>
     </div>
     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
         <thead>
             <tr>
-                <th scope="col" class=" manage-column column-primary"><?= __('Payment ID', 'aes'); ?>
+                <th scope="col" class=" manage-column column-primary"><?= __('Payment ID', 'edusystem'); ?>
                 </th>
-                <th scope="col" class=" manage-column column-email"><?= __('Parent', 'aes'); ?></th>
-                <th scope="col" class=" manage-column column-email"><?= __('Student', 'aes'); ?></th>
-                <th scope="col" class=" manage-column column-email"><?= __('Total', 'aes'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Created', 'aes'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Actions', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column-email"><?= __('Parent', 'edusystem'); ?></th>
+                <th scope="col" class=" manage-column column-email"><?= __('Student', 'edusystem'); ?></th>
+                <th scope="col" class=" manage-column column-email"><?= __('Total', 'edusystem'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Created', 'edusystem'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Actions', 'edusystem'); ?></th>
             </tr>
         </thead>
         <tbody id="table-institutes-payment">

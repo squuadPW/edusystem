@@ -53,7 +53,7 @@ function add_admin_form_enrollments_content()
                     'type' => $subject->type
                 ], ['id' => $enrollment_id]);
 
-                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_enrollments_content&section_tab=enrollment_details&enrollment_id=' . $enrollment_id));
                 exit;
             } else {
@@ -136,7 +136,7 @@ class TT_enrollments_all_List_Table extends WP_List_Table
                         break;
                 }
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_enrollments_content&section_tab=enrollment_details&enrollment_id=' . $item['enrollment_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_enrollments_content&section_tab=enrollment_details&enrollment_id=' . $item['enrollment_id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -157,12 +157,12 @@ class TT_enrollments_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'status' => __('Status', 'aes'),
-            'full_name' => __('Student', 'aes'),
-            'subject_code' => __('Subject - Code of subject', 'aes'),
-            'period_cut' => __('Period - Cut', 'aes'),
-            'calification' => __('Calification', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'status' => __('Status', 'edusystem'),
+            'full_name' => __('Student', 'edusystem'),
+            'subject_code' => __('Subject - Code of subject', 'edusystem'),
+            'period_cut' => __('Period - Cut', 'edusystem'),
+            'calification' => __('Calification', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;

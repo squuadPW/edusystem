@@ -365,7 +365,7 @@ function add_admin_form_available_scholarships_content()
             }
 
             if (isset($scholarship_id) && !empty($scholarship_id)) {
-                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_available_scholarships_content&section_tab=available_scholarship_detail&scholarship_id='.$scholarship_id));
             } else {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_available_scholarships_content'));
@@ -418,7 +418,7 @@ class TT_scholarship_pending_List_Table extends WP_List_Table
             case 'date':
                 return ucwords($item[$column_name]);
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_scholarships_content&section_tab=scholarship_detail&scholarship_id=' . $item['scholarship_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_scholarships_content&section_tab=scholarship_detail&scholarship_id=' . $item['scholarship_id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -443,13 +443,13 @@ class TT_scholarship_pending_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'scholarship_id' => __('Scholarship ID', 'aes'),
-            'student_name' => __('Student', 'aes'),
-            'student_email' => __('Student email', 'aes'),
-            'partner_name' => __('Parent', 'aes'),
-            'partner_email' => __('Parent email', 'aes'),
-            'date' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'scholarship_id' => __('Scholarship ID', 'edusystem'),
+            'student_name' => __('Student', 'edusystem'),
+            'student_email' => __('Student email', 'edusystem'),
+            'partner_name' => __('Parent', 'edusystem'),
+            'partner_email' => __('Parent email', 'edusystem'),
+            'date' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -565,7 +565,7 @@ class TT_scholarship_all_List_Table extends WP_List_Table
             case 'date':
                 return ucwords($item[$column_name]);
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_scholarships_content&section_tab=scholarship_detail&scholarship_id=' . $item['scholarship_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_scholarships_content&section_tab=scholarship_detail&scholarship_id=' . $item['scholarship_id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -590,13 +590,13 @@ class TT_scholarship_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'scholarship_id' => __('Scholarship ID', 'aes'),
-            'student_name' => __('Student', 'aes'),
-            'student_email' => __('Student email', 'aes'),
-            'partner_name' => __('Partner', 'aes'),
-            'partner_email' => __('Partner email', 'aes'),
-            'date' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'scholarship_id' => __('Scholarship ID', 'edusystem'),
+            'student_name' => __('Student', 'edusystem'),
+            'student_email' => __('Student email', 'edusystem'),
+            'partner_name' => __('Partner', 'edusystem'),
+            'partner_email' => __('Partner email', 'edusystem'),
+            'date' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -704,7 +704,7 @@ class TT_pre_scholarship_all_List_Table extends WP_List_Table
 
         switch ($column_name) {
             case 'view_details':
-                return "<a target='_blank' href='" . esc_url(home_url('/student-scholarship-application/?id=' . $item['document_id'] .'&type=' . $item['document_type'])) . "' class='button button-primary'>" . __('Share link', 'aes') . "</a>";
+                return "<a target='_blank' href='" . esc_url(home_url('/student-scholarship-application/?id=' . $item['document_id'] .'&type=' . $item['document_type'])) . "' class='button button-primary'>" . __('Share link', 'edusystem') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -729,12 +729,12 @@ class TT_pre_scholarship_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'scholarship' => __('Scholarship', 'aes'),
-            'document_type' => __('Type document', 'aes'),
-            'document_id' => __('ID Document', 'aes'),
-            'student' => __('Student', 'aes'),
-            'created_at' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'scholarship' => __('Scholarship', 'edusystem'),
+            'document_type' => __('Type document', 'edusystem'),
+            'document_id' => __('ID Document', 'edusystem'),
+            'student' => __('Student', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -831,7 +831,7 @@ class TT_availables_scholarships_List_Table extends WP_List_Table
 
         switch ($column_name) {
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_available_scholarships_content&section_tab=available_scholarship_detail&scholarship_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_available_scholarships_content&section_tab=available_scholarship_detail&scholarship_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -856,11 +856,11 @@ class TT_availables_scholarships_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'id' => __('Scholarship ID', 'aes'),
-            'name_scholarship' => __('Name', 'aes'),
-            'description' => __('Description', 'aes'),
-            'created_at' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'id' => __('Scholarship ID', 'edusystem'),
+            'name_scholarship' => __('Name', 'edusystem'),
+            'description' => __('Description', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;

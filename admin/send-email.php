@@ -37,7 +37,7 @@ function add_admin_form_send_email_content()
                     }
                 }
 
-                setcookie('message', __('Email sent successfully.', 'aes'), time() + 10, '/');
+                setcookie('message', __('Email sent successfully.', 'edusystem'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_send_email_content'));
                 exit;
             } else {
@@ -57,11 +57,11 @@ function add_admin_form_send_email_content()
                         $email_user->trigger($parent, $subject, $message);
                     }
 
-                    setcookie('message', __('Email sent successfully.', 'aes'), time() + 10, '/');
+                    setcookie('message', __('Email sent successfully.', 'edusystem'), time() + 10, '/');
                     wp_redirect(admin_url('admin.php?page=add_admin_form_send_email_content'));
                     exit;
                 } else {
-                    setcookie('message-error', __("This student don't exist.", 'aes'), time() + 3600, '/');
+                    setcookie('message-error', __("This student don't exist.", 'edusystem'), time() + 3600, '/');
                     wp_redirect(admin_url('admin.php?page=add_admin_form_send_email_content'));
                     exit;
                 }

@@ -25,7 +25,7 @@
                                     require you to set a password before accessing your account.</p>
                             </div>
                             <div>
-                                <label for="password"><?= __('Password of access', 'aes'); ?><span
+                                <label for="password"><?= __('Password of access', 'edusystem'); ?><span
                                         class="required">*</span></label>
                                 <input class="formdata" type="password" name="password" autocomplete="off" required>
                             </div>
@@ -34,7 +34,7 @@
                         <!-- DATOS DEL GRADO -->
                         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-3"
                             style="text-align:center;">
-                            <button class="submit" id="buttonsave"><?= __('Save', 'aes'); ?></button>
+                            <button class="submit" id="buttonsave"><?= __('Save', 'edusystem'); ?></button>
                         </div>
                     </div>
                 </form>

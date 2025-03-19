@@ -9,17 +9,17 @@
         <?php if($projection && current_user_can('manager_academic_projection_aes')) { ?>
             <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=') . $projection->id ?>"
                 class="button button-outline-primary">
-                <?= __('Academic projection', 'aes'); ?>
+                <?= __('Academic projection', 'edusystem'); ?>
             </a>
         <?php } ?>
         <a href="<?= admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id; ?>"
             class="button button-outline-primary">
-            <?= __('Admission', 'aes'); ?>
+            <?= __('Admission', 'edusystem'); ?>
         </a>
         <?php if (current_user_can('manager_payments_aes')) { ?>
             <a href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=') . $email ?>"
                 class="button button-outline-primary">
-                <?= __('Payments', 'aes'); ?>
+                <?= __('Payments', 'edusystem'); ?>
             </a>
         <?php } ?>
     </div>

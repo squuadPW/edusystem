@@ -98,7 +98,7 @@ function add_admin_form_teachers_content()
                 }
 
 
-                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_teachers_content&section_tab=teacher_details&teacher_id=' . $teacher_id));
                 exit;
             } else {
@@ -213,7 +213,7 @@ function add_admin_form_teachers_content()
                 }    
             }
 
-            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+            setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_teachers_content&section_tab=teacher_details&teacher_id=' . $teacher_id));
             exit;
         } else {
@@ -272,7 +272,7 @@ class TT_teachers_all_List_Table extends WP_List_Table
                         break;
                 }
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_teachers_content&section_tab=teacher_details&teacher_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_teachers_content&section_tab=teacher_details&teacher_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -293,13 +293,13 @@ class TT_teachers_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'avatar' => __('Avatar', 'aes'),
-            'identification' => __('Identification', 'aes'),
-            'full_name' => __('Full name', 'aes'),
-            'email' => __('Email', 'aes'),
-            'status' => __('Status', 'aes'),
-            'pending_documents' => __('Pending documents', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'avatar' => __('Avatar', 'edusystem'),
+            'identification' => __('Identification', 'edusystem'),
+            'full_name' => __('Full name', 'edusystem'),
+            'email' => __('Email', 'edusystem'),
+            'status' => __('Status', 'edusystem'),
+            'pending_documents' => __('Pending documents', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;

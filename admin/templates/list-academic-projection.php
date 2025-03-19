@@ -1,7 +1,7 @@
 <div class="tabs-content">
 	<div class="wrap">
         <div style="text-align:start;">
-			<h1 class="wp-heading-line"><?= __('All academic projections','aes'); ?></h1>
+			<h1 class="wp-heading-line"><?= __('All academic projections','edusystem'); ?></h1>
 		</div>
 		<?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
 			<div class="notice notice-success is-dismissible">
@@ -28,9 +28,9 @@
 		?>
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 			<?php if(current_user_can('manager_enrollments_aes')) { ?>
-				<a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollments'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to validate enrollments?');"><?= __('Enrollment history','aes'); ?></a>
-				<a data-tippy-content="<?= $current_enroll_text ?>" style="margin-left: 10px; <?= $style_pending ?>" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_enrollments_moodle'); ?>" class="button button-outline-primary  help-tooltip" onclick="return confirm('Are you sure you want to generate enrollments in Moodle?');"><?= __('Enroll in moodle','aes'); ?> (<?= $enroll_moodle_count ?>)</a>
-				<a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=get_moodle_notes'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to update the notes from Moodle?');"><?= __('Download moodle notes','aes'); ?></a>
+				<a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollments'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to validate enrollments?');"><?= __('Enrollment history','edusystem'); ?></a>
+				<a data-tippy-content="<?= $current_enroll_text ?>" style="margin-left: 10px; <?= $style_pending ?>" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_enrollments_moodle'); ?>" class="button button-outline-primary  help-tooltip" onclick="return confirm('Are you sure you want to generate enrollments in Moodle?');"><?= __('Enroll in moodle','edusystem'); ?> (<?= $enroll_moodle_count ?>)</a>
+				<a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=get_moodle_notes'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to update the notes from Moodle?');"><?= __('Download moodle notes','edusystem'); ?></a>
 				<?php
 					$text_students = '';
 					foreach ($pending_emails_students as $key => $student) {
@@ -45,14 +45,14 @@
 				style="margin-left: 10px; <?= $style_pending_email ?>"
 					href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_welcome_email') ?>"
 					class="button button-outline-primary help-tooltip" onclick="return confirm('Are you sure?');">
-					<?= __('Send welcome mailing', 'aes'); ?> (<?= $pending_emails_count ?>)
+					<?= __('Send welcome mailing', 'edusystem'); ?> (<?= $pending_emails_count ?>)
 				</a>
 			<?php } ?>
 		</div>
 		<form action="" id="post-filter" method="get">
 			<p class="search-box">
-				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','aes').':'; ?></label>
-				<input value="<?= isset($_GET['s']) ? $_GET['s'] : '' ?>" type="search" id="search-box-id-search-input" name="s" placeholder="<?= __('Search for Student','aes'); ?>" value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
+				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','edusystem').':'; ?></label>
+				<input value="<?= isset($_GET['s']) ? $_GET['s'] : '' ?>" type="search" id="search-box-id-search-input" name="s" placeholder="<?= __('Search for Student','edusystem'); ?>" value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
 				<input type="submit" id="search-submit" class="button" value="Search">
 			</p>
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />

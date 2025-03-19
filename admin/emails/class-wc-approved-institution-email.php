@@ -13,12 +13,12 @@ class WC_Approved_Institution_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_approved_institution';
-        $this->title = __('Approved Institution','aes');
-        $this->description = __('Document approval emails are sent when a student is approved for a specific document.','aes');
+        $this->title = __('Approved Institution','edusystem');
+        $this->description = __('Document approval emails are sent when a student is approved for a specific document.','edusystem');
         $this->customer_email = true;
         $this->manual = true;
-        $this->heading = __('Approved Institution','aes');
-        $this->subject = __('Approved Institution','aes');
+        $this->heading = __('Approved Institution','edusystem');
+        $this->subject = __('Approved Institution','edusystem');
 
         $this->template_html  = 'templates/approved-institution-email.php';
         $this->template_plain = 'templates/approved-institution-email.php';

@@ -13,12 +13,12 @@ class WC_Approved_Document_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_approved_document';
-        $this->title = __('Approved Document','aes');
-        $this->description = __('Document approval emails are sent when a student is approved for a specific document.','aes');
+        $this->title = __('Approved Document','edusystem');
+        $this->description = __('Document approval emails are sent when a student is approved for a specific document.','edusystem');
         $this->customer_email = true;
         $this->manual = true;
-        $this->heading = __('Approved Document','aes');
-        $this->subject = __('Approved Document','aes');
+        $this->heading = __('Approved Document','edusystem');
+        $this->subject = __('Approved Document','edusystem');
 
         $this->template_html  = 'templates/approved-document-email.php';
         $this->template_plain = 'templates/approved-document-email.php';

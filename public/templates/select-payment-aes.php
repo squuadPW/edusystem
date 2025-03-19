@@ -1,5 +1,5 @@
 <div class="title">
-    <?= __('Select payment', 'aes'); ?>
+    <?= __('Select payment', 'edusystem'); ?>
 </div>
 
 <div class="container">
@@ -32,9 +32,9 @@
     <div class="grid grid-cols-12 gap-4">
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="country"><?= __('Country', 'form-plugin'); ?><span class="required">*</span></label>
+            <label for="country"><?= __('Country', 'edusystem'); ?><span class="required">*</span></label>
             <select name="country" autocomplete="off" required id="country-select-step-two">
-                <option value="" selected><?= __('Select an option', 'aes'); ?></option>
+                <option value="" selected><?= __('Select an option', 'edusystem'); ?></option>
                 <?php foreach ($countries as $key => $country) { ?>
                     <option value="<?= $key ?>"><?= $country; ?></option>
                 <?php } ?>
@@ -42,38 +42,38 @@
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="billing_address_1"><?= __('Street address', 'aes'); ?><span class="required">*</span></label>
+            <label for="billing_address_1"><?= __('Street address', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="billing_address_1" autocomplete="off" required>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="city"><?= __('City', 'aes'); ?><span class="required">*</span></label>
+            <label for="city"><?= __('City', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="city" autocomplete="off" required>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="billing_state"><?= __('State / County', 'aes'); ?><span class="required">*</span></label>
+            <label for="billing_state"><?= __('State / County', 'edusystem'); ?><span class="required">*</span></label>
             <select name="billing_state" id="state-select-step-two">
-                <option value="" selected="selected"><?= __('Select an option', 'aes'); ?></option>
+                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
             </select>
         </div>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="billing_postcode"><?= __('Postcode / ZIP', 'aes'); ?><span class="required">*</span></label>
+            <label for="billing_postcode"><?= __('Postcode / ZIP', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="billing_postcode" autocomplete="off" required>
         </div>
 
         <input class="formdata capitalize" type="hidden" name="payment_method_selected" autocomplete="off" required>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-3" style="text-align:center; display: none !important">
-            <button type="submit" class="submit" id="buttonsave"><?= __('Send', 'aes'); ?></button>
+            <button type="submit" class="submit" id="buttonsave"><?= __('Send', 'edusystem'); ?></button>
         </div>
     </div>
 </form>
 
 <div class="grid grid-cols-12 gap-4">
     <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 flex justify-center space-x-4">
-        <a href="<?= home_url() . '?form=1'; ?>"><button class="button" id="back_home"><?= __('Back', 'aes'); ?></button></a>
-        <button class="submit" id="buttonsave_secondary"><?= __('Send', 'aes'); ?></button>
+        <a href="<?= home_url() . '?form=1'; ?>"><button class="button" id="back_home"><?= __('Back', 'edusystem'); ?></button></a>
+        <button class="submit" id="buttonsave_secondary"><?= __('Send', 'edusystem'); ?></button>
     </div>
 </div>

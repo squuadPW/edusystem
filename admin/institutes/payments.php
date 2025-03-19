@@ -78,9 +78,9 @@ class TT_all_Payment_Institutes_List_Table extends WP_List_Table
                 return $item[$column_name];
             case 'view_details':
                 if (isset($_GET['institute_id']) && !empty($_GET['institute_id'])) {
-                    return "<a class='button button-primary' href='" . admin_url('admin.php?page=add_admin_institutes_content&section_tab=payment-detail&payment_id=' . $item['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                    return "<a class='button button-primary' href='" . admin_url('admin.php?page=add_admin_institutes_content&section_tab=payment-detail&payment_id=' . $item['order_id']) . "'>" . __('View details', 'edusystem') . "</a>";
                 } else {
-                    return "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_institutes_payments_content&action=payment-detail&payment_id=' . $item['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                    return "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_institutes_payments_content&action=payment-detail&payment_id=' . $item['order_id']) . "'>" . __('View details', 'edusystem') . "</a>";
                 }
             default:
                 return print_r($item, true);
@@ -101,10 +101,10 @@ class TT_all_Payment_Institutes_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'order_id' => __('Payment ID', 'aes'),
-            'fee' => __('Fee', 'aes'),
-            'created_at' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'order_id' => __('Payment ID', 'edusystem'),
+            'fee' => __('Fee', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -176,17 +176,17 @@ class TT_all_Payment_Institutes_List_Table extends WP_List_Table
             ?>
             <div class="alignleft actions bulkactions">
                 <select name="filter-date" id="filter-date">
-                    <option value=""><?= __('All Payments', 'aes'); ?></option>
-                    <option value="today"><?= __('Today', 'aes'); ?></option>
-                    <option value="yesterday"><?= __('Yesterday', 'aes'); ?></option>
-                    <option value="this-week"><?= __('This week', 'aes'); ?></option>
-                    <option value="last-week"><?= __('Last Week', 'aes'); ?></option>
-                    <option value="this-month"><?= __('This Month', 'aes'); ?></option>
-                    <option value="last-month"><?= __('Last Month', 'aes'); ?></option>
-                    <option value="custom"><?= __('Custom', 'aes'); ?></option>
+                    <option value=""><?= __('All Payments', 'edusystem'); ?></option>
+                    <option value="today"><?= __('Today', 'edusystem'); ?></option>
+                    <option value="yesterday"><?= __('Yesterday', 'edusystem'); ?></option>
+                    <option value="this-week"><?= __('This week', 'edusystem'); ?></option>
+                    <option value="last-week"><?= __('Last Week', 'edusystem'); ?></option>
+                    <option value="this-month"><?= __('This Month', 'edusystem'); ?></option>
+                    <option value="last-month"><?= __('Last Month', 'edusystem'); ?></option>
+                    <option value="custom"><?= __('Custom', 'edusystem'); ?></option>
                 </select>
                 <input type="text" id="input-date" style="display:none;">
-                <input type="submit" class="button" value="<?= __('Search', 'aes'); ?>">
+                <input type="submit" class="button" value="<?= __('Search', 'edusystem'); ?>">
             </div>
             <?php
         }
@@ -404,19 +404,19 @@ function get_list_fee_institute()
 
             foreach ($orders['orders'] as $order) {
                 $html .= "<tr>";
-                $html .= "<td class='column column-primary' data-colname='" . __('Payment ID', 'aes') . "'>";
+                $html .= "<td class='column column-primary' data-colname='" . __('Payment ID', 'edusystem') . "'>";
                 $html .= '#' . $order['order_id'];
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
-                $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>" . $order['customer'] . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Fee', 'aes') . "'>" . get_woocommerce_currency_symbol() . number_format($order['fee'], 2, '.', ',') . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Created', 'aes') . "'><b>" . $order['created_at'] . "</b></td>";
-                $html .= "<td class='column' data-colname='" . __('Action', 'aes') . "'>";
+                $html .= "<td class='column' data-colname='" . __('Customer', 'edusystem') . "'>" . $order['customer'] . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Fee', 'edusystem') . "'>" . get_woocommerce_currency_symbol() . number_format($order['fee'], 2, '.', ',') . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Created', 'edusystem') . "'><b>" . $order['created_at'] . "</b></td>";
+                $html .= "<td class='column' data-colname='" . __('Action', 'edusystem') . "'>";
 
                 if (!empty($institute_id)) {
-                    $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=add_admin_institutes_content&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                    $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=add_admin_institutes_content&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'edusystem') . "</a>";
                 } else {
-                    $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_institutes_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                    $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_institutes_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'edusystem') . "</a>";
                 }
 
 
@@ -426,7 +426,7 @@ function get_list_fee_institute()
 
         } else {
             $html .= "<tr>";
-            $html .= "<td colspan='5' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html .= "<td colspan='5' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
             $html .= "</tr>";
         }
 
@@ -463,23 +463,23 @@ function get_invoices_institute()
 
             foreach ($filtered_invices['orders'] as $order) {
                 $html .= "<tr>";
-                $html .= "<td class='column column-primary' data-colname='" . __('Payment ID', 'aes') . "'>";
+                $html .= "<td class='column column-primary' data-colname='" . __('Payment ID', 'edusystem') . "'>";
                 $html .= '#' . $order['order_id'];
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
-                $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>" . $order['customer'] . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . $order['student'] . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Fee', 'aes') . "'>" . wc_price($order['fee']) . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Created', 'aes') . "'><b>" . $order['created_at'] . "</b></td>";
-                $html .= "<td class='column' data-colname='" . __('Action', 'aes') . "'>";
+                $html .= "<td class='column' data-colname='" . __('Customer', 'edusystem') . "'>" . $order['customer'] . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Student', 'edusystem') . "'>" . $order['student'] . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Fee', 'edusystem') . "'>" . wc_price($order['fee']) . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Created', 'edusystem') . "'><b>" . $order['created_at'] . "</b></td>";
+                $html .= "<td class='column' data-colname='" . __('Action', 'edusystem') . "'>";
 
                 if (!$institute_id) {
-                    $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_institutes_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                    $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_institutes_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'edusystem') . "</a>";
                 } else {
                     if (in_array('alliance', $roles)) {
-                        $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                        $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'edusystem') . "</a>";
                     } else {
-                        $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=add_admin_institutes_content&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                        $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=add_admin_institutes_content&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'edusystem') . "</a>";
                     }
                 }
 
@@ -490,7 +490,7 @@ function get_invoices_institute()
 
         } else {
             $html .= "<tr>";
-            $html .= "<td colspan='6' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html .= "<td colspan='6' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
             $html .= "</tr>";
         }
 
@@ -502,18 +502,18 @@ function get_invoices_institute()
 
             foreach ($transactions['orders'] as $order) {
                 $html_transactions .= "<tr>";
-                $html_transactions .= "<td class='column column-primary' data-colname='" . __('Status', 'aes') . "'>";
+                $html_transactions .= "<td class='column column-primary' data-colname='" . __('Status', 'edusystem') . "'>";
                 $html_transactions .= $order['status'];
                 $html_transactions .= "</td>";
-                $html_transactions .= "<td class='column' data-colname='" . __('Month', 'aes') . "'><b>" . $order['month'] . "</b></td>";
-                $html_transactions .= "<td class='column' data-colname='" . __('Amount', 'aes') . "'>" . wc_price($order['amount']) . "</td>";
-                $html_transactions .= "<td class='column' data-colname='" . __('Total orders', 'aes') . "'><b>" . $order['total_orders'] . "</b></td>";
+                $html_transactions .= "<td class='column' data-colname='" . __('Month', 'edusystem') . "'><b>" . $order['month'] . "</b></td>";
+                $html_transactions .= "<td class='column' data-colname='" . __('Amount', 'edusystem') . "'>" . wc_price($order['amount']) . "</td>";
+                $html_transactions .= "<td class='column' data-colname='" . __('Total orders', 'edusystem') . "'><b>" . $order['total_orders'] . "</b></td>";
                 $html_transactions .= "</tr>";
             }
 
         } else {
             $html_transactions .= "<tr>";
-            $html_transactions .= "<td colspan='4' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html_transactions .= "<td colspan='4' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
             $html_transactions .= "</tr>";
         }
 

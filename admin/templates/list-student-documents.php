@@ -1,27 +1,27 @@
 <h2 class="nav-tab-wrapper">
 
-	<!--<a href="<?= admin_url('admin.php?page=add_admin_form_admission_content') ?>" class="nav-tab <?= (!isset($_GET['section_tab'])) ? 'nav-tab-active' : ''; ?>"><?= __('New Applicants','form-plugin'); ?></a>-->
-	<a href="<?= admin_url('admin.php?page=add_admin_form_admission_content') ?>" class="nav-tab <?= (!isset($_GET['section_tab'])) ? 'nav-tab-active' : ''; ?>"><?= __('Documents for review','form-plugin'); ?></a>
-    <a href="<?= admin_url('admin.php?page=add_admin_form_admission_content&section_tab=all_students') ?>" class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'all_students') ? 'nav-tab-active' : ''; ?>"><?= __('All Applicants','form-plugin'); ?></a>
+	<!--<a href="<?= admin_url('admin.php?page=add_admin_form_admission_content') ?>" class="nav-tab <?= (!isset($_GET['section_tab'])) ? 'nav-tab-active' : ''; ?>"><?= __('New Applicants','edusystem'); ?></a>-->
+	<a href="<?= admin_url('admin.php?page=add_admin_form_admission_content') ?>" class="nav-tab <?= (!isset($_GET['section_tab'])) ? 'nav-tab-active' : ''; ?>"><?= __('Documents for review','edusystem'); ?></a>
+    <a href="<?= admin_url('admin.php?page=add_admin_form_admission_content&section_tab=all_students') ?>" class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'all_students') ? 'nav-tab-active' : ''; ?>"><?= __('All Applicants','edusystem'); ?></a>
 </h2>
 
 <div class="tabs-content">
 	<div class="wrap">
         <div style="text-align:start;">
 			<?php if(!isset($_GET['section_tab'])): ?>
-				<h1 class="wp-heading-line"><?= __('Document for Review','aes'); ?></h1>
+				<h1 class="wp-heading-line"><?= __('Document for Review','edusystem'); ?></h1>
 			<?php elseif(isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'all_students'): ?>
-				<h1 class="wp-heading-line"><?= __('All Applicants','aes'); ?></h1>
+				<h1 class="wp-heading-line"><?= __('All Applicants','edusystem'); ?></h1>
 			<?php endif; ?>
 		</div>
 		<form action="" id="post-filter" method="get">
 			<p class="search-box">
-				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','aes').':'; ?></label>
+				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','edusystem').':'; ?></label>
 				<input type="search" placeholder="Search by names and identification document" id="search-box-id-search-input" name="s" value="<?= (!empty($_GET['s'])) ? $_GET['s'] : ''; ?>">
 				<input type="submit" id="search-submit" class="button" value="Search">
 			</p>
 			<p class="search-box" style="margin-right: 10px">
-				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','aes').':'; ?></label>
+				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','edusystem').':'; ?></label>
 				<select name="academic_period_cut">
 					<option value="">Select academic period cut</option>
 					<option value="A" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'A') ? 'selected' : '') : ''; ?>>A</option>
@@ -32,7 +32,7 @@
 				</select>
 			</p>
 			<p class="search-box" style="margin-right: 10px">
-				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','aes').':'; ?></label>
+				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','edusystem').':'; ?></label>
 				<select name="academic_period">
 						<option value="" selected>Select academic period to filter</option>
 					<?php foreach ($periods as $key => $period) { ?>
@@ -43,7 +43,7 @@
 				</select>
 			</p>
 			<p class="search-box" style="margin-right: 10px">
-				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Date','aes').':'; ?></label>
+				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Date','edusystem').':'; ?></label>
 				<select name="date_selected">
 						<option value="" selected>Select date range</option>
 						<option value="1" <?= !empty($_GET['date_selected']) ? (($_GET['date_selected'] == 1) ? 'selected' : '') : ''; ?>>Last 15 days</option>

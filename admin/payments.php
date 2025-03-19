@@ -515,7 +515,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
             case 'total':
                 return '<b>' . $item[$column_name] . '</b>';
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $item['payment_id']) . "' class='button button-primary'>" . __('View Details', 'form-plugin') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $item['payment_id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return print_r($item, true);
         }
@@ -540,14 +540,14 @@ class TT_payment_pending_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'payment_id' => __('Payment ID', 'aes'),
-            'date' => __('Date', 'aes'),
-            'partner_name' => __('Parent', 'aes'),
-            'student_name' => __('Student', 'aes'),
-            'total' => __('Total', 'aes'),
-            'payment_method' => __('Payment Method', 'aes'),
-            'status' => __('Status', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'payment_id' => __('Payment ID', 'edusystem'),
+            'date' => __('Date', 'edusystem'),
+            'partner_name' => __('Parent', 'edusystem'),
+            'student_name' => __('Student', 'edusystem'),
+            'total' => __('Total', 'edusystem'),
+            'payment_method' => __('Payment Method', 'edusystem'),
+            'status' => __('Status', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -721,7 +721,7 @@ class TT_all_payments_List_Table extends WP_List_Table
             case 'total':
                 return '<b>' . $item[$column_name] . '</b>';
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $item['payment_id']) . "' class='button button-primary'>" . __('View Details', 'form-plugin') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $item['payment_id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return print_r($item, true);
         }
@@ -746,14 +746,14 @@ class TT_all_payments_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'payment_id' => __('Payment ID', 'aes'),
-            'date' => __('Date', 'aes'),
-            'partner_name' => __('Parent', 'aes'),
-            'student_name' => __('Student', 'aes'),
-            'total' => __('Total', 'aes'),
-            'payment_method' => __('Payment Method', 'aes'),
-            'status' => __('Status', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'payment_id' => __('Payment ID', 'edusystem'),
+            'date' => __('Date', 'edusystem'),
+            'partner_name' => __('Parent', 'edusystem'),
+            'student_name' => __('Student', 'edusystem'),
+            'total' => __('Total', 'edusystem'),
+            'payment_method' => __('Payment Method', 'edusystem'),
+            'status' => __('Status', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -931,7 +931,7 @@ class TT_Invoices_Alliances_List_Table extends WP_List_Table
                 return $item->total_orders;
             case 'view_details':
                 if ($item->status_id == 0) {
-                    return "<a href='" . admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=invoices_alliances&id_payment=' . $item->id) . "' class='button button-primary'>" . __('Pay', 'form-plugin') . "</a>";
+                    return "<a href='" . admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=invoices_alliances&id_payment=' . $item->id) . "' class='button button-primary'>" . __('Pay', 'edusystem') . "</a>";
                 } else {
                     return "Paid";
                 }
@@ -959,12 +959,12 @@ class TT_Invoices_Alliances_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'status_id' => __('Status', 'aes'),
-            'alliance_id' => __('Alliance', 'aes'),
-            'month' => __('Month', 'aes'),
-            'amount' => __('Amount', 'aes'),
-            'total_orders' => __('Total Orders', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'status_id' => __('Status', 'edusystem'),
+            'alliance_id' => __('Alliance', 'edusystem'),
+            'month' => __('Month', 'edusystem'),
+            'amount' => __('Amount', 'edusystem'),
+            'total_orders' => __('Total Orders', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -1077,7 +1077,7 @@ class TT_Invoices_Institutes_List_Table extends WP_List_Table
                 return $item->total_orders;
             case 'view_details':
                 if ($item->status_id == 0) {
-                    return "<a href='" . admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=invoices_institutes&id_payment=' . $item->id) . "' class='button button-primary'>" . __('Pay', 'form-plugin') . "</a>";
+                    return "<a href='" . admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=invoices_institutes&id_payment=' . $item->id) . "' class='button button-primary'>" . __('Pay', 'edusystem') . "</a>";
                 } else {
                     return "Paid";
                 }
@@ -1105,12 +1105,12 @@ class TT_Invoices_Institutes_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'status_id' => __('Status', 'aes'),
-            'institute_id' => __('Institute', 'aes'),
-            'month' => __('Month', 'aes'),
-            'amount' => __('Amount', 'aes'),
-            'total_orders' => __('Total Orders', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'status_id' => __('Status', 'edusystem'),
+            'institute_id' => __('Institute', 'edusystem'),
+            'month' => __('Month', 'edusystem'),
+            'amount' => __('Amount', 'edusystem'),
+            'total_orders' => __('Total Orders', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;

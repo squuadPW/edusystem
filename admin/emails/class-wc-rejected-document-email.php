@@ -13,12 +13,12 @@ class WC_Rejected_Document_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_rejected_document';
-        $this->title = __('Rejected Document','aes');
-        $this->description = __('Document rejection notification emails are produced when a student\'s document is rejected from admissions.','aes');
+        $this->title = __('Rejected Document','edusystem');
+        $this->description = __('Document rejection notification emails are produced when a student\'s document is rejected from admissions.','edusystem');
         $this->customer_email = true;
         $this->manual = true;
-        $this->heading = __('Rejected Document','aes');
-        $this->subject = __('Rejected Document','aes');
+        $this->heading = __('Rejected Document','edusystem');
+        $this->subject = __('Rejected Document','edusystem');
 
         $this->template_html  = 'templates/rejected-document-email.php';
         $this->template_plain = 'templates/rejected-document-email.php';

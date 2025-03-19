@@ -1,17 +1,17 @@
 <div class="wrap">
     <div style="text-align:start;">
-        <h1 class="wp-heading-line"><?= __('Fees','aes'); ?></h1>
+        <h1 class="wp-heading-line"><?= __('Fees','edusystem'); ?></h1>
     </div> 
     <?php if(!in_array('institutes',$roles) && !in_array('alliance',$roles)){ ?>
         <div style="diplay:flex;width:100%;">
             <a class="button button-outline-primary" href="<?= admin_url('admin.php?page=add_admin_partners_content&section_tab=all_alliances'); ?>"><?= __('Back') ?></a>
         </div>
         <div style="diplay:flex;width:100%;">
-            <h3><?= __('Alliance:','aes').' '.$alliance->name.' '.$alliance->last_name; ?></h3>
+            <h3><?= __('Alliance:','edusystem').' '.$alliance->name.' '.$alliance->last_name; ?></h3>
         </div>
     <?php } ?>
     <div>
-        <h3><?= __('Fee Total','aes').': '; ?><span id="fee-total-alliance"><?= get_woocommerce_currency_symbol().$orders['total']; ?></span></h3>
+        <h3><?= __('Fee Total','edusystem').': '; ?><span id="fee-total-alliance"><?= get_woocommerce_currency_symbol().$orders['total']; ?></span></h3>
     <div>  
     <div style="width:100%;text-align:end;padding-top:10px;">
     
@@ -20,13 +20,13 @@
         <?php }else{ ?>
             <select id="typeFilter" name="typeFilter" autocomplete="off">
         <?php } ?>
-            <option value="today" selected><?= __('Today','aes'); ?></option>
-            <option value="yesterday"><?= __('yesterday','aes'); ?></option>
-            <option value="this-week"><?= __('This week','aes'); ?></option>
-            <option value="last-week"><?= __('Last week','aes'); ?></option>
-            <option value="this-month"><?= __('This month','aes'); ?></option>
-            <option value="last-month"><?= __('Last month','aes'); ?></option>
-            <option value="custom"><?= __('Custom','aes'); ?></option>
+            <option value="today" selected><?= __('Today','edusystem'); ?></option>
+            <option value="yesterday"><?= __('yesterday','edusystem'); ?></option>
+            <option value="this-week"><?= __('This week','edusystem'); ?></option>
+            <option value="last-week"><?= __('Last week','edusystem'); ?></option>
+            <option value="this-month"><?= __('This month','edusystem'); ?></option>
+            <option value="last-month"><?= __('Last month','edusystem'); ?></option>
+            <option value="custom"><?= __('Custom','edusystem'); ?></option>
         </select>
         <?php if(wp_is_mobile()){ ?>
             <input type="text" value="<?= $start_date; ?>" id="inputStartDate" style="display:none;width:100%;margin-bottom:5px;">
@@ -34,45 +34,45 @@
             <input type="text" value="<?= $start_date; ?>" id="inputStartDate" style="display:none;width:200px;">
         <?php } ?>
         <?php if(wp_is_mobile()): ?>
-            <button type="button" id="update_data" class="button button-primary" style="width:100%"></span><?= __('Update data','aes'); ?></button>
+            <button type="button" id="update_data" class="button button-primary" style="width:100%"></span><?= __('Update data','edusystem'); ?></button>
         <?php else: ?>
-            <button type="button" id="update_data" class="button button-primary"></span><?= __('Update data','aes'); ?></button>
+            <button type="button" id="update_data" class="button button-primary"></span><?= __('Update data','edusystem'); ?></button>
         <?php endif; ?>
     </div>
     <input type="hidden" id="alliance_id" value="<?= (isset($_GET['alliance_id']) && !empty($_GET['alliance_id'])) ? $_GET['alliance_id'] : ''; ?>">
     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
         <thead>
             <tr>
-                <th scope="col" class=" manage-column column-primary"><?= __('Payment ID','aes'); ?></th>
-                <th scope="col" class=" manage-column column-email"><?= __('Customer','aes'); ?></th>
-                <th scope="col" class=" manage-column column-phone"><?= __('Fee','aes'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Created','aes'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Actions','aes'); ?></th>
+                <th scope="col" class=" manage-column column-primary"><?= __('Payment ID','edusystem'); ?></th>
+                <th scope="col" class=" manage-column column-email"><?= __('Customer','edusystem'); ?></th>
+                <th scope="col" class=" manage-column column-phone"><?= __('Fee','edusystem'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Created','edusystem'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Actions','edusystem'); ?></th>
             </tr>
         </thead>
         <tbody id="table-payment-alliance">
             <?php if(!empty($orders['orders'])){ ?>
                 <?php foreach($orders['orders'] as $order){ ?>
                     <tr>
-                        <td class="column column-primary" data-colname="<?= __('Payment ID','aes'); ?>">
+                        <td class="column column-primary" data-colname="<?= __('Payment ID','edusystem'); ?>">
                             <?= '#'.$order['order_id']; ?>
                             <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                         </td>
-                        <td class="column" style="align-content:center;" data-colname="<?= __('Customer','aes'); ?>"><?= $order['customer']; ?></td>
-                        <td class="column" style="align-content:center;" data-colname="<?= __('Fee','aes'); ?>"><?= get_woocommerce_currency_symbol().number_format($order['fee'],2,'.',','); ?></td>
-                        <td class="column" style="align-content:center;" data-colname="<?= __('Created','aes'); ?>"><b><?= $order['created_at']; ?></b></td>
-                        <td class="column" style="align-content:center;" data-colname="<?= __('Action','aes'); ?>">
+                        <td class="column" style="align-content:center;" data-colname="<?= __('Customer','edusystem'); ?>"><?= $order['customer']; ?></td>
+                        <td class="column" style="align-content:center;" data-colname="<?= __('Fee','edusystem'); ?>"><?= get_woocommerce_currency_symbol().number_format($order['fee'],2,'.',','); ?></td>
+                        <td class="column" style="align-content:center;" data-colname="<?= __('Created','edusystem'); ?>"><b><?= $order['created_at']; ?></b></td>
+                        <td class="column" style="align-content:center;" data-colname="<?= __('Action','edusystem'); ?>">
                             <?php if(isset($_GET['alliance_id'])): ?>
-                                <a class='button button-primary' href="<?= admin_url('admin.php?page=add_admin_partners_content&section_tab=payment-detail&payment_id='.$order['order_id']) ?>"><?= __('View details','aes'); ?></a>
+                                <a class='button button-primary' href="<?= admin_url('admin.php?page=add_admin_partners_content&section_tab=payment-detail&payment_id='.$order['order_id']) ?>"><?= __('View details','edusystem'); ?></a>
                             <?php else: ?>
-                                <a class='button button-primary' href="<?= admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id='.$order['order_id']) ?>"><?= __('View details','aes'); ?></a>
+                                <a class='button button-primary' href="<?= admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id='.$order['order_id']) ?>"><?= __('View details','edusystem'); ?></a>
                             <?php endif; ?>
                         </td>
                     </tr>
                 <?php } ?>
             <?php }else{ ?>
                 <tr>
-                    <td colspan='5' style='text-align:center;'><?= __('There are not records','aes') ?></td>
+                    <td colspan='5' style='text-align:center;'><?= __('There are not records','edusystem') ?></td>
                 </tr>
             <?php } ?>
         </tbody>

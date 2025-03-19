@@ -53,7 +53,7 @@ function save_student()
         }
 
         if (isset($email_partner) && ($email_partner === $email_student)) {
-            wc_add_notice(__('Emails can\'t be the same', 'aes'), 'error');
+            wc_add_notice(__('Emails can\'t be the same', 'edusystem'), 'error');
             return;
         }
 
@@ -249,7 +249,7 @@ function redirect_to_checkout($program, $grade, $from_webinar = false, $is_schol
     global $woocommerce;
     $woocommerce->cart->empty_cart();
 
-    if ($program == 'aes') {
+    if ($program == 'edusystem') {
         switch ($grade) {
             case '1':
                 $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
@@ -686,10 +686,10 @@ function get_name_grade($grade_id)
 {
 
     $grade = match ($grade_id) {
-        '1' => __('Lower', 'aes'),
-        '2' => __('Middle', 'aes'),
-        '3' => __('Upper', 'aes'),
-        '4' => __('Graduate', 'aes'),
+        '1' => __('Lower', 'edusystem'),
+        '2' => __('Middle', 'edusystem'),
+        '3' => __('Upper', 'edusystem'),
+        '4' => __('Graduate', 'edusystem'),
         default => ''
     };
 
@@ -700,7 +700,7 @@ function get_name_program($program_id)
 {
 
     $program = match ($program_id) {
-        'aes' => __('AES (Dual Diploma)', 'aes'),
+        'aes' => __('AES (Dual Diploma)', 'edusystem'),
         default => "",
     };
 
@@ -711,8 +711,8 @@ function get_gender($gender_id)
 {
 
     $gender = match ($gender_id) {
-        'male' => __('Male', 'aes'),
-        'female' => __('Female', 'aes'),
+        'male' => __('Male', 'edusystem'),
+        'female' => __('Female', 'edusystem'),
         default => "",
     };
 
@@ -763,7 +763,7 @@ function save_student_details()
             ]);
 
 
-            wc_add_notice(__('information changed successfully.', 'aes'), 'success');
+            wc_add_notice(__('information changed successfully.', 'edusystem'), 'success');
             wp_redirect(wc_get_account_endpoint_url('student-details') . '/?student=' . $student_id);
             exit;
 
@@ -778,7 +778,7 @@ function save_student_details()
             $student_id = $_POST['student_id'];
             $wpdb->update($table_students, ['moodle_password' => $moodle_password], ['id' => $student_id]);
             change_password_user_moodle($student_id);
-            wc_add_notice(__('information changed successfully.', 'aes'), 'success');
+            wc_add_notice(__('information changed successfully.', 'edusystem'), 'success');
             wp_redirect(wc_get_account_endpoint_url('student-details') . '/?student=' . $student_id);
             exit;
         }

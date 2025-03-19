@@ -10,9 +10,9 @@
 <div class="wrap">
 
     <?php if (in_array('institutes', $roles)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Student details', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Student details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Applicant details', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Applicant details', 'edusystem'); ?></h2>
     <?php endif; ?>
     <div style="diplay:flex;width:100%;">
     <?php if (in_array('institutes', $roles)): ?>
@@ -28,17 +28,17 @@
             include(plugin_dir_path(__FILE__).'connections-student.php');
         ?>
         <?php if (in_array('administrator', $roles)) { ?>
-            <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projection_student&student_id=') . $student->id . '&projection_id='.$projection->id ?>" class="button button-outline-primary" onclick="return confirm('Estas seguro de volver a generar proyeccion academica?');"><?= __('Re-generate projection','aes'); ?></a>
+            <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projection_student&student_id=') . $student->id . '&projection_id='.$projection->id ?>" class="button button-outline-primary" onclick="return confirm('Estas seguro de volver a generar proyeccion academica?');"><?= __('Re-generate projection','edusystem'); ?></a>
         <?php } ?>
         <button style="margin-left: 5px;" data-id="<?= $student->id; ?>" id="button-export-xlsx"
-            class="button button-primary"><?= __('Export Excel', 'aes'); ?></button>
+            class="button button-primary"><?= __('Export Excel', 'edusystem'); ?></button>
         <!-- <?php 
             global $current_user;
             $roles = $current_user->roles;
             if (in_array('administrator', $roles)) {
         ?>
             <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>" target="_blank">
-                <button class="button button-success" style="margin-left: 10px"><?= __('View user', 'aes'); ?></button>
+                <button class="button button-success" style="margin-left: 10px"><?= __('View user', 'edusystem'); ?></button>
             </a>
         <?php } ?> -->
     </div>
@@ -63,7 +63,7 @@
                                     </tr>
                                     <tr>
                                         <th scope="row" style="font-weight:400; text-align: center">
-                                            <label for="grade"><b><?php _e('Grade', 'aes'); ?></b></label><br>
+                                            <label for="grade"><b><?php _e('Grade', 'edusystem'); ?></b></label><br>
                                             <select name="grade" autocomplete="off" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($grades as $grade): ?>
                                                     <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>><?= $grade->name; ?> <?= $grade->description; ?></option>
@@ -71,7 +71,7 @@
                                             </select>
                                         </th>
                                         <th scope="row" style="font-weight:400; text-align: center">
-                                            <label for="academic_period"><b><?php _e('School Year', 'aes'); ?></b></label><br>
+                                            <label for="academic_period"><b><?php _e('School Year', 'edusystem'); ?></b></label><br>
                                             <select name="academic_period" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($periods as $key => $period) { ?>
                                                     <option value="<?= $period->code ?>" <?= $student->academic_period == $period->code ? 'selected' : '' ?>><?= $period->name ?></option>
@@ -79,7 +79,7 @@
                                             </select>
                                         </th>
                                         <th scope="row" style="font-weight:400; text-align: center">
-                                            <label for="academic_period_cut"><b><?php _e('Student\'s entry cut', 'aes'); ?></b></label><br>
+                                            <label for="academic_period_cut"><b><?php _e('Student\'s entry cut', 'edusystem'); ?></b></label><br>
                                             <select name="academic_period_cut" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <option value="A" <?= $student->initial_cut == 'A' ? 'selected' : '' ?>>A</option>
                                                 <option value="B" <?= $student->initial_cut == 'B' ? 'selected' : '' ?>>B</option>
@@ -91,20 +91,20 @@
                                     </tr>
                                     <tr>
                                         <th colspan="2" style="font-weight:400; text-align: center">
-                                            <label for="program"><b><?php _e('Program', 'aes'); ?></b></label><br>
+                                            <label for="program"><b><?php _e('Program', 'edusystem'); ?></b></label><br>
                                             <input readonly type="text" id="program" name="program"
                                                 value="<?php echo get_name_program($student->program_id); ?>"
                                                 style="width:100%">
                                         </th>
                                         <th scope="row" style="font-weight:400; text-align: center">
-                                            <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
+                                            <label for="name_institute"><b><?php _e('Institute', 'edusystem'); ?></b></label><br>
                                             <select name="institute_id" autocomplete="off" id="institute_id" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($institutes as $institute): ?>
                                                     <option value="<?= $institute->id; ?>" <?php echo isset($student->institute_id) && $institute->id == $student->institute_id ? 'selected' : ''; ?>>
                                                         <?= $institute->name; ?>
                                                     </option>
                                                 <?php endforeach; ?>
-                                                <option value="other" <?php echo !isset($student->institute_id) ? 'selected' : ''; ?>><?= __('Other', 'aes'); ?></option>
+                                                <option value="other" <?php echo !isset($student->institute_id) ? 'selected' : ''; ?>><?= __('Other', 'edusystem'); ?></option>
                                             </select>
                                         </th>
                                     </tr>
@@ -114,7 +114,7 @@
                                     ?>
                                     <tr id="institute_down" style="<?php echo $style_dos ?>">
                                         <th scope="row" colspan="4" style="font-weight:400; text-align: center">
-                                            <label for="name_institute"><b><?php _e('Institute', 'aes'); ?></b></label><br>
+                                            <label for="name_institute"><b><?php _e('Institute', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="name_institute" name="name_institute"
                                                 value="<?php echo strtoupper($student->name_institute); ?>"
                                                 style="width:100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -123,7 +123,7 @@
                                 </tbody>
                             </table>
                             <h3 style="margin-bottom:0px;text-align:center;">
-                                <b><?php _e('Student Information', 'aes'); ?></b></h3>
+                                <b><?php _e('Student Information', 'edusystem'); ?></b></h3>
                                 <div>
                                     <?php 
                                         global $current_user;
@@ -132,7 +132,7 @@
                                     ?>
                                         <p style="text-align: center">
                                             <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>" target="_blank">
-                                                <button type="button" class="button button-success" style="margin-left: 10px"><?= __('View user student', 'aes'); ?></button>
+                                                <button type="button" class="button button-success" style="margin-left: 10px"><?= __('View user student', 'edusystem'); ?></button>
                                             </a>
                                         </p>
                                     <?php } ?>
@@ -142,19 +142,19 @@
                                     <tr>
                                         <td colspan="1">
                                             <label
-                                                for="document_type"><b><?php _e('Document Type', 'aes'); ?></b></label><br>
+                                                for="document_type"><b><?php _e('Document Type', 'edusystem'); ?></b></label><br>
                                             <select name="document_type" id="document_type"
                                                 value="<?php echo get_name_type_document($student->type_document); ?>"
                                                 style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <option value="identification_document"
-                                                    <?= ($student->type_document == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'aes'); ?></option>
-                                                <option value="passport" <?= ($student->type_document == 'passport') ? 'selected' : ''; ?>><?= __('Passport', 'aes'); ?></option>
-                                                <option value="ssn" <?= ($student->type_document == 'ssn') ? 'selected' : ''; ?>><?= __('SNN', 'aes'); ?></option>
+                                                    <?= ($student->type_document == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'edusystem'); ?></option>
+                                                <option value="passport" <?= ($student->type_document == 'passport') ? 'selected' : ''; ?>><?= __('Passport', 'edusystem'); ?></option>
+                                                <option value="ssn" <?= ($student->type_document == 'ssn') ? 'selected' : ''; ?>><?= __('SNN', 'edusystem'); ?></option>
                                             </select>
                                         </td>
                                         <td colspan="5">
                                             <label
-                                                for="id_document"><b><?php _e('ID Document', 'aes'); ?></b></label><br>
+                                                for="id_document"><b><?php _e('ID Document', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="id_document" name="id_document"
                                                 value="<?php echo $student->id_document; ?>" style="width:100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                             <input type="hidden" id="id" name="id" value="<?php echo $student->id; ?>"
@@ -162,14 +162,14 @@
                                         </td>
                                         <?php if ($user_student) { ?>
                                             <td colspan="3">
-                                                <label for="username"><b><?php _e('Username', 'aes'); ?></b></label><br>
+                                                <label for="username"><b><?php _e('Username', 'edusystem'); ?></b></label><br>
                                                 <input type="text" id="username" name="username"
                                                     value="<?php echo $user_student->user_nicename; ?>" style="width:100%"
                                                     required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                             </td>
                                         <?php } ?>
                                         <td colspan="3">
-                                            <label for="birth_date"><b><?php _e('Birth date', 'aes'); ?></b></label><br>
+                                            <label for="birth_date"><b><?php _e('Birth date', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="birth_date" name="birth_date"
                                                 value="<?php echo date('m/d/Y', strtotime($student->birth_date)); ?>"
                                                 required style="width:100%; background-color: white;"
@@ -178,24 +178,24 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3">
-                                            <label for="first_name"><b><?php _e('First name', 'aes'); ?></b></label><br>
+                                            <label for="first_name"><b><?php _e('First name', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="first_name" name="first_name"
                                                 value="<?php echo $student->name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td colspan="3">
                                             <label
-                                                for="middle_name"><b><?php _e('Middle name', 'aes'); ?></b></label><br>
+                                                for="middle_name"><b><?php _e('Middle name', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="middle_name" name="middle_name"
                                                 value="<?php echo $student->middle_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td colspan="3">
-                                            <label for="last_name"><b><?php _e('Last name', 'aes'); ?></b></label><br>
+                                            <label for="last_name"><b><?php _e('Last name', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="last_name" name="last_name"
                                                 value="<?php echo $student->last_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td colspan="3">
                                             <label
-                                                for="middle_last_name"><b><?php _e('Middle last name', 'aes'); ?></b></label><br>
+                                                for="middle_last_name"><b><?php _e('Middle last name', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="middle_last_name" name="middle_last_name"
                                                 value="<?php echo $student->middle_last_name; ?>" style="width:100%"
                                                 required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -203,17 +203,17 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3">
-                                            <label for="gender"><b><?php _e('Gender', 'aes'); ?></b></label><br>
+                                            <label for="gender"><b><?php _e('Gender', 'edusystem'); ?></b></label><br>
                                             <select name="gender" id="gender"
                                                 value="<?php echo get_gender($student->gender); ?>" style="width:100%"
                                                 required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                                <option value="male" <?= ($student->gender == 'male') ? 'selected' : ''; ?>><?= __('Male', 'aes'); ?></option>
-                                                <option value="female" <?= ($student->gender == 'female') ? 'selected' : ''; ?>><?= __('Female', 'aes'); ?></option>
+                                                <option value="male" <?= ($student->gender == 'male') ? 'selected' : ''; ?>><?= __('Male', 'edusystem'); ?></option>
+                                                <option value="female" <?= ($student->gender == 'female') ? 'selected' : ''; ?>><?= __('Female', 'edusystem'); ?></option>
                                             </select>
                                         </td>
 
                                         <td colspan="3">
-                                            <label for="country"><b><?php _e('Country', 'aes'); ?></b></label><br>
+                                            <label for="country"><b><?php _e('Country', 'edusystem'); ?></b></label><br>
                                             <select id="country" name="country"
                                                 value="<?php echo get_name_country($student->country); ?>"
                                                 style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -225,14 +225,14 @@
                                         </td>
 
                                         <td colspan="3">
-                                            <label for="city"><b><?php _e('City', 'aes'); ?></b></label><br>
+                                            <label for="city"><b><?php _e('City', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="city" name="city"
                                                 value="<?php echo $student->city; ?>" style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
 
                                         <td colspan="3">
                                             <label
-                                                for="postal_code"><b><?php _e('Postal Code', 'aes'); ?></b></label><br>
+                                                for="postal_code"><b><?php _e('Postal Code', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="postal_code" name="postal_code"
                                                 value="<?php echo $student->postal_code; ?>" style="width:100%;"
                                                 required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -240,21 +240,21 @@
                                     </tr>
                                     <tr>
                                         <td  colspan="4">
-                                            <label for="email"><b><?php _e('Email', 'aes'); ?></b></label><br>
+                                            <label for="email"><b><?php _e('Email', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="email" name="email"
                                                 value="<?php echo $student->email; ?>" style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                             <input type="hidden" id="old_email" name="old_email"
                                                 value="<?php echo $student->email; ?>" style="width:100%;">
                                         </td>
                                         <td  colspan="4">
-                                            <label for="phone"><b><?php _e('Phone', 'aes'); ?></b></label><br>
+                                            <label for="phone"><b><?php _e('Phone', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="phone" name="phone"
                                                 value="<?php echo $student->phone; ?>" style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
 
                                         <!-- <td  colspan="3">
                                             <label
-                                                for="academic_period"><b><?php _e('Academic period', 'aes'); ?></b></label><br>
+                                                for="academic_period"><b><?php _e('Academic period', 'edusystem'); ?></b></label><br>
                                             <select name="academic_period" required style="width:100%;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($periods as $key => $period) { ?>
                                                     <option value="<?php echo $period->code; ?>"
@@ -266,7 +266,7 @@
                                         </td> -->
                                         <td  colspan="4">
                                             <label
-                                                for="new_password"><b><?php _e('New password for student', 'aes'); ?></label><br>
+                                                for="new_password"><b><?php _e('New password for student', 'edusystem'); ?></label><br>
                                             <input type="password" id="new_password" name="new_password"
                                                 style="width:100%; background-color: white;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
@@ -274,7 +274,7 @@
                                 </tbody>
                             </table>
                             <h3 style="margin-bottom:0px;text-align:center;">
-                                <b><?php _e('Parent Information', 'aes'); ?></b></h3>
+                                <b><?php _e('Parent Information', 'edusystem'); ?></b></h3>
                                 <div>
                                     <?php 
                                         global $current_user;
@@ -283,7 +283,7 @@
                                     ?>
                                         <p style="text-align: center">
                                             <a href="<?php echo admin_url('user-edit.php?user_id=') . $partner->ID ?>" target="_blank">
-                                                <button  type="button" class="button button-success" style="margin-left: 10px"><?= __('View user parent', 'aes'); ?></button>
+                                                <button  type="button" class="button button-success" style="margin-left: 10px"><?= __('View user parent', 'edusystem'); ?></button>
                                             </a>
                                         </p>
                                     <?php } ?>
@@ -293,22 +293,22 @@
                                     <tr>
                                         <td colspan="4">
                                             <label
-                                                for="parent_document_type"><b><?php _e('Document Type', 'aes'); ?></b></label><br>
+                                                for="parent_document_type"><b><?php _e('Document Type', 'edusystem'); ?></b></label><br>
                                             <select name="parent_document_type" id="parent_document_type"
                                                 value="<?php echo get_user_meta($partner->ID, 'type_document', true); ?>"
                                                 style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <option value="identification_document"
-                                                    <?= (get_user_meta($partner->ID, 'type_document', true) == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'aes'); ?>
+                                                    <?= (get_user_meta($partner->ID, 'type_document', true) == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'edusystem'); ?>
                                                 </option>
                                                 <option value="passport"
-                                                    <?= (get_user_meta($partner->ID, 'type_document', true) == 'passport') ? 'selected' : ''; ?>><?= __('Passport', 'aes'); ?></option>
+                                                    <?= (get_user_meta($partner->ID, 'type_document', true) == 'passport') ? 'selected' : ''; ?>><?= __('Passport', 'edusystem'); ?></option>
                                                 <option value="ssn"
-                                                    <?= (get_user_meta($partner->ID, 'type_document', true) == 'ssn') ? 'selected' : ''; ?>><?= __('SNN', 'aes'); ?></option>
+                                                    <?= (get_user_meta($partner->ID, 'type_document', true) == 'ssn') ? 'selected' : ''; ?>><?= __('SNN', 'edusystem'); ?></option>
                                             </select>
                                         </td>
                                         <td colspan="4">
                                             <label
-                                                for="parent_id_document"><b><?php _e('ID Document', 'aes'); ?></b></label><br>
+                                                for="parent_id_document"><b><?php _e('ID Document', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="parent_id_document" name="parent_id_document"
                                                 value="<?php echo get_user_meta($partner->ID, 'id_document', true); ?>"
                                                 style="width:100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -317,7 +317,7 @@
                                         </td>
                                         <td colspan="4">
                                             <label
-                                                for="parent_username"><b><?php _e('Username', 'aes'); ?></b></label><br>
+                                                for="parent_username"><b><?php _e('Username', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="parent_username" name="parent_username"
                                                 value="<?php echo $partner->user_nicename; ?>" style="width:100%"
                                                 required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -326,19 +326,19 @@
                                     <tr>
                                         <td colspan="4">
                                             <label
-                                                for="parent_first_name"><b><?php _e('First name', 'aes'); ?></b></label><br>
+                                                for="parent_first_name"><b><?php _e('First name', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="parent_first_name" name="parent_first_name"
                                                 value="<?php echo $partner->first_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td colspan="4">
                                             <label
-                                                for="parent_last_name"><b><?php _e('Last name', 'aes'); ?></b></label><br>
+                                                for="parent_last_name"><b><?php _e('Last name', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="parent_last_name" name="parent_last_name"
                                                 value="<?php echo $partner->last_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td colspan="4">
                                             <label
-                                                for="parent_birth_date"><b><?php _e('Birth date', 'aes'); ?></b></label><br>
+                                                for="parent_birth_date"><b><?php _e('Birth date', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="parent_birth_date" name="parent_birth_date"
                                                 value="<?php echo get_user_meta($partner->ID, 'birth_date', true); ?>"
                                                 style="width:100%; background-color: white;" class="birth_date"
@@ -347,18 +347,18 @@
                                     </tr>
                                     <tr>
                                         <td colspan="4">
-                                            <label for="parent_gender"><b><?php _e('Gender', 'aes'); ?></b></label><br>
+                                            <label for="parent_gender"><b><?php _e('Gender', 'edusystem'); ?></b></label><br>
                                             <select name="parent_gender" id="parent_gender"
                                                 value="<?php echo get_user_meta($partner->ID, 'gender', true); ?>"
                                                 style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <option value="male"
-                                                    <?= (get_user_meta($partner->ID, 'gender', true) == 'male') ? 'selected' : ''; ?>><?= __('Male', 'aes'); ?></option>
+                                                    <?= (get_user_meta($partner->ID, 'gender', true) == 'male') ? 'selected' : ''; ?>><?= __('Male', 'edusystem'); ?></option>
                                                 <option value="female"
-                                                    <?= (get_user_meta($partner->ID, 'gender', true) == 'female') ? 'selected' : ''; ?>><?= __('Female', 'aes'); ?></option>
+                                                    <?= (get_user_meta($partner->ID, 'gender', true) == 'female') ? 'selected' : ''; ?>><?= __('Female', 'edusystem'); ?></option>
                                             </select>
                                         </td>
                                         <td colspan="4">
-                                            <label for="parent_country"><b><?php _e('Country', 'aes'); ?></b></label><br>
+                                            <label for="parent_country"><b><?php _e('Country', 'edusystem'); ?></b></label><br>
                                             <select id="parent_country" name="parent_country"
                                                 value="<?php echo get_name_country(get_user_meta($partner->ID, 'billing_country', true)); ?>"
                                                 style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -369,7 +369,7 @@
                                             </select>
                                         </td>
                                         <td colspan="4">
-                                            <label for="parent_city"><b><?php _e('City', 'aes'); ?></b></label><br>
+                                            <label for="parent_city"><b><?php _e('City', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="parent_city" name="parent_city"
                                                 value="<?php echo get_user_meta($partner->ID, 'billing_city', true) ?>"
                                                 style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -378,13 +378,13 @@
                                     <tr>
                                         <td colspan="4">
                                             <label
-                                                for="parent_postal_code"><b><?php _e('Postal Code', 'aes'); ?></b></label><br>
+                                                for="parent_postal_code"><b><?php _e('Postal Code', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="parent_postal_code" name="parent_postal_code"
                                                 value="<?php echo get_user_meta($partner->ID, 'billing_postcode', true) ?>"
                                                 style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td colspan="4">
-                                            <label for="parent_email"><b><?php _e('Email', 'aes'); ?></b></label><br>
+                                            <label for="parent_email"><b><?php _e('Email', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="parent_email" name="parent_email"
                                                 value="<?php echo $partner->user_email ?>"
                                                 style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -392,7 +392,7 @@
                                                 value="<?php echo $partner->user_email; ?>">
                                         </td>
                                         <td colspan="4">
-                                            <label for="parent_phone"><b><?php _e('Phone', 'aes'); ?></b></label><br>
+                                            <label for="parent_phone"><b><?php _e('Phone', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="parent_phone" name="parent_phone"
                                                 value="<?php echo get_user_meta($partner->ID, 'billing_phone', true) ?>"
                                                 style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -401,7 +401,7 @@
                                     <tr>
                                         <td colspan="12">
                                             <label
-                                                for="parent_occupation"><b><?php _e('Occupation', 'aes'); ?></b></label><br>
+                                                for="parent_occupation"><b><?php _e('Occupation', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="parent_occupation" name="parent_occupation"
                                                 value="<?php echo get_user_meta($partner->ID, 'occupation', true) ?>"
                                                 style="width:100%;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
@@ -411,7 +411,7 @@
                             </table>
                             <?php if (!in_array('institutes', $roles) && !current_user_can('only_read_admission_aes')): ?>
                                 <p style="text-align: end">
-                                <input type="submit" value="<?php _e('Save Changes', 'aes'); ?>"
+                                <input type="submit" value="<?php _e('Save Changes', 'edusystem'); ?>"
                                     class="button button-primary">
                             </p>
                             <?php endif; ?>
@@ -423,16 +423,16 @@
         </div>
     </form>
     <?php if (!in_array('institutes', $roles) && !current_user_can('only_read_admission_aes')): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Documents', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Documents', 'edusystem'); ?></h2>
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">
-            <p><?= __('Status change successfully', 'aes'); ?></p>
+            <p><?= __('Status change successfully', 'edusystem'); ?></p>
         </div>
         <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
             <thead>
                 <tr>
-                    <th colspan="3" scope="col" class="manage-column column-primary column-title"><?= __('Document', 'aes') ?></th>
-                    <th colspan="2" scope="col" class="manage-column column-title-translate"><?= __('Status', 'aes') ?></th>
-                    <th colspan="7" scope="col" class="manage-column column-price"><?= __('Actions', 'aes') ?></th>
+                    <th colspan="3" scope="col" class="manage-column column-primary column-title"><?= __('Document', 'edusystem') ?></th>
+                    <th colspan="2" scope="col" class="manage-column column-title-translate"><?= __('Status', 'edusystem') ?></th>
+                    <th colspan="7" scope="col" class="manage-column column-price"><?= __('Actions', 'edusystem') ?></th>
                 </tr>
             </thead>
             <tbody id="table-documents">
@@ -443,27 +443,27 @@
                                 <?= $name = get_name_document($document->document_id); ?>
                                 <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                             </td>
-                            <td colspan="2" id="<?= 'td_document_' . $document->document_id; ?>" data-colname="<?= __('Status', 'aes'); ?>">
+                            <td colspan="2" id="<?= 'td_document_' . $document->document_id; ?>" data-colname="<?= __('Status', 'edusystem'); ?>">
                                 <b>
                                     <?= $status = get_status_document($document->status); ?>
                                 </b>
                             </td>
-                            <td colspan="7" data-colname="<?= __('Actions', 'aes'); ?>">
-                                <a target="_blank" onclick='uploadDocument(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document"><span class='dashicons dashicons-upload'></span><?= __('Upload', 'aes'); ?></button></a>
+                            <td colspan="7" data-colname="<?= __('Actions', 'edusystem'); ?>">
+                                <a target="_blank" onclick='uploadDocument(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document"><span class='dashicons dashicons-upload'></span><?= __('Upload', 'edusystem'); ?></button></a>
                                 <?php if ($document->status > 0): ?>
-                                    <a target="_blank" onclick='watchDetails(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document"><?= __('View detail', 'aes'); ?></button></a>
-                                    <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>"><button type="button" class="button button-primary other-buttons-document"><?= __('View documment', 'aes'); ?></button></a>
+                                    <a target="_blank" onclick='watchDetails(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document"><?= __('View detail', 'edusystem'); ?></button></a>
+                                    <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>"><button type="button" class="button button-primary other-buttons-document"><?= __('View documment', 'edusystem'); ?></button></a>
                                     <?php if ($document->status != 1) { ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
-                                            data-status="1" class="button change-status button-warning"><?= __('Revert', 'aes'); ?></button>
+                                            data-status="1" class="button change-status button-warning"><?= __('Revert', 'edusystem'); ?></button>
                                     <?php } ?>
                                     <?php if ($document->status != 5 && $document->status != 3): ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
-                                            data-status="5" class="button change-status button-success"><?= __('Approve', 'aes'); ?></button>
+                                            data-status="5" class="button change-status button-success"><?= __('Approve', 'edusystem'); ?></button>
                                     <?php endif; ?>
                                     <?php if ($document->status != 5 && $document->status != 3): ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
-                                            data-status="3" class="button change-status button-danger"><?= __('Decline', 'aes'); ?></button>
+                                            data-status="3" class="button change-status button-danger"><?= __('Decline', 'edusystem'); ?></button>
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </td>
@@ -474,31 +474,31 @@
         </table>
     <?php endif; ?>
     <?php if (in_array('administrator', haystack: $roles) || in_array('admision', haystack: $roles)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Payments', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Payments', 'edusystem'); ?></h2>
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">
-            <p><?= __('Status change successfully', 'aes'); ?></p>
+            <p><?= __('Status change successfully', 'edusystem'); ?></p>
         </div>
         <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
             <thead>
                 <tr>
-                    <th scope="col" style="text-align: center" class="manage-column column-primary column-title"><?= __('Fee registration', 'aes') ?></th>
-                    <th scope="col" style="text-align: center" class="manage-column column-title-translate"><?= __('Program payment', 'aes') ?></th>
-                    <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Fee graduation', 'aes') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-primary column-title"><?= __('Fee registration', 'edusystem') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-title-translate"><?= __('Program payment', 'edusystem') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Fee graduation', 'edusystem') ?></th>
                 </tr>
             </thead>
             <tbody id="table-documents">
                 <tr id="<?= 'tr_payment_'; ?>">
-                    <td style="text-align: center" id="<?= 'td_payment_fee'; ?>" data-colname="<?= __('Fee registration', 'aes'); ?>">
+                    <td style="text-align: center" id="<?= 'td_payment_fee'; ?>" data-colname="<?= __('Fee registration', 'edusystem'); ?>">
                         <b>
                             <?= isset($fee_payment_ready) && $fee_payment_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
                         </b>
                     </td>
-                    <td style="text-align: center" id="<?= 'td_payment_product'; ?>" data-colname="<?= __('Program payment', 'aes'); ?>">
+                    <td style="text-align: center" id="<?= 'td_payment_product'; ?>" data-colname="<?= __('Program payment', 'edusystem'); ?>">
                         <b>
                             <?= isset($product_ready) && $product_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
                         </b>
                     </td>
-                    <td style="text-align: center" id="<?= 'td_payment_graduation'; ?>" data-colname="<?= __('Fee graduation', 'aes'); ?>">
+                    <td style="text-align: center" id="<?= 'td_payment_graduation'; ?>" data-colname="<?= __('Fee graduation', 'edusystem'); ?>">
                         <b>
                             <?= isset($fee_graduation_ready) && $fee_graduation_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
                         </b>
@@ -521,13 +521,13 @@
                 <span>This same text will be shown to the user in their notifications section, please create a message addressed to the user</span>
             </div>
             <div>
-                <label for="decline-description"><b><?= __('Reason why it is declined','aes'); ?></b><span class="text-danger">*</span></label><br>
+                <label for="decline-description"><b><?= __('Reason why it is declined','edusystem'); ?></b><span class="text-danger">*</span></label><br>
                 <textarea name="decline-description" type="text" style="width: 100%;"></textarea>
             </div>
         </div>
         <div class="modal-footer">
-            <button id="decline-save" type="submit" class="button button-danger"><?= __('Decline','aes'); ?></button>
-            <button id="decline-exit-button" type="button" class="button button-outline-primary modal-close"><?= __('Exit','aes'); ?></button>
+            <button id="decline-save" type="submit" class="button button-danger"><?= __('Decline','edusystem'); ?></button>
+            <button id="decline-exit-button" type="button" class="button button-outline-primary modal-close"><?= __('Exit','edusystem'); ?></button>
         </div>
 	</div>
 </div>
@@ -543,11 +543,11 @@
             <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
             <thead>
                 <tr>
-                    <th scope="col" class=" manage-column column"><?= __('Date user registered', 'aes'); ?></th>
-                    <th scope="col" class=" manage-column column-primary"><?= __('Date upload documents', 'aes'); ?></th>
-                    <th scope="col" class=" manage-column column-email"><?= __('Date status change', 'aes'); ?></th>
-                    <th scope="col" class=" manage-column column-email"><?= __('Status changed by', 'aes'); ?></th>
-                    <th scope="col" class=" manage-column column-email"><?= __('Message', 'aes'); ?></th>
+                    <th scope="col" class=" manage-column column"><?= __('Date user registered', 'edusystem'); ?></th>
+                    <th scope="col" class=" manage-column column-primary"><?= __('Date upload documents', 'edusystem'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Date status change', 'edusystem'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Status changed by', 'edusystem'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Message', 'edusystem'); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -562,7 +562,7 @@
         </table>
         </div>
         <div class="modal-footer">
-            <button id="detail-exit-button" type="button" class="button button-outline-primary modal-close"><?= __('Exit','aes'); ?></button>
+            <button id="detail-exit-button" type="button" class="button button-outline-primary modal-close"><?= __('Exit','edusystem'); ?></button>
         </div>
 	</div>
 </div>
@@ -584,8 +584,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="upload-button" type="submit" class="button button-outline-primary modal-close"><?= __('Upload','aes'); ?></button>
-                <button id="upload-exit-button" type="button" class="button button-danger modal-close"><?= __('Exit','aes'); ?></button>
+                <button id="upload-button" type="submit" class="button button-outline-primary modal-close"><?= __('Upload','edusystem'); ?></button>
+                <button id="upload-exit-button" type="button" class="button button-danger modal-close"><?= __('Exit','edusystem'); ?></button>
             </div>
         </div>
     </form>

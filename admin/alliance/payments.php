@@ -125,19 +125,19 @@ function get_list_fee_alliance(){
 
             foreach ($filtered_invices['orders'] as $order) {
                 $html .= "<tr>";
-                $html .= "<td class='column column-primary' data-colname='" . __('Payment ID', 'aes') . "'>";
+                $html .= "<td class='column column-primary' data-colname='" . __('Payment ID', 'edusystem') . "'>";
                 $html .= '#' . $order['order_id'];
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
-                $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>" . $order['customer'] . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Fee', 'aes') . "'>" . wc_price($order['fee']) . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Created', 'aes') . "'><b>" . $order['created_at'] . "</b></td>";
-                $html .= "<td class='column' data-colname='" . __('Action', 'aes') . "'>";
+                $html .= "<td class='column' data-colname='" . __('Customer', 'edusystem') . "'>" . $order['customer'] . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Fee', 'edusystem') . "'>" . wc_price($order['fee']) . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Created', 'edusystem') . "'><b>" . $order['created_at'] . "</b></td>";
+                $html .= "<td class='column' data-colname='" . __('Action', 'edusystem') . "'>";
 
                 if($alliance_id) {
-                    $html .= "<a class='button button-primary' href=". admin_url('admin.php?page=add_admin_partners_content&section_tab=payment-detail&payment_id='.$order['order_id']) .">".__('View details','aes')."</a>";
+                    $html .= "<a class='button button-primary' href=". admin_url('admin.php?page=add_admin_partners_content&section_tab=payment-detail&payment_id='.$order['order_id']) .">".__('View details','edusystem')."</a>";
                 } else {
-                    $html .= "<a class='button button-primary' href=". admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id='.$order['order_id']) .">".__('View details','aes')."</a>";
+                    $html .= "<a class='button button-primary' href=". admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id='.$order['order_id']) .">".__('View details','edusystem')."</a>";
                 }
 
 
@@ -147,7 +147,7 @@ function get_list_fee_alliance(){
 
         } else {
             $html .= "<tr>";
-            $html .= "<td colspan='5' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html .= "<td colspan='5' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
             $html .= "</tr>";
         }
 
@@ -159,18 +159,18 @@ function get_list_fee_alliance(){
 
             foreach ($transactions['orders'] as $order) {
                 $html_transactions .= "<tr>";
-                $html_transactions .= "<td class='column column-primary' data-colname='" . __('Status', 'aes') . "'>";
+                $html_transactions .= "<td class='column column-primary' data-colname='" . __('Status', 'edusystem') . "'>";
                 $html_transactions .= $order['status'];
                 $html_transactions .= "</td>";
-                $html_transactions .= "<td class='column' data-colname='" . __('Month', 'aes') . "'><b>" . $order['month'] . "</b></td>";
-                $html_transactions .= "<td class='column' data-colname='" . __('Amount', 'aes') . "'>" . wc_price($order['amount']) . "</td>";
-                $html_transactions .= "<td class='column' data-colname='" . __('Total orders', 'aes') . "'><b>" . $order['total_orders'] . "</b></td>";
+                $html_transactions .= "<td class='column' data-colname='" . __('Month', 'edusystem') . "'><b>" . $order['month'] . "</b></td>";
+                $html_transactions .= "<td class='column' data-colname='" . __('Amount', 'edusystem') . "'>" . wc_price($order['amount']) . "</td>";
+                $html_transactions .= "<td class='column' data-colname='" . __('Total orders', 'edusystem') . "'><b>" . $order['total_orders'] . "</b></td>";
                 $html_transactions .= "</tr>";
             }
 
         } else {
             $html_transactions .= "<tr>";
-            $html_transactions .= "<td colspan='4' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html_transactions .= "<td colspan='4' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
             $html_transactions .= "</tr>";
         }
 

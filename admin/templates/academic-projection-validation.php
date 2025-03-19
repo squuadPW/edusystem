@@ -4,11 +4,11 @@
 
         <div>
             <h3 style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                <b><?= __('Filter', 'aes'); ?></b>
+                <b><?= __('Filter', 'edusystem'); ?></b>
             </h3>
 
             <div style="text-align: center;">
-                <label for="input_id"><b><?= __('Period', 'aes'); ?></b></label><br>
+                <label for="input_id"><b><?= __('Period', 'edusystem'); ?></b></label><br>
                 <select name="academic_period">
                     <option value="" selected>Select academic period to filter</option>
                     <?php foreach ($periods as $period) { ?>
@@ -20,7 +20,7 @@
             </div>
 
             <div style="text-align: center;">
-                <label for="input_id"><b><?= __('Cut', 'aes'); ?></b></label><br>
+                <label for="input_id"><b><?= __('Cut', 'edusystem'); ?></b></label><br>
                 <select name="academic_period_cut">
                     <option value="">Select academic period cut</option>
                     <option value="A">A</option>
@@ -34,7 +34,7 @@
         </div>
 
         <div style="margin-top:20px;text-align:center">
-            <button type="submit" class="button button-success" name="action" value="save"><?= __('Search', 'aes'); ?></button>
+            <button type="submit" class="button button-success" name="action" value="save"><?= __('Search', 'edusystem'); ?></button>
         </div>
     </form>
 </div>

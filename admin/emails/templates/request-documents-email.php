@@ -11,8 +11,8 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
         <table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
             <thead>
                 <tr>
-                    <th class="td" scope="col" style="text-decoration: none;font-size:13px;text-align:left;"><?= __( 'Document', 'aes' ); ?></th>
-                    <th class="td" scope="col" style="text-decoration: none;font-size:13px;text-align:right;"><?= __( 'Status', 'aes' ); ?></th>
+                    <th class="td" scope="col" style="text-decoration: none;font-size:13px;text-align:left;"><?= __( 'Document', 'edusystem' ); ?></th>
+                    <th class="td" scope="col" style="text-decoration: none;font-size:13px;text-align:right;"><?= __( 'Status', 'edusystem' ); ?></th>
                 </tr>
             </thead>
             <tbody>

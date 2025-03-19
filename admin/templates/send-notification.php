@@ -16,25 +16,25 @@
 
     <div class="card">
         <div class="card-header">
-            <h3><?= __('Send email for staff', 'aes'); ?></h3>
+            <h3><?= __('Send email for staff', 'edusystem'); ?></h3>
         </div>
         <div class="card-body">
             <div class="content-notification-staff">
                 <?= __('An email notification will be sent to the academic coordination, academic management, admission and national and international manager.')?> <br>
-                <?= __('This module is essential to keep all departments aligned and updated, thus improving collaboration and response to situations that require immediate attention.', 'aes'); ?>
+                <?= __('This module is essential to keep all departments aligned and updated, thus improving collaboration and response to situations that require immediate attention.', 'edusystem'); ?>
             </div>
             <form method="post"
                 action="<?= admin_url('admin.php?page=add_admin_form_send_notification_content&action=send_notification'); ?>">
                 <div class="form-group">
-                    <label for="subject"><?= __('Subject', 'aes'); ?></label>
+                    <label for="subject"><?= __('Subject', 'edusystem'); ?></label>
                     <input type="text" name="subject" id="subject" required>
                 </div>
                 <div class="form-group">
-                    <label for="message"><?= __('Message', 'aes'); ?></label>
+                    <label for="message"><?= __('Message', 'edusystem'); ?></label>
                     <textarea name="message" id="message" required></textarea>
                 </div>
                 <div class="form-group" style="text-align: center">
-                    <button type="submit" class="btn btn-primary"><?= __('Send', 'aes'); ?></button>
+                    <button type="submit" class="btn btn-primary"><?= __('Send', 'edusystem'); ?></button>
                 </div>
             </form>
         </div>

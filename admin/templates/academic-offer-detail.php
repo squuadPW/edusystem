@@ -1,8 +1,8 @@
 <div class="wrap">
     <?php if (isset($offer) && !empty($offer)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Offer Details', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Offer Details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Add Offer', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Add Offer', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
@@ -19,7 +19,7 @@
     <?php } ?>
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary"
-            href="<?= admin_url('admin.php?page=add_admin_form_academic_offers_content'); ?>"><?= __('Back', 'aes'); ?></a>
+            href="<?= admin_url('admin.php?page=add_admin_form_academic_offers_content'); ?>"><?= __('Back', 'edusystem'); ?></a>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder admin-add-offer">
@@ -33,14 +33,14 @@
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Offer Information', 'aes'); ?></b>
+                                    <b><?= __('Offer Information', 'edusystem'); ?></b>
                                 </h3>
 
                                 <div style="margin: 18px;">
                                     <input type="hidden" name="offer_id" value="<?= $offer->id ?>">
                                     <input type="hidden" name="old_subject_id" value="<?= $offer->subject_id ?>">
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="hc"><b><?= __('Subject', 'aes'); ?></b></label><br>
+                                        <label for="hc"><b><?= __('Subject', 'edusystem'); ?></b></label><br>
                                         <select name="subject_id" required>
                                             <option value="" selected>Assigns a subject to the offer</option>
                                             <?php foreach ($subjects as $subject) { ?>
@@ -52,7 +52,7 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="hc"><b><?= __('School year', 'aes'); ?></b></label><br>
+                                        <label for="hc"><b><?= __('School year', 'edusystem'); ?></b></label><br>
                                         <select name="code_period" required>
                                             <option value="" selected>Assigns a school year to the offer</option>
                                             <?php foreach ($periods as $period) { ?>
@@ -65,7 +65,7 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="hc"><b><?= __('Cut', 'aes'); ?></b></label><br>
+                                        <label for="hc"><b><?= __('Cut', 'edusystem'); ?></b></label><br>
                                         <select name="cut_period" required>
                                             <option value="">Assigns a cut to the offer</option>
                                             <option value="A" <?= (($offer->cut_period == 'A') ? 'selected' : '') ?>>A</option>
@@ -77,7 +77,7 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="hc"><b><?= __('Teacher or person responsible', 'aes'); ?></b></label><br>
+                                        <label for="hc"><b><?= __('Teacher or person responsible', 'edusystem'); ?></b></label><br>
                                         <select name="teacher_id" required>
                                             <option value="" selected>Assigns a teacher to the offer</option>
                                             <?php foreach ($teachers as $teacher) { ?>
@@ -93,14 +93,14 @@
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label
-                                            for="max_students"><b><?= __('Maximum students enrolled', 'aes'); ?></b><span
+                                            for="max_students"><b><?= __('Maximum students enrolled', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>
                                         <input type="number" step="0" name="max_students"
                                             value="<?= $offer->max_students; ?>" required>
                                     </div>
                                     <div style="font-weight:400;" class="space-offer">
                                         <label
-                                            for="moodle_course_id"><b><?= __('Moodle course ID', 'aes'); ?></b><span
+                                            for="moodle_course_id"><b><?= __('Moodle course ID', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>
                                         <input type="number" step="0" name="moodle_course_id"
                                             value="<?= $offer->moodle_course_id; ?>" required>
@@ -111,12 +111,12 @@
                             <?php if (isset($offer) && !empty($offer)): ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Saves changes', 'aes'); ?></button>
+                                        class="button button-primary"><?= __('Saves changes', 'edusystem'); ?></button>
                                 </div>
                             <?php else: ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Add offer', 'aes'); ?></button>
+                                        class="button button-primary"><?= __('Add offer', 'edusystem'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

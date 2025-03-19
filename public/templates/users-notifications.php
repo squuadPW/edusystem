@@ -1,4 +1,4 @@
-<h2 style="font-size:24px;text-align:center;"><?= __('Notifications', 'aes'); ?></h2>
+<h2 style="font-size:24px;text-align:center;"><?= __('Notifications', 'edusystem'); ?></h2>
 
 <div style="margin-top: 18px">
     <div style="display: flex; justify-content: space-evenly;">
@@ -59,7 +59,7 @@
                 <?php } ?>
             <?php } ?>
         <?php } else { ?>
-            <p style="text-align: center;"><?= __('No notifications available', 'aes'); ?></p>
+            <p style="text-align: center;"><?= __('No notifications available', 'edusystem'); ?></p>
         <?php } ?>
     </div>
 </div>

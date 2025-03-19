@@ -10,7 +10,7 @@ function add_admin_form_send_notification_content()
         if ($_GET['action'] == 'send_notification') {
 
             send_notification_staff($_POST['subject'], $_POST['message']);
-            setcookie('message', __('Email sent successfully.', 'aes'), time() + 10, '/');
+            setcookie('message', __('Email sent successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_send_notification_content'));
             exit;
         }

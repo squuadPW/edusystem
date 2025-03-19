@@ -13,12 +13,12 @@ class WC_Request_Documents_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_request_documents';
-        $this->title = __('Request Documents','aes');
-        $this->description = __('Document request notification emails are approved for payment and require student documents.','aes');
+        $this->title = __('Request Documents','edusystem');
+        $this->description = __('Document request notification emails are approved for payment and require student documents.','edusystem');
         $this->customer_email = true;
         $this->manual = true;
-        $this->heading = __('Request Documents','aes');
-        $this->subject = __('Request Documents','aes');
+        $this->heading = __('Request Documents','edusystem');
+        $this->subject = __('Request Documents','edusystem');
 
         $this->template_html  = 'templates/request-documents-email.php';
         $this->template_plain = 'templates/request-documents-email.php';

@@ -14,7 +14,7 @@
           </div> -->
           <div>
             <div>
-              <label for="elective"><?= __('Elective', 'aes'); ?><span class="required">*</span></label>
+              <label for="elective"><?= __('Elective', 'edusystem'); ?><span class="required">*</span></label>
               <select class="form-control" name="elective" autocomplete="off" required>
                 <?php foreach($electives as $elective) { ?>
                   <option value="<?php echo $elective->code_subject ?>"><?php echo $elective->name ?> (<?php echo $elective->code_subject ?>)</option>
@@ -25,7 +25,7 @@
 
           <!-- DATOS DEL GRADO -->
           <div style="text-align:center; margin-top: 3rem">
-            <button type="button" class="submit button-success" id="send-continue"><?= __('Continue', 'aes'); ?></button>
+            <button type="button" class="submit button-success" id="send-continue"><?= __('Continue', 'edusystem'); ?></button>
           </div>
       </div>
     </div>

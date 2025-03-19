@@ -18,7 +18,7 @@
             <tr>
                 <th colspan="12" class="text-uppercase">
                     <strong>Complete Name:</strong>
-                    <?= strtoupper(__($student->last_name . ' ' . $student->middle_last_name . ', ' . $student->name . ' ' . $student->middle_name, 'aes')); ?>
+                    <?= strtoupper(__($student->last_name . ' ' . $student->middle_last_name . ', ' . $student->name . ' ' . $student->middle_name, 'edusystem')); ?>
                 </th>
             </tr>
             <tr>

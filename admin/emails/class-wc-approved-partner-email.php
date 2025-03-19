@@ -13,10 +13,10 @@ class WC_Approved_Partner_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_approved_partner';
-        $this->title = __('Approved Alliance','aes');
-        $this->description = __('Ally approved notification emails are sent when an ally to be reviewed is approved.','aes');
-        $this->heading = __('Approved Alliance','aes');
-        $this->subject = __('Approved Alliance','aes');
+        $this->title = __('Approved Alliance','edusystem');
+        $this->description = __('Ally approved notification emails are sent when an ally to be reviewed is approved.','edusystem');
+        $this->heading = __('Approved Alliance','edusystem');
+        $this->subject = __('Approved Alliance','edusystem');
         $this->customer_email = true;
         $this->manual = true;
         $this->template_html  = 'templates/approved-partner-email.php';

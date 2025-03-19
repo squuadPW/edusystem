@@ -13,11 +13,11 @@ class WC_Registered_Partner_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_registered-partner';
-        $this->title = __('New alliance registered','aes');
-        $this->description = __('New registered ally notification emails are sent when an ally registers and is pending approval.','aes');
+        $this->title = __('New alliance registered','edusystem');
+        $this->description = __('New registered ally notification emails are sent when an ally registers and is pending approval.','edusystem');
 
-        $this->heading = __('New alliance registered','aes');
-        $this->subject = __('New alliance registered','aes');
+        $this->heading = __('New alliance registered','edusystem');
+        $this->subject = __('New alliance registered','edusystem');
 
         $this->template_html  = 'templates/registered-partner-email.php';
         $this->template_plain = 'templates/registered-partner-email.php';

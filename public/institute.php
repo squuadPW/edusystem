@@ -60,9 +60,9 @@ function save_institute()
 
                 $new_institute = WC()->mailer()->get_emails()['WC_Registered_Institution_Email'];
                 $new_institute->trigger($wpdb->insert_id);
-                wc_add_notice(__('Registration sent. Wait for confirmation.', 'aes'), 'success');
+                wc_add_notice(__('Registration sent. Wait for confirmation.', 'edusystem'), 'success');
             } else {
-                wc_add_notice(__('Existing email, please enter another email.', 'aes'), 'error');
+                wc_add_notice(__('Existing email, please enter another email.', 'edusystem'), 'error');
             }
         }
     }

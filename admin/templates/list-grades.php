@@ -1,18 +1,18 @@
 <div class="tabs-content">
      <div class="wrap">
         <div style="text-align:start;">
-                <h1 class="wp-heading-line"><?= __('Required Documents','aes'); ?></h1>
+                <h1 class="wp-heading-line"><?= __('Required Documents','edusystem'); ?></h1>
         </div>
         <div style="text-align:end;">
-            <button class="button button-primary" disabled><?= __('Add Document','aes'); ?></button>
+            <button class="button button-primary" disabled><?= __('Add Document','edusystem'); ?></button>
         </div>
         <div>
             <table id="table-products" class="wp-list-table widefat fixed posts" style="margin-top:20px;">
                 <thead>
                     <tr>
-                        <th scope="col" class="manage-column column-primary column-title"><?= __('Document','aes') ?></th>
-                        <th scope="col" class="manage-column column-title-translate"><?= __('Required for access to the virtual classroom','aes') ?></th>
-                        <th scope="col" class="manage-column column-title-translate"><?= __('Actions','aes') ?></th>
+                        <th scope="col" class="manage-column column-primary column-title"><?= __('Document','edusystem') ?></th>
+                        <th scope="col" class="manage-column column-title-translate"><?= __('Required for access to the virtual classroom','edusystem') ?></th>
+                        <th scope="col" class="manage-column column-title-translate"><?= __('Actions','edusystem') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,16 +28,16 @@
                                             <?=  get_name_document($document->name); ?>
                                             <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                                         </td>
-                                        <td data-colname="<?= __('Required for access to the virtual classroom','aes'); ?>">
+                                        <td data-colname="<?= __('Required for access to the virtual classroom','edusystem'); ?>">
                                             <?php if($document->is_required): ?>
-                                                <span class="color-success"><?= __('Yes','aes'); ?></span>
+                                                <span class="color-success"><?= __('Yes','edusystem'); ?></span>
                                             <?php else: ?>
-                                                <span class="color-danger"><?= __('No','aes'); ?></span>
+                                                <span class="color-danger"><?= __('No','edusystem'); ?></span>
                                             <?php endif; ?>
                                         </td>
-                                        <td data-colname="<?= __('Actions','aes'); ?>">
-                                            <a href="<?= admin_url('admin.php?page=admission-documents&action=edit&document_id='.$document->id); ?>" class="button button-outline-primary"><?= __('Edit','aes'); ?></a>
-                                            <button class="button button-danger" disabled><?= __('Delete','aes'); ?></button>
+                                        <td data-colname="<?= __('Actions','edusystem'); ?>">
+                                            <a href="<?= admin_url('admin.php?page=admission-documents&action=edit&document_id='.$document->id); ?>" class="button button-outline-primary"><?= __('Edit','edusystem'); ?></a>
+                                            <button class="button button-danger" disabled><?= __('Delete','edusystem'); ?></button>
                                         </td>
                                     </tr>
                                 <?php endif; ?>

@@ -1,8 +1,8 @@
 <div class="wrap">
     <?php if (isset($teacher) && !empty($teacher)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Teacher Details', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Teacher Details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Add Teacher', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Add Teacher', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
@@ -19,7 +19,7 @@
     <?php } ?>
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary"
-            href="<?= admin_url('admin.php?page=add_admin_form_teachers_content'); ?>"><?= __('Back', 'aes'); ?></a>
+            href="<?= admin_url('admin.php?page=add_admin_form_teachers_content'); ?>"><?= __('Back', 'edusystem'); ?></a>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder">
@@ -34,14 +34,14 @@
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Teacher Information', 'aes'); ?></b>
+                                    <b><?= __('Teacher Information', 'edusystem'); ?></b>
                                 </h3>
                             </div>
 
                             <div style="text-align: center;">
                                 <div style="padding: 20px 0px 10px 0px;">
                                     <input type="checkbox" id="status" name="status" <?= ($teacher->status == 1) ? 'checked' : ''; ?>>
-                                    <label for="status"><b><?php _e('Active', 'aes'); ?></b></label><br>
+                                    <label for="status"><b><?php _e('Active', 'edusystem'); ?></b></label><br>
                                 </div>
                             </div>
                             <table class="form-table table-customize" style="margin-top:0px;">
@@ -49,60 +49,60 @@
                                     <tr>
                                         <th scope="row">
                                             <label
-                                                for="type_document"><b><?php _e('Type document', 'aes'); ?></b></label><br>
+                                                for="type_document"><b><?php _e('Type document', 'edusystem'); ?></b></label><br>
                                             <select name="type_document" autocomplete="off" required>
                                                 <option value="" selected="selected">
-                                                    <?= __('Select an option', 'aes'); ?>
+                                                    <?= __('Select an option', 'edusystem'); ?>
                                                 </option>
-                                                <option value="passport" <?= ($teacher->type_document == 'passport') ? 'selected' : ''; ?>><?= __('Passport', 'aes'); ?></option>
+                                                <option value="passport" <?= ($teacher->type_document == 'passport') ? 'selected' : ''; ?>><?= __('Passport', 'edusystem'); ?></option>
                                                 <option value="identification_document"
-                                                    <?= ($teacher->type_document == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'aes'); ?></option>
-                                                <option value="ssn" <?= ($teacher->type_document == 'ssn') ? 'selected' : ''; ?>><?= __('SSN', 'aes'); ?></option>
+                                                    <?= ($teacher->type_document == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'edusystem'); ?></option>
+                                                <option value="ssn" <?= ($teacher->type_document == 'ssn') ? 'selected' : ''; ?>><?= __('SSN', 'edusystem'); ?></option>
                                             </select>
                                         </th>
                                         <th scope="row">
                                             <label
-                                                for="id_document"><b><?php _e('ID document', 'aes'); ?></b></label><br>
+                                                for="id_document"><b><?php _e('ID document', 'edusystem'); ?></b></label><br>
                                             <input autocomplete="off" type="text" id="id_document" name="id_document"
                                                 value="<?php echo $teacher->id_document; ?>">
                                         </th>
 
                                         <th scope="row">
-                                            <label for="birth_date"><b><?php _e('Birth date', 'aes'); ?></b></label><br>
+                                            <label for="birth_date"><b><?php _e('Birth date', 'edusystem'); ?></b></label><br>
                                             <input autocomplete="off" type="date" id="birth_date" name="birth_date"
                                                 value="<?php echo $teacher->birth_date; ?>">
                                         </th>
                                         <th scope="row">
-                                            <label for="gender"><b><?php _e('Gender', 'aes'); ?></b></label><br>
+                                            <label for="gender"><b><?php _e('Gender', 'edusystem'); ?></b></label><br>
                                             <select class="form-control" id="gender" required name="gender">
                                                 <option value="" selected="selected">
-                                                    <?= __('Select an option', 'aes'); ?>
+                                                    <?= __('Select an option', 'edusystem'); ?>
                                                 </option>
-                                                <option value="male" <?= ($teacher->gender == 'male') ? 'selected' : ''; ?>><?= __('Male', 'aes'); ?></option>
-                                                <option value="female" <?= ($teacher->gender == 'female') ? 'selected' : ''; ?>><?= __('Female', 'aes'); ?></option>
+                                                <option value="male" <?= ($teacher->gender == 'male') ? 'selected' : ''; ?>><?= __('Male', 'edusystem'); ?></option>
+                                                <option value="female" <?= ($teacher->gender == 'female') ? 'selected' : ''; ?>><?= __('Female', 'edusystem'); ?></option>
                                             </select>
                                         </th>
                                     </tr>
                                     <tr>
                                         <th scope="row">
-                                            <label for="name"><b><?php _e('Name', 'aes'); ?></b></label><br>
+                                            <label for="name"><b><?php _e('Name', 'edusystem'); ?></b></label><br>
                                             <input autocomplete="off" type="text" id="name" name="name"
                                                 value="<?php echo $teacher->name; ?>">
                                         </th>
                                         <th scope="row">
                                             <label
-                                                for="middle_name"><b><?php _e('Middle name', 'aes'); ?></b></label><br>
+                                                for="middle_name"><b><?php _e('Middle name', 'edusystem'); ?></b></label><br>
                                             <input autocomplete="off" type="text" id="middle_name" name="middle_name"
                                                 value="<?php echo $teacher->middle_name; ?>">
                                         </th>
                                         <th scope="row">
-                                            <label for="last_name"><b><?php _e('Last name', 'aes'); ?></b></label><br>
+                                            <label for="last_name"><b><?php _e('Last name', 'edusystem'); ?></b></label><br>
                                             <input autocomplete="off" type="text" id="last_name" name="last_name"
                                                 value="<?php echo $teacher->last_name; ?>">
                                         </th>
                                         <th scope="row">
                                             <label
-                                                for="middle_last_name"><b><?php _e('Middle last name', 'aes'); ?></b></label><br>
+                                                for="middle_last_name"><b><?php _e('Middle last name', 'edusystem'); ?></b></label><br>
                                             <input autocomplete="off" type="text" id="middle_last_name"
                                                 name="middle_last_name"
                                                 value="<?php echo $teacher->middle_last_name; ?>">
@@ -110,26 +110,26 @@
                                     </tr>
                                     <tr>
                                         <th scope="row">
-                                            <label for="email"><b><?php _e('Email', 'aes'); ?></b></label><br>
+                                            <label for="email"><b><?php _e('Email', 'edusystem'); ?></b></label><br>
                                             <input autocomplete="off" type="text" id="email" name="email"
                                                 value="<?php echo $teacher->email; ?>">
                                             <input autocomplete="off" type="hidden" id="old_email" name="old_email"
                                                 value="<?php echo $teacher->email; ?>">
                                         </th>
                                         <th scope="row">
-                                            <label for="phone"><b><?php _e('Phone', 'aes'); ?></b></label><br>
+                                            <label for="phone"><b><?php _e('Phone', 'edusystem'); ?></b></label><br>
                                             <input autocomplete="off" type="text" id="phone" name="phone"
                                                 value="<?php echo $teacher->phone; ?>">
                                             <input type="hidden" name="phone_hidden" id="phone_hidden"
                                                 value="<?= $teacher->phone; ?>">
                                         </th>
                                         <th scope="row">
-                                            <label for="address"><b><?php _e('Address', 'aes'); ?></b></label><br>
+                                            <label for="address"><b><?php _e('Address', 'edusystem'); ?></b></label><br>
                                             <input autocomplete="off" type="text" id="address" name="address"
                                                 value="<?php echo $teacher->address; ?>">
                                         </th>
                                         <th scope="row">
-                                            <label for="password"><b><?php _e('Password', 'aes'); ?></b></label><br>
+                                            <label for="password"><b><?php _e('Password', 'edusystem'); ?></b></label><br>
                                             <input type="password" id="password" name="password" autocomplete="off"
                                                 <?= !isset($teacher) ? 'required' : '' ?>>
                                         </th>
@@ -140,12 +140,12 @@
                             <?php if (isset($teacher) && !empty($teacher)): ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Saves changes', 'aes'); ?></button>
+                                        class="button button-primary"><?= __('Saves changes', 'edusystem'); ?></button>
                                 </div>
                             <?php else: ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Add teacher', 'aes'); ?></button>
+                                        class="button button-primary"><?= __('Add teacher', 'edusystem'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>
@@ -154,7 +154,7 @@
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Teacher Information', 'aes'); ?></b>
+                                    <b><?= __('Teacher Information', 'edusystem'); ?></b>
                                 </h3>
                             </div>
 
@@ -241,7 +241,7 @@
                         addressed to the user</span>
                 </div>
                 <div>
-                    <label for="description"><b><?= __('Reason why it is declined', 'aes'); ?></b><span
+                    <label for="description"><b><?= __('Reason why it is declined', 'edusystem'); ?></b><span
                             class="text-danger">*</span></label><br>
                     <textarea name="description" type="text" style="width: 100%;" required></textarea>
                     <input type="hidden" name="document_id_decline">
@@ -250,9 +250,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="button button-danger"><?= __('Decline', 'aes'); ?></button>
+                <button type="submit" class="button button-danger"><?= __('Decline', 'edusystem'); ?></button>
                 <button id="decline-exit-button" type="button"
-                    class="button button-outline-primary modal-close"><?= __('Exit', 'aes'); ?></button>
+                    class="button button-outline-primary modal-close"><?= __('Exit', 'edusystem'); ?></button>
             </div>
         </form>
     </div>

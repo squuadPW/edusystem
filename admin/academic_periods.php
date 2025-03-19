@@ -107,7 +107,7 @@ function add_admin_form_academic_periods_content()
                     ], ['code' => $old_code, 'cut' => $cut]);
                 }
 
-                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id=' . $period_id));
                 exit;
             } else {
@@ -186,7 +186,7 @@ class TT_academic_period_all_List_Table extends WP_List_Table
                         break;
                 }
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id=' . $item['academic_period_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id=' . $item['academic_period_id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -207,11 +207,11 @@ class TT_academic_period_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'academic_period_code' => __('Period', 'aes'),
-            'name' => __('Description', 'aes'),
-            'status_id' => __('Status', 'aes'),
-            'date' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'academic_period_code' => __('Period', 'edusystem'),
+            'name' => __('Description', 'edusystem'),
+            'status_id' => __('Status', 'edusystem'),
+            'date' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;

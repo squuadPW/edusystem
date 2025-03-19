@@ -8,11 +8,11 @@ class WC_New_Applicant_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_new_student';
-        $this->title = __('New Applicant Registered','aes');
-        $this->description = __('Student notification emails are sent when a student registers after making a payment.','aes');
+        $this->title = __('New Applicant Registered','edusystem');
+        $this->description = __('Student notification emails are sent when a student registers after making a payment.','edusystem');
 
-        $this->heading = __('New Applicant Registered','aes');
-        $this->subject = __('New Applicant Registered','aes');
+        $this->heading = __('New Applicant Registered','edusystem');
+        $this->subject = __('New Applicant Registered','edusystem');
 
         $this->template_html  = 'templates/new-applicant-email.php';
         $this->template_plain = 'templates/new-applicant-email.php';

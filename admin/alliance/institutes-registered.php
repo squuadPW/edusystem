@@ -53,7 +53,7 @@ function list_admin_institutes_partner_registered_content(){
                     'updated_at' => date('Y-m-d H:i:s')
                 ],[ 'id' => $institute_id]);
                 
-                setcookie('message',__('Changes saved successfully.','aes'),time() + 3600,'/');
+                setcookie('message',__('Changes saved successfully.','edusystem'),time() + 3600,'/');
                 wp_redirect(admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-detail&institute_id='.$institute_id));
                 exit;
 
@@ -154,10 +154,10 @@ class TT_all_Institutes_Alliance_List_Table extends WP_List_Table{
             case 'view_details':
                 if($item['status'] == 1){
                         return "
-                        <a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=fee-institute&institute_id='.$item['id'])."'><span class='dashicons dashicons-money-alt'></span>".__('Fees','aes')."</a>
-                        <a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-detail&institute_id='.$item['id'])."'><span class='dashicons dashicons-edit'></span>".__('Edit','aes')."</a>";
+                        <a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=fee-institute&institute_id='.$item['id'])."'><span class='dashicons dashicons-money-alt'></span>".__('Fees','edusystem')."</a>
+                        <a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-detail&institute_id='.$item['id'])."'><span class='dashicons dashicons-edit'></span>".__('Edit','edusystem')."</a>";
                 }else{
-                    return "<a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-detail&institute_id='.$item['id'])."'><span class='dashicons dashicons-edit'></span>".__('Edit','aes')."</a>";
+                    return "<a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-detail&institute_id='.$item['id'])."'><span class='dashicons dashicons-edit'></span>".__('Edit','edusystem')."</a>";
                 }
                
 			default:
@@ -176,12 +176,12 @@ class TT_all_Institutes_Alliance_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
-            'name'     => __('Name','aes'),
-            'email'    => __('Email','aes'),
-            'level'    => __('Level','aes'),
-            'status'   => __('Status','aes'),
-            'created_at' => __('Created at','aes'),
-            'view_details' => __('Actions','aes'),
+            'name'     => __('Name','edusystem'),
+            'email'    => __('Email','edusystem'),
+            'level'    => __('Level','edusystem'),
+            'status'   => __('Status','edusystem'),
+            'created_at' => __('Created at','edusystem'),
+            'view_details' => __('Actions','edusystem'),
         );
 
         return $columns;

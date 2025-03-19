@@ -67,7 +67,7 @@ function add_admin_form_academic_offers_content()
                 ]);
             }
 
-            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+            setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_offers_content'));
             exit;
         } else if($_GET['action'] == 'offer_delete') {
@@ -76,7 +76,7 @@ function add_admin_form_academic_offers_content()
             $offer_id = $_GET['offer_id'];
             $wpdb->delete($table_academic_offers, ['id' => $offer_id]);
 
-            setcookie('message', __('Offer deleted.', 'aes'), time() + 10, '/');
+            setcookie('message', __('Offer deleted.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_offers_content'));
             exit;
         } else {
@@ -111,8 +111,8 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&section_tab=offer_details&offer_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
-                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&action=offer_delete&offer_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'aes') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&section_tab=offer_details&offer_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&action=offer_delete&offer_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);
@@ -134,12 +134,12 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'subject' => __('Subject', 'aes'),
-            'section' => __('Section', 'aes'),
-            'period' => __('Offer period', 'aes'),
-            'teacher' => __('Teacher or person responsible', 'aes'),
-            'max' => __('Max. students', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'subject' => __('Subject', 'edusystem'),
+            'section' => __('Section', 'edusystem'),
+            'period' => __('Offer period', 'edusystem'),
+            'teacher' => __('Teacher or person responsible', 'edusystem'),
+            'max' => __('Max. students', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;

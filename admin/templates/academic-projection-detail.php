@@ -10,9 +10,9 @@
 <?php include(plugin_dir_path(__FILE__) . 'table-download-grades-loading.php'); ?>
 <div class="wrap">
     <?php if (isset($projection) && !empty($projection)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Academic projection', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Academic projection', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Not found', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Not found', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
@@ -29,14 +29,14 @@
     <?php } ?>
     <div>
         <div style="display:flex; justify-content: start;">
-            <a class="button button-outline-primary" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content'); ?>"><?= __('Back', 'aes'); ?></a>
+            <a class="button button-outline-primary" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content'); ?>"><?= __('Back', 'edusystem'); ?></a>
         </div>
         <div style="display:flex; justify-content: end;">
             <?php 
                 include(plugin_dir_path(__FILE__).'connections-student.php');
             ?>
             <?php if (in_array('administrator', $roles)) { ?>
-                <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=auto_enroll&student_id=') . $student->id . '&projection_id='.$projection->id ?>" class="button button-outline-primary" onclick="return confirm('Estas seguro de inscribir en base a la matriz de proyeccion academica?');"><?= __('Auto-enroll','aes'); ?></a>
+                <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=auto_enroll&student_id=') . $student->id . '&projection_id='.$projection->id ?>" class="button button-outline-primary" onclick="return confirm('Estas seguro de inscribir en base a la matriz de proyeccion academica?');"><?= __('Auto-enroll','edusystem'); ?></a>
             <?php } ?>
         </div>
     </div>
@@ -51,12 +51,12 @@
                             <tbody>
                                 <tr>
                                     <p style="text-align: center; padding: 12px !important">
-                                        <label for="grade" style="font-size: 24px;" class="text-uppercase"><b><?= strtoupper(__($student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name, 'aes')); ?></b></label>
+                                        <label for="grade" style="font-size: 24px;" class="text-uppercase"><b><?= strtoupper(__($student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name, 'edusystem')); ?></b></label>
                                     </p>
                                 </tr>
                                 <tr>
                                     <th scope="row" style="font-weight:400; text-align: center">
-                                        <label for="grade"><b><?php _e('Grade', 'aes'); ?></b></label><br>
+                                        <label for="grade"><b><?php _e('Grade', 'edusystem'); ?></b></label><br>
                                         <?php foreach ($grades as $grade): ?>
                                             <?php if($student->grade_id == $grade->id) { ?>
                                                 <label for="grade"><b><?= $grade->name; ?> <?= $grade->description; ?></b></label>
@@ -64,7 +64,7 @@
                                         <?php endforeach; ?>
                                     </th>
                                     <th scope="row" style="font-weight:400; text-align: center">
-                                        <label for="grade"><b><?php _e('Initial period and cut', 'aes'); ?></b></label><br>
+                                        <label for="grade"><b><?php _e('Initial period and cut', 'edusystem'); ?></b></label><br>
                                         <label for="grade"><b><?= $student->academic_period . ' - ' . $student->initial_cut ?></b></label>
                                     </th>
                                 </tr>
@@ -76,7 +76,7 @@
 
                             <div>
                                 <h3 style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Academic projection', 'aes'); ?></b>
+                                    <b><?= __('Academic projection', 'edusystem'); ?></b>
                                 </h3>
 
                                 <input type="hidden" name="projection_id" value="<?= $projection->id ?>">
@@ -92,18 +92,18 @@
                                                     <input type="hidden" name="this_cut[<?= $key ?>]" value="<?= $projection_for->this_cut ? 1 : 0 ?>">
                                                 <?php } ?>
 
-                                                <label for="input_id"><b><?= __($projection_for->subject, 'aes'); ?></b></label>
+                                                <label for="input_id"><b><?= __($projection_for->subject, 'edusystem'); ?></b></label>
                                             </div>
 
                                             <?php if($projection_for->type == 'equivalence') { ?>
                                                 <div style="flex: 1; padding: 5px; align-content: center; text-align: end; font-style: italic;">
-                                                    <label for="input_id"><b><?= __('Equivalence', 'aes'); ?></b></label>
+                                                    <label for="input_id"><b><?= __('Equivalence', 'edusystem'); ?></b></label>
                                                 </div>
                                             <?php } ?>
                                             
                                             <?php if($projection_for->type != 'equivalence') { ?>
                                                 <div style="flex: 1; padding: 5px;">
-                                                    <label for="input_id"><b><?= __('Period', 'aes'); ?></b></label><br>
+                                                    <label for="input_id"><b><?= __('Period', 'edusystem'); ?></b></label><br>
                                                     <select onchange="academic_period_changed(<?= $key ?>)" name="academic_period[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                                         <option value="" selected>Select academic period to filter</option>
                                                         <?php foreach ($periods as $period) { ?>
@@ -115,7 +115,7 @@
                                                 </div>
                                                 
                                                 <div style="flex: 1; padding: 5px;">
-                                                    <label for="input_id"><b><?= __('Cut', 'aes'); ?></b></label><br>
+                                                    <label for="input_id"><b><?= __('Cut', 'edusystem'); ?></b></label><br>
                                                     <select onchange="academic_period_changed(<?= $key ?>)" name="academic_period_cut[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                                         <option value="">Select academic period cut</option>
                                                         <option <?= ($current_cut == 'A') ? 'class="current-period"' : ''; ?> value="A" <?= ($projection_for->cut == 'A') ? 'selected' : ''; ?>>A</option>
@@ -127,7 +127,7 @@
                                                 </div>
 
                                                 <div style="flex: 1; padding: 5px;">
-                                                    <label for="input_id"><b><?= __('Calification', 'aes'); ?></b></label><br>
+                                                    <label for="input_id"><b><?= __('Calification', 'edusystem'); ?></b></label><br>
                                                     <input type="number" step="0.01" name="calification[<?= $key ?>]" value="<?= $projection_for->calification ?? ''; ?>" <?php echo $projection_for->is_completed && !$projection_for->this_cut ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                                 </div>
                                             <?php } ?>
@@ -139,11 +139,11 @@
                                 <?php if($student->elective == 1) { ?>
                                     <div style="display: block; width: 100%; text-align: center">
                                         <div style="flex: 1; padding: 20px;">
-                                            <label><b><?= __('This student has yet to select an elective.', 'aes'); ?></b></label><br>
+                                            <label><b><?= __('This student has yet to select an elective.', 'edusystem'); ?></b></label><br>
                                         </div>
                                         <div>
                                             <a onclick="return confirm('Are you sure?');" style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=student_elective_change&student_id=') . $student->id . '&projection_id='.$projection->id . '&status=0' ?>" class="button button-danger" onclick="return confirm('Are you sure to desactivate the elective for this student?');">
-                                                <?= __('Desactivate student elective','aes'); ?>
+                                                <?= __('Desactivate student elective','edusystem'); ?>
                                             </a>
                                         </div>
                                     </div>
@@ -153,7 +153,7 @@
                                     <div style="display: flex; width: 100%; text-align: center">
                                         <div style="flex: 1; padding: 20px;">
                                             <a onclick="return confirm('Are you sure?');" style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=student_elective_change&student_id=') . $student->id . '&projection_id='.$projection->id . '&status=1' ?>" class="button button-outline-primary" onclick="return confirm('Are you sure to activate the elective for this student?');">
-                                                <?= __('Activate student elective','aes'); ?>
+                                                <?= __('Activate student elective','edusystem'); ?>
                                             </a>
                                         </div>
                                     </div>
@@ -162,7 +162,7 @@
 
                             <div>
                                 <h3 style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Inscriptions', 'aes'); ?></b>
+                                    <b><?= __('Inscriptions', 'edusystem'); ?></b>
                                 </h3>
 
                                 <table class="wp-list-table widefat fixed striped posts"
@@ -170,22 +170,22 @@
                                     <thead>
                                         <tr>
                                             <th scope="col" class=" manage-column column">
-                                                <?= __('Status', 'aes'); ?>
+                                                <?= __('Status', 'edusystem'); ?>
                                             </th>
                                             <th scope="col" class=" manage-column column-primary">
-                                                <?= __('Student', 'aes'); ?>
+                                                <?= __('Student', 'edusystem'); ?>
                                             </th>
                                             <th scope="col" class=" manage-column">
-                                                <?= __('Subject - Code', 'aes'); ?>
+                                                <?= __('Subject - Code', 'edusystem'); ?>
                                             </th>
                                             <th scope="col" class=" manage-column">
-                                                <?= __('Period - cut', 'aes'); ?>
+                                                <?= __('Period - cut', 'edusystem'); ?>
                                             </th>
                                             <th scope="col" class=" manage-column">
-                                                <?= __('Calification', 'aes'); ?>
+                                                <?= __('Calification', 'edusystem'); ?>
                                             </th>
                                             <th scope="col" class=" manage-column" style="text-align: end">
-                                                <?= __('Action', 'aes'); ?>
+                                                <?= __('Action', 'edusystem'); ?>
                                             </th>
                                         </tr>
                                     </thead>
@@ -240,7 +240,7 @@
                                     <div style="display: flex; width: 100%; text-align: center">
                                         <div style="flex: 1; padding: 20px;">
                                             <button type="button" class="button button-outline-primary" id="download-grades">
-                                                <?= __('Download grades','aes'); ?>
+                                                <?= __('Download grades','edusystem'); ?>
                                             </button>
                                         </div>
                                     </div>
@@ -250,9 +250,9 @@
                             <?php if (isset($projection) && !empty($projection)): ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                 <button type="submit"
-                                    class="button button-primary" name="action" value="send_email" onclick="return confirm('Are you sure?');"><?= __('Save and send email', 'aes'); ?></button>
+                                    class="button button-primary" name="action" value="send_email" onclick="return confirm('Are you sure?');"><?= __('Save and send email', 'edusystem'); ?></button>
                                     <button type="submit"
-                                        class="button button-success" name="action" value="save" onclick="return confirm('Are you sure?');"><?= __('Only saves changes', 'aes'); ?></button>
+                                        class="button button-success" name="action" value="save" onclick="return confirm('Are you sure?');"><?= __('Only saves changes', 'edusystem'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

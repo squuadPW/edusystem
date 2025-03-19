@@ -16,13 +16,13 @@
 
     <div class="card" style="min-width: 100% !important;">
         <div class="card-header">
-            <h3><?= __('Send email for students', 'aes'); ?></h3>
+            <h3><?= __('Send email for students', 'edusystem'); ?></h3>
         </div>
         <div class="card-body">
 
             <section class="segment" style="display: flex; margin: 0px 20px 30px 20px;">
-                <div class="segment-button active" data-option="group"><?= __('By group', 'aes'); ?></div>
-                <div class="segment-button" data-option="email"><?= __('By email', 'aes'); ?></div>
+                <div class="segment-button active" data-option="group"><?= __('By group', 'edusystem'); ?></div>
+                <div class="segment-button" data-option="email"><?= __('By email', 'edusystem'); ?></div>
             </section>
 
             <form method="post"
@@ -30,7 +30,7 @@
                 <input type="hidden" name="type" value="1">
                 <div class="form-group" id="by_group">
                     <div class="form-group">
-                        <label for="academic_period"><?= __('Academic period of students to send', 'aes'); ?></label>
+                        <label for="academic_period"><?= __('Academic period of students to send', 'edusystem'); ?></label>
                         <select name="academic_period" style="width: 100%" >
                             <option value="">Select an option</option>
                             <?php foreach ($periods as $key => $period): ?>
@@ -39,7 +39,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="academic_period"><?= __('Academic cut-off filter to be applied', 'aes'); ?></label>
+                        <label for="academic_period"><?= __('Academic cut-off filter to be applied', 'edusystem'); ?></label>
                         <select name="academic_period_cut_filter" style="width: 100%" >
                             <option value="">Select an option</option>
                             <option value="1">Initial</option>
@@ -47,7 +47,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="academic_period"><?= __('Academic period cut-off', 'aes'); ?></label>
+                        <label for="academic_period"><?= __('Academic period cut-off', 'edusystem'); ?></label>
                         <select name="academic_period_cut" style="width: 100%" >
                             <option value="">Select an option</option>
                             <option value="A">A</option>
@@ -60,16 +60,16 @@
                 </div>
                 <div id="by_email" style="display: none">
                     <div class="form-group">
-                        <label for="email_student"><?= __('Email student', 'aes'); ?></label>
+                        <label for="email_student"><?= __('Email student', 'edusystem'); ?></label>
                         <input type="email" name="email_student" id="email_student">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="subject"><?= __('Title', 'aes'); ?></label>
+                    <label for="subject"><?= __('Title', 'edusystem'); ?></label>
                     <input type="text" name="subject" id="subject" required>
                 </div>
                 <div class="form-group">
-                    <label for="message"><?= __('Message', 'aes'); ?></label>
+                    <label for="message"><?= __('Message', 'edusystem'); ?></label>
                     <ul>
                         <li>For the student's full name use: <strong>{{student}}</strong></li>
                     </ul>
@@ -85,11 +85,11 @@
                 <div class="form-group" style="display: flex">
                     <input style="margin: auto 6px auto 6px;" type="checkbox" name="email_parent" id="email_parent">
                     <label style="margin-bottom: 0px"
-                        for="email_parent"><?= __('Send the same email to the parent', 'aes'); ?></label>
+                        for="email_parent"><?= __('Send the same email to the parent', 'edusystem'); ?></label>
                 </div>
                 <div class="form-group" style="text-align: center">
-                    <button type="button" id="summary-email" class="btn btn-primary"><?= __('Send', 'aes'); ?></button>
-                    <button type="submit" id="summary-email-send" class="btn btn-primary" style="display: none"><?= __('Send', 'aes'); ?></button>
+                    <button type="button" id="summary-email" class="btn btn-primary"><?= __('Send', 'edusystem'); ?></button>
+                    <button type="submit" id="summary-email-send" class="btn btn-primary" style="display: none"><?= __('Send', 'edusystem'); ?></button>
                 </div>
             </form>
         </div>
@@ -109,8 +109,8 @@
             </ul>
         </div>
         <div class="modal-footer">
-            <button id="summary-email-button" type="submit" class="button button-outline-primary modal-close"><?= __('Send','aes'); ?></button>
-            <button id="summary-email-exit-button" type="button" class="button button-danger modal-close"><?= __('Cancel','aes'); ?></button>
+            <button id="summary-email-button" type="submit" class="button button-outline-primary modal-close"><?= __('Send','edusystem'); ?></button>
+            <button id="summary-email-exit-button" type="button" class="button button-danger modal-close"><?= __('Cancel','edusystem'); ?></button>
         </div>
     </div>
 </div>

@@ -1,8 +1,8 @@
-<h2 style="font-size:24px;text-align:center;"><?= __('Califications', 'form-plugin'); ?></h2>
+<h2 style="font-size:24px;text-align:center;"><?= __('Califications', 'edusystem'); ?></h2>
 
 <section class="segment" style="margin-top: 20px">
-    <div class="segment-button-history active" data-option="current"><?= __('Current', 'aes'); ?></div>
-    <div class="segment-button-history" data-option="history"><?= __('History', 'aes'); ?></div>
+    <div class="segment-button-history active" data-option="current"><?= __('Current', 'edusystem'); ?></div>
+    <div class="segment-button-history" data-option="history"><?= __('History', 'edusystem'); ?></div>
 </section>
 
 <div>
@@ -18,13 +18,13 @@
                     <thead>
                         <tr>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span
-                                    class="nobr"><?= __('Course', 'aes'); ?></span></th>
+                                    class="nobr"><?= __('Course', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                                    class="nobr"><?= __('Assignment', 'aes'); ?></span></th>
+                                    class="nobr"><?= __('Assignment', 'edusystem'); ?></span></th>
                             <!-- <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                            class="nobr"><?= __('Max date', 'aes'); ?></span></th> -->
+                            class="nobr"><?= __('Max date', 'edusystem'); ?></span></th> -->
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                                    class="nobr"><?= __('Calification', 'aes'); ?></span></th>
+                                    class="nobr"><?= __('Calification', 'edusystem'); ?></span></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,20 +35,20 @@
                                     style="background-color: blue !important">
                                     <td style="background-color: #f8f8f8;"
                                         class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                                        data-title="<?= __('Course', 'aes'); ?>">
+                                        data-title="<?= __('Course', 'edusystem'); ?>">
                                         <strong><?= strtoupper($row['course']) ?></strong>
                                     </td>
                                     <td style="background-color: #f8f8f8;"
                                         class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
-                                        data-title="<?= __('Assignment', 'aes'); ?>">
+                                        data-title="<?= __('Assignment', 'edusystem'); ?>">
                                     </td>
                                     <!-- <td style="background-color: #f8f8f8;"
                                 class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                data-title="<?= __('Max date', 'aes') ?>">
+                                data-title="<?= __('Max date', 'edusystem') ?>">
                             </td> -->
                                     <td style="background-color: #f8f8f8;"
                                         class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                        data-title="<?= __('Calification', 'aes') ?>">
+                                        data-title="<?= __('Calification', 'edusystem') ?>">
                                     </td>
                                 </tr>
 
@@ -56,19 +56,19 @@
                                     <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order"
                                         style="background-color: green !important">
                                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                                            data-title="<?= __('Course', 'aes'); ?>">
+                                            data-title="<?= __('Course', 'edusystem'); ?>">
 
                                         </td>
                                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
-                                            data-title="<?= __('Assignment', 'aes'); ?>">
+                                            data-title="<?= __('Assignment', 'edusystem'); ?>">
                                             <?= $assignment['name'] ?>
                                         </td>
                                         <!-- <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                    data-title="<?= __('Max date', 'aes') ?>">
+                                    data-title="<?= __('Max date', 'edusystem') ?>">
                                     <?= $assignment['max_date'] ?>
                                 </td> -->
                                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                            data-title="<?= __('Calification', 'aes') ?>">
+                                            data-title="<?= __('Calification', 'edusystem') ?>">
                                             <?= $assignment['grade'] ?> / <?= $assignment['max_grade'] ?>
                                         </td>
                                     </tr>
@@ -97,15 +97,15 @@
                     <thead>
                         <tr>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span
-                                class="nobr"><?= __('Status', 'aes'); ?></span></th>
+                                class="nobr"><?= __('Status', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span
-                                    class="nobr"><?= __('Code', 'aes'); ?></span></th>
+                                    class="nobr"><?= __('Code', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                                    class="nobr"><?= __('Subject', 'aes'); ?></span></th>
+                                    class="nobr"><?= __('Subject', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                                class="nobr"><?= __('Calification', 'aes'); ?></span></th>
+                                class="nobr"><?= __('Calification', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                                    class="nobr"><?= __('Academic period', 'aes'); ?></span></th>
+                                    class="nobr"><?= __('Academic period', 'edusystem'); ?></span></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -115,7 +115,7 @@
                                 <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order"
                                     style="background-color: blue !important">
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                                        data-title="<?= __('Status', 'aes'); ?>">
+                                        data-title="<?= __('Status', 'edusystem'); ?>">
                                         <?php
                                             switch ($row['status_id']) {
                                                 case 0:
@@ -138,19 +138,19 @@
                                     </td>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                                        data-title="<?= __('Code', 'aes'); ?>">
+                                        data-title="<?= __('Code', 'edusystem'); ?>">
                                         <?= strtoupper($row['code_subject']) ?>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
-                                        data-title="<?= __('Subject', 'aes'); ?>">
+                                        data-title="<?= __('Subject', 'edusystem'); ?>">
                                         <?= strtoupper($row['subject']) ?>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                        data-title="<?= __('Calification', 'aes') ?>">
+                                        data-title="<?= __('Calification', 'edusystem') ?>">
                                         <strong><?= strtoupper($row['calification']) ?></strong>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                        data-title="<?= __('Academic period', 'aes') ?>">
+                                        data-title="<?= __('Academic period', 'edusystem') ?>">
                                         <?= strtoupper($row['code_period']) . ' - ' . strtoupper($row['cut']) ?>
                                     </td>
                                 </tr>

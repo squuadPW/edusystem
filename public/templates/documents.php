@@ -8,7 +8,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
 
 <?php if (!$student->moodle_password) { ?>
     <div class="text-center info-box">
-        <h2 style="font-size:24px;text-align:center;"><?= __('Documents', 'aes'); ?></h2>
+        <h2 style="font-size:24px;text-align:center;"><?= __('Documents', 'edusystem'); ?></h2>
         <p>To access the <a style="text-decoration: underline !important; color: #002fbd;"
                 href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student' ?>">virtual
                 classroom</a>, please ensure you complete the following steps:</p>
@@ -23,7 +23,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
         <!-- <p class="info-note">Once both steps are complete, you will receive an email with instructions on how to access the virtual classroom. Please note that access will only be granted once all required documents have been received and your payment has been processed.</p> -->
     </div>
 <?php } else { ?>
-    <h2 style="font-size:24px;text-align:center;"><?= __('Documents', 'aes'); ?></h2>
+    <h2 style="font-size:24px;text-align:center;"><?= __('Documents', 'edusystem'); ?></h2>
 <?php } ?>
 
 <style>
@@ -58,11 +58,11 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                 <thead>
                     <tr>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-document"><span
-                                class="nobr"><?= __('Document', 'aes'); ?></span></th>
+                                class="nobr"><?= __('Document', 'edusystem'); ?></span></th>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-status"><span
-                                class="nobr"><?= __('Status', 'aes'); ?></span></th>
+                                class="nobr"><?= __('Status', 'edusystem'); ?></span></th>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-action"><span
-                                class="nobr"><?= __('action', 'aes'); ?></span></th>
+                                class="nobr"><?= __('action', 'edusystem'); ?></span></th>
                 </thead>
                 <tbody>
                     <?php $documents = get_documents($student->id); ?>
@@ -72,7 +72,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                             <?php $document_name_complete = get_name_document($document->document_id); ?>
                             <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                                    data-title="<?= __('Document', 'aes'); ?>">
+                                    data-title="<?= __('Document', 'edusystem'); ?>">
                                     <input type="hidden" name="<?= 'file_student_' . $student->id . '_id[]'; ?>"
                                         value="<?= $document->id; ?>">
                                     <?php if ($document->is_required): ?>
@@ -87,7 +87,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     </span>
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
-                                    data-title="<?= __('Status', 'aes'); ?>">
+                                    data-title="<?= __('Status', 'edusystem'); ?>">
                                     <input type="hidden" name="<?= 'status_file_' . $document->id . '_student_id_' . $student->id; ?>"
                                         value="<?= $document->status; ?>">
                                     <input type="hidden"
@@ -113,7 +113,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <span style="<?= $style ?>"><?= $status == 'No sent' ? 'Pending' : $status ?></span>
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                                    data-title="<?= __('Action', 'aes'); ?>">
+                                    data-title="<?= __('Action', 'edusystem'); ?>">
                                     <?php if ($document->status == 0 || $document->status == 3 || $document->status == 4) { ?>
                                         <div class="custom-file">
                                             <input type="file" class="custom-file-input" <?= $document_name_complete == 'PHOTO OF STUDENT CARD' || $document_name_complete == 'STUDENT\'S PHOTO' ? 'id=student_photo' : '' ?>
@@ -132,7 +132,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                         <?php } else if ($document->status != 0 && $document->status != 3) { ?>
                                 <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                                        data-title="<?= __('Document', 'aes'); ?>">
+                                        data-title="<?= __('Document', 'edusystem'); ?>">
                                         <input type="hidden" name="<?= 'file_student_' . $student->id . '_id[]'; ?>"
                                             value="<?= $document->id; ?>">
                                     <?php $name = get_name_document($document->document_id); ?>
@@ -158,11 +158,11 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                 ?>
 
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
-                                        data-title="<?= __('Status', 'aes'); ?>">
+                                        data-title="<?= __('Status', 'edusystem'); ?>">
                                         <span style="<?= $style ?>"><?= $status == 'No sent' ? 'Pending' : $status ?></span>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                                        data-title="<?= __('Action', 'aes'); ?>">
+                                        data-title="<?= __('Action', 'edusystem'); ?>">
                                         <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" type="button"
                                             class="button">View Document</a>
                                     </td>
@@ -175,7 +175,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
 
         <div style="display:block;text-align:center;">
             <button class="submit" type="submit" style="display: none"
-                id="send_real"><?= __('Send Documents', 'aes'); ?></button>
+                id="send_real"><?= __('Send Documents', 'edusystem'); ?></button>
             <div id="progressButton">
                 <div id="progressBar"></div>
                 <div id="buttonText">Send Documents</div>

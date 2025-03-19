@@ -17,13 +17,13 @@
             <?php } else { ?>
                 <select id="typeFilter" name="typeFilter" autocomplete="off">
                 <?php } ?>
-                <option value="today"><?= __('Today', 'aes'); ?></option>
-                <option value="tomorrow"><?= __('Tomorrow', 'aes'); ?></option>
-                <option value="this-week"><?= __('This week', 'aes'); ?></option>
-                <option value="next-week"><?= __('Next week', 'aes'); ?></option>
-                <option value="this-month" selected><?= __('This month', 'aes'); ?></option>
-                <option value="next-month"><?= __('Next month', 'aes'); ?></option>
-                <option value="custom"><?= __('Custom', 'aes'); ?></option>
+                <option value="today"><?= __('Today', 'edusystem'); ?></option>
+                <option value="tomorrow"><?= __('Tomorrow', 'edusystem'); ?></option>
+                <option value="this-week"><?= __('This week', 'edusystem'); ?></option>
+                <option value="next-week"><?= __('Next week', 'edusystem'); ?></option>
+                <option value="this-month" selected><?= __('This month', 'edusystem'); ?></option>
+                <option value="next-month"><?= __('Next month', 'edusystem'); ?></option>
+                <option value="custom"><?= __('Custom', 'edusystem'); ?></option>
             </select>
             <?php if (wp_is_mobile()) { ?>
                 <input type="text" value="<?= $start_date; ?>" id="inputStartDate"
@@ -33,57 +33,57 @@
             <?php } ?>
             <?php if (wp_is_mobile()): ?>
                 <button type="button" id="update_data_accounts_receivable" class="button button-primary"
-                    style="width:100%;"></span><?= __('Update data', 'aes'); ?></button>
+                    style="width:100%;"></span><?= __('Update data', 'edusystem'); ?></button>
             <?php else: ?>
                 <button type="button" id="update_data_accounts_receivable"
-                    class="button button-primary"></span><?= __('Update data', 'aes'); ?></button>
+                    class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
             <?php endif; ?>
     </div>
     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
         <thead>
             <tr>
-                <th scope="col" class=" manage-column column"><?= __('Parent', 'aes'); ?></th>
-                <th scope="col" class=" manage-column column-primary"><?= __('Student', 'aes'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Product', 'aes'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Amount', 'aes'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Number cuote', 'aes'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Total cuotes', 'aes'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Date', 'aes'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Parent', 'edusystem'); ?></th>
+                <th scope="col" class=" manage-column column-primary"><?= __('Student', 'edusystem'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Product', 'edusystem'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Amount', 'edusystem'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Number cuote', 'edusystem'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Total cuotes', 'edusystem'); ?></th>
+                <th scope="col" class=" manage-column column"><?= __('Date', 'edusystem'); ?></th>
             </tr>
         </thead>
         <tbody id="table-institutes-payment">
             <?php if (!empty($orders['cuotes'])) { ?>
                 <?php foreach ($orders['cuotes'] as $order) { ?>
                     <tr>
-                    <td class="column" data-colname="<?= __('Parent', 'aes'); ?>">
+                    <td class="column" data-colname="<?= __('Parent', 'edusystem'); ?>">
                             <?= $order['customer']; ?>
                         </td>
-                    <td class="column" data-colname="<?= __('Student', 'aes'); ?>">
+                    <td class="column" data-colname="<?= __('Student', 'edusystem'); ?>">
                             <?= $order['student']; ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Product', 'aes'); ?>">
+                        <td class="column" data-colname="<?= __('Product', 'edusystem'); ?>">
                             <?= $order['product']; ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Amount', 'aes'); ?>">
+                        <td class="column" data-colname="<?= __('Amount', 'edusystem'); ?>">
                             <?= wc_price($order['amount']); ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Number cuote', 'aes'); ?>">
+                        <td class="column" data-colname="<?= __('Number cuote', 'edusystem'); ?>">
                             <?= $order['cuote']; ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Total cuotes', 'aes'); ?>">
+                        <td class="column" data-colname="<?= __('Total cuotes', 'edusystem'); ?>">
                             <?= $order['num_cuotes']; ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Date', 'aes'); ?>">
+                        <td class="column" data-colname="<?= __('Date', 'edusystem'); ?>">
                             <b><?= $order['date_next_payment']; ?></b>
                         </td>
-                        <!-- <td class="column" data-colname="<?= __('Action', 'aes'); ?>">
+                        <!-- <td class="column" data-colname="<?= __('Action', 'edusystem'); ?>">
                             
                         </td> -->
                     </tr>
                 <?php } ?>
             <?php } else { ?>
                 <tr>
-                    <td colspan='7' style='text-align:center;'><?= __('There are not records', 'aes') ?></td>
+                    <td colspan='7' style='text-align:center;'><?= __('There are not records', 'edusystem') ?></td>
                 </tr>
             <?php } ?>
         </tbody>

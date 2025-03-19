@@ -366,25 +366,25 @@ function get_list_orders_sales()
 
             foreach ($orders['orders'] as $order) {
                 $html .= "<tr>";
-                $html .= "<td class='column column-primary' data-colname='" . __('Payment ID', 'aes') . "'>";
+                $html .= "<td class='column column-primary' data-colname='" . __('Payment ID', 'edusystem') . "'>";
                 $html .= '#' . $order['order_id'];
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
                 if ($order['customer']) {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>" . '<a href="' . $url . $order['customer']->data->ID . '" target="_blank">' . get_user_meta($order['customer']->data->ID, 'last_name', true) . ' ' . get_user_meta($order['customer']->data->ID, 'first_name', true) . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Customer', 'edusystem') . "'>" . '<a href="' . $url . $order['customer']->data->ID . '" target="_blank">' . get_user_meta($order['customer']->data->ID, 'last_name', true) . ' ' . get_user_meta($order['customer']->data->ID, 'first_name', true) . "</a></td>";
                 } else {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'aes') . "'>N/A</td>";
+                    $html .= "<td class='column' data-colname='" . __('Customer', 'edusystem') . "'>N/A</td>";
                 }
                 if ($order['student']) {
-                    $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $order['student_id'] . '" target="_blank">' . $order['student']['last_name'] . ' ' . $order['student']['middle_last_name'] . ' ' . $order['student']['name'] . ' ' . $order['student']['middle_name'] . "</a></td>";
+                    $html .= "<td class='column' data-colname='" . __('Student', 'edusystem') . "'>" . '<a href="' . $url . $order['student_id'] . '" target="_blank">' . $order['student']['last_name'] . ' ' . $order['student']['middle_last_name'] . ' ' . $order['student']['name'] . ' ' . $order['student']['middle_name'] . "</a></td>";
                 } else {
-                    $html .= "<td class='column' data-colname='" . __('Student', 'aes') . "'>N/A</td>";
+                    $html .= "<td class='column' data-colname='" . __('Student', 'edusystem') . "'>N/A</td>";
                 }
-                $html .= "<td class='column' data-colname='" . __('Total', 'aes') . "'>" . wc_price($order['total']) . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Created', 'aes') . "'><b>" . $order['created_at'] . "</b></td>";
-                $html .= "<td class='column' data-colname='" . __('Action', 'aes') . "'>";
+                $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'>" . wc_price($order['total']) . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Created', 'edusystem') . "'><b>" . $order['created_at'] . "</b></td>";
+                $html .= "<td class='column' data-colname='" . __('Action', 'edusystem') . "'>";
 
-                $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=report-sales&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'aes') . "</a>";
+                $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=report-sales&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View details', 'edusystem') . "</a>";
 
 
                 $html .= "</td>";
@@ -393,7 +393,7 @@ function get_list_orders_sales()
 
         } else {
             $html .= "<tr>";
-            $html .= "<td colspan='6' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html .= "<td colspan='6' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
             $html .= "</tr>";
         }
 
@@ -428,16 +428,16 @@ function list_sales_product()
                 $product_name = $product->get_name();
 
                 $html .= "<tr style='background-color: #f6f7f7; -webkit-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); -moz-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%);'>";
-                $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'aes') . "'>";
+                $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'edusystem') . "'>";
                 $html .= '#' . $product_id;
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
-                $html .= "<td class='column' data-colname='" . __('Product', 'aes') . "'><strong>" . $product_name . "</strong></td>";
-                $html .= "<td class='column' data-colname='" . __('Quantity', 'aes') . "'><strong>" . $quantity . "</strong></td>";
-                $html .= "<td class='column' data-colname='" . __('Subtotal', 'aes') . "'><strong>" . wc_price($orders['product_subtotals'][$product_id]) . "</strong></td>";
-                $html .= "<td class='column' data-colname='" . __('Discount', 'aes') . "'><strong>" . wc_price($orders['product_discounts'][$product_id]) . "</strong></td>";
-                $html .= "<td class='column' data-colname='" . __('Tax', 'aes') . "'><strong>" . wc_price($orders['product_taxs'][$product_id]) . "</strong></td>";
-                $html .= "<td class='column' data-colname='" . __('Total', 'aes') . "'><strong>" . wc_price(($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]))) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Product', 'edusystem') . "'><strong>" . $product_name . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Quantity', 'edusystem') . "'><strong>" . $quantity . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Subtotal', 'edusystem') . "'><strong>" . wc_price($orders['product_subtotals'][$product_id]) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Discount', 'edusystem') . "'><strong>" . wc_price($orders['product_discounts'][$product_id]) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Tax', 'edusystem') . "'><strong>" . wc_price($orders['product_taxs'][$product_id]) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'><strong>" . wc_price(($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]))) . "</strong></td>";
                 $html .= "</tr>";
 
                 uasort($orders['product_quantities_variation'][$product_id], function ($a, $b) {
@@ -450,16 +450,16 @@ function list_sales_product()
                         $ex_product_name = explode(' - ', $product_name);
 
                         $html .= "<tr style='background-color: #ffffff;'>";
-                        $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'aes') . "'>";
+                        $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'edusystem') . "'>";
                         $html .= '#' . $key;
                         $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                         $html .= "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Product', 'aes') . "'>" . $ex_product_name[1] . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Quantity', 'aes') . "'>" . $orders['product_quantities_variation'][$product_id][$key] . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Subtotal', 'aes') . "'>" . wc_price($orders['product_subtotals_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Discount', 'aes') . "'>" . wc_price($orders['product_discounts_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Tax', 'aes') . "'>" . wc_price($orders['product_taxs_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Total', 'aes') . "'>" . wc_price(($orders['product_subtotals_variation'][$product_id][$key] - ($orders['product_discounts_variation'][$product_id][$key] - $orders['product_taxs_variation'][$product_id][$key]))) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Product', 'edusystem') . "'>" . $ex_product_name[1] . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Quantity', 'edusystem') . "'>" . $orders['product_quantities_variation'][$product_id][$key] . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Subtotal', 'edusystem') . "'>" . wc_price($orders['product_subtotals_variation'][$product_id][$key]) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Discount', 'edusystem') . "'>" . wc_price($orders['product_discounts_variation'][$product_id][$key]) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Tax', 'edusystem') . "'>" . wc_price($orders['product_taxs_variation'][$product_id][$key]) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'>" . wc_price(($orders['product_subtotals_variation'][$product_id][$key] - ($orders['product_discounts_variation'][$product_id][$key] - $orders['product_taxs_variation'][$product_id][$key]))) . "</td>";
                         $html .= "</tr>";
                     }
                 }
@@ -467,7 +467,7 @@ function list_sales_product()
 
         } else {
             $html .= "<tr>";
-            $html .= "<td colspan='7' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html .= "<td colspan='7' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
             $html .= "</tr>";
         }
 
@@ -497,26 +497,26 @@ function list_accounts_receivables()
             foreach ($orders['cuotes'] as $order) {
                 $html .= "<tr>";
                 if ($order->customer['data']) {
-                    $html .= "<td class='column text-uppercase' data-colname='" . __('Customer', 'aes') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . strtoupper(get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true)) . "</a></td>";
+                    $html .= "<td class='column text-uppercase' data-colname='" . __('Customer', 'edusystem') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . strtoupper(get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true)) . "</a></td>";
                 } else {
-                    $html .= "<td class='column text-uppercase' data-colname='" . __('Customer', 'aes') . "'>N/A</td>";
+                    $html .= "<td class='column text-uppercase' data-colname='" . __('Customer', 'edusystem') . "'>N/A</td>";
                 }
                 if ($order->student) {
-                    $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . strtoupper($order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '')) . "</a></td>";
+                    $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . strtoupper($order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '')) . "</a></td>";
                 } else {
-                    $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'aes') . "'>N/A</td>";
+                    $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>N/A</td>";
                 }
-                $html .= "<td class='column' data-colname='" . __('Product', 'aes') . "'>" . $order->product . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Amount', 'aes') . "'>" . wc_price($order->amount) . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Number cuote', 'aes') . "'>" . $order->cuote . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Total cuotes', 'aes') . "'>" . $order->num_cuotes . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Date', 'aes') . "'><b>" . $order->date_next_payment . "</b></td>";
+                $html .= "<td class='column' data-colname='" . __('Product', 'edusystem') . "'>" . $order->product . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Amount', 'edusystem') . "'>" . wc_price($order->amount) . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Number cuote', 'edusystem') . "'>" . $order->cuote . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Total cuotes', 'edusystem') . "'>" . $order->num_cuotes . "</td>";
+                $html .= "<td class='column' data-colname='" . __('Date', 'edusystem') . "'><b>" . $order->date_next_payment . "</b></td>";
                 $html .= "</tr>";
             }
 
         } else {
             $html .= "<tr>";
-            $html .= "<td colspan='7' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+            $html .= "<td colspan='7' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
             $html .= "</tr>";
         }
 
@@ -549,28 +549,28 @@ function list_report_students()
 
             $html .= "<tr>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'aes') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</a></td>";
+                $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</a></td>";
             } else {
-                $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'aes') . "'>" . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</td>";
+                $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</td>";
             }
-            $html .= "<td class='column' data-colname='" . __('Student document', 'aes') . "'>" . $student->id_document . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Student email', 'aes') . "'>" . $student->email . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Student document', 'edusystem') . "'>" . $student->id_document . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Student email', 'edusystem') . "'>" . $student->email . "</td>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column text-uppercase' data-colname='" . __('Parent', 'aes') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</a></td>";
+                $html .= "<td class='column text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</a></td>";
             } else {
-                $html .= "<td class='column text-uppercase' data-colname='" . __('Parent', 'aes') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</a></td>";
+                $html .= "<td class='column text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</a></td>";
             }
-            $html .= "<td class='column' data-colname='" . __('Parent email', 'aes') . "'>" . $parent->user_email . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Country', 'aes') . "'>" . $student->country . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Grade', 'aes') . "'>" . get_name_grade($student->grade_id) . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Program', 'aes') . "'>" . get_name_program($student->program_id) . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Institute', 'aes') . "'>" . $student->name_institute . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Parent email', 'edusystem') . "'>" . $parent->user_email . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Country', 'edusystem') . "'>" . $student->country . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Grade', 'edusystem') . "'>" . get_name_grade($student->grade_id) . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Program', 'edusystem') . "'>" . get_name_program($student->program_id) . "</td>";
+            $html .= "<td class='column' data-colname='" . __('Institute', 'edusystem') . "'>" . $student->name_institute . "</td>";
             $html .= "</tr>";
         }
 
     } else {
         $html .= "<tr>";
-        $html .= "<td colspan='9' style='text-align:center;'>" . __('There are not records', 'aes') . "</td>";
+        $html .= "<td colspan='9' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
         $html .= "</tr>";
     }
 
@@ -673,7 +673,7 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'student' => __('Student', 'aes'),
+            'student' => __('Student', 'edusystem'),
         );
 
         return $columns;
@@ -801,8 +801,8 @@ class TT_Current_Student_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'student' => __('Student', 'aes'),
-            'subjects' => __('Subjects', 'aes'),
+            'student' => __('Student', 'edusystem'),
+            'subjects' => __('Subjects', 'edusystem'),
         );
 
         return $columns;
@@ -987,7 +987,7 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'student' => __('Student', 'aes'),
+            'student' => __('Student', 'edusystem'),
         );
 
         return $columns;

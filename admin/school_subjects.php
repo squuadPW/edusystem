@@ -68,7 +68,7 @@ function add_admin_form_school_subjects_content()
                 ]);
             }
 
-            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+            setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_school_subjects_content'));
             exit;
         } else {
@@ -108,7 +108,7 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
             case 'type':
                 return ucwords($item[$column_name]);
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_school_subjects_content&section_tab=subject_details&subject_id=' . $item['school_subject_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_school_subjects_content&section_tab=subject_details&subject_id=' . $item['school_subject_id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -129,11 +129,11 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'code_subject' => __('Subject code', 'aes'),
-            'name' => __('Name', 'aes'),
-            'hc' => __('HC', 'aes'),
-            'type' => __('Type', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'code_subject' => __('Subject code', 'edusystem'),
+            'name' => __('Name', 'edusystem'),
+            'hc' => __('HC', 'edusystem'),
+            'type' => __('Type', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;

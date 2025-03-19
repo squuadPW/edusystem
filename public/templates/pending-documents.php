@@ -9,7 +9,7 @@
                         style="background-color: #f7f7f7; padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-bottom: 10px">
                         <div style="border-bottom: 1px solid #a9a9a9; margin: 0px 0px 20px 0px;">
                             <h4 style="font-size:20px;text-align:center;padding-bottom: 10px">
-                                <?= __('Pending Documents for ' . $student->name . ' ' . $student->last_name, 'aes'); ?>
+                                <?= __('Pending Documents for ' . $student->name . ' ' . $student->last_name, 'edusystem'); ?>
                             </h4>
                         </div>
                         <?php foreach ($documents as $document): ?>

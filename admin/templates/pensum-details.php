@@ -2,12 +2,12 @@
 
 <div class="wrap">
     <?php if (isset($pensum) && !empty($pensum)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Pensum details', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Pensum details', 'edusystem'); ?></h2>
     <?php else: ?>
         <?php if ($institute): ?>
-            <h2 style="margin-bottom:15px;"><?= __('Institute\'s pensum', 'aes'); ?></h2>
+            <h2 style="margin-bottom:15px;"><?= __('Institute\'s pensum', 'edusystem'); ?></h2>
         <?php else: ?>
-            <h2 style="margin-bottom:15px;"><?= __('Program pensum', 'aes'); ?></h2>
+            <h2 style="margin-bottom:15px;"><?= __('Program pensum', 'edusystem'); ?></h2>
         <?php endif; ?>
     <?php endif; ?>
 
@@ -38,7 +38,7 @@
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Pensum Information', 'aes'); ?></b>
+                                    <b><?= __('Pensum Information', 'edusystem'); ?></b>
                                 </h3>
 
                                 <div style="margin: 18px;">
@@ -47,30 +47,30 @@
                                     <div style="font-weight:400; text-align: center; margin-bottom: 10px;">
                                             <div>
                                                 <input style="width: auto !important;" type="checkbox" name="status" id="status" <?= ($pensum->status == 1) ? 'checked' : ''; ?>>
-                                                <label for="status"><b><?= __('Active', 'aes'); ?></b></label>
+                                                <label for="status"><b><?= __('Active', 'edusystem'); ?></b></label>
                                             </div>
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="name"><b><?= __('Name', 'aes'); ?></b><span
+                                        <label for="name"><b><?= __('Name', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>
                                         <input type="text" name="name" value="<?= $pensum->name; ?>" required>
                                     </div>
 
                                     <?php if (!$institute) { ?>
                                         <div style="font-weight:400;" class="space-offer">
-                                            <label for="hc"><b><?= __('Program', 'aes'); ?></b></label><br>
+                                            <label for="hc"><b><?= __('Program', 'edusystem'); ?></b></label><br>
                                             <select name="program_id" required>
                                                 <option value="" selected>Assigns a program</option>
                                                 <option value="aes" <?= ($pensum->program_id == 'aes') ? 'selected' : ''; ?>>
-                                                    <?= __('Dual diploma', 'aes'); ?></option>
+                                                    <?= __('Dual diploma', 'edusystem'); ?></option>
                                             </select>
                                         </div>
                                     <?php } ?>
 
                                     <?php if ($institute) { ?>
                                         <div style="font-weight:400;" class="space-offer">
-                                            <label for="hc"><b><?= __('Institute', 'aes'); ?></b></label><br>
+                                            <label for="hc"><b><?= __('Institute', 'edusystem'); ?></b></label><br>
                                             <select class="js-example-basic" name="institute_id">
                                                 <option value="" selected>Assigns an institute</option>
                                                 <?php foreach ($institutes as $institute) { ?>
@@ -84,7 +84,7 @@
                                     <?php } ?>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="hc"><b><?= __('Subject', 'aes'); ?></b></label><br>
+                                        <label for="hc"><b><?= __('Subject', 'edusystem'); ?></b></label><br>
                                         <select class="js-example-basic" name="subject_id">
                                             <option value="" selected>Select a subject</option>
                                             <?php foreach ($subjects as $subject) { ?>
@@ -100,7 +100,7 @@
                                     <div
                                         style="margin:20px;display:flex;flex-direction:row;justify-content:center;gap:5px;">
                                         <button type="button" class="button button-secondary"
-                                            id="add-subject-pensum"><?= __('Add', 'aes'); ?></button>
+                                            id="add-subject-pensum"><?= __('Add', 'edusystem'); ?></button>
                                     </div>
 
                                     <div>
@@ -136,12 +136,12 @@
                             <?php if (isset($pensum) && !empty($pensum)): ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Saves changes', 'aes'); ?></button>
+                                        class="button button-primary"><?= __('Saves changes', 'edusystem'); ?></button>
                                 </div>
                             <?php else: ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Add pensum', 'aes'); ?></button>
+                                        class="button button-primary"><?= __('Add pensum', 'edusystem'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

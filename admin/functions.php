@@ -34,7 +34,7 @@ require plugin_dir_path(__FILE__) . 'pensum.php';
 
 function admin_form_plugin_scripts()
 {
-    wp_enqueue_style('style-admin', plugins_url('aes') . '/admin/assets/css/style.css');
+    wp_enqueue_style('style-admin', plugins_url('edusystem') . '/admin/assets/css/style.css');
 }
 
 add_action('wp_enqueue_scripts', 'admin_form_plugin_scripts');
@@ -42,17 +42,17 @@ add_action('wp_enqueue_scripts', 'admin_form_plugin_scripts');
 function aes_scripts_admin()
 {
     $version = '2.0.6';
-    wp_enqueue_style('flatpickr', plugins_url('aes') . '/public/assets/css/flatpickr.min.css');
-    wp_enqueue_style('intel-css', plugins_url('aes') . '/public/assets/css/intlTelInput.css');
-    wp_enqueue_style('style-admin', plugins_url('aes') . '/admin/assets/css/style.css', array(), $version, 'all');
-    wp_enqueue_script('xlsx-js', plugins_url('aes') . '/admin/assets/js/xlsx.full.min.js', array('jquery'), $version, true);
-    wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js', array('jquery'), $version, true);
-    wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js', array('jquery'), $version, true);
-    wp_enqueue_script('intel-js', plugins_url('aes') . '/public/assets/js/intlTelInput.min.js');
-    wp_enqueue_script('masker-js', plugins_url('aes') . '/public/assets/js/vanilla-masker.min.js');
+    wp_enqueue_style('flatpickr', plugins_url('edusystem') . '/public/assets/css/flatpickr.min.css');
+    wp_enqueue_style('intel-css', plugins_url('edusystem') . '/public/assets/css/intlTelInput.css');
+    wp_enqueue_style('style-admin', plugins_url('edusystem') . '/admin/assets/css/style.css', array(), $version, 'all');
+    wp_enqueue_script('xlsx-js', plugins_url('edusystem') . '/admin/assets/js/xlsx.full.min.js', array('jquery'), $version, true);
+    wp_enqueue_script('admin-flatpickr', plugins_url('edusystem') . '/public/assets/js/flatpickr.js', array('jquery'), $version, true);
+    wp_enqueue_script('admin-flatpickr', plugins_url('edusystem') . '/public/assets/js/flatpickr.js', array('jquery'), $version, true);
+    wp_enqueue_script('intel-js', plugins_url('edusystem') . '/public/assets/js/intlTelInput.min.js');
+    wp_enqueue_script('masker-js', plugins_url('edusystem') . '/public/assets/js/vanilla-masker.min.js');
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_payments_content') {
-        wp_enqueue_script('student-payment', plugins_url('aes') . '/admin/assets/js/payment.js', array('jquery'), $version, true);
+        wp_enqueue_script('student-payment', plugins_url('edusystem') . '/admin/assets/js/payment.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_pensum_content') {
@@ -62,7 +62,7 @@ function aes_scripts_admin()
         // Especifica jQuery como dependencia y usa la versión empaquetada con WordPress
         wp_enqueue_script(
             'pensum',
-            plugins_url('aes') . '/admin/assets/js/pensum.js',
+            plugins_url('edusystem') . '/admin/assets/js/pensum.js',
             ['jquery', 'select2'], // Asegura que jQuery y Select2 se carguen primero
             $version,
             true
@@ -70,11 +70,11 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_scholarships_content') {
-        wp_enqueue_script('student-payment', plugins_url('aes') . '/admin/assets/js/scholarship.js', array('jquery'), $version, true);
+        wp_enqueue_script('student-payment', plugins_url('edusystem') . '/admin/assets/js/scholarship.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_email_content') {
-        wp_enqueue_script('send-email', plugins_url('aes') . '/admin/assets/js/send-email.js', array('jquery'), $version, true);
+        wp_enqueue_script('send-email', plugins_url('edusystem') . '/admin/assets/js/send-email.js', array('jquery'), $version, true);
 
         wp_localize_script('send-email', 'summary_email', [
             'url' => admin_url('admin-ajax.php'),
@@ -83,19 +83,19 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_notification_content') {
-        wp_enqueue_script('send-notification', plugins_url('aes') . '/admin/assets/js/send-notification.js', array('jquery'), $version, true);
+        wp_enqueue_script('send-notification', plugins_url('edusystem') . '/admin/assets/js/send-notification.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_configuration_options_content') {
-        wp_enqueue_script('configuration', plugins_url('aes') . '/admin/assets/js/configuration.js', array('jquery'), $version, true);
+        wp_enqueue_script('configuration', plugins_url('edusystem') . '/admin/assets/js/configuration.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_teachers_content') {
-        wp_enqueue_script('teacher', plugins_url('aes') . '/admin/assets/js/teacher.js', array('jquery'), $version, true);
+        wp_enqueue_script('teacher', plugins_url('edusystem') . '/admin/assets/js/teacher.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')) {
-        wp_enqueue_script('institute', plugins_url('aes') . '/admin/assets/js/institute.js', array('jquery'), $version, true);
+        wp_enqueue_script('institute', plugins_url('edusystem') . '/admin/assets/js/institute.js', array('jquery'), $version, true);
 
         wp_localize_script('institute', 'list_fee_institute', [
             'url' => admin_url('admin-ajax.php'),
@@ -104,7 +104,7 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables' || $_GET['page'] == 'report-students' || $_GET['page'] == 'report-current-students' || $_GET['page'] == 'report-sales-product') {
-        wp_enqueue_script('report', plugins_url('aes') . '/admin/assets/js/report.js', array('jquery'), $version, true);
+        wp_enqueue_script('report', plugins_url('edusystem') . '/admin/assets/js/report.js', array('jquery'), $version, true);
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js');
         wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js');
 
@@ -140,7 +140,7 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_partners_content' || isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'list_admin_partner_payments_content' || $_GET['page'] == 'list_admin_partner_invoice_content') {
-        wp_enqueue_script('alliance', plugins_url('aes') . '/admin/assets/js/alliance.js', array('jquery'), $version, true);
+        wp_enqueue_script('alliance', plugins_url('edusystem') . '/admin/assets/js/alliance.js', array('jquery'), $version, true);
 
 
         wp_localize_script('alliance', 'list_fee_alliance', [
@@ -150,15 +150,15 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_requests_content') {
-        wp_enqueue_script('request', plugins_url('aes') . '/admin/assets/js/request.js', array('jquery'), $version, true);
+        wp_enqueue_script('request', plugins_url('edusystem') . '/admin/assets/js/request.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_department_content') {
-        wp_enqueue_script('department', plugins_url('aes') . '/admin/assets/js/department.js', array('jquery'), $version, true);
+        wp_enqueue_script('department', plugins_url('edusystem') . '/admin/assets/js/department.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_enrollments_content') {
-        wp_enqueue_script('enrollment', plugins_url('aes') . '/admin/assets/js/enrollment.js', array('jquery'), $version, true);
+        wp_enqueue_script('enrollment', plugins_url('edusystem') . '/admin/assets/js/enrollment.js', array('jquery'), $version, true);
 
         wp_localize_script('enrollment', 'search_student_id_document', [
             'url' => admin_url('admin-ajax.php'),
@@ -167,7 +167,7 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_admission_content') {
-        wp_enqueue_script('student-documents', plugins_url('aes') . '/admin/assets/js/document.js', array('jquery'), $version, true);
+        wp_enqueue_script('student-documents', plugins_url('edusystem') . '/admin/assets/js/document.js', array('jquery'), $version, true);
 
         wp_localize_script('student-documents', 'update_status_documents', [
             'url' => admin_url('admin-ajax.php'),
@@ -196,7 +196,7 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')) {
-        wp_enqueue_script('institute', plugins_url('aes') . '/admin/assets/js/institute.js', array('jquery'), $version, true);
+        wp_enqueue_script('institute', plugins_url('edusystem') . '/admin/assets/js/institute.js', array('jquery'), $version, true);
 
         wp_localize_script('institute', 'list_fee_institute', [
             'url' => admin_url('admin-ajax.php'),
@@ -205,7 +205,7 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_academic_projection_content') {
-        wp_enqueue_script('academic-projection', plugins_url('aes') . '/admin/assets/js/academic-projection.js', array('jquery'), $version, true);
+        wp_enqueue_script('academic-projection', plugins_url('edusystem') . '/admin/assets/js/academic-projection.js', array('jquery'), $version, true);
 
         wp_localize_script('academic-projection', 'ajax_object', [
             'url' => admin_url('admin-ajax.php')
@@ -225,8 +225,8 @@ function add_custom_admin_page()
     if (in_array('institutes', $roles)) {
 
         add_menu_page(
-            __('Students', 'aes'),
-            __('Students', 'aes'),
+            __('Students', 'edusystem'),
+            __('Students', 'edusystem'),
             'read',
             'list_admin_institutes_student_registered_content',
             'list_admin_institutes_student_registered_content',
@@ -235,8 +235,8 @@ function add_custom_admin_page()
         );
 
         add_menu_page(
-            __('Fees', 'aes'),
-            __('Fees', 'aes'),
+            __('Fees', 'edusystem'),
+            __('Fees', 'edusystem'),
             'read',
             'list_admin_institutes_payments_content',
             'list_admin_institutes_payments_content',
@@ -246,8 +246,8 @@ function add_custom_admin_page()
 
 
         add_menu_page(
-            __('Invoice', 'aes'),
-            __('Invoice', 'aes'),
+            __('Invoice', 'edusystem'),
+            __('Invoice', 'edusystem'),
             'read',
             'list_admin_institutes_invoice_content',
             'list_admin_institutes_invoice_content',
@@ -259,8 +259,8 @@ function add_custom_admin_page()
     if (in_array('alliance', $roles)) {
 
         add_menu_page(
-            __('Institutes', 'aes'),
-            __('Institutes', 'aes'),
+            __('Institutes', 'edusystem'),
+            __('Institutes', 'edusystem'),
             'read',
             'list_admin_institutes_partner_registered_content',
             'list_admin_institutes_partner_registered_content',
@@ -269,8 +269,8 @@ function add_custom_admin_page()
         );
 
         add_menu_page(
-            __('Fees', 'aes'),
-            __('Fees', 'aes'),
+            __('Fees', 'edusystem'),
+            __('Fees', 'edusystem'),
             'read',
             'list_admin_partner_payments_content',
             'list_admin_partner_payments_content',
@@ -279,8 +279,8 @@ function add_custom_admin_page()
         );
 
         add_menu_page(
-            __('Invoice', 'aes'),
-            __('Invoice', 'aes'),
+            __('Invoice', 'edusystem'),
+            __('Invoice', 'edusystem'),
             'read',
             'list_admin_partner_invoice_content',
             'list_admin_partner_invoice_content',
@@ -291,40 +291,40 @@ function add_custom_admin_page()
 
     if (current_user_can('manager_admission_aes') || current_user_can('only_read_admission_aes')) {
         add_menu_page(
-            __('Admission', 'aes'),
-            __('Admission', 'aes'),
+            __('Admission', 'edusystem'),
+            __('Admission', 'edusystem'),
             'manage_options',
             'add_admin_form_admission_content',
             'add_admin_form_admission_content',
             'dashicons-groups',
             4
         );
-        add_submenu_page('add_admin_form_admission_content', __('Required Documents', 'aes'), __('Required Documents', 'aes'), 'manager_documents_aes', 'admission-documents', 'show_admission_documents', 10);
+        add_submenu_page('add_admin_form_admission_content', __('Required Documents', 'edusystem'), __('Required Documents', 'edusystem'), 'manager_documents_aes', 'admission-documents', 'show_admission_documents', 10);
     }
 
     add_menu_page(
-        __('Academic', 'aes'),
-        __('Academic', 'aes'),
+        __('Academic', 'edusystem'),
+        __('Academic', 'edusystem'),
         'manager_academic_aes',
         'add_admin_form_academic_content',
         'add_admin_form_academic_content',
         'dashicons-welcome-learn-more',
         4
     );
-    add_submenu_page('add_admin_form_academic_content', __('Academic projection', 'aes'), __('Academic projection', 'aes'), 'manager_academic_projection_aes', 'add_admin_form_academic_projection_content', 'add_admin_form_academic_projection_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'aes'), __('Academic periods', 'aes'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'aes'), __('Academic offers', 'aes'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Requests', 'aes'), __('Requests', 'aes'), 'manager_requests_aes', 'add_admin_form_requests_content', 'add_admin_form_requests_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'aes'), __('Enrollments', 'aes'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Pensum', 'aes'), __('Pensum', 'aes'), 'manager_pensums', 'add_admin_form_pensum_content', 'add_admin_form_pensum_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('School subjects', 'aes'), __('School subjects', 'aes'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Scholarship students', 'aes'), __('Scholarship students', 'aes'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Available scholarships', 'aes'), __('Available scholarships', 'aes'), 'manager_availables_scholarship_aes', 'add_admin_form_available_scholarships_content', 'add_admin_form_available_scholarships_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Academic projection', 'edusystem'), __('Academic projection', 'edusystem'), 'manager_academic_projection_aes', 'add_admin_form_academic_projection_content', 'add_admin_form_academic_projection_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'edusystem'), __('Academic periods', 'edusystem'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'edusystem'), __('Academic offers', 'edusystem'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Requests', 'edusystem'), __('Requests', 'edusystem'), 'manager_requests_aes', 'add_admin_form_requests_content', 'add_admin_form_requests_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'edusystem'), __('Enrollments', 'edusystem'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Pensum', 'edusystem'), __('Pensum', 'edusystem'), 'manager_pensums', 'add_admin_form_pensum_content', 'add_admin_form_pensum_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('School subjects', 'edusystem'), __('School subjects', 'edusystem'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Scholarship students', 'edusystem'), __('Scholarship students', 'edusystem'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Available scholarships', 'edusystem'), __('Available scholarships', 'edusystem'), 'manager_availables_scholarship_aes', 'add_admin_form_available_scholarships_content', 'add_admin_form_available_scholarships_content', 10);
     remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
 
     add_menu_page(
-        __('Payments', 'aes'),
-        __('Payments', 'aes'),
+        __('Payments', 'edusystem'),
+        __('Payments', 'edusystem'),
         'manager_payments_aes',
         'add_admin_form_payments_content',
         'add_admin_form_payments_content',
@@ -333,59 +333,59 @@ function add_custom_admin_page()
     );
 
     add_menu_page(
-        __('Staff', 'aes'),
-        __('Staff', 'aes'),
+        __('Staff', 'edusystem'),
+        __('Staff', 'edusystem'),
         'manager_staff_menu_aes',
         'add_admin_form_staff_menu_content',
         'add_admin_form_staff_menu_content',
         'dashicons-buddicons-buddypress-logo',
         6
     );
-    add_submenu_page('add_admin_form_staff_menu_content', __('Staff', 'aes'), __('Staff', 'aes'), 'manager_staff_aes', 'add_admin_form_staff_content', 'add_admin_form_staff_content', 10);
-    add_submenu_page('add_admin_form_staff_menu_content', __('Institutes', 'aes'), __('Institutes', 'aes'), 'manager_institutes_aes', 'add_admin_institutes_content', 'add_admin_institutes_content', 10);
-    add_submenu_page('add_admin_form_staff_menu_content', __('Alliances', 'aes'), __('Alliances', 'aes'), 'manager_alliances_aes', 'add_admin_partners_content', 'add_admin_partners_content', 10);
-    add_submenu_page('add_admin_form_staff_menu_content', __('Teachers', 'aes'), __('Teachers', 'aes'), 'manager_teachers_aes', 'add_admin_form_teachers_content', 'add_admin_form_teachers_content', 10);
+    add_submenu_page('add_admin_form_staff_menu_content', __('Staff', 'edusystem'), __('Staff', 'edusystem'), 'manager_staff_aes', 'add_admin_form_staff_content', 'add_admin_form_staff_content', 10);
+    add_submenu_page('add_admin_form_staff_menu_content', __('Institutes', 'edusystem'), __('Institutes', 'edusystem'), 'manager_institutes_aes', 'add_admin_institutes_content', 'add_admin_institutes_content', 10);
+    add_submenu_page('add_admin_form_staff_menu_content', __('Alliances', 'edusystem'), __('Alliances', 'edusystem'), 'manager_alliances_aes', 'add_admin_partners_content', 'add_admin_partners_content', 10);
+    add_submenu_page('add_admin_form_staff_menu_content', __('Teachers', 'edusystem'), __('Teachers', 'edusystem'), 'manager_teachers_aes', 'add_admin_form_teachers_content', 'add_admin_form_teachers_content', 10);
     remove_submenu_page('add_admin_form_staff_menu_content', 'add_admin_form_staff_menu_content');
 
     add_menu_page(
-        __('Communications', 'aes'),
-        __('Communications', 'aes'),
+        __('Communications', 'edusystem'),
+        __('Communications', 'edusystem'),
         'manager_communications_aes',
         'add_admin_form_communications_content',
         'add_admin_form_communications_content',
         'dashicons-email-alt2',
         7
     );
-    add_submenu_page('add_admin_form_communications_content', __('Email to students', 'aes'), __('Email to students', 'aes'), 'manager_send_email_aes', 'add_admin_form_send_email_content', 'add_admin_form_send_email_content', 10);
-    add_submenu_page('add_admin_form_communications_content', __('Email to staff', 'aes'), __('Email to staff', 'aes'), 'manager_send_notification_aes', 'add_admin_form_send_notification_content', 'add_admin_form_send_notification_content', 10);
+    add_submenu_page('add_admin_form_communications_content', __('Email to students', 'edusystem'), __('Email to students', 'edusystem'), 'manager_send_email_aes', 'add_admin_form_send_email_content', 'add_admin_form_send_email_content', 10);
+    add_submenu_page('add_admin_form_communications_content', __('Email to staff', 'edusystem'), __('Email to staff', 'edusystem'), 'manager_send_notification_aes', 'add_admin_form_send_notification_content', 'add_admin_form_send_notification_content', 10);
     remove_submenu_page('add_admin_form_communications_content', 'add_admin_form_communications_content');
 
     add_menu_page(
-        __('Report', 'aes'),
-        __('Report', 'aes'),
+        __('Report', 'edusystem'),
+        __('Report', 'edusystem'),
         'manager_report_aes',
         'add_admin_form_report_content',
         'add_admin_form_report_content',
         'dashicons-list-view',
         8
     );
-    add_submenu_page('add_admin_form_report_content', __('Sales', 'aes'), __('Sales', 'aes'), 'manager_sales_aes', 'report-sales', 'show_report_sales', 10);
-    add_submenu_page('add_admin_form_report_content', __('Accounts receivable', 'aes'), __('Accounts receivable', 'aes'), 'manager_accounts_receivables_aes', 'report-accounts-receivables', 'show_report_accounts_receivables', 10);
-    add_submenu_page('add_admin_form_report_content', __('Students', 'aes'), __('Students', 'aes'), 'manager_report_students_aes', 'report-students', 'show_report_students', 10);
-    add_submenu_page('add_admin_form_report_content', __('Current students', 'aes'), __('Current students', 'aes'), 'manager_report_current_students_aes', 'report-current-students', 'show_report_current_students', 10);
-    add_submenu_page('add_admin_form_report_content', __('Sales by product', 'aes'), __('Sales by product', 'aes'), 'manager_report_sales_product', 'report-sales-product', 'show_report_sales_product', 10);
+    add_submenu_page('add_admin_form_report_content', __('Sales', 'edusystem'), __('Sales', 'edusystem'), 'manager_sales_aes', 'report-sales', 'show_report_sales', 10);
+    add_submenu_page('add_admin_form_report_content', __('Accounts receivable', 'edusystem'), __('Accounts receivable', 'edusystem'), 'manager_accounts_receivables_aes', 'report-accounts-receivables', 'show_report_accounts_receivables', 10);
+    add_submenu_page('add_admin_form_report_content', __('Students', 'edusystem'), __('Students', 'edusystem'), 'manager_report_students_aes', 'report-students', 'show_report_students', 10);
+    add_submenu_page('add_admin_form_report_content', __('Current students', 'edusystem'), __('Current students', 'edusystem'), 'manager_report_current_students_aes', 'report-current-students', 'show_report_current_students', 10);
+    add_submenu_page('add_admin_form_report_content', __('Sales by product', 'edusystem'), __('Sales by product', 'edusystem'), 'manager_report_sales_product', 'report-sales-product', 'show_report_sales_product', 10);
 
     add_menu_page(
-        __('Settings', 'aes'),
-        __('Settings', 'aes'),
+        __('Settings', 'edusystem'),
+        __('Settings', 'edusystem'),
         'manager_settings_aes',
         'add_admin_form_settings_content',
         'add_admin_form_settings_content',
         'dashicons-admin-generic',
         30
     );
-    add_submenu_page('add_admin_form_settings_content', __('Settings', 'aes'), __('Settings', 'aes'), 'manager_configuration_options_aes', 'add_admin_form_configuration_options_content', 'add_admin_form_configuration_options_content', 10);
-    add_submenu_page('add_admin_form_settings_content', __('Departments', 'aes'), __('Departments', 'aes'), 'manager_departments_aes', 'add_admin_department_content', 'list_admin_form_department_content', 10);
+    add_submenu_page('add_admin_form_settings_content', __('Settings', 'edusystem'), __('Settings', 'edusystem'), 'manager_configuration_options_aes', 'add_admin_form_configuration_options_content', 'add_admin_form_configuration_options_content', 10);
+    add_submenu_page('add_admin_form_settings_content', __('Departments', 'edusystem'), __('Departments', 'edusystem'), 'manager_departments_aes', 'add_admin_department_content', 'list_admin_form_department_content', 10);
     remove_submenu_page('add_admin_form_settings_content', 'add_admin_form_settings_content');
 }
 

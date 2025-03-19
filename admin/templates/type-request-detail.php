@@ -1,8 +1,8 @@
 <div class="wrap">
     <?php if (isset($type) && !empty($type)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Type Details', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Type Details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Add Type', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Add Type', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
@@ -19,7 +19,7 @@
     <?php } ?>
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary"
-            href="<?= admin_url('admin.php?page=add_admin_form_requests_content&section_tab=types'); ?>"><?= __('Back', 'aes'); ?></a>
+            href="<?= admin_url('admin.php?page=add_admin_form_requests_content&section_tab=types'); ?>"><?= __('Back', 'edusystem'); ?></a>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder admin-add-type">
@@ -33,7 +33,7 @@
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Type Information', 'aes'); ?></b>
+                                    <b><?= __('Type Information', 'edusystem'); ?></b>
                                 </h3>
 
                                 <div style="margin: 18px;">
@@ -41,7 +41,7 @@
 
                                     <div style="font-weight:400;" class="space-type">
                                         <label
-                                            for="type"><b><?= __('Name', 'aes'); ?></b><span
+                                            for="type"><b><?= __('Name', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>
                                         <input type="text" name="type"
                                             value="<?= $type->type; ?>" required>
@@ -52,12 +52,12 @@
                             <?php if (isset($type) && !empty($type)): ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Saves changes', 'aes'); ?></button>
+                                        class="button button-primary"><?= __('Saves changes', 'edusystem'); ?></button>
                                 </div>
                             <?php else: ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Add type', 'aes'); ?></button>
+                                        class="button button-primary"><?= __('Add type', 'edusystem'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

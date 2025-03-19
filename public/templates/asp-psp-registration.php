@@ -2,7 +2,7 @@
 if (is_user_logged_in()) {
     ?>
     <div class="title">
-        <?= __('Applicant', 'aes'); ?>
+        <?= __('Applicant', 'edusystem'); ?>
     </div>
 
     <?php
@@ -18,8 +18,8 @@ if (is_user_logged_in()) {
     } else {
         ?>
         <section class="segment">
-            <div class="segment-button active" data-option="me"><?= __('Me', 'aes'); ?></div>
-            <div class="segment-button" data-option="others"><?= __('Others', 'aes'); ?></div>
+            <div class="segment-button active" data-option="me"><?= __('Me', 'edusystem'); ?></div>
+            <div class="segment-button" data-option="others"><?= __('Others', 'edusystem'); ?></div>
         </section>
 
         <?php
@@ -30,7 +30,7 @@ if (is_user_logged_in()) {
 ?>
 <?php } else { ?>
     <div class="title">
-        <?= __('Applicant', 'aes'); ?>
+        <?= __('Applicant', 'edusystem'); ?>
     </div>
     <?php
     include(plugin_dir_path(__FILE__) . 'form-register.php');

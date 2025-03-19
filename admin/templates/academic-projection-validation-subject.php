@@ -73,7 +73,7 @@
     <input type="hidden" name="name_document"
         value="<?= strtoupper($projections_result['subject']->name) . ' - ' . strtoupper($projections_result['academic_period']->code) ?>">
     <button type="button" class="button button-success" id="download"
-        style="margin: 10px"><?= __('Export PDF', 'aes'); ?></button>
+        style="margin: 10px"><?= __('Export PDF', 'edusystem'); ?></button>
 </div>
 
 <script>

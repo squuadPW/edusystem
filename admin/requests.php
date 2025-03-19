@@ -52,7 +52,7 @@ function add_admin_form_requests_content()
                 send_notification_user($user_student->ID, $title . $description, ($status_id == 2 ? 3 : 1), 'requests');
             }
 
-            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+            setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_requests_content'));
             exit;
         } else if ($_GET['action'] == 'save_type_details') {
@@ -62,7 +62,7 @@ function add_admin_form_requests_content()
             $type_id = sanitize_text_field($_POST['type_id']);
             $type = sanitize_text_field($_POST['type']);
 
-            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+            setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             if (isset($type_id) && !empty($type_id)) {
                 $wpdb->update($table_type_requests, [
                     'type' => $type,
@@ -116,7 +116,7 @@ class TT_Pending_Requests_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_requests_content&section_tab=request_details&request_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_requests_content&section_tab=request_details&request_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);
@@ -138,11 +138,11 @@ class TT_Pending_Requests_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'type' => __('Request', 'aes'),
-            'partner' => __('Partner', 'aes'),
-            'student' => __('Student', 'aes'),
-            'created_at' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'type' => __('Request', 'edusystem'),
+            'partner' => __('Partner', 'edusystem'),
+            'student' => __('Student', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -263,7 +263,7 @@ class TT_All_Requests_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_requests_content&section_tab=request_details&request_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_requests_content&section_tab=request_details&request_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);
@@ -285,12 +285,12 @@ class TT_All_Requests_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'type' => __('Request', 'aes'),
-            'partner' => __('Partner', 'aes'),
-            'student' => __('Student', 'aes'),
-            'status' => __('Status', 'aes'),
-            'created_at' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'type' => __('Request', 'edusystem'),
+            'partner' => __('Partner', 'edusystem'),
+            'student' => __('Student', 'edusystem'),
+            'status' => __('Status', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -412,8 +412,8 @@ class TT_Types_Requests_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_requests_content&section_tab=type_details&type_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
-                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_requests_content&action=delete_type&type_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'aes') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_requests_content&section_tab=type_details&type_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_requests_content&action=delete_type&type_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);
@@ -435,8 +435,8 @@ class TT_Types_Requests_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'type' => __('Request', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'type' => __('Request', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;

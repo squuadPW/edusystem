@@ -16,7 +16,7 @@
 
     <div class="card">
         <div class="card-header">
-            <h3><?= __('Scholarship Information', 'aes'); ?></h3>
+            <h3><?= __('Scholarship Information', 'edusystem'); ?></h3>
         </div>
         <div class="card-body">
 
@@ -26,7 +26,7 @@
                     <div class="form-group">
                         <div class="form-group" style="text-align: center; margin-top: 20px">
                             <input type="checkbox" name="is_active" id="is_active" <?= $scholarship ? (($scholarship->is_active == 1) ? 'checked' : '') : 'checked'; ?>>
-                            <label for="is_active"><b><?= __('Active', 'aes'); ?></b></label>
+                            <label for="is_active"><b><?= __('Active', 'edusystem'); ?></b></label>
                         </div>
                         <input type="hidden" name="scholarship_id" id="scholarship_id" value="<?= $scholarship->id; ?>">
                         <div class="form-group">
@@ -41,20 +41,20 @@
                         </div>
                         <h3
                             style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                            <b><?= __('This SCHOLARSHIP applies to:', 'aes'); ?></b>
+                            <b><?= __('This SCHOLARSHIP applies to:', 'edusystem'); ?></b>
                         </h3>
                         <div class="grid-container-report-3">
                             <div class="form-group" style="text-align: center">
                                 <input type="checkbox" name="fee_registration" id="fee_registration" <?= $scholarship ? (($scholarship->fee_registration == 1) ? 'checked' : '') : ''; ?>>
-                                <label for="fee_registration"><b><?= __('Fee registration', 'aes'); ?></b></label>
+                                <label for="fee_registration"><b><?= __('Fee registration', 'edusystem'); ?></b></label>
                             </div>
                             <div class="form-group" style="text-align: center">
                                 <input type="checkbox" name="program" id="program" <?= $scholarship ? (($scholarship->program == 1) ? 'checked' : '') : ''; ?>>
-                                <label for="program"><b><?= __('Program', 'aes'); ?></b></label>
+                                <label for="program"><b><?= __('Program', 'edusystem'); ?></b></label>
                             </div>
                             <div class="form-group" style="text-align: center">
                                 <input type="checkbox" name="fee_graduation" id="fee_graduation" <?= $scholarship ? (($scholarship->fee_graduation == 1) ? 'checked' : '') : ''; ?>>
-                                <label for="fee_graduation"><b><?= __('Fee graduation', 'aes'); ?></b></label>
+                                <label for="fee_graduation"><b><?= __('Fee graduation', 'edusystem'); ?></b></label>
                             </div>
                             <div class="form-group" style="text-align: center">
                                 <label for="percent_registration">Percent (%)</label>
@@ -75,14 +75,14 @@
                 <?php if (isset($scholarship) && !empty($scholarship)): ?>
                     <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                         <a class="button button-outline-primary"
-                            href="<?= admin_url('admin.php?page=add_admin_form_available_scholarships_content'); ?>"><?= __('Exit', 'aes'); ?></a>
-                        <button type="submit" class="button button-primary"><?= __('Saves changes', 'aes'); ?></button>
+                            href="<?= admin_url('admin.php?page=add_admin_form_available_scholarships_content'); ?>"><?= __('Exit', 'edusystem'); ?></a>
+                        <button type="submit" class="button button-primary"><?= __('Saves changes', 'edusystem'); ?></button>
                     </div>
                 <?php else: ?>
                     <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                         <a class="button button-outline-primary"
-                            href="<?= admin_url('admin.php?page=add_admin_form_available_scholarships_content'); ?>"><?= __('Exit', 'aes'); ?></a>
-                        <button type="submit" class="button button-primary"><?= __('Add scholarship', 'aes'); ?></button>
+                            href="<?= admin_url('admin.php?page=add_admin_form_available_scholarships_content'); ?>"><?= __('Exit', 'edusystem'); ?></a>
+                        <button type="submit" class="button button-primary"><?= __('Add scholarship', 'edusystem'); ?></button>
                     </div>
                 <?php endif; ?>
             </form>

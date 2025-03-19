@@ -16,33 +16,33 @@ if (in_array('student', $roles)) {
 <?php if (!$student_logged->moodle_password && count($students) > 0) { ?>
     <div class="text-center info-box">
         <?php if (in_array('student', $roles)): ?>
-            <h2 style="font-size:24px;text-align:center;"><?= __('Student Information', 'form-plugin'); ?></h2>
+            <h2 style="font-size:24px;text-align:center;"><?= __('Student Information', 'edusystem'); ?></h2>
         <?php elseif (in_array('parent', $roles)): ?>
-            <h2 style="font-size:24px;text-align:center;"><?= __('Students Information', 'form-plugin'); ?></h2>
+            <h2 style="font-size:24px;text-align:center;"><?= __('Students Information', 'edusystem'); ?></h2>
         <?php endif; ?>
 
-        <p><?= __('To access the virtual classroom, please ensure you complete the following steps:', 'form-plugin'); ?></p>
+        <p><?= __('To access the virtual classroom, please ensure you complete the following steps:', 'edusystem'); ?></p>
         <ul class="info-list">
             <li>
                 <i class="fas fa-upload"></i>
-                <?= __('Upload all required documents marked with an asterisk (*)', 'form-plugin'); ?> <a
+                <?= __('Upload all required documents marked with an asterisk (*)', 'edusystem'); ?> <a
                     style="text-decoration: underline !important; color: #002fbd;"
-                    href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents' ?>"><?= __('here', 'form-plugin'); ?></a>
+                    href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents' ?>"><?= __('here', 'edusystem'); ?></a>
             </li>
             <li>
                 <i class="fas fa-credit-card"></i>
-                <?= __('If you haven\'t already, please process the payment for your registration fee. This will enable us to finalize your registration and grant you access to the virtual classroom.', 'form-plugin'); ?>
+                <?= __('If you haven\'t already, please process the payment for your registration fee. This will enable us to finalize your registration and grant you access to the virtual classroom.', 'edusystem'); ?>
             </li>
         </ul>
         <p class="info-note">
-            <?= __('Once both steps are complete, you will receive an email with instructions on how to access the virtual classroom. Please note that access will only be granted once all required documents have been received and your payment has been processed.', 'form-plugin'); ?>
+            <?= __('Once both steps are complete, you will receive an email with instructions on how to access the virtual classroom. Please note that access will only be granted once all required documents have been received and your payment has been processed.', 'edusystem'); ?>
         </p>
     </div>
 <?php } else { ?>
     <?php if (in_array('student', $roles)): ?>
-        <h2 style="font-size:24px;text-align:center;"><?= __('Student Information', 'form-plugin'); ?></h2>
+        <h2 style="font-size:24px;text-align:center;"><?= __('Student Information', 'edusystem'); ?></h2>
     <?php elseif (in_array('parent', $roles)): ?>
-        <h2 style="font-size:24px;text-align:center;"><?= __('Students Information', 'form-plugin'); ?></h2>
+        <h2 style="font-size:24px;text-align:center;"><?= __('Students Information', 'edusystem'); ?></h2>
     <?php endif; ?>
 <?php } ?>
 <?php if (count($students) == 0) { ?>
@@ -57,15 +57,15 @@ if (in_array('student', $roles)) {
     <thead>
         <tr>
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span
-                    class="nobr"><?= __('Full Name', 'aes'); ?></span></th>
+                    class="nobr"><?= __('Full Name', 'edusystem'); ?></span></th>
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                    class="nobr"><?= __('Grade', 'aes'); ?></span></th>
+                    class="nobr"><?= __('Grade', 'edusystem'); ?></span></th>
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                    class="nobr"><?= __('Program(s)', 'aes'); ?></span></th>
+                    class="nobr"><?= __('Program(s)', 'edusystem'); ?></span></th>
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                    class="nobr"><?= __('Email', 'aes'); ?></span></th>
+                    class="nobr"><?= __('Email', 'edusystem'); ?></span></th>
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                    class="nobr"><?= __('Actions', 'aes'); ?></span></th>
+                    class="nobr"><?= __('Actions', 'edusystem'); ?></span></th>
         </tr>
     </thead>
     <tbody>
@@ -73,23 +73,23 @@ if (in_array('student', $roles)) {
             <?php foreach ($student as $row): ?>
                 <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                        data-title="<?= __('Full Name', 'aes'); ?>">
+                        data-title="<?= __('Full Name', 'edusystem'); ?>">
                         <?= $row->name . ' ' . $row->last_name; ?>
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
-                        data-title="<?= __('Grade', 'aes'); ?>">
+                        data-title="<?= __('Grade', 'edusystem'); ?>">
                         <?= $grade = get_name_grade($row->grade_id); ?>
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                        data-title="<?= __('Program', 'aes') ?>">
+                        data-title="<?= __('Program', 'edusystem') ?>">
                         <?= $program = get_name_program($row->program_id); ?>
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                        data-title="<?= __('Email', 'aes') ?>">
+                        data-title="<?= __('Email', 'edusystem') ?>">
                         <?= $row->email; ?>
                     </td>
                     <!--
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('Program', 'aes') ?>">
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="<?= __('Program', 'edusystem') ?>">
                         <?php if (!empty($row->moodle_password)): ?>
                         <form class="woocommerce-form woocommerce-form-login login mt-4">
                             <input class="woocommerce-Input woocommerce-Input--text input-text input-no-style" type="password" name="password" id="password" value="<?= $row->moodle_password; ?>">
@@ -98,9 +98,9 @@ if (in_array('student', $roles)) {
                     </td>
                     -->
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                        data-title="<?= __('View', 'aes'); ?>">
+                        data-title="<?= __('View', 'edusystem'); ?>">
                         <a href="<?= wc_get_account_endpoint_url('student-details') . '/?student=' . $row->id; ?>"
-                            class="button button-primary"><?= __('View', 'aes'); ?></a>
+                            class="button button-primary"><?= __('View', 'edusystem'); ?></a>
                     </td>
                 </tr>
             <?php endforeach; ?>

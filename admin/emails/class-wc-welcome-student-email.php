@@ -8,11 +8,11 @@ class WC_Welcome_Student_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_welcome-student';
-        $this->title = __('Welcome','aes');
-        $this->description = __('Welcome students.','aes');
+        $this->title = __('Welcome','edusystem');
+        $this->description = __('Welcome students.','edusystem');
 
-        $this->heading = __('Welcome','aes');
-        $this->subject = __('Welcome','aes');
+        $this->heading = __('Welcome','edusystem');
+        $this->subject = __('Welcome','edusystem');
         $this->customer_email = true;
         $this->manual = true;
         $this->template_html  = 'templates/welcome-student-email.php';

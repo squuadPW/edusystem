@@ -71,9 +71,9 @@ function add_admin_institutes_content(){
 
 function get_name_status_institute($status_id){
     $status = match($status_id){
-        '0' => __('Pending','aes'),
-        '1' => __('Approved','aes'),
-        '2' => __('Declined','aes'),
+        '0' => __('Pending','edusystem'),
+        '1' => __('Approved','edusystem'),
+        '2' => __('Declined','edusystem'),
         default => '',
     };
 
@@ -97,9 +97,9 @@ function get_name_country($country_id){
 function get_name_reference($reference_id){
 
     $reference = match($reference_id){
-        '3' => __('Email','aes'),
-        '4' => __('Internet search','aes'),
-        '5' => __('On-site Event','aes'),
+        '3' => __('Email','edusystem'),
+        '4' => __('Internet search','edusystem'),
+        '5' => __('On-site Event','edusystem'),
         default => '',
     };
 
@@ -118,8 +118,8 @@ function get_institute_details($institute_id){
 function get_name_level($level_id){
 
     $level = match($level_id){
-        '1' => __('Primary','aes'),
-        '2' => __('High School','aes'),
+        '1' => __('Primary','edusystem'),
+        '2' => __('High School','edusystem'),
         default => "",
     };
 
@@ -155,7 +155,7 @@ class TT_institutes_review_List_Table extends WP_List_Table{
             case 'name_rector':
                 return ucwords($item['name_rector']).' '.ucwords($item['lastname_rector']);
             case 'view_details':
-                return "<a href='".admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id='.$item['id'])."' class='button button-primary'>".__('View Details','form-plugin')."</a>";
+                return "<a href='".admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id='.$item['id'])."' class='button button-primary'>".__('View Details','edusystem')."</a>";
 			default:
 				return print_r($item,true);
         }
@@ -175,12 +175,12 @@ class TT_institutes_review_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
-            'name'         => __('Name','aes'),
-            'phone'         => __('Phone','aes'),
-            'email'         => __('Email','aes'),
-            'country'         => __('Country','aes'),
-            'name_rector'   => __('Name Rector','aes'),
-            'view_details' => __('Actions','aes'),
+            'name'         => __('Name','edusystem'),
+            'phone'         => __('Phone','edusystem'),
+            'email'         => __('Email','edusystem'),
+            'country'         => __('Country','edusystem'),
+            'name_rector'   => __('Name Rector','edusystem'),
+            'view_details' => __('Actions','edusystem'),
         );
 
         return $columns;
@@ -289,8 +289,8 @@ class TT_institutes_List_Table extends WP_List_Table{
                 return $status;
             case 'view_details':
                 return "
-                    <a style='margin:3px;' href='".admin_url('/admin.php?page=add_admin_institutes_content&section_tab=fee_institute&institute_id='.$item['id'])."' class='button button-primary'>".__('Fees','form-plugin')."</a>
-                    <a style='margin:3px;' href='".admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id='.$item['id'])."' class='button button-primary'>".__('View Details','form-plugin')."</a>
+                    <a style='margin:3px;' href='".admin_url('/admin.php?page=add_admin_institutes_content&section_tab=fee_institute&institute_id='.$item['id'])."' class='button button-primary'>".__('Fees','edusystem')."</a>
+                    <a style='margin:3px;' href='".admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id='.$item['id'])."' class='button button-primary'>".__('View Details','edusystem')."</a>
                 ";
 			default:
 				return print_r($item,true);
@@ -311,12 +311,12 @@ class TT_institutes_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
-            'name'         => __('Name','aes'),
-            'phone'         => __('Phone','aes'),
-            'email'         => __('Email','aes'),
-            'country'         => __('Country','aes'),
-            'name_rector'   => __('Name Rector','aes'),
-            'view_details' => __('Actions','aes'),
+            'name'         => __('Name','edusystem'),
+            'phone'         => __('Phone','edusystem'),
+            'email'         => __('Email','edusystem'),
+            'country'         => __('Country','edusystem'),
+            'name_rector'   => __('Name Rector','edusystem'),
+            'view_details' => __('Actions','edusystem'),
         );
 
         return $columns;

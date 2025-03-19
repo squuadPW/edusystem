@@ -1,23 +1,23 @@
 <div class="tabs-content">
 	<div class="wrap">
 		<div style="text-align:start;">
-			<h1 class="wp-heading-line"><?= __('All Enrollments', 'aes'); ?></h1>
+			<h1 class="wp-heading-line"><?= __('All Enrollments', 'edusystem'); ?></h1>
 		</div>
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 			<a href="<?= admin_url('admin.php?page=add_admin_form_enrollments_content&section_tab=add_enrollment'); ?>"
-				class="button button-outline-primary"><?= __('Create Enrollment', 'aes'); ?></a>
+				class="button button-outline-primary"><?= __('Create Enrollment', 'edusystem'); ?></a>
 		</div>
 		<form action="" id="post-filter" method="get">
 			<p class="search-box">
 				<label class="screen-reader-text"
-					for="search-box-id-search-input"><?= __('Search', 'aes') . ':'; ?></label>
+					for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
 				<input type="search" placeholder="Search Student"
 					id="search-box-id-search-input" name="s" value="<?= (!empty($_GET['s'])) ? $_GET['s'] : ''; ?>">
 				<input type="submit" id="search-submit" class="button" value="Search">
 			</p>
 			<p class="search-box" style="margin-right: 10px">
 				<label class="screen-reader-text"
-					for="search-box-id-search-input"><?= __('Search', 'aes') . ':'; ?></label>
+					for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
 				<select name="academic_period_cut">
 					<option value="">Select academic period cut</option>
 					<option value="A" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'A') ? 'selected' : '') : ''; ?>>A</option>
@@ -29,7 +29,7 @@
 			</p>
 			<p class="search-box" style="margin-right: 10px">
 				<label class="screen-reader-text"
-					for="search-box-id-search-input"><?= __('Search', 'aes') . ':'; ?></label>
+					for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
 				<select name="academic_period">
 					<option value="" selected>Select academic period to filter</option>
 					<?php foreach ($periods as $key => $period) { ?>
@@ -41,7 +41,7 @@
 			</p>
 			<p class="search-box" style="margin-right: 10px">
 				<label class="screen-reader-text"
-					for="search-box-id-search-input"><?= __('Search', 'aes') . ':'; ?></label>
+					for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
 				<select name="code_subject">
 					<option value="" selected>Select subject to filter</option>
 					<?php foreach ($subjects as $key => $subject) { ?>
@@ -53,7 +53,7 @@
 			</p>
 			<p class="search-box" style="margin-right: 10px">
 				<label class="screen-reader-text"
-					for="search-box-id-search-input"><?= __('Search', 'aes') . ':'; ?></label>
+					for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
 				<select name="status_id">
 					<option value="">Select a status</option>
 					<option value="0" <?= $_GET['status_id'] != '' ? (($_GET['status_id'] == '0') ? 'selected' : '') : ''; ?>>To begin</option>

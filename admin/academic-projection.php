@@ -121,19 +121,19 @@ function add_admin_form_academic_projection_content()
                 generate_projection_student($student->id);
             }
 
-            setcookie('message', __('Successfully generated all missing academic projections for the students.', 'aes'), time() + 3600, '/');
+            setcookie('message', __('Successfully generated all missing academic projections for the students.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'generate_academic_projection_student') {
             $student_id = $_GET['student_id'];
             generate_projection_student($student_id, true);
 
-            setcookie('message', __('Successfully generated academic projections for the student.', 'aes'), time() + 3600, '/');
+            setcookie('message', __('Successfully generated academic projections for the student.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'generate_enrollments_moodle') {
             generate_enroll_student();
-            setcookie('message', __('Students successfully enrolled in moodle.', 'aes'), time() + 3600, '/');
+            setcookie('message', __('Students successfully enrolled in moodle.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'auto_enroll') {
@@ -178,7 +178,7 @@ function add_admin_form_academic_projection_content()
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'get_moodle_notes') {
             get_moodle_notes();
-            setcookie('message', __('Successfully updated notes for the students.', 'aes'), time() + 3600, '/');
+            setcookie('message', __('Successfully updated notes for the students.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'save_academic_projection') {
@@ -319,7 +319,7 @@ function add_admin_form_academic_projection_content()
                 send_welcome_subjects($projection->student_id);
             }
 
-            setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 10, '/');
+            setcookie('message', __('Projection adjusted successfully.', 'edusystem'), time() + 10, '/');
             setcookie('message-error', $errors, time() + 3600, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
@@ -362,7 +362,7 @@ function add_admin_form_academic_projection_content()
 
             $wpdb->delete($table_student_period_inscriptions, ['id' => $inscription_id]);
 
-            setcookie('message', __('Projection adjusted successfully.', 'aes'), time() + 10, '/');
+            setcookie('message', __('Projection adjusted successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'set_max_access_date') {
@@ -419,7 +419,7 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
             case 'initial_cut':
                 return '<label class="text-uppercase">' . strtoupper($item[$column_name]) . '</label>';
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $item['academic_projection_id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $item['academic_projection_id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -440,10 +440,10 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'student' => __('Student', 'aes'),
-            'initial_cut' => __('Initial period - cut', 'aes'),
-            'grade_id' => __('Grade', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'student' => __('Student', 'edusystem'),
+            'initial_cut' => __('Initial period - cut', 'edusystem'),
+            'grade_id' => __('Grade', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;

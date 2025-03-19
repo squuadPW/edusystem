@@ -7,7 +7,7 @@
     <div class="modal-body">
       <div>
         <div>
-          <label for="type"><?= __('Type', 'aes'); ?><span class="required">*</span></label>
+          <label for="type"><?= __('Type', 'edusystem'); ?><span class="required">*</span></label>
           <select class="form-control" name="type_id" autocomplete="off" required>
             <option value="" class="text-uppercase">Select an option</option>
             <?php foreach ($types as $type) { ?>
@@ -16,12 +16,12 @@
           </select>
         </div>
         <div>
-          <label for="reason"><?= __('Reason', 'aes'); ?><span class="required">*</span></label>
+          <label for="reason"><?= __('Reason', 'edusystem'); ?><span class="required">*</span></label>
           <textarea class="formdata" name="reason" autocomplete="off" required></textarea>
         </div>
         <?php if (!$student_id) { ?>
           <div>
-            <label for="student_id"><?= __('Student', 'aes'); ?> <span style="font-size: 10px; font-style: italic;">(optional)</span></label>
+            <label for="student_id"><?= __('Student', 'edusystem'); ?> <span style="font-size: 10px; font-style: italic;">(optional)</span></label>
             <select class="form-control" name="student_id" autocomplete="off">
               <option value="" class="text-uppercase">Select an option</option>
               <?php foreach ($students as $student) { ?>
@@ -37,7 +37,7 @@
 
       <!-- DATOS DEL GRADO -->
       <div style="text-align:center; margin-top: 3rem">
-        <button type="button" class="submit button-success" id="send-request"><?= __('Save', 'aes'); ?></button>
+        <button type="button" class="submit button-success" id="send-request"><?= __('Save', 'edusystem'); ?></button>
       </div>
     </div>
   </div>

@@ -125,7 +125,7 @@ function process_documents($wpdb, $current_user, $tables, $config, $entities) {
         }
     }
 
-    wc_add_notice(__('Documents saved successfully.', 'form-plugin'), 'success');
+    wc_add_notice(__('Documents saved successfully.', 'edusystem'), 'success');
     wp_redirect(wc_get_endpoint_url(
         $config['redirect_endpoint'], 
         '', 
@@ -612,7 +612,7 @@ function save_documents()
         
     }
 
-    wc_add_notice( __( 'Documents saved successfully.', 'form-plugin' ), 'success' );
+    wc_add_notice( __( 'Documents saved successfully.', 'edusystem' ), 'success' );
     wp_send_json(array('success' => true));
     exit;
 }
@@ -690,14 +690,14 @@ add_action('woocommerce_account_dashboard','view_pending_documents');
 function get_name_document($document_id){
     /*
     $name = match ($document_id) {
-        'certified_notes_high_school' => __('CERTIFIED NOTES HIGH SCHOOL','aes'),
-        'high_school_diploma' => __('HIGH SCHOOL DIPLOMA','aes'),
-        'id_parents' => __('ID OR CI OF THE PARENTS','aes'),
-        'id_student' => __('ID STUDENTS','aes'),
-        'photo_student_card' => __('STUDENT'S PHOTO','aes'),
-        'proof_of_grades' => __('PROOF OF GRADE','aes'),
-        'proof_of_study' => __('PROOF OF STUDY','aes'),
-        'vaccunation_card' => __('VACCINATION CARD','aes'),
+        'certified_notes_high_school' => __('CERTIFIED NOTES HIGH SCHOOL','edusystem'),
+        'high_school_diploma' => __('HIGH SCHOOL DIPLOMA','edusystem'),
+        'id_parents' => __('ID OR CI OF THE PARENTS','edusystem'),
+        'id_student' => __('ID STUDENTS','edusystem'),
+        'photo_student_card' => __('STUDENT'S PHOTO','edusystem'),
+        'proof_of_grades' => __('PROOF OF GRADE','edusystem'),
+        'proof_of_study' => __('PROOF OF STUDY','edusystem'),
+        'vaccunation_card' => __('VACCINATION CARD','edusystem'),
         default => '',
     };
 
@@ -765,12 +765,12 @@ function get_type_file_document_teacher($document_id) {
 function get_status_document($status_id){
 
     $status = match ($status_id){
-        '0' => __('No sent','aes'),
-        '1' => __('Sent','aes'),
-        '2' => __('Processing','aes'),
-        '3' => __('Declined','aes'),
-        '4' => __('Expired','aes'),
-        '5' => __('Approved','aes'),
+        '0' => __('No sent','edusystem'),
+        '1' => __('Sent','edusystem'),
+        '2' => __('Processing','edusystem'),
+        '3' => __('Declined','edusystem'),
+        '4' => __('Expired','edusystem'),
+        '5' => __('Approved','edusystem'),
         default => '',
     };
 
@@ -780,8 +780,8 @@ function get_status_document($status_id){
 function get_name_type_document($type_document){
 
     $type_document_parent = match($type_document){
-        'passport' => __('Passport','aes'),
-        'identification_document' => __('Identification Document','aes'),
+        'passport' => __('Passport','edusystem'),
+        'identification_document' => __('Identification Document','edusystem'),
         'ssn' => __('SSN'),
         default => '',
     };

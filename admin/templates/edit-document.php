@@ -1,5 +1,5 @@
 <div class="wrap">
-    <h2 style="margin-bottom:15px;"><?= __('Edit Document','aes'); ?></h2>
+    <h2 style="margin-bottom:15px;"><?= __('Edit Document','edusystem'); ?></h2>
 
     <div style="diplay:flex;width:100%;">
         <a class="button button-outline-primary" href="<?= admin_url('admin.php?page=admission-documents'); ?>"><?= __('Back') ?></a>
@@ -15,7 +15,7 @@
                                 <tbody>
                                     <tr>
                                         <th scope="row" style="font-weight:400;">
-                                            <label for="input_id"><b><?= __('Name','aes'); ?></b></label><br>
+                                            <label for="input_id"><b><?= __('Name','edusystem'); ?></b></label><br>
                                         </th>
                                         <td>
                                             <input type="text" name="name" value="<?= $document->name; ?>" style="width:100%">
@@ -24,7 +24,7 @@
                                     </tr>
                                     <tr>
                                         <th>
-                                            <span><?= __('Required for access to the virtual classroom','aes'); ?></span>
+                                            <span><?= __('Required for access to the virtual classroom','edusystem'); ?></span>
                                         </th>
                                         <td>
                                             <fieldset>
@@ -37,7 +37,7 @@
                                 </tbody>
                             </table>
                             <div style="display:flex;width:100%;justify-content:end;">
-                                <button class="button button-primary" type="submit"><?= __('Save Changes','aes'); ?></button>
+                                <button class="button button-primary" type="submit"><?= __('Save Changes','edusystem'); ?></button>
                             </div>
                         </form>
                     </div>

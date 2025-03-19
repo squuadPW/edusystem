@@ -395,7 +395,7 @@ class TT_new_student_List_Table extends WP_List_Table
                 $grade = get_name_grade($item['grade_id']);
                 return $grade;
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'form-plugin') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return print_r($item, true);
         }
@@ -420,10 +420,10 @@ class TT_new_student_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'full_name' => __('Full name', 'aes'),
-            'program' => __('Program', 'aes'),
-            'grade' => __('Grade', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'full_name' => __('Full name', 'edusystem'),
+            'program' => __('Program', 'edusystem'),
+            'grade' => __('Grade', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -615,7 +615,7 @@ class TT_document_review_List_Table extends WP_List_Table
 
                             $html .= '
                                 <a href="javascript:void(0)" class="button button-success" style="border-radius:9px;">
-                                    <span>' . $diff->days . ' ' . __('Day', 'aes') . '</span>
+                                    <span>' . $diff->days . ' ' . __('Day', 'edusystem') . '</span>
                                 </a>
                             ';
 
@@ -623,7 +623,7 @@ class TT_document_review_List_Table extends WP_List_Table
 
                             $html .= '
                                 <a href="javascript:void(0)" class="button button-success" style="border-radius:9px;">
-                                    <span>' . $diff->days . ' ' . __('Days', 'aes') . '</span>
+                                    <span>' . $diff->days . ' ' . __('Days', 'edusystem') . '</span>
                                 </a>
                             ';
                         }
@@ -631,20 +631,20 @@ class TT_document_review_List_Table extends WP_List_Table
                     } else if ($diff->days < (int) get_option('documents_warning')) {
                         $html .= '
                             <a href="javascript:void(0)" class="button button-warning" style="border-radius:9px;">
-                                <span>' . $diff->days . ' ' . __('Days', 'aes') . '</span>
+                                <span>' . $diff->days . ' ' . __('Days', 'edusystem') . '</span>
                             </a>
                         ';
                     } else if ($diff->days >= (int) get_option('documents_red')) {
                         $html .= '
                             <a href="javascript:void(0)" class="button button-danger" style="border-radius:9px;">
-                                <span>' . $diff->days . ' ' . __('Days', 'aes') . '</span>
+                                <span>' . $diff->days . ' ' . __('Days', 'edusystem') . '</span>
                             </a>
                         ';
                     }
                 } else {
                     $html .= '
                     <a href="javascript:void(0)" class="button button-danger" style="border-radius:9px;">
-                        <span>' . __('N/A Days', 'aes') . '</span>
+                        <span>' . __('N/A Days', 'edusystem') . '</span>
                     </a>
                 ';
                 }
@@ -652,7 +652,7 @@ class TT_document_review_List_Table extends WP_List_Table
 
                 return $html;
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'form-plugin') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return print_r($item, true);
         }
@@ -677,17 +677,17 @@ class TT_document_review_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'full_name' => __('Full name', 'aes'),
-            // 'program' => __('Program', 'aes'),
-            'grade' => __('Income', 'aes'),
-            'pending_documents' => __('Pending', 'aes'),
-            'pending_review_documents' => __('For review', 'aes'),
-            'approved_documents' => __('Approved', 'aes'),
-            'rejected_documents' => __('Rejected', 'aes'),
-            // 'access_classroom' => __('Classroom', 'aes'),
-            'moodle_active' => __('Classroom', 'aes'),
-            'waiting_time' => __('Waiting Time', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'full_name' => __('Full name', 'edusystem'),
+            // 'program' => __('Program', 'edusystem'),
+            'grade' => __('Income', 'edusystem'),
+            'pending_documents' => __('Pending', 'edusystem'),
+            'pending_review_documents' => __('For review', 'edusystem'),
+            'approved_documents' => __('Approved', 'edusystem'),
+            'rejected_documents' => __('Rejected', 'edusystem'),
+            // 'access_classroom' => __('Classroom', 'edusystem'),
+            'moodle_active' => __('Classroom', 'edusystem'),
+            'waiting_time' => __('Waiting Time', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -847,7 +847,7 @@ class TT_all_student_List_Table extends WP_List_Table
             case 'moodle_active':
                 return $item['moodle_active'];
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'form-plugin') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
             default:
                 return print_r($item, true);
         }
@@ -872,12 +872,12 @@ class TT_all_student_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'student' => __('Student', 'aes'),
-            'parent' => __('Parent', 'aes'),
-            'program' => __('Program', 'aes'),
-            'grade' => __('Grade', 'aes'),
-            'moodle_active' => __('Moodle', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'student' => __('Student', 'edusystem'),
+            'parent' => __('Parent', 'edusystem'),
+            'program' => __('Program', 'edusystem'),
+            'grade' => __('Grade', 'edusystem'),
+            'moodle_active' => __('Moodle', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -1257,24 +1257,24 @@ function generate_documents_html($student_id, $document_id)
         if ($document->id == $document_id) {
             $html .= '<tr id="tr_document_' . $document->id . '">';
             $html .= '<td class="column-primary" colspan="3">' . get_name_document($document->document_id) . "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
-            $html .= '<td colspan="2" id="td_document_' . $document->document_id . '" data-colname="' . __('Status', 'aes') . '"><b>' . get_status_document($document->status) . '</b></td>';
-            $html .= '<td colspan="7" data-colname="' . __('Actions', 'aes') . '">';
-            $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'aes') . "</button></a>";
+            $html .= '<td colspan="2" id="td_document_' . $document->document_id . '" data-colname="' . __('Status', 'edusystem') . '"><b>' . get_status_document($document->status) . '</b></td>';
+            $html .= '<td colspan="7" data-colname="' . __('Actions', 'edusystem') . '">';
+            $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'edusystem') . "</button></a>";
 
             if ($document->status > 0) {
-                $html .= "<a style='margin-right: 3px;' target='_blank' onclick='watchDetails(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'>" . __('View detail', 'aes') . "</button></a>";
-                $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '"><button type="button" class="button button-primary other-buttons-document">' . __('View documment', 'aes') . '</button></a>';
+                $html .= "<a style='margin-right: 3px;' target='_blank' onclick='watchDetails(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'>" . __('View detail', 'edusystem') . "</button></a>";
+                $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '"><button type="button" class="button button-primary other-buttons-document">' . __('View documment', 'edusystem') . '</button></a>';
 
                 if ($document->status != 1) {
-                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="1" class="button change-status button-warning" style="margin-left: 3px; margin-right: 3px;">' . __('Revert', 'aes') . '</button>';
+                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="1" class="button change-status button-warning" style="margin-left: 3px; margin-right: 3px;">' . __('Revert', 'edusystem') . '</button>';
                 }
 
                 if ($document->status != 5 && $document->status != 3) {
-                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="5" class="button change-status button-success" style="margin-left: 3px; margin-right: 3px;">' . __('Approve', 'aes') . '</button>';
+                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="5" class="button change-status button-success" style="margin-left: 3px; margin-right: 3px;">' . __('Approve', 'edusystem') . '</button>';
                 }
 
                 if ($document->status != 5 && $document->status != 3) {
-                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="3" class="button change-status button-danger" style="margin-left: 3px; margin-right: 3px;">' . __('Decline', 'aes') . '</button>';
+                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="3" class="button change-status button-danger" style="margin-left: 3px; margin-right: 3px;">' . __('Decline', 'edusystem') . '</button>';
                 }
             }
             $html .= "</td></tr>";
@@ -1462,7 +1462,7 @@ function update_payment()
         $order->set_status('completed');
         $order->save();
 
-        echo json_encode(['status' => 'success', 'message' => __('Status changed', 'aes')]);
+        echo json_encode(['status' => 'success', 'message' => __('Status changed', 'edusystem')]);
         die();
     }
 

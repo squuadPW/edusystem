@@ -13,11 +13,11 @@ class WC_Registered_Institution_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_registered-institution';
-        $this->title = __('New Registered Institution','aes');
-        $this->description = __('New registered institution notification emails are sent when an institution registers later and is awaiting approval.','aes');
+        $this->title = __('New Registered Institution','edusystem');
+        $this->description = __('New registered institution notification emails are sent when an institution registers later and is awaiting approval.','edusystem');
 
-        $this->heading = __('New Registered Institution','aes');
-        $this->subject = __('New Registered Institution','aes');
+        $this->heading = __('New Registered Institution','edusystem');
+        $this->subject = __('New Registered Institution','edusystem');
 
         $this->template_html  = 'templates/registered-institution-email.php';
         $this->template_plain = 'templates/registered-institution-email.php';

@@ -1,1 +1,1 @@
-<h2 style="font-size:24px;text-align:center;"><?= __('Notes','aes'); ?></h2>
+<h2 style="font-size:24px;text-align:center;"><?= __('Notes','edusystem'); ?></h2>

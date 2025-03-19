@@ -80,7 +80,7 @@ function add_admin_form_pensum_content()
                 ]);
             }
             
-            setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+            setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             if ($program_institute) {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_pensum_content&section_tab=pensum_institute'));
             } else {
@@ -124,7 +124,7 @@ class TT_All_Pensum_List_Table extends WP_List_Table
                 return $item[$column_name] ?? 'N/A';
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_pensum_content&section_tab=pensum_details&pensum_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_pensum_content&section_tab=pensum_details&pensum_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);
@@ -146,11 +146,11 @@ class TT_All_Pensum_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'current' => __('Current', 'aes'),
-            'name' => __('Name', 'aes'),
-            'program' => __('Program', 'aes'),
-            'created_at' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'current' => __('Current', 'edusystem'),
+            'name' => __('Name', 'edusystem'),
+            'program' => __('Program', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -273,7 +273,7 @@ class TT_All_Pensum_Institute_List_Table extends WP_List_Table
                 return $item[$column_name] ?? 'N/A';
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_pensum_content&section_tab=pensum_details&institute=1&pensum_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'aes') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_pensum_content&section_tab=pensum_details&institute=1&pensum_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);
@@ -295,11 +295,11 @@ class TT_All_Pensum_Institute_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'current' => __('Current', 'aes'),
-            'name' => __('Name', 'aes'),
-            'institute' => __('Institute', 'aes'),
-            'created_at' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'current' => __('Current', 'edusystem'),
+            'name' => __('Name', 'edusystem'),
+            'institute' => __('Institute', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;

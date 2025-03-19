@@ -50,7 +50,7 @@ class TT_all_Student_Institutes_List_Table extends WP_List_Table{
 
                 return $datetime->format('F j, Y');
             case 'view_details':
-                return "<a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_student_registered_content&action=student-details&student_id='.$item['id'])."'>".__('View details','aes')."</a>";
+                return "<a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_student_registered_content&action=student-details&student_id='.$item['id'])."'>".__('View details','edusystem')."</a>";
 			default:
 				return print_r($item,true);
         }
@@ -67,11 +67,11 @@ class TT_all_Student_Institutes_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
-            'name'     => __('Name','aes'),
-            'email'    => __('Email','aes'),
-            'grade'    => __('Grade','aes'),
-            'created_at' => __('Created at','aes'),
-            'view_details' => __('Actions','aes'),
+            'name'     => __('Name','edusystem'),
+            'email'    => __('Email','edusystem'),
+            'grade'    => __('Grade','edusystem'),
+            'created_at' => __('Created at','edusystem'),
+            'view_details' => __('Actions','edusystem'),
         );
 
         return $columns;

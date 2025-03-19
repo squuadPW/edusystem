@@ -18,19 +18,19 @@ function form_plugin_scripts()
     global $wp;
     $version = '2.0.6';
     wp_enqueue_style('dashicons');
-    wp_enqueue_style('admin-flatpickr', plugins_url('aes') . '/public/assets/css/flatpickr.min.css');
-    wp_enqueue_style('intel-css', plugins_url('aes') . '/public/assets/css/intlTelInput.css');
-    wp_enqueue_style('style-public', plugins_url('aes') . '/public/assets/css/style.css', array(), $version, 'all');
+    wp_enqueue_style('admin-flatpickr', plugins_url('edusystem') . '/public/assets/css/flatpickr.min.css');
+    wp_enqueue_style('intel-css', plugins_url('edusystem') . '/public/assets/css/intlTelInput.css');
+    wp_enqueue_style('style-public', plugins_url('edusystem') . '/public/assets/css/style.css', array(), $version, 'all');
     wp_enqueue_script('tailwind', 'https://cdn.tailwindcss.com');
-    wp_enqueue_script('admin-flatpickr', plugins_url('aes') . '/public/assets/js/flatpickr.js');
-    wp_enqueue_script('masker-js', plugins_url('aes') . '/public/assets/js/vanilla-masker.min.js');
-    wp_enqueue_script('intel-js', plugins_url('aes') . '/public/assets/js/intlTelInput.min.js');
-    wp_enqueue_script('checkout', plugins_url('aes') . '/public/assets/js/checkout.js');
-    wp_enqueue_script('form-register', plugins_url('aes') . '/public/assets/js/form-register.js');
-    wp_enqueue_script('int-tel', plugins_url('aes') . '/public/assets/js/int-tel.js');
+    wp_enqueue_script('admin-flatpickr', plugins_url('edusystem') . '/public/assets/js/flatpickr.js');
+    wp_enqueue_script('masker-js', plugins_url('edusystem') . '/public/assets/js/vanilla-masker.min.js');
+    wp_enqueue_script('intel-js', plugins_url('edusystem') . '/public/assets/js/intlTelInput.min.js');
+    wp_enqueue_script('checkout', plugins_url('edusystem') . '/public/assets/js/checkout.js');
+    wp_enqueue_script('form-register', plugins_url('edusystem') . '/public/assets/js/form-register.js');
+    wp_enqueue_script('int-tel', plugins_url('edusystem') . '/public/assets/js/int-tel.js');
 
     // PAYMENTS PARTS
-    wp_register_script('payment-parts-update', plugins_url('aes') . '/public/assets/js/payment-parts-update.js', array('jquery'), $version, true);
+    wp_register_script('payment-parts-update', plugins_url('edusystem') . '/public/assets/js/payment-parts-update.js', array('jquery'), $version, true);
     wp_localize_script(
         'payment-parts-update',
         'ajax_object',
@@ -41,7 +41,7 @@ function form_plugin_scripts()
     wp_enqueue_script('payment-parts-update');
 
     // form-register
-    wp_register_script('form-register', plugins_url('aes') . '/public/assets/js/form-register.js', array('jquery'), $version, true);
+    wp_register_script('form-register', plugins_url('edusystem') . '/public/assets/js/form-register.js', array('jquery'), $version, true);
     wp_localize_script(
         'form-register',
         'ajax_object',
@@ -51,7 +51,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('form-register');
 
-    wp_register_script('create-password', plugins_url('aes') . '/public/assets/js/create-password.js', array('jquery'), $version, true);
+    wp_register_script('create-password', plugins_url('edusystem') . '/public/assets/js/create-password.js', array('jquery'), $version, true);
     wp_localize_script(
         'create-password',
         'ajax_object',
@@ -61,7 +61,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('create-password');
 
-    wp_register_script('create-enrollment', plugins_url('aes') . '/public/assets/js/create-enrollment.js', array('jquery'), $version, true);
+    wp_register_script('create-enrollment', plugins_url('edusystem') . '/public/assets/js/create-enrollment.js', array('jquery'), $version, true);
     wp_localize_script(
         'create-enrollment',
         'ajax_object',
@@ -72,7 +72,7 @@ function form_plugin_scripts()
     wp_enqueue_script('create-enrollment');
     
     if (str_contains(home_url($wp->request), 'califications')) {
-        wp_register_script('califications', plugins_url('aes') . '/public/assets/js/califications.js', array('jquery'), $version, true);
+        wp_register_script('califications', plugins_url('edusystem') . '/public/assets/js/califications.js', array('jquery'), $version, true);
         wp_localize_script(
             'califications',
             'ajax_object',
@@ -84,7 +84,7 @@ function form_plugin_scripts()
     }
 
     if (str_contains(home_url($wp->request), 'student-documents')) {
-        wp_enqueue_script('document', plugins_url('aes') . '/public/assets/js/document.js', array('jquery'), $version, true);
+        wp_enqueue_script('document', plugins_url('edusystem') . '/public/assets/js/document.js', array('jquery'), $version, true);
         wp_localize_script('document', 'save_documents', [
             'url' => admin_url('admin-ajax.php'),
             'action' => 'save_documents'
@@ -92,14 +92,14 @@ function form_plugin_scripts()
     }
 
     if (str_contains(home_url($wp->request), 'orders')) {
-        wp_enqueue_script('next-payment', plugins_url('aes') . '/public/assets/js/next-payment.js', array('jquery'), $version, true);
+        wp_enqueue_script('next-payment', plugins_url('edusystem') . '/public/assets/js/next-payment.js', array('jquery'), $version, true);
         wp_localize_script('next-payment', 'ajax_object', [
             'url' => admin_url('admin-ajax.php')
         ]);
     }
 
     if (str_contains(home_url($wp->request), 'my-requests')) {
-        wp_register_script('requests', plugins_url('aes') . '/public/assets/js/requests.js', array('jquery'), $version, true);
+        wp_register_script('requests', plugins_url('edusystem') . '/public/assets/js/requests.js', array('jquery'), $version, true);
         wp_localize_script(
             'requests',
             'ajax_object',
@@ -110,7 +110,7 @@ function form_plugin_scripts()
         wp_enqueue_script('requests');
     }
 
-    wp_register_script('student-continue', plugins_url('aes') . '/public/assets/js/student-continue.js', array('jquery'), $version, true);
+    wp_register_script('student-continue', plugins_url('edusystem') . '/public/assets/js/student-continue.js', array('jquery'), $version, true);
     wp_localize_script(
         'student-continue',
         'ajax_object',
@@ -120,7 +120,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('student-continue');
 
-    wp_register_script('previous-form', plugins_url('aes') . '/public/assets/js/previous-form.js', array('jquery'), $version, true);
+    wp_register_script('previous-form', plugins_url('edusystem') . '/public/assets/js/previous-form.js', array('jquery'), $version, true);
     wp_localize_script(
         'previous-form',
         'ajax_object',
@@ -474,7 +474,7 @@ function remove_my_account_links($menu_links)
 
     // Definir el orden base del menú
     $menu_links = [
-        'dashboard' => __('Dashboard', 'form-plugin'),
+        'dashboard' => __('Dashboard', 'edusystem'),
     ];
 
     // Eliminar enlaces no deseados
@@ -485,26 +485,26 @@ function remove_my_account_links($menu_links)
 
     // Agregar "Payments" para el rol "parent"
     if (in_array('parent', $roles)) {
-        $menu_links['orders'] = __('Payments', 'form-plugin');
+        $menu_links['orders'] = __('Payments', 'edusystem');
     }
 
     // Agregar "Documents" para el rol "teacher"
     if (in_array('teacher', $roles)) {
-        $menu_links['teacher-documents'] = __('Documents', 'form-plugin');
+        $menu_links['teacher-documents'] = __('Documents', 'edusystem');
     }
 
     // Lógica para roles "parent" y "student"
     if (in_array('parent', $roles) || in_array('student', $roles)) {
         
         // Agregar "Student Information"
-        $menu_links['student'] = __('Student Information', 'aes');
+        $menu_links['student'] = __('Student Information', 'edusystem');
 
         // Agregar "Califications"
-        $menu_links['califications'] = __('Califications', 'form-plugin');
+        $menu_links['califications'] = __('Califications', 'edusystem');
 
         if (in_array('parent', $roles)) {
             if (get_user_meta($user_id, 'status_register', true) == 1) {
-                $menu_links['student-documents'] = __('Documents', 'form-plugin');
+                $menu_links['student-documents'] = __('Documents', 'edusystem');
             }
         }
 
@@ -512,7 +512,7 @@ function remove_my_account_links($menu_links)
             $student_id = get_user_meta($user_id, 'student_id', true);
             $student = get_student_detail($student_id);
             if (get_user_meta($student->partner_id, 'status_register', true) == 1) {
-                $menu_links['student-documents'] = __('Documents', 'form-plugin');
+                $menu_links['student-documents'] = __('Documents', 'edusystem');
             }
         }
     }
@@ -520,8 +520,8 @@ function remove_my_account_links($menu_links)
     $menu_links['edit-account'] = __('Account', 'woocommerce');
 
     if (in_array('parent', $roles) || in_array('student', $roles)) {
-        $menu_links['my-tickets'] = __('Support Tickets', 'form-plugin');
-        $menu_links['my-requests'] = __('Requests', 'form-plugin');
+        $menu_links['my-tickets'] = __('Support Tickets', 'edusystem');
+        $menu_links['my-requests'] = __('Requests', 'edusystem');
     }
 
     return $menu_links;
@@ -594,7 +594,7 @@ add_action('ticket_created', 'create_ticket', 10, 4);
 
 function modify_columns_orders($columns = [])
 {
-    $columns['order-number'] = __('Payment ID', 'form-plugin');
+    $columns['order-number'] = __('Payment ID', 'edusystem');
     return $columns;
 }
 
@@ -625,27 +625,27 @@ function add_loginout_link($items, $args)
         $birthday = get_user_meta($current_user->ID, 'birth_date', true);
         $age = floor((time() - strtotime($birthday)) / 31556926);
         if ($age >= 18) {
-            $items .= '<li><a href="' . home_url() . '">' . __('New applicant', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . home_url() . '">' . __('New applicant', 'edusystem') . '</a></li>';
         }
 
-        $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '">' . __('Dashboard', 'form-plugin') . '</a></li>';
+        $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '">' . __('Dashboard', 'edusystem') . '</a></li>';
 
 
         if ($args->theme_location != 'primary') {
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications">' . __('Notifications', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications">' . __('Notifications', 'edusystem') . '</a></li>';
         }
 
         
         if ($args->theme_location != 'primary') {
             if ($age >= 18) {
-                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/orders">' . __('Payments', 'form-plugin') . '</a></li>';
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/orders">' . __('Payments', 'edusystem') . '</a></li>';
             }
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'form-plugin') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'form-plugin') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'form-plugin') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account', 'form-plugin') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('Suppor tickets', 'form-plugin') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-requests">' . __('Requests', 'form-plugin') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'edusystem') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account', 'edusystem') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('Suppor tickets', 'edusystem') . '</a></li>';
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-requests">' . __('Requests', 'edusystem') . '</a></li>';
         }
 
         $logout_link = wp_logout_url(get_home_url());
@@ -655,12 +655,12 @@ function add_loginout_link($items, $args)
                 ' . $current_user->first_name . ' ' . $current_user->last_name . ' 
                 </div>
                 <div>
-                    <a class="button-primary" style="font-size:14px;" href="' . $logout_link . '">' . __('Log out', 'form-plugin') . '</a>
+                    <a class="button-primary" style="font-size:14px;" href="' . $logout_link . '">' . __('Log out', 'edusystem') . '</a>
                 </div>
             </div>
         </li>';
     } elseif (!is_user_logged_in()) {
-        $items .= '<li style="margin-bottom: 17px; !important"><a class="button-primary" style="font-size:14px;" href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '">' . __('Log in', 'form-plugin') . '</a></li>';
+        $items .= '<li style="margin-bottom: 17px; !important"><a class="button-primary" style="font-size:14px;" href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '">' . __('Log in', 'edusystem') . '</a></li>';
     }
 
     return $items;

@@ -13,12 +13,12 @@ class WC_Rejected_Partner_Email extends WC_Email {
     public function __construct() {
 
         $this->id = 'wc_rejected_partner';
-        $this->title = __('Rejected Alliance','aes');
-        $this->description = __('Ally rejection notification emails are sent when an ally to be reviewed is rejected.','aes');
+        $this->title = __('Rejected Alliance','edusystem');
+        $this->description = __('Ally rejection notification emails are sent when an ally to be reviewed is rejected.','edusystem');
         $this->customer_email = true;
         $this->manual = true;
-        $this->heading = __('Rejected Alliance','aes');
-        $this->subject = __('Rejected Alliance','aes');
+        $this->heading = __('Rejected Alliance','edusystem');
+        $this->subject = __('Rejected Alliance','edusystem');
 
         $this->template_html  = 'templates/rejected-partner-email.php';
         $this->template_plain = 'templates/rejected-partner-email.php';

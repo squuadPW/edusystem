@@ -1,7 +1,7 @@
 <?php
 foreach ($student_payments as $student_id => $payments) { ?>
     <h2 class="mb-4" style="font-size:24px;text-align:center;">
-        <?= __('Next payments for ', 'aes') . get_student_from_id($student_id)[0]->name . ' ' . get_student_from_id($student_id)[0]->last_name; ?>
+        <?= __('Next payments for ', 'edusystem') . get_student_from_id($student_id)[0]->name . ' ' . get_student_from_id($student_id)[0]->last_name; ?>
     </h2>
     <table
         class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">

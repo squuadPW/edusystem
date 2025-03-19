@@ -2,26 +2,26 @@
 
 function add_role_form_plugin(){
 
-    add_role('parent',__('Parent','aes'),[
+    add_role('parent',__('Parent','edusystem'),[
         'read' => true,
         'upload_files' => true,
         'unfiltered_upload' => true
     ]);
 
-    add_role('student',__('Student','aes'),[
+    add_role('student',__('Student','edusystem'),[
         'read' => true,
         'upload_files' => true,
         'unfiltered_upload' => true
     ]);
 
-    add_role('institutes',__('Institutes','aes'),[
+    add_role('institutes',__('Institutes','edusystem'),[
         'read' => true,
         'edit_posts' => true,
         'upload_files' => true,
         'unfiltered_upload' => true
     ]);
 
-    add_role('alliance',__('Alliance','aes'),[
+    add_role('alliance',__('Alliance','edusystem'),[
         'read' => true,
         'edit_posts' => true,
         'upload_files' => true,

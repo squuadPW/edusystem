@@ -109,7 +109,7 @@ if ($order) {
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="continue-payment"
-                        class="button button-primary"><?= __('Continue', 'aes'); ?></button>
+                        class="button button-primary"><?= __('Continue', 'edusystem'); ?></button>
                 </div>
             </div>
         </div>

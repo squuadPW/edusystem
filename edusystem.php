@@ -7,7 +7,7 @@ Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
-Text Domain:  form-plugin
+Text Domain:  edusystem
 */
 
 if (!class_exists('WP_List_Table')) {

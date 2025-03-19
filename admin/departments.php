@@ -60,7 +60,7 @@ function list_admin_form_department_content(){
 
                 $wpdb->update($table_departments,['description' => $description],['id' => $department_id]);
 
-                $message_success = __('Department updated','aes');
+                $message_success = __('Department updated','edusystem');
                 setcookie('message_success',$message_success,time() + 3600,'/');
                 wp_redirect(admin_url('admin.php?page=add_admin_department_content&action=edit&department_id='.$department_id));
                 exit;
@@ -70,7 +70,7 @@ function list_admin_form_department_content(){
 
             if(wp_roles()->is_role($role_name)){
                 
-                $message = __('Existing department.','aes');
+                $message = __('Existing department.','edusystem');
                 include(plugin_dir_path(__FILE__).'templates/register-departments.php');
                 exit;
             }
@@ -149,7 +149,7 @@ class TT_all_departments_List_Table extends WP_List_Table{
 
                 return $datetime->format('F j, Y');
             case 'view_details':
-                return "<a href='".admin_url('admin.php?page=add_admin_department_content&action=edit&department_id='.$item['id'])."' class='button button-primary'>".__('Edit','aes')."</a>";
+                return "<a href='".admin_url('admin.php?page=add_admin_department_content&action=edit&department_id='.$item['id'])."' class='button button-primary'>".__('Edit','edusystem')."</a>";
 			default:
 				return print_r($item,true);
         }
@@ -166,10 +166,10 @@ class TT_all_departments_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
-            'name'     => __('Name','form-plugin'),
-            'description'     => __('Description','form-plugin'),
-            'created_at' => __('Created at','form-plugin'),
-            'view_details' => __('Actions','form-plugin'),
+            'name'     => __('Name','edusystem'),
+            'description'     => __('Description','edusystem'),
+            'created_at' => __('Created at','edusystem'),
+            'view_details' => __('Actions','edusystem'),
         );
 
         return $columns;

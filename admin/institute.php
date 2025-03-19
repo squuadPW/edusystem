@@ -84,7 +84,7 @@ function add_admin_institutes_content()
                     'updated_at' => date('Y-m-d H:i:s')
                 ], ['id' => $institute_id]);
 
-                setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
+                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id=' . $institute_id));
                 exit;
 
@@ -131,7 +131,7 @@ function add_admin_institutes_content()
                     exit;
 
                 } else {
-                    setcookie('message-error', __('Existing email, please enter another email', 'aes'), time() + 3600, '/');
+                    setcookie('message-error', __('Existing email, please enter another email', 'edusystem'), time() + 3600, '/');
                     wp_redirect(admin_url('admin.php?page=add_admin_institutes_content&section_tab=add_institute'));
                     exit;
                 }
@@ -215,9 +215,9 @@ function add_admin_institutes_content()
 function get_name_status_institute($status_id)
 {
     $status = match ($status_id) {
-        '0' => __('Pending', 'aes'),
-        '1' => __('Approved', 'aes'),
-        '2' => __('Declined', 'aes'),
+        '0' => __('Pending', 'edusystem'),
+        '1' => __('Approved', 'edusystem'),
+        '2' => __('Declined', 'edusystem'),
         default => '',
     };
 
@@ -243,9 +243,9 @@ function get_name_reference($reference_id)
 {
 
     $reference = match ($reference_id) {
-        '3' => __('Email', 'aes'),
-        '4' => __('Internet search', 'aes'),
-        '5' => __('On-site Event', 'aes'),
+        '3' => __('Email', 'edusystem'),
+        '4' => __('Internet search', 'edusystem'),
+        '5' => __('On-site Event', 'edusystem'),
         default => '',
     };
 
@@ -276,8 +276,8 @@ function get_name_level($level_id)
 {
 
     $level = match ($level_id) {
-        '1' => __('Primary', 'aes'),
-        '2' => __('High School', 'aes'),
+        '1' => __('Primary', 'edusystem'),
+        '2' => __('High School', 'edusystem'),
         default => "",
     };
 
@@ -321,7 +321,7 @@ class TT_institutes_review_List_Table extends WP_List_Table
             case 'name_contact':
                 return ucwords($item['name_contact']) . ' ' . ucwords($item['lastname_contact']);
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-visibility'></span>" . __('View', 'form-plugin') . "</a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-visibility'></span>" . __('View', 'edusystem') . "</a>";
             default:
                 return print_r($item, true);
         }
@@ -345,14 +345,14 @@ class TT_institutes_review_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'name' => __('Name', 'aes'),
-            'number_phone' => __('Phone', 'aes'),
-            'email' => __('Email', 'aes'),
-            'country' => __('Country', 'aes'),
-            'name_rector' => __('Name Rector', 'aes'),
-            'name_contact' => __('Name Contact', 'aes'),
-            'created_at' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'name' => __('Name', 'edusystem'),
+            'number_phone' => __('Phone', 'edusystem'),
+            'email' => __('Email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'name_rector' => __('Name Rector', 'edusystem'),
+            'name_contact' => __('Name Contact', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
@@ -481,8 +481,8 @@ class TT_institutes_List_Table extends WP_List_Table
                 return ucwords($item['name_contact']) . ' ' . ucwords($item['lastname_contact']);
             case 'view_details':
                 return "
-                    <a style='margin:3px;' href='" . admin_url('/admin.php?page=add_admin_institutes_content&section_tab=fee_institute&institute_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-money-alt'></span>" . __('Fees', 'form-plugin') . "</a>
-                    <a style='margin:3px;' href='" . admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-edit'></span>" . __('Edit', 'form-plugin') . "</a>
+                    <a style='margin:3px;' href='" . admin_url('/admin.php?page=add_admin_institutes_content&section_tab=fee_institute&institute_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-money-alt'></span>" . __('Fees', 'edusystem') . "</a>
+                    <a style='margin:3px;' href='" . admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-edit'></span>" . __('Edit', 'edusystem') . "</a>
                 ";
             default:
                 return print_r($item, true);
@@ -507,14 +507,14 @@ class TT_institutes_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'name' => __('Name', 'aes'),
-            'number_phone' => __('Phone', 'aes'),
-            'email' => __('Email', 'aes'),
-            'country' => __('Country', 'aes'),
-            'name_rector' => __('Name Rector', 'aes'),
-            'name_contact' => __('Name Contact', 'aes'),
-            'created_at' => __('Created at', 'aes'),
-            'view_details' => __('Actions', 'aes'),
+            'name' => __('Name', 'edusystem'),
+            'number_phone' => __('Phone', 'edusystem'),
+            'email' => __('Email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'name_rector' => __('Name Rector', 'edusystem'),
+            'name_contact' => __('Name Contact', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;

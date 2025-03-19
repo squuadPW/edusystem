@@ -21,9 +21,9 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="submit" class="button button-primary"><?= __('Generate', 'aes'); ?></button>
+				<button type="submit" class="button button-primary"><?= __('Generate', 'edusystem'); ?></button>
 				<button type="button"
-					class="button button-outline-primary modal-close"><?= __('Cancel', 'aes'); ?></button>
+					class="button button-outline-primary modal-close"><?= __('Cancel', 'edusystem'); ?></button>
 			</div>
 		</form>
 	</div>

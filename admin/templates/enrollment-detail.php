@@ -1,8 +1,8 @@
 <div class="wrap">
     <?php if (isset($enrollment) && !empty($enrollment)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Enrollment Details', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Enrollment Details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Create Enrollment', 'aes'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Create Enrollment', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
@@ -19,7 +19,7 @@
     <?php } ?>
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary"
-            href="<?= admin_url('admin.php?page=add_admin_form_enrollments_content'); ?>"><?= __('Back', 'aes'); ?></a>
+            href="<?= admin_url('admin.php?page=add_admin_form_enrollments_content'); ?>"><?= __('Back', 'edusystem'); ?></a>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder">
@@ -34,14 +34,14 @@
 
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Student Information', 'aes'); ?></b>
+                                    <b><?= __('Student Information', 'edusystem'); ?></b>
                                 </h3>
                                 <div style="margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($enrollment) && !empty($enrollment)): ?>
                                             <div>
                                                 <label
-                                                    for="id_document"><b><?= __('ID Document Student', 'aes'); ?></b><span
+                                                    for="id_document"><b><?= __('ID Document Student', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="id_document"
                                                     value="<?php echo $student->id_document ?>" required readonly>
@@ -51,13 +51,13 @@
                                         <?php else: ?>
                                             <div>
                                                 <label
-                                                    for="id_document"><b><?= __('ID Document Student', 'aes'); ?></b><span
+                                                    for="id_document"><b><?= __('ID Document Student', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="id_document" required>
 
                                                 <div>
                                                     <button type="button"
-                                                        class="button button-primary" style="margin: 10px" id="search-student"><?= __('Search student by id document', 'aes'); ?></button>
+                                                        class="button button-primary" style="margin: 10px" id="search-student"><?= __('Search student by id document', 'edusystem'); ?></button>
                                                 </div>
                                             </div>
                                             <input type="hidden" name="student_id" required>
@@ -69,25 +69,25 @@
                                             <thead>
                                                 <tr>
                                                     <th scope="col" class=" manage-column column">
-                                                        <?= __('Type document', 'aes'); ?>
+                                                        <?= __('Type document', 'edusystem'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column column-primary">
-                                                        <?= __('ID document', 'aes'); ?>
+                                                        <?= __('ID document', 'edusystem'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column">
-                                                        <?= __('Student', 'aes'); ?>
+                                                        <?= __('Student', 'edusystem'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column">
-                                                        <?= __('Student email', 'aes'); ?>
+                                                        <?= __('Student email', 'edusystem'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column">
-                                                        <?= __('Student phone', 'aes'); ?>
+                                                        <?= __('Student phone', 'edusystem'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column">
-                                                        <?= __('Student country', 'aes'); ?>
+                                                        <?= __('Student country', 'edusystem'); ?>
                                                     </th>
                                                     <th scope="col" class=" manage-column column">
-                                                        <?= __('Institute', 'aes'); ?>
+                                                        <?= __('Institute', 'edusystem'); ?>
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -111,12 +111,12 @@
 
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Enrollment Information', 'aes'); ?></b>
+                                    <b><?= __('Enrollment Information', 'edusystem'); ?></b>
                                 </h3>
                                 <div style="display: flex; justify-content: space-evenly; margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($enrollment) && !empty($enrollment)): ?>
-                                            <label for="status_id"><b><?= __('Status', 'aes'); ?></b><span
+                                            <label for="status_id"><b><?= __('Status', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <select name="status_id" required>
                                                 <option value="">Select status</option>
@@ -132,7 +132,7 @@
                                             <input type="hidden" name="enrollment_id" id="enrollment_id"
                                                 value="<?= $enrollment->id; ?>">
                                         <?php else: ?>
-                                            <label for="status_id"><b><?= __('Status', 'aes'); ?></b><span
+                                            <label for="status_id"><b><?= __('Status', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <select name="status_id" required>
                                                 <option value="">Select status</option>
@@ -146,7 +146,7 @@
                                     </div>
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($enrollment) && !empty($enrollment)): ?>
-                                            <label for="code_subject"><b><?= __('Subject', 'aes'); ?></b><span
+                                            <label for="code_subject"><b><?= __('Subject', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <select name="code_subject">
                                                 <option value="">Select a subject</option>
@@ -158,7 +158,7 @@
                                                 <?php } ?>
                                             </select>
                                         <?php else: ?>
-                                            <label for="code_subject"><b><?= __('Subject', 'aes'); ?></b><span
+                                            <label for="code_subject"><b><?= __('Subject', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <select name="code_subject">
                                                 <option value="">Select a subject</option>
@@ -172,10 +172,10 @@
                                     </div>
                                     <div style="font-weight:400; text-align: center">
                                     <?php if (isset($enrollment) && !empty($enrollment)): ?>
-                                            <label for="calification"><b><?= __('Calification', 'aes'); ?></b><span class="text-danger">*</span></label><br>
+                                            <label for="calification"><b><?= __('Calification', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
                                             <input type="number" step="0.01" name="calification" value="<?= $enrollment->calification; ?>">
                                         <?php else: ?>
-                                            <label for="calification"><b><?= __('Calification', 'aes'); ?></b><span class="text-danger">*</span></label><br>
+                                            <label for="calification"><b><?= __('Calification', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
                                             <input type="number" step="0.01" name="calification">
                                         <?php endif; ?>
                                     </div>
@@ -183,12 +183,12 @@
 
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Period enrolled', 'aes'); ?></b>
+                                    <b><?= __('Period enrolled', 'edusystem'); ?></b>
                                 </h3>
                                 <div style="display: flex; justify-content: space-evenly; margin: 18px;">
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($enrollment) && !empty($enrollment)): ?>
-                                            <label for="code_period"><b><?= __('Period', 'aes'); ?></b><span
+                                            <label for="code_period"><b><?= __('Period', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <select name="code_period" required>
                                                 <option value="">Select a period</option>
@@ -200,7 +200,7 @@
                                                 <?php } ?>
                                             </select>
                                         <?php else: ?>
-                                            <label for="code_period"><b><?= __('Period', 'aes'); ?></b><span
+                                            <label for="code_period"><b><?= __('Period', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <select name="code_period" required>
                                                 <option value="">Select a period</option>
@@ -214,7 +214,7 @@
                                     </div>
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($enrollment) && !empty($enrollment)): ?>
-                                            <label for="cut_period"><b><?= __('Cut-off', 'aes'); ?></b><span
+                                            <label for="cut_period"><b><?= __('Cut-off', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <select name="cut_period" required>
                                                 <option value="">Select cut-off period</option>
@@ -231,7 +231,7 @@
                                             </select>
 
                                         <?php else: ?>
-                                            <label for="cut_period"><b><?= __('Cut-off', 'aes'); ?></b><span
+                                            <label for="cut_period"><b><?= __('Cut-off', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <select name="cut_period" required>
                                                 <option value="">Select cut-off period</option>
@@ -249,12 +249,12 @@
                             <?php if (isset($enrollment) && !empty($enrollment)): ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-success"><?= __('Saves changes', 'aes'); ?></button>
+                                        class="button button-success"><?= __('Saves changes', 'edusystem'); ?></button>
                                 </div>
                             <?php else: ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-success" id="create-enrollment"><?= __('Create enrollment', 'aes'); ?></button>
+                                        class="button button-success" id="create-enrollment"><?= __('Create enrollment', 'edusystem'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

@@ -4,16 +4,16 @@
 ?>
 <div class="content-dashboard">
     <?php if(count($access) == 0) { ?>
-        <h4 style="font-size:18px;text-align:center; margin-bottom: 10px"><?= __('You will soon be assigned your corresponding courses and will have access to','aes'); ?></h4>
+        <h4 style="font-size:18px;text-align:center; margin-bottom: 10px"><?= __('You will soon be assigned your corresponding courses and will have access to','edusystem'); ?></h4>
     <?php } else { ?>
-        <h4 style="font-size:18px;text-align:center; margin-bottom: 10px"><?= __('Access','aes'); ?></h4>
+        <h4 style="font-size:18px;text-align:center; margin-bottom: 10px"><?= __('Access','edusystem'); ?></h4>
     <?php } ?>
     <div style="display:flex">
         <div style="width: 100%; text-align: center">
-            <a style="width: 60% !important; <?php echo count($access) == 0 ? 'background-color: #002fbd75 !important; pointer-events: none;' : '' ?>" target="_blank" href="<?= home_url('?action=access_moodle_url&student_id='.$data->id); ?>" class="button button-primary"><?= __('Virtual Classroom','aes'); ?></a>
+            <a style="width: 60% !important; <?php echo count($access) == 0 ? 'background-color: #002fbd75 !important; pointer-events: none;' : '' ?>" target="_blank" href="<?= home_url('?action=access_moodle_url&student_id='.$data->id); ?>" class="button button-primary"><?= __('Virtual Classroom','edusystem'); ?></a>
         </div>
         <!-- <div style="width: 50%; text-align: start">
-            <a style="width: 70% !important; <?php echo count($access) == 0 ? 'background-color: #002fbd75 !important; pointer-events: none;' : '' ?>" target="_blank" href="<?= $url.'login-student?user='.$data->id_document; ?>" class="button button-primary"><?= __('Student area','aes'); ?></a>
+            <a style="width: 70% !important; <?php echo count($access) == 0 ? 'background-color: #002fbd75 !important; pointer-events: none;' : '' ?>" target="_blank" href="<?= $url.'login-student?user='.$data->id_document; ?>" class="button button-primary"><?= __('Student area','edusystem'); ?></a>
         </div> -->
     </div>
 </div>

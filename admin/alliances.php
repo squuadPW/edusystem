@@ -74,8 +74,8 @@ function add_admin_partners_content(){
                     'id' => $alliance_id
                 ]);
 
-                setcookie('message',__('Changes saved successfully.','aes'),time() + 3600,'/');
-                wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id='.$alliance_id.'&message='.__('Changes saved successfully','aes')));
+                setcookie('message',__('Changes saved successfully.','edusystem'),time() + 3600,'/');
+                wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id='.$alliance_id.'&message='.__('Changes saved successfully','edusystem')));
                 exit;
 
             }else{
@@ -113,8 +113,8 @@ function add_admin_partners_content(){
                     exit;
 
                 }else{
-                    setcookie('message-error',__( 'Existing email, please enter another email', 'aes' ),time() + 3600,'/');
-                    wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=add_alliance','aes'));
+                    setcookie('message-error',__( 'Existing email, please enter another email', 'edusystem' ),time() + 3600,'/');
+                    wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=add_alliance','edusystem'));
                     exit;
                 }
             }
@@ -231,7 +231,7 @@ class TT_alliances_review_List_Table extends WP_List_Table{
             case 'name_rector':
                 return ucwords($item['name_rector']).' '.ucwords($item['lastname_rector']);
             case 'view_details':
-                return "<a href='".admin_url('/admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id='.$item['id'])."' class='button button-primary'><span class='dashicons dashicons-visibility'></span>".__('View','form-plugin')."</a>";
+                return "<a href='".admin_url('/admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id='.$item['id'])."' class='button button-primary'><span class='dashicons dashicons-visibility'></span>".__('View','edusystem')."</a>";
 			default:
 				return print_r($item,true);
         }
@@ -251,14 +251,14 @@ class TT_alliances_review_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
-            'full_name'     => __('Full name','aes'),
-            'phone'         => __('Phone','aes'),
-            'email'         => __('Email','aes'),
-            'country'       => __('Country','aes'),
-            // 'state'         => __('State','aes'),
-            // 'city'          => __('City','aes'),
-            'created_at'       => __('Created at','aes'),
-            'view_details' => __('Actions','aes'),
+            'full_name'     => __('Full name','edusystem'),
+            'phone'         => __('Phone','edusystem'),
+            'email'         => __('Email','edusystem'),
+            'country'       => __('Country','edusystem'),
+            // 'state'         => __('State','edusystem'),
+            // 'city'          => __('City','edusystem'),
+            'created_at'       => __('Created at','edusystem'),
+            'view_details' => __('Actions','edusystem'),
         );
 
         return $columns;
@@ -365,8 +365,8 @@ class TT_alliances_List_Table extends WP_List_Table{
                 return ucwords($item['name_rector']).' '.ucwords($item['lastname_rector']);
             case 'view_details':
                 return "
-                <a href='".admin_url('/admin.php?page=add_admin_partners_content&section_tab=fee_alliance&alliance_id='.$item['id'])."' class='button button-primary'><span class='dashicons dashicons-money-alt'></span>".__('Fees','form-plugin')."</a>
-                <a href='".admin_url('/admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id='.$item['id'])."' class='button button-primary'></span><span class='dashicons dashicons-edit'></span>".__('Edit','form-plugin')."</a>";
+                <a href='".admin_url('/admin.php?page=add_admin_partners_content&section_tab=fee_alliance&alliance_id='.$item['id'])."' class='button button-primary'><span class='dashicons dashicons-money-alt'></span>".__('Fees','edusystem')."</a>
+                <a href='".admin_url('/admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id='.$item['id'])."' class='button button-primary'></span><span class='dashicons dashicons-edit'></span>".__('Edit','edusystem')."</a>";
 			default:
 				return print_r($item,true);
         }
@@ -386,13 +386,13 @@ class TT_alliances_List_Table extends WP_List_Table{
 	function get_columns(){
 
         $columns = array(
-            'full_name'     => __('Full name','aes'),
-            'phone'         => __('Phone','aes'),
-            'email'         => __('Email','aes'),
-            'country'       => __('Country','aes'),
-            'state'         => __('State','aes'),
-            'city'          => __('City','aes'),
-            'view_details' => __('Actions','aes'),
+            'full_name'     => __('Full name','edusystem'),
+            'phone'         => __('Phone','edusystem'),
+            'email'         => __('Email','edusystem'),
+            'country'       => __('Country','edusystem'),
+            'state'         => __('State','edusystem'),
+            'city'          => __('City','edusystem'),
+            'view_details' => __('Actions','edusystem'),
         );
 
         return $columns;
@@ -476,9 +476,9 @@ function get_institutes_from_alliance($alliance_id){
 
 function get_name_status_alliance($status_id){
     $status = match($status_id){
-        '0' => __('Pending','aes'),
-        '1' => __('Approved','aes'),
-        '2' => __('Declined','aes'),
+        '0' => __('Pending','edusystem'),
+        '1' => __('Approved','edusystem'),
+        '2' => __('Declined','edusystem'),
         default => '',
     };
 
@@ -488,8 +488,8 @@ function get_name_status_alliance($status_id){
 function get_name_type($type_id){
 
     $type = match($type_id){
-        '1' => __('Junior','aes'),
-        '2' => __('Senior','aes'),
+        '1' => __('Junior','edusystem'),
+        '2' => __('Senior','edusystem'),
         default => '',
     };
 

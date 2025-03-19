@@ -6,7 +6,7 @@ $table_teachers = $wpdb->prefix . 'teachers';
 $teacher = get_teacher_details($current_user->user_email);
 ?>
 
-<h2 style="font-size:24px;text-align:center;"><?= __('Documents', 'aes'); ?></h2>
+<h2 style="font-size:24px;text-align:center;"><?= __('Documents', 'edusystem'); ?></h2>
 
 <form method="post"
     action="<?= wc_get_endpoint_url('teacher-documents', '', get_permalink(get_option('woocommerce_myaccount_page_id'))) . '?actions=save_documents_teacher'; ?>"
@@ -19,11 +19,11 @@ $teacher = get_teacher_details($current_user->user_email);
         <thead>
             <tr>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-document"><span
-                        class="nobr"><?= __('Document', 'aes'); ?></span></th>
+                        class="nobr"><?= __('Document', 'edusystem'); ?></span></th>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-status"><span
-                        class="nobr"><?= __('Status', 'aes'); ?></span></th>
+                        class="nobr"><?= __('Status', 'edusystem'); ?></span></th>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-action"><span
-                        class="nobr"><?= __('action', 'aes'); ?></span></th>
+                        class="nobr"><?= __('action', 'edusystem'); ?></span></th>
         </thead>
         <tbody>
             <?php $documents = get_teacher_documents($teacher->id); ?>
@@ -31,7 +31,7 @@ $teacher = get_teacher_details($current_user->user_email);
                 <?php if ($document->is_visible) { ?>
                     <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                            data-title="<?= __('Document', 'aes'); ?>">
+                            data-title="<?= __('Document', 'edusystem'); ?>">
                             <input type="hidden" name="<?= 'file_teacher_' . $teacher->id . '_id[]'; ?>"
                                 value="<?= $document->id; ?>">
                             <?php $name = get_name_document($document->document_id); ?>
@@ -48,7 +48,7 @@ $teacher = get_teacher_details($current_user->user_email);
                             </span>
                         </td>
                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
-                            data-title="<?= __('Status', 'aes'); ?>">
+                            data-title="<?= __('Status', 'edusystem'); ?>">
                             <input type="hidden" name="<?= 'status_file_' . $document->id . '_teacher_id_' . $teacher->id; ?>"
                                 value="<?= $document->status; ?>">
                             <input type="hidden"
@@ -57,7 +57,7 @@ $teacher = get_teacher_details($current_user->user_email);
                             <?= $status = get_status_document($document->status); ?>
                         </td>
                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                            data-title="<?= __('Action', 'aes'); ?>">
+                            data-title="<?= __('Action', 'edusystem'); ?>">
                             <?php if ($document->status == 0 || $document->status == 3 || $document->status == 4) { ?>
                                 <div class="custom-file">
                                     <input type="file" class="custom-file-input"
@@ -78,7 +78,7 @@ $teacher = get_teacher_details($current_user->user_email);
     </table>
 
     <div style="display:block;text-align:center;">
-        <button class="submit" type="submit"><?= __('Send Documents', 'aes'); ?></button>
+        <button class="submit" type="submit"><?= __('Send Documents', 'edusystem'); ?></button>
     </div>
 </form>
 
