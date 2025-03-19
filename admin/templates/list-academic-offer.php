@@ -16,9 +16,6 @@
 			</div>
 			<?php setcookie('message-error', '', time(), '/'); ?>
 		<?php } ?>
-		<!-- <div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
-			<a href="<?= admin_url('admin.php?page=add_admin_form_academic_offers_content&action=update_matrices'); ?>" class="button button-outline-primary"><?= __('Update all matrices','aes'); ?></a>
-		</div> -->
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 				<a href="<?= admin_url('admin.php?page=add_admin_form_academic_offers_content&section_tab=add_offer'); ?>" class="button button-outline-primary"><?= __('Add Offer','aes'); ?></a>
 			</div>

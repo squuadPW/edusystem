@@ -30,7 +30,6 @@ function create_tables()
   $table_student_califications = $wpdb->prefix . 'student_califications';
   $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
   $table_academic_projection_base = $wpdb->prefix . 'academic_projection_base';
-  $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
   $table_institutes = $wpdb->prefix . 'institutes';
   $table_alliances = $wpdb->prefix . 'alliances';
   $table_grades = $wpdb->prefix . 'grades';
@@ -56,14 +55,17 @@ function create_tables()
   $table_requests = $wpdb->prefix . 'requests';
   $table_type_requests = $wpdb->prefix . 'type_requests';
   $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
-  $table_equivalence_matrix = $wpdb->prefix . 'equivalence_matrix';
+  $table_pensum = $wpdb->prefix . 'pensum';
 
-  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_equivalence_matrix}'") != $table_equivalence_matrix) {
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_pensum}'") != $table_pensum) {
     dbDelta(
-      "CREATE TABLE " . $table_equivalence_matrix . " (
+      "CREATE TABLE " . $table_pensum . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         name TEXT NOT NULL,
         matrix JSON NULL,
+        `type` TEXT NOT NULL,
+        `status` INT(11) NOT NULL,
+        program_id TEXT NULL,
         institute_id INT(11) NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
@@ -1077,17 +1079,6 @@ function create_tables()
       'projection' => json_encode($graduated),
       'created_at' => date('Y-m-d H:i:s')
     ]);
-  }
-
-  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subject_matrix_regular}'") != $table_school_subject_matrix_regular) {
-    dbDelta(
-      "CREATE TABLE " . $table_school_subject_matrix_regular . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        subject TEXT NOT NULL,
-        subject_id INT(11) NOT NULL,
-        type TEXT NOT NULL,
-        PRIMARY KEY (id))$charset_collate;"
-    );
   }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_pre_scholarship}'") != $table_pre_scholarship) {

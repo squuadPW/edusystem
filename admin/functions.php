@@ -30,7 +30,7 @@ require plugin_dir_path(__FILE__) . 'alliance/institutes-registered.php';
 require plugin_dir_path(__FILE__) . 'alliance/payments.php';
 require plugin_dir_path(__FILE__) . 'academic-offers.php';
 require plugin_dir_path(__FILE__) . 'requests.php';
-require plugin_dir_path(__FILE__) . 'equivalence-matrix.php';
+require plugin_dir_path(__FILE__) . 'pensum.php';
 
 function admin_form_plugin_scripts()
 {
@@ -41,7 +41,7 @@ add_action('wp_enqueue_scripts', 'admin_form_plugin_scripts');
 
 function aes_scripts_admin()
 {
-    $version = '2.0.3';
+    $version = '2.0.5';
     wp_enqueue_style('flatpickr', plugins_url('aes') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('aes') . '/public/assets/css/intlTelInput.css');
     wp_enqueue_style('style-admin', plugins_url('aes') . '/admin/assets/css/style.css', array(), $version, 'all');
@@ -55,14 +55,14 @@ function aes_scripts_admin()
         wp_enqueue_script('student-payment', plugins_url('aes') . '/admin/assets/js/payment.js', array('jquery'), $version, true);
     }
 
-    if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_equivalence_matrix_content') {
+    if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_pensum_content') {
         wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
         wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', ['jquery']);
 
         // Especifica jQuery como dependencia y usa la versión empaquetada con WordPress
         wp_enqueue_script(
-            'equivalence-matrix',
-            plugins_url('aes') . '/admin/assets/js/equivalence-matrix.js',
+            'pensum',
+            plugins_url('aes') . '/admin/assets/js/pensum.js',
             ['jquery', 'select2'], // Asegura que jQuery y Select2 se carguen primero
             $version,
             true
@@ -315,8 +315,8 @@ function add_custom_admin_page()
     add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'aes'), __('Academic periods', 'aes'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'aes'), __('Academic offers', 'aes'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Requests', 'aes'), __('Requests', 'aes'), 'manager_requests_aes', 'add_admin_form_requests_content', 'add_admin_form_requests_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Equivalence matrix', 'aes'), __('Equivalence matrix', 'aes'), 'manager_equivalence_matrix_aes', 'add_admin_form_equivalence_matrix_content', 'add_admin_form_equivalence_matrix_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'aes'), __('Enrollments', 'aes'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Pensum', 'aes'), __('Pensum', 'aes'), 'manager_pensums', 'add_admin_form_pensum_content', 'add_admin_form_pensum_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('School subjects', 'aes'), __('School subjects', 'aes'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Scholarship students', 'aes'), __('Scholarship students', 'aes'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Available scholarships', 'aes'), __('Available scholarships', 'aes'), 'manager_availables_scholarship_aes', 'add_admin_form_available_scholarships_content', 'add_admin_form_available_scholarships_content', 10);
@@ -404,9 +404,9 @@ function add_cap_to_administrator()
     $role->add_cap('manager_academic_projection_aes');
     $role->add_cap('manager_teachers_aes');
     $role->add_cap('manager_enrollments_aes');
+    $role->add_cap('manager_pensums');
     $role->add_cap('manager_academic_offers_aes');
     $role->add_cap('manager_requests_aes');
-    $role->add_cap('manager_equivalence_matrix_aes');
     $role->add_cap('manager_configuration_options_aes');
     $role->add_cap('manager_send_email_aes');
     $role->add_cap('manager_send_notification_aes');

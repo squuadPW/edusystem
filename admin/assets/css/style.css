@@ -524,4 +524,8 @@ div#application-passwords-section {
 
 #wp-admin-bar-new-content {
   display: none;
+}
+
+.select2-container--default {
+  width: 100% !important;
 }/*# sourceMappingURL=style.css.map */

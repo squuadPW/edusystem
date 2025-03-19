@@ -44,7 +44,7 @@ function load_automatically_enrollment($expected_projection, $student)
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_students = $wpdb->prefix . 'students';
-    $matrix_regular = only_matrix_regular();
+    $matrix_regular = only_pensum_regular($student->program_id);
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
     $load = load_current_cut_enrollment();
     $matrix_elective = load_available_electives($student, $load['code'], cut: $load['cut']);
@@ -78,7 +78,10 @@ function load_automatically_enrollment($expected_projection, $student)
 
         if ($expected == 'R') {
             $expected_subject = $matrix_regular[$count_expected_subject];
+            error_log('expected '. $expected_subject->subject_id);
             $subject = get_subject_details($expected_subject->subject_id);
+            error_log('subject '. json_encode($subject));
+
             $inscriptions = $wpdb->get_results(
                 $wpdb->prepare(
                     "SELECT * FROM {$table_student_period_inscriptions} 
@@ -94,6 +97,8 @@ function load_automatically_enrollment($expected_projection, $student)
                 continue;
             }
 
+            error_log('no la ha visto');
+
             $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
             if (!$offer_available_to_enroll) {
                 $count_expected_subject++;
@@ -103,6 +108,8 @@ function load_automatically_enrollment($expected_projection, $student)
                 }
                 continue;
             }
+
+            error_log('hay ofertas disponibles');
 
             $force_skip = false;
             $subjectIds = array_column($projection_obj, 'subject_id');
@@ -292,7 +299,7 @@ function load_inscriptions_regular_valid($student)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $matrix_regular = only_matrix_regular();
+    $matrix_regular = only_pensum_regular($student->program_id);
 
     $regulars_ids = [];
     foreach ($matrix_regular as $key => $regular) {
@@ -340,7 +347,7 @@ function generate_projection_student($student_id, $force = false)
         return;
     }
 
-    $matrix_regular = get_pensum_student($student_id);
+    $matrix_regular = get_current_pensum();
     $projection = [];
     $projection_obj = [];
 

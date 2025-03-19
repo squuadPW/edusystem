@@ -6,14 +6,12 @@ function add_admin_form_school_subjects_content()
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         if ($_GET['section_tab'] == 'subject_details') {
             $subject_id = $_GET['subject_id'];
-            $equivalence = $_GET['equivalence'] ?? false;
-            $subject = get_subject_details($subject_id, $equivalence);
+            $subject = get_subject_details($subject_id);
             $teachers = get_teachers_active();
             include (plugin_dir_path(__FILE__) . 'templates/school-subject-detail.php');
         }
         if ($_GET['section_tab'] == 'add_subject') {
             $teachers = get_teachers_active();
-            $equivalence = false;
             include (plugin_dir_path(__FILE__) . 'templates/school-subject-detail.php');
         }
 
@@ -70,20 +68,10 @@ function add_admin_form_school_subjects_content()
                 ]);
             }
 
-            $section_tab = '';
-            if($_GET['equivalence']) {
-                $section_tab = '&section_tab=equivalence_subjects';
-            }
-
-            update_matrices();
             setcookie('message', __('Changes saved successfully.', 'aes'), time() + 10, '/');
-            wp_redirect(admin_url('admin.php?page=add_admin_form_school_subjects_content') . $section_tab);
-            exit;
-        } else if ($_GET['action'] == 'update_matrices') {
-            update_matrices();
             wp_redirect(admin_url('admin.php?page=add_admin_form_school_subjects_content'));
             exit;
-        }  else {
+        } else {
             $list_school_subjects = new TT_school_subjects_all_List_Table;
             $list_school_subjects->prepare_items();
             include (plugin_dir_path(__FILE__) . 'templates/list-school-subjects.php');
@@ -255,34 +243,10 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
 
 }
 
-function update_matrices() {
-    global $wpdb;
-    $table_school_subjects = $wpdb->prefix . 'school_subjects';
-    $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
-    
-    // Truncar las tablas antes de hacer los inserts
-    $wpdb->query("TRUNCATE TABLE {$table_school_subject_matrix_regular}");
-    
-    // Obtener los sujetos regulares
-    $subjects_regular = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1 AND `type` <> 'elective' ORDER BY matrix_position ASC");
-    
-    // Insertar los sujetos regulares
-    foreach ($subjects_regular as $regular) {
-        $wpdb->insert($table_school_subject_matrix_regular, [
-            'subject' => $regular->name,
-            'subject_id' => $regular->id,
-            'type' => $regular->type
-        ]);
-    }
-}
-
-function get_subject_details($subject_id, $equivalence = false)
+function get_subject_details($subject_id)
 {
     global $wpdb;
     $table = $wpdb->prefix.'school_subjects';
-    if ($equivalence) {
-        $table = $wpdb->prefix . 'equivalence_subjects';
-    }
 
     $subject = $wpdb->get_row("SELECT * FROM {$table} WHERE id={$subject_id}");
     return $subject;
@@ -295,20 +259,4 @@ function get_subject_details_code($code_subject)
 
     $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE code_subject='{$code_subject}'");
     return $subject;
-}
-
-function only_matrix_regular()
-{
-    global $wpdb;
-    $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
-    $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular} WHERE `type` = 'regular' ORDER BY id ASC");
-    return $matrix_regular;
-}
-
-function all_matrix_regular()
-{
-    global $wpdb;
-    $table_school_subject_matrix_regular = $wpdb->prefix . 'school_subject_matrix_regular';
-    $matrix_regular = $wpdb->get_results("SELECT * FROM {$table_school_subject_matrix_regular} ORDER BY id ASC");
-    return $matrix_regular;
 }

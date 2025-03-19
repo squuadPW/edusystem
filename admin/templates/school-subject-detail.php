@@ -28,7 +28,7 @@
                     <div class="inside">
 
                         <form method="post"
-                            action="<?= admin_url('admin.php?page=add_admin_form_school_subjects_content&action=save_subject_details&equivalence=') . $equivalence; ?>">
+                            action="<?= admin_url('admin.php?page=add_admin_form_school_subjects_content&action=save_subject_details'); ?>">
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
