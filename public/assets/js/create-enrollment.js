@@ -356,7 +356,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
       filename: filename,
       image: { type: "jpeg", quality: 0.98 },
       jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-      html2canvas: { scale: 2 },
+      html2canvas: { scale: 3 },
       pagebreak: { after: "#part1" },
     };
 

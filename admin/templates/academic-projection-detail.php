@@ -4,10 +4,7 @@
     
 ?>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <?php include(plugin_dir_path(__FILE__) . 'table-download-grades.php'); ?>
-<?php include(plugin_dir_path(__FILE__) . 'table-download-grades-loading.php'); ?>
 <div class="wrap">
     <?php if (isset($projection) && !empty($projection)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Academic projection', 'edusystem'); ?></h2>
@@ -239,8 +236,8 @@
                                 
                                     <div style="display: flex; width: 100%; text-align: center">
                                         <div style="flex: 1; padding: 20px;">
-                                            <button type="button" class="button button-outline-primary" id="download-grades">
-                                                <?= __('Download grades','edusystem'); ?>
+                                            <button type="button" class="button button-outline-primary" id="preview-grades">
+                                                <?= __('Preview grades','edusystem'); ?>
                                             </button>
                                         </div>
                                     </div>
@@ -256,36 +253,6 @@
                                 </div>
                             <?php endif; ?>
                         </form>
-
-                        <!-- <div>
-                            <strong>Step-by-step registration process</strong><br>
-                            <ul>
-                                <li>1. Check the checkmark to the left of the subject name, this indicates that it <strong>will be selected.</strong></li>
-                                <li>2. Checking the “During this period” checkmark indicates that <strong>this student will take this course during the current period and cut-off.</strong></li>
-                                <li>3. Then we must fill in the period, and the cut in which this subject is <strong>being viewed.</strong></li>
-                                <li>4. <strong>Save</strong> <br>
-                                    <ul style="margin-left: 20px">
-                                        <li>- Depending on what we want, “save and send email” <strong>will send a welcome email to the student</strong> and the email will show the subjects that are marked with “During this period”.</li>
-                                        <li>- And “only save changes” will save the data <strong>without notifying the student</strong>, in case any changes are required.</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                            <div>
-                                <strong>Upload manual califications</strong>
-                                <ul>
-                                    <li>1. When saving the data with the selected subject, its respective period and cut-off. The grade can be 0. This will create an enrollment with status “Active” and the grade will be pending evolution.</li>
-                                    <li>2. To load a rating, we must fill in the respective box and save. Depending on the minimum passing grade of the subject, it will mark the enrollment as pass or fail. </li>
-                                    <li>3. If we want to close the subject, we must uncheck the box “During this period” to make the calculation of the grade.</li>
-                                    <li>4. If approved, the subject will be locked or will go to a “closed” status where it will no longer be editable until the registration is deleted. And the enrollment will go to a status of “Approved”.</li>
-                                    <li>5. In case of failure, the enrollment will be set to “Failed” status and the subject will be deselected, clearing the period, cut-off and grade fields. Ready to be re-enrolled.</li>
-                                </ul>
-                                <strong>Automatic califications from moodle</strong>
-                                <ul>
-                                    <li>1. In the previous screen, at the top right we have the button “update notes from moodle” this will download the current notes from moodle, and will apply the same process as if it were manual, validate the minimum passing grade, to pass or fail the subject, close or leave open the subject, besides this will update the grades with the ones coming from moodle.</li>
-                                </ul>
-                            </div>
-                        </div> -->
-
                     </div>
                 </div>
             </div>

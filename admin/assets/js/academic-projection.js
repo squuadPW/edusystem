@@ -26,71 +26,43 @@ function academic_period_changed(key) {
   }
 }
 
-let download_grades = document.getElementById("download-grades");
-let modalGeneratingGrades = document.getElementById("modalGeneratingGrades");
+let preview_grades = document.getElementById("preview-grades");
+if (preview_grades) {
+    preview_grades.addEventListener("click", async (e) => {
+      document.getElementById('modal-grades').style.display = 'block';
+      document.body.classList.add("modal-open");
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 100);
+    });
+}
 
+let close_modal_grades = document.getElementById("close-modal-grades");
+if (close_modal_grades) {
+    close_modal_grades.addEventListener("click", async (e) => {
+      document.getElementById('modal-grades').style.display = 'none';
+      document.body.classList.remove("modal-open");
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 100);
+    });
+}
+
+
+let download_grades = document.getElementById("download-grades");
 if (download_grades) {
     download_grades.addEventListener("click", async (e) => {
-        document.body.classList.add("modal-open");
-        modalGeneratingGrades.style.display = 'block';
-        download_grades.disabled = true;
-        
-        const { jsPDF } = window.jspdf;
-        const table = document.getElementById("template_certificate");
-
-        // 1. Mostrar tabla temporalmente
-        const originalDisplay = table.style.display;
-        table.style.display = "block";
-
-        // 2. Captura optimizada
-        const canvas = await html2canvas(table, {
-            scale: 1.5,
-            useCORS: true,
-            logging: false,
-            backgroundColor: "#FFFFFF"
-        });
-
-        // 3. Conversión a JPEG comprimido
-        const imgData = canvas.toDataURL("image/jpeg", 0.7);
-
-        // 4. Crear PDF con compresión
-        const doc = new jsPDF({
-            orientation: "portrait",
-            unit: "mm",
-            format: "a4",
-            compress: true
-        });
-
-        // 5. Cálculo de dimensiones y posición
-        const pageWidth = 210;
-        const margin = 5;
-        const maxContentWidth = pageWidth - (2 * margin);
-
-        // Calcular dimensiones manteniendo relación de aspecto
-        const imgRatio = canvas.width / canvas.height;
-        let imgWidth = maxContentWidth;
-        let imgHeight = maxContentWidth / imgRatio;
-
-        // Posición superior izquierda con márgenes
-        const xPos = margin;
-        const yPos = margin;
-
-        // 6. Añadir imagen en posición superior
-        doc.addImage(
-            imgData,
-            "JPEG",
-            xPos,       // Posición horizontal desde izquierda
-            yPos,       // Posición vertical desde arriba
-            imgWidth,  // Ancho ajustado
-            imgHeight   // Alto proporcional
-        );
-
-        doc.save("calificaciones.pdf");
-
-        // 7. Restaurar estado original
-        table.style.display = originalDisplay;
-        modalGeneratingGrades.style.display = 'none';
-        download_grades.disabled = false;
-        document.body.classList.remove("modal-open");
+      download_grades.disabled = true;
+      var element = document.getElementById("content-pdf");
+      var opt = {
+        margin: [0.2, 0, 0, 0],
+        filename: 'califications.pdf',
+        image: { type: "jpeg", quality: 0.98 },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        html2canvas: { scale: 3 }
+      };
+  
+      html2pdf().set(opt).from(element).save();
+      download_grades.disabled = false;
     });
 }

@@ -528,4 +528,16 @@ div#application-passwords-section {
 
 .select2-container--default {
   width: 100% !important;
+}
+
+.modal-enrollment {
+  border-radius: 0px !important;
+  width: 210mm !important;
+  overflow: auto;
+}
+@media screen and (max-width: 767px) {
+  .modal-enrollment {
+    width: 100% !important;
+    margin: 0 !important;
+  }
 }/*# sourceMappingURL=style.css.map */
