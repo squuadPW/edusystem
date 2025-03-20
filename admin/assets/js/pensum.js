@@ -109,8 +109,6 @@ jQuery(document).ready(function ($) {
                 sortableList.querySelectorAll('input[name="subjects[]"]').forEach((input, index) => {
                     input.value = subjects[index];
                 });
-    
-                console.log('Nuevo orden:', subjects); // Para depuración
             },
         });
     }

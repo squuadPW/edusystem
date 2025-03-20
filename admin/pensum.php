@@ -474,7 +474,6 @@ function update_equivalence_califications($student_id) {
     $current_period = $load['code'];
     $projection_obj = json_decode($projection->projection);
 
-    error_log('student ' . $student_id);
     if (!$pensum_institute) {
         foreach ($projection_obj as $key => $value) {
             if ($projection_obj[$key]->type == 'equivalence') {
