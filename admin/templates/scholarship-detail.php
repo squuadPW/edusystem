@@ -69,7 +69,7 @@
                                     <td><?= $grade ? $grade->name : '' ?></td>
 
                                     <th scope="row"><label for="input_id"><?= __('Program','edusystem').':'; ?></label></th>
-                                    <td><?= $student->program_id == 'edusystem' ? 'Dual diploma' : '' ?></td>
+                                    <td><?= $student->program_id == 'aes' ? 'Dual diploma' : '' ?></td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><label for="input_id"><?= __('Institute','edusystem').':'; ?></label></th>

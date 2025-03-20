@@ -249,7 +249,7 @@ function redirect_to_checkout($program, $grade, $from_webinar = false, $is_schol
     global $woocommerce;
     $woocommerce->cart->empty_cart();
 
-    if ($program == 'edusystem') {
+    if ($program == 'aes') {
         switch ($grade) {
             case '1':
                 $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
