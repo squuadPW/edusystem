@@ -1,6 +1,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<?php include(plugin_dir_path(__FILE__) . 'table-download-grades-subject.php'); ?>
+<?php include(plugin_dir_path(__FILE__) . 'document-export-grades-subject.php'); ?>
 
 <div id="template_subject" style=" margin-top: 30px;">
     <div style="display: flex; justify-content: space-between; align-items: center;">

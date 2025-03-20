@@ -4,7 +4,7 @@
     
 ?>
 
-<?php include(plugin_dir_path(__FILE__) . 'table-download-grades.php'); ?>
+<?php include(plugin_dir_path(__FILE__) . 'document-export-grades.php'); ?>
 <div class="wrap">
     <?php if (isset($projection) && !empty($projection)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Academic projection', 'edusystem'); ?></h2>
