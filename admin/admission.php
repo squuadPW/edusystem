@@ -311,7 +311,7 @@ function add_admin_form_admission_content()
                         }
 
                         if ($document_changed->document_id == 'CERTIFIED NOTES HIGH SCHOOL') {
-                            update_equivalence_califications($student_id);
+                            update_equivalence_califications($id);
                         }
                     }
                 }
