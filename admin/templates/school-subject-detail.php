@@ -110,7 +110,7 @@
                                             <input type="number" step="0.01"  name="min_pass" value="" required>
                                         <?php endif; ?>
                                     </div>
-                                    <div style="font-weight:400; text-align: center">
+                                    <!-- <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
                                                 for="matrix_position"><b><?= __('Matrix position', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
@@ -120,7 +120,8 @@
                                                     class="text-danger">*</span></label><br>
                                             <input type="number" step="0"  name="matrix_position" value="" required>
                                         <?php endif; ?>
-                                    </div>
+                                    </div> -->
+                                    <input type="hidden" name="matrix_position" value="<?= isset($subject) ? $subject->matrix_position : ''; ?>">
                                     <input type="hidden" name="max_students" value="<?= isset($subject) ? $subject->max_students : ''; ?>">
                                     <!-- <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
