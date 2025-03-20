@@ -8,15 +8,15 @@
                 class='dashicons dashicons-no-alt'></span></span>
         <div class="modal-body" id="content-pdf">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="margin-left: 10px">
+                <div style="margin-left: 10px; flex: 1">
                     <?php include(plugin_dir_path(__FILE__) . 'img-logo.php'); ?>
                 </div>
-                <div style="text-align: center;">
+                <div style="text-align: center; flex: 1">
                     <div>United States of America</div>
                     <div>American Elite School</div>
                     <div>Miami, Florida</div>
                 </div>
-                <div style="text-align: center; margin-right: 10px">
+                <div style="text-align: center; margin-right: 10px; flex: 1">
                     <div>Score Record P.A.: <?= strtoupper($projections_result['academic_period']->name) ?></div>
                     <div>Cod. Val.: </div>
                 </div>
