@@ -311,15 +311,15 @@ function add_custom_admin_page()
         'dashicons-welcome-learn-more',
         4
     );
-    add_submenu_page('add_admin_form_academic_content', __('Academic projection', 'edusystem'), __('Academic projection', 'edusystem'), 'manager_academic_projection_aes', 'add_admin_form_academic_projection_content', 'add_admin_form_academic_projection_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'edusystem'), __('Academic periods', 'edusystem'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'edusystem'), __('Academic offers', 'edusystem'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Requests', 'edusystem'), __('Requests', 'edusystem'), 'manager_requests_aes', 'add_admin_form_requests_content', 'add_admin_form_requests_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Academic projection', 'edusystem'), __('Academic projection', 'edusystem'), 'manager_academic_projection_aes', 'add_admin_form_academic_projection_content', 'add_admin_form_academic_projection_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'edusystem'), __('Enrollments', 'edusystem'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Pensum', 'edusystem'), __('Pensum', 'edusystem'), 'manager_pensums', 'add_admin_form_pensum_content', 'add_admin_form_pensum_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('School subjects', 'edusystem'), __('School subjects', 'edusystem'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Requests', 'edusystem'), __('Requests', 'edusystem'), 'manager_requests_aes', 'add_admin_form_requests_content', 'add_admin_form_requests_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Scholarship students', 'edusystem'), __('Scholarship students', 'edusystem'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Available scholarships', 'edusystem'), __('Available scholarships', 'edusystem'), 'manager_availables_scholarship_aes', 'add_admin_form_available_scholarships_content', 'add_admin_form_available_scholarships_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Pensum', 'edusystem'), __('Pensum', 'edusystem'), 'manager_pensums', 'add_admin_form_pensum_content', 'add_admin_form_pensum_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('School subjects', 'edusystem'), __('School subjects', 'edusystem'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
     remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
 
     add_menu_page(
