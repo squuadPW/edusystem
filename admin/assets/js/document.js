@@ -519,7 +519,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document_certificate_button.addEventListener("click", function () {
       let document_certificate_id = document.querySelector("input[name=document_certificate_id]").value;
       let user_signature_id = document.querySelector("select[name=user_signature_id]").value;
-      let student_id = document.querySelector("input[name=student_id]").value;
+      let student_id = document.querySelector("input[name=student_document_certificate_id]").value;
       const XHR = new XMLHttpRequest();
       XHR.open("POST", generate_document.url, true);
       XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -529,6 +529,26 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       XHR.onload = function () {
         if (this.readyState == "4" && XHR.status === 200) {
+
+          const qrCode = new QRCodeStyling({
+            width: 100,
+            height: 100,
+            type: "canvas",
+            data: this.response.url,
+            dotsOptions: {
+              color: "#000000",
+              type: "rounded",
+            },
+            backgroundOptions: {
+                color: "#ffffff",
+            },
+            imageOptions: {
+              crossOrigin: "anonymous",
+              margin: 0,
+            },
+          });
+          qrCode.append(document.getElementById("qrcode"));
+
           const modal_body = document.getElementById("modal-body-content");
           modal_body.innerHTML = this.response.html;
 
@@ -570,6 +590,11 @@ document.addEventListener("DOMContentLoaded", function () {
       close_modal_grades.addEventListener("click", async (e) => {
         document.getElementById('modal-grades').style.display = 'none';
         document.body.classList.remove("modal-open");
+
+        document.querySelector("input[name=document_certificate_id]").value = '';
+        document.querySelector("select[name=user_signature_id]").value = '';
+        document.querySelector("input[name=student_document_certificate_id]").value = '';
+
         setTimeout(() => {
           window.scrollTo(0, 0);
         }, 100);

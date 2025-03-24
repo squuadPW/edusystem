@@ -1446,6 +1446,11 @@ add_action('wp_ajax_last_access_moodle', 'last_access_moodle');
 
 function generate_document()
 {
+    global $wpdb;
+    $table_certificates = $wpdb->prefix . 'certificates';
+    $today_timestamp = new DateTime('now', new DateTimeZone('UTC'));
+    $emission_date = $today_timestamp->format('Y-m-d');
+
     $student_id = $_POST['student_id'];
     $document_certificate_id = $_POST['document_certificate_id'];
     $user_signature_id = $_POST['user_signature_id'];
@@ -1503,7 +1508,9 @@ function generate_document()
 
     $html .= '</div>';
 
-    wp_send_json(array('user_signature_id' => $user_signature_id, 'html' => $html));
+    $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, $program, 1, $student, $emission_date);
+
+    wp_send_json(array('url' => $url, 'html' => $html));
     die();
 }
 

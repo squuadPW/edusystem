@@ -619,6 +619,7 @@
     </form>
 </div>
 
+<?php if(!empty($documents_certificates)) { ?>
 <div id='documentcertificate-modal' class='modal' style='display:none'>
     <div class='modal-content' style="width: 70%;">
         <div class="modal-header">
@@ -627,7 +628,7 @@
         </div>
         <div class="modal-body" style="padding:10px;">
             <input type="hidden" name="document_certificate_id">
-            <input type="hidden" name="student_id" value="<?= $student->id; ?>">
+            <input type="hidden" name="student_document_certificate_id" value="<?= $student->id; ?>">
             <div>
                 <label for="user_signature_id">Who signed this document</label><br>
                 <select name="user_signature_id" required>
@@ -647,3 +648,4 @@
     </div>
 </div>
 <?php include(plugin_dir_path(__FILE__) . 'document-export.php'); ?>
+<?php } ?>
