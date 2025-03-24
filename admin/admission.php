@@ -1460,8 +1460,8 @@ function generate_document()
     $user_signature = get_user_by('id', $signature->user_id);
     $load = load_current_cut();
     $academic_period = get_period_details_code($load['code']);
-    $start_academic_period = date('M d, Y', $academic_period->start_date);
-    $end_academic_period = date('M d, Y', $academic_period->end_date);
+    $start_academic_period = date('M d, Y', strtotime($academic_period->start_date));
+    $end_academic_period = date('M d, Y', strtotime($academic_period->end_date));
 
     $span_open = '<span class="text-uppercase">';
     $span_close = '</span>';
