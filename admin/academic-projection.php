@@ -843,3 +843,99 @@ function update_count_moodle_pending($count_fixed = '') {
         'count' => $count
     ], ['id' => 1]);
 } 
+
+function table_notes_html($student_id) {
+    $projection = get_projection_by_student($student_id);
+    $html = '';
+    
+    $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px'>
+                <thead>
+                    <tr>
+                        <th colspan='2'>CODE</th>
+                        <th colspan='4'>COURSE</th>
+                        <th colspan='1'>CH</th>
+                        <th colspan='1'>0-100</th>
+                        <th colspan='1'>0-4</th>
+                        <th colspan='3'>PERIOD</th>
+                    </tr>
+                </thead>
+                <tbody>";
+
+    // Procesar cada proyección
+    foreach(json_decode($projection->projection) as $key => $projection_for) {
+        $download_grades = get_status_approved('CERTIFIED NOTES HIGH SCHOOL', $student_id);
+        $subject = get_subject_details($projection_for->subject_id);
+        $period_name = '';
+        $period = get_period_details_code($projection_for->code_period);
+        if($period) $period_name = $period->name;
+        
+        // Construir fila
+        $html .= "<tr>
+                    <td colspan='2'>".$projection_for->code_subject."</td>
+                    <td colspan='4'>".$projection_for->subject;
+        
+        // Electivo
+        $html .= (isset($projection_for->is_elective) && $projection_for->is_elective ? '(ELECTIVE)' : '')."</td>";
+        
+        // CH
+        $html .= "<td colspan='1'>";
+        if($subject->type != 'equivalence') {
+            $html .= $projection_for->hc;
+        } else {
+            $html .= $download_grades ? 'TR' : '-';
+        }
+        $html .= "</td>";
+        
+        // Nota 0-100
+        $html .= "<td colspan='1'>";
+        if(isset($projection_for->calification) && !empty($projection_for->calification)) {
+            $html .= $projection_for->calification;
+        } else {
+            $html .= ($subject->type != 'equivalence') ? '-' : ($download_grades ? 'TR' : '-');
+        }
+        $html .= "</td>";
+        
+        // Nota 0-4
+        $html .= "<td colspan='1'>";
+        $html .= ($subject->type != 'equivalence') ? get_calc_note($projection_for->calification) : ($download_grades ? 'TR' : '-');
+        $html .= "</td>";
+        
+        // Periodo
+        $html .= "<td colspan='3'>".(!empty($period_name) ? $period_name : '-')."</td>
+                </tr>";
+    }
+
+    $html .= "</tbody></table>";
+    
+    return $html;
+}
+
+function table_notes_summary_html($student_id) {
+    $projection = get_projection_by_student($student_id);
+    
+    $sum_quality = 0;
+    $earned_ch = 0;
+    $total_quality = 0;
+    $gpa = 0;
+
+    foreach(json_decode($projection->projection) as $key => $projection_for) {
+        if ($projection_for->is_completed && (int)$projection_for->calification) {
+            $total_quality++;
+            $earned_ch += (int)$projection_for->hc;
+            $sum_quality += get_calc_note((int)$projection_for->calification);
+        }
+    }
+
+    $gpa = ($sum_quality / $total_quality);
+
+    $html = '';
+    $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px'>
+                <tbody>
+                    <tr><td colspan='12'>Total Quality Points: " . $sum_quality . "</td></tr>
+                    <tr><td colspan='12'>Earned CH: " . $earned_ch . "</td></tr>
+                    <tr><td colspan='12'>GPA: " . $gpa . "</td></tr>
+                </tbody>
+            </table>";
+    
+    return $html;
+}

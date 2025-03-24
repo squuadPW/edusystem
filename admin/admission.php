@@ -1447,7 +1447,6 @@ add_action('wp_ajax_last_access_moodle', 'last_access_moodle');
 function generate_document()
 {
     global $wpdb;
-    $table_certificates = $wpdb->prefix . 'certificates';
     $today_timestamp = new DateTime('now', new DateTimeZone('UTC'));
     $emission_date = $today_timestamp->format('Y-m-d');
 
@@ -1482,15 +1481,8 @@ function generate_document()
 
     $today = date('M d, Y');
     $document->content = str_replace('{{today}}', $today, $document->content);
-    $document->content = str_replace('<p', '<div', $document->content);
-    $document->content = str_replace('</p>', '</div><br>', $document->content);
-
-    $html = '';
-    $html .= '<div style="margin: 50px; font-size: 18px; color: black;">';
-
-    $html .= '<div style="text-align: center">';
-    $html .= '<h4 style="padding: 4px; text-align: center; font-weight: bold; font-size: 20px;" class="text-uppercase">'. $document->title . '</h4>';
-    $html .= '</div>';
+    $document->content = str_replace('{{table_notes}}', table_notes_html($student->id), $document->content);
+    $document->content = str_replace('{{table_notes_summary}}', table_notes_summary_html($student->id), $document->content);
 
     if ($document->signature_required) {
         $user_sign = $user_signature->first_name . ' ' . $user_signature->last_name;
@@ -1498,28 +1490,13 @@ function generate_document()
     
         $user_charge = $signature->charge;
         $document->content = str_replace('{{position_user_charge}}', $span_open.$user_charge.$span_close, $document->content);
+
+        $document->content = str_replace('{{signature}}', '<img style="width: 250px" src="'. wp_get_attachment_url($signature->attach_id) .'"/>', $document->content);
     }
-
-    $html .= '<div>';
-    $html .= $document->content;
-    $html .= '</div>';
-
-    if ($document->signature_required) {
-        $html .= '<div style="text-align: center; margin-top: 30px">';
-        $html .= '<div style="text-align: start">Signed by:</div>';
-        $html .= '<div style="display: flex; justify-content: center;">';
-        $html .= '<img style="width: 250px" src="'. wp_get_attachment_url($signature->attach_id) .'"/>';
-        $html .= '</div>';
-        $html .= '<div>'. $user_sign . '</div>';
-        $html .= '<div>'. $user_charge . '</div>';
-        $html .= '</div>';
-    }
-
-    $html .= '</div>';
 
     $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, $program, 1, $student, $emission_date);
 
-    wp_send_json(array('url' => $url, 'html' => $html));
+    wp_send_json(array('url' => $url, 'html' => $document->content));
     die();
 }
 

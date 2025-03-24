@@ -4,7 +4,6 @@
     
 ?>
 
-<?php include(plugin_dir_path(__FILE__) . 'document-export-grades.php'); ?>
 <div class="wrap">
     <?php if (isset($projection) && !empty($projection)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Academic projection', 'edusystem'); ?></h2>
@@ -232,16 +231,6 @@
                                        <?php } ?>
                                     </tbody>
                                 </table>
-
-                                
-                                    <div style="display: flex; width: 100%; text-align: center">
-                                        <div style="flex: 1; padding: 20px;">
-                                            <button type="button" class="button button-outline-primary" id="preview-grades">
-                                                <?= __('Preview grades','edusystem'); ?>
-                                            </button>
-                                        </div>
-                                    </div>
-                                
                             </div>
 
                             <?php if (isset($projection) && !empty($projection)): ?>

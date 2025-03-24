@@ -540,4 +540,8 @@ div#application-passwords-section {
     width: 100% !important;
     margin: 0 !important;
   }
+}
+
+#qt_content_toolbar input {
+  width: auto !important;
 }/*# sourceMappingURL=style.css.map */
