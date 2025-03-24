@@ -330,6 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
     modalCloseElementsCertificateDocument.forEach(function (element) {
       element.addEventListener("click", function () {
         document.getElementById("documentcertificate-modal").style.display = "none";
+        restoreButtonsCertificates(false);
       });
     });
   }
@@ -501,18 +502,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+
   const buttons_certificate = document.querySelectorAll(
     ".download-document-certificate"
   );
   buttons_certificate.forEach((button) => {
     button.addEventListener("click", function () {
+      restoreButtonsCertificates(true);
 
+      let signature_required = this.dataset.signaturerequired;
       document.querySelector("input[name=document_certificate_id]").value = this.dataset.documentcertificate;
     
-      const modal = document.getElementById("documentcertificate-modal");
-      modal.style.display = "block";
+      if (signature_required == 1) {
+        const modal = document.getElementById("documentcertificate-modal");
+        modal.style.display = "block";
+      } else {
+        document.getElementById('documentcertificate-button').click();
+      }
     });
   });
+
+  function restoreButtonsCertificates(disabled = false) {
+    const buttons_certificate = document.querySelectorAll(
+      ".download-document-certificate"
+    );
+    buttons_certificate.forEach((button) => {
+      button.disabled = disabled;
+    });
+  }
 
   let document_certificate_button = document.getElementById('documentcertificate-button');
   if (document_certificate_button) {
@@ -593,8 +610,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.querySelector("input[name=document_certificate_id]").value = '';
         document.querySelector("select[name=user_signature_id]").value = '';
-        document.querySelector("input[name=student_document_certificate_id]").value = '';
         document.getElementById("qrcode").innerHTML = '';
+        restoreButtonsCertificates(false);
 
         setTimeout(() => {
           window.scrollTo(0, 0);

@@ -493,7 +493,7 @@
                                 <?= $document->title; ?>
                             </td>
                             <td class="column-primary" colspan="6"  style="text-align: end;">
-                                <button type="button" data-documentcertificate="<?= $document->id; ?>" class="button download-document-certificate button-success"><?= __('Download', 'edusystem'); ?></button>
+                                <button type="button" data-documentcertificate="<?= $document->id; ?>" data-signaturerequired="<?= $document->signature_required; ?>" class="button download-document-certificate button-success"><?= __('Download', 'edusystem'); ?></button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
