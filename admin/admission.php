@@ -345,6 +345,8 @@ function add_admin_form_admission_content()
                 $product_ready = get_payments($_GET['student_id']);
                 $fee_graduation_ready = false;
                 $student = get_student_detail($_GET['student_id']);
+                $documents_certificates = function_exists('get_documents_certificates') ? get_documents_certificates() : [];
+                $users_signatures_certificates = function_exists('get_users_signatures_certificates') ? get_users_signatures_certificates() : [];
                 $partner = get_userdata($student->partner_id);
                 $table_users = $wpdb->prefix . 'users';
                 $table_academic_periods = $wpdb->prefix . 'academic_periods';
@@ -1441,6 +1443,72 @@ function last_access_moodle()
 
 add_action('wp_ajax_nopriv_last_access_moodle', 'last_access_moodle');
 add_action('wp_ajax_last_access_moodle', 'last_access_moodle');
+
+function generate_document()
+{
+    $student_id = $_POST['student_id'];
+    $document_certificate_id = $_POST['document_certificate_id'];
+    $user_signature_id = $_POST['user_signature_id'];
+    $student = get_student_detail($student_id);
+    $document = get_document_detail($document_certificate_id);
+    $signature = get_user_signature_detail($user_signature_id);
+    $user_signature = get_user_by('id', $signature->user_id);
+
+    $span_open = '<span class="text-uppercase">';
+    $span_close = '</span>';
+
+    $student_name = $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name;
+    $document->content = str_replace('{{student_name}}', $span_open.$student_name.$span_close, $document->content);
+
+    $id_student = $student->id_document;
+    $document->content = str_replace('{{id_student}}', $span_open.$id_student.$span_close, $document->content);
+
+    $program = get_name_program($student->program_id);
+    $document->content = str_replace('{{program}}', $span_open.$program.$span_close, $document->content);
+
+    $today = date('M d, Y');
+    $document->content = str_replace('{{today}}', $today, $document->content);
+    $document->content = str_replace('<p', '<div', $document->content);
+    $document->content = str_replace('</p>', '</div><br>', $document->content);
+
+    $html = '';
+    $html .= '<div style="margin: 50px; font-size: 18px; color: black;">';
+
+    $html .= '<div style="text-align: center">';
+    $html .= '<h4 style="padding: 4px; text-align: center; font-weight: bold; font-size: 20px;" class="text-uppercase">'. $document->title . '</h4>';
+    $html .= '</div>';
+
+    if ($document->signature_required) {
+        $user_sign = $user_signature->first_name . ' ' . $user_signature->last_name;
+        $document->content = str_replace('{{user_sign}}', $span_open.$user_sign.$span_close, $document->content);
+    
+        $user_charge = $signature->charge;
+        $document->content = str_replace('{{position_user_charge}}', $span_open.$user_charge.$span_close, $document->content);
+    }
+
+    $html .= '<div>';
+    $html .= $document->content;
+    $html .= '</div>';
+
+    if ($document->signature_required) {
+        $html .= '<div style="text-align: center; margin-top: 30px">';
+        $html .= '<div style="text-align: start">Signed by:</div>';
+        $html .= '<div style="display: flex; justify-content: center;">';
+        $html .= '<img style="width: 250px" src="'. wp_get_attachment_url($signature->attach_id) .'"/>';
+        $html .= '</div>';
+        $html .= '<div>'. $user_sign . '</div>';
+        $html .= '<div>'. $user_charge . '</div>';
+        $html .= '</div>';
+    }
+
+    $html .= '</div>';
+
+    wp_send_json(array('user_signature_id' => $user_signature_id, 'html' => $html));
+    die();
+}
+
+add_action('wp_ajax_nopriv_generate_document', 'generate_document');
+add_action('wp_ajax_generate_document', 'generate_document');
 
 function get_approved_by()
 {

@@ -473,6 +473,34 @@
             </tbody>
         </table>
     <?php endif; ?>
+    <?php if (!in_array('institutes', $roles) && !current_user_can('only_read_admission_aes') && !empty($documents_certificates)): ?>
+        <h2 style="margin-bottom:15px;"><?= __('Others documents', 'edusystem'); ?></h2>
+        <div id="notice-status" class="notice-custom notice-info" style="display:none;">
+            <p><?= __('Status change successfully', 'edusystem'); ?></p>
+        </div>
+        <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
+            <thead>
+                <tr>
+                    <th colspan="6" scope="col" class="manage-column column-primary column-title"><?= __('Document', 'edusystem') ?></th>
+                    <th colspan="6" scope="col" class="manage-column column-price" style="text-align: end;"><?= __('Actions', 'edusystem') ?></th>
+                </tr>
+            </thead>
+            <tbody id="table-documents-certificates">
+                <?php if (!empty($documents_certificates)): ?>
+                    <?php foreach ($documents_certificates as $document): ?>
+                        <tr id="<?= 'tr_document_certificate_' . $document->id; ?>">
+                            <td class="column-primary text-uppercase" colspan="6">
+                                <?= $document->title; ?>
+                            </td>
+                            <td class="column-primary" colspan="6"  style="text-align: end;">
+                                <button type="button" data-documentcertificate="<?= $document->id; ?>" class="button download-document-certificate button-success"><?= __('Download', 'edusystem'); ?></button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
     <?php if (in_array('administrator', haystack: $roles) || in_array('admision', haystack: $roles)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Payments', 'edusystem'); ?></h2>
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">
@@ -591,17 +619,31 @@
     </form>
 </div>
 
-<script>
-    let institute_id = document.getElementById('institute_id');
-    institute_id.addEventListener('change', function (e) {
-        document.querySelector('input[name=name_institute]').value = '';
-        if (e.target.value == 'other') {
-            document.getElementById('institute_down').style.display = 'contents';
-            document.querySelector('input[name=name_institute]').required = true;
-        } else {
-            document.getElementById('institute_down').style.display = 'none';
-            document.querySelector('input[name=name_institute]').required = false;
-        }
-        
-    })
-</script>
+<div id='documentcertificate-modal' class='modal' style='display:none'>
+    <div class='modal-content' style="width: 70%;">
+        <div class="modal-header">
+        <h3 style="font-size:20px;"><?= __('Generate Document') ?></h3>
+            <span id="documentcertificate-exit-icon" class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+        </div>
+        <div class="modal-body" style="padding:10px;">
+            <input type="hidden" name="document_certificate_id">
+            <input type="hidden" name="student_id" value="<?= $student->id; ?>">
+            <div>
+                <label for="user_signature_id">Who signed this document</label><br>
+                <select name="user_signature_id" required>
+                    <option value="" selected>Assigns an user</option>
+                    <?php foreach($users_signatures_certificates as $user) { 
+                        $user_loaded = get_user_by('id', $user->user_id);
+                        ?>
+                        <option value="<?= $user->id ?>"><?= $user_loaded->first_name ?> <?= $user_loaded->last_name ?> (<?= $user->charge ?>)</option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="documentcertificate-button" type="button" class="button button-outline-primary modal-close"><?= __('Generate','edusystem'); ?></button>
+            <button id="documentcertificate-exit-button" type="button" class="button button-danger modal-close"><?= __('Exit','edusystem'); ?></button>
+        </div>
+    </div>
+</div>
+<?php include(plugin_dir_path(__FILE__) . 'document-export.php'); ?>

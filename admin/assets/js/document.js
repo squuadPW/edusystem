@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   button_export_xlsx = document.getElementById("button-export-xlsx");
   input_birth_date = document.querySelectorAll(".birth_date");
-  modal = document.getElementById('decline-modal'); // assume you have a modal with id "decline-modal"
+  modal = document.getElementById("decline-modal"); // assume you have a modal with id "decline-modal"
   documentId = null;
   statusId = null;
 
@@ -243,16 +243,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-
   let initialized = false;
-  if(initialized == false) {
+  if (initialized == false) {
     watchButtons();
   }
 
   function watchButtons() {
     initialized = true;
     buttons_change_status = document.querySelectorAll(".change-status");
-    other_buttons_document = document.querySelectorAll(".other-buttons-document");
+    other_buttons_document = document.querySelectorAll(
+      ".other-buttons-document"
+    );
     buttons_change_status.forEach((button) => {
       button.addEventListener("click", (e) => {
         documentId = button.dataset.documentId;
@@ -261,9 +262,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const confirmMessage = `Are you sure you want to ${action.toLowerCase()} this document?`;
         if (confirm(confirmMessage)) {
-          if (action.toLowerCase() === 'decline') {
+          if (action.toLowerCase() === "decline") {
             // Open modal with textarea for description
-            modal.style.display = 'block';
+            modal.style.display = "block";
           } else {
             buttons_status(button);
           }
@@ -272,151 +273,174 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  var modalCloseElements = document.querySelectorAll('#decline-exit-icon, #decline-exit-button');
+  var modalCloseElements = document.querySelectorAll(
+    "#decline-exit-icon, #decline-exit-button"
+  );
   if (modalCloseElements) {
-    modalCloseElements.forEach(function(element) {
-      element.addEventListener('click', function() {
-        document.getElementById('decline-modal').style.display = 'none';
-        const textarea = document.querySelector('textarea[name="decline-description"]');
-        textarea.value = '';
+    modalCloseElements.forEach(function (element) {
+      element.addEventListener("click", function () {
+        document.getElementById("decline-modal").style.display = "none";
+        const textarea = document.querySelector(
+          'textarea[name="decline-description"]'
+        );
+        textarea.value = "";
       });
     });
   }
 
-  var modalSaveElements = document.querySelectorAll('#decline-save');
+  var modalSaveElements = document.querySelectorAll("#decline-save");
   if (modalSaveElements) {
-    modalSaveElements.forEach(function(element) {
-      element.addEventListener('click', function() {
-        const textarea = document.querySelector('textarea[name="decline-description"]');
+    modalSaveElements.forEach(function (element) {
+      element.addEventListener("click", function () {
+        const textarea = document.querySelector(
+          'textarea[name="decline-description"]'
+        );
         const description = textarea.value;
         if (description) {
-          button = document.querySelector(`[data-document-id="${documentId}"][data-status="${statusId}"]`);
+          button = document.querySelector(
+            `[data-document-id="${documentId}"][data-status="${statusId}"]`
+          );
           buttons_status(button, description);
 
-          modal.style.display = 'none';
-          textarea.value = '';
+          modal.style.display = "none";
+          textarea.value = "";
         } else {
-          alert('The description is required');
+          alert("The description is required");
         }
       });
     });
   }
 
-  var modalCloseElementsUpload = document.querySelectorAll('#upload-exit-icon, #upload-exit-button');
+  var modalCloseElementsUpload = document.querySelectorAll(
+    "#upload-exit-icon, #upload-exit-button"
+  );
   if (modalCloseElementsUpload) {
-    modalCloseElementsUpload.forEach(function(element) {
-      element.addEventListener('click', function() {
-        document.getElementById('upload-form').reset();
-        document.getElementById('upload-modal').style.display = 'none';
+    modalCloseElementsUpload.forEach(function (element) {
+      element.addEventListener("click", function () {
+        document.getElementById("upload-form").reset();
+        document.getElementById("upload-modal").style.display = "none";
       });
     });
   }
 
-  var modalCloseElementsDetail = document.querySelectorAll('#detail-exit-icon, #detail-exit-button');
+  var modalCloseElementsCertificateDocument = document.querySelectorAll(
+    "#documentcertificate-exit-icon, #documentcertificate-exit-button"
+  );
+  if (modalCloseElementsCertificateDocument) {
+    modalCloseElementsCertificateDocument.forEach(function (element) {
+      element.addEventListener("click", function () {
+        document.getElementById("documentcertificate-modal").style.display = "none";
+      });
+    });
+  }
+
+  var modalCloseElementsDetail = document.querySelectorAll(
+    "#detail-exit-icon, #detail-exit-button"
+  );
   if (modalCloseElementsDetail) {
-    modalCloseElementsDetail.forEach(function(element) {
-      element.addEventListener('click', function() {
-        document.getElementById('detail-modal').style.display = 'none';
+    modalCloseElementsDetail.forEach(function (element) {
+      element.addEventListener("click", function () {
+        document.getElementById("detail-modal").style.display = "none";
       });
     });
   }
 
   function buttons_status(button, description = null) {
-      // Deshabilitar todos los botones con la clase change-status
-      buttons_change_status.forEach((btn) => {
-        btn.disabled = true;
-      });
-      other_buttons_document.forEach((btn) => {
-        btn.disabled = true;
-      });
-      document_id = button.getAttribute("data-document-id");
-      status_id = button.getAttribute("data-status");
-      student_id = button.getAttribute("data-student-id");
+    // Deshabilitar todos los botones con la clase change-status
+    buttons_change_status.forEach((btn) => {
+      btn.disabled = true;
+    });
+    other_buttons_document.forEach((btn) => {
+      btn.disabled = true;
+    });
+    document_id = button.getAttribute("data-document-id");
+    status_id = button.getAttribute("data-status");
+    student_id = button.getAttribute("data-student-id");
 
-      let htmlLoading = "";
-      htmlLoading +=
-        "<td class='column-primary id column-id' colspan='12' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+    let htmlLoading = "";
+    htmlLoading +=
+      "<td class='column-primary id column-id' colspan='12' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
 
-      document.getElementById("tr_document_" + document_id).innerHTML =
-        htmlLoading;
-      document.getElementById("notice-status").style.display = "none";
-
-      const XHR = new XMLHttpRequest();
-      XHR.open("POST", update_status_documents.url, true);
-      XHR.setRequestHeader(
-        "Content-type",
-        "application/x-www-form-urlencoded"
-      );
-      XHR.responseType = "text";
-      XHR.send(
-        "action=" +
-          update_status_documents.action +
-          "&student_id=" +
-          student_id +
-          "&document_id=" +
-          document_id +
-          "&status=" +
-          status_id +
-          "&description=" +
-          description
-      );
-      XHR.onload = function () {
-        if (this.readyState == "4" && XHR.status === 200) {
-          let result = JSON.parse(XHR.responseText);
-          if (result.status == "success") {
-            // document.getElementById("notice-status").style.display = "block";
-            document.getElementById("tr_document_" + document_id).innerHTML =
-              result.html;
-
-              buttons_change_status.forEach((button) => {
-                const newButton = button.cloneNode(true);
-                button.parentNode.replaceChild(newButton, button);
-              });
-              watchButtons();
-
-              if (result.rejected_document) {
-                let rejected = result.rejected_document;
-                rejected_documents(rejected.student_id, rejected.document_id, rejected.description);
-              }
-
-              // location.reload();
-            // setTimeout(() => {
-            //   document.getElementById("notice-status").style.display = "none";
-            // }, 2000);
-          } else {
-            document.getElementById("tr_document_" + document_id).innerHTML =
-            result.html;
-
-            buttons_change_status.forEach((button) => {
-              const newButton = button.cloneNode(true);
-              button.parentNode.replaceChild(newButton, button);
-            });
-            watchButtons();
-
-            if (confirm(`ERROR: ${result.message}`) || !confirm(`ERROR: ${result.message}`)) {
-              location.reload();
-            }
-          }
-
-          // Habilitar nuevamente los botones cuando se completa la solicitud
-          buttons_change_status.forEach((btn) => {
-            btn.disabled = false;
-          });
-          other_buttons_document.forEach((btn) => {
-            btn.disabled = false;
-          });
-        }
-      };
-  }
-
-  function rejected_documents(student_id, document_id, description) {
+    document.getElementById("tr_document_" + document_id).innerHTML =
+      htmlLoading;
+    document.getElementById("notice-status").style.display = "none";
 
     const XHR = new XMLHttpRequest();
     XHR.open("POST", update_status_documents.url, true);
-    XHR.setRequestHeader(
-      "Content-type",
-      "application/x-www-form-urlencoded"
+    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    XHR.responseType = "text";
+    XHR.send(
+      "action=" +
+        update_status_documents.action +
+        "&student_id=" +
+        student_id +
+        "&document_id=" +
+        document_id +
+        "&status=" +
+        status_id +
+        "&description=" +
+        description
     );
+    XHR.onload = function () {
+      if (this.readyState == "4" && XHR.status === 200) {
+        let result = JSON.parse(XHR.responseText);
+        if (result.status == "success") {
+          // document.getElementById("notice-status").style.display = "block";
+          document.getElementById("tr_document_" + document_id).innerHTML =
+            result.html;
+
+          buttons_change_status.forEach((button) => {
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+          });
+          watchButtons();
+
+          if (result.rejected_document) {
+            let rejected = result.rejected_document;
+            rejected_documents(
+              rejected.student_id,
+              rejected.document_id,
+              rejected.description
+            );
+          }
+
+          // location.reload();
+          // setTimeout(() => {
+          //   document.getElementById("notice-status").style.display = "none";
+          // }, 2000);
+        } else {
+          document.getElementById("tr_document_" + document_id).innerHTML =
+            result.html;
+
+          buttons_change_status.forEach((button) => {
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+          });
+          watchButtons();
+
+          if (
+            confirm(`ERROR: ${result.message}`) ||
+            !confirm(`ERROR: ${result.message}`)
+          ) {
+            location.reload();
+          }
+        }
+
+        // Habilitar nuevamente los botones cuando se completa la solicitud
+        buttons_change_status.forEach((btn) => {
+          btn.disabled = false;
+        });
+        other_buttons_document.forEach((btn) => {
+          btn.disabled = false;
+        });
+      }
+    };
+  }
+
+  function rejected_documents(student_id, document_id, description) {
+    const XHR = new XMLHttpRequest();
+    XHR.open("POST", update_status_documents.url, true);
+    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     XHR.responseType = "text";
     XHR.send(
       "action=rejected_document_emails" +
@@ -429,18 +453,17 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     XHR.onload = function () {
       if (this.readyState == "4" && XHR.status === 200) {
-
       }
     };
-}
+  }
 
-  const moodleActiveElements = document.querySelectorAll('.moodle-active');
-  moodleActiveElements.forEach(function(element) {
-      element.addEventListener('click', function() {
-          if (element.dataset.moodle == 'Yes') {
-            loadLastAccessMoodle(element.dataset.student_id);
-          }
-      });
+  const moodleActiveElements = document.querySelectorAll(".moodle-active");
+  moodleActiveElements.forEach(function (element) {
+    element.addEventListener("click", function () {
+      if (element.dataset.moodle == "Yes") {
+        loadLastAccessMoodle(element.dataset.student_id);
+      }
+    });
   });
 
   function loadLastAccessMoodle(student_id) {
@@ -454,22 +477,116 @@ document.addEventListener("DOMContentLoaded", function () {
     XHR.onload = function () {
       if (this.readyState == "4" && XHR.status === 200) {
         if (!JSON.parse(XHR.response).last_access) {
-          alert('This user has not logged in to Moodle.');
+          alert("This user has not logged in to Moodle.");
         } else {
-          alert(`This user's last login to Moodle was ${JSON.parse(XHR.response).last_access}`);
-          
+          alert(
+            `This user's last login to Moodle was ${
+              JSON.parse(XHR.response).last_access
+            }`
+          );
         }
       }
     };
   }
+
+  let institute_id = document.getElementById("institute_id");
+  institute_id.addEventListener("change", function (e) {
+    document.querySelector("input[name=name_institute]").value = "";
+    if (e.target.value == "other") {
+      document.getElementById("institute_down").style.display = "contents";
+      document.querySelector("input[name=name_institute]").required = true;
+    } else {
+      document.getElementById("institute_down").style.display = "none";
+      document.querySelector("input[name=name_institute]").required = false;
+    }
+  });
+
+  const buttons_certificate = document.querySelectorAll(
+    ".download-document-certificate"
+  );
+  buttons_certificate.forEach((button) => {
+    button.addEventListener("click", function () {
+
+      document.querySelector("input[name=document_certificate_id]").value = this.dataset.documentcertificate;
+    
+      const modal = document.getElementById("documentcertificate-modal");
+      modal.style.display = "block";
+    });
+  });
+
+  let document_certificate_button = document.getElementById('documentcertificate-button');
+  if (document_certificate_button) {
+    document_certificate_button.addEventListener("click", function () {
+      let document_certificate_id = document.querySelector("input[name=document_certificate_id]").value;
+      let user_signature_id = document.querySelector("select[name=user_signature_id]").value;
+      let student_id = document.querySelector("input[name=student_id]").value;
+      const XHR = new XMLHttpRequest();
+      XHR.open("POST", generate_document.url, true);
+      XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      XHR.responseType = "json";
+      XHR.send(
+        "action=" + generate_document.action + "&document_certificate_id=" + document_certificate_id + "&user_signature_id=" + user_signature_id + "&student_id=" + student_id
+      );
+      XHR.onload = function () {
+        if (this.readyState == "4" && XHR.status === 200) {
+          const modal_body = document.getElementById("modal-body-content");
+          modal_body.innerHTML = this.response.html;
+
+          let modal = document.getElementById("modal-grades");
+          modal.style.display = "block";
+
+          document.body.classList.add("modal-open");
+          setTimeout(() => {
+            window.scrollTo(0, 0);
+          }, 100);
+
+          modal = document.getElementById("documentcertificate-modal");
+          modal.style.display = "none";
+        }
+      };
+    });
+  }
+
+  let download_grades = document.getElementById("download-grades");
+  if (download_grades) {
+      download_grades.addEventListener("click", async (e) => {
+        download_grades.disabled = true;
+        var element = document.getElementById("content-pdf");
+        var opt = {
+          margin: [0.2, 0, 0, 0],
+          filename: 'document.pdf',
+          image: { type: "jpeg", quality: 0.98 },
+          jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+          html2canvas: { scale: 3 }
+        };
+    
+        html2pdf().set(opt).from(element).save();
+        download_grades.disabled = false;
+      });
+  }
+
+  let close_modal_grades = document.getElementById("close-modal-grades");
+  if (close_modal_grades) {
+      close_modal_grades.addEventListener("click", async (e) => {
+        document.getElementById('modal-grades').style.display = 'none';
+        document.body.classList.remove("modal-open");
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+        }, 100);
+      });
+  }
 });
 
 function watchDetails(doc) {
-  document.getElementById("date_user_registered").innerHTML = doc.created_at ?? 'N/A';
-  document.getElementById("date_upload_documents").innerHTML = doc.upload_at ?? 'N/A';
-  document.getElementById("date_status_change").innerHTML = doc.updated_at ?? 'N/A';
-  document.getElementById("description_status_changed").innerHTML = doc.description ?? 'N/A';
-  document.getElementById("status_changed_by").innerHTML = 'Loading...';
+  document.getElementById("date_user_registered").innerHTML =
+    doc.created_at ?? "N/A";
+  document.getElementById("date_upload_documents").innerHTML =
+    doc.upload_at ?? "N/A";
+  document.getElementById("date_status_change").innerHTML =
+    doc.updated_at ?? "N/A";
+  document.getElementById("description_status_changed").innerHTML =
+    doc.description ?? "N/A";
+  document.getElementById("status_changed_by").innerHTML = "Loading...";
 
   const XHR = new XMLHttpRequest();
   XHR.open("POST", get_approved_by.url, true);
@@ -480,19 +597,23 @@ function watchDetails(doc) {
   );
   XHR.onload = function () {
     if (this.readyState == "4" && XHR.status === 200) {
-      document.getElementById("status_changed_by").innerHTML = JSON.parse(XHR.response).approved_by != ' ' ? JSON.parse(XHR.response).approved_by : 'N/A';
+      document.getElementById("status_changed_by").innerHTML =
+        JSON.parse(XHR.response).approved_by != " "
+          ? JSON.parse(XHR.response).approved_by
+          : "N/A";
     }
   };
 
-  const modal = document.getElementById('detail-modal');
-  modal.style.display = 'block';
+  const modal = document.getElementById("detail-modal");
+  modal.style.display = "block";
 }
 
 function uploadDocument(doc) {
-  document.querySelector('input[name=document_upload_id]').value = doc.id;
-  document.querySelector('input[name=document_upload_name]').value = doc.document_id;
+  document.querySelector("input[name=document_upload_id]").value = doc.id;
+  document.querySelector("input[name=document_upload_name]").value =
+    doc.document_id;
   document.getElementById("document_upload_text").innerHTML = doc.document_id;
 
-  const modal = document.getElementById('upload-modal');
-  modal.style.display = 'block';
+  const modal = document.getElementById("upload-modal");
+  modal.style.display = "block";
 }
