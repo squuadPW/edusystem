@@ -594,6 +594,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector("input[name=document_certificate_id]").value = '';
         document.querySelector("select[name=user_signature_id]").value = '';
         document.querySelector("input[name=student_document_certificate_id]").value = '';
+        document.getElementById("qrcode").innerHTML = '';
 
         setTimeout(() => {
           window.scrollTo(0, 0);

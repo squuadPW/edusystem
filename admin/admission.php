@@ -1458,9 +1458,18 @@ function generate_document()
     $document = get_document_detail($document_certificate_id);
     $signature = get_user_signature_detail($user_signature_id);
     $user_signature = get_user_by('id', $signature->user_id);
+    $load = load_current_cut();
+    $academic_period = get_period_details_code($load['code']);
+    $start_academic_period = date('M d, Y', $academic_period->start_date);
+    $end_academic_period = date('M d, Y', $academic_period->end_date);
 
     $span_open = '<span class="text-uppercase">';
     $span_close = '</span>';
+
+    $academic_period_name = $academic_period->name;
+    $document->content = str_replace('{{academic_year}}', $span_open.$academic_period_name.$span_close, $document->content);
+    $document->content = str_replace('{{start_academic_year}}', $span_open.$start_academic_period.$span_close, $document->content);
+    $document->content = str_replace('{{end_academic_year}}', $span_open.$end_academic_period.$span_close, $document->content);
 
     $student_name = $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name;
     $document->content = str_replace('{{student_name}}', $span_open.$student_name.$span_close, $document->content);
