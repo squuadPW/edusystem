@@ -547,11 +547,15 @@ document.addEventListener("DOMContentLoaded", function () {
       XHR.onload = function () {
         if (this.readyState == "4" && XHR.status === 200) {
 
+          const modal_body = document.getElementById("modal-body-content");
+          modal_body.innerHTML = this.response.html;
+
           const qrCode = new QRCodeStyling({
             width: 100,
             height: 100,
             type: "canvas",
             data: this.response.url,
+            image: this.response.image_url,
             dotsOptions: {
               color: "#000000",
               type: "rounded",
@@ -565,9 +569,6 @@ document.addEventListener("DOMContentLoaded", function () {
             },
           });
           qrCode.append(document.getElementById("qrcode"));
-
-          const modal_body = document.getElementById("modal-body-content");
-          modal_body.innerHTML = this.response.html;
 
           let modal = document.getElementById("modal-grades");
           modal.style.display = "block";
@@ -608,9 +609,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('modal-grades').style.display = 'none';
         document.body.classList.remove("modal-open");
 
-        document.querySelector("input[name=document_certificate_id]").value = '';
-        document.querySelector("select[name=user_signature_id]").value = '';
-        document.getElementById("qrcode").innerHTML = '';
+        document.querySelector("input[name=document_certificate_id]")?.value = '';
+        document.querySelector("select[name=user_signature_id]")?.value = '';
+        document.getElementById("qrcode")?.innerHTML = '';
         restoreButtonsCertificates(false);
 
         setTimeout(() => {

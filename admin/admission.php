@@ -1483,6 +1483,7 @@ function generate_document()
     $document->content = str_replace('{{today}}', $today, $document->content);
     $document->content = str_replace('{{table_notes}}', table_notes_html($student->id), $document->content);
     $document->content = str_replace('{{table_notes_summary}}', table_notes_summary_html($student->id), $document->content);
+    $document->content = str_replace('{{qrcode}}', '<div id="qrcode"></div>', $document->content);
 
     if ($document->signature_required) {
         $user_sign = $user_signature->first_name . ' ' . $user_signature->last_name;
@@ -1496,7 +1497,7 @@ function generate_document()
 
     $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, $program, 1, $student, $emission_date);
 
-    wp_send_json(array('url' => $url, 'html' => $document->content));
+    wp_send_json(array('url' => $url['url'], 'image_url' => $url['image_url'], 'html' => $document->content));
     die();
 }
 
