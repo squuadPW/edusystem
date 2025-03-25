@@ -10,7 +10,7 @@
 	define('AES_DUAL_DEFAULT', '53');    // Product initial 11 and bacheloder (upper)
 	define('AES_DUAL_DEFAULT_VARIABLE','60'); // Product variable (upper)
 	define('ROLES_OF_STAFF', array('owner', 'administrador', 'admision', 'admission', 'alliance', 'administration', 'allied', 'webinar-aliance'));
-	define('VERSIONS_JS', '2.0.14'); // Product registration fee
+	define('VERSIONS_JS', '2.0.15'); // Product registration fee
 
 	// FOR ALL USERS, DONT COMMENT
 	define('AES_PROGRAM_ID', 'HSD-01'); // AES program for endpoint for laravel create user and move documents

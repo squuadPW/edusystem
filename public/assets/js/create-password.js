@@ -54,7 +54,6 @@ var alert_content_text = document.getElementById('content-password');
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error:', error);
                 }
             });
         });

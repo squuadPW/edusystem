@@ -548,15 +548,13 @@ document.addEventListener("DOMContentLoaded", function () {
   
       XHR.onload = function () {
         if (this.readyState == 4 && XHR.status === 200) {
-          (async () => { // IIFE async para usar await
+          (async () => {
             const modal_body = document.getElementById("modal-body-content");
             
-            // Función para convertir imagen a Base64 con proxy CORS
+            // Función simplificada sin CORS
             const convertToBase64 = async (url) => {
               try {
-                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Error en la respuesta');
+                const response = await fetch(url);
                 const blob = await response.blob();
                 return await new Promise((resolve, reject) => {
                   const reader = new FileReader();
@@ -565,12 +563,10 @@ document.addEventListener("DOMContentLoaded", function () {
                   reader.readAsDataURL(blob);
                 });
               } catch (error) {
-                console.error('Error convirtiendo imagen:', error);
-                return url; // Devuelve URL original como fallback
+                return url;
               }
             };
   
-            // Procesar HTML para convertir imágenes
             let processedHtml = this.response.html;
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = this.response.html;
@@ -578,51 +574,33 @@ document.addEventListener("DOMContentLoaded", function () {
             const imgElement = tempDiv.querySelector('img');
             if (imgElement) {
               try {
-                const base64 = await convertToBase64(imgElement.src);
-                imgElement.src = base64;
+                imgElement.src = await convertToBase64(imgElement.src);
                 processedHtml = tempDiv.innerHTML;
               } catch (error) {
-                console.warn('No se pudo convertir la imagen, usando URL original');
               }
             }
   
-            // Insertar HTML modificado
             modal_body.innerHTML = processedHtml;
   
-            // Generar QR Code
+            // Generar QR Code (versión simplificada)
             const qrCode = new QRCodeStyling({
               width: 100,
               height: 100,
-              type: "canvas",
               data: this.response.url,
               image: this.response.image_url,
-              dotsOptions: {
-                color: "#000000",
-                type: "rounded",
-              },
-              backgroundOptions: {
-                color: "#ffffff",
-              },
-              imageOptions: {
-                crossOrigin: "anonymous",
-                margin: 0,
-              },
+              dotsOptions: { color: "#000000" },
+              backgroundOptions: { color: "#ffffff" }
             });
             
             qrCode.append(document.getElementById("qrcode"));
   
-            // Mostrar modal
             let modal = document.getElementById("modal-grades");
             modal.style.display = "block";
             document.body.classList.add("modal-open");
             
-            setTimeout(() => {
-              window.scrollTo(0, 0);
-            }, 100);
-  
-            // Ocultar modal anterior
+            setTimeout(() => window.scrollTo(0, 0), 100);
             document.getElementById("documentcertificate-modal").style.display = "none";
-          })(); // Fin de la IIFE
+          })();
         }
       };
     });
