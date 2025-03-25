@@ -548,7 +548,39 @@ document.addEventListener("DOMContentLoaded", function () {
         if (this.readyState == "4" && XHR.status === 200) {
 
           const modal_body = document.getElementById("modal-body-content");
-          modal_body.innerHTML = this.response.html;
+
+          // Función para convertir URL a Base64
+          const convertToBase64 = async (url) => {
+            try {
+              const response = await fetch(url);
+              const blob = await response.blob();
+              return await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+              });
+            } catch (error) {
+              console.error('Error convirtiendo imagen:', error);
+              return url; // Fallback a URL original
+            }
+          };
+
+          // Convertir la imagen ANTES de insertar el HTML
+          let modifiedHtml = await (async (html) => {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            // Buscar la imagen en el HTML
+            const img = tempDiv.querySelector('img');
+            if (img) {
+              img.src = await convertToBase64(img.src).catch(() => img.src);
+            }
+            
+            return tempDiv.innerHTML;
+          })(this.response.html);
+
+          // Insertar el HTML modificado
+          modal_body.innerHTML = modifiedHtml;
 
           const qrCode = new QRCodeStyling({
             width: 100,
@@ -572,14 +604,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
           let modal = document.getElementById("modal-grades");
           modal.style.display = "block";
-
           document.body.classList.add("modal-open");
+
           setTimeout(() => {
             window.scrollTo(0, 0);
           }, 100);
 
-          modal = document.getElementById("documentcertificate-modal");
-          modal.style.display = "none";
+          document.getElementById("documentcertificate-modal").style.display = "none";
         }
       };
     });
