@@ -595,7 +595,10 @@ document.addEventListener("DOMContentLoaded", function () {
           filename: 'document.pdf',
           image: { type: "jpeg", quality: 0.98 },
           jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-          html2canvas: { scale: 3 }
+          html2canvas: { 
+            scale: 3,
+            useCORS: true // ¡Esto es clave para imágenes externas!
+          }
         };
     
         html2pdf().set(opt).from(element).save();
