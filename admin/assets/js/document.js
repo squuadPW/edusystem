@@ -609,9 +609,14 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('modal-grades').style.display = 'none';
         document.body.classList.remove("modal-open");
 
-        document.querySelector("input[name=document_certificate_id]")?.value = '';
-        document.querySelector("select[name=user_signature_id]")?.value = '';
-        document.getElementById("qrcode")?.innerHTML = '';
+        const input = document.querySelector("input[name='document_certificate_id']");
+        const select = document.querySelector("select[name='user_signature_id']");
+        const qrcode = document.getElementById("qrcode");
+        
+        if (input) input.value = '';
+        if (select) select.value = '';
+        if (qrcode) qrcode.innerHTML = '';
+
         restoreButtonsCertificates(false);
 
         setTimeout(() => {
