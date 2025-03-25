@@ -537,6 +537,7 @@ document.addEventListener("DOMContentLoaded", function () {
       let document_certificate_id = document.querySelector("input[name=document_certificate_id]").value;
       let user_signature_id = document.querySelector("select[name=user_signature_id]").value;
       let student_id = document.querySelector("input[name=student_document_certificate_id]").value;
+      
       const XHR = new XMLHttpRequest();
       XHR.open("POST", generate_document.url, true);
       XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -544,73 +545,84 @@ document.addEventListener("DOMContentLoaded", function () {
       XHR.send(
         "action=" + generate_document.action + "&document_certificate_id=" + document_certificate_id + "&user_signature_id=" + user_signature_id + "&student_id=" + student_id
       );
+  
       XHR.onload = function () {
-        if (this.readyState == "4" && XHR.status === 200) {
-
-          const modal_body = document.getElementById("modal-body-content");
-
-          // Función para convertir URL a Base64
-          const convertToBase64 = async (url) => {
-            try {
-              const response = await fetch(url);
-              const blob = await response.blob();
-              return await new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(blob);
-              });
-            } catch (error) {
-              console.error('Error convirtiendo imagen:', error);
-              return url; // Fallback a URL original
-            }
-          };
-
-          // Convertir la imagen ANTES de insertar el HTML
-          let modifiedHtml = await (async (html) => {
+        if (this.readyState == 4 && XHR.status === 200) {
+          (async () => { // IIFE async para usar await
+            const modal_body = document.getElementById("modal-body-content");
+            
+            // Función para convertir imagen a Base64 con proxy CORS
+            const convertToBase64 = async (url) => {
+              try {
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Error en la respuesta');
+                const blob = await response.blob();
+                return await new Promise((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onloadend = () => resolve(reader.result);
+                  reader.onerror = reject;
+                  reader.readAsDataURL(blob);
+                });
+              } catch (error) {
+                console.error('Error convirtiendo imagen:', error);
+                return url; // Devuelve URL original como fallback
+              }
+            };
+  
+            // Procesar HTML para convertir imágenes
+            let processedHtml = this.response.html;
             const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
+            tempDiv.innerHTML = this.response.html;
             
-            // Buscar la imagen en el HTML
-            const img = tempDiv.querySelector('img');
-            if (img) {
-              img.src = await convertToBase64(img.src).catch(() => img.src);
+            const imgElement = tempDiv.querySelector('img');
+            if (imgElement) {
+              try {
+                const base64 = await convertToBase64(imgElement.src);
+                imgElement.src = base64;
+                processedHtml = tempDiv.innerHTML;
+              } catch (error) {
+                console.warn('No se pudo convertir la imagen, usando URL original');
+              }
             }
-            
-            return tempDiv.innerHTML;
-          })(this.response.html);
-
-          // Insertar el HTML modificado
-          modal_body.innerHTML = modifiedHtml;
-
-          const qrCode = new QRCodeStyling({
-            width: 100,
-            height: 100,
-            type: "canvas",
-            data: this.response.url,
-            image: this.response.image_url,
-            dotsOptions: {
-              color: "#000000",
-              type: "rounded",
-            },
-            backgroundOptions: {
+  
+            // Insertar HTML modificado
+            modal_body.innerHTML = processedHtml;
+  
+            // Generar QR Code
+            const qrCode = new QRCodeStyling({
+              width: 100,
+              height: 100,
+              type: "canvas",
+              data: this.response.url,
+              image: this.response.image_url,
+              dotsOptions: {
+                color: "#000000",
+                type: "rounded",
+              },
+              backgroundOptions: {
                 color: "#ffffff",
-            },
-            imageOptions: {
-              crossOrigin: "anonymous",
-              margin: 0,
-            },
-          });
-          qrCode.append(document.getElementById("qrcode"));
-
-          let modal = document.getElementById("modal-grades");
-          modal.style.display = "block";
-          document.body.classList.add("modal-open");
-
-          setTimeout(() => {
-            window.scrollTo(0, 0);
-          }, 100);
-
-          document.getElementById("documentcertificate-modal").style.display = "none";
+              },
+              imageOptions: {
+                crossOrigin: "anonymous",
+                margin: 0,
+              },
+            });
+            
+            qrCode.append(document.getElementById("qrcode"));
+  
+            // Mostrar modal
+            let modal = document.getElementById("modal-grades");
+            modal.style.display = "block";
+            document.body.classList.add("modal-open");
+            
+            setTimeout(() => {
+              window.scrollTo(0, 0);
+            }, 100);
+  
+            // Ocultar modal anterior
+            document.getElementById("documentcertificate-modal").style.display = "none";
+          })(); // Fin de la IIFE
         }
       };
     });
