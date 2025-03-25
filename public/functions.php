@@ -16,7 +16,7 @@ require plugin_dir_path(__FILE__) . 'automatically_enrollment.php';
 function form_plugin_scripts()
 {
     global $wp;
-    $version = '2.0.9';
+    $version = VERSIONS_JS;
     wp_enqueue_style('dashicons');
     wp_enqueue_style('admin-flatpickr', plugins_url('edusystem') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('edusystem') . '/public/assets/css/intlTelInput.css');
