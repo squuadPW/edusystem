@@ -848,7 +848,7 @@ function table_notes_html($student_id) {
     $projection = get_projection_by_student($student_id);
     $html = '';
     
-    $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px'>
+    $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
                 <thead>
                     <tr>
                         <th colspan='2'>CODE</th>
@@ -929,7 +929,7 @@ function table_notes_summary_html($student_id) {
     $gpa = ($sum_quality / $total_quality);
 
     $html = '';
-    $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px'>
+    $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
                 <tbody>
                     <tr><td colspan='12'>Total Quality Points: " . $sum_quality . "</td></tr>
                     <tr><td colspan='12'>Earned CH: " . $earned_ch . "</td></tr>
