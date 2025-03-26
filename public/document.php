@@ -200,7 +200,7 @@ function check_payment_status($wpdb, $table, $student_id) {
     return $wpdb->get_row($wpdb->prepare(
         "SELECT * FROM {$table} WHERE student_id = %d AND product_id = %d",
         $student_id, 
-        AES_FEE_INSCRIPTION
+        FEE_INSCRIPTION
     ));
 }
 
@@ -246,8 +246,8 @@ function prepare_user_data($student, $current_user) {
         'grade' => $grade_map[$student->grade_id] ?? 9,
         'gender' => $gender_map[$student->gender] ?? 'M',
         'cod_period' => $student->academic_period,
-        'cod_program' => AES_PROGRAM_ID,
-        'cod_tip' => AES_TYPE_PROGRAM,
+        'cod_program' => PROGRAM_ID,
+        'cod_tip' => TYPE_PROGRAM,
         'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
         'country' => get_user_meta($student->partner_id, 'billing_country', true),
         'city' => get_user_meta($student->partner_id, 'billing_city', true),
@@ -437,7 +437,7 @@ function save_documents()
                     $partner_id = get_current_user_id();
                     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
                     $student_id = $student->id;
-                    $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = ". AES_FEE_INSCRIPTION);
+                    $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = ". FEE_INSCRIPTION);
                     // VERIFICAR FEE DE INSCRIPCION
 
                     //virtual classroom
@@ -548,8 +548,8 @@ function save_documents()
                             'email_re' => $user_partner->user_email,
                             'gender_re' => $gender_re,
         
-                            'cod_program' => AES_PROGRAM_ID,
-                            'cod_tip' => AES_TYPE_PROGRAM,
+                            'cod_program' => PROGRAM_ID,
+                            'cod_tip' => TYPE_PROGRAM,
                             'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
                             'country' => get_user_meta($student->partner_id, 'billing_country', true),
                             'city' => get_user_meta($student->partner_id, 'billing_city', true),

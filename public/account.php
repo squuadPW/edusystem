@@ -19,7 +19,7 @@ function fee_inscription_payment(){
             //clear cart
             $woocommerce->cart->empty_cart(); 
 
-            $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+            $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
 
             wp_redirect(wc_get_checkout_url());
             exit;

@@ -1,7 +1,7 @@
 <?php
   global $woocommerce;
   $cart = $woocommerce->cart->get_cart();
-  $id = AES_FEE_INSCRIPTION;
+  $id = FEE_INSCRIPTION;
 
   $filtered_products = array_filter($cart, function($product) use($id) {
       return $product['product_id'] != $id;
@@ -25,7 +25,7 @@
       <div >
         <div style="margin-bottom: 10px !important; text-align: center">
         <?php
-          $product_fee = wc_get_product(AES_FEE_INSCRIPTION);
+          $product_fee = wc_get_product(FEE_INSCRIPTION);
           $product_price = $product_fee->get_price();
         ?>
             <label class="fee-container"><strong>Registration fee</strong> <br><span>(You can pay it before starting classes in your account)</span>

@@ -817,7 +817,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
     // FEE DE INSCRIPCION
     $product = null;
     foreach ($items as $item) {
-        $product = $item->get_product()->get_id() == AES_FEE_INSCRIPTION ? $item->get_product() : $product;
+        $product = $item->get_product()->get_id() == FEE_INSCRIPTION ? $item->get_product() : $product;
     }
     if (isset($product)) {
         $roles = $current_user->roles;
@@ -834,7 +834,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
             }
 
             // VERIFICAR FEE DE INSCRIPCION
-            $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = " . AES_FEE_INSCRIPTION);
+            $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = " . FEE_INSCRIPTION);
             // VERIFICAR FEE DE INSCRIPCION
 
             //virtual classroom
@@ -945,8 +945,8 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                     'email_re' => $user_partner->user_email,
                     'gender_re' => $gender_re,
 
-                    'cod_program' => AES_PROGRAM_ID,
-                    'cod_tip' => AES_TYPE_PROGRAM,
+                    'cod_program' => PROGRAM_ID,
+                    'cod_tip' => TYPE_PROGRAM,
                     'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
                     'country' => get_user_meta($student->partner_id, 'billing_country', true),
                     'city' => get_user_meta($student->partner_id, 'billing_city', true),
@@ -1197,7 +1197,7 @@ function fee_update()
 {
     global $woocommerce;
     $value = $_POST['option'];
-    $id = AES_FEE_INSCRIPTION;
+    $id = FEE_INSCRIPTION;
 
     if ($value == 'true') {
         $woocommerce->cart->add_to_cart($id, 1);
@@ -1303,7 +1303,7 @@ function reload_payment_table()
     $value = $_POST['option'];
     global $woocommerce;
     $cart = $woocommerce->cart->get_cart();
-    $id = AES_FEE_INSCRIPTION;
+    $id = FEE_INSCRIPTION;
     $filtered_products = array_filter($cart, function ($product) use ($id) {
         return $product['product_id'] != $id;
     });
@@ -1442,7 +1442,7 @@ function fee_inscription_button()
     $partner_id = get_current_user_id();
     $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
     foreach ($students as $key => $student) {
-        $paid = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id = {$student->id} and product_id = " . AES_FEE_INSCRIPTION);
+        $paid = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id = {$student->id} and product_id = " . FEE_INSCRIPTION);
         if ($paid) {
             unset($students[$key]);
         }

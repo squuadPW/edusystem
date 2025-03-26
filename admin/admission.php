@@ -256,8 +256,8 @@ function add_admin_form_admission_content()
                     'email_re' => $parent_email,
                     'gender_re' => $parent_gender,
 
-                    'cod_program' => AES_PROGRAM_ID,
-                    'cod_tip' => AES_TYPE_PROGRAM,
+                    'cod_program' => PROGRAM_ID,
+                    'cod_tip' => TYPE_PROGRAM,
                     'cod_period' => $student_exist->academic_period,
                     'address' => get_user_meta($user_parent->ID, 'billing_address_1', true),
                     'country' => $parent_country,
@@ -1310,7 +1310,7 @@ function check_access_virtual($student_id)
         }
     }
 
-    $paid = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}student_payments WHERE student_id = $student_id AND product_id = " . AES_FEE_INSCRIPTION);
+    $paid = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}student_payments WHERE student_id = $student_id AND product_id = " . FEE_INSCRIPTION);
     return isset($paid);
 }
 
@@ -1395,8 +1395,8 @@ function prepare_fields_to_send($student)
         'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
         'email_re' => $user_partner->user_email,
         'gender_re' => $gender_re,
-        'cod_program' => AES_PROGRAM_ID,
-        'cod_tip' => AES_TYPE_PROGRAM,
+        'cod_program' => PROGRAM_ID,
+        'cod_tip' => TYPE_PROGRAM,
         'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
         'country' => get_user_meta($student->partner_id, 'billing_country', true),
         'city' => get_user_meta($student->partner_id, 'billing_city', true),

@@ -187,7 +187,7 @@ function get_orders($start, $end)
             $cuote->product = $product->get_name();
     
             // for fix
-            if ($cuote->product_id != AES_FEE_INSCRIPTION) {
+            if ($cuote->product_id != FEE_INSCRIPTION) {
                 $created_at = $cuote->created_at;
                 $month = date('n', strtotime($created_at)); // extract month from date string
                 if ($month == 8) { // August is the 8th month
@@ -300,8 +300,8 @@ function get_products_by_order($start, $end)
             $product_subtotals_variation[$product_id][$use_variation_id] += $subtotal;
             $product_taxs[$product_id] += $tax;
             $product_taxs_variation[$product_id][$use_variation_id] += $tax;
-            $product_discounts[$product_id] += ($product_id != AES_FEE_INSCRIPTION) ? $discount : 0;
-            $product_discounts_variation[$product_id][$use_variation_id] += ($product_id != AES_FEE_INSCRIPTION) ? $discount : 0;
+            $product_discounts[$product_id] += ($product_id != FEE_INSCRIPTION) ? $discount : 0;
+            $product_discounts_variation[$product_id][$use_variation_id] += ($product_id != FEE_INSCRIPTION) ? $discount : 0;
             $product_totals[$product_id] += $total;
             $product_totals_variation[$product_id][$use_variation_id] += $total;
         }

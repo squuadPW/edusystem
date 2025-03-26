@@ -252,24 +252,24 @@ function redirect_to_checkout($program, $grade, $from_webinar = false, $is_schol
     if ($program == 'aes') {
         switch ($grade) {
             case '1':
-                $variation = wc_get_product(AES_DUAL_9NO_VARIABLE);
+                $variation = wc_get_product(DUAL_9NO_VARIABLE);
                 $metadata = $variation->get_meta_data();
-                $woocommerce->cart->add_to_cart(AES_DUAL_9NO, 1, AES_DUAL_9NO_VARIABLE, $metadata);
-                $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                $woocommerce->cart->add_to_cart(DUAL_9NO, 1, DUAL_9NO_VARIABLE, $metadata);
+                $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
                 break;
 
             case '2':
-                $variation = wc_get_product(AES_DUAL_10MO_VARIABLE);
+                $variation = wc_get_product(DUAL_10MO_VARIABLE);
                 $metadata = $variation->get_meta_data();
-                $woocommerce->cart->add_to_cart(AES_DUAL_10MO, 1, AES_DUAL_10MO_VARIABLE, $metadata);
-                $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                $woocommerce->cart->add_to_cart(DUAL_10MO, 1, DUAL_10MO_VARIABLE, $metadata);
+                $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
                 break;
 
             default:
-                $variation = wc_get_product(AES_DUAL_DEFAULT_VARIABLE);
+                $variation = wc_get_product(DUAL_DEFAULT_VARIABLE);
                 $metadata = $variation->get_meta_data();
-                $woocommerce->cart->add_to_cart(AES_DUAL_DEFAULT, 1, AES_DUAL_DEFAULT_VARIABLE, $metadata);
-                $woocommerce->cart->add_to_cart(AES_FEE_INSCRIPTION, 1);
+                $woocommerce->cart->add_to_cart(DUAL_DEFAULT, 1, DUAL_DEFAULT_VARIABLE, $metadata);
+                $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
                 break;
         }
 

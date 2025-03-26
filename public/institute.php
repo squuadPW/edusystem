@@ -102,7 +102,7 @@ function set_institute_in_order($order, $id = NULL)
 
             foreach ($order_items as $item) {
                 $product_id = $item->get_product_id();
-                $subtotal = ($product_id != AES_FEE_INSCRIPTION) ? $item->get_subtotal() : $subtotal;
+                $subtotal = ($product_id != FEE_INSCRIPTION) ? $item->get_subtotal() : $subtotal;
             }
 
             // Ahora puedes recorrer los cupones de descuento

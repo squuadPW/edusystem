@@ -298,7 +298,7 @@ function add_admin_form_available_scholarships_content()
             $coupons = [];
 
             if ($fee_registration) {
-                $available_coupons = obtener_cupones_porcentuales_producto( [AES_FEE_INSCRIPTION], $percent_registration);
+                $available_coupons = obtener_cupones_porcentuales_producto( [FEE_INSCRIPTION], $percent_registration);
                 foreach ($available_coupons as $key => $coupon) {
                     array_push($coupons, $coupon);
                 }
@@ -309,7 +309,7 @@ function add_admin_form_available_scholarships_content()
                     $coupon->set_code($coupon_code);
                     $coupon->set_discount_type('percent');
                     $coupon->set_amount($percent_registration);
-                    $coupon->set_product_ids(array(AES_FEE_INSCRIPTION));
+                    $coupon->set_product_ids(array(FEE_INSCRIPTION));
                     $coupon->save();
                     array_push($coupons, $coupon_code);
                 }
@@ -317,7 +317,7 @@ function add_admin_form_available_scholarships_content()
 
             if ($program) {
                 $product_ids = get_all_woocommerce_product_ids(true);
-                $product_ids = array_diff($product_ids, [AES_FEE_INSCRIPTION]);
+                $product_ids = array_diff($product_ids, [FEE_INSCRIPTION]);
                 $available_coupons = obtener_cupones_porcentuales_producto($product_ids, $percent_program);
                 foreach ($available_coupons as $key => $coupon) {
                     array_push($coupons, $coupon);
