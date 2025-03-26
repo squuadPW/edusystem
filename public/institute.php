@@ -99,10 +99,11 @@ function set_institute_in_order($order, $id = NULL)
             $fee_institute = $data->fee;
             $coupons = $order->get_coupons();
             $order_items = $order->get_items();
+            $subtotal = 0;
 
             foreach ($order_items as $item) {
                 $product_id = $item->get_product_id();
-                $subtotal = ($product_id != FEE_INSCRIPTION) ? $item->get_subtotal() : $subtotal;
+                $subtotal = !in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $item->get_subtotal() : $subtotal;
             }
 
             // Ahora puedes recorrer los cupones de descuento

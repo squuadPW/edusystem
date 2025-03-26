@@ -101,6 +101,7 @@
 							</tr>
 							<tr>
 								<th>Cuote</th>
+								<th>Product</th>
 								<th>Expected payment date</th>
 								<th>Date of payment made</th>
 								<th>Amount</th>
@@ -112,6 +113,13 @@
 							<?php foreach ($payments as $key => $payment) { ?>
 								<tr>
 									<td><?= $payment->cuote ?>
+									</td>
+									<td>
+									<?php 
+									$product = wc_get_product($payment->variation_id ? $payment->variation_id : $payment->product_id);
+									$name_product = $product->get_name();
+									?>
+									<?= $name_product ?>
 									</td>
 									<td><?= in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment; ?>
 									</td>
