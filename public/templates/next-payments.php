@@ -1,7 +1,9 @@
 <?php
-foreach ($student_payments as $student_id => $payments) { ?>
+foreach ($student_payments as $student_id => $payments) { 
+    $student = get_student_detail($student_id);
+    ?>
     <h2 class="mb-4" style="font-size:24px;text-align:center;">
-        <?= __('Next payments for ', 'edusystem') . get_student_from_id($student_id)[0]->name . ' ' . get_student_from_id($student_id)[0]->last_name; ?>
+        <?= __('Quotes for ', 'edusystem') . $student->name . ' ' . $student->last_name; ?>
     </h2>
     <table
         class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
@@ -35,13 +37,41 @@ foreach ($student_payments as $student_id => $payments) { ?>
             <?php } ?>
         </tbody>
     </table>
-    <?php 
-    $fee_graduation_ready = get_payments($student_id, product_id: FEE_GRADUATION);
-    if (!$fee_graduation_ready) { ?>
-        <form method="POST" action="<?= the_permalink() . '?action=pay_graduation_fee&student_id='.$student_id; ?>" class="form-aes" style="text-align: center;">
-            <button type="submit" class="submit" id="buttonsave"><?= __('Pay fee graduation', 'edusystem'); ?></button>
-        </form>
-    <?php } ?>
     <?php
 }
 ?>
+
+<h2 class="mb-4" style="font-size:24px;text-align:center;">
+    <?= __('Student Graduation Fees', 'edusystem'); ?>
+</h2>
+<table
+    class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
+    <thead>
+        <tr>
+            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-quota"><span
+                    class="nobr">Student</span></th>
+            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-action" style="text-align: end"><span
+                    class="nobr">Action</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($students as $key => $student) { ?>
+            <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-pending">
+                <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-quota" data-title="Cuote">
+                    <?= $student->name ?> <?= $student->last_name ?>
+                </td>
+                <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-action" data-title="Action" style="text-align: end">
+                    <?php 
+                    $fee_graduation_ready = get_payments($student->id, product_id: FEE_GRADUATION);
+                    if (!$fee_graduation_ready) { ?>
+                        <form method="POST" action="<?= the_permalink() . '?action=pay_graduation_fee&student_id='.$student->id; ?>" style="margin-bottom: 0;">
+                            <button style="width: 70px;" type="submit" class="button button-primary">Pay</button>
+                        </form>
+                    <?php } else { ?>
+                        <button style="width: 70px; cursor: not-allowed; opacity: 0.5;" type="submit" class="button button-primary">Ready</button>
+                    <?php } ?>
+                </td>
+            </tr>
+        <?php } ?>
+    </tbody>
+</table>
