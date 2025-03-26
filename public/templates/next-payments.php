@@ -41,6 +41,11 @@ foreach ($student_payments as $student_id => $payments) {
 }
 ?>
 
+<?php
+    $product = wc_get_product(FEE_GRADUATION);
+    $name_product = $product->get_name();
+    $price_product = $product->get_price();
+?>
 <h2 class="mb-4" style="font-size:24px;text-align:center;">
     <?= __('Student Graduation Fees', 'edusystem'); ?>
 </h2>
@@ -50,6 +55,10 @@ foreach ($student_payments as $student_id => $payments) {
         <tr>
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-quota"><span
                     class="nobr">Student</span></th>
+            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-payment"><span
+                    class="nobr">Payment</span></th>
+            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-price"><span
+                    class="nobr">Price</span></th>
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-action" style="text-align: end"><span
                     class="nobr">Action</span></th>
         </tr>
@@ -60,6 +69,12 @@ foreach ($student_payments as $student_id => $payments) {
                 <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-quota" data-title="Cuote">
                     <?= $student->name ?> <?= $student->last_name ?>
                 </td>
+                <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-payment" data-title="Payment">
+                    <?= $name_product ?>
+                </td>
+                <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-price" data-title="Price">
+                    <?= wc_price($price_product); ?>
+                </td>
                 <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-action" data-title="Action" style="text-align: end">
                     <?php 
                     $fee_graduation_ready = get_payments($student->id, product_id: FEE_GRADUATION);
@@ -68,7 +83,7 @@ foreach ($student_payments as $student_id => $payments) {
                             <button style="width: 70px;" type="submit" class="button button-primary">Pay</button>
                         </form>
                     <?php } else { ?>
-                        <button style="width: 70px; cursor: not-allowed; opacity: 0.5;" type="submit" class="button button-primary">Ready</button>
+                        <button style="width: 90px; cursor: not-allowed; opacity: 0.5;" type="submit" class="button button-primary">Ready</button>
                     <?php } ?>
                 </td>
             </tr>
