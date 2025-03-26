@@ -39,7 +39,7 @@ foreach ($student_payments as $student_id => $payments) { ?>
     $fee_graduation_ready = get_payments($student_id, product_id: FEE_GRADUATION);
     if (!$fee_graduation_ready) { ?>
         <form method="POST" action="<?= the_permalink() . '?action=pay_graduation_fee&student_id='.$student_id; ?>" class="form-aes" style="text-align: center;">
-            <button type="submit" class="submit" id="buttonsave"><?= __('Pay graduation fee', 'edusystem'); ?></button>
+            <button type="submit" class="submit" id="buttonsave"><?= __('Pay fee graduation', 'edusystem'); ?></button>
         </form>
     <?php } ?>
     <?php
