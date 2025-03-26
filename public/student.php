@@ -677,7 +677,13 @@ function get_payments($student_id, $product_id = false)
         $payments = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id={$student_id} AND product_id={$product_id}");
         return $payments;
     } else {
-        $payments = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id={$student_id} AND NOT product_id = 63");
+        $products = ['FEE_INSCRIPTION', 'FEE_GRADUATION'];
+        $products_list = "'" . implode("','", $products) . "'";
+        $payments = $wpdb->get_row(
+            "SELECT * FROM {$table_student_payments} 
+            WHERE student_id = {$student_id} 
+            AND product_id NOT IN ({$products_list})"
+        );
         return $payments;
     }
 }
