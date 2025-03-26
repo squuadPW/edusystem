@@ -703,20 +703,22 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
     if ($order->get_meta('student_id')) {
         $student_id = $order->get_meta('student_id');
         create_user_student($student_id);
-
-        $query = $wpdb->prepare("
-            UPDATE {$table_student_payment} AS main
-            INNER JOIN (
-                SELECT product_id, MIN(id) AS min_id
-                FROM {$table_student_payment}
-                WHERE student_id = %d
-                AND status_id = 0
-                GROUP BY product_id
-            ) AS sub ON main.product_id = sub.product_id AND main.id = sub.min_id
-            SET main.status_id = 1, main.order_id = %d, main.date_payment = CURDATE()
-        ", $student_id, $order_id);
-
-        $wpdb->query($query);
+        $items = $order->get_items();
+        foreach ($items as $item) {
+            $query = $wpdb->prepare("
+                UPDATE {$table_student_payment} AS main
+                INNER JOIN (
+                    SELECT product_id, MIN(id) AS min_id
+                    FROM {$table_student_payment}
+                    WHERE student_id = %d
+                    AND product_id = %d
+                    AND status_id = 0
+                    GROUP BY product_id
+                ) AS sub ON main.product_id = sub.product_id AND main.id = sub.min_id
+                SET main.status_id = 1, main.order_id = %d, main.date_payment = CURDATE()
+            ", $student_id, $item->get_product_id(), $order_id);
+            $wpdb->query($query);
+        }
 
         if ($order->get_meta('id_bitrix')) {
             sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());
@@ -788,6 +790,11 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                 $cuotes = $product->get_meta('num_cuotes_text') ? $product->get_meta('num_cuotes_text') : 1;
             }
 
+            $need_next_payment = true;
+            if (in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION])) {
+                $need_next_payment = false;
+            }
+
             for ($i = 0; $i < $cuotes; $i++) {
                 $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
                 $data = array(
@@ -801,12 +808,11 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                     'cuote' => ($i + 1),
                     'num_cuotes' => $cuotes,
                     'date_payment' => $i == 0 ? date('Y-m-d') : null,
-                    'date_next_payment' => $date,
+                    'date_next_payment' => $need_next_payment ? $date : null,
                 );
 
                 // Busca si ya existe una fila con los mismos valores
                 $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND product_id = %d AND variation_id = %d AND cuote = %d", $student_id, $product_id, $variation_id, ($i + 1)));
-
                 if (!$existing_row) {
                     // Si no se encuentra ninguna fila, inserta la nueva fila
                     $wpdb->insert($wpdb->prefix . 'student_payments', $data);
@@ -2651,6 +2657,7 @@ function detect_orders_endpoint()
 {
     global $current_user, $wpdb;
     if ($current_user) {
+        $order = null;
         $orders = wc_get_orders(array(
             'status' => 'pending',
             'customer_id' => $current_user->ID,

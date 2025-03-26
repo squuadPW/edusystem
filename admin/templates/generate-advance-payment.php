@@ -113,7 +113,7 @@
 								<tr>
 									<td><?= $payment->cuote ?>
 									</td>
-									<td><?= $payment->product_id == FEE_INSCRIPTION ? $payment->date_payment : $payment->date_next_payment; ?>
+									<td><?= in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment; ?>
 									</td>
 									<td><?= $payment->status_id == 1 ? $payment->date_payment : 'N/A'; ?>
 									</td>

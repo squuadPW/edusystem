@@ -238,6 +238,11 @@ function save_student()
     }
 
     if (isset($_GET['action']) && $_GET['action'] === 'pay_graduation_fee') {
+
+        $student = get_student_detail($_GET['student_id']);
+        setcookie('fee_student_id', $student->id, time() + 864000, '/');
+        setcookie('institute_id', $student->institute_id, time() + 864000, '/');
+
         // Vaciar carrito existente
         WC()->cart->empty_cart();
         
