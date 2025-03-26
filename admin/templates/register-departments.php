@@ -63,6 +63,41 @@
                     </tr>
                 </div>
                 <!-- ADMISSION -->
+
+                <!-- CERTIFICATIONS -->
+                <div>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" name="capabilities[]" id="manager_certificates" value="manager_certificates" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_certificates'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_certificates"><?= __('Certificates','edusystem'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" id="manager_documents_certificates" value="manager_documents_certificates" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_documents_certificates'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_documents_certificates" style="margin-left:20px;"><?= __('Documents of certificates','edusystem'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" id="manager_users_signatures_certificate" value="manager_users_signatures_certificate" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_users_signatures_certificate'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_users_signatures_certificate" style="margin-left:20px;"><?= __('Users and signatures','edusystem'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" id="manager_configuration_certificates" value="manager_id_card" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_id_card'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_id_card" style="margin-left:20px;"><?= __('ID Card of students','edusystem'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" id="manager_configuration_certificates" value="manager_configuration_certificates" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_configuration_certificates'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_configuration_certificates" style="margin-left:20px;"><?= __('Configuration of certificates','edusystem'); ?></label></td>
+                    </tr>
+                </div>
+                <!-- CERTIFICATIONS -->
             
                 <!-- ACADEMIC -->
                 <div>
