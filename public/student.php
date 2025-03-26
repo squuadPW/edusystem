@@ -702,16 +702,10 @@ function get_payments($student_id, $product_id = false)
 
 function get_name_grade($grade_id)
 {
-
-    $grade = match ($grade_id) {
-        '1' => __('Lower', 'edusystem'),
-        '2' => __('Middle', 'edusystem'),
-        '3' => __('Upper', 'edusystem'),
-        '4' => __('Graduate', 'edusystem'),
-        default => ''
-    };
-
-    return $grade;
+    global $wpdb;
+    $table_grades = $wpdb->prefix . 'grades';
+    $grade = $wpdb->get_row("SELECT * FROM {$table_grades} WHERE id = " . $grade_id);
+    return $grade->name;
 }
 
 function get_name_program($program_id)
