@@ -1466,33 +1466,64 @@ function generate_document()
     $span_close = '</span>';
 
     $academic_period_name = $academic_period->name;
-    $document->content = str_replace('{{academic_year}}', $span_open.$academic_period_name.$span_close, $document->content);
-    $document->content = str_replace('{{start_academic_year}}', $start_academic_period, $document->content);
-    $document->content = str_replace('{{end_academic_year}}', $end_academic_period, $document->content);
+    if (strpos($document->content, '{{academic_year}}') !== false) {
+        $document->content = str_replace('{{academic_year}}', $span_open.$academic_period_name.$span_close, $document->content);
+    }
+    
+    if (strpos($document->content, '{{start_academic_year}}') !== false) {
+        $document->content = str_replace('{{start_academic_year}}', $start_academic_period, $document->content);
+    }
+    
+    if (strpos($document->content, '{{end_academic_year}}') !== false) {
+        $document->content = str_replace('{{end_academic_year}}', $end_academic_period, $document->content);
+    }
 
     $student_name = $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name;
-    $document->content = str_replace('{{student_name}}', $span_open.$student_name.$span_close, $document->content);
+    if (strpos($document->content, '{{student_name}}') !== false) {
+        $document->content = str_replace('{{student_name}}', $span_open.$student_name.$span_close, $document->content);
+    }
 
     $id_student = $student->id_document;
-    $document->content = str_replace('{{id_student}}', $span_open.$id_student.$span_close, $document->content);
+    if (strpos($document->content, '{{id_student}}') !== false) {
+        $document->content = str_replace('{{id_student}}', $span_open.$id_student.$span_close, $document->content);
+    }
 
     $program = get_name_program($student->program_id);
-    $document->content = str_replace('{{program}}', $span_open.$program.$span_close, $document->content);
+    if (strpos($document->content, '{{program}}') !== false) {
+        $document->content = str_replace('{{program}}', $span_open.$program.$span_close, $document->content);
+    }
 
     $today = date('M d, Y');
-    $document->content = str_replace('{{today}}', $today, $document->content);
-    $document->content = str_replace('{{table_notes}}', table_notes_html($student->id), $document->content);
-    $document->content = str_replace('{{table_notes_summary}}', table_notes_summary_html($student->id), $document->content);
-    $document->content = str_replace('{{qrcode}}', '<div id="qrcode"></div>', $document->content);
+    if (strpos($document->content, '{{today}}') !== false) {
+        $document->content = str_replace('{{today}}', $today, $document->content);
+    }
+    
+    if (strpos($document->content, '{{table_notes}}') !== false) {
+        $document->content = str_replace('{{table_notes}}', table_notes_html($student->id), $document->content);
+    }
+    
+    if (strpos($document->content, '{{table_notes_summary}}') !== false) {
+        $document->content = str_replace('{{table_notes_summary}}', table_notes_summary_html($student->id), $document->content);
+    }
+    
+    if (strpos($document->content, '{{qrcode}}') !== false) {
+        $document->content = str_replace('{{qrcode}}', '<div id="qrcode"></div>', $document->content);
+    }
 
     if ($document->signature_required) {
         $user_sign = $user_signature->first_name . ' ' . $user_signature->last_name;
-        $document->content = str_replace('{{user_sign}}', $span_open.$user_sign.$span_close, $document->content);
+        if (strpos($document->content, '{{user_sign}}') !== false) {
+            $document->content = str_replace('{{user_sign}}', $span_open.$user_sign.$span_close, $document->content);
+        }
     
         $user_charge = $signature->charge;
-        $document->content = str_replace('{{position_user_charge}}', $span_open.$user_charge.$span_close, $document->content);
+        if (strpos($document->content, '{{position_user_charge}}') !== false) {
+            $document->content = str_replace('{{position_user_charge}}', $span_open.$user_charge.$span_close, $document->content);
+        }
 
-        $document->content = str_replace('{{signature}}', '<img style="width: 250px" src="'. wp_get_attachment_url($signature->attach_id) .'"/>', $document->content);
+        if (strpos($document->content, '{{signature}}') !== false) {
+            $document->content = str_replace('{{signature}}', '<img style="width: 250px" src="'. wp_get_attachment_url($signature->attach_id) .'"/>', $document->content);
+        }
     }
 
     $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, $program, 1, $student, $emission_date);
