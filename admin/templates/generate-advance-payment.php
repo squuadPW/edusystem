@@ -88,8 +88,8 @@
 					<table class="wp-list-table widefat fixed posts striped">
 						<thead>
 							<tr>
-								<th>Payments</th>
-								<th colspan="5" style="text-align: end">
+								<th colspan="6">Payments</th>
+								<th colspan="6" style="text-align: end">
 									<button type="submit" class="button button-primary"
 										style="margin: 10px" onclick="return confirm('Are you sure?');">Generate next quota order</button>
 									<input type="hidden" id="amount" name="amount"
@@ -100,35 +100,31 @@
 								</th>
 							</tr>
 							<tr>
-								<th>Cuote</th>
-								<th>Product</th>
-								<th>Expected payment date</th>
-								<th>Date of payment made</th>
-								<th>Amount</th>
-								<th>Status</th>
-								<th>Order ID</th>
+								<th colspan="4">Payment</th>
+								<th colspan="2" style="text-align: center;">Expected payment date</th>
+								<th colspan="2" style="text-align: center;">Date of payment made</th>
+								<th colspan="1" style="text-align: center;">Amount</th>
+								<th colspan="1" style="text-align: center;">Order ID</th>
+								<th colspan="2" style="text-align: center;">Status</th>
 							</tr>
 						</thead>
 						<tbody>
 							<?php foreach ($payments as $key => $payment) { ?>
 								<tr>
-									<td><?= $payment->cuote ?>
-									</td>
-									<td>
+									<td colspan="4">
 									<?php 
 									$product = wc_get_product($payment->variation_id ? $payment->variation_id : $payment->product_id);
 									$name_product = $product->get_name();
 									?>
-									<?= $name_product ?>
+									#<?= $payment->cuote ?> - <?= $name_product ?>
 									</td>
-									<td><?= in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment; ?>
+									<td colspan="2" style="text-align: center;"><?= in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment; ?>
 									</td>
-									<td><?= $payment->status_id == 1 ? $payment->date_payment : 'N/A'; ?>
+									<td colspan="2" style="text-align: center;"><?= $payment->status_id == 1 ? $payment->date_payment : 'N/A'; ?>
 									</td>
-									<td><?= wc_price($payment->amount) ?>
+									<td colspan="1" style="text-align: center;"><?= wc_price($payment->amount) ?>
 									</td>
-									<td><?= $payment->status_id == 1 ? 'Completed' : 'Pending'; ?></td>
-									<td>
+									<td colspan="1" style="text-align: center;">
 										<?php if($payment->status_id == 1) { ?>
 											<a target="_blank"
 											href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $payment->order_id) ?>"><?= $payment->order_id ?></a>
@@ -136,6 +132,7 @@
 											N/A
 										<?php } ?>
 									</td>
+									<td style="text-align: center;" colspan="2"><?= $payment->status_id == 1 ? '<span style="color: green">Completed</span>' : '<span style="color: orange">Pending</span>'; ?></td>
 								</tr>
 							<?php } ?>
 						</tbody>
