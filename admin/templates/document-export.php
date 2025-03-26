@@ -7,10 +7,8 @@
     <div class="modal-content modal-enrollment">
         <span id="close-modal-grades" style="float: right; cursor: pointer"><span
                 class='dashicons dashicons-no-alt'></span></span>
-        <div class="modal-body" id="content-pdf">
-            <div id="modal-body-content" style="padding: 0 !important; margin: 0 !important">
+        <div class="modal-body" id="content-pdf" style="padding: 0 !important; margin: 0 !important">
 
-            </div>
         </div>
         <div class="modal-footer" style="text-align: center; display: block">
             <button type="button" class="button button-primary" id="download-grades">Print</button>

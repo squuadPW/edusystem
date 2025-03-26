@@ -549,7 +549,7 @@ document.addEventListener("DOMContentLoaded", function () {
       XHR.onload = function () {
         if (this.readyState == 4 && XHR.status === 200) {
           (async () => {
-            const modal_body = document.getElementById("modal-body-content");
+            const modal_body = document.getElementById("content-pdf");
             
             // Función simplificada sin CORS
             const convertToBase64 = async (url) => {
