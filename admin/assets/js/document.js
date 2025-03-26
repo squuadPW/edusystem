@@ -612,7 +612,7 @@ document.addEventListener("DOMContentLoaded", function () {
         download_grades.disabled = true;
         var element = document.getElementById("content-pdf");
         var opt = {
-          margin: [0.2, 0, 0, 0],
+          margin: [0, 0, 0, 0],
           filename: 'document.pdf',
           image: { type: "jpeg", quality: 0.98 },
           jsPDF: { unit: "in", format: "a4", orientation: "portrait" },

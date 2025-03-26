@@ -8,7 +8,7 @@
         <span id="close-modal-grades" style="float: right; cursor: pointer"><span
                 class='dashicons dashicons-no-alt'></span></span>
         <div class="modal-body" id="content-pdf">
-            <div id="modal-body-content">
+            <div id="modal-body-content" style="padding: 0 !important; margin: 0 !important">
 
             </div>
         </div>
