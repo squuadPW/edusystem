@@ -926,7 +926,7 @@ function table_notes_summary_html($student_id) {
         }
     }
 
-    $gpa = ($sum_quality / $total_quality);
+    $gpa = ($sum_quality / ($total_quality == 0 ? 1 : $total_quality ));
 
     $html = '';
     $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
