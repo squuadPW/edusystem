@@ -237,6 +237,18 @@ function save_student()
         redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false);
     }
 
+    if (isset($_GET['action']) && $_GET['action'] === 'pay_graduation_fee') {
+        // Vaciar carrito existente
+        WC()->cart->empty_cart();
+        
+        // Agregar nuevo producto
+        WC()->cart->add_to_cart(FEE_GRADUATION, 1);
+        
+        // Redireccionar a checkout
+        wp_redirect(wc_get_checkout_url());
+        exit;
+    }
+
     if (isset($_GET['action']) && !empty($_GET['action']) && $_GET['action'] == 'change_payment_method') {
         setcookie('payment_method_selected', '', time() - 3600, '/');
         wp_redirect(home_url('/select-payment'));
@@ -273,11 +285,6 @@ function redirect_to_checkout($program, $grade, $from_webinar = false, $is_schol
                 break;
         }
 
-    } else if ($program == 'psp') {
-        $woocommerce->cart->add_to_cart(102, 1);
-    } else if ($program == 'aes_psp') {
-        $woocommerce->cart->add_to_cart(103, 1);
-        $woocommerce->cart->add_to_cart(102, 1);
     }
 
     if (!$from_webinar && !$is_scholarship) {

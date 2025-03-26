@@ -424,10 +424,10 @@ function create_tables()
         variation_id INT(11) NULL,
         amount DOUBLE(10, 2) NOT NULL,
         type_payment INT(11) NOT NULL,
-        cuote INT(11) NOT NULL,
-        num_cuotes INT(11) NOT NULL,
+        cuote INT(11) NULL,
+        num_cuotes INT(11) NULL,
         date_payment DATE NULL,
-        date_next_payment DATE NOT NULL,
+        date_next_payment DATE NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );

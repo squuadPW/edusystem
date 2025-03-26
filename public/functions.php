@@ -70,7 +70,7 @@ function form_plugin_scripts()
         )
     );
     wp_enqueue_script('create-enrollment');
-    
+
     if (str_contains(home_url($wp->request), 'califications')) {
         wp_register_script('califications', plugins_url('edusystem') . '/public/assets/js/califications.js', array('jquery'), $version, true);
         wp_localize_script(
@@ -184,7 +184,7 @@ function send_request_callback()
     $roles = $current_user->roles;
     $table_students = $wpdb->prefix . 'students';
     $table_requests = $wpdb->prefix . 'requests';
-    
+
     $type_id = sanitize_text_field($_POST['type_id']);
     $reason = sanitize_text_field($_POST['reason']);
     $student_id = sanitize_text_field($_POST['student_id']);
@@ -198,7 +198,7 @@ function send_request_callback()
         } else if (!in_array('parent', $roles) && in_array('student', $roles)) {
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
             $partner_id = $student->partner_id;
-        }    
+        }
     }
 
     $wpdb->insert($table_requests, [
@@ -495,7 +495,7 @@ function remove_my_account_links($menu_links)
 
     // Lógica para roles "parent" y "student"
     if (in_array('parent', $roles) || in_array('student', $roles)) {
-        
+
         // Agregar "Student Information"
         $menu_links['student'] = __('Student Information', 'edusystem');
 
@@ -554,19 +554,20 @@ function redirect_to_my_account()
 add_action('woocommerce_thankyou', 'redirect_to_my_account', 10, 1);
 add_action('woocommerce_thankyou', 'auto_complete_free_orders', 9, 1);
 
-function auto_complete_free_orders($order_id) {
+function auto_complete_free_orders($order_id)
+{
     // Obtener el objeto de la orden
     $order = wc_get_order($order_id);
-    
+
     // Verificar si es una orden válida y con total 0
     if ($order && $order->get_total() == 0) {
-        
+
         // Verificar que no esté ya completada
         if (!$order->has_status('completed')) {
-            
+
             // Actualizar estado y agregar nota
             $order->update_status('completed', __('Orden marcada como completada automáticamente por monto cero', 'your-textdomain'));
-            
+
             // Opcional: Limpiar carrito si es necesario
             if (WC()->cart) {
                 WC()->cart->empty_cart();
@@ -620,8 +621,8 @@ function add_loginout_link($items, $args)
         if ($args->theme_location == 'primary') {
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications"><span style="vertical-align: baseline; font-size: 28px; width: 26px; color: ' . $color . '; cursor: pointer;" class="dashicons dashicons-bell"></span>' . $count . '</a></li>';
         }
-        
-        
+
+
         $birthday = get_user_meta($current_user->ID, 'birth_date', true);
         $age = floor((time() - strtotime($birthday)) / 31556926);
         if ($age >= 18) {
@@ -635,7 +636,7 @@ function add_loginout_link($items, $args)
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/notifications">' . __('Notifications', 'edusystem') . '</a></li>';
         }
 
-        
+
         if ($args->theme_location != 'primary') {
             if ($age >= 18) {
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/orders">' . __('Payments', 'edusystem') . '</a></li>';
@@ -666,24 +667,25 @@ function add_loginout_link($items, $args)
     return $items;
 }
 
-function status_changed_payment($order_id, $old_status, $new_status)
+function status_changed_payment($order_id)
 {
-    global $wpdb, $current_user;
     $order = wc_get_order($order_id);
+    $current_status = $order->get_status();
     $customer_id = $order->get_customer_id();
     $status_register = get_user_meta($customer_id, 'status_register', true);
 
-    if ($order->get_status() != 'failed' && $order->get_status() != 'pending') {
+    // Limpiar cookies solo para estados válidos
+    if (!in_array($current_status, ['failed', 'pending'])) {
         clear_all_cookies();
     }
 
-    if ($order->get_status() == 'completed') {
+    // Determinar qué función ejecutar
+    if ($current_status === 'completed') {
         status_order_completed($order, $order_id, $customer_id, $status_register);
-    } else {
+    } elseif (!in_array($current_status, ['failed', 'pending'])) {
         status_order_not_completed($order, $order_id, $customer_id, $status_register);
     }
 }
-
 
 add_action('woocommerce_order_status_changed', 'status_changed_payment', 10, 3);
 
@@ -713,7 +715,7 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
             ) AS sub ON main.product_id = sub.product_id AND main.id = sub.min_id
             SET main.status_id = 1, main.order_id = %d, main.date_payment = CURDATE()
         ", $student_id, $order_id);
-        
+
         $wpdb->query($query);
 
         if ($order->get_meta('id_bitrix')) {
@@ -1069,9 +1071,10 @@ function insert_data_student($order)
 
 add_action('woocommerce_after_checkout_billing_form', 'payments_parts');
 
-function split_payment() {
+function split_payment()
+{
     $cart = WC()->cart;
-    
+
     if (!$cart || $cart->is_empty()) {
         // Carrito vacío
         include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
@@ -1299,76 +1302,76 @@ function reload_payment_table()
 {
     ob_start();
     ?>
-    <?php
-    $value = $_POST['option'];
-    global $woocommerce;
-    $cart = $woocommerce->cart->get_cart();
-    $id = FEE_INSCRIPTION;
-    $filtered_products = array_filter($cart, function ($product) use ($id) {
-        return $product['product_id'] != $id;
-    });
+        <?php
+        $value = $_POST['option'];
+        global $woocommerce;
+        $cart = $woocommerce->cart->get_cart();
+        $id = FEE_INSCRIPTION;
+        $filtered_products = array_filter($cart, function ($product) use ($id) {
+            return $product['product_id'] != $id;
+        });
 
-    $cart_total = 0;
-    $product_id = null;
-    foreach ($filtered_products as $key => $product) {
-        $product_id = $product['product_id'];
-        $cart_total = $product['line_total'];
-        // $price = $product['line_total']; 
-    }
-    if (isset($product_id)) {
-        $product = wc_get_product($product_id);
-        if ($product->is_type('variable')) {
-            $variations = $product->get_available_variations();
-            $date = new DateTime();
-            $date = $date->format('Y-m-d');
-            foreach ($variations as $key => $variation) {
-                if ($variation['attributes']['attribute_payments'] === $value) {
-                    ?>
-                    <table class="payment-parts-table mt-5">
-                        <tr>
-                            <th class="payment-parts-table-header">Payment</th>
-                            <th class="payment-parts-table-header">Next date payment</th>
-                            <th class="payment-parts-table-header">Amount</th>
-                        </tr>
-                        <?php
-                        $date_calc = '';
-                        switch ($value) {
-                            case 'Annual':
-                                $date_calc = '+1 year';
-                                break;
-                            case 'Semiannual':
-                                $date_calc = '+6 months';
-                                break;
-                        }
-                        $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true);
-                        for ($i = 0; $i < $cuotes; $i++) {
-                            $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
-                            ?>
-                                                <tr class="payment-parts-table-row">
-                                                    <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
-                                                    <td class="payment-parts-table-data">
-                                                        <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?>
-                                                    </td>
-                                                    <td class="payment-parts-table-data"><?php echo wc_price($cart_total) ?></td>
-                                                </tr>
-                                                <?php
-                        }
+        $cart_total = 0;
+        $product_id = null;
+        foreach ($filtered_products as $key => $product) {
+            $product_id = $product['product_id'];
+            $cart_total = $product['line_total'];
+            // $price = $product['line_total']; 
+        }
+        if (isset($product_id)) {
+            $product = wc_get_product($product_id);
+            if ($product->is_type('variable')) {
+                $variations = $product->get_available_variations();
+                $date = new DateTime();
+                $date = $date->format('Y-m-d');
+                foreach ($variations as $key => $variation) {
+                    if ($variation['attributes']['attribute_payments'] === $value) {
                         ?>
-                        <tr>
-                            <th class="payment-parts-table-header text-end" colspan="3">Total</th>
-                        </tr>
-                        <tr class="payment-parts-table-row">
-                            <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes)) ?></td>
-                        </tr>
-                    </table>
-                    <?php
+                                        <table class="payment-parts-table mt-5">
+                                            <tr>
+                                                <th class="payment-parts-table-header">Payment</th>
+                                                <th class="payment-parts-table-header">Next date payment</th>
+                                                <th class="payment-parts-table-header">Amount</th>
+                                            </tr>
+                                            <?php
+                                            $date_calc = '';
+                                            switch ($value) {
+                                                case 'Annual':
+                                                    $date_calc = '+1 year';
+                                                    break;
+                                                case 'Semiannual':
+                                                    $date_calc = '+6 months';
+                                                    break;
+                                            }
+                                            $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true);
+                                            for ($i = 0; $i < $cuotes; $i++) {
+                                                $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
+                                                ?>
+                                                                        <tr class="payment-parts-table-row">
+                                                                            <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
+                                                                            <td class="payment-parts-table-data">
+                                                                                <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?>
+                                                                            </td>
+                                                                            <td class="payment-parts-table-data"><?php echo wc_price($cart_total) ?></td>
+                                                                        </tr>
+                                                                        <?php
+                                            }
+                                            ?>
+                                            <tr>
+                                                <th class="payment-parts-table-header text-end" colspan="3">Total</th>
+                                            </tr>
+                                            <tr class="payment-parts-table-row">
+                                                <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes)) ?></td>
+                                            </tr>
+                                        </table>
+                                        <?php
+                    }
                 }
             }
         }
-    }
-    $html = ob_get_clean();
-    echo $html;
-    wp_die();
+        $html = ob_get_clean();
+        echo $html;
+        wp_die();
 }
 
 add_action('wp_ajax_nopriv_reload_button_schoolship', 'reload_button_schoolship');
@@ -1386,19 +1389,19 @@ function reload_button_schoolship()
         }
     }
     ?>
-    <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
-        <?php if ($has_scholarship): ?>
-                                <button id="apply-scholarship-btn" type="button"
-                                    disabled><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?></button>
-        <?php else: ?>
-                                <button id="apply-scholarship-btn"
-                                    type="button"><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?></button>
-        <?php endif; ?>
-    </div>
-    <?php
-    $html = ob_get_clean();
-    echo $html;
-    wp_die();
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
+            <?php if ($has_scholarship): ?>
+                                        <button id="apply-scholarship-btn" type="button"
+                                            disabled><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?></button>
+            <?php else: ?>
+                                        <button id="apply-scholarship-btn"
+                                            type="button"><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?></button>
+            <?php endif; ?>
+        </div>
+        <?php
+        $html = ob_get_clean();
+        echo $html;
+        wp_die();
 }
 
 add_action('wp_ajax_nopriv_apply_scholarship', 'apply_scholarship');
@@ -1474,7 +1477,8 @@ function update_coupon_label_individually($coupon_html, $coupon)
 // Apply the hook
 add_filter('woocommerce_cart_totals_coupon_label', 'update_coupon_label_individually', 10, 2);
 
-function redirect_after_login($redirect_to, $user) {
+function redirect_after_login($redirect_to, $user)
+{
     if (is_wp_error($user) || !isset($user->roles)) {
         return $redirect_to;
     }
@@ -1705,7 +1709,7 @@ function select_elective_callback()
     $wpdb->update($table_students, [
         'elective' => 0,
     ], ['id' => $student_id]);
-    
+
     $section = load_section_available($subject->id, $code, $cut);
 
     $wpdb->insert($table_student_period_inscriptions, [
@@ -1719,7 +1723,7 @@ function select_elective_callback()
         'cut_period' => $projection_obj[count($projection_obj) - 1]['cut']
     ]);
 
-    if(get_option('auto_enroll_elective')) {
+    if (get_option('auto_enroll_elective')) {
         $offer = get_offer_filtered($subject->id, $code, $cut);
         $enrollments = [];
         $enrollments = array_merge($enrollments, courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id]));
@@ -1811,7 +1815,7 @@ function sendOrderbitrix($id_bitrix, $id_order, $status)
         // Do something with the data...
     } else {
         // Handle the error
-        
+
     }
 }
 
@@ -2354,9 +2358,9 @@ function loadFeesSplit()
     if (!isset($_COOKIE['from_webinar']) || empty($_COOKIE['from_webinar'])) {
 
         if ($order) {
-            foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
-                if ( $item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' ) {
-                    $order->remove_item( $item_id );
+            foreach ($order->get_items('fee') as $item_id => $item_fee) {
+                if ($item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee') {
+                    $order->remove_item($item_id);
                 }
             }
 
@@ -2388,8 +2392,8 @@ function loadFeesSplit()
                     $order->save();
                 }
             }
-        } 
-        
+        }
+
         if ($chosen_gateway == 'woo_squuad_stripe') {
             if ($payment_page == 0) {
                 $stripe_fee_percentage = 4.5; // 4.5% fee
@@ -2643,33 +2647,35 @@ function load_last_cut()
 }
 
 add_action('woocommerce_account_orders_endpoint', 'detect_orders_endpoint');
-function detect_orders_endpoint() {
+function detect_orders_endpoint()
+{
     global $current_user, $wpdb;
     if ($current_user) {
         $orders = wc_get_orders(array(
             'status' => 'pending',
             'customer_id' => $current_user->ID,
         ));
-    
+
         if (count($orders) > 0) {
             $order_id = $orders[0]->get_id(); // Get the first pending order ID
             $order = wc_get_order($order_id);
         }
-    
+
         if ($order) {
-            foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
-                if ( $item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' ) {
-                    $order->remove_item( $item_id );
+            foreach ($order->get_items('fee') as $item_id => $item_fee) {
+                if ($item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee') {
+                    $order->remove_item($item_id);
                 }
             }
-    
+
             $order->calculate_totals();
             $order->save();
         }
     }
 }
 
-function clear_students_electives() {
+function clear_students_electives()
+{
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $wpdb->query("UPDATE {$table_students} SET elective = 0, skip_cut = 1 WHERE elective = 1");
@@ -2688,18 +2694,19 @@ function clear_students_electives() {
 //     return $available_gateways;
 // }
 
-function send_notification_user($user_id, $description, $importance, $type) {
-    if($user_id) {
+function send_notification_user($user_id, $description, $importance, $type)
+{
+    if ($user_id) {
         global $wpdb;
         $table_users_notices = $wpdb->prefix . 'users_notices';
-    
+
         $data = [
             'user_id' => $user_id,
             'message' => $description,
             'importance' => $importance,
             'type_notice' => $type,
         ];
-    
+
         $wpdb->insert($table_users_notices, $data);
     }
 }
@@ -2710,7 +2717,8 @@ function send_notification_user($user_id, $description, $importance, $type) {
  * @param int $user_id (opcional) ID del usuario. Si no se proporciona, usa el usuario actual.
  * @return bool
  */
-function customer_pending_orders($user_id = null) {
+function customer_pending_orders($user_id = null)
+{
     if (!$user_id) {
         $user_id = get_current_user_id();
     }
@@ -2723,9 +2731,9 @@ function customer_pending_orders($user_id = null) {
     // Argumentos para buscar órdenes
     $args = array(
         'customer_id' => $user_id,
-        'status'      => 'pending',
-        'limit'       => 1, // Solo necesitamos al menos 1 orden
-        'return'      => 'ids',
+        'status' => 'pending',
+        'limit' => 1, // Solo necesitamos al menos 1 orden
+        'return' => 'ids',
     );
 
     // Obtener órdenes
@@ -2735,9 +2743,10 @@ function customer_pending_orders($user_id = null) {
 
 add_action('template_redirect', 'redirect_admins_from_my_account_to_admin');
 
-function redirect_admins_from_my_account_to_admin() {
+function redirect_admins_from_my_account_to_admin()
+{
     // Verificar si estamos en la página "My Account" de WooCommerce
-    if(is_account_page()){
+    if (is_account_page()) {
         if (is_user_logged_in()) {
             global $current_user;
             $roles = $current_user->roles;
