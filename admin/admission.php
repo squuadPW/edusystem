@@ -1522,7 +1522,7 @@ function generate_document()
         }
 
         if (strpos($document->content, '{{signature}}') !== false) {
-            $document->content = str_replace('{{signature}}', '<img style="width: 250px" src="'. wp_get_attachment_url($signature->attach_id) .'"/>', $document->content);
+            $document->content = str_replace('{{signature}}', '<img style="width: auto !important; height: 100px !important;" src="'. wp_get_attachment_url($signature->attach_id) .'"/>', $document->content);
         }
     }
 
