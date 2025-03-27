@@ -696,7 +696,16 @@ function get_payments($student_id, $product_id = false)
             WHERE student_id = {$student_id} 
             AND product_id NOT IN ({$products_list})"
         );
-        return $payments;
+
+        $has_pending_payments = $wpdb->get_results(
+            "SELECT * FROM {$table_student_payments} 
+            WHERE student_id = {$student_id} 
+            AND product_id NOT IN ({$products_list})
+            AND status_id = 0"
+        );
+
+        $program = $payments ? ($has_pending_payments ? 2 : 1) : 0; 
+        return $program;
     }
 }
 

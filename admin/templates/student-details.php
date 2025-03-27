@@ -42,6 +42,60 @@
             </a>
         <?php } ?> -->
     </div>
+    <?php if (in_array('administrator', haystack: $roles) || in_array('admision', haystack: $roles)): ?>
+        <!-- <h2 style="margin-bottom:15px; text-align: center;"><?= __('Status student', 'edusystem'); ?></h2> -->
+        <div id="notice-status" class="notice-custom notice-info" style="display:none;">
+            <p><?= __('Status change successfully', 'edusystem'); ?></p>
+        </div>
+        <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
+            <thead>
+                <tr>
+                    <th scope="col" style="text-align: center" class="manage-column column-primary column-title"><?= __('Registration fee paid', 'edusystem') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-title-translate"><?= __('Paid program', 'edusystem') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Graduation fee paid', 'edusystem') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Approved documents', 'edusystem') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Academic requirements fulfilled', 'edusystem') ?></th>
+                </tr>
+            </thead>
+            <tbody id="table-documents">
+                <tr id="<?= 'tr_payment_'; ?>">
+                    <td style="text-align: center" id="<?= 'td_payment_fee'; ?>" data-colname="<?= __('Registration fee paid', 'edusystem'); ?>">
+                        <b>
+                            <?= isset($fee_payment_ready) && $fee_payment_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
+                        </b>
+                    </td>
+                    <td style="text-align: center" id="<?= 'td_payment_product'; ?>" data-colname="<?= __('Paid program', 'edusystem'); ?>">
+                        <b>
+                            <?= isset($product_ready) && $product_ready ? ($product_ready == 1 ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-money-alt" style="color: #b97b0b"></span>') : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
+                        </b>
+                    </td>
+                    <td style="text-align: center" id="<?= 'td_payment_graduation'; ?>" data-colname="<?= __('Graduation fee paid', 'edusystem'); ?>">
+                        <b>
+                            <?= isset($fee_graduation_ready) && $fee_graduation_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
+                        </b>
+                    </td>
+                    <td style="text-align: center" id="<?= 'td_documents_ready'; ?>" data-colname="<?= __('Approved documents', 'edusystem'); ?>">
+                        <b>
+                            <?= isset($documents_ready) && $documents_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
+                        </b>
+                    </td>
+                    <td style="text-align: center" id="<?= 'td_academic_ready'; ?>" data-colname="<?= __('Academic requirements fulfilled', 'edusystem'); ?>">
+                        <b>
+                            <?= isset($academic_ready) && $academic_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
+                        </b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <?php if($student->status_id < 5 && ($fee_payment_ready && $product_ready && $fee_graduation_ready && $documents_ready && $academic_ready)) { ?>
+            <form method="post" action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=update_status_student&status_id=5&student_id='.$student->id); ?>">
+                <p style="text-align: center">
+                    <input type="submit" value="<?php _e('Graduate student', 'edusystem'); ?>"
+                        class="button button-primary">
+                </p>
+            </form>
+        <?php } ?>
+    <?php endif; ?>
     <form id="student-form" method="post"
         action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=save_users_details'); ?>">
         <div id="dashboard-widgets" class="metabox-holder">
@@ -502,60 +556,6 @@
                 <?php endif; ?>
             </tbody>
         </table>
-    <?php endif; ?>
-    <?php if (in_array('administrator', haystack: $roles) || in_array('admision', haystack: $roles)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Status student', 'edusystem'); ?></h2>
-        <div id="notice-status" class="notice-custom notice-info" style="display:none;">
-            <p><?= __('Status change successfully', 'edusystem'); ?></p>
-        </div>
-        <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
-            <thead>
-                <tr>
-                    <th scope="col" style="text-align: center" class="manage-column column-primary column-title"><?= __('Registration fee paid', 'edusystem') ?></th>
-                    <th scope="col" style="text-align: center" class="manage-column column-title-translate"><?= __('Paid program', 'edusystem') ?></th>
-                    <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Graduation fee paid', 'edusystem') ?></th>
-                    <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Approved documents', 'edusystem') ?></th>
-                    <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Academic requirements fulfilled', 'edusystem') ?></th>
-                </tr>
-            </thead>
-            <tbody id="table-documents">
-                <tr id="<?= 'tr_payment_'; ?>">
-                    <td style="text-align: center" id="<?= 'td_payment_fee'; ?>" data-colname="<?= __('Registration fee paid', 'edusystem'); ?>">
-                        <b>
-                            <?= isset($fee_payment_ready) && $fee_payment_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
-                        </b>
-                    </td>
-                    <td style="text-align: center" id="<?= 'td_payment_product'; ?>" data-colname="<?= __('Paid program', 'edusystem'); ?>">
-                        <b>
-                            <?= isset($product_ready) && $product_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
-                        </b>
-                    </td>
-                    <td style="text-align: center" id="<?= 'td_payment_graduation'; ?>" data-colname="<?= __('Graduation fee paid', 'edusystem'); ?>">
-                        <b>
-                            <?= isset($fee_graduation_ready) && $fee_graduation_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
-                        </b>
-                    </td>
-                    <td style="text-align: center" id="<?= 'td_documents_ready'; ?>" data-colname="<?= __('Approved documents', 'edusystem'); ?>">
-                        <b>
-                            <?= isset($documents_ready) && $documents_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
-                        </b>
-                    </td>
-                    <td style="text-align: center" id="<?= 'td_academic_ready'; ?>" data-colname="<?= __('Academic requirements fulfilled', 'edusystem'); ?>">
-                        <b>
-                            <?= isset($academic_ready) && $academic_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
-                        </b>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <?php if($student->status_id < 5 && ($fee_payment_ready && $product_ready && $fee_graduation_ready && $documents_ready && $academic_ready)) { ?>
-            <form method="post" action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=update_status_student&status_id=5&student_id='.$student->id); ?>">
-                <p style="text-align: center">
-                    <input type="submit" value="<?php _e('Graduate student', 'edusystem'); ?>"
-                        class="button button-primary">
-                </p>
-            </form>
-        <?php } ?>
     <?php endif; ?>
 </div>
 
