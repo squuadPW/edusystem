@@ -488,14 +488,16 @@
             <tbody id="table-documents-certificates">
                 <?php if (!empty($documents_certificates)): ?>
                     <?php foreach ($documents_certificates as $document): ?>
-                        <tr id="<?= 'tr_document_certificate_' . $document->id; ?>">
-                            <td class="column-primary text-uppercase" colspan="6">
-                                <?= $document->title; ?>
-                            </td>
-                            <td class="column-primary" colspan="6"  style="text-align: end;">
-                                <button type="button" data-documentcertificate="<?= $document->id; ?>" data-signaturerequired="<?= $document->signature_required; ?>" class="button download-document-certificate button-success"><?= __('Download', 'edusystem'); ?></button>
-                            </td>
-                        </tr>
+                        <?php if(!$document->graduated_required || ($document->graduated_required && $student->status_id == 5)) { ?>
+                            <tr id="<?= 'tr_document_certificate_' . $document->id; ?>">
+                                <td class="column-primary text-uppercase" colspan="6">
+                                    <?= $document->title; ?>
+                                </td>
+                                <td class="column-primary" colspan="6"  style="text-align: end;">
+                                    <button type="button" data-documentcertificate="<?= $document->id; ?>" data-signaturerequired="<?= $document->signature_required; ?>" class="button download-document-certificate button-success"><?= __('Generate', 'edusystem'); ?></button>
+                                </td>
+                            </tr>
+                        <?php } ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
@@ -546,6 +548,14 @@
                 </tr>
             </tbody>
         </table>
+        <?php if($student->status_id < 5) { ?>
+            <form method="post" action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=update_status_student&status_id=5&student_id='.$student->id); ?>">
+                <p style="text-align: center">
+                    <input type="submit" value="<?php _e('Graduate student', 'edusystem'); ?>"
+                        class="button button-primary">
+                </p>
+            </form>
+        <?php } ?>
     <?php endif; ?>
 </div>
 

@@ -319,6 +319,15 @@ function add_admin_form_admission_content()
                 wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
                 exit;
             }
+
+            if ($_GET['action'] == 'update_status_student') {
+                $status_id = $_GET['status_id'];
+                $student_id = $_GET['student_id'];
+                update_status_student($student_id, $status_id);
+
+                wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $student_id));
+                exit;
+            }
         }
 
         if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
@@ -1463,6 +1472,7 @@ function generate_document()
     $academic_period = get_period_details_code($load['code']);
     $start_academic_period = date('F d, Y', strtotime($academic_period->start_date));
     $end_academic_period = date('F d, Y', strtotime($academic_period->end_date));
+    $create_certificate_qr = false;
 
     $span_open = '<span class="text-uppercase">';
     $span_close = '</span>';
@@ -1483,6 +1493,11 @@ function generate_document()
     $student_name = $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name;
     if (strpos($document->content, '{{student_name}}') !== false) {
         $document->content = str_replace('{{student_name}}', $span_open.$student_name.$span_close, $document->content);
+    }
+
+    $student_short_name = $student->name . ' ' . $student->last_name;
+    if (strpos($document->content, '{{student_short_name}}') !== false) {
+        $document->content = str_replace('{{student_short_name}}', $span_open.$student_short_name.$span_close, $document->content);
     }
 
     $id_student = $student->id_document;
@@ -1509,6 +1524,7 @@ function generate_document()
     }
     
     if (strpos($document->content, '{{qrcode}}') !== false) {
+        $create_certificate_qr = true;
         $document->content = str_replace('{{qrcode}}', '<div id="qrcode"></div>', $document->content);
     }
 
@@ -1528,9 +1544,12 @@ function generate_document()
         }
     }
 
-    $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, $program, 1, $student, $emission_date);
+    $url = ['url' => '', 'image_url' => ''];
+    if ($create_certificate_qr) {
+        $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, $program, 1, $student, $emission_date);
+    }
 
-    wp_send_json(array('url' => $url['url'], 'image_url' => $url['image_url'], 'html' => $document->content));
+    wp_send_json(array('url' => $url['url'], 'image_url' => $url['image_url'], 'html' => $document->content, 'document' => $document));
     die();
 }
 

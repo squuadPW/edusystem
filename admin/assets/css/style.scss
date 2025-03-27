@@ -564,6 +564,16 @@ div#application-passwords-section {
   }
 }
 
+.modal-document-export {
+  border-radius: 0px;
+  width: 210mm;
+  overflow: auto;
+  @media screen and (max-width: 767px){
+    width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
 #qt_content_toolbar {
   input {
     width: auto !important;

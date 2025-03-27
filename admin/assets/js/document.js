@@ -531,6 +531,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  let orientation = 'portrait';
   let document_certificate_button = document.getElementById('documentcertificate-button');
   if (document_certificate_button) {
     document_certificate_button.addEventListener("click", function () {
@@ -570,7 +571,8 @@ document.addEventListener("DOMContentLoaded", function () {
             let processedHtml = this.response.html;
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = this.response.html;
-            
+            orientation = this.response.document.orientation;
+
             const imgElement = tempDiv.querySelector('img');
             if (imgElement) {
               try {
@@ -581,19 +583,34 @@ document.addEventListener("DOMContentLoaded", function () {
             }
   
             modal_body.innerHTML = processedHtml;
-  
-            // Generar QR Code (versión simplificada)
-            const qrCode = new QRCodeStyling({
-              width: 100,
-              height: 100,
-              data: this.response.url,
-              image: this.response.image_url,
-              dotsOptions: { color: "#000000" },
-              backgroundOptions: { color: "#ffffff" }
-            });
-            
-            qrCode.append(document.getElementById("qrcode"));
-  
+
+            if (document.getElementById("qrcode") && this.response.url) {
+              const qrCode = new QRCodeStyling({
+                width: 100,
+                height: 100,
+                data: this.response.url,
+                image: this.response.image_url,
+                dotsOptions: { color: "#000000" },
+                backgroundOptions: { color: "#ffffff" }
+              });
+              
+              qrCode.append(document.getElementById("qrcode"));
+            }
+
+            if (orientation != 'portrait') {
+              document.querySelector('.modal-document-export').style.minWidth = '296.5mm';
+              document.querySelector('.modal-document-export').style.minHeight = '209.5mm';
+
+              document.getElementById('content-pdf').style.minWidth = '296.5mm';
+              document.getElementById('content-pdf').style.minHeight = '209.5mm';
+            } else {
+              document.querySelector('.modal-document-export').style.minWidth = '209.5mm';
+              document.querySelector('.modal-document-export').style.minHeight = '296.5mm';
+
+              document.getElementById('content-pdf').style.minWidth = '209.5mm';
+              document.getElementById('content-pdf').style.minHeight = '296.5mm';
+            }
+
             let modal = document.getElementById("modal-grades");
             modal.style.display = "block";
             document.body.classList.add("modal-open");
@@ -614,8 +631,8 @@ document.addEventListener("DOMContentLoaded", function () {
         var opt = {
           margin: [0, 0, 0, 0],
           filename: 'document.pdf',
-          image: { type: "jpeg", quality: 0.98 },
-          jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+          image: { type: "jpeg", quality: 1 },
+          jsPDF: { unit: "mm", format: "a4", orientation: orientation },
           html2canvas: { 
             scale: 3,
             useCORS: true // ¡Esto es clave para imágenes externas!
