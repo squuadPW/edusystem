@@ -511,7 +511,7 @@
         <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
             <thead>
                 <tr>
-                    <th scope="col" style="text-align: center" class="manage-column column-primary column-title"><?= __('Registration Fee Paid', 'edusystem') ?></th>
+                    <th scope="col" style="text-align: center" class="manage-column column-primary column-title"><?= __('Registration fee paid', 'edusystem') ?></th>
                     <th scope="col" style="text-align: center" class="manage-column column-title-translate"><?= __('Paid program', 'edusystem') ?></th>
                     <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Graduation fee paid', 'edusystem') ?></th>
                     <th scope="col" style="text-align: center" class="manage-column column-price"><?= __('Approved documents', 'edusystem') ?></th>
@@ -520,7 +520,7 @@
             </thead>
             <tbody id="table-documents">
                 <tr id="<?= 'tr_payment_'; ?>">
-                    <td style="text-align: center" id="<?= 'td_payment_fee'; ?>" data-colname="<?= __('Registration Fee Paid', 'edusystem'); ?>">
+                    <td style="text-align: center" id="<?= 'td_payment_fee'; ?>" data-colname="<?= __('Registration fee paid', 'edusystem'); ?>">
                         <b>
                             <?= isset($fee_payment_ready) && $fee_payment_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
                         </b>
