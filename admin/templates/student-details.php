@@ -42,7 +42,7 @@
             </a>
         <?php } ?> -->
     </div>
-    <?php if (in_array('administrator', haystack: $roles) || in_array('admision', haystack: $roles)): ?>
+    <?php if (in_array('administrator', haystack: $roles) || in_array('admision', haystack: $roles) || in_array('administrador', haystack: $roles)): ?>
         <!-- <h2 style="margin-bottom:15px; text-align: center;"><?= __('Status student', 'edusystem'); ?></h2> -->
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">
             <p><?= __('Status change successfully', 'edusystem'); ?></p>
