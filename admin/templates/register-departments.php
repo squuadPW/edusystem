@@ -157,6 +157,12 @@
                     </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_graduations_aes" id="manager_graduations_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_graduations_aes'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_graduations_aes" style="margin-left:20px;"><?= __('Student graduations','edusystem'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
                             <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_pensums" id="manager_pensums" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_pensums'])) ? 'checked' : ''; ?>>
                         </th>
                         <td style="display:table-cell;padding:3px;"><label for="manager_pensums" style="margin-left:20px;"><?= __('Pensum','edusystem'); ?></label></td>
