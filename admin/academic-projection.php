@@ -940,3 +940,14 @@ function table_notes_summary_html($student_id) {
     
     return $html;
 }
+
+function get_academic_ready($student_id){
+    $student = get_student_detail($student_id);
+    $regular_count = load_inscriptions_regular_valid($student, 'status_id = 3');
+    $elective_count = load_inscriptions_electives_valid($student, 'status_id = 3');
+    if ($regular_count >= 6 && $elective_count >= 2) {
+        return true;
+    }
+
+    return false;
+}

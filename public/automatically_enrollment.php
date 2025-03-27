@@ -254,16 +254,16 @@ function load_inscriptions_electives($student)
     return count($inscriptions);
 }
 
-function load_inscriptions_electives_valid($student)
+function load_inscriptions_electives_valid($student, $status = "(status_id = 1 OR status_id = 3)")
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $table_academic_offers = $wpdb->prefix . 'academic_offers';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
 
-    $offers = $wpdb->get_results("SELECT * FROM {$table_academic_offers} WHERE `type` = 'elective'");
+    $offers = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE `type` = 'elective'");
     $electives_ids = [];
     foreach ($offers as $key => $elective) {
-        array_push($electives_ids, $elective->subject_id);
+        array_push($electives_ids, $elective->id);
     }
 
     if (empty($electives_ids)) {
@@ -279,7 +279,7 @@ function load_inscriptions_electives_valid($student)
     $conditions[] = "student_id = %d";
     $params[] = $student->id;
 
-    $conditions[] = "(status_id = 1 OR status_id = 3)";
+    $conditions[] = $status;
 
     $query = "SELECT * FROM {$table_student_period_inscriptions}";
     if (!empty($conditions)) {
@@ -289,7 +289,7 @@ function load_inscriptions_electives_valid($student)
     return count($inscriptions);
 }
 
-function load_inscriptions_regular_valid($student)
+function load_inscriptions_regular_valid($student, $status = "(status_id = 1 OR status_id = 3)")
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
@@ -313,7 +313,7 @@ function load_inscriptions_regular_valid($student)
     $conditions[] = "student_id = %d";
     $params[] = $student->id;
 
-    $conditions[] = "(status_id = 1 OR status_id = 3)";
+    $conditions[] = $status;
 
     $query = "SELECT * FROM {$table_student_period_inscriptions}";
     if (!empty($conditions)) {

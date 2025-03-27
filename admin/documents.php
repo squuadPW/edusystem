@@ -77,3 +77,17 @@ function get_status_approved($document_id = "", $student_id = ""){
     $document = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id} AND document_id='{$document_id}'");
     return $document->status == 5 ? true : false;
 }
+
+function get_documents_ready($student_id){
+    global $wpdb;
+    $table_student_documents = $wpdb->prefix.'student_documents';
+    $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
+    $ready = true;
+    foreach ($documents as $key => $document) {
+        if ($document->status != 5) {
+            $ready = false;
+        }
+    }
+
+    return $ready;
+}

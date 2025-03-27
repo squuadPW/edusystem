@@ -344,6 +344,8 @@ function add_admin_form_admission_content()
                 $fee_payment_ready = get_payments($_GET['student_id'], FEE_INSCRIPTION);
                 $product_ready = get_payments($_GET['student_id']);
                 $fee_graduation_ready = get_payments($_GET['student_id'], product_id: FEE_GRADUATION);
+                $documents_ready = get_documents_ready($_GET['student_id']);
+                $academic_ready = get_academic_ready($_GET['student_id']);
                 $student = get_student_detail($_GET['student_id']);
                 $documents_certificates = function_exists('get_documents_certificates') ? get_documents_certificates() : [];
                 $users_signatures_certificates = function_exists('get_users_signatures_certificates') ? get_users_signatures_certificates() : [];
