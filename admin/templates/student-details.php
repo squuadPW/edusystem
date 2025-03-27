@@ -548,7 +548,7 @@
                 </tr>
             </tbody>
         </table>
-        <?php if($student->status_id < 5) { ?>
+        <?php if($student->status_id < 5 && ($fee_payment_ready && $product_ready && $fee_graduation_ready && $documents_ready && $academic_ready)) { ?>
             <form method="post" action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=update_status_student&status_id=5&student_id='.$student->id); ?>">
                 <p style="text-align: center">
                     <input type="submit" value="<?php _e('Graduate student', 'edusystem'); ?>"
