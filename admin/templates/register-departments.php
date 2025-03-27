@@ -207,6 +207,12 @@
                         </th>
                         <td style="display:table-cell;padding:3px;"><label for="manager_alliances_aes" style="margin-left:20px;"><?= __('Alliances','edusystem'); ?></label></td>
                     </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_teachers_aes" id="manager_teachers_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_teachers_aes'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_teachers_aes" style="margin-left:20px;"><?= __('Teachers','edusystem'); ?></label></td>
+                    </tr>
                 </div>
                 <!-- STAFF -->
 
