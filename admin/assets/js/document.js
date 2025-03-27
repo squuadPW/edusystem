@@ -611,6 +611,8 @@ document.addEventListener("DOMContentLoaded", function () {
               document.getElementById('content-pdf').style.minHeight = '296.5mm';
             }
 
+            document.querySelector('.modal-document-export').style.padding = '0';
+
             let modal = document.getElementById("modal-grades");
             modal.style.display = "block";
             document.body.classList.add("modal-open");
