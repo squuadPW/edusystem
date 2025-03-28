@@ -555,7 +555,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Función simplificada sin CORS
             const convertToBase64 = async (url) => {
               try {
-                const response = await fetch(url, { mode: 'no-cors' });
+                const response = await fetch(url);
                 const blob = await response.blob();
                 return await new Promise((resolve, reject) => {
                   const reader = new FileReader();
