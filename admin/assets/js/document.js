@@ -555,16 +555,35 @@ document.addEventListener("DOMContentLoaded", function () {
             // Función simplificada sin CORS
             const convertToBase64 = async (url) => {
               try {
-                const response = await fetch(url);
-                const blob = await response.blob();
-                return await new Promise((resolve, reject) => {
-                  const reader = new FileReader();
-                  reader.onloadend = () => resolve(reader.result);
-                  reader.onerror = reject;
-                  reader.readAsDataURL(blob);
+                // Intenta con CORS
+                const img = await new Promise((resolve, reject) => {
+                  const img = new Image();
+                  img.crossOrigin = "Anonymous";
+                  img.onload = () => resolve(img);
+                  img.onerror = reject;
+                  img.src = url;
                 });
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                return canvas.toDataURL();
               } catch (error) {
-                return url;
+                // Fallback a fetch si el servidor no permite CORS
+                try {
+                  const response = await fetch(url);
+                  const blob = await response.blob();
+                  return await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                  });
+                } catch (fetchError) {
+                  return url; // Devuelve la URL original como último recurso
+                }
               }
             };
   
