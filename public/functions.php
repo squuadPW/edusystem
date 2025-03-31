@@ -1460,6 +1460,18 @@ function fee_inscription_button()
     include(plugin_dir_path(__FILE__) . 'templates/fee-inscription-payment.php');
 }
 
+add_filter('woocommerce_account_dashboard', 'load_feed', 0);
+function load_feed()
+{
+    global $wpdb;
+    $table_feed = $wpdb->prefix . 'feed';
+    $today = date('Y-m-d');
+    $feeds = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_feed} WHERE max_date IS NULL OR max_date >= %s", $today));-
+
+    // VERIFICAR FEE DE INSCRIPCION
+    include(plugin_dir_path(__FILE__) . 'templates/feed-student.php');
+}
+
 function custom_coupon_applied_notice($message)
 {
     wc_clear_notices();

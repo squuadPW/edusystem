@@ -52,7 +52,7 @@
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="attach_id_mobile"><b><?= __('Image for mobile', 'edusystem'); ?></b> <span class="text-gray">(optional)</span></label><br>
-                                        <input type="file" step="0" name="attach_id_mobile" <?= $feed ? '' : 'required' ?>>
+                                        <input type="file" step="0" name="attach_id_mobile">
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
