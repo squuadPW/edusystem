@@ -1,5 +1,39 @@
-const segmentButtons = document.querySelectorAll(".segment-button");
+document.addEventListener('DOMContentLoaded', function() {
+  // Seleccionar todos los botones con data-visual
+  const buttons = document.querySelectorAll('.form-group button[data-visual]');
+  
+  buttons.forEach(button => {
+      button.addEventListener('click', function() {
+          // Obtener el contenido de data-visual
+          const content = this.dataset.visual;
+          
+          // Verificar si el editor visual está activo
+          if (typeof tinymce !== 'undefined' && tinymce.get('content')) {
+              // Insertar contenido en el editor visual
+              tinymce.get('content').execCommand('mceInsertContent', false, content);
+          } else {
+              // Insertar en el textarea (modo texto)
+              const textarea = document.getElementById('message');
+              const startPos = textarea.selectionStart;
+              const endPos = textarea.selectionEnd;
+              
+              // Insertar el contenido en la posición del cursor
+              textarea.value = textarea.value.substring(0, startPos) 
+                              + content 
+                              + textarea.value.substring(endPos);
+              
+              // Actualizar la posición del cursor
+              textarea.selectionStart = textarea.selectionEnd = startPos + content.length;
+              
+              // Disparar evento para actualizar el editor
+              textarea.dispatchEvent(new Event('input'));
+          }
+      });
+  });
+});
 
+
+const segmentButtons = document.querySelectorAll(".segment-button");
 segmentButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
         // Remove active class from all buttons

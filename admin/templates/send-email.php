@@ -68,11 +68,18 @@
                     <label for="subject"><?= __('Title', 'edusystem'); ?></label>
                     <input type="text" name="subject" id="subject" required>
                 </div>
+
+                <div class="form-group" style="text-align: center">
+                    <label for="title"><b><?= __('Variables', 'wp-certificates'); ?></b></label><br>
+                    <?php foreach ($variables as $key => $variable) { 
+                        if($variable->type != 'document') { ?>
+                        <button type="button" class="button button-primary" style="margin: 4px;" id="<?= $variable->identificator ?>" data-visual="<?= $variable->visual ?>"><?= $variable->text ?></button>
+                        <?php } ?>
+                    <?php } ?>
+                </div>
+
                 <div class="form-group">
                     <label for="message"><?= __('Message', 'edusystem'); ?></label>
-                    <ul>
-                        <li>For the student's full name use: <strong>{{student}}</strong></li>
-                    </ul>
                     <?= wp_editor('',
                         'message',      // ID del editor
                         array(

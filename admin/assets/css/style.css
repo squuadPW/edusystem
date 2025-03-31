@@ -556,4 +556,8 @@ div#application-passwords-section {
 
 #qt_content_toolbar input {
   width: auto !important;
+}
+
+#qt_message_toolbar input {
+  width: auto !important;
 }/*# sourceMappingURL=style.css.map */

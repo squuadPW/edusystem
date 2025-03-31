@@ -21,7 +21,7 @@ function add_admin_form_send_email_content()
                 }
 
                 $subject = wp_kses_post($_POST['subject']);
-                $message = wp_kses_post($_POST['message']);
+                $message = isset($_POST['message']) ? wp_unslash($_POST['message']) : '';
 
                 $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', $cut_student_ids) . ")");
                 $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
@@ -45,7 +45,7 @@ function add_admin_form_send_email_content()
                 if ($student) {
 
                     $subject = wp_kses_post($_POST['subject']);
-                    $message = wp_kses_post($_POST['message']);
+                    $message = isset($_POST['message']) ? wp_unslash($_POST['message']) : '';
                     $message = set_variables_message($message, $student);
                     $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
                     $email_student->trigger($student, $subject, $message);
@@ -73,6 +73,7 @@ function add_admin_form_send_email_content()
         }
     }
 
+    $variables = get_variables_documents() ?? [];
     $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
     include(plugin_dir_path(__FILE__) . 'templates/send-email.php');
 }
@@ -109,8 +110,60 @@ function send_pending_payments_email()
 
 function set_variables_message($message, $student)
 {
-    $name = strtoupper($student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name);
-    return str_replace('{{student}}', $name, $message);
+
+    $load = load_current_cut();
+    $academic_period = get_period_details_code($load['code']);
+    $start_academic_period = date('F d, Y', strtotime($academic_period->start_date));
+    $end_academic_period = date('F d, Y', strtotime($academic_period->end_date));
+    $span_open = '<span class="text-uppercase">';
+    $span_close = '</span>';
+    $academic_period_name = $academic_period->name;
+    if (strpos($message, '{{academic_year}}') !== false) {
+        $message = str_replace('{{academic_year}}', $span_open . $academic_period_name . $span_close, $message);
+    }
+
+    if (strpos($message, '{{start_academic_year}}') !== false) {
+        $message = str_replace('{{start_academic_year}}', $start_academic_period, $message);
+    }
+
+    if (strpos($message, '{{end_academic_year}}') !== false) {
+        $message = str_replace('{{end_academic_year}}', $end_academic_period, $message);
+    }
+
+    $student_name = $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name;
+    if (strpos($message, '{{student_name}}') !== false) {
+        $message = str_replace('{{student_name}}', $span_open . $student_name . $span_close, $message);
+    }
+
+    $student_short_name = $student->name . ' ' . $student->last_name;
+    if (strpos($message, '{{student_short_name}}') !== false) {
+        $message = str_replace('{{student_short_name}}', $span_open . $student_short_name . $span_close, $message);
+    }
+
+    $id_student = $student->id_document;
+    if (strpos($message, '{{id_student}}') !== false) {
+        $message = str_replace('{{id_student}}', $span_open . $id_student . $span_close, $message);
+    }
+
+    $program = get_name_program($student->program_id);
+    if (strpos($message, '{{program}}') !== false) {
+        $message = str_replace('{{program}}', $span_open . $program . $span_close, $message);
+    }
+
+    $today = date('M d, Y');
+    if (strpos($message, '{{today}}') !== false) {
+        $message = str_replace('{{today}}', $today, $message);
+    }
+
+    if (strpos($message, '{{table_notes}}') !== false) {
+        $message = str_replace('{{table_notes}}', table_notes_html($student->id), $message);
+    }
+
+    if (strpos($message, '{{table_notes_summary}}') !== false) {
+        $message = str_replace('{{table_notes_summary}}', table_notes_summary_html($student->id), $message);
+    }
+
+    return $message;
 }
 
 function get_summary_email()
