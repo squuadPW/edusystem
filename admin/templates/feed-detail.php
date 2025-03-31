@@ -34,7 +34,7 @@
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Feed Information', 'edusystem'); ?></b>
+                                    <b><?= __('Banner Information', 'edusystem'); ?></b>
                                 </h3>
 
                                 <div style="margin: 18px;">
