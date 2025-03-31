@@ -76,18 +76,13 @@ class TT_All_Student_Pending_Graduated_List_Table extends WP_List_Table
         global $wpdb;
         $pending_array = [];
 
-        // PAGINATION
-        $per_page = 20; // number of items per page
-        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-        $offset = (($pagenum - 1) * $per_page);
-        // PAGINATION
-
         $table_students = $wpdb->prefix . 'students';
-        $students = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE status_id != 5 ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE status_id != 5 ORDER BY id DESC", "ARRAY_A");
 
         if ($students) {
             foreach ($students as $student) {
                 $academic_ready = get_academic_ready($student['id']);
+                error_log($academic_ready .  ' con el id ' .$student['id']);
                 if($academic_ready) {
                     array_push($pending_array, [
                         'id' => $student['id'],
@@ -97,7 +92,7 @@ class TT_All_Student_Pending_Graduated_List_Table extends WP_List_Table
             }
         }
 
-        return ['data' => $pending_array, 'total_count' => count($pending_array)];
+        return ['data' => $pending_array];
     }
 
     function get_sortable_columns()
@@ -126,9 +121,6 @@ class TT_All_Student_Pending_Graduated_List_Table extends WP_List_Table
 
         $data_requests = $this->get_students_pending_graduate();
 
-        $per_page = 10;
-
-
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
@@ -137,7 +129,6 @@ class TT_All_Student_Pending_Graduated_List_Table extends WP_List_Table
         $this->process_bulk_action();
 
         $data = $data_requests['data'];
-        $total_count = (int) $data_requests['total_count'];
 
         function usort_reorder($a, $b)
         {
@@ -146,12 +137,6 @@ class TT_All_Student_Pending_Graduated_List_Table extends WP_List_Table
             $result = strcmp($a[$orderby], $b[$orderby]);
             return ($order === 'asc') ? $result : -$result;
         }
-
-        $per_page = 20; // items per page
-        $this->set_pagination_args(array(
-            'total_items' => $total_count,
-            'per_page' => $per_page,
-        ));
 
         $this->items = $data;
     }
@@ -219,15 +204,8 @@ class TT_All_Student_Graduated_List_Table extends WP_List_Table
         global $wpdb;
         $graduated_array = [];
 
-        // PAGINATION
-        $per_page = 20; // number of items per page
-        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-        $offset = (($pagenum - 1) * $per_page);
-        // PAGINATION
-
         $table_students = $wpdb->prefix . 'students';
-        $students = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE status_id = 5 ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
-        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE status_id = 5 ORDER BY id DESC", "ARRAY_A");
 
         if ($students) {
             foreach ($students as $student) {
@@ -238,7 +216,7 @@ class TT_All_Student_Graduated_List_Table extends WP_List_Table
             }
         }
 
-        return ['data' => $graduated_array, 'total_count' => $total_count];
+        return ['data' => $graduated_array];
     }
 
     function get_sortable_columns()
@@ -267,9 +245,6 @@ class TT_All_Student_Graduated_List_Table extends WP_List_Table
 
         $data_requests = $this->get_student_graduated();
 
-        $per_page = 10;
-
-
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
@@ -278,7 +253,6 @@ class TT_All_Student_Graduated_List_Table extends WP_List_Table
         $this->process_bulk_action();
 
         $data = $data_requests['data'];
-        $total_count = (int) $data_requests['total_count'];
 
         function usort_reorder($a, $b)
         {
@@ -287,12 +261,6 @@ class TT_All_Student_Graduated_List_Table extends WP_List_Table
             $result = strcmp($a[$orderby], $b[$orderby]);
             return ($order === 'asc') ? $result : -$result;
         }
-
-        $per_page = 20; // items per page
-        $this->set_pagination_args(array(
-            'total_items' => $total_count,
-            'per_page' => $per_page,
-        ));
 
         $this->items = $data;
     }
