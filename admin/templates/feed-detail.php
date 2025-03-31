@@ -1,8 +1,8 @@
 <div class="wrap">
     <?php if (isset($feed) && !empty($feed)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Feed Details', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Banner Details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Add Feed', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Add Banner', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
@@ -80,7 +80,7 @@
                             <?php else: ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Add offer', 'edusystem'); ?></button>
+                                        class="button button-primary"><?= __('Add banner', 'edusystem'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

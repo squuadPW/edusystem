@@ -1,10 +1,10 @@
 <div class="tabs-content">
 	<div class="wrap">
 		<div style="text-align:start;">
-			<h1 class="wp-heading-line"><?= __('Feed', 'edusystem'); ?></h1>
+			<h1 class="wp-heading-line"><?= __('Banners', 'edusystem'); ?></h1>
 		</div>
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
-			<a href="<?= admin_url('admin.php?page=add_admin_form_feed_content&section_tab=add_feed'); ?>" class="button button-outline-primary"><?= __('Add Feed', 'edusystem'); ?></a>
+			<a href="<?= admin_url('admin.php?page=add_admin_form_feed_content&section_tab=add_feed'); ?>" class="button button-outline-primary"><?= __('Add Banner', 'edusystem'); ?></a>
 		</div>
 	</div>
 	<form action="" id="post-filter" method="get">
