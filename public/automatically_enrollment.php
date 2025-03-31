@@ -262,8 +262,10 @@ function load_inscriptions_electives_valid($student, $status = "(status_id = 1 O
 
     $offers = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE `type` = 'elective'");
     $electives_ids = [];
+    $electives_codes = [];
     foreach ($offers as $key => $elective) {
         array_push($electives_ids, $elective->id);
+        array_push($electives_codes, $elective->code_subject);
     }
 
     if (empty($electives_ids)) {
@@ -275,6 +277,9 @@ function load_inscriptions_electives_valid($student, $status = "(status_id = 1 O
 
     $conditions[] = "subject_id IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
     $params = array_merge($params, $electives_ids);
+
+    $conditions[] = "code_subject IN (" . implode(',', array_fill(0, count($electives_codes), '%d')) . ")";
+    $params = array_merge($params, $electives_codes);
 
     $conditions[] = "student_id = %d";
     $params[] = $student->id;

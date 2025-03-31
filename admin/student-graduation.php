@@ -82,7 +82,6 @@ class TT_All_Student_Pending_Graduated_List_Table extends WP_List_Table
         if ($students) {
             foreach ($students as $student) {
                 $academic_ready = get_academic_ready($student['id']);
-                error_log($academic_ready .  ' con el id ' .$student['id']);
                 if($academic_ready) {
                     array_push($pending_array, [
                         'id' => $student['id'],
