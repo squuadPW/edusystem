@@ -32,6 +32,7 @@ require plugin_dir_path(__FILE__) . 'academic-offers.php';
 require plugin_dir_path(__FILE__) . 'requests.php';
 require plugin_dir_path(__FILE__) . 'pensum.php';
 require plugin_dir_path(__FILE__) . 'student-graduation.php';
+require plugin_dir_path(__FILE__) . 'feed.php';
 
 function admin_form_plugin_scripts()
 {
@@ -85,6 +86,10 @@ function aes_scripts_admin()
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_notification_content') {
         wp_enqueue_script('send-notification', plugins_url('edusystem') . '/admin/assets/js/send-notification.js', array('jquery'), $version, true);
+    }
+
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_feed_content') {
+        wp_enqueue_script('feed', plugins_url('edusystem') . '/admin/assets/js/feed.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_configuration_options_content') {
@@ -327,6 +332,7 @@ function add_custom_admin_page()
     add_submenu_page('add_admin_form_academic_content', __('Available scholarships', 'edusystem'), __('Available scholarships', 'edusystem'), 'manager_availables_scholarship_aes', 'add_admin_form_available_scholarships_content', 'add_admin_form_available_scholarships_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Pensum', 'edusystem'), __('Pensum', 'edusystem'), 'manager_pensums', 'add_admin_form_pensum_content', 'add_admin_form_pensum_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('School subjects', 'edusystem'), __('School subjects', 'edusystem'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Student feed', 'edusystem'), __('Student feed', 'edusystem'), 'manager_feed', 'add_admin_form_feed_content', 'add_admin_form_feed_content', 10);
     remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
 
     add_menu_page(
@@ -413,6 +419,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_enrollments_aes');
     $role->add_cap('manager_graduations_aes');
     $role->add_cap('manager_pensums');
+    $role->add_cap('manager_feed');
     $role->add_cap('manager_academic_offers_aes');
     $role->add_cap('manager_requests_aes');
     $role->add_cap('manager_configuration_options_aes');

@@ -2763,3 +2763,17 @@ function redirect_admins_from_my_account_to_admin()
         }
     }
 }
+
+function upload_file_attchment_edusystem($upload_data, $document_name) {
+    $attachment = array(
+        'post_mime_type' => $upload_data['type'],
+        'post_title' => $document_name,
+        'post_content' => '',
+        'post_status' => 'inherit'
+    );
+
+    $attach_id = wp_insert_attachment($attachment, $upload_data['file']);
+    $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
+    wp_update_attachment_metadata($attach_id, $attach_data);
+    return $attach_id;
+}

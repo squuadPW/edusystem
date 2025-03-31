@@ -55,6 +55,20 @@ function create_tables()
   $table_type_requests = $wpdb->prefix . 'type_requests';
   $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
   $table_pensum = $wpdb->prefix . 'pensum';
+  $table_feed = $wpdb->prefix . 'feed';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_feed}'") != $table_feed) {
+    dbDelta(
+      "CREATE TABLE " . $table_feed . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        title TEXT NOT NULL,
+        attach_id_desktop INT(11) NULL,
+        attach_id_mobile INT(11) NULL,
+        `max_date` DATE NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_pensum}'") != $table_pensum) {
     dbDelta(
