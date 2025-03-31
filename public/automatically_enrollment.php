@@ -268,28 +268,43 @@ function load_inscriptions_electives_valid($student, $status = "(status_id = 1 O
         array_push($electives_codes, $elective->code_subject);
     }
 
-    if (empty($electives_ids)) {
+    if (empty($electives_ids) && empty($electives_codes)) {
         return 0;
     }
 
     $conditions = array();
     $params = array();
 
-    $conditions[] = "subject_id IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
-    $params = array_merge($params, $electives_ids);
+    // Crear condiciones para subject_id y code_subject
+    $or_conditions = array();
 
-    $conditions[] = "code_subject IN (" . implode(',', array_fill(0, count($electives_codes), '%d')) . ")";
-    $params = array_merge($params, $electives_codes);
+    if (!empty($electives_ids)) {
+        $or_conditions[] = "subject_id IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
+        $params = array_merge($params, $electives_ids);
+    }
 
+    if (!empty($electives_codes)) {
+        $or_conditions[] = "code_subject IN (" . implode(',', array_fill(0, count($electives_codes), '%s')) . ")";
+        $params = array_merge($params, $electives_codes);
+    }
+
+    // Agregar la condición de OR si hay condiciones
+    if (!empty($or_conditions)) {
+        $conditions[] = "(" . implode(" OR ", $or_conditions) . ")";
+    }
+
+    // Agregar la condición de student_id
     $conditions[] = "student_id = %d";
     $params[] = $student->id;
 
+    // Agregar la condición de status
     $conditions[] = $status;
 
     $query = "SELECT * FROM {$table_student_period_inscriptions}";
     if (!empty($conditions)) {
         $query .= " WHERE " . implode(" AND ", $conditions);
     }
+    
     $inscriptions = $wpdb->get_results($wpdb->prepare($query, $params));
     return count($inscriptions);
 }
