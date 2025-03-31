@@ -2094,8 +2094,7 @@ function modal_enrollment_student()
         $institute_id = $student->institute_id;
         $birth_date = get_user_meta($student_id, 'birth_date', true);
         $birth_date_timestamp = strtotime($birth_date);
-        $current_timestamp = time();
-        $age = floor(($current_timestamp - $birth_date_timestamp) / 31536000); // 31536000 es el número de segundos en un año
+        $age = floor((strtotime($student->created_at) - $birth_date_timestamp) / 31536000); // 31536000 es el número de segundos en un año
         if ($age >= 18) {
             $show_parent_info = 0;
         }
