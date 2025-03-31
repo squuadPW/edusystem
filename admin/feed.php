@@ -113,6 +113,10 @@ class TT_Feed_all_List_Table extends WP_List_Table
 
         global $current_user;
         switch ($column_name) {
+            case 'img_desktop':
+                return $item['img_desktop'] ? '<img src="'. $item['img_desktop'] .'" width="100px" height="50px" />' : 'N/A';
+            case 'img_mobile':
+                return $item['img_mobile'] ? '<img src="'. $item['img_mobile'] .'" width="100px" height="50px" />' : 'N/A';
             case 'view_details':
                 $buttons = "<a href='" . admin_url('/admin.php?page=add_admin_form_feed_content&section_tab=feed_details&feed_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
                 $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_feed_content&action=delete_feed&feed_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'edusystem') . "</a>";
@@ -139,6 +143,8 @@ class TT_Feed_all_List_Table extends WP_List_Table
         $columns = array(
             'title' => __('Title', 'edusystem'),
             'max_date' => __('Maximum visible date', 'edusystem'),
+            'img_desktop' => __('Img desktop', 'edusystem'),
+            'img_mobile' => __('Img mobile', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
@@ -173,7 +179,9 @@ class TT_Feed_all_List_Table extends WP_List_Table
                     'id' => $feed_val['id'],
                     'title' => $feed_val['title'],
                     'max_date' => $feed_val['max_date'] ?? 'N/A',
-                    'created_at' => $feed_val['created_at']
+                    'created_at' => $feed_val['created_at'],
+                    'img_desktop' => wp_get_attachment_url($feed_val['attach_id_desktop'], 'full'),
+                    'img_mobile' => wp_get_attachment_url($feed_val['attach_id_mobile'], 'full'),
                 ]);
             }
         }
