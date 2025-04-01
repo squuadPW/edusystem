@@ -55,7 +55,7 @@ if (download_grades) {
       download_grades.disabled = true;
       var element = document.getElementById("content-pdf");
       var opt = {
-        margin: [20, 0],
+        margin: [10, 0],
         filename: 'califications.pdf',
         image: { type: "jpeg", quality: 0.98 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
