@@ -81,7 +81,7 @@ function add_admin_form_send_email_content()
 function send_pending_payments_email()
 {
     $orders = wc_get_orders(array(
-        'status' => 'pending'
+        'status' => 'pending-payment'
     ));
 
     $sent_customers = array(); // Almacena IDs de clientes ya notificados

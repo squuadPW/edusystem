@@ -532,6 +532,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   let orientation = 'portrait';
+  let margin = [0, 0, 0, 0];
   let document_certificate_button = document.getElementById('documentcertificate-button');
   if (document_certificate_button) {
     document_certificate_button.addEventListener("click", function () {
@@ -591,6 +592,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = this.response.html;
             orientation = this.response.document.orientation;
+            margin = this.response.document.margin_required == 1 ? [5, 5, 5, 5] : margin;
 
             const imgElement = tempDiv.querySelector('img');
             if (imgElement) {
@@ -650,7 +652,7 @@ document.addEventListener("DOMContentLoaded", function () {
         download_grades.disabled = true;
         var element = document.getElementById("content-pdf");
         var opt = {
-          margin: [0, 0, 0, 0],
+          margin: margin,
           filename: 'document.pdf',
           image: { type: "jpeg", quality: 1 },
           jsPDF: { unit: "mm", format: "a4", orientation: orientation },
