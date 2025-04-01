@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css">
 <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 
+<?php if(count($feeds) > 0): ?>
 <div class="swiper-container">
     <div class="swiper">
         <div class="swiper-wrapper">
@@ -24,6 +25,7 @@
         <div class="swiper-pagination"></div>
     </div>
 </div>
+<?php endif; ?>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
