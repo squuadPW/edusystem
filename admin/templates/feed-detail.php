@@ -111,7 +111,7 @@
                                     </div>
                                     <div style="font-weight:400; text-align: start">
                                         <div style="text-align: center">
-                                            Mobile
+                                            Mobile <?= !$feed->attach_id_mobile ? '(Same as desktop)' : '' ?>
                                         </div>
                                         <?php
                                         echo wp_get_attachment_image($feed->attach_id_mobile ? $feed->attach_id_mobile : $feed->attach_id_desktop, 'medium');
