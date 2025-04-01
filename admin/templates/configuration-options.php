@@ -166,18 +166,6 @@
               </a>
             </div>
           </div>
-          <div style="text-align: center; margin-top: 5px">
-            <span>Emails</span>
-          </div>
-          <div style="text-align: center;">
-            <div>
-              <a style="margin: 5px"
-                href="<?= admin_url('admin.php?page=add_admin_form_send_email_content&action=send_pending_payments_email') ?>"
-                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Send pending payment mail', 'edusystem'); ?>
-              </a>
-            </div>
-          </div>
         </div>
         <div class="form-group" id="save-configuration" style="text-align: center">
           <button type="submit" class="btn btn-primary"><?= __('Save settings', 'edusystem'); ?></button>

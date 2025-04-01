@@ -66,10 +66,6 @@ function add_admin_form_send_email_content()
                     exit;
                 }
             }
-
-        } else if ($_GET['action'] == 'send_pending_payments_email') {
-            send_pending_payments_email();
-            wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
         }
     }
 
@@ -80,17 +76,18 @@ function add_admin_form_send_email_content()
 
 function send_pending_payments_email()
 {
+    // Obtener órdenes con estado 'pending'
     $orders = wc_get_orders(array(
         'status' => 'pending'
     ));
 
     $sent_customers = array(); // Almacena IDs de clientes ya notificados
 
-    foreach ($orders as $key => $order) {
-        $customer_id = $order->get_customer_id();
+    foreach ($orders as $order) {
+        $customer_id = $order->get_user_id();
 
         // Verificar si ya se notificó a este cliente
-        if (!in_array($customer_id, $sent_customers)) {
+        if (!in_array($customer_id, $sent_customers) && $customer_id > 0) { // Asegúrate de que el ID del cliente sea válido
             $user_customer = get_user_by('id', $customer_id);
 
             if ($user_customer) {
