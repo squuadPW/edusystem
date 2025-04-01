@@ -114,7 +114,7 @@
                                             Mobile
                                         </div>
                                         <?php
-                                        echo wp_get_attachment_image($feed->attach_id_mobile, 'medium');
+                                        echo wp_get_attachment_image($feed->attach_id_mobile ? $feed->attach_id_mobile : $feed->attach_id_desktop, 'medium');
                                         ?>
                                     </div>
                                 </div>
