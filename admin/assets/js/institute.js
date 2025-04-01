@@ -268,29 +268,35 @@ document.addEventListener('DOMContentLoaded',function(){
     }
 
     if (document.getElementById('country-selector')) {
+        let timeout;
         document.getElementById('country-selector').addEventListener('change', function(e) {
-            document.getElementById('state-td').style.display = 'none';
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
 
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST',list_fee_institute.url,true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onload = function() {
-              if (xhr.status === 200) {
-                var states = JSON.parse(xhr.responseText);
-                var stateSelect = document.getElementById('state-selector');
-                stateSelect.innerHTML = '';
-                for (var stateCode in states) {
-                  var option = document.createElement('option');
-                  option.value = stateCode;
-                  option.text = states[stateCode];
-                  stateSelect.appendChild(option);
+                document.getElementById('state-td').style.display = 'none';
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST',list_fee_institute.url,true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var states = JSON.parse(xhr.responseText);
+                    var stateSelect = document.getElementById('state-selector');
+                    stateSelect.innerHTML = '';
+                    for (var stateCode in states) {
+                    var option = document.createElement('option');
+                    option.value = stateCode;
+                    option.text = states[stateCode];
+                    stateSelect.appendChild(option);
+                    }
+                    if (states) {
+                        document.getElementById('state-td').style.display = 'block';
+                    }
                 }
-                if (states) {
-                    document.getElementById('state-td').style.display = 'block';
-                }
-              }
-            };
-            xhr.send('action=get_states_by_country&country_code=' + e.target.value);
+                };
+                xhr.send('action=get_states_by_country&country_code=' + e.target.value);
+
+            }, 800); // Cambia 2000 a 1000 para 1 segundo si lo prefieres
         });
     }
 });

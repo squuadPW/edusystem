@@ -9,6 +9,7 @@ function list_admin_institutes_partner_registered_content(){
             $institute_id = $_GET['institute_id'];
             $institute = get_institute_details($institute_id);
             $countries = get_countries();
+            $states = get_states_by_country_code($institute->country);
             include(plugin_dir_path(__FILE__).'../templates/institute-details-alliance.php');
 
         }else if($_GET['action'] == 'add_institute'){
@@ -17,7 +18,7 @@ function list_admin_institutes_partner_registered_content(){
 
         }else if($_GET['action'] == 'save_institute_details'){
             
-            global $wpdb;
+            global $wpdb, $current_user;
             $table_institutes =  $wpdb->prefix.'institutes';
             $institute_id = $_POST['institute_id'];
 
@@ -26,32 +27,47 @@ function list_admin_institutes_partner_registered_content(){
             $email = $_POST['email'];
             $country = $_POST['country'];
             $state = $_POST['state'];
-            $address = $_POST['address'];
             $city = $_POST['city'];
             $level = $_POST['level'];
-            $fee = str_replace('%','',$_POST['fee']);
+            $fee = str_replace('%', '', $_POST['fee']);
             $rector_name = $_POST['rector_name'];
             $rector_last_name = $_POST['rector_last_name'];
             $rector_phone = $_POST['rector_phone_hidden'];
+            $contact_name = $_POST['contact_name'];
+            $contact_last_name = $_POST['contact_last_name'];
+            $contact_phone = $_POST['contact_phone_hidden'];
+            $address = $_POST['address'];
+            $description = $_POST['description'];
             $reference = $_POST['reference'];
+            $business_name = $_POST['business_name'];
+
+            $alliance = get_alliance_detail_email($current_user->user_email);
+            $alliance_id = $alliance->id;
 
             //update
             if(isset($institute_id) && !empty($institute_id)){
 
-                $wpdb->update($table_institutes,[
+                $wpdb->update($table_institutes, [
                     'name' => $name,
                     'phone' => $phone,
                     'email' => $email,
                     'country' => $country,
                     'state' => $state,
                     'city' => $city,
-                    'address' => $address,
                     'level_id' => $level,
+                    'fee' => $fee,
                     'name_rector' => $rector_name,
                     'lastname_rector' => $rector_last_name,
                     'phone_rector' => $rector_phone,
+                    'name_contact' => $contact_name,
+                    'lastname_contact' => $contact_last_name,
+                    'phone_contact' => $contact_phone,
+                    'address' => $address,
+                    'description' => $description,
+                    'business_name' => $business_name,
+                    'alliance_id' => $alliance_id,
                     'updated_at' => date('Y-m-d H:i:s')
-                ],[ 'id' => $institute_id]);
+                ], ['id' => $institute_id]);
                 
                 setcookie('message',__('Changes saved successfully.','edusystem'),time() + 3600,'/');
                 wp_redirect(admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-detail&institute_id='.$institute_id));
@@ -60,21 +76,26 @@ function list_admin_institutes_partner_registered_content(){
             //insert
             }else{
 
-                $wpdb->insert($table_institutes,[
+                $wpdb->insert($table_institutes, [
                     'name' => $name,
                     'phone' => $phone,
                     'email' => $email,
                     'country' => $country,
                     'state' => $state,
                     'city' => $city,
-                    'address' => $address,
                     'level_id' => $level,
-                    'fee' => 5,
+                    'fee' => $fee,
                     'name_rector' => $rector_name,
                     'lastname_rector' => $rector_last_name,
                     'phone_rector' => $rector_phone,
+                    'name_contact' => $contact_name,
+                    'lastname_contact' => $contact_last_name,
+                    'phone_contact' => $contact_phone,
                     'reference' => $reference,
-                    'alliance_id' => get_user_meta(get_current_user_id(),'alliance_id',true),
+                    'address' => $address,
+                    'description' => $description,
+                    'business_name' => $business_name,
+                    'alliance_id' => $alliance_id,
                     'status' => 0,
                     'created_at' => date('Y-m-d H:i:s')
                 ]);

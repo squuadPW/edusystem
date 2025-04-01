@@ -197,6 +197,15 @@ function get_alliance_detail($alliance_id){
     return $data;
 }
 
+function get_alliance_detail_email($email){
+
+    global $wpdb;
+    $table_alliances =  $wpdb->prefix.'alliances';
+
+    $data = $wpdb->get_row("SELECT * FROM {$table_alliances} WHERE email='{$email}'");
+    return $data;
+}
+
 class TT_alliances_review_List_Table extends WP_List_Table{
 
 	function __construct(){

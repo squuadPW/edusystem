@@ -239,6 +239,21 @@ function get_name_country($country_id)
     return $name;
 }
 
+function get_name_state($country_id, $state_id)
+{
+
+    $states = get_states_by_country_code($country_id);
+    $name = "";
+
+    foreach ($states as $key => $state) {
+        if ($key == $state_id) {
+            $name = $state;
+        }
+    }
+
+    return $name;
+}
+
 function get_name_reference($reference_id)
 {
 

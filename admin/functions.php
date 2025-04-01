@@ -100,15 +100,6 @@ function aes_scripts_admin()
         wp_enqueue_script('teacher', plugins_url('edusystem') . '/admin/assets/js/teacher.js', array('jquery'), $version, true);
     }
 
-    if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')) {
-        wp_enqueue_script('institute', plugins_url('edusystem') . '/admin/assets/js/institute.js', array('jquery'), $version, true);
-
-        wp_localize_script('institute', 'list_fee_institute', [
-            'url' => admin_url('admin-ajax.php'),
-            'action' => 'list_fee_institute'
-        ]);
-    }
-
     if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables' || $_GET['page'] == 'report-students' || $_GET['page'] == 'report-current-students' || $_GET['page'] == 'report-sales-product') {
         wp_enqueue_script('report', plugins_url('edusystem') . '/admin/assets/js/report.js', array('jquery'), $version, true);
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js');
