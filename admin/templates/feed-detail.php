@@ -46,12 +46,12 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="attach_id_desktop"><b><?= __('Image for desktop', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        <label for="attach_id_desktop"><b><?= __('Image for desktop (1920 x 400px)', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
                                         <input type="file" step="0" name="attach_id_desktop" <?= $feed ? '' : 'required' ?>>
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="attach_id_mobile"><b><?= __('Image for mobile', 'edusystem'); ?></b> <span class="text-gray">(optional)</span></label><br>
+                                        <label for="attach_id_mobile"><b><?= __('Image for mobile (360 x 160)', 'edusystem'); ?></b> <span class="text-gray">(optional)</span></label><br>
                                         <input type="file" step="0" name="attach_id_mobile">
                                     </div>
 

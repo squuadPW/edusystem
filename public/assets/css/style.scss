@@ -1348,90 +1348,39 @@ body.modal-open {
   }
 }
 
-.feed-container {
-  max-width: 1200px;
-  margin: 1.5rem auto;
+.swiper-container {
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+  .swiper-container {
+      max-width: 360px;
+  }
 }
 
 .swiper {
   width: 100%;
-  height: var($banner-height);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: 160px;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .swiper {
+      height: 400px;
+  }
 }
 
 .swiper-slide {
+  width: 100%;
+  height: 100%;
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding: 20px;
-  box-sizing: border-box;
+  background-image: var(--mobile-image);
 }
 
-.slide-content {
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 15px 25px;
-  border-radius: 4px;
-  max-width: 80%;
-  text-align: center;
-}
-
-.swiper-pagination-bullet {
-  background: white;
-  opacity: 0.6;
-  width: 10px;
-  height: 10px;
-}
-
-.swiper-pagination-bullet-active {
-  background: var($primary);
-  opacity: 1;
-}
-
-.swiper-button-next,
-.swiper-button-prev {
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.swiper-button-next::after,
-.swiper-button-prev::after {
-  font-size: 20px;
-}
-
-.no-banners {
-  text-align: center;
-  padding: 40px;
-  color: var($secondary);
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  height: var($banner-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@media (max-width: 768px) {
-  .swiper {
-      height: var($banner-height-mobile);
-  }
-  
-  .no-banners {
-      height: var($banner-height-mobile);
-  }
-  
-  .slide-content {
-      max-width: 90%;
-      padding: 10px 15px;
+@media (min-width: 768px) {
+  .swiper-slide {
+      background-image: var(--desktop-image);
   }
 }
