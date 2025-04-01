@@ -532,7 +532,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   let orientation = 'portrait';
-  let margin = [0, 0, 0, 0];
+  let margin = [0, 0];
   let document_certificate_button = document.getElementById('documentcertificate-button');
   if (document_certificate_button) {
     document_certificate_button.addEventListener("click", function () {
@@ -592,7 +592,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = this.response.html;
             orientation = this.response.document.orientation;
-            margin = this.response.document.margin_required == 1 ? [5, 5, 5, 5] : margin;
+            margin = this.response.document.margin_required == 1 ? [5, 0] : margin;
 
             const imgElement = tempDiv.querySelector('img');
             if (imgElement) {
@@ -619,17 +619,17 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             if (orientation != 'portrait') {
-              document.querySelector('.modal-document-export').style.minWidth = '296.5mm';
-              document.querySelector('.modal-document-export').style.minHeight = '209.5mm';
+              document.querySelector('.modal-document-export').style.minWidth = '287mm';
+              document.querySelector('.modal-document-export').style.minHeight = '210mm';
 
-              document.getElementById('content-pdf').style.minWidth = '296.5mm';
-              document.getElementById('content-pdf').style.minHeight = '209.5mm';
+              document.getElementById('content-pdf').style.minWidth = '287mm';
+              document.getElementById('content-pdf').style.minHeight = '210mm';
             } else {
-              document.querySelector('.modal-document-export').style.minWidth = '209.5mm';
-              document.querySelector('.modal-document-export').style.minHeight = '296.5mm';
+              document.querySelector('.modal-document-export').style.minWidth = '210mm';
+              document.querySelector('.modal-document-export').style.minHeight = '287mm';
 
-              document.getElementById('content-pdf').style.minWidth = '209.5mm';
-              document.getElementById('content-pdf').style.minHeight = '296.5mm';
+              document.getElementById('content-pdf').style.minWidth = '210mm';
+              document.getElementById('content-pdf').style.minHeight = '287mm';
             }
 
             document.querySelector('.modal-document-export').style.padding = '0';
