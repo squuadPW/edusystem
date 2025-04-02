@@ -933,7 +933,6 @@ class TT_all_student_List_Table extends WP_List_Table
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
             FROM {$table_students} as a 
             JOIN {$table_student_documents} b on b.student_id = a.id 
-            WHERE (status_id = 2 OR status_id = 1)
             AND (" . (isset($cut) && $cut != '' ? "a.id IN (" . implode(',', $cut_student_ids) . ")" : "1=1") . ")
             AND (
                 (" . ($search ? "a.name  LIKE '{$search}%' OR a.middle_name LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR a.middle_last_name  LIKE '{$search}%' OR a.email LIKE '{$search}%' OR a.id_document LIKE '{$search}%'" : "1=1") . ")
