@@ -851,12 +851,12 @@ function table_notes_html($student_id) {
     $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
                 <thead>
                     <tr>
-                        <th colspan='2'>CODE</th>
-                        <th colspan='4'>COURSE</th>
-                        <th colspan='1'>CH</th>
-                        <th colspan='1'>0-100</th>
-                        <th colspan='1'>0-4</th>
-                        <th colspan='3'>PERIOD</th>
+                        <th style='width: 70px !important;'>CODE</th>
+                        <th>COURSE</th>
+                        <th style='width: 40px !important;'>CH</th>
+                        <th style='width: 40px !important;'>0-100</th>
+                        <th style='width: 40px !important;'>0-4</th>
+                        <th style='width: 150px !important;'>PERIOD</th>
                     </tr>
                 </thead>
                 <tbody>";
@@ -871,14 +871,14 @@ function table_notes_html($student_id) {
         
         // Construir fila
         $html .= "<tr>
-                    <td colspan='2'>".$projection_for->code_subject."</td>
-                    <td colspan='4'>".$projection_for->subject;
+                    <td>".$projection_for->code_subject."</td>
+                    <td>".$projection_for->subject;
         
         // Electivo
         $html .= (isset($projection_for->is_elective) && $projection_for->is_elective ? '(ELECTIVE)' : '')."</td>";
         
         // CH
-        $html .= "<td colspan='1'>";
+        $html .= "<td>";
         if($subject->type != 'equivalence') {
             $html .= $projection_for->hc;
         } else {
@@ -887,7 +887,7 @@ function table_notes_html($student_id) {
         $html .= "</td>";
         
         // Nota 0-100
-        $html .= "<td colspan='1'>";
+        $html .= "<td>";
         if(isset($projection_for->calification) && !empty($projection_for->calification)) {
             $html .= $projection_for->calification;
         } else {
@@ -896,12 +896,12 @@ function table_notes_html($student_id) {
         $html .= "</td>";
         
         // Nota 0-4
-        $html .= "<td colspan='1'>";
+        $html .= "<td>";
         $html .= ($subject->type != 'equivalence') ? get_calc_note($projection_for->calification) : ($download_grades ? 'TR' : '-');
         $html .= "</td>";
         
         // Periodo
-        $html .= "<td colspan='3'>".(!empty($period_name) ? $period_name : '-')."</td>
+        $html .= "<td>".(!empty($period_name) ? $period_name : '-')."</td>
                 </tr>";
     }
 
