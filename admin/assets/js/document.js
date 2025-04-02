@@ -592,7 +592,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = this.response.html;
             orientation = this.response.document.orientation;
-            margin = this.response.document.margin_required == 1 ? [10, 0] : margin;
+            margin = this.response.document.margin_required == 1 ? [10, 0, 0, 0] : margin;
 
             const imgElement = tempDiv.querySelector('img');
             if (imgElement) {
