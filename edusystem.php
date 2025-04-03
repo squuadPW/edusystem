@@ -468,6 +468,7 @@ function create_tables()
         phone TEXT NOT NULL,
         email TEXT NOT NULL,
         gender TEXT NULL,
+        nacionality TEXT NULL,
         country TEXT NULL,
         city TEXT NULL,
         postal_code TEXT NULL,
