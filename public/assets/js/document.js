@@ -115,7 +115,7 @@ document.getElementById("btnCrop").addEventListener("click", function () {
 
       document.getElementById("pre-image-buttons").style.display = "none";
       document.getElementById("preview-buttons").style.display = "flex";
-    }, "image/png");
+    }, "image/jpeg");
   }
 });
 
