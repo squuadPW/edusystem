@@ -91,8 +91,8 @@ document.getElementById("btnCrop").addEventListener("click", function () {
     // Convertir el canvas a Blob
     croppedCanvas.toBlob((blob) => {
       // Crear un File a partir del Blob
-      const file = new File([blob], "imagen_recortada.png", {
-        type: "image/png",
+      const file = new File([blob], "imagen_recortada.jpeg", {
+        type: "image/jpeg",
       });
 
       // Crear un DataTransfer para asignar el archivo al input
