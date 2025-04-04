@@ -33,6 +33,7 @@ require plugin_dir_path(__FILE__) . 'requests.php';
 require plugin_dir_path(__FILE__) . 'pensum.php';
 require plugin_dir_path(__FILE__) . 'student-graduation.php';
 require plugin_dir_path(__FILE__) . 'feed.php';
+require plugin_dir_path(__FILE__) . 'auto-inscription.php';
 
 function admin_form_plugin_scripts()
 {
@@ -214,6 +215,14 @@ function aes_scripts_admin()
         ]);
     }
 
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_auto_inscription_content') {
+        wp_enqueue_script('auto-enroll', plugins_url('edusystem') . '/admin/assets/js/auto-enroll.js', array('jquery'), $version, true);
+
+        wp_localize_script('auto-enroll', 'ajax_object', [
+            'url' => admin_url('admin-ajax.php')
+        ]);
+    }
+
 }
 
 add_action('admin_enqueue_scripts', 'aes_scripts_admin', 3);
@@ -316,7 +325,8 @@ function add_custom_admin_page()
     add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'edusystem'), __('Academic periods', 'edusystem'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'edusystem'), __('Academic offers', 'edusystem'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Academic projection', 'edusystem'), __('Academic projection', 'edusystem'), 'manager_academic_projection_aes', 'add_admin_form_academic_projection_content', 'add_admin_form_academic_projection_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'edusystem'), __('Enrollments', 'edusystem'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
+    add_submenu_page('add_admin_form_academic_content', __('Auto inscription', 'edusystem'), __('Auto inscription', 'edusystem'), 'manager_automatically_inscriptions', 'add_admin_form_auto_inscription_content', 'add_admin_form_auto_inscription_content', 10);
+    // add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'edusystem'), __('Enrollments', 'edusystem'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Student graduations', 'edusystem'), __('Student graduations', 'edusystem'), 'manager_graduations_aes', 'add_admin_form_student_graduated_content', 'add_admin_form_student_graduated_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Requests', 'edusystem'), __('Requests', 'edusystem'), 'manager_requests_aes', 'add_admin_form_requests_content', 'add_admin_form_requests_content', 10);
     add_submenu_page('add_admin_form_academic_content', __('Scholarship students', 'edusystem'), __('Scholarship students', 'edusystem'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
@@ -406,6 +416,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_academic_periods_aes');
     $role->add_cap('manager_school_subjects_aes');
     $role->add_cap('manager_academic_projection_aes');
+    $role->add_cap('manager_automatically_inscriptions');
     $role->add_cap('manager_teachers_aes');
     $role->add_cap('manager_enrollments_aes');
     $role->add_cap('manager_graduations_aes');

@@ -167,7 +167,12 @@
                         </th>
                         <td style="display:table-cell;padding:3px;"><label for="manager_pensums" style="margin-left:20px;"><?= __('Pensum','edusystem'); ?></label></td>
                     </tr>
-                    
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_automatically_inscriptions" id="manager_automatically_inscriptions" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_automatically_inscriptions'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_automatically_inscriptions" style="margin-left:20px;"><?= __('Automatically inscription','edusystem'); ?></label></td>
+                    </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
                             <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_feed" id="manager_feed" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_feed'])) ? 'checked' : ''; ?>>
