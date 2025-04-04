@@ -1514,11 +1514,15 @@ function generate_document()
     }
     
     if (strpos($document->content, '{{table_notes}}') !== false) {
-        $document->content = str_replace('{{table_notes}}', table_notes_html($student->id), $document->content);
+        $document->content = str_replace('{{table_notes}}', table_notes_html($student->id, get_projection_by_student($student->id)), $document->content);
     }
     
     if (strpos($document->content, '{{table_notes_summary}}') !== false) {
-        $document->content = str_replace('{{table_notes_summary}}', table_notes_summary_html($student->id), $document->content);
+        $document->content = str_replace('{{table_notes_summary}}', table_notes_summary_html(get_projection_by_student($student->id)), $document->content);
+    }
+
+    if (strpos($document->content, '{{table_inscriptions}}') !== false) {
+        $document->content = str_replace('{{table_inscriptions}}', table_inscriptions_html(get_inscriptions_by_student($student->id)), $document->content);
     }
     
     if (strpos($document->content, '{{qrcode}}') !== false) {

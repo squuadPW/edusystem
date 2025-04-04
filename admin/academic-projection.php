@@ -269,7 +269,7 @@ function add_admin_form_academic_projection_content()
                             $status_id
                         );
                         $exist = $wpdb->get_row($query);
-                        if (!isset($exist)) { 
+                        if (!isset($exist)) {
                             $wpdb->insert($table_student_period_inscriptions, [
                                 'status_id' => $status_id,
                                 'student_id' => $projection->student_id,
@@ -568,6 +568,14 @@ function get_projection_by_student($student_id)
     return $projection;
 }
 
+function get_inscriptions_by_student($student_id)
+{
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student_id} AND code_subject IS NOT NULL AND code_subject <> ''");
+    return $inscriptions;
+}
+
 function generate_enroll_student()
 {
     global $wpdb;
@@ -805,14 +813,16 @@ function get_calc_note($calification)
     return $note;
 }
 
-function get_count_moodle_pending() {
+function get_count_moodle_pending()
+{
     global $wpdb;
     $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
     $pending = $wpdb->get_row("SELECT * FROM {$table_count_pending_student} WHERE id = 1");
     return $pending->count;
 }
 
-function get_count_email_pending() {
+function get_count_email_pending()
+{
     global $wpdb;
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
@@ -835,19 +845,20 @@ function get_count_email_pending() {
     return ['count' => $count, 'students' => $students];
 }
 
-function update_count_moodle_pending($count_fixed = '') {
+function update_count_moodle_pending($count_fixed = '')
+{
     global $wpdb;
     $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
-    $count = $count_fixed != '' ? $count_fixed : (get_count_moodle_pending() + 1) ;
+    $count = $count_fixed != '' ? $count_fixed : (get_count_moodle_pending() + 1);
     $wpdb->update($table_count_pending_student, [
         'count' => $count
     ], ['id' => 1]);
-} 
+}
 
-function table_notes_html($student_id) {
-    $projection = get_projection_by_student($student_id);
+function table_notes_html($student_id, $projection)
+{
     $html = '';
-    
+
     $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
                 <thead>
                     <tr>
@@ -862,67 +873,123 @@ function table_notes_html($student_id) {
                 <tbody>";
 
     // Procesar cada proyección
-    foreach(json_decode($projection->projection) as $key => $projection_for) {
+    foreach (json_decode($projection->projection) as $key => $projection_for) {
         $download_grades = get_status_approved('CERTIFIED NOTES HIGH SCHOOL', $student_id);
         $subject = get_subject_details($projection_for->subject_id);
         $period_name = '';
         $period = get_period_details_code($projection_for->code_period);
-        if($period) $period_name = $period->name;
-        
+        if ($period)
+            $period_name = $period->name;
+
         // Construir fila
         $html .= "<tr>
-                    <td>".$projection_for->code_subject."</td>
-                    <td>".$projection_for->subject;
-        
+                    <td>" . $projection_for->code_subject . "</td>
+                    <td>" . $projection_for->subject;
+
         // Electivo
-        $html .= (isset($projection_for->is_elective) && $projection_for->is_elective ? '(ELECTIVE)' : '')."</td>";
-        
+        $html .= (isset($projection_for->is_elective) && $projection_for->is_elective ? '(ELECTIVE)' : '') . "</td>";
+
         // CH
         $html .= "<td>";
-        if($subject->type != 'equivalence') {
+        if ($subject->type != 'equivalence') {
             $html .= $projection_for->hc;
         } else {
             $html .= $download_grades ? 'TR' : '-';
         }
         $html .= "</td>";
-        
+
         // Nota 0-100
         $html .= "<td>";
-        if(isset($projection_for->calification) && !empty($projection_for->calification)) {
+        if (isset($projection_for->calification) && !empty($projection_for->calification)) {
             $html .= $projection_for->calification;
         } else {
             $html .= ($subject->type != 'equivalence') ? '-' : ($download_grades ? 'TR' : '-');
         }
         $html .= "</td>";
-        
+
         // Nota 0-4
         $html .= "<td>";
         $html .= ($subject->type != 'equivalence') ? get_calc_note($projection_for->calification) : ($download_grades ? 'TR' : '-');
         $html .= "</td>";
-        
+
         // Periodo
-        $html .= "<td>".(!empty($period_name) ? $period_name : '-')."</td>
+        $html .= "<td>" . (!empty($period_name) ? $period_name : '-') . "</td>
                 </tr>";
     }
 
     $html .= "</tbody></table>";
-    
+
     return $html;
 }
 
-function table_notes_summary_html($student_id) {
-    $projection = get_projection_by_student($student_id);
+function table_inscriptions_html($inscriptions) {
+    $html = '<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;">';
     
+    // Encabezados de tabla
+    $html .= '<thead>
+                <tr>
+                    <th scope="col" class="manage-column" style="width: 90px;">'.__('Status', 'edusystem').'</th>
+                    <th scope="col" class="manage-column">'.__('Subject - Code', 'edusystem').'</th>
+                    <th scope="col" class="manage-column" style="width: 80px;">'.__('Period - cut', 'edusystem').'</th>
+                    <th scope="col" class="manage-column" style="width: 80px;">'.__('Calification', 'edusystem').'</th>
+                </tr>
+              </thead>
+              <tbody>';
+
+    foreach ($inscriptions as $inscription) {
+        $subject = get_subject_details_code($inscription->code_subject);
+        $name_subject = $subject ? ($subject->name . ' - ' . $subject->code_subject) : 'N/A';
+
+        // Manejo del estado
+        $status_html = '';
+        switch ($inscription->status_id) {
+            case 0:
+                $status_html = '<div style="color: gray; font-weight: 600">'.strtoupper(__('To begin', 'edusystem')).'</div>';
+                break;
+            case 1:
+                $status_html = '<div style="color: blue; font-weight: 600">'.strtoupper(__('Active', 'edusystem')).'</div>';
+                break;
+            case 2:
+                $status_html = '<div style="color: red; font-weight: 600">'.strtoupper(__('Unsubscribed', 'edusystem')).'</div>';
+                break;
+            case 3:
+                $status_html = '<div style="color: green; font-weight: 600">'.strtoupper(__('Approved', 'edusystem')).'</div>';
+                break;
+            case 4:
+                $status_html = '<div style="color: red; font-weight: 600">'.strtoupper(__('Reproved', 'edusystem')).'</div>';
+                break;
+        }
+
+        // Manejo de calificación
+        $calification = isset($inscription->calification) 
+                      ? number_format((float)$inscription->calification, 2)
+                      : __('N/A', 'edusystem');
+
+        // Construir fila
+        $html .= '<tr>
+                    <td>'.$status_html.'</td>
+                    <td>'.esc_html($name_subject).'</td>
+                    <td>'.esc_html($inscription->code_period.' - '.$inscription->cut_period).'</td>
+                    <td>'.esc_html($calification).'</td>
+                  </tr>';
+    }
+
+    $html .= '</tbody></table>';
+    return $html;
+}
+
+function table_notes_summary_html($projection)
+{
     $sum_quality = 0;
     $earned_ch = 0;
     $total_quality = 0;
     $gpa = 0;
 
-    foreach(json_decode($projection->projection) as $key => $projection_for) {
-        if ($projection_for->is_completed && (int)$projection_for->calification) {
+    foreach (json_decode($projection->projection) as $key => $projection_for) {
+        if ($projection_for->is_completed && (int) $projection_for->calification) {
             $total_quality++;
-            $earned_ch += (int)$projection_for->hc;
-            $sum_quality += get_calc_note((int)$projection_for->calification);
+            $earned_ch += (int) $projection_for->hc;
+            $sum_quality += get_calc_note((int) $projection_for->calification);
         }
     }
 
@@ -937,11 +1004,12 @@ function table_notes_summary_html($student_id) {
                     <tr><td colspan='12'>GPA: " . $gpa . "</td></tr>
                 </tbody>
             </table>";
-    
+
     return $html;
 }
 
-function get_academic_ready($student_id){
+function get_academic_ready($student_id)
+{
     $student = get_student_detail($student_id);
     $regular_count = load_inscriptions_regular_valid($student, 'status_id = 3');
     $elective_count = load_inscriptions_electives_valid($student, 'status_id = 3');
