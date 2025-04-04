@@ -1157,14 +1157,20 @@ function handle_status_specific_actions($status_id, $student_id, $document, $use
         ];
     }
     
-    handle_document_approval($student_id, $document);
+    if ($status_id == 5) {
+        handle_document_approval($student_id, $document);
+    }
+
+    if ($status_id == 6) {
+        handle_document_rejection($student_id, $document, false);
+    }
     return null;
 }
 
-function handle_document_rejection($student_id, $document) {
+function handle_document_rejection($student_id, $document, $remove_access = true) {
     global $wpdb;
     
-    if ($document->is_required) {
+    if ($document->is_required && $remove_access) {
         update_status_student($student_id, 1);
     }
     
@@ -1270,22 +1276,26 @@ function generate_documents_html($student_id, $document_id)
             $html .= '<td class="column-primary" colspan="3">' . get_name_document($document->document_id) . "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
             $html .= '<td colspan="2" id="td_document_' . $document->document_id . '" data-colname="' . __('Status', 'edusystem') . '"><b>' . get_status_document($document->status) . '</b></td>';
             $html .= '<td colspan="7" data-colname="' . __('Actions', 'edusystem') . '">';
-            $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'edusystem') . "</button></a>";
+            $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'  style='color: #149dcd; border-color: #149dcd;'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'edusystem') . "</button></a>";
 
             if ($document->status > 0) {
-                $html .= "<a style='margin-right: 3px;' target='_blank' onclick='watchDetails(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'>" . __('View detail', 'edusystem') . "</button></a>";
-                $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '"><button type="button" class="button button-primary other-buttons-document">' . __('View documment', 'edusystem') . '</button></a>';
+                $html .= "<a style='margin-right: 3px;' target='_blank' onclick='watchDetails(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document' style='color: #737983; border-color: #737983;'>" . __('View detail', 'edusystem') . "</button></a>";
+                $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '"><button type="button" class="button button-primary-outline other-buttons-document" style="color: #737983; border-color: #737983;">' . __('View documment', 'edusystem') . '</button></a>';
 
                 if ($document->status != 1) {
-                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="1" class="button change-status button-warning" style="margin-left: 3px; margin-right: 3px;">' . __('Revert', 'edusystem') . '</button>';
+                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="1" class="button change-status button-warning-outline" style="margin-left: 3px; margin-right: 3px; color: #c7850b; border-color: #c7850b;">' . __('Revert', 'edusystem') . '</button>';
+                }
+
+                if ($document->status != 6 && $document->status != 1) {
+                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="6" class="button change-status button-secondary" style="margin-left: 3px; margin-right: 3px; color: purple; border-color: purple;">' . __('Request update', 'edusystem') . '</button>';
                 }
 
                 if ($document->status != 5 && $document->status != 3) {
-                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="5" class="button change-status button-success" style="margin-left: 3px; margin-right: 3px;">' . __('Approve', 'edusystem') . '</button>';
+                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="5" class="button change-status button-success-outline" style="margin-left: 3px; margin-right: 3px; color: green; border-color: green;">' . __('Approve', 'edusystem') . '</button>';
                 }
 
                 if ($document->status != 5 && $document->status != 3) {
-                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="3" class="button change-status button-danger" style="margin-left: 3px; margin-right: 3px;">' . __('Decline', 'edusystem') . '</button>';
+                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="3" class="button change-status button-danger-outline" style="margin-left: 3px; margin-right: 3px; color: red; border-color: red;">' . __('Decline', 'edusystem') . '</button>';
                 }
             }
             $html .= "</td></tr>";

@@ -503,21 +503,25 @@
                                 </b>
                             </td>
                             <td colspan="7" data-colname="<?= __('Actions', 'edusystem'); ?>">
-                                <a target="_blank" onclick='uploadDocument(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document"><span class='dashicons dashicons-upload'></span><?= __('Upload', 'edusystem'); ?></button></a>
+                                <a target="_blank" onclick='uploadDocument(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document" style="color: #149dcd; border-color: #149dcd;"><span class='dashicons dashicons-upload'></span><?= __('Upload', 'edusystem'); ?></button></a>
                                 <?php if ($document->status > 0): ?>
-                                    <a target="_blank" onclick='watchDetails(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document"><?= __('View detail', 'edusystem'); ?></button></a>
-                                    <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>"><button type="button" class="button button-primary other-buttons-document"><?= __('View documment', 'edusystem'); ?></button></a>
+                                    <a target="_blank" onclick='watchDetails(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document" style="color: #737983; border-color: #737983;"><?= __('View detail', 'edusystem'); ?></button></a>
+                                    <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>"><button type="button" class="button button-primary-outline other-buttons-document" style="color: #737983; border-color: #737983;"><?= __('View documment', 'edusystem'); ?></button></a>
                                     <?php if ($document->status != 1) { ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
-                                            data-status="1" class="button change-status button-warning"><?= __('Revert', 'edusystem'); ?></button>
+                                            data-status="1" class="button change-status button-warning-outline" style="color: #c7850b; border-color: #c7850b;"><?= __('Revert', 'edusystem'); ?></button>
+                                    <?php } ?>
+                                    <?php if ($document->status != 6 && $document->status != 1) { ?>
+                                        <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
+                                            data-status="6" class="button change-status button-secondary" style="color: purple; border-color: purple;"><?= __('Request update', 'edusystem'); ?></button>
                                     <?php } ?>
                                     <?php if ($document->status != 5 && $document->status != 3): ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
-                                            data-status="5" class="button change-status button-success"><?= __('Approve', 'edusystem'); ?></button>
+                                            data-status="5" class="button change-status button-success-outline" style="color: green; border-color: green;"><?= __('Approve', 'edusystem'); ?></button>
                                     <?php endif; ?>
                                     <?php if ($document->status != 5 && $document->status != 3): ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
-                                            data-status="3" class="button change-status button-danger"><?= __('Decline', 'edusystem'); ?></button>
+                                            data-status="3" class="button change-status button-danger-outline" style="color: red; border-color: red;"><?= __('Decline', 'edusystem'); ?></button>
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </td>

@@ -376,7 +376,7 @@ function save_documents()
                     $file_temp = [];
                 }
 
-                if($status == 0 || $status == 3 || $status == 4){
+                if($status == 0 || $status == 3 || $status == 4 || $status == 6){
 
                     if(!empty($file_temp['tmp_name'])){
                         
@@ -771,6 +771,7 @@ function get_status_document($status_id){
         '3' => __('Declined','edusystem'),
         '4' => __('Expired','edusystem'),
         '5' => __('Approved','edusystem'),
+        '6' => __('Waiting update','edusystem'),
         default => '',
     };
 

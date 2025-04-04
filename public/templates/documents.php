@@ -62,7 +62,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-status"><span
                                 class="nobr"><?= __('Status', 'edusystem'); ?></span></th>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-action"><span
-                                class="nobr"><?= __('action', 'edusystem'); ?></span></th>
+                                class="nobr"><?= __('Action', 'edusystem'); ?></span></th>
                 </thead>
                 <tbody>
                     <?php $documents = get_documents($student->id); ?>
@@ -102,6 +102,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                             $style = 'color: blue';
                                             break;
                                         case 'Declined':
+                                        case 'Waiting update':
                                         case 'Expired':
                                             $style = 'color: red';
                                             break;
@@ -114,7 +115,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                     data-title="<?= __('Action', 'edusystem'); ?>">
-                                    <?php if ($document->status == 0 || $document->status == 3 || $document->status == 4) { ?>
+                                    <?php if ($document->status == 0 || $document->status == 3 || $document->status == 4 || $document->status == 6) { ?>
                                         <div class="custom-file">
                                             <input type="file" class="custom-file-input" <?= $document_name_complete == 'PHOTO OF STUDENT CARD' || $document_name_complete == 'STUDENT\'S PHOTO' ? 'id=student_photo' : '' ?>
                                                 name="<?= 'document_' . $document->id . '_student_id_' . $student->id; ?>"
