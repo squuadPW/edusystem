@@ -14,7 +14,7 @@
         <?php setcookie('message-error', '', time(), '/'); ?>
     <?php } ?>
 
-    <div id="dashboard-widgets" class="metabox-holder admin-add-offer" style="width: 70% !important">
+    <div id="dashboard-widgets" class="metabox-holder admin-add-offer">
         <div id="postbox-container-1" style="width:100% !important;">
             <div id="normal-sortables">
                 <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
