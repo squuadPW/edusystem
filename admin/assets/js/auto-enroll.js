@@ -66,6 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
                   student.middle_name,
                   student.last_name,
                   student.middle_last_name,
+                  '-',
+                  student.next_enrollment,
                 ]
                   .filter(Boolean)
                   .join(" ")}

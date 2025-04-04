@@ -10,6 +10,19 @@ function automatically_enrollment($student_id)
     load_automatically_enrollment($expected_projection, $student);
 }
 
+
+function next_enrollment($student_id)
+{
+    $next = 'Regular';
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+
+    $expected_projection = load_expected_projection($student->initial_cut, $student->grade_id);
+    $next = load_next_enrollment($expected_projection, $student);
+    return $next;
+}
+
 function load_expected_projection($initial_cut, $grade)
 {
     global $wpdb;
@@ -36,6 +49,11 @@ function load_expected_projection($initial_cut, $grade)
         'max_expected' => $max_expected,
         'grade_id' => $grade
     ];
+}
+
+function load_next_enrollment($expected_projection, $student)
+{
+    return 'Loading...';
 }
 
 function load_automatically_enrollment($expected_projection, $student)
