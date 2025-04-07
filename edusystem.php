@@ -174,20 +174,21 @@ function create_tables()
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_school_subjects}'") != $table_school_subjects) {
     dbDelta(
       "CREATE TABLE " . $table_school_subjects . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        is_active BOOLEAN NOT NULL DEFAULT 1,
-        is_open BOOLEAN NOT NULL DEFAULT 1,
-        code_subject TEXT NOT NULL,
-        name TEXT NOT NULL,
-        description TEXT NOT NULL,
-        min_pass DOUBLE(10, 2) NOT NULL,
-        hc INT(11) NOT NULL,
-        max_students INT(11) NOT NULL,
-        maxtrix_position INT(11) NOT NULL,
-        moodle_course_id INT(11) NULL,
-        teacher_id INT(11) NULL,
-        type TEXT NOT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `is_active` tinyint(1) DEFAULT 1,
+      `is_open` tinyint(1) NOT NULL DEFAULT 0,
+      `code_subject` text NOT NULL,
+      `name` text NOT NULL,
+      `description` text NOT NULL,
+      `min_pass` double NOT NULL,
+      `max_students` int(11) NOT NULL DEFAULT 25,
+      `matrix_position` int(11) DEFAULT 0,
+      `hc` int(11) NOT NULL,
+      `moodle_course_id` int(11) DEFAULT NULL,
+      `teacher_id` int(11) DEFAULT NULL,
+      `type` text DEFAULT NULL,
+      `is_elective` tinyint(1) NOT NULL DEFAULT 0,
+      `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
         PRIMARY KEY (id))$charset_collate;"
     );
   }
@@ -320,6 +321,7 @@ function create_tables()
         start_date_pre_inscription DATE NULL,
         end_date_pre_inscription DATE NULL,
         status_id INT(11) NOT NULL,
+        `current` int(11) NOT NULL DEFAULT 1,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
