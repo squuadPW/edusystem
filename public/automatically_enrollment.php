@@ -59,7 +59,7 @@ function load_next_enrollment($expected_projection, $student)
     $table_students = $wpdb->prefix . 'students';
     $matrix_regular = only_pensum_regular($student->program_id);
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
-    $load = load_current_cut();
+    $load = load_current_cut_enrollment();
     $matrix_elective = load_available_electives($student, $load['code'], cut: $load['cut']);
     $last_inscriptions_electives_count = load_inscriptions_electives($student);
     $real_electives_inscriptions_count = load_inscriptions_electives_valid($student);
@@ -110,7 +110,7 @@ function load_next_enrollment($expected_projection, $student)
             if (!$offer_available_to_enroll) {
                 $count_expected_subject++;
                 $force_skip = true;
-                if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0)) {
+                if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0) && count($matrix_elective) > 0) {
                     $next_enrollment = 'Elective';
                 }
                 continue;
@@ -181,7 +181,7 @@ function load_automatically_enrollment($expected_projection, $student)
     $table_students = $wpdb->prefix . 'students';
     $matrix_regular = only_pensum_regular($student->program_id);
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
-    $load = load_current_cut();
+    $load = load_current_cut_enrollment();
     $matrix_elective = load_available_electives($student, $load['code'], cut: $load['cut']);
     $last_inscriptions_electives_count = load_inscriptions_electives($student);
     $real_electives_inscriptions_count = load_inscriptions_electives_valid($student);
@@ -234,7 +234,7 @@ function load_automatically_enrollment($expected_projection, $student)
             if (!$offer_available_to_enroll) {
                 $count_expected_subject++;
                 $force_skip = true;
-                if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0)) {
+                if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0) && count($matrix_elective) > 0) {
                     update_elective_student($student->id, 1);
                 }
                 continue;
