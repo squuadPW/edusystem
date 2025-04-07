@@ -53,7 +53,175 @@ function load_expected_projection($initial_cut, $grade)
 
 function load_next_enrollment($expected_projection, $student)
 {
-    return 'Loading...';
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $table_students = $wpdb->prefix . 'students';
+    $matrix_regular = only_pensum_regular($student->program_id);
+    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
+    $load = load_current_cut_enrollment();
+    $matrix_elective = load_available_electives($student, $load['code'], cut: $load['cut']);
+    $last_inscriptions_electives_count = load_inscriptions_electives($student);
+    $real_electives_inscriptions_count = load_inscriptions_electives_valid($student);
+    $code = $load['code'];
+    $cut = $load['cut'];
+    $student_enrolled = 0;
+    $count_expected_subject = 0;
+    $count_expected_subject_elective = 0;
+    $skip_cut = $student->skip_cut;
+    $force_skip = false;
+    $regular_enrolled = false;
+    $next_enrollment = 'Inscription not found';
+
+    if (!$projection) {
+        return $next_enrollment;
+    }
+
+    $projection_obj = json_decode($projection->projection);
+    foreach ($expected_projection['expected_matrix'] as $key => $expected) {
+        if ($expected_projection['grade_id'] > 2 && ($key + 1) > 6) {
+            $expected_projection['max_expected'] = 1;
+        }
+
+        if ($student_enrolled >= (int)$expected_projection['max_expected']) {
+            break;
+        }
+
+        if ($expected == 'R') {
+            $expected_subject = $matrix_regular[$count_expected_subject];
+            $subject = get_subject_details($expected_subject->subject_id);
+
+            $inscriptions = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM {$table_student_period_inscriptions} 
+                    WHERE student_id = %d 
+                    AND subject_id = %d 
+                    AND (status_id = 3 OR status_id = 1)",
+                    $student->id,
+                    $subject->id
+                )
+            );
+            if (count($inscriptions) > 0) {
+                $count_expected_subject++;
+                continue;
+            }
+
+            $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
+            if (!$offer_available_to_enroll) {
+                $count_expected_subject++;
+                $force_skip = true;
+                if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0)) {
+                    $next_enrollment = 'Elective';
+                }
+                continue;
+            }
+
+            $force_skip = false;
+            $subjectIds = array_column($projection_obj, 'subject_id');
+            $indexToEdit = array_search($subject->id, $subjectIds);
+            if ($indexToEdit !== false) {
+                // $projection_obj[$indexToEdit]->cut = $cut;
+                // $projection_obj[$indexToEdit]->this_cut = true;
+                // $projection_obj[$indexToEdit]->code_period = $code;
+                // $projection_obj[$indexToEdit]->calification = '';
+                // $projection_obj[$indexToEdit]->is_completed = true;
+                // $projection_obj[$indexToEdit]->welcome_email = false;
+            }
+
+            // $wpdb->update($table_student_academic_projection, [
+            //     'projection' => json_encode($projection_obj)
+            // ], ['id' => $projection->id]);
+
+            // $section = load_section_available($subject->id, $code, $cut);
+            // $wpdb->insert($table_student_period_inscriptions, [
+            //     'status_id' => 1,
+            //     'section' => $section,
+            //     'student_id' => $student->id,
+            //     'subject_id' => $subject->id,
+            //     'code_subject' => $subject->code_subject,
+            //     'code_period' => $code,
+            //     'cut_period' => $cut,
+            //     'type' => $subject->type
+            // ]);
+
+            $next_enrollment = 'Regular';
+            if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2) {
+                $next_enrollment .= ' && Elective';
+            }
+
+            $regular_enrolled = true;
+            $count_expected_subject++;
+            $student_enrolled++;
+        } else {
+            if ($force_skip) {
+                $count_expected_subject_elective++;
+                $last_inscriptions_electives_count++;
+                continue;
+            }
+
+            if (count($matrix_elective) == 0) {
+                continue;
+            }
+
+            if ($last_inscriptions_electives_count > $count_expected_subject_elective) {
+                $count_expected_subject_elective++;
+                continue;
+            }
+
+            if ($skip_cut) {
+                // $wpdb->update($table_students, [
+                //     'elective' => 0,
+                //     'skip_cut' => 0
+                // ], ['id' => $student->id]);
+
+                // $wpdb->insert($table_student_period_inscriptions, [
+                //     'status_id' => 2,
+                //     'student_id' => $student->id,
+                //     'code_period' => $code,
+                //     'cut_period' => $cut,
+                //     'type' => 'elective'
+                // ]);
+                $count_expected_subject_elective++;
+                $last_inscriptions_electives_count++;
+                $skip_cut = false;
+                continue;
+            }
+
+            if ($expected_projection['max_expected'] > 1) {
+                if ($next_enrollment == 'Inscription not found') {
+                    $next_enrollment = '';
+                } else {
+                    $next_enrollment .= ' && ';
+                }
+            } else {
+                $next_enrollment = '';
+            }
+
+            if ($expected == 'EA' && !get_option('use_elective_aditional')) {
+                // $wpdb->update($table_students, [
+                //     'elective' => 0,
+                //     'skip_cut' => 0
+                // ], ['id' => $student->id]);
+
+                // $wpdb->insert($table_student_period_inscriptions, [
+                //     'status_id' => 2,
+                //     'student_id' => $student->id,
+                //     'code_period' => $code,
+                //     'cut_period' => $cut,
+                //     'type' => 'elective'
+                // ]);
+                $next_enrollment .= 'Elective';
+                break;
+            }
+
+            // update_elective_student($student->id, 1);
+            $next_enrollment .= 'Elective';
+            $count_expected_subject_elective++;
+            $student_enrolled++;
+        }
+    }
+
+    return $next_enrollment;
 }
 
 function load_automatically_enrollment($expected_projection, $student)
@@ -83,11 +251,11 @@ function load_automatically_enrollment($expected_projection, $student)
 
     $projection_obj = json_decode($projection->projection);
     foreach ($expected_projection['expected_matrix'] as $key => $expected) {
-        if ($expected_projection['grade_id'] > 2 && $count_expected_subject >= 4) {
+        if ($expected_projection['grade_id'] > 2 && ($key + 1) > 6) {
             $expected_projection['max_expected'] = 1;
         }
 
-        if ($student_enrolled == $expected_projection['max_expected']) {
+        if ($student_enrolled >= (int)$expected_projection['max_expected']) {
             if ($regular_enrolled) {
                 update_count_moodle_pending();
             }
