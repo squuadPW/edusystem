@@ -317,6 +317,26 @@ function offer_available_to_enroll($subject_id, $code, $cut) {
     return $available;
 }
 
+function available_inscription_subject($student_id, $subject_id) {
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $available = true;
+    $inscriptions = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM {$table_student_period_inscriptions} 
+            WHERE student_id = %d 
+            AND subject_id = %d 
+            AND (status_id = 3 OR status_id = 1)",
+            $student_id,
+            $subject_id
+        )
+    );
+    if (count($inscriptions) > 0) {
+        $available = false;
+    }
+    return $available;
+}
+
 function load_next_section($subject_id, $code, $cut, $offer_id, $new_section) {
     global $wpdb;
     $all_offers = get_offer_filtered_all($subject_id, $code, $cut);
