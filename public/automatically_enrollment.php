@@ -122,7 +122,7 @@ function load_next_enrollment($expected_projection, $student)
                 continue;
             }
 
-            if ($last_inscriptions_electives_count < $count_expected_subject_elective) {
+            if ($last_inscriptions_electives_count > $count_expected_subject_elective) {
                 $count_expected_subject_elective++;
                 continue;
             }
@@ -253,7 +253,7 @@ function load_automatically_enrollment($expected_projection, $student)
                 continue;
             }
 
-            if ($last_inscriptions_electives_count < $count_expected_subject_elective) {
+            if ($last_inscriptions_electives_count > $count_expected_subject_elective) {
                 $count_expected_subject_elective++;
                 continue;
             }
