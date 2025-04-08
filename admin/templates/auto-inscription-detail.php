@@ -1,5 +1,5 @@
 <div class="wrap">
-    <h2 style="margin-bottom:15px;"><?= __('Auto enroll', 'edusystem'); ?></h2>
+    <h2 style="margin-bottom:15px;"><?= __('EduSystem Autoenrollment', 'edusystem'); ?></h2>
 
     <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
         <div class="notice notice-success is-dismissible">
@@ -25,7 +25,7 @@
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Inscription Information', 'edusystem'); ?></b>
+                                    <b><?= __('Enrollment information', 'edusystem'); ?></b>
                                 </h3>
 
                                 <div style="margin: 18px;">
