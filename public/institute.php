@@ -14,56 +14,127 @@ function save_institute()
     if (isset($_POST['action']) && !empty($_POST['action'])) {
 
         if ($_POST['action'] == 'save_institute') {
-
             global $wpdb;
             $table_institutes = $wpdb->prefix . 'institutes';
-
-            $name = strtoupper($_POST['name_institute']);
-            $phone = $_POST['number_phone_hidden'];
-            $email = $_POST['current_email'];
-            $country = $_POST['country'];
-            $state = $_POST['state'];
-            $city = strtolower($_POST['city']);
-            $address = $_POST['address'];
-            $level = $_POST['level'];
-            $rector_name = strtolower($_POST['rector_name']);
-            $rector_lastname = strtolower($_POST['rector_lastname']);
-            $rector_phone = $_POST['number_rector_phone_hidden'];
-            $reference = $_POST['reference'];
-            $description = $_POST['description'];
-            $business_name = $_POST['business_name'];
-
-            $user = get_user_by('email', $email);
-
-            if (!$user) {
-
-                $wpdb->insert($table_institutes, [
-                    'name' => $name,
-                    'phone' => $phone,
-                    'email' => $email,
-                    'country' => $country,
-                    'state' => $state,
-                    'city' => $city,
-                    'address' => $address,
-                    'level_id' => $level,
-                    'name_rector' => $rector_name,
-                    'lastname_rector' => $rector_lastname,
-                    'phone_rector' => $rector_phone,
-                    'reference' => $reference,
-                    'description' => $description,
-                    'business_name' => $business_name,
-                    'status' => 0,
-                    'fee' => 5.0,
-                    'created_at' => date('Y-m-d H:i:s')
-                ]);
-
-
-                $new_institute = WC()->mailer()->get_emails()['WC_Registered_Institution_Email'];
-                $new_institute->trigger($wpdb->insert_id);
-                wc_add_notice(__('Registration sent. Wait for confirmation.', 'edusystem'), 'success');
-            } else {
-                wc_add_notice(__('Existing email, please enter another email.', 'edusystem'), 'error');
+        
+            // Definir campos requeridos y sus mensajes de error
+            $required_fields = [
+                'name_institute' => __('Institute name is required', 'edusystem'),
+                'number_phone_hidden' => __('Phone number is required', 'edusystem'),
+                'current_email' => __('Email is required', 'edusystem'),
+                'country' => __('Country is required', 'edusystem'),
+                'state' => __('State is required', 'edusystem'),
+                'city' => __('City is required', 'edusystem'),
+                'address' => __('Address is required', 'edusystem'),
+                'level' => __('Education level is required', 'edusystem'),
+                'rector_name' => __('Rector name is required', 'edusystem'),
+                'rector_lastname' => __('Rector lastname is required', 'edusystem'),
+                'number_rector_phone_hidden' => __('Rector phone is required', 'edusystem'),
+                'business_name' => __('Business name is required', 'edusystem')
+            ];
+        
+            // Validar campos requeridos
+            $errors = [];
+            foreach ($required_fields as $field => $message) {
+                if (empty($_POST[$field])) {
+                    $errors[] = $message;
+                }
             }
+        
+            // Validar formato de email
+            if (!empty($_POST['current_email']) && !is_email($_POST['current_email'])) {
+                $errors[] = __('Invalid email format', 'edusystem');
+            }
+        
+            // Validar números telefónicos (ejemplo básico)
+            $phone_pattern = '/^\+?[0-9]{7,15}$/';
+            if (!empty($_POST['number_phone_hidden']) && !preg_match($phone_pattern, $_POST['number_phone_hidden'])) {
+                $errors[] = __('Invalid phone number format', 'edusystem');
+            }
+        
+            if (!empty($_POST['number_rector_phone_hidden']) && !preg_match($phone_pattern, $_POST['number_rector_phone_hidden'])) {
+                $errors[] = __('Invalid rector phone number format', 'edusystem');
+            }
+        
+            // Si hay errores, mostrarlos y abortar
+            if (!empty($errors)) {
+                foreach ($errors as $error) {
+                    wc_add_notice($error, 'error');
+                }
+                return;
+            }
+        
+            // Sanitizar y preparar datos
+            $name = sanitize_text_field(strtoupper($_POST['name_institute']));
+            $phone = sanitize_text_field($_POST['number_phone_hidden']);
+            $email = sanitize_email($_POST['current_email']);
+            $country = sanitize_text_field($_POST['country']);
+            $state = sanitize_text_field($_POST['state']);
+            $city = sanitize_text_field(strtolower($_POST['city']));
+            $address = sanitize_textarea_field($_POST['address']);
+            $level = intval($_POST['level']);
+            $rector_name = sanitize_text_field(strtolower($_POST['rector_name']));
+            $rector_lastname = sanitize_text_field(strtolower($_POST['rector_lastname']));
+            $rector_phone = sanitize_text_field($_POST['number_rector_phone_hidden']);
+            $reference = sanitize_textarea_field($_POST['reference']);
+            $description = sanitize_textarea_field($_POST['description']);
+            $business_name = sanitize_text_field($_POST['business_name']);
+        
+            // Verificar si el email ya existe en la tabla de institutos
+            $existing_institute = $wpdb->get_var($wpdb->prepare(
+                "SELECT email FROM $table_institutes WHERE email = %s",
+                $email
+            ));
+        
+            if ($existing_institute) {
+                wc_add_notice(__('Email already registered for another institute', 'edusystem'), 'error');
+                return;
+            }
+        
+            // Verificar usuario existente
+            $user = get_user_by('email', $email);
+            if ($user) {
+                wc_add_notice(__('Existing email, please enter another email.', 'edusystem'), 'error');
+                return;
+            }
+        
+            // Insertar en la base de datos
+            $result = $wpdb->insert($table_institutes, [
+                'name' => $name,
+                'phone' => $phone,
+                'email' => $email,
+                'country' => $country,
+                'state' => $state,
+                'city' => $city,
+                'address' => $address,
+                'level_id' => $level,
+                'name_rector' => $rector_name,
+                'lastname_rector' => $rector_lastname,
+                'phone_rector' => $rector_phone,
+                'reference' => $reference,
+                'description' => $description,
+                'business_name' => $business_name,
+                'status' => 0,
+                'fee' => 5.0,
+                'created_at' => current_time('mysql', 1)
+            ]);
+        
+            // Manejar resultado de la inserción
+            if ($result === false) {
+                wc_add_notice(__('Database error. Please try again.', 'edusystem'), 'error');
+                return;
+            }
+        
+            // Obtener ID del nuevo registro
+            $institute_id = $wpdb->insert_id;
+        
+            // Enviar email de confirmación
+            $new_institute = WC()->mailer()->get_emails()['WC_Registered_Institution_Email'];
+            if ($new_institute) {
+                $new_institute->trigger($institute_id);
+            }
+        
+            wc_add_notice(__('Registration sent. Wait for confirmation.', 'edusystem'), 'success');
         }
     }
 }
