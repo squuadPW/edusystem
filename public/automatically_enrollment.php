@@ -56,7 +56,6 @@ function load_next_enrollment($expected_projection, $student)
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $table_students = $wpdb->prefix . 'students';
     $matrix_regular = only_pensum_regular($student->program_id);
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
     $load = load_current_cut_enrollment();
@@ -70,14 +69,12 @@ function load_next_enrollment($expected_projection, $student)
     $count_expected_subject_elective = 0;
     $skip_cut = $student->skip_cut;
     $force_skip = false;
-    $regular_enrolled = false;
     $next_enrollment = 'Inscription not found';
 
     if (!$projection) {
         return $next_enrollment;
     }
 
-    $projection_obj = json_decode($projection->projection);
     foreach ($expected_projection['expected_matrix'] as $key => $expected) {
         if ($expected_projection['grade_id'] > 2 && ($key + 1) > 6) {
             $expected_projection['max_expected'] = 1;
@@ -111,7 +108,7 @@ function load_next_enrollment($expected_projection, $student)
                 $count_expected_subject++;
                 $force_skip = true;
                 if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0) && count($matrix_elective) > 0) {
-                    $next_enrollment = 'Elective';
+                    $next_enrollment = 'Program elective';
                 }
                 continue;
             }
@@ -120,10 +117,9 @@ function load_next_enrollment($expected_projection, $student)
 
             $next_enrollment = 'Regular';
             if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2) {
-                $next_enrollment .= ' && Elective';
+                $next_enrollment .= ' && Program elective';
             }
 
-            $regular_enrolled = true;
             $count_expected_subject++;
             $student_enrolled++;
         } else {
@@ -159,12 +155,13 @@ function load_next_enrollment($expected_projection, $student)
                 $next_enrollment = '';
             }
 
-            if ($expected == 'EA' && !get_option('use_elective_aditional')) {
-                $next_enrollment .= 'Elective';
+            if ($expected == 'EA') {
+                $text = 'Additional elective ' . (get_option('use_elective_aditional') ? '(Available in this period)' : '(Nothing in this period)');
+                $next_enrollment .= $text;
                 break;
             }
 
-            $next_enrollment .= 'Elective';
+            $next_enrollment .= 'Program elective';
             $count_expected_subject_elective++;
             $student_enrolled++;
         }
