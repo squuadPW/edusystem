@@ -127,12 +127,18 @@ function load_next_enrollment($expected_projection, $student)
                 continue;
             }
 
+            if ($next_enrollment == 'Regular') {
+                $next_enrollment = 'Regular and ';
+            } else {
+                $next_enrollment = '';
+            }
+
             if ($expected == 'EA' && !get_option('use_elective_aditional')) {
-                $next_enrollment = 'Additional elective ' . (get_option('use_elective_aditional') ? '(Available during this period)' : '(Not available during this period)');
+                $next_enrollment .= 'Additional elective ' . (get_option('use_elective_aditional') ? '(Available during this period)' : '(Not available during this period)');
                 break;
             }
 
-            $next_enrollment = 'Program elective';
+            $next_enrollment .= 'Program elective';
             $count_expected_subject_elective++;
             $student_enrolled++;
         }
