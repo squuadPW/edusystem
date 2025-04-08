@@ -53,7 +53,96 @@ function load_expected_projection($initial_cut, $grade)
 
 function load_next_enrollment($expected_projection, $student)
 {
-    return 'loading';
+    // proyeccion
+    $projection = get_projection_by_student($student->id);
+    if (!$projection) {
+        return 'Inscription not found';
+    }
+    
+    // matrices
+    $load = load_current_cut_enrollment();
+    $matrix_elective = load_available_electives($student, $load['code'], cut: $load['cut']);
+    $matrix_regular = only_pensum_regular($student->program_id);
+
+    // contadores
+    $last_inscriptions_electives_count = load_inscriptions_electives($student);
+    $real_electives_inscriptions_count = load_inscriptions_electives_valid($student);
+    $student_enrolled = 0;
+    $count_expected_subject = 0;
+    $count_expected_subject_elective = 0;
+
+    // valores
+    $code = $load['code'];
+    $cut = $load['cut'];
+    $force_skip = false;
+    $next_enrollment = 'Inscription not found';
+
+    foreach ($expected_projection['expected_matrix'] as $key => $expected) {
+        if ($expected_projection['grade_id'] > 2 && ($key + 1) > 6) {
+            $expected_projection['max_expected'] = 1;
+        }
+
+        if ($student_enrolled >= (int)$expected_projection['max_expected']) {
+            break;
+        }
+
+        if ($expected == 'R') {
+            $expected_subject = $matrix_regular[$count_expected_subject];
+            $subject = get_subject_details($expected_subject->subject_id);
+
+            $available_inscription_subject = available_inscription_subject($student->id, $subject->id);
+            if (!$available_inscription_subject) {
+                $count_expected_subject++;
+                continue;
+            }
+
+            $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
+            if (!$offer_available_to_enroll) {
+                $count_expected_subject++;
+                $force_skip = true;
+                continue;
+            }
+
+            $next_enrollment = 'Regular';
+            $force_skip = false;
+            $count_expected_subject++;
+            $student_enrolled++;
+
+            if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2 && ($key + 1) >= (count($expected_projection['expected_matrix']) - 1)) {
+                $next_enrollment .= ' and program elective';
+            }
+        } else {
+            if ($force_skip) {
+                $count_expected_subject_elective++;
+                $last_inscriptions_electives_count++;
+                continue;
+            }
+
+            if (count($matrix_elective) == 0) {
+                continue;
+            }
+
+            if ($last_inscriptions_electives_count < $count_expected_subject_elective) {
+                $count_expected_subject_elective++;
+                continue;
+            }
+
+            if ($expected == 'EA' && !get_option('use_elective_aditional')) {
+                $next_enrollment = 'Additional elective ' . (get_option('use_elective_aditional') ? '(Available during this period)' : '(Not available during this period)');
+                break;
+            }
+
+            $next_enrollment = 'Program elective';
+            $count_expected_subject_elective++;
+            $student_enrolled++;
+        }
+
+        if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0) && count($matrix_elective) > 0) {
+            $next_enrollment .= ' and program elective';
+        }
+    }
+
+    return $next_enrollment;
 }
 
 function load_automatically_enrollment($expected_projection, $student)
@@ -118,7 +207,6 @@ function load_automatically_enrollment($expected_projection, $student)
                 continue;
             }
 
-            $force_skip = false;
             $subjectIds = array_column($projection_obj, 'subject_id');
             $indexToEdit = array_search($subject->id, $subjectIds);
             if ($indexToEdit !== false) {
@@ -146,13 +234,14 @@ function load_automatically_enrollment($expected_projection, $student)
                 'type' => $subject->type
             ]);
 
-            if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2 && ($key + 1) >= (count($expected_projection['expected_matrix']) - 2)) {
-                update_elective_student($student->id, 1);
-            }
-
+            $force_skip = false;
             $regular_enrolled = true;
             $count_expected_subject++;
             $student_enrolled++;
+
+            if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2 && ($key + 1) >= (count($expected_projection['expected_matrix']) - 1)) {
+                update_elective_student($student->id, 1);
+            }
         } else {
             if ($force_skip) {
                 $count_expected_subject_elective++;
@@ -164,7 +253,7 @@ function load_automatically_enrollment($expected_projection, $student)
                 continue;
             }
 
-            if ($last_inscriptions_electives_count > $count_expected_subject_elective) {
+            if ($last_inscriptions_electives_count < $count_expected_subject_elective) {
                 $count_expected_subject_elective++;
                 continue;
             }
