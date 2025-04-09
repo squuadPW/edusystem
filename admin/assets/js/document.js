@@ -713,7 +713,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   scale: 3,
                   useCORS: true
               },
-              pagebreak: { after: ".page_break" },
+              pagebreak: { after: ".pagebreak" },
           };
   
           // Generar el PDF

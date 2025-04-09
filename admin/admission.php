@@ -1559,7 +1559,7 @@ function generate_document()
             'wrap' => false,
         ],
         'page_break' => [
-            'value' => '<div class=".page_break"></div>',
+            'value' => '<div class="pagebreak"></div>',
             'wrap' => false,
         ],
     ];
