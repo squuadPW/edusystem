@@ -658,7 +658,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 data: this.response.url,
                 image: this.response.image_url,
                 dotsOptions: { color: "#000000" },
-                backgroundOptions: { color: "#ffffff" }
+                backgroundOptions: { color: "#ffffff" },
+                imageOptions: {
+                  crossOrigin: "anonymous"
+                }
               });
               
               qrCode.append(document.getElementById("qrcode"));
