@@ -1558,6 +1558,10 @@ function generate_document()
             'value' => '<div id="qrcode"></div>',
             'wrap' => false,
         ],
+        'page_break' => [
+            'value' => '<div id="page_break"></div>',
+            'wrap' => false,
+        ],
     ];
 
     if ($document->signature_required) {

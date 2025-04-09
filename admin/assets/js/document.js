@@ -707,12 +707,13 @@ document.addEventListener("DOMContentLoaded", function () {
               jsPDF: { 
                   unit: "mm", 
                   format: "a4", 
-                  orientation: 'portrait'
+                  orientation: orientation
               },
               html2canvas: { 
                   scale: 3,
                   useCORS: true
-              }
+              },
+              pagebreak: { after: "#page_break" },
           };
   
           // Generar el PDF
