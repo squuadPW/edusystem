@@ -360,7 +360,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
       pagebreak: { after: "#part1" },
     };
 
-    // html2pdf().set(opt).from(element).save();
     html2pdf()
       .set(opt)
       .from(element)
