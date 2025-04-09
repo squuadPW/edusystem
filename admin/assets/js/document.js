@@ -531,6 +531,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  let marginHeaderDocument = 0;
+  let marginFooterDocument = 0;
   let orientation = 'portrait';
   let margin = [0, 0];
   let document_certificate_button = document.getElementById('documentcertificate-button');
@@ -552,6 +554,26 @@ document.addEventListener("DOMContentLoaded", function () {
         if (this.readyState == 4 && XHR.status === 200) {
           (async () => {
             const modal_body = document.getElementById("content-pdf");
+            if (modal_body && (this.response.header && this.response.header != '')) {
+              // Eliminar header existente si ya está presente
+              const existingHeader = document.getElementById('header-document');
+              if (existingHeader) {
+                  existingHeader.remove();
+              }
+          
+              // Crear y agregar nuevo header
+              const headerElement = document.createElement('div');
+              headerElement.id = 'header-document';
+              headerElement.innerHTML = this.response.header;
+              modal_body.parentNode.insertBefore(headerElement, modal_body);
+              
+              // Forzar reflow y luego calcular altura
+              setTimeout(() => {
+                const headerCalculated = document.getElementById('header-document');
+                void headerCalculated.offsetHeight; // Esto fuerza un reflow
+                marginHeaderDocument = Math.round(((headerCalculated.offsetHeight + 10) * 0.264583333));
+              }, 1000);
+          }
             
             // Función simplificada sin CORS
             const convertToBase64 = async (url) => {
@@ -592,7 +614,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = this.response.html;
             orientation = this.response.document.orientation;
-            margin = this.response.document.margin_required == 1 ? [10, 0, 0, 0] : margin;
 
             const imgElement = tempDiv.querySelector('img');
             if (imgElement) {
@@ -604,6 +625,31 @@ document.addEventListener("DOMContentLoaded", function () {
             }
   
             modal_body.innerHTML = processedHtml;
+
+            if (modal_body && (this.response.footer && this.response.footer != '')) {
+              // Eliminar footer existente si ya está presente
+              const existingFooter = document.getElementById('footer-document');
+              if (existingFooter) {
+                  existingFooter.remove();
+              }
+          
+              // Crear y agregar nuevo footer
+              const footerElement = document.createElement('div');
+              footerElement.id = 'footer-document';
+              footerElement.innerHTML = this.response.footer;
+              modal_body.after(footerElement);
+              
+              // Forzar reflow y luego calcular altura
+              setTimeout(() => {
+                const footerCalculated = document.getElementById('footer-document');
+                void footerCalculated.offsetHeight; // Esto fuerza un reflow
+                marginFooterDocument = Math.round(((footerCalculated.offsetHeight + 10) * 0.264583333));
+              }, 1000);
+          }
+
+            setTimeout(() => {
+              margin = this.response.document.margin_required == 1 ? [marginHeaderDocument, 0, marginFooterDocument, 0] : margin;
+            }, 1500);
 
             if (document.getElementById("qrcode") && this.response.url) {
               const qrCode = new QRCodeStyling({
@@ -626,10 +672,10 @@ document.addEventListener("DOMContentLoaded", function () {
               document.getElementById('content-pdf').style.minHeight = '210mm';
             } else {
               document.querySelector('.modal-document-export').style.minWidth = '210mm';
-              document.querySelector('.modal-document-export').style.minHeight = '287mm';
+              // document.querySelector('.modal-document-export').style.minHeight = '287mm';
 
               document.getElementById('content-pdf').style.minWidth = '210mm';
-              document.getElementById('content-pdf').style.minHeight = '287mm';
+              // document.getElementById('content-pdf').style.minHeight = '287mm';
             }
 
             document.querySelector('.modal-document-export').style.padding = '0';
@@ -649,21 +695,70 @@ document.addEventListener("DOMContentLoaded", function () {
   let download_grades = document.getElementById("download-grades");
   if (download_grades) {
       download_grades.addEventListener("click", async (e) => {
-        download_grades.disabled = true;
-        var element = document.getElementById("content-pdf");
-        var opt = {
-          margin: margin,
-          filename: 'document.pdf',
-          image: { type: "jpeg", quality: 1 },
-          jsPDF: { unit: "mm", format: "a4", orientation: orientation },
-          html2canvas: { 
-            scale: 3,
-            useCORS: true // ¡Esto es clave para imágenes externas!
-          }
-        };
+          download_grades.disabled = true;
+          var element = document.getElementById("content-pdf");
+          var opt = {
+              margin: margin,
+              filename: 'document.pdf',
+              image: { type: "jpeg", quality: 1 },
+              jsPDF: { 
+                  unit: "mm", 
+                  format: "a4", 
+                  orientation: 'portrait'
+              },
+              html2canvas: { 
+                  scale: 3,
+                  useCORS: true
+              }
+          };
+  
+          // Generar el PDF
+          const pdf = await html2pdf().set(opt).from(element).toPdf().get('pdf');
+  
+          if (orientation == 'portrait') {
+            const pageCount = pdf.internal.getNumberOfPages();
+
+            // Capturar el contenido del header
+            const headerElement = document.getElementById("header-document");
+            let imgDataHeader = '';
+            let canvasHeader = null;
+            if (headerElement) {
+              canvasHeader = await html2canvas(headerElement, { scale: 2 });
+              imgDataHeader = canvasHeader.toDataURL("image/jpeg");
+            }
     
-        html2pdf().set(opt).from(element).save();
-        download_grades.disabled = false;
+            // Capturar el contenido del footer
+            const footerElement = document.getElementById("footer-document");
+            let imgData = '';
+            let canvas = null;
+            if (footerElement) {
+              canvas = await html2canvas(footerElement, { scale: 2 });
+              imgData = canvas.toDataURL("image/jpeg");
+            }
+
+            // Agregar el footer manualmente
+            for (let i = 1; i <= pageCount; i++) {
+                pdf.setPage(i);
+                const imgWidth = pdf.internal.pageSize.width; // Ancho de la imagen igual al ancho de la página
+
+                // Header
+                if (headerElement) {
+                  const imgHeightHeader = (canvasHeader.height * imgWidth) / canvasHeader.width; // Mantener la proporción
+                  pdf.addImage(imgDataHeader, 'JPEG', 0, 0, imgWidth, imgHeightHeader);
+                }
+
+                // Footer
+                if (footerElement) {
+                  const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantener la proporción
+                  const y = pdf.internal.pageSize.height - imgHeight; // Posición Y para que esté en la parte inferior
+                  pdf.addImage(imgData, 'JPEG', 0, y, imgWidth, imgHeight);
+                }
+            }
+          }
+  
+          // Guardar el PDF
+          pdf.save('document.pdf'); // No se usa .then() aquí
+          download_grades.disabled = false; // Habilitar el botón nuevamente
       });
   }
 

@@ -558,6 +558,35 @@ div#application-passwords-section {
   width: auto !important;
 }
 
+#qt_header_toolbar input {
+  width: auto !important;
+}
+
+#qt_footer_toolbar input {
+  width: auto !important;
+}
+
 #qt_message_toolbar input {
   width: auto !important;
+}
+
+.documents-footer {
+  background: rgb(231, 31, 59);
+  background: linear-gradient(90deg, rgb(231, 31, 59) 0%, rgb(116, 39, 124) 50%, rgb(0, 47, 189) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e71f3b",endColorstr="#002fbd",GradientType=1);
+}
+.documents-footer a {
+  color: white !important;
+  -webkit-text-decoration: auto;
+          text-decoration: auto;
+}
+.documents-footer .contact-info-aes {
+  display: flex;
+  justify-content: space-evenly;
+  color: #ffffff;
+  padding: 10px;
+  font-size: 12px !important;
+}
+.documents-footer .contact-info-aes .icon-footer::before {
+  vertical-align: unset !important;
 }/*# sourceMappingURL=style.css.map */

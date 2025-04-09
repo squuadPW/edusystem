@@ -48,21 +48,44 @@ if (close_modal_grades) {
     });
 }
 
-
 let download_grades = document.getElementById("download-grades");
 if (download_grades) {
     download_grades.addEventListener("click", async (e) => {
-      download_grades.disabled = true;
-      var element = document.getElementById("content-pdf");
-      var opt = {
-        margin: [10, 0, 0, 0],
-        filename: 'califications.pdf',
-        image: { type: "jpeg", quality: 0.98 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        html2canvas: { scale: 3 }
-      };
-  
-      html2pdf().set(opt).from(element).save();
-      download_grades.disabled = false;
+        download_grades.disabled = true;
+        var element = document.getElementById("content-pdf");
+        var opt = {
+          margin: [10, 0, 20, 0],
+          filename: 'califications.pdf',
+          image: { type: "jpeg", quality: 0.98 },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          html2canvas: { scale: 3 }
+        };
+
+        // Generar el PDF
+        const pdf = await html2pdf().set(opt).from(element).toPdf().get('pdf');
+
+        // Capturar el contenido del footer
+        const footerElement = document.getElementById("colophon");
+        footerElement.style.display = "block"; // Asegúrate de que el footer sea visible
+        const canvas = await html2canvas(footerElement, { scale: 2 });
+        const imgData = canvas.toDataURL("image/png");
+        footerElement.style.display = "none"; // Ocultar el footer nuevamente
+
+        // Agregar el footer manualmente
+        const pageCount = pdf.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            pdf.setPage(i);
+            const imgWidth = pdf.internal.pageSize.width; // Ancho de la imagen igual al ancho de la página
+            const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantener la proporción
+            const x = 0; // Posición X para que ocupe todo el ancho
+            const y = pdf.internal.pageSize.height - imgHeight; // Posición Y para que esté en la parte inferior
+
+            // Agregar la imagen del footer al PDF
+            pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+        }
+
+        // Guardar el PDF
+        pdf.save('califications.pdf'); // No se usa .then() aquí
+        download_grades.disabled = false; // Habilitar el botón nuevamente
     });
 }

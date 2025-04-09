@@ -580,8 +580,60 @@ div#application-passwords-section {
   }
 }
 
+#qt_header_toolbar {
+  input {
+    width: auto !important;
+  }
+}
+
+#qt_footer_toolbar {
+  input {
+    width: auto !important;
+  }
+}
+
 #qt_message_toolbar {
   input {
     width: auto !important;
+  }
+}
+
+.documents-footer {
+  background: rgb(231, 31, 59);
+  background: -moz-linear-gradient(
+    90deg,
+    rgba(231, 31, 59, 1) 0%,
+    rgba(116, 39, 124, 1) 50%,
+    rgba(0, 47, 189, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    90deg,
+    rgba(231, 31, 59, 1) 0%,
+    rgba(116, 39, 124, 1) 50%,
+    rgba(0, 47, 189, 1) 100%
+  );
+  background: linear-gradient(
+    90deg,
+    rgba(231, 31, 59, 1) 0%,
+    rgba(116, 39, 124, 1) 50%,
+    rgba(0, 47, 189, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e71f3b",endColorstr="#002fbd",GradientType=1);
+
+  a {
+    color: white !important;
+    text-decoration: auto;
+  }
+
+  .contact-info-aes {
+    display: flex;
+    justify-content: space-evenly;
+    color: #ffffff;
+    padding: 10px;
+    font-size: 12px !important;
+
+    .icon-footer::before {
+      vertical-align: unset !important;
+    }
   }
 }

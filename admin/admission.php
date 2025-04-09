@@ -1463,6 +1463,27 @@ function last_access_moodle()
 add_action('wp_ajax_nopriv_last_access_moodle', 'last_access_moodle');
 add_action('wp_ajax_last_access_moodle', 'last_access_moodle');
 
+
+function process_template($template, $replacements) {
+    $span_open = '<span class="text-uppercase">';
+    $span_close = '</span>';
+    
+    foreach ($replacements as $placeholder => $config) {
+        $tag = '{{' . $placeholder . '}}';
+        if (strpos($template, $tag) !== false) {
+            $value = $config['value'];
+            if (is_callable($value)) {
+                $value = $value();
+            }
+            if ($config['wrap']) {
+                $value = $span_open . $value . $span_close;
+            }
+            $template = str_replace($tag, $value, $template);
+        }
+    }
+    return $template;
+}
+
 function generate_document()
 {
     global $wpdb;
@@ -1482,86 +1503,92 @@ function generate_document()
     $end_academic_period = date('F d, Y', strtotime($academic_period->end_date));
     $create_certificate_qr = false;
 
-    $span_open = '<span class="text-uppercase">';
-    $span_close = '</span>';
-
-    $academic_period_name = $academic_period->name;
-    if (strpos($document->content, '{{academic_year}}') !== false) {
-        $document->content = str_replace('{{academic_year}}', $span_open.$academic_period_name.$span_close, $document->content);
-    }
-    
-    if (strpos($document->content, '{{start_academic_year}}') !== false) {
-        $document->content = str_replace('{{start_academic_year}}', $start_academic_period, $document->content);
-    }
-    
-    if (strpos($document->content, '{{end_academic_year}}') !== false) {
-        $document->content = str_replace('{{end_academic_year}}', $end_academic_period, $document->content);
-    }
-
-    $student_name = $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name;
-    if (strpos($document->content, '{{student_name}}') !== false) {
-        $document->content = str_replace('{{student_name}}', $span_open.$student_name.$span_close, $document->content);
-    }
-
-    $student_short_name = $student->name . ' ' . $student->last_name;
-    if (strpos($document->content, '{{student_short_name}}') !== false) {
-        $document->content = str_replace('{{student_short_name}}', $span_open.$student_short_name.$span_close, $document->content);
-    }
-
-    $id_student = $student->id_document;
-    if (strpos($document->content, '{{id_student}}') !== false) {
-        $document->content = str_replace('{{id_student}}', $span_open.$id_student.$span_close, $document->content);
-    }
-
-    $program = get_name_program($student->program_id);
-    if (strpos($document->content, '{{program}}') !== false) {
-        $document->content = str_replace('{{program}}', $span_open.$program.$span_close, $document->content);
-    }
-
-    $today = date('M d, Y');
-    if (strpos($document->content, '{{today}}') !== false) {
-        $document->content = str_replace('{{today}}', $today, $document->content);
-    }
-    
-    if (strpos($document->content, '{{table_notes}}') !== false) {
-        $document->content = str_replace('{{table_notes}}', table_notes_html($student->id, get_projection_by_student($student->id)), $document->content);
-    }
-    
-    if (strpos($document->content, '{{table_notes_summary}}') !== false) {
-        $document->content = str_replace('{{table_notes_summary}}', table_notes_summary_html(get_projection_by_student($student->id)), $document->content);
-    }
-
-    if (strpos($document->content, '{{table_inscriptions}}') !== false) {
-        $document->content = str_replace('{{table_inscriptions}}', table_inscriptions_html(get_inscriptions_by_student($student->id)), $document->content);
-    }
-    
-    if (strpos($document->content, '{{qrcode}}') !== false) {
-        $create_certificate_qr = true;
-        $document->content = str_replace('{{qrcode}}', '<div id="qrcode"></div>', $document->content);
-    }
+    $replacements = [
+        'academic_year' => [
+            'value' => $academic_period->name,
+            'wrap' => true,
+        ],
+        'start_academic_year' => [
+            'value' => $start_academic_period,
+            'wrap' => false,
+        ],
+        'end_academic_year' => [
+            'value' => $end_academic_period,
+            'wrap' => false,
+        ],
+        'student_name' => [
+            'value' => $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name,
+            'wrap' => true,
+        ],
+        'student_short_name' => [
+            'value' => $student->name . ' ' . $student->last_name,
+            'wrap' => true,
+        ],
+        'id_student' => [
+            'value' => $student->id_document,
+            'wrap' => true,
+        ],
+        'program' => [
+            'value' => get_name_program($student->program_id),
+            'wrap' => true,
+        ],
+        'today' => [
+            'value' => date('M d, Y'),
+            'wrap' => false,
+        ],
+        'table_notes' => [
+            'value' => function() use ($student) {
+                return table_notes_html($student->id, get_projection_by_student($student->id));
+            },
+            'wrap' => false,
+        ],
+        'table_notes_summary' => [
+            'value' => function() use ($student) {
+                return table_notes_summary_html(get_projection_by_student($student->id));
+            },
+            'wrap' => false,
+        ],
+        'table_inscriptions' => [
+            'value' => function() use ($student) {
+                return table_inscriptions_html(get_inscriptions_by_student($student->id));
+            },
+            'wrap' => false,
+        ],
+        'qrcode' => [
+            'value' => '<div id="qrcode"></div>',
+            'wrap' => false,
+        ],
+    ];
 
     if ($document->signature_required) {
         $user_sign = $user_signature->first_name . ' ' . $user_signature->last_name;
-        if (strpos($document->content, '{{user_sign}}') !== false) {
-            $document->content = str_replace('{{user_sign}}', $span_open.$user_sign.$span_close, $document->content);
-        }
-    
-        $user_charge = $signature->charge;
-        if (strpos($document->content, '{{position_user_charge}}') !== false) {
-            $document->content = str_replace('{{position_user_charge}}', $span_open.$user_charge.$span_close, $document->content);
-        }
-
-        if (strpos($document->content, '{{signature}}') !== false) {
-            $document->content = str_replace('{{signature}}', '<img style="width: auto !important; height: 100px !important;" src="'. wp_get_attachment_url($signature->attach_id) .'"/>', $document->content);
-        }
+        $replacements['user_sign'] = ['value' => $user_sign, 'wrap' => true];
+        $replacements['position_user_charge'] = ['value' => $signature->charge, 'wrap' => true];
+        $replacements['signature'] = [
+            'value' => '<img style="width: auto !important; height: 100px !important;" src="'. wp_get_attachment_url($signature->attach_id) .'"/>',
+            'wrap' => false
+        ];
     }
+
+    // Verificar presencia de QR antes de procesar
+    $create_certificate_qr = (
+        strpos($document->content, '{{qrcode}}') !== false ||
+        strpos($document->header, '{{qrcode}}') !== false ||
+        strpos($document->footer, '{{qrcode}}') !== false
+    );
+
+    // Procesar todas las secciones
+    $document->content = process_template($document->content, $replacements);
+    $document->header = process_template($document->header, $replacements);
+    $document->footer = process_template($document->footer, $replacements);
+
 
     $url = ['url' => '', 'image_url' => ''];
     if ($create_certificate_qr) {
-        $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, $program, 1, $student, $emission_date);
+        $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, get_name_program($student->program_id), 1, $student, $emission_date);
     }
 
-    wp_send_json(array('url' => $url['url'], 'image_url' => $url['image_url'], 'html' => $document->content, 'document' => $document));
+    wp_send_json(array('url' => $url['url'], 'image_url' => $url['image_url'], 'html' => $document->content, 'header' => $document->header, 'footer' => $document->footer, 'document' => $document));
     die();
 }
 
