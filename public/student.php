@@ -728,6 +728,22 @@ function get_name_program($program_id)
     return $program;
 }
 
+function get_ethnicity($ethnicity)
+{
+
+    $program = match ($ethnicity) {
+        '1' => __('African American', 'edusystem'),
+        '2' => __('Asian', 'edusystem'),
+        '3' => __('Caucasian', 'edusystem'),
+        '4' => __('Hispanic', 'edusystem'),
+        '5' => __('Native American', 'edusystem'),
+        '7' => __('Choose Not To Respond', 'edusystem'),
+        default => "",
+    };
+
+    return $program;
+}
+
 function get_gender($gender_id)
 {
 
