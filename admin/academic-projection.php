@@ -576,6 +576,14 @@ function get_inscriptions_by_student($student_id)
     return $inscriptions;
 }
 
+function get_inscriptions_by_student_period($student_id, $code_period, $cut_period)
+{
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student_id} AND code_period = '{$code_period}' AND cut_period = '{$cut_period}' AND code_subject IS NOT NULL AND code_subject <> ''");
+    return $inscriptions;
+}
+
 function generate_enroll_student()
 {
     global $wpdb;
@@ -970,6 +978,60 @@ function table_inscriptions_html($inscriptions) {
                     <td>'.$status_html.'</td>
                     <td>'.esc_html($name_subject).'</td>
                     <td>'.esc_html($inscription->code_period.' - '.$inscription->cut_period).'</td>
+                    <td>'.esc_html($calification).'</td>
+                  </tr>';
+    }
+
+    $html .= '</tbody></table>';
+    return $html;
+}
+
+function table_notes_period_html($inscriptions) {
+    $html = '<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;">';
+    
+    // Encabezados de tabla
+    $html .= '<thead>
+                <tr>
+                    <th scope="col" class="manage-column">'.__('Status', 'edusystem').'</th>
+                    <th scope="col" class="manage-column">'.__('Subject - Code', 'edusystem').'</th>
+                    <th scope="col" class="manage-column">'.__('Calification', 'edusystem').'</th>
+                </tr>
+              </thead>
+              <tbody>';
+
+    foreach ($inscriptions as $inscription) {
+        $subject = get_subject_details_code($inscription->code_subject);
+        $name_subject = $subject ? ($subject->name . ' - ' . $subject->code_subject) : 'N/A';
+
+        // Manejo del estado
+        $status_html = '';
+        switch ($inscription->status_id) {
+            case 0:
+                $status_html = '<div style="color: gray; font-weight: 600">'.strtoupper(__('To begin', 'edusystem')).'</div>';
+                break;
+            case 1:
+                $status_html = '<div style="color: blue; font-weight: 600">'.strtoupper(__('Active', 'edusystem')).'</div>';
+                break;
+            case 2:
+                $status_html = '<div style="color: red; font-weight: 600">'.strtoupper(__('Unsubscribed', 'edusystem')).'</div>';
+                break;
+            case 3:
+                $status_html = '<div style="color: green; font-weight: 600">'.strtoupper(__('Approved', 'edusystem')).'</div>';
+                break;
+            case 4:
+                $status_html = '<div style="color: red; font-weight: 600">'.strtoupper(__('Reproved', 'edusystem')).'</div>';
+                break;
+        }
+
+        // Manejo de calificación
+        $calification = isset($inscription->calification) 
+                      ? number_format((float)$inscription->calification, 2)
+                      : __('N/A', 'edusystem');
+
+        // Construir fila
+        $html .= '<tr>
+                    <td>'.$status_html.'</td>
+                    <td>'.esc_html($name_subject).'</td>
                     <td>'.esc_html($calification).'</td>
                   </tr>';
     }

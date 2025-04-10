@@ -179,6 +179,12 @@
                         </th>
                         <td style="display:table-cell;padding:3px;"><label for="manager_feed" style="margin-left:20px;"><?= __('Feed','edusystem'); ?></label></td>
                     </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_templates_emails" id="manager_templates_emails" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_templates_emails'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_templates_emails" style="margin-left:20px;"><?= __('Templates emails','edusystem'); ?></label></td>
+                    </tr>
                 </div>
                 <!-- ACADEMIC -->
 

@@ -5,6 +5,7 @@ function add_admin_form_send_email_content()
     global $wpdb;
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
     $table_students = $wpdb->prefix . 'students';
+    $table_templates_email = $wpdb->prefix . 'templates_email';
 
     if (isset($_GET['action']) && !empty($_GET['action'])) {
         if ($_GET['action'] == 'send_email') {
@@ -28,13 +29,20 @@ function add_admin_form_send_email_content()
                 $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
 
                 foreach ($students as $key => $student) {
-                    $message = set_variables_message($message, $student);
-                    $email_student->trigger($student, $subject, $message);
+                    $message_student = set_variables_message($message, $student, $academic_period, $cut);
+                    $email_student->trigger($student, $subject, $message_student);
 
                     if (isset($_POST['email_parent']) && $_POST['email_parent'] == 'on') {
                         $parent = get_user_by('id', $student->partner_id);
-                        $email_user->trigger($parent, $subject, $message);
+                        $email_user->trigger($parent, $subject, $message_student);
                     }
+                }
+
+                if (isset($_POST['save_template']) && $_POST['save_template'] == 'on') {
+                    $wpdb->insert($table_templates_email, [
+                        'title' => $subject,
+                        'content' => $message
+                    ]);
                 }
 
                 setcookie('message', __('Email sent successfully.', 'edusystem'), time() + 10, '/');
@@ -46,15 +54,22 @@ function add_admin_form_send_email_content()
 
                     $subject = wp_unslash($_POST['subject']);
                     $message = isset($_POST['message']) ? wp_unslash($_POST['message']) : '';
-                    $message = set_variables_message($message, $student);
+                    $message_student = set_variables_message($message, $student);
                     $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
-                    $email_student->trigger($student, $subject, $message);
+                    $email_student->trigger($student, $subject, $message_student);
 
                     if ($_POST['email_parent'] == 'on') {
                         $parent = get_user_by('id', $student->partner_id);
 
                         $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
-                        $email_user->trigger($parent, $subject, $message);
+                        $email_user->trigger($parent, $subject, $message_student);
+                    }
+
+                    if (isset($_POST['save_template']) && $_POST['save_template'] == 'on') {
+                        $wpdb->insert($table_templates_email, [
+                            'title' => $subject,
+                            'content' => $message
+                        ]);
                     }
 
                     setcookie('message', __('Email sent successfully.', 'edusystem'), time() + 10, '/');
@@ -71,6 +86,7 @@ function add_admin_form_send_email_content()
 
     $variables = get_variables_documents() ?? [];
     $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+    $templates = $wpdb->get_results("SELECT * FROM {$table_templates_email} ORDER BY id ASC");
     include(plugin_dir_path(__FILE__) . 'templates/send-email.php');
 }
 
@@ -105,11 +121,11 @@ function send_pending_payments_email()
     }
 }
 
-function set_variables_message($message, $student)
+function set_variables_message($message, $student, $code_period = null, $cut_period = null)
 {
-    $replacements = get_replacements_variables($student);
-
+    $replacements = get_replacements_variables($student, $code_period, $cut_period);
     $message = process_template($message, $replacements);
+
     return $message;
 }
 

@@ -56,6 +56,17 @@ function create_tables()
   $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
   $table_pensum = $wpdb->prefix . 'pensum';
   $table_feed = $wpdb->prefix . 'feed';
+  $table_templates_email = $wpdb->prefix . 'templates_email';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_templates_email}'") != $table_templates_email) {
+    dbDelta(
+      "CREATE TABLE " . $table_templates_email . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_feed}'") != $table_feed) {
     dbDelta(
