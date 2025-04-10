@@ -1502,16 +1502,10 @@ function generate_document()
     $start_academic_period = date('F d, Y', strtotime($academic_period->start_date));
     $end_academic_period = date('F d, Y', strtotime($academic_period->end_date));
     $create_certificate_qr = false;
-
-    // Get the billing country and state code
     $billing_country = get_user_meta($student->partner_id, 'billing_country', true);
     $state_code = get_user_meta($student->partner_id, 'billing_state', true);
-
-    // Get state name using WooCommerce's country/state data
     $states = WC()->countries->get_states($billing_country);
     $state_name = isset($states[$state_code]) ? $states[$state_code] : $state_code;
-
-    // Get country name from student's country code
     $countries = WC()->countries->get_countries();
     $country_code = $student->country;
     $country_name = isset($countries[$country_code]) ? $countries[$country_code] : $country_code;

@@ -20,7 +20,7 @@ function add_admin_form_send_email_content()
                     $cut_student_ids = array_merge($cut_student_ids, $wpdb->get_col("SELECT id FROM {$table_students} WHERE elective = 1"));
                 }
 
-                $subject = wp_kses_post($_POST['subject']);
+                $subject = wp_unslash($_POST['subject']);
                 $message = isset($_POST['message']) ? wp_unslash($_POST['message']) : '';
 
                 $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', $cut_student_ids) . ")");
@@ -112,54 +112,112 @@ function set_variables_message($message, $student)
     $academic_period = get_period_details_code($load['code']);
     $start_academic_period = date('F d, Y', strtotime($academic_period->start_date));
     $end_academic_period = date('F d, Y', strtotime($academic_period->end_date));
-    $span_open = '<span class="text-uppercase">';
-    $span_close = '</span>';
-    $academic_period_name = $academic_period->name;
-    if (strpos($message, '{{academic_year}}') !== false) {
-        $message = str_replace('{{academic_year}}', $span_open . $academic_period_name . $span_close, $message);
-    }
+    $billing_country = get_user_meta($student->partner_id, 'billing_country', true);
+    $state_code = get_user_meta($student->partner_id, 'billing_state', true);
+    $states = WC()->countries->get_states($billing_country);
+    $state_name = isset($states[$state_code]) ? $states[$state_code] : $state_code;
+    $countries = WC()->countries->get_countries();
+    $country_code = $student->country;
+    $country_name = isset($countries[$country_code]) ? $countries[$country_code] : $country_code;
 
-    if (strpos($message, '{{start_academic_year}}') !== false) {
-        $message = str_replace('{{start_academic_year}}', $start_academic_period, $message);
-    }
+    $replacements = [
+        'student_name' => [
+            'value' => $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name,
+            'wrap' => true,
+        ],
+        'name' => [
+            'value' => $student->name . ' ' . $student->middle_name,
+            'wrap' => true,
+        ],
+        'last_name' => [
+            'value' => $student->last_name . ' ' . $student->middle_last_name,
+            'wrap' => true,
+        ],
+        'id_student' => [
+            'value' => $student->id_document,
+            'wrap' => true,
+        ],
+        'birth_date' => [
+            'value' => date('m/d/Y', strtotime($student->birth_date)),
+            'wrap' => true,
+        ],
+        'gender' => [
+            'value' => $student->gender,
+            'wrap' => true,
+        ],
+        'program' => [
+            'value' => get_name_program($student->program_id),
+            'wrap' => true,
+        ],
+        'academic_year' => [
+            'value' => $academic_period->name,
+            'wrap' => true,
+        ],
+        'start_academic_year' => [
+            'value' => $start_academic_period,
+            'wrap' => false,
+        ],
+        'end_academic_year' => [
+            'value' => $end_academic_period,
+            'wrap' => false,
+        ],
+        'table_notes' => [
+            'value' => function() use ($student) {
+                return table_notes_html($student->id, get_projection_by_student($student->id));
+            },
+            'wrap' => false,
+        ],
+        'table_notes_summary' => [
+            'value' => function() use ($student) {
+                return table_notes_summary_html(get_projection_by_student($student->id));
+            },
+            'wrap' => false,
+        ],
+        'table_inscriptions' => [
+            'value' => function() use ($student) {
+                return table_inscriptions_html(get_inscriptions_by_student($student->id));
+            },
+            'wrap' => false,
+        ],
+        'address' => [
+            'value' => get_user_meta($student->partner_id, 'billing_address_1', true),
+            'wrap' => true,
+        ],
+        'state' => [
+            'value' => $state_name,
+            'wrap' => true,
+        ],
+        'country' => [
+            'value' => $country_name,
+            'wrap' => true,
+        ],
+        'zip_code' => [
+            'value' => $student->postal_code,
+            'wrap' => true,
+        ],
+        'phone' => [
+            'value' => $student->phone,
+            'wrap' => true,
+        ],
+        'email' => [
+            'value' => $student->email,
+            'wrap' => true,
+        ],
+        'today' => [
+            'value' => date('M d, Y'),
+            'wrap' => false,
+        ],
+        'qrcode' => [
+            'value' => '<div id="qrcode"></div>',
+            'wrap' => false,
+        ],
+        'page_break' => [
+            'value' => '<div class="pagebreak"></div>',
+            'wrap' => false,
+        ],
+    ];
 
-    if (strpos($message, '{{end_academic_year}}') !== false) {
-        $message = str_replace('{{end_academic_year}}', $end_academic_period, $message);
-    }
-
-    $student_name = $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name;
-    if (strpos($message, '{{student_name}}') !== false) {
-        $message = str_replace('{{student_name}}', $span_open . $student_name . $span_close, $message);
-    }
-
-    $student_short_name = $student->name . ' ' . $student->last_name;
-    if (strpos($message, '{{student_short_name}}') !== false) {
-        $message = str_replace('{{student_short_name}}', $span_open . $student_short_name . $span_close, $message);
-    }
-
-    $id_student = $student->id_document;
-    if (strpos($message, '{{id_student}}') !== false) {
-        $message = str_replace('{{id_student}}', $span_open . $id_student . $span_close, $message);
-    }
-
-    $program = get_name_program($student->program_id);
-    if (strpos($message, '{{program}}') !== false) {
-        $message = str_replace('{{program}}', $span_open . $program . $span_close, $message);
-    }
-
-    $today = date('M d, Y');
-    if (strpos($message, '{{today}}') !== false) {
-        $message = str_replace('{{today}}', $today, $message);
-    }
-
-    if (strpos($message, '{{table_notes}}') !== false) {
-        $message = str_replace('{{table_notes}}', table_notes_html($student->id), $message);
-    }
-
-    if (strpos($message, '{{table_notes_summary}}') !== false) {
-        $message = str_replace('{{table_notes_summary}}', table_notes_summary_html($student->id), $message);
-    }
-
+    $message = process_template($message, $replacements);
     return $message;
 }
 

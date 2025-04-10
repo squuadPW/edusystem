@@ -69,13 +69,18 @@
                     <input type="text" name="subject" id="subject" required>
                 </div>
 
-                <div class="form-group" style="text-align: center">
-                    <label for="title"><b><?= __('Variables', 'wp-certificates'); ?></b></label><br>
-                    <?php foreach ($variables as $key => $variable) { 
-                        if($variable->type != 'document') { ?>
-                        <button type="button" class="button button-primary" style="margin: 4px;" id="<?= $variable->identificator ?>" data-visual="<?= $variable->visual ?>"><?= $variable->text ?></button>
+                <div style="font-weight:400; text-align: center;" class="space-offer">
+                    <label for="variables-select"><b><?= __('Variables', 'wp-certificates'); ?></b></label><br>
+                    <select id="variables-select" class="variable-selector" style="width: 80%; margin: 8px 0;">
+                        <option value=""><?= __('Select a variable', 'wp-certificates'); ?></option>
+                        <?php foreach ($variables as $key => $variable) { ?>
+                            <?php if($variable->type == 'all') { ?>
+                                <option value="<?= esc_attr($variable->visual) ?>" data-identificator="<?= esc_attr($variable->identificator) ?>">
+                                    <?= esc_html($variable->text) ?>
+                                </option>
+                            <? } ?>
                         <?php } ?>
-                    <?php } ?>
+                    </select>
                 </div>
 
                 <div class="form-group">
