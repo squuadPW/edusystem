@@ -78,7 +78,7 @@
                                 <option value="<?= esc_attr($variable->visual) ?>" data-identificator="<?= esc_attr($variable->identificator) ?>">
                                     <?= esc_html($variable->text) ?>
                                 </option>
-                            <? } ?>
+                            <?php } ?>
                         <?php } ?>
                     </select>
                 </div>
