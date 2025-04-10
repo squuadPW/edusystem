@@ -477,7 +477,7 @@
         </div>
     </form>
     <?php if (!in_array('institutes', $roles) && !current_user_can('only_read_admission_aes')): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Documents', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Student Documents', 'edusystem'); ?></h2>
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">
             <p><?= __('Status change successfully', 'edusystem'); ?></p>
         </div>
@@ -532,7 +532,7 @@
         </table>
     <?php endif; ?>
     <?php if (!in_array('institutes', $roles) && !current_user_can('only_read_admission_aes') && !empty($documents_certificates)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Others documents', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Institution Documents', 'edusystem'); ?></h2>
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">
             <p><?= __('Status change successfully', 'edusystem'); ?></p>
         </div>
