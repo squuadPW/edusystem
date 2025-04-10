@@ -44,7 +44,7 @@ function add_admin_form_send_email_content()
                 $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '" . $_POST['email_student'] . "'");
                 if ($student) {
 
-                    $subject = wp_kses_post($_POST['subject']);
+                    $subject = wp_unslash($_POST['subject']);
                     $message = isset($_POST['message']) ? wp_unslash($_POST['message']) : '';
                     $message = set_variables_message($message, $student);
                     $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
