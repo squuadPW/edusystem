@@ -1503,7 +1503,48 @@ function generate_document()
     $end_academic_period = date('F d, Y', strtotime($academic_period->end_date));
     $create_certificate_qr = false;
 
+    // Get the billing country and state code
+    $billing_country = get_user_meta($student->partner_id, 'billing_country', true);
+    $state_code = get_user_meta($student->partner_id, 'billing_state', true);
+
+    // Get state name using WooCommerce's country/state data
+    $states = WC()->countries->get_states($billing_country);
+    $state_name = isset($states[$state_code]) ? $states[$state_code] : $state_code;
+
+    // Get country name from student's country code
+    $countries = WC()->countries->get_countries();
+    $country_code = $student->country;
+    $country_name = isset($countries[$country_code]) ? $countries[$country_code] : $country_code;
+
     $replacements = [
+        'student_name' => [
+            'value' => $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name,
+            'wrap' => true,
+        ],
+        'name' => [
+            'value' => $student->name . ' ' . $student->middle_name,
+            'wrap' => true,
+        ],
+        'last_name' => [
+            'value' => $student->last_name . ' ' . $student->middle_last_name,
+            'wrap' => true,
+        ],
+        'id_student' => [
+            'value' => $student->id_document,
+            'wrap' => true,
+        ],
+        'birth_date' => [
+            'value' => date('m/d/Y', strtotime($student->birth_date)),
+            'wrap' => true,
+        ],
+        'gender' => [
+            'value' => $student->gender,
+            'wrap' => true,
+        ],
+        'program' => [
+            'value' => get_name_program($student->program_id),
+            'wrap' => true,
+        ],
         'academic_year' => [
             'value' => $academic_period->name,
             'wrap' => true,
@@ -1514,26 +1555,6 @@ function generate_document()
         ],
         'end_academic_year' => [
             'value' => $end_academic_period,
-            'wrap' => false,
-        ],
-        'student_name' => [
-            'value' => $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name,
-            'wrap' => true,
-        ],
-        'student_short_name' => [
-            'value' => $student->name . ' ' . $student->last_name,
-            'wrap' => true,
-        ],
-        'id_student' => [
-            'value' => $student->id_document,
-            'wrap' => true,
-        ],
-        'program' => [
-            'value' => get_name_program($student->program_id),
-            'wrap' => true,
-        ],
-        'today' => [
-            'value' => date('M d, Y'),
             'wrap' => false,
         ],
         'table_notes' => [
@@ -1552,6 +1573,34 @@ function generate_document()
             'value' => function() use ($student) {
                 return table_inscriptions_html(get_inscriptions_by_student($student->id));
             },
+            'wrap' => false,
+        ],
+        'address' => [
+            'value' => get_user_meta($student->partner_id, 'billing_address_1', true),
+            'wrap' => true,
+        ],
+        'state' => [
+            'value' => $state_name,
+            'wrap' => true,
+        ],
+        'country' => [
+            'value' => $country_name,
+            'wrap' => true,
+        ],
+        'zip_code' => [
+            'value' => $student->postal_code,
+            'wrap' => true,
+        ],
+        'phone' => [
+            'value' => $student->phone,
+            'wrap' => true,
+        ],
+        'email' => [
+            'value' => $student->email,
+            'wrap' => true,
+        ],
+        'today' => [
+            'value' => date('M d, Y'),
             'wrap' => false,
         ],
         'qrcode' => [
