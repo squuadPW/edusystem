@@ -1188,3 +1188,20 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
 
     return $replacements;
 }
+
+function filter_media_library_modal($query) {
+    if (current_user_can('manager_media_aes') && !current_user_can('administrator')) {
+        // Get all users with manager_media_aes capability but exclude administrators
+        $manager_users = get_users(array(
+            'fields'       => 'ID',
+            'capability'   => 'manager_media_aes',
+            'role__not_in' => array('administrator') // Exclude administrators
+        ));
+
+        if (!empty($manager_users)) {
+            $query['author__in'] = $manager_users;
+        }
+    }
+    return $query;
+}
+add_filter('ajax_query_attachments_args', 'filter_media_library_modal');

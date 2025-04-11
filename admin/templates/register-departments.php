@@ -323,6 +323,13 @@
 
                 <tr>
                     <th scope="row" style="width:10px;padding:3px;">
+                        <input type="checkbox" name="capabilities[]" id="manager_media_aes" value="manager_media_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_media_aes'])) ? 'checked' : ''; ?>>
+                    </th>
+                    <td style="display:table-cell;padding:3px;"><label for="manager_media_aes"><?= __('Media','edusystem'); ?></label></td>
+                </tr>
+
+                <tr>
+                    <th scope="row" style="width:10px;padding:3px;">
                         <input type="checkbox" name="capabilities[]" id="manager_users_aes" value="manager_users_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_users_aes'])) ? 'checked' : ''; ?>>
                     </th>
                     <td style="display:table-cell;padding:3px;"><label for="manager_users_aes"><?= __('Users','edusystem'); ?></label></td>

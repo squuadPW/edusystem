@@ -35,7 +35,6 @@ add_action("admin_init", "add_role_form_plugin");
 
 
 function remove_menu_pages_roles(){
-
     global $wpdb,$current_user;
     $roles = $current_user->roles;
     $table_departments = $wpdb->prefix.'departments';
@@ -45,6 +44,8 @@ function remove_menu_pages_roles(){
     foreach($departments as $department){
 
         $role_name = str_replace('','_',$department->name);
+        $role_obj = get_role($role_name);
+        $capabilities = $role_obj->capabilities;
 
         if(in_array($role_name,$roles)){
             remove_menu_page('edit-comments.php');
@@ -52,23 +53,24 @@ function remove_menu_pages_roles(){
             remove_menu_page('profile.php');
             remove_menu_page('index.php');
             remove_menu_page('edit.php');
-            remove_menu_page('upload.php');
             remove_menu_page('options-general.php');
             remove_menu_page('wp-mail-smtp');
             remove_menu_page('wpfront-user-role-editor-all-roles');
             remove_menu_page('menu-support-ticket');
 
-            if ($role_name != 'owner') {
+            if (!in_array('manager_users_aes', $capabilities)) {
                 remove_menu_page('users.php');
+            }
+
+            if (!in_array('manager_media_aes', $capabilities)) {
+                remove_menu_page('upload.php');
             }
         }
     }
 
     if(in_array('institutes',$roles) || in_array('alliance',$roles)){
-
         remove_menu_page('edit-comments.php');
         remove_menu_page('tools.php');
-        // remove_menu_page('users.php');
         remove_menu_page('profile.php');
         remove_menu_page('index.php');
         remove_menu_page('edit.php');
@@ -76,10 +78,8 @@ function remove_menu_pages_roles(){
         remove_menu_page('options-general.php');
         remove_menu_page('wp-mail-smtp');
         remove_menu_page('menu-support-ticket');
-
-        if ($role_name != 'owner') {
-            remove_menu_page('users.php');
-        }
+        remove_menu_page('users.php');
+        remove_menu_page('upload.php');
     }
 }
 

@@ -58,6 +58,15 @@ function list_admin_form_department_content(){
                     $role->add_cap('remove_users');
                 }
 
+                if (in_array('manager_media_aes', $capabilities)) {
+                    // Capacidades para subir y gestionar medios
+                    $role->add_cap('upload_files');
+                    $role->add_cap('edit_posts');
+                    $role->add_cap('delete_posts');
+                    $role->add_cap('edit_others_posts');
+                    $role->add_cap('delete_others_posts');
+                }
+
                 $wpdb->update($table_departments,['description' => $description],['id' => $department_id]);
 
                 $message_success = __('Department updated','edusystem');
