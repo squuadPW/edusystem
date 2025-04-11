@@ -907,14 +907,14 @@ function create_tables()
       'grade_id' => 3,
       'initial_cut' => 'A-E',
       'max_expected' => 2,
-      'expected_sequence' => 'R,R,R,EP,R,EP,R,R'
+      'expected_sequence' => 'R,R,EP,R,EP,R,R,R'
     ]);
 
     $wpdb->insert($table_expected_matrix, [
       'grade_id' => 4,
       'initial_cut' => 'A-E',
       'max_expected' => 2,
-      'expected_sequence' => 'R,R,R,EP,R,EP,R,R'
+      'expected_sequence' => 'R,R,EP,R,EP,R,R,R'
     ]);
   }
 
