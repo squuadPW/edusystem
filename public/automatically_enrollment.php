@@ -78,16 +78,16 @@ function load_next_enrollment($expected_projection, $student)
     $next_enrollment = 'Inscription not found';
 
     foreach ($expected_projection['expected_matrix'] as $key => $expected) {
+        if ($student_enrolled >= (int)$expected_projection['max_expected']) {
+            break;
+        }
+
         if ($expected_projection['grade_id'] > 2 && (($key + 1) > 6 || ($key + 1) == 1)) {
             $expected_projection['max_expected'] = 1;
         } else {
             if ($expected_projection['grade_id'] > 2) {
                 $expected_projection['max_expected'] = 2;
             }
-        }
-
-        if ($student_enrolled >= (int)$expected_projection['max_expected']) {
-            break;
         }
 
         if ($expected == 'R') {
