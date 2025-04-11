@@ -320,7 +320,6 @@ function woocommerce_checkout_order_created_action($order)
         $student_id = insert_student($customer_id);
         insert_register_documents($student_id, $_COOKIE['initial_grade']);
 
-        error_log('el estudiante id es '. $student_id);
         if (!$order->meta_exists('student_id')) {
             $order->update_meta_data('student_id', $student_id);
         }
