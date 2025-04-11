@@ -320,7 +320,11 @@ function woocommerce_checkout_order_created_action($order)
         $student_id = insert_student($customer_id);
         insert_register_documents($student_id, $_COOKIE['initial_grade']);
 
-        $order->update_meta_data('student_id', $student_id);
+        error_log('el estudiante id es '. $student_id);
+        if (!$order->meta_exists('student_id')) {
+            $order->update_meta_data('student_id', $student_id);
+        }
+
         $order->update_meta_data('id_bitrix', $_COOKIE['id_bitrix']);
         $order->save();
 
@@ -371,7 +375,9 @@ function woocommerce_checkout_order_created_action($order)
 
     //validate cookie and set metadata
     if (isset($_COOKIE['fee_student_id']) && !empty($_COOKIE['fee_student_id'])) {
-        $order->update_meta_data('student_id', $_COOKIE['fee_student_id']);
+        if (!$order->meta_exists('student_id')) {
+            $order->update_meta_data('student_id', $_COOKIE['fee_student_id']);
+        }
         $order->save();
     }
 
