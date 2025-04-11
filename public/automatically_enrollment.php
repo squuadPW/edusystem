@@ -78,8 +78,12 @@ function load_next_enrollment($expected_projection, $student)
     $next_enrollment = 'Inscription not found';
 
     foreach ($expected_projection['expected_matrix'] as $key => $expected) {
-        if ($expected_projection['grade_id'] > 2 && ($key + 1) > 6) {
+        if ($expected_projection['grade_id'] > 2 && (($key + 1) > 6 || ($key + 1) == 1)) {
             $expected_projection['max_expected'] = 1;
+        } else {
+            if ($expected_projection['grade_id'] > 2) {
+                $expected_projection['max_expected'] = 2;
+            }
         }
 
         if ($student_enrolled >= (int)$expected_projection['max_expected']) {
@@ -185,15 +189,19 @@ function load_automatically_enrollment($expected_projection, $student)
     $regular_enrolled = false;
 
     foreach ($expected_projection['expected_matrix'] as $key => $expected) {
-        if ($expected_projection['grade_id'] > 2 && ($key + 1) > 6) {
-            $expected_projection['max_expected'] = 1;
-        }
-
         if ($student_enrolled >= (int)$expected_projection['max_expected']) {
             if ($regular_enrolled) {
                 update_count_moodle_pending();
             }
             break;
+        }
+
+        if ($expected_projection['grade_id'] > 2 && (($key + 1) > 6 || ($key + 1) == 1)) {
+            $expected_projection['max_expected'] = 1;
+        } else {
+            if ($expected_projection['grade_id'] > 2) {
+                $expected_projection['max_expected'] = 2;
+            }
         }
 
         if ($expected == 'R') {
