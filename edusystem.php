@@ -310,7 +310,7 @@ function create_tables()
         user_id TEXT NOT NULL,
         signature LONGTEXT NOT NULL,
         document_id LONGTEXT NOT NULL,
-        grade_selected TEXT NOT NULL,
+        grade_selected TEXT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
