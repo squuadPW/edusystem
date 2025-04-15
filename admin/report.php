@@ -347,6 +347,40 @@ function get_students_report($academic_period = null, $cut = null)
 
     return $students;
 }
+
+function get_students_active_report($academic_period = null, $cut = null)
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+
+    $conditions = array();
+    $params = array();
+
+    // Agregar condición fija para status_id
+    $conditions[] = "status_id IN (0, 1, 2)";
+
+    if (!empty($cut)) {
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND code_subject IS NOT NULL AND code_subject <> ''");
+        if (!empty($cut_student_ids)) {
+            $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
+            $params = array_merge($params, $cut_student_ids);
+        } else {
+            // Si no hay IDs, asegurar que la consulta no retorne resultados
+            $conditions[] = "1 = 0";
+        }
+    }
+
+    $query = "SELECT * FROM {$table_students}";
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $students = $wpdb->get_results($wpdb->prepare($query, $params));
+
+    return $students;
+}
 // GET ORDERS
 
 function get_list_orders_sales()
