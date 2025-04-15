@@ -240,7 +240,7 @@
                                             <label
                                                 for="middle_name"><b><?php _e('Middle name', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="middle_name" name="middle_name"
-                                                value="<?php echo $student->middle_name; ?>" style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                value="<?php echo $student->middle_name; ?>" style="width:100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td colspan="3">
                                             <label for="last_name"><b><?php _e('Last name', 'edusystem'); ?></b></label><br>
@@ -252,7 +252,7 @@
                                                 for="middle_last_name"><b><?php _e('Middle last name', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="middle_last_name" name="middle_last_name"
                                                 value="<?php echo $student->middle_last_name; ?>" style="width:100%"
-                                                required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
                                     <tr>
