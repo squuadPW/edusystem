@@ -322,7 +322,7 @@ function get_products_by_order($start, $end)
 
 }
 
-function get_students_report($academic_period, $cut)
+function get_students_report($academic_period = null, $cut = null)
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
