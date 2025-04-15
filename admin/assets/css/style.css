@@ -589,4 +589,33 @@ div#application-passwords-section {
 }
 .documents-footer .contact-info-aes .icon-footer::before {
   vertical-align: unset !important;
+}
+
+.wp-list-table {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wp-list-table thead th {
+  background: #f1f5f9 !important;
+  color: #1f2937 !important;
+  padding: 12px 15px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  font-weight: 600;
+}
+
+.wp-list-table tbody td {
+  padding: 12px 15px !important;
+  border-color: #e5e7eb !important;
+  color: #4b5563;
+}
+
+.wp-list-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.wp-list-table tbody tr:hover {
+  background: #f1f5f9 !important;
 }/*# sourceMappingURL=style.css.map */

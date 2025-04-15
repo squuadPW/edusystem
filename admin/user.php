@@ -1,36 +1,36 @@
 <?php
 
-function delete_data_student($user_id){
-
+function delete_data_student($user_id) {
     global $wpdb;
-    $table_student_documents = $wpdb->prefix.'student_documents';
-    $table_students = $wpdb->prefix.'students';
-    $table_student_payments = $wpdb->prefix.'student_payments';
+    
+    // Definir nombres de tablas
+    $tables = [
+        'documents' => $wpdb->prefix.'student_documents',
+        'students' => $wpdb->prefix.'students',
+        'payments' => $wpdb->prefix.'student_payments',
+        'academic_projection' => $wpdb->prefix.'student_academic_projection',
+        'period_inscriptions' => $wpdb->prefix.'student_period_inscriptions'
+    ];
 
-    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id={$user_id}");
+    // Obtener IDs de estudiantes en un solo query
+    $student_ids = $wpdb->get_col(
+        $wpdb->prepare(
+            "SELECT id FROM {$tables['students']} WHERE partner_id = %d",
+            $user_id
+        )
+    );
 
-    if($students){
+    if (empty($student_ids)) return;
 
-        foreach($students as $student){
+    // Convertir IDs a enteros y crear lista segura para SQL
+    $ids = implode(',', array_map('intval', $student_ids));
 
-            $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student->id}");
-
-            foreach($documents as $document){
-
-                $wpdb->delete($table_student_documents,['id' => $document->id]);
-            }
-
-            
-            $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id}");
-
-            foreach($payments as $document){
-
-                $wpdb->delete($table_student_payments,['id' => $document->id]);
-            }
-
-            $wpdb->delete($table_students,['id' => $student->id]);
-        }
-    }
+    // Eliminar datos relacionados en operaciones bulk
+    $wpdb->query("DELETE FROM {$tables['documents']} WHERE student_id IN ($ids)");
+    $wpdb->query("DELETE FROM {$tables['payments']} WHERE student_id IN ($ids)");
+    $wpdb->query("DELETE FROM {$tables['academic_projection']} WHERE student_id IN ($ids)");
+    $wpdb->query("DELETE FROM {$tables['period_inscriptions']} WHERE student_id IN ($ids)");
+    $wpdb->query("DELETE FROM {$tables['students']} WHERE id IN ($ids)");
 }
 
-add_action('delete_user','delete_data_student');
+add_action('delete_user', 'delete_data_student');
