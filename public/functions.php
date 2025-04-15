@@ -1388,31 +1388,39 @@ function reload_payment_table()
 add_action('wp_ajax_nopriv_reload_button_schoolship', 'reload_button_schoolship');
 add_action('wp_ajax_reload_button_schoolship', 'reload_button_schoolship');
 
-function reload_button_schoolship()
-{
+function reload_button_schoolship() {
     ob_start();
     global $woocommerce;
     $has_scholarship = false;
     $applied_coupons = $woocommerce->cart->get_applied_coupons();
-    foreach ($applied_coupons as $key => $coupon) {
+
+    foreach ($applied_coupons as $coupon) {
         if ($coupon == 'latam scholarship') {
             $has_scholarship = true;
+            break;
         }
     }
-    ?>
+
+    // Check if the 'name_institute' cookie is NOT set or is empty
+    if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) {
+        ?>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
             <?php if ($has_scholarship): ?>
-                                        <button id="apply-scholarship-btn" type="button"
-                                            disabled><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?></button>
+                <button id="apply-scholarship-btn" type="button" disabled>
+                    <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
+                </button>
             <?php else: ?>
-                                        <button id="apply-scholarship-btn"
-                                            type="button"><?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?></button>
+                <button id="apply-scholarship-btn" type="button">
+                    <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
+                </button>
             <?php endif; ?>
         </div>
         <?php
-        $html = ob_get_clean();
-        echo $html;
-        wp_die();
+    }
+
+    $html = ob_get_clean();
+    echo $html;
+    wp_die();
 }
 
 add_action('wp_ajax_nopriv_apply_scholarship', 'apply_scholarship');

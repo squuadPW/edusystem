@@ -9,6 +9,7 @@ function save_student()
         $action = $_GET['action'];
         global $woocommerce;
 
+        setcookie('name_institute', '', time(), '/');
         setcookie('from_webinar', '', time(), '/');
         setcookie('one_time_payment', '', time(), '/');
         setcookie('is_scholarship', '', time(), '/');
@@ -86,9 +87,9 @@ function save_student()
             setcookie('institute_id', $institute_id, time() + 864000, '/');
         } else {
             $name_institute = isset($_POST['name_institute']) ? strtoupper($_POST['name_institute']) : null;
+            setcookie('name_institute', strtoupper($name_institute), time() + 864000, '/');
         }
 
-        setcookie('name_institute', strtoupper($name_institute), time() + 864000, '/');
         switch ($action) {
             case 'save_student_scholarship':
             case 'save_student':
