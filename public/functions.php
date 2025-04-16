@@ -2541,8 +2541,7 @@ function custom_new_user_notification($send, $user)
 }
 add_filter('wp_send_new_user_notification_to_user', 'custom_new_user_notification', 10, 2);
 
-function load_current_cut_enrollment()
-{
+function load_current_cut_enrollment() {
     global $wpdb;
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
@@ -2550,37 +2549,66 @@ function load_current_cut_enrollment()
     $code = 'noperiod';
     $cut = 'nocut';
 
+    // 1. Buscar el periodo académico actual (basado en fechas ajustadas)
     $period_data = $wpdb->get_row($wpdb->prepare(
         "
         SELECT * FROM {$table_academic_periods} 
         WHERE DATE_SUB(`start_date`, INTERVAL 1 MONTH) <= %s 
-        AND DATE_ADD(`end_date`, INTERVAL -1 MONTH) >= %s",
+        AND DATE_ADD(`end_date`, INTERVAL -1 MONTH) >= %s
+        ORDER BY start_date ASC
+        LIMIT 1",
         array($current_time, $current_time)
     ));
 
     if ($period_data) {
         $code = $period_data->code;
 
-        $period_data_cut = $wpdb->get_row($wpdb->prepare(
+        // 2. Buscar cortes activos en el periodo actual (max_date > ahora)
+        $cut_query = $wpdb->prepare(
             "
             SELECT * FROM {$table_academic_periods_cut} 
-            WHERE DATE_SUB(`start_date`, INTERVAL 1 MONTH) <= %s 
-            AND DATE_ADD(`end_date`, INTERVAL -1 MONTH) >= %s
-            AND `max_date` > %s",
-            array($current_time, $current_time, $current_time)
+            WHERE period_id = %d 
+            AND `max_date` >= %s
+            ORDER BY start_date ASC
+            LIMIT 1",
+            $period_data->id,
+            $current_time
+        );
+        $active_cut = $wpdb->get_row($cut_query);
+
+        if ($active_cut) {
+            $cut = $active_cut->cut;
+            return ['cut' => $cut, 'code' => $code];
+        }
+
+        // 3. Si no hay cortes activos, buscar en el siguiente periodo académico
+        $next_period_data = $wpdb->get_row($wpdb->prepare(
+            "
+            SELECT * FROM {$table_academic_periods} 
+            WHERE start_date >= %s 
+            ORDER BY start_date ASC 
+            LIMIT 1",
+            $period_data->start_date
         ));
 
-        if ($period_data_cut) {
-            $cut = $period_data_cut->cut;
-        } else {
-            $period_data_cut = $wpdb->get_row($wpdb->prepare(
+        if ($next_period_data) {
+            // 4. Buscar cortes activos en el siguiente periodo
+            $next_cut_query = $wpdb->prepare(
                 "
                 SELECT * FROM {$table_academic_periods_cut} 
-                WHERE `start_date` >= %s
-                AND `max_date` > %s",
-                array($current_time, $current_time, $current_time)
-            ));
-            $cut = $period_data_cut->cut;
+                WHERE period_id = %d 
+                AND `max_date` >= %s
+                ORDER BY start_date ASC
+                LIMIT 1",
+                $next_period_data->id,
+                $current_time
+            );
+            $next_active_cut = $wpdb->get_row($next_cut_query);
+
+            if ($next_active_cut) {
+                $code = $next_period_data->code;
+                $cut = $next_active_cut->cut;
+            }
         }
     }
 
