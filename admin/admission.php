@@ -1064,10 +1064,10 @@ function update_status_documents() {
         $document = get_document_details($document_id);
 
         $description = build_status_description($status_id, $description, $document);
-        
         update_document_status($document_id, $student_id, $status_id, $description);
         handle_status_notifications($status_id, $users, $description);
         
+        $document = get_document_details($document_id);
         $response = [
             'html' => generate_documents_html($student_id, $document_id),
             'rejected_document' => handle_status_specific_actions($status_id, $student_id, $document, $users)
@@ -1124,7 +1124,7 @@ function build_status_description($status_id, $description, $document) {
         5 => 'Document approved'
     ];
     
-    return $status_map[$status_id] ?? '' . ($description ?: $document->description);
+    return ($status_map[$status_id] ?? '') . ($description ? $description : $document->description);
 }
 
 function update_document_status($document_id, $student_id, $status_id, $description) {
@@ -1134,7 +1134,7 @@ function update_document_status($document_id, $student_id, $status_id, $descript
         'approved_by' => $current_user->ID,
         'status' => $status_id,
         'updated_at' => current_time('mysql'),
-        'description' => $status_id == 3 ? $description : null
+        'description' => $status_id == 3 || $status_id == 5 ? $description : null
     ], ['id' => $document_id, 'student_id' => $student_id]);
 }
 
