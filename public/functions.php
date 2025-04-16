@@ -2520,7 +2520,7 @@ function custom_new_user_notification($send, $user)
     wp_set_password($password, $user_student->ID);
 
     $content = '';
-    $content .= '<div>Welcome to the American Elite School platform, we have assigned you a password that you can use to log in and change it immediately.</div><br>';
+    $content .= '<div>Welcome ' . $user_student->first_name . ' ' . $user_student->last_name . ' to the American Elite School platform, we have assigned you a password that you can use to log in and change it immediately.</div><br>';
     $content .= '<div>Access information</div>';
     $content .= '<ul>';
     $content .= '<li><strong>Email</strong>: ' . $user->user_email . '</li>';
