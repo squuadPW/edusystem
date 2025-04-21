@@ -46,7 +46,7 @@ foreach ($student_payments as $student_id => $payments) {
     $name_product = $product->get_name();
     $price_product = $product->get_price();
 ?>
-<h2 class="mb-4" style="font-size:24px;text-align:center;">
+<!-- <h2 class="mb-4" style="font-size:24px;text-align:center;">
     <?= __('Student Graduation Fees', 'edusystem'); ?>
 </h2>
 <table
@@ -89,4 +89,4 @@ foreach ($student_payments as $student_id => $payments) {
             </tr>
         <?php } ?>
     </tbody>
-</table>
+</table> -->
