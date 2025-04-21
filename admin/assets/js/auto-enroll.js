@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  let show_button = false;
   const handleSelectChange = () => {
     document.getElementById("enroll-button").style.display = 'none';
 
@@ -32,6 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
     XHR.onload = () => {
       if (XHR.status === 200 && XHR.response && XHR.response) {
         const students = XHR.response;
+        if (students.length > 0) {
+          show_button = true;
+        } else {
+          show_button = false;
+        }
         renderStudentsList(students);
       }
     };
@@ -87,7 +93,11 @@ document.addEventListener("DOMContentLoaded", () => {
       container.appendChild(listContainer);
     }
 
-    document.getElementById("enroll-button").style.display = 'flex';
+    if (show_button) {
+      document.getElementById("enroll-button").style.display = 'flex';
+    } else {
+      document.getElementById("enroll-button").style.display = 'none';
+    }
   };
 
   // Configurar listeners
