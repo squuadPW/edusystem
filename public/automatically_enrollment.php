@@ -53,6 +53,10 @@ function load_expected_projection($initial_cut, $grade)
 
 function load_next_enrollment($expected_projection, $student)
 {
+    if ($student->status_id == 0 || $student->status_id > 3) {
+        return 'Inscription not found';
+    }
+
     // proyeccion
     $projection = get_projection_by_student($student->id);
     if (!$projection) {
@@ -157,6 +161,10 @@ function load_next_enrollment($expected_projection, $student)
 
 function load_automatically_enrollment($expected_projection, $student)
 {
+    if ($student->status_id == 0 || $student->status_id > 3) {
+        return;
+    }
+
     // proyeccion
     $projection = get_projection_by_student($student->id);
     if (!$projection) {
