@@ -80,6 +80,9 @@ function add_admin_form_academic_offers_content()
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_offers_content'));
             exit;
         } else {
+            global $wpdb;
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
+            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             $list_academic_offers = new TT_Academic_Offers_List_Table;
             $list_academic_offers->prepare_items();
             include (plugin_dir_path(__FILE__) . 'templates/list-academic-offer.php');
@@ -150,18 +153,47 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
     {
         global $wpdb;
         $academic_offers_array = [];
-
+        $period = isset($_GET['academic_period']) ? sanitize_text_field($_GET['academic_period']) : '';
+        $cut = isset($_GET['academic_period_cut']) ? sanitize_text_field($_GET['academic_period_cut']) : '';
+    
         // PAGINATION
-        $per_page = 20; // number of items per page
+        $per_page = 20;
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
-
+    
         $table_academic_offers = $wpdb->prefix . 'academic_offers';
-        $academic_offers = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_academic_offers} ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
-
+    
+        // Construir WHERE dinámicamente
+        $where_clauses = array();
+        $params = array();
+    
+        if (!empty($period)) {
+            $where_clauses[] = 'code_period = %s';
+            $params[] = $period;
+        }
+    
+        if (!empty($cut)) {
+            $where_clauses[] = 'cut_period = %s';
+            $params[] = $cut;
+        }
+    
+        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_academic_offers}";
+    
+        if (!empty($where_clauses)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
+        }
+    
+        $sql .= ' ORDER BY id DESC LIMIT %d OFFSET %d';
+        $params[] = $per_page;
+        $params[] = $offset;
+    
+        // Preparar y ejecutar consulta segura
+        $prepared_sql = $wpdb->prepare($sql, $params);
+        $academic_offers = $wpdb->get_results($prepared_sql, ARRAY_A);
+    
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
-
+    
         if ($academic_offers) {
             foreach ($academic_offers as $offer) {
                 $subject = get_subject_details($offer['subject_id']);
@@ -179,7 +211,7 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
                 ]);
             }
         }
-
+    
         return ['data' => $academic_offers_array, 'total_count' => $total_count];
     }
 
