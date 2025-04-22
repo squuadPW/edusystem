@@ -41,6 +41,10 @@ function list_admin_institutes_partner_registered_content(){
             $reference = $_POST['reference'];
             $business_name = $_POST['business_name'];
             $type_calendar = $_POST['type_calendar'];
+            $lower_text = $_POST['lower_text'];
+            $middle_text = $_POST['middle_text'];
+            $upper_text = $_POST['upper_text'];
+            $graduated_text = $_POST['graduated_text'];
 
             $alliance = get_alliance_detail_email($current_user->user_email);
             $alliance_id = $alliance->id;
@@ -67,6 +71,10 @@ function list_admin_institutes_partner_registered_content(){
                     'address' => $address,
                     'description' => $description,
                     'business_name' => $business_name,
+                    'lower_text' => $lower_text,
+                    'middle_text' => $middle_text,
+                    'upper_text' => $upper_text,
+                    'graduated_text' => $graduated_text,
                     'alliance_id' => $alliance_id,
                     'updated_at' => date('Y-m-d H:i:s')
                 ], ['id' => $institute_id]);
@@ -98,6 +106,10 @@ function list_admin_institutes_partner_registered_content(){
                     'address' => $address,
                     'description' => $description,
                     'business_name' => $business_name,
+                    'lower_text' => $lower_text,
+                    'middle_text' => $middle_text,
+                    'upper_text' => $upper_text,
+                    'graduated_text' => $graduated_text,
                     'alliance_id' => $alliance_id,
                     'status' => 0,
                     'created_at' => date('Y-m-d H:i:s')

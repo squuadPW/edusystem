@@ -59,6 +59,10 @@ function add_admin_institutes_content()
             $business_name = $_POST['business_name'];
             $alliance_id = $_POST['alliance'];
             $type_calendar = $_POST['type_calendar'];
+            $lower_text = $_POST['lower_text'];
+            $middle_text = $_POST['middle_text'];
+            $upper_text = $_POST['upper_text'];
+            $graduated_text = $_POST['graduated_text'];
 
             //update
             if (isset($institute_id) && !empty($institute_id)) {
@@ -82,6 +86,10 @@ function add_admin_institutes_content()
                     'address' => $address,
                     'description' => $description,
                     'business_name' => $business_name,
+                    'lower_text' => $lower_text,
+                    'middle_text' => $middle_text,
+                    'upper_text' => $upper_text,
+                    'graduated_text' => $graduated_text,
                     'alliance_id' => $alliance_id,
                     'updated_at' => date('Y-m-d H:i:s')
                 ], ['id' => $institute_id]);
@@ -118,6 +126,10 @@ function add_admin_institutes_content()
                         'address' => $address,
                         'description' => $description,
                         'business_name' => $business_name,
+                        'lower_text' => $lower_text,
+                        'middle_text' => $middle_text,
+                        'upper_text' => $upper_text,
+                        'graduated_text' => $graduated_text,
                         'alliance_id' => $alliance_id,
                         'status' => 1,
                         'created_at' => date('Y-m-d H:i:s')
