@@ -111,8 +111,9 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&section_tab=offer_details&offer_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
-                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&action=offer_delete&offer_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'edusystem') . "</a>";
+                $buttons .= "<a style='margin: 1px' href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&section_tab=offer_details&offer_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                $buttons .= "<a target='_blank' style='margin: 1px' href='" . admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollment_subject&academic_period=' . $item['academic_period']) . "&academic_period_cut=". $item['academic_period_cut'] . "&subject_id=". $item['subject_id'] . "' class='button button-success'>" . __('View Notes', 'edusystem') . "</a>";
+                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin: 1px' href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&action=offer_delete&offer_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);
@@ -167,6 +168,9 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
                 $teacher = get_teacher_details($offer['teacher_id']);
                 array_push($academic_offers_array, [
                     'id' => $offer['id'],
+                    'subject_id' => $offer['subject_id'],
+                    'academic_period' => $offer['code_period'],
+                    'academic_period_cut' => $offer['cut_period'],
                     'subject' => $subject->name . ' (' . $subject->code_subject . ')',
                     'section' => $offer['section'],
                     'period' => $offer['code_period'] . ' - ' . $offer['cut_period'],
