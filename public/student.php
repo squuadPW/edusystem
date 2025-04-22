@@ -667,9 +667,9 @@ function insert_register_documents($student_id, $grade_id) {
         $exist = $wpdb->get_row(
             $wpdb->prepare(
                 "SELECT 1 FROM {$table_student_documents} 
-                WHERE student_id = %d AND document_id = %d",
+                WHERE student_id = %d AND document_id = %s",
                 $student_id,
-                $document->id // Asumiendo que hay un campo id único
+                $document->name // Asumiendo que hay un campo id único
             )
         );
 
