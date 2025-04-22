@@ -71,21 +71,6 @@
                     <input type="text" name="subject" id="subject" required>
                 </div>
 
-                <div style="font-weight:400; text-align: center;" class="space-offer">
-                    <label for="variables-select"><b><?= __('Variables', 'wp-certificates'); ?></b></label><br>
-                    <select id="variables-select" class="variable-selector" style="width: 80%; margin: 8px 0;">
-                        <option value=""><?= __('Select a variable', 'wp-certificates'); ?></option>
-                        <?php foreach ($variables as $key => $variable) { ?>
-                            <?php if ($variable->type == 'all' || $variable->type == 'email') { ?>
-                                <option value="<?= esc_attr($variable->visual) ?>"
-                                    data-identificator="<?= esc_attr($variable->identificator) ?>">
-                                    <?= esc_html($variable->text) ?>
-                                </option>
-                            <?php } ?>
-                        <?php } ?>
-                    </select>
-                </div>
-
                 <?php if(count($templates) > 0) { ?>
                 <div style="font-weight:400; text-align: center;" class="space-offer">
                     <label for="templates-select"><b><?= __('Templates', 'wp-certificates'); ?></b></label><br>
@@ -99,6 +84,23 @@
                     </select>
                 </div>
                 <?php } ?>
+
+                <div style="font-weight:400;" class="space-offer">
+                    <label for="variables-select"><b><?= __('Variables', 'edusystem'); ?></b></label><br>
+                    <ul style="display: grid;grid-template-columns: 1fr 1fr;">
+                        <?php foreach ($variables as $key => $variable) { ?>
+                            <li><strong><?= $variable->text ?></strong>: <?= $variable->visual ?></li>
+                        <?php } ?>
+                    </ul>
+                    <!-- <select id="variables-select" class="variable-selector" style="width: 80%; margin: 8px 0;">
+                        <option value=""><?= __('Select a variable', 'edusystem'); ?></option>
+                        <?php foreach ($variables as $key => $variable) { ?>
+                            <option value="<?= esc_attr($variable->visual) ?>" data-identificator="<?= esc_attr($variable->identificator) ?>">
+                                <?= esc_html($variable->text) ?>
+                            </option>
+                        <?php } ?>
+                    </select> -->
+                </div>
 
                 <div class="form-group">
                     <label for="message"><?= __('Message', 'edusystem'); ?></label>
