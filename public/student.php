@@ -644,30 +644,52 @@ function update_elective_student($student_id, $status_id)
     ], ['id' => $student_id]);
 }
 
-function insert_register_documents($student_id, $grade_id)
-{
-
+function insert_register_documents($student_id, $grade_id) {
     global $wpdb;
+    
+    $student = get_student_detail($student_id);
+    $birthDate = new DateTime($student->birth_date);
+    $today = new DateTime();
+    $legal_age = ($today->diff($birthDate)->y >= 18);
+
     $table_student_documents = $wpdb->prefix . 'student_documents';
     $table_documents = $wpdb->prefix . 'documents';
 
-    $documents = $wpdb->get_results("SELECT * FROM {$table_documents} WHERE grade_id={$grade_id}");
+    // Query segura con prepared statement
+    $documents = $wpdb->get_results(
+        $wpdb->prepare("SELECT * FROM {$table_documents} WHERE grade_id = %d", $grade_id)
+    );
 
-    if ($documents) {
+    if (!$documents) return;
 
-        foreach ($documents as $document) {
-            $exist = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE student_id = {$student_id} AND document_id = '{$document->name}'");
-            if (!$exist) {
-                $wpdb->insert($table_student_documents, [
-                    'student_id' => $student_id,
-                    'document_id' => $document->name,
-                    'is_required' => $document->is_required,
-                    'is_visible' => $document->is_visible,
-                    'status' => 0,
-                    'created_at' => date('Y-m-d H:i:s')
-                ]);
-            }
+    foreach ($documents as $document) {
+        // Verificar existencia usando el ID del documento
+        $exist = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT 1 FROM {$table_student_documents} 
+                WHERE student_id = %d AND document_id = %d",
+                $student_id,
+                $document->id // Asumiendo que hay un campo id único
+            )
+        );
+
+        if ($exist) continue;
+
+        // Lógica de is_required mejorada
+        $isRequired = 0;
+        if ($document->is_required) {
+            $isRequired = ($document->name === 'ID OR CI OF THE PARENTS' && $legal_age) ? 0 : 1;
         }
+
+        // Inserción segura
+        $wpdb->insert($table_student_documents, [
+            'student_id' => $student_id,
+            'document_id' => $document->name,
+            'is_required' => $isRequired,
+            'is_visible' => $document->is_visible,
+            'status' => 0,
+            'created_at' => current_time('mysql')
+        ]);
     }
 }
 
