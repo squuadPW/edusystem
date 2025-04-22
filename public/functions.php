@@ -2551,10 +2551,9 @@ function load_current_cut_enrollment() {
 
     // 1. Buscar el periodo académico actual (basado en fechas ajustadas)
     $period_data = $wpdb->get_row($wpdb->prepare(
-        "
-        SELECT * FROM {$table_academic_periods} 
-        WHERE DATE_SUB(`start_date`, INTERVAL 1 MONTH) <= %s 
-        AND DATE_ADD(`end_date`, INTERVAL -1 MONTH) >= %s
+        "SELECT * FROM {$table_academic_periods} 
+        WHERE `start_date` <= %s 
+        AND `end_date` >= %s
         ORDER BY start_date ASC
         LIMIT 1",
         array($current_time, $current_time)
@@ -2565,14 +2564,17 @@ function load_current_cut_enrollment() {
 
         // 2. Buscar cortes activos en el periodo actual (max_date > ahora)
         $cut_query = $wpdb->prepare(
-            "
-            SELECT * FROM {$table_academic_periods_cut} 
-            WHERE period_id = %d 
+            "SELECT * FROM {$table_academic_periods_cut} 
+            WHERE code = %s 
+            AND DATE_SUB(`start_date`, INTERVAL 1 MONTH) <= %s 
+            AND `end_date` >= %s
             AND `max_date` >= %s
             ORDER BY start_date ASC
             LIMIT 1",
-            $period_data->id,
-            $current_time
+            array($code,
+            $current_time,
+            $current_time,
+            $current_time,)
         );
         $active_cut = $wpdb->get_row($cut_query);
 
@@ -2583,9 +2585,8 @@ function load_current_cut_enrollment() {
 
         // 3. Si no hay cortes activos, buscar en el siguiente periodo académico
         $next_period_data = $wpdb->get_row($wpdb->prepare(
-            "
-            SELECT * FROM {$table_academic_periods} 
-            WHERE start_date >= %s 
+            "SELECT * FROM {$table_academic_periods} 
+            WHERE code = {$period_data->code_next} 
             ORDER BY start_date ASC 
             LIMIT 1",
             $period_data->start_date
@@ -2594,14 +2595,13 @@ function load_current_cut_enrollment() {
         if ($next_period_data) {
             // 4. Buscar cortes activos en el siguiente periodo
             $next_cut_query = $wpdb->prepare(
-                "
-                SELECT * FROM {$table_academic_periods_cut} 
-                WHERE period_id = %d 
+                "SELECT * FROM {$table_academic_periods_cut} 
+                WHERE code = %s 
                 AND `max_date` >= %s
                 ORDER BY start_date ASC
                 LIMIT 1",
-                $next_period_data->id,
-                $current_time
+                array($next_period_data->code,
+                $current_time)
             );
             $next_active_cut = $wpdb->get_row($next_cut_query);
 
