@@ -30,6 +30,13 @@
             </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="type_calendar"><?= __('Type calendar','edusystem'); ?><span class="required">*</span></label>
+            <select name="type_calendar">
+                <option value="1"><?= get_type_calendar(1); ?></option> 
+                <option value="2"><?= get_type_calendar(2); ?></option> 
+            </select>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="state"><?= __('State','edusystem'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="state" required>
         </div>

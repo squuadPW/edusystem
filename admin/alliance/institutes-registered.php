@@ -40,6 +40,7 @@ function list_admin_institutes_partner_registered_content(){
             $description = $_POST['description'];
             $reference = $_POST['reference'];
             $business_name = $_POST['business_name'];
+            $type_calendar = $_POST['type_calendar'];
 
             $alliance = get_alliance_detail_email($current_user->user_email);
             $alliance_id = $alliance->id;
@@ -55,6 +56,7 @@ function list_admin_institutes_partner_registered_content(){
                     'state' => $state,
                     'city' => $city,
                     'level_id' => $level,
+                    'type_calendar' => $type_calendar,
                     'fee' => $fee,
                     'name_rector' => $rector_name,
                     'lastname_rector' => $rector_last_name,
@@ -84,6 +86,7 @@ function list_admin_institutes_partner_registered_content(){
                     'state' => $state,
                     'city' => $city,
                     'level_id' => $level,
+                    'type_calendar' => $type_calendar,
                     'fee' => $fee,
                     'name_rector' => $rector_name,
                     'lastname_rector' => $rector_last_name,

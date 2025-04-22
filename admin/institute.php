@@ -58,6 +58,7 @@ function add_admin_institutes_content()
             $reference = $_POST['reference'];
             $business_name = $_POST['business_name'];
             $alliance_id = $_POST['alliance'];
+            $type_calendar = $_POST['type_calendar'];
 
             //update
             if (isset($institute_id) && !empty($institute_id)) {
@@ -70,6 +71,7 @@ function add_admin_institutes_content()
                     'state' => $state,
                     'city' => $city,
                     'level_id' => $level,
+                    'type_calendar' => $type_calendar,
                     'fee' => $fee,
                     'name_rector' => $rector_name,
                     'lastname_rector' => $rector_last_name,
@@ -104,6 +106,7 @@ function add_admin_institutes_content()
                         'state' => $state,
                         'city' => $city,
                         'level_id' => $level,
+                        'type_calendar' => $type_calendar,
                         'fee' => $fee,
                         'name_rector' => $rector_name,
                         'lastname_rector' => $rector_last_name,
@@ -294,6 +297,18 @@ function get_name_level($level_id)
         '1' => __('Primary', 'edusystem'),
         '2' => __('High School', 'edusystem'),
         default => "",
+    };
+
+    return $level;
+}
+
+function get_type_calendar($type_calendar)
+{
+
+    $level = match ($type_calendar) {
+        1 => __('Calendar A (Jan - Dec)', 'edusystem'),
+        2 => __('Calendar B (Sep - Aug)', 'edusystem'),
+        default => "N/A",
     };
 
     return $level;

@@ -259,6 +259,31 @@
                                                     <input type="text" id="fee" name="fee" value="10">
                                                 </td>
                                             <?php endif; ?>
+                                            <th scope="row" style="font-weight:400;">
+                                                <?php if (isset($institute) && !empty($institute)): ?>
+
+                                                    <label
+                                                        for="input_id"><b><?= __('Type calendar', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                    <?php if ($institute->status == 0): ?>
+                                                        <input type="text" name="text"
+                                                            value="<?= get_type_calendar((int)$institute->type_calendar); ?>" readonly>
+                                                    <?php elseif ($institute->status == 1): ?>
+                                                        <select name="type_calendar" required>
+                                                            <option value="1" <?= ($institute->type_calendar == 1) ? 'selected' : ''; ?>><?= get_type_calendar(1); ?></option>
+                                                            <option value="2" <?= ($institute->type_calendar == 2) ? 'selected' : ''; ?>><?= get_type_calendar(2); ?></option>
+                                                        </select>
+                                                    <?php endif; ?>
+
+
+                                                <?php else: ?>
+                                                    <label for="input_id"><b><?= __('Type calendar', 'edusystem'); ?></b><span
+                                                            class="text-danger">*</span></label><br>
+                                                    <select name="type_calendar" required>
+                                                        <option value="1"><?= get_type_calendar(1); ?></option>
+                                                        <option value="2"><?= get_type_calendar(2); ?></option>
+                                                    </select>
+                                                <?php endif; ?>
+                                            </th>
                                         </tr>
                                     </tbody>
                                 </table>

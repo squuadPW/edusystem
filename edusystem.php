@@ -557,6 +557,7 @@ function create_tables()
         city TEXT NOT NULL,
         address TEXT NOT NULL,
         level_id INT(11) NOT NULL,
+        type_calendar INT(11) NOT NULL,
         name_rector TEXT NOT NULL,
         name_contact TEXT NOT NULL,
         lastname_rector TEXT NOT NULL,

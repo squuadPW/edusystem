@@ -79,6 +79,7 @@ function save_institute()
             $reference = sanitize_textarea_field($_POST['reference']);
             $description = sanitize_textarea_field($_POST['description']);
             $business_name = sanitize_text_field($_POST['business_name']);
+            $type_calendar = sanitize_text_field($_POST['type_calendar']);
         
             // Verificar si el email ya existe en la tabla de institutos
             $existing_institute = $wpdb->get_var($wpdb->prepare(
@@ -108,6 +109,7 @@ function save_institute()
                 'city' => $city,
                 'address' => $address,
                 'level_id' => $level,
+                'type_calendar' => $type_calendar,
                 'name_rector' => $rector_name,
                 'lastname_rector' => $rector_lastname,
                 'phone_rector' => $rector_phone,

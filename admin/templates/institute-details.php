@@ -38,7 +38,8 @@
                         <form method="post"
                             action="<?= admin_url('admin.php?page=add_admin_institutes_content&action=save_institute_details'); ?>">
                             <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;">
-                                <b><?= __('Institution Information', 'edusystem'); ?></b></h3>
+                                <b><?= __('Institution Information', 'edusystem'); ?></b>
+                            </h3>
                             <table class="form-table table-customize" style="margin-top:0px;">
                                 <table class="form-table">
                                     <tbody>
@@ -257,10 +258,40 @@
                                                 </td>
                                             <?php endif; ?>
                                         </tr>
+                                        <tr>
+                                            <th scope="row" style="font-weight:400;">
+                                                <?php if (isset($institute) && !empty($institute)): ?>
+
+                                                    <label
+                                                        for="input_id"><b><?= __('Type calendar', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                    <?php if ($institute->status == 0): ?>
+                                                        <input type="text" name="text"
+                                                            value="<?= get_type_calendar((int)$institute->type_calendar); ?>"
+                                                            readonly>
+                                                    <?php elseif ($institute->status == 1): ?>
+                                                        <select name="type_calendar" required>
+                                                            <option value="1" <?= ($institute->type_calendar == 1) ? 'selected' : ''; ?>><?= get_type_calendar(1); ?></option>
+                                                            <option value="2" <?= ($institute->type_calendar == 2) ? 'selected' : ''; ?>><?= get_type_calendar(2); ?></option>
+                                                        </select>
+                                                    <?php endif; ?>
+
+
+                                                <?php else: ?>
+                                                    <label
+                                                        for="input_id"><b><?= __('Type calendar', 'edusystem'); ?></b><span
+                                                            class="text-danger">*</span></label><br>
+                                                    <select name="type_calendar" required>
+                                                        <option value="1"><?= get_type_calendar(1); ?></option>
+                                                        <option value="2"><?= get_type_calendar(2); ?></option>
+                                                    </select>
+                                                <?php endif; ?>
+                                            </th>
+                                        </tr>
                                     </tbody>
                                 </table>
                                 <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;">
-                                    <b><?= __('Rector Information', 'edusystem'); ?></b></h3>
+                                    <b><?= __('Rector Information', 'edusystem'); ?></b>
+                                </h3>
                                 <table class="form-table table-customize" style="margin-top:0px;">
                                     <tbody>
                                         <tr>
@@ -314,7 +345,8 @@
                                 </table>
 
                                 <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;">
-                                    <b><?= __('Contact Information', 'edusystem'); ?></b></h3>
+                                    <b><?= __('Contact Information', 'edusystem'); ?></b>
+                                </h3>
                                 <table class="form-table table-customize" style="margin-top:0px;">
                                     <tbody>
                                         <tr>
@@ -326,7 +358,8 @@
                                                         value="<?= ucwords($institute->name_contact); ?>"
                                                         <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
                                                 <?php else: ?>
-                                                    <label for="input_id"><b><?= __('Contact Name', 'edusystem'); ?></b><span
+                                                    <label
+                                                        for="input_id"><b><?= __('Contact Name', 'edusystem'); ?></b><span
                                                             class="text-danger">*</span></label><br>
                                                     <input type="text" name="contact_name" value="" required>
                                                 <?php endif; ?>
@@ -368,7 +401,8 @@
                                     </tbody>
                                 </table>
                                 <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;">
-                                    <b><?= __('Alliances Information', 'edusystem'); ?></b></h3>
+                                    <b><?= __('Alliances Information', 'edusystem'); ?></b>
+                                </h3>
                                 <table class="form-table table-customize" style="margin-top:0px;">
                                     <tbody>
                                         <tr>
@@ -380,7 +414,8 @@
                                                         <?php foreach ($alliances as $alliance): ?>
                                                             <option value="<?= $alliance->id ?>"
                                                                 <?= ($institute->alliance_id == $alliance->id) ? 'selected' : ''; ?>><?= $alliance->name ?>         <?= $alliance->last_name ?> -
-                                                                <?= $alliance->code ?></option>
+                                                                <?= $alliance->code ?>
+                                                            </option>
                                                         <?php endforeach; ?>
                                                     </select>
                                                 <?php else: ?>
@@ -389,7 +424,8 @@
                                                     <select name="alliance" required style="width: 100%">
                                                         <?php foreach ($alliances as $alliance): ?>
                                                             <option value="<?= $alliance->id ?>"><?= $alliance->name ?>
-                                                                <?= $alliance->last_name ?> - <?= $alliance->code ?></option>
+                                                                <?= $alliance->last_name ?> - <?= $alliance->code ?>
+                                                            </option>
                                                         <?php endforeach; ?>
                                                     </select>
                                                 <?php endif; ?>
@@ -400,7 +436,8 @@
                                 <?php if (isset($institute) && !empty($institute)): ?>
                                     <?php if ($institute->status == 0): ?>
                                         <h3 style="margin-bottom:0px;text-align:center;">
-                                            <b><?= __('Reference', 'edusystem'); ?></b></h3>
+                                            <b><?= __('Reference', 'edusystem'); ?></b>
+                                        </h3>
                                         <table class="form-table" style="margin-top:0px;">
                                             <tbody>
                                                 <tr>
@@ -417,7 +454,8 @@
                                     <?php endif; ?>
                                 <?php else: ?>
                                     <h3 style="margin-bottom:0px;text-align:center;">
-                                        <b><?= __('Reference', 'edusystem'); ?></b></h3>
+                                        <b><?= __('Reference', 'edusystem'); ?></b>
+                                    </h3>
                                     <table class="form-table" style="margin-top:0px;">
                                         <tbody>
                                             <tr>
@@ -426,7 +464,8 @@
                                                             class="text-danger">*</span></label><br>
                                                     <select name="reference">
                                                         <option value="3"><?= __('Email', 'edusystem'); ?></option>
-                                                        <option value="4"><?= __('Internet search', 'edusystem'); ?></option>
+                                                        <option value="4"><?= __('Internet search', 'edusystem'); ?>
+                                                        </option>
                                                         <option value="5"><?= __('On-site event', 'edusystem'); ?></option>
                                                     </select>
                                                 </th>
