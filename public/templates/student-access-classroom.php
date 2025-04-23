@@ -18,6 +18,6 @@
         </div> -->
     </div>
     <?php } else { ?>
-        <h4 style="font-size:18px;text-align:center; margin-bottom: 10px"><?= __('For now the virtual classroom is under maintenance, we invite you to be attentive to your email to receive information about the next academic term.','edusystem'); ?></h4>
+        <h4 style="font-size: 18px; text-align: center; margin-bottom: 10px; background-color: #e71f3b6e; padding: 20px; border-radius: 10px;"><?= __('For now the virtual classroom is under maintenance, we invite you to be attentive to your email to receive information about the next academic term.','edusystem'); ?></h4>
     <?php } ?>
 </div>
