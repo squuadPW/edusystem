@@ -887,10 +887,6 @@ function view_access_classroom()
         return;
     }
 
-    if(!get_option('virtual_access')){
-        return;
-    }
-
     $student_id = get_user_meta($current_user->ID, 'student_id', true);
 
     if (!$student_id) {
@@ -908,6 +904,7 @@ function view_access_classroom()
         return;
     }
 
+    $admin_virtual_access = get_option('virtual_access');
     include(plugin_dir_path(__FILE__) . 'templates/student-access-classroom.php');
 }
 
