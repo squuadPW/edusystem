@@ -16,12 +16,14 @@
 
     <div class="card" style="min-width: 100% !important;">
         <div class="card-header">
-            <h3><?= __('Send email for students', 'edusystem'); ?></h3>
+            <h3><?= __('Send email from the system', 'edusystem'); ?></h3>
         </div>
         <div class="card-body">
 
             <section class="segment" style="display: flex; margin: 0px 20px 30px 20px;">
-                <div class="segment-button active" data-option="group"><?= __('By group', 'edusystem'); ?></div>
+                <div class="segment-button active" data-option="group"><?= __('Student\'s group', 'edusystem'); ?></div>
+                <div class="segment-button" data-option="alliances"><?= __('Alliances', 'edusystem'); ?></div>
+                <div class="segment-button" data-option="institutes"><?= __('Institutes', 'edusystem'); ?></div>
                 <div class="segment-button" data-option="email"><?= __('By email', 'edusystem'); ?></div>
             </section>
 
@@ -62,12 +64,12 @@
                 </div>
                 <div id="by_email" style="display: none">
                     <div class="form-group">
-                        <label for="email_student"><?= __('Email student', 'edusystem'); ?></label>
+                        <label for="email_student"><?= __('Student, alliance or institute mail', 'edusystem'); ?></label>
                         <input type="email" name="email_student" id="email_student">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="subject"><?= __('Title', 'edusystem'); ?></label>
+                    <label for="subject"><?= __('Subject', 'edusystem'); ?></label>
                     <input type="text" name="subject" id="subject" required>
                 </div>
 
@@ -114,10 +116,10 @@
                         )
                     ); ?>
                 </div>
-                <div class="form-group" style="display: flex">
+                <div class="form-group" style="display: flex" id="email_parent_container">
                     <input style="margin: auto 6px auto 6px;" type="checkbox" name="email_parent" id="email_parent">
                     <label style="margin-bottom: 0px"
-                        for="email_parent"><?= __('Send the same email to the parent', 'edusystem'); ?></label>
+                        for="email_parent"><?= __('Send the same email to parents (only if the email is a student)', 'edusystem'); ?></label>
                 </div>
                 <div class="form-group" style="display: flex">
                     <input style="margin: auto 6px auto 6px;" type="checkbox" name="save_template" id="save_template">
@@ -143,7 +145,7 @@
                     class="dashicons dashicons-no-alt"></span></span>
         </div>
         <div class="modal-body" style="padding:10px; overflow: auto; max-height: 400px;">
-            <b>List of students to send email: (<span id="total-send">0</span>)</b>
+            <b>List of users to send email: (<span id="total-send">0</span>)</b>
             <ul id="list-students-email">
                 <li>Loading...</li>
             </ul>

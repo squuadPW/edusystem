@@ -372,7 +372,7 @@ function add_custom_admin_page()
         'dashicons-email-alt2',
         7
     );
-    add_submenu_page('add_admin_form_communications_content', __('Email to students', 'edusystem'), __('Email to students', 'edusystem'), 'manager_send_email_aes', 'add_admin_form_send_email_content', 'add_admin_form_send_email_content', 10);
+    add_submenu_page('add_admin_form_communications_content', __('Send email', 'edusystem'), __('Send email', 'edusystem'), 'manager_send_email_aes', 'add_admin_form_send_email_content', 'add_admin_form_send_email_content', 10);
     add_submenu_page('add_admin_form_communications_content', __('Email to staff', 'edusystem'), __('Email to staff', 'edusystem'), 'manager_send_notification_aes', 'add_admin_form_send_notification_content', 'add_admin_form_send_notification_content', 10);
     remove_submenu_page('add_admin_form_communications_content', 'add_admin_form_communications_content');
 

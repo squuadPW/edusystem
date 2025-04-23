@@ -4,83 +4,12 @@ function add_admin_form_send_email_content()
 {
     global $wpdb;
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
-    $table_students = $wpdb->prefix . 'students';
     $table_templates_email = $wpdb->prefix . 'templates_email';
 
-    if (isset($_GET['action']) && !empty($_GET['action'])) {
-        if ($_GET['action'] == 'send_email') {
-
-            if ($_POST['type'] == '1') {
-                $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-                $academic_period = $_POST['academic_period'];
-                $cut = $_POST['academic_period_cut'];
-                if ($_POST['academic_period_cut_filter'] == 1) {
-                    $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE academic_period = '{$academic_period}' AND initial_cut = '$cut'");
-                } else {
-                    $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$cut}'");
-                    $cut_student_ids = array_merge($cut_student_ids, $wpdb->get_col("SELECT id FROM {$table_students} WHERE elective = 1"));
-                }
-
-                $subject = wp_unslash($_POST['subject']);
-                $message = isset($_POST['message']) ? wp_unslash($_POST['message']) : '';
-
-                $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', $cut_student_ids) . ")");
-                $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
-                $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
-
-                foreach ($students as $key => $student) {
-                    $message_student = set_variables_message($message, $student, $academic_period, $cut);
-                    $email_student->trigger($student, $subject, $message_student);
-
-                    if (isset($_POST['email_parent']) && $_POST['email_parent'] == 'on') {
-                        $parent = get_user_by('id', $student->partner_id);
-                        $email_user->trigger($parent, $subject, $message_student);
-                    }
-                }
-
-                if (isset($_POST['save_template']) && $_POST['save_template'] == 'on') {
-                    $wpdb->insert($table_templates_email, [
-                        'title' => $subject,
-                        'content' => $message
-                    ]);
-                }
-
-                setcookie('message', __('Email sent successfully.', 'edusystem'), time() + 10, '/');
-                wp_redirect(admin_url('admin.php?page=add_admin_form_send_email_content'));
-                exit;
-            } else {
-                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '" . $_POST['email_student'] . "'");
-                if ($student) {
-
-                    $subject = wp_unslash($_POST['subject']);
-                    $message = isset($_POST['message']) ? wp_unslash($_POST['message']) : '';
-                    $message_student = set_variables_message($message, $student);
-                    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
-                    $email_student->trigger($student, $subject, $message_student);
-
-                    if ($_POST['email_parent'] == 'on') {
-                        $parent = get_user_by('id', $student->partner_id);
-
-                        $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
-                        $email_user->trigger($parent, $subject, $message_student);
-                    }
-
-                    if (isset($_POST['save_template']) && $_POST['save_template'] == 'on') {
-                        $wpdb->insert($table_templates_email, [
-                            'title' => $subject,
-                            'content' => $message
-                        ]);
-                    }
-
-                    setcookie('message', __('Email sent successfully.', 'edusystem'), time() + 10, '/');
-                    wp_redirect(admin_url('admin.php?page=add_admin_form_send_email_content'));
-                    exit;
-                } else {
-                    setcookie('message-error', __("This student don't exist.", 'edusystem'), time() + 3600, '/');
-                    wp_redirect(admin_url('admin.php?page=add_admin_form_send_email_content'));
-                    exit;
-                }
-            }
+    if (isset($_GET['action']) && $_GET['action'] == 'send_email' && isset($_POST['type'])) {
+        if (handle_email_sending($_POST['type'], $_POST)) {
+            wp_redirect(admin_url('admin.php?page=add_admin_form_send_email_content'));
+            exit;
         }
     }
 
@@ -129,34 +58,274 @@ function set_variables_message($message, $student, $code_period = null, $cut_per
     return $message;
 }
 
-function get_summary_email()
-{
+function get_students_by_period($academic_period, $cut, $filter) {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
-    $academic_period = $_POST['academic_period'];
-    $cut = $_POST['cut'];
-    $filter = $_POST['filter'];
-    $email_student = $_POST['email_student'];
-    $type = $_POST['type'];
-    $students = [];
-
-    if ($type == 1) {
-        if ($filter == 1) {
-            $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE academic_period = '{$academic_period}' AND initial_cut = '$cut'");
-        } else {
-            $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$cut}'");
-            $cut_student_ids = array_merge($cut_student_ids, $wpdb->get_col("SELECT id FROM {$table_students} WHERE elective = 1"));
-        }
-        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', $cut_student_ids) . ")");
+    if ($filter == 1) {
+        return $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$table_students} WHERE academic_period = %s AND initial_cut = %s",
+            $academic_period,
+            $cut
+        ));
     } else {
-        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE email = '{$email_student}'");
+        $cut_student_ids = $wpdb->get_col($wpdb->prepare(
+            "SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s",
+            $academic_period,
+            $cut
+        ));
+        $elective_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE elective = 1");
+        $all_ids = array_merge($cut_student_ids, $elective_ids);
+        
+        if (empty($all_ids)) {
+            return [];
+        }
+        
+        return $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', array_map('intval', $all_ids)) . ")");
+    }
+}
+
+function get_student_by_email($email) {
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    return $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$table_students} WHERE email = %s",
+        $email
+    ));
+}
+
+function get_alliance_by_email($email) {
+    global $wpdb;
+    $table_alliances = $wpdb->prefix . 'alliances';
+    return $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$table_alliances} WHERE email = %s",
+        $email
+    ));
+}
+
+function get_institute_by_email($email) {
+    global $wpdb;
+    $table_institutes = $wpdb->prefix . 'institutes';
+    return $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$table_institutes} WHERE email = %s",
+        $email
+    ));
+}
+
+function get_active_alliances() {
+    global $wpdb;
+    $table_alliances = $wpdb->prefix . 'alliances';
+    return $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 1");
+}
+
+function get_active_institutes() {
+    global $wpdb;
+    $table_institutes = $wpdb->prefix . 'institutes';
+    return $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status = 1");
+}
+
+function get_summary_email() {
+    if (!isset($_POST['type'])) {
+        wp_send_json(['success' => false, 'message' => 'Missing required parameters']);
+        return;
     }
 
-    wp_send_json(array('success' => true, 'students' => $students));
-    die();
+    $type = $_POST['type'];
+    $data = [];
+
+    switch ($type) {
+        case '1':
+            if (!isset($_POST['academic_period']) || !isset($_POST['cut']) || !isset($_POST['filter'])) {
+                wp_send_json(['success' => false, 'message' => 'Missing required parameters for type 1']);
+                return;
+            }
+            $data = get_students_by_period(
+                $_POST['academic_period'],
+                $_POST['cut'],
+                $_POST['filter']
+            );
+            break;
+
+        case '2':
+            if (!isset($_POST['email_student'])) {
+                wp_send_json(['success' => false, 'message' => 'Missing email parameter']);
+                return;
+            }
+            
+            $email = $_POST['email_student'];
+            $student = get_student_by_email($email);
+            $alliance = get_alliance_by_email($email);
+            $institute = get_institute_by_email($email);
+            
+            $data = [];
+            if ($student) {
+                $data[] = $student;
+            }
+            if ($alliance) {
+                $data[] = $alliance;
+            }
+            if ($institute) {
+                $data[] = $institute;
+            }
+            
+            if (empty($data)) {
+                wp_send_json(['success' => false, 'message' => 'No records found with this email']);
+                return;
+            }
+            break;
+
+        case '3':
+            $data = get_active_alliances();
+            break;
+
+        case '4':
+            $data = get_active_institutes();
+            break;
+
+        default:
+            wp_send_json(['success' => false, 'message' => 'Invalid type parameter']);
+            return;
+    }
+
+    wp_send_json(['success' => true, 'students' => $data]);
 }
 
 add_action('wp_ajax_nopriv_summary_email', 'get_summary_email');
 add_action('wp_ajax_summary_email', 'get_summary_email');
+
+function send_email_to_students($students, $subject, $message, $academic_period = null, $cut = null, $send_to_parent = false) {
+    $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
+    $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+
+    foreach ($students as $student) {
+        $message_student = set_variables_message($message, $student, $academic_period, $cut);
+        $email_student->trigger($student, $subject, $message_student);
+
+        if ($send_to_parent && !empty($student->partner_id)) {
+            $parent = get_user_by('id', $student->partner_id);
+            if ($parent) {
+                $email_user->trigger($parent, $subject, $message_student);
+            }
+        }
+    }
+}
+
+function save_email_template($subject, $message) {
+    global $wpdb;
+    $table_templates_email = $wpdb->prefix . 'templates_email';
+    return $wpdb->insert($table_templates_email, [
+        'title' => $subject,
+        'content' => $message
+    ]);
+}
+
+function handle_email_sending($type, $post_data) {
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_alliances = $wpdb->prefix . 'alliances';
+    $table_institutes = $wpdb->prefix . 'institutes';
+
+    $subject = wp_unslash($post_data['subject']);
+    $message = isset($post_data['message']) ? wp_unslash($post_data['message']) : '';
+    $send_to_parent = isset($post_data['email_parent']) && $post_data['email_parent'] == 'on';
+    $save_template = isset($post_data['save_template']) && $post_data['save_template'] == 'on';
+
+    switch ($type) {
+        case '1':
+            $academic_period = $post_data['academic_period'];
+            $cut = $post_data['academic_period_cut'];
+            
+            if ($post_data['academic_period_cut_filter'] == 1) {
+                $cut_student_ids = $wpdb->get_col($wpdb->prepare(
+                    "SELECT id FROM {$table_students} WHERE academic_period = %s AND initial_cut = %s",
+                    $academic_period,
+                    $cut
+                ));
+            } else {
+                $cut_student_ids = $wpdb->get_col($wpdb->prepare(
+                    "SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s",
+                    $academic_period,
+                    $cut
+                ));
+                $elective_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE elective = 1");
+                $cut_student_ids = array_merge($cut_student_ids, $elective_ids);
+            }
+
+            $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', array_map('intval', $cut_student_ids)) . ")");
+            send_email_to_students($students, $subject, $message, $academic_period, $cut, $send_to_parent);
+            break;
+
+        case '2':
+            if (!isset($_POST['email_student'])) {
+                wp_send_json(['success' => false, 'message' => 'Missing email parameter']);
+                return;
+            }
+            
+            $email = $_POST['email_student'];
+            $student = get_student_by_email($email);
+            $alliance = get_alliance_by_email($email);
+            $institute = get_institute_by_email($email);
+            
+            $data = [];
+            if ($student) {
+                $data[] = $student;
+                $message_student = set_variables_message($message, $student);
+                send_email_to_students([$student], $subject, $message_student, null, null, $send_to_parent);
+            }
+            if ($alliance) {
+                $data[] = $alliance;
+                $user_alliance = get_user_by('email', $alliance->email);
+                if ($user_alliance) {
+                    $message_alliance = set_variables_message($message, $alliance);
+                    $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                    $email_user->trigger($user_alliance, $subject, $message_alliance);
+                }
+            }
+            if ($institute) {
+                $data[] = $institute;
+                $user_institute = get_user_by('email', $institute->email);
+                if ($user_institute) {
+                    $message_institute = set_variables_message($message, $institute);
+                    $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                    $email_user->trigger($user_institute, $subject, $message_institute);
+                }
+            }
+            
+            if (empty($data)) {
+                wp_send_json(['success' => false, 'message' => 'No records found with this email']);
+                return;
+            }
+            break;
+
+        case '3':
+            $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 1");
+            foreach ($alliances as $alliance) {
+                $user_alliance = get_user_by('email', $alliance->email);
+                if ($user_alliance) {
+                    $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                    $email_user->trigger($user_alliance, $subject, $message);
+                }
+            }
+            break;
+
+        case '4':
+            $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status = 1");
+            foreach ($institutes as $institute) {
+                $user_institute = get_user_by('email', $institute->email);
+                if ($user_institute) {
+                    $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                    $email_user->trigger($user_institute, $subject, $message);
+                }
+            }
+            break;
+    }
+
+    if ($save_template) {
+        save_email_template($subject, $message);
+    }
+
+    setcookie('message', __('Email sent successfully.', 'edusystem'), time() + 10, '/');
+    return true;
+}

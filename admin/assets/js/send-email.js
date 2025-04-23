@@ -81,7 +81,9 @@ segmentButtons.forEach((button) => {
         'select[name="academic_period_cut"]'
       ).required = true;
       document.querySelector('input[name="email_student"]').required = false;
-    } else {
+
+      document.getElementById("email_parent_container").style.display = "flex";
+    } else if (selectedOption == "email") {
       const formOthers = document.getElementById("by_group");
       formOthers.style.display = "none";
 
@@ -98,6 +100,32 @@ segmentButtons.forEach((button) => {
         'select[name="academic_period_cut"]'
       ).required = false;
       document.querySelector('input[name="email_student"]').required = true;
+
+      document.getElementById("email_parent_container").style.display = "flex";
+    } else {
+      
+      if (selectedOption == "alliances") {
+        document.querySelector('input[name="type"]').value = "3";
+      } else if (selectedOption == "institutes") {
+        document.querySelector('input[name="type"]').value = "4";
+      }
+
+      const formOthers = document.getElementById("by_group");
+      formOthers.style.display = "none";
+      document.querySelector('select[name="academic_period"]').required = false;
+      document.querySelector(
+        'select[name="academic_period_cut_filter"]'
+      ).required = false;
+      document.querySelector(
+        'select[name="academic_period_cut"]'
+      ).required = false;
+      document.querySelector('input[name="email_student"]').required = true;
+
+      const formMe = document.getElementById("by_email");
+      formMe.style.display = "none";
+      document.querySelector('input[name="email_student"]').required = false;
+
+      document.getElementById("email_parent_container").style.display = "none";
     }
   });
 });
@@ -117,6 +145,7 @@ if (modalCloseElementSummaryEmail) {
 var summaryEmailButton = document.getElementById("summary-email");
 if (summaryEmailButton) {
   summaryEmailButton.addEventListener("click", function () {
+    document.getElementById("summary-email-button").disabled = true;
     document.getElementById("summary-email-modal").style.display = "block";
     document.getElementById("list-students-email").innerHTML = "";
     var studentsSend = document.getElementById("list-students-email");
@@ -153,14 +182,23 @@ if (summaryEmailButton) {
         let students = XHR.response.students;
         students.forEach((student) => {
           var li = document.createElement("li");
-          li.innerText = `${student.last_name} ${student.middle_last_name} ${student.name} ${student.middle_name}`;
+          if(type == 1 || type == 2) {
+            li.innerText = `${student.last_name} ${student.middle_last_name ? student.middle_last_name : ''} ${student.name} ${student.middle_name ? student.middle_name : ''} (${student.email})`;
+          } else if(type == 3) {
+            li.innerText = `${student.last_name} ${student.name} (${student.email})`;
+          } else if(type == 4) {
+            li.innerText = `${student.name} (${student.email})`;
+          }
           studentsSend.appendChild(li);
         });
 
         if (students.length == 0) {
           var li = document.createElement("li");
-          li.innerText = `No students found.`;
+          li.innerText = `No users found.`;
           studentsSend.appendChild(li);
+          document.getElementById("summary-email-button").disabled = true;
+        } else {
+          document.getElementById("summary-email-button").disabled = false;
         }
 
         var total_send = document.getElementById("total-send");
