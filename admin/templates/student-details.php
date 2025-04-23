@@ -5,6 +5,7 @@
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
+    $url = wp_get_attachment_url($student->profile_picture);
 ?>
 
 <div class="wrap">
@@ -105,6 +106,13 @@
                         <div class="inside">
                             <table class="form-table table-customize" style="margin-top:0px;">
                                 <tbody>
+                                    <?php if(isset($url) && $url != '') { ?>
+                                        <tr>
+                                            <div style="height: 100px; width: 100px; background-color: gray; margin: auto; border-radius: 100%; overflow: hidden; position: relative; border: 3px solid #E71F3B; margin: 20px auto;">
+                                                <img decoding="async" src="<?= $url ?>" style="height: auto; width: 100%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -45%);" alt="">
+                                            </div>
+                                        </tr>
+                                    <?php } ?>
                                     <tr>
                                         <p style="text-align: center; padding: 12px !important">
                                             <?php 
