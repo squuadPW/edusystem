@@ -1,3 +1,7 @@
+<?php
+$url = wp_get_attachment_url($student->profile_picture);
+?>
+
 <h2 style="font-size:24px;text-align:center;"><?= __('Student Details','edusystem') ?></h2>
 
 <div style="margin-top:20px;">
@@ -5,6 +9,11 @@
 </div>
 
 <form action="" method="post" style="margin-top:20px;" >
+	<?php if(isset($url) && $url != '') { ?>
+		<div style="height: 200px; width: 200px; background-color: gray; margin: auto; border-radius: 100%; overflow: hidden; position: relative; border: 3px solid #E71F3B; margin: 30px auto;">
+			<img decoding="async" src="<?= $url ?>" style="height: auto; width: 100%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -45%);" alt="">
+		</div>
+	<?php } ?>
 	<h3 style="font-size:20px;"><?= __('General Information','edusystem'); ?></h3>
 	<p class="woocommerce-form-row woocommerce-form-row--first form-row form-row-first">
 		<label for="document_type"><?php esc_html_e( 'Document Type', 'edusystem' ); ?></label>
