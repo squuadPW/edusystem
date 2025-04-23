@@ -109,39 +109,9 @@
                     </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
-                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_academic_projection_aes" id="manager_academic_projection_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_academic_projection_aes'])) ? 'checked' : ''; ?>>
-                        </th>
-                        <td style="display:table-cell;padding:3px;"><label for="manager_academic_projection_aes" style="margin-left:20px;"><?= __('Academic projection','edusystem'); ?></label></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" style="width:10px;padding:3px;">
-                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_school_subjects_aes" id="manager_school_subjects_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_school_subjects_aes'])) ? 'checked' : ''; ?>>
-                        </th>
-                        <td style="display:table-cell;padding:3px;"><label for="manager_school_subjects_aes" style="margin-left:20px;"><?= __('School subjects','edusystem'); ?></label></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" style="width:10px;padding:3px;">
                             <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_academic_periods_aes" id="manager_academic_periods_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_academic_periods_aes'])) ? 'checked' : ''; ?>>
                         </th>
                         <td style="display:table-cell;padding:3px;"><label for="manager_academic_periods_aes" style="margin-left:20px;"><?= __('Academic periods','edusystem'); ?></label></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" style="width:10px;padding:3px;">
-                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_scholarship_aes" id="manager_scholarship_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_scholarship_aes'])) ? 'checked' : ''; ?>>
-                        </th>
-                        <td style="display:table-cell;padding:3px;"><label for="manager_scholarship_aes" style="margin-left:20px;"><?= __('Scholarship application','edusystem'); ?></label></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" style="width:10px;padding:3px;">
-                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_availables_scholarship_aes" id="manager_availables_scholarship_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_availables_scholarship_aes'])) ? 'checked' : ''; ?>>
-                        </th>
-                        <td style="display:table-cell;padding:3px;"><label for="manager_availables_scholarship_aes" style="margin-left:20px;"><?= __('Availables scholarships','edusystem'); ?></label></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" style="width:10px;padding:3px;">
-                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_enrollments_aes" id="manager_enrollments_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_enrollments_aes'])) ? 'checked' : ''; ?>>
-                        </th>
-                        <td style="display:table-cell;padding:3px;"><label for="manager_enrollments_aes" style="margin-left:20px;"><?= __('Enrollments','edusystem'); ?></label></td>
                     </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
@@ -151,9 +121,15 @@
                     </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
-                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_requests_aes" id="manager_requests_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_requests_aes'])) ? 'checked' : ''; ?>>
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_academic_projection_aes" id="manager_academic_projection_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_academic_projection_aes'])) ? 'checked' : ''; ?>>
                         </th>
-                        <td style="display:table-cell;padding:3px;"><label for="manager_requests_aes" style="margin-left:20px;"><?= __('Requests','edusystem'); ?></label></td>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_academic_projection_aes" style="margin-left:20px;"><?= __('Academic projection','edusystem'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_automatically_inscriptions" id="manager_automatically_inscriptions" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_automatically_inscriptions'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_automatically_inscriptions" style="margin-left:20px;"><?= __('Autoenrollment','edusystem'); ?></label></td>
                     </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
@@ -163,15 +139,33 @@
                     </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_requests_aes" id="manager_requests_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_requests_aes'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_requests_aes" style="margin-left:20px;"><?= __('Requests','edusystem'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_scholarship_aes" id="manager_scholarship_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_scholarship_aes'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_scholarship_aes" style="margin-left:20px;"><?= __('Scholarship students','edusystem'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_availables_scholarship_aes" id="manager_availables_scholarship_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_availables_scholarship_aes'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_availables_scholarship_aes" style="margin-left:20px;"><?= __('Availables scholarships','edusystem'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
                             <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_pensums" id="manager_pensums" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_pensums'])) ? 'checked' : ''; ?>>
                         </th>
                         <td style="display:table-cell;padding:3px;"><label for="manager_pensums" style="margin-left:20px;"><?= __('Pensum','edusystem'); ?></label></td>
                     </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
-                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_automatically_inscriptions" id="manager_automatically_inscriptions" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_automatically_inscriptions'])) ? 'checked' : ''; ?>>
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_school_subjects_aes" id="manager_school_subjects_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_school_subjects_aes'])) ? 'checked' : ''; ?>>
                         </th>
-                        <td style="display:table-cell;padding:3px;"><label for="manager_automatically_inscriptions" style="margin-left:20px;"><?= __('Automatically inscription','edusystem'); ?></label></td>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_school_subjects_aes" style="margin-left:20px;"><?= __('School subjects','edusystem'); ?></label></td>
                     </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
