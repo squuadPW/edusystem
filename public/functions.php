@@ -175,6 +175,50 @@ function use_previous_form_aes_callback()
     }
 }
 
+add_action('wp_ajax_load_grades_institute', 'load_grades_institute_callback');
+add_action('wp_ajax_nopriv_load_grades_institute', 'load_grades_institute_callback');
+
+function load_grades_institute_callback()
+{
+    $institute_id = $_POST['institute_id'];
+    $institute = get_institute_details($institute_id);
+    $grades = get_grades();
+
+    if ($institute) {
+        foreach ($grades as $grade) {
+            switch ($grade->id) {
+                case 1:
+                    if ($grade->name !== $institute->lower_text) {
+                        $grade->name = $institute->lower_text;
+                        $grade->description = '';
+                    }
+                    break;
+                case 2:
+                    if ($grade->name !== $institute->middle_text) {
+                        $grade->name = $institute->middle_text;
+                        $grade->description = '';
+                    }
+                    break;
+                case 3:
+                    if ($grade->name !== $institute->upper_text) {
+                        $grade->name = $institute->upper_text;
+                        $grade->description = '';
+                    }
+                    break;
+                case 4:
+                    if ($grade->name !== $institute->graduated_text) {
+                        $grade->name = $institute->graduated_text;
+                        $grade->description = '';
+                    }
+                    break;
+            }
+        }
+    }
+
+    wp_send_json_success(array('grades' => $grades));
+    exit;
+}
+
 add_action('wp_ajax_send_request', 'send_request_callback');
 add_action('wp_ajax_nopriv_send_request', 'send_request_callback');
 

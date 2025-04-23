@@ -12,6 +12,45 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (not_institute) {
     not_institute.addEventListener("change", (e) => {
+
+      const XHR = new XMLHttpRequest();
+      XHR.open(
+        "POST",
+        `${ajax_object.ajax_url}?action=load_grades_institute`,
+        true
+      );
+      XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      XHR.responseType = "json";
+  
+      const params = new URLSearchParams({
+        action: "load_grades_institute",
+        institute_id: e.target.value,
+      });
+  
+      XHR.onload = () => {
+        if (XHR.status === 200 && XHR.response && XHR.response) {
+          let grades = XHR.response.data.grades;
+
+          // Get the grades select element
+          const gradeSelect = document.querySelector('select[name="grade"]');
+          
+          // Clear existing options except the first one
+          while (gradeSelect.options.length > 1) {
+            gradeSelect.remove(1);
+          }
+          
+          // Add new options from the grades array
+          grades.forEach(grade => {
+            const option = document.createElement('option');
+            option.value = grade.id;
+            option.textContent = grade.description ? `${grade.name} ${grade.description}` : grade.name;
+            gradeSelect.appendChild(option);
+          });
+        }
+      };
+  
+      XHR.send(params.toString());
+
       if (e.target.value == "other") {
         document.getElementById("name-institute-field").style.display = "block";
         document.getElementById("name_institute").required = true;

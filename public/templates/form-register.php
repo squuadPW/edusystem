@@ -187,16 +187,6 @@
             <div class="subtitle text-align-center"><?= __('Degree details', 'edusystem'); ?></div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="grade" id="grade_tooltip"><?= __('Grade', 'edusystem'); ?> <span style="color: #002fbd"
-                    class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
-            <select name="grade" autocomplete="off" required>
-                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                <?php foreach ($grades as $grade): ?>
-                    <option value="<?= $grade->id; ?>"><?= $grade->name; ?> <?= $grade->description; ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span class="required">*</span></label>
             <select name="program" autocomplete="off" required>
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
@@ -220,6 +210,16 @@
             style="display:none;">
             <label for="name_institute"><?= __('Name Institute', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata" autocomplete="off" type="text" id="name_institute" name="name_institute">
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="grade" id="grade_tooltip"><?= __('Grade', 'edusystem'); ?> <span style="color: #002fbd"
+                    class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
+            <select name="grade" autocomplete="off" required>
+                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                <?php foreach ($grades as $grade): ?>
+                    <option value="<?= $grade->id; ?>"><?= $grade->name; ?> <?= $grade->description; ?></option>
+                <?php endforeach; ?>
+            </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <input type="checkbox" id="terms" name="terms" required>
