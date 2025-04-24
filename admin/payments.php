@@ -171,7 +171,7 @@ function add_admin_form_payments_content()
                 exit;
             }
 
-            global $wpdb;
+            global $wpdb, $current_user;
             $id_document = $_POST['id_document'];
             $generate = $_POST['generate'];
             $save_changes = $_POST['save_changes'];
@@ -179,13 +179,26 @@ function add_admin_form_payments_content()
             $amount_payment = $_POST['amount_payment'] ?? [];
             $table_students = $wpdb->prefix . 'students';
             $table_student_payments = $wpdb->prefix . 'student_payments';
+            $table_student_payments_log = $wpdb->prefix . 'student_payments_log';
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}' OR email='{$id_document}'");
             $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY cuote ASC");
 
             if ($save_changes) {
+                $old_amount = 0;
+                $new_amount = 0;
                 foreach ($payments as $key => $payment) {
                     $wpdb->update($table_student_payments, ['date_next_payment' => $date_payment[$key], 'amount' => $amount_payment[$key]], ['id' => $payment->id]);
+                    $old_amount += $payment->amount;
+                    $new_amount += $amount_payment[$key];
                 }
+
+                $wpdb->insert($table_student_payments_log, [
+                    'student_id' => $student->id,
+                    'old_amount' => $old_amount,
+                    'new_amount' => $new_amount,
+                    'user_id' => $current_user->ID,
+                    'description' => $_POST['description_payment_log']
+                ]);
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&success_save_changes=true'));
                 exit;
             }
@@ -434,12 +447,14 @@ function add_admin_form_payments_content()
             $id_document = $_GET['id_document'];
             $table_students = $wpdb->prefix . 'students';
             $table_student_payments = $wpdb->prefix . 'student_payments';
+            $table_student_payments_log = $wpdb->prefix . 'student_payments_log';
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}' OR email='{$id_document}'");
             $order_amount = 0;
             $order_variation_id = 0;
             $order_product_id = 0;
             if ($student) {
                 $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY cuote ASC");
+                $payments_log = $wpdb->get_results("SELECT * FROM {$table_student_payments_log} WHERE student_id={$student->id} ORDER BY created_at DESC");
                 foreach ($payments as $key => $payment) {
                     if ($payment->status_id == 0) {
                         $order_amount = $payment->amount;

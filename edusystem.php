@@ -24,6 +24,7 @@ function create_tables()
   $charset_collate = $wpdb->get_charset_collate();
   $table_departments = $wpdb->prefix . 'departments';
   $table_student_payments = $wpdb->prefix . 'student_payments';
+  $table_student_payments_log = $wpdb->prefix . 'student_payments_log';
   $table_students = $wpdb->prefix . 'students';
   $table_student_documents = $wpdb->prefix . 'student_documents';
   $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
@@ -455,6 +456,21 @@ function create_tables()
         num_cuotes INT(11) NULL,
         date_payment DATE NULL,
         date_next_payment DATE NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_student_payments_log}'") != $table_student_payments_log) {
+
+    dbDelta(
+      "CREATE TABLE " . $table_student_payments_log . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        student_id INT(11) NOT NULL,
+        user_id INT(11) NOT NULL,
+        old_amount DOUBLE(10, 2) NOT NULL,
+        new_amount DOUBLE(10, 2) NOT NULL,
+        description TEXT NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );

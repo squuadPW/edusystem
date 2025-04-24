@@ -143,11 +143,57 @@
 							<tr>
 								<th colspan="6">Payments</th>
 								<th colspan="6" style="text-align: end">
-									<button type="submit" class="button button-success" name="save_changes" value="1"
-										style="margin: 10px" onclick="return confirm('Are you sure?');">Save changes</button>
+									<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+										<div style="flex: 1;">
+											<textarea name="description_payment_log" id="description_payment_log" placeholder="Description" style="width: 100%; min-width: 300px;"></textarea>
+										</div>
+										<div style="flex-shrink: 0;">
+											<button type="submit" class="button button-success" name="save_changes" value="1"
+											style="margin: 10px" onclick="return confirm('Are you sure?');">Save changes</button>
+										</div>
+									</div>
 								</th>
 							</tr>
 						</tfoot>
+					</table>
+				</div>
+
+				<div style="padding: 10px">
+					<table class="wp-list-table widefat fixed posts striped">
+						<thead>
+							<tr>
+								<th colspan="12" style="text-align: center;">Payments log</th>
+							</tr>
+							<tr>
+								<th colspan="2" style="text-align: center;">Created at</th>
+								<th colspan="2" style="text-align: center;">User</th>
+								<th colspan="2" style="text-align: center;">Old amount</th>
+								<th colspan="2" style="text-align: center;">New amount</th>
+								<th colspan="4" style="text-align: center;">Description</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ($payments_log as $key => $payment_log) { ?>
+								<tr>
+									<td style="text-align: center;" colspan="2">
+										<?= $payment_log->created_at ?>
+									</td>
+									<td style="text-align: center;" colspan="2">
+										<?= get_user_by('id', $payment_log->user_id)->first_name ?>
+										<?= get_user_by('id', $payment_log->user_id)->last_name ?>
+									</td>
+									<td style="text-align: center;" colspan="2">
+										<?= wc_price($payment_log->old_amount) ?>
+									</td>
+									<td style="text-align: center;" colspan="2">
+										<?= wc_price($payment_log->new_amount) ?>
+									</td>
+									<td style="text-align: center;" colspan="4">
+										<?= $payment_log->description ?>
+									</td>
+								</tr>
+							<?php } ?>
+						</tbody>
 					</table>
 				</div>
 			<?php } else if (!$_GET['student_available'] && $_GET['id_document']) { ?>
