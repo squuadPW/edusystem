@@ -1,12 +1,14 @@
 <h2 style="font-size:24px;text-align:center;"><?= __('Califications', 'edusystem'); ?></h2>
 
-<section class="segment" style="margin-top: 20px">
-    <div class="segment-button-history active" data-option="current"><?= __('Current', 'edusystem'); ?></div>
-    <div class="segment-button-history" data-option="history"><?= __('History', 'edusystem'); ?></div>
-</section>
+<?php if($admin_virtual_access) { ?>
+    <section class="segment" style="margin-top: 20px">
+        <div class="segment-button-history active" data-option="current"><?= __('Current', 'edusystem'); ?></div>
+        <div class="segment-button-history" data-option="history"><?= __('History', 'edusystem'); ?></div>
+    </section>
+<?php } ?>
 
 <div>
-    <div id="current">
+    <div id="current" style="display: <?php echo $admin_virtual_access ? 'block' : 'none'; ?>">
         <?php if (!empty($students_formatted)): ?>
             <?php foreach ($students_formatted as $key => $student) { ?>
                 <table
@@ -85,7 +87,7 @@
             </div>
         <?php endif; ?>
     </div>
-    <div id="history" style="display: none">
+    <div id="history" style="display: <?php echo $admin_virtual_access ? 'none' : 'block'; ?>">
     <?php if (!empty($students_formatted_history)): ?>
             <?php foreach ($students_formatted_history as $key => $student) { ?>
                 <table

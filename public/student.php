@@ -515,6 +515,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
         }
     }
 
+    $admin_virtual_access = get_option('virtual_access');
     include(plugin_dir_path(__FILE__) . 'templates/califications.php');
 });
 
