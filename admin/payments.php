@@ -174,8 +174,21 @@ function add_admin_form_payments_content()
             global $wpdb;
             $id_document = $_POST['id_document'];
             $generate = $_POST['generate'];
+            $save_changes = $_POST['save_changes'];
+            $date_payment = $_POST['date_payment'] ?? [];
+            $amount_payment = $_POST['amount_payment'] ?? [];
             $table_students = $wpdb->prefix . 'students';
+            $table_student_payments = $wpdb->prefix . 'student_payments';
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}' OR email='{$id_document}'");
+            $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY cuote ASC");
+
+            if ($save_changes) {
+                foreach ($payments as $key => $payment) {
+                    $wpdb->update($table_student_payments, ['date_next_payment' => $date_payment[$key], 'amount' => $amount_payment[$key]], ['id' => $payment->id]);
+                }
+                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&success_save_changes=true'));
+                exit;
+            }
 
             if ($generate) {
                 $amount = $_POST['amount'];
@@ -232,7 +245,7 @@ function add_admin_form_payments_content()
                 $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
                 $email_user->trigger($user_customer, 'You have pending payments', 'We invite you to log in to our platform as soon as possible so you can see your pending payments.');
 
-                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&success_advance_payment=true'));
+                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&success_advance_payment=true'));
                 exit;
             }
 
@@ -474,6 +487,14 @@ function success_advance_payment()
         ?>
         <div class="notice notice-success is-dismissible">
             <p>Payment generated successfully</p>
+        </div>
+        <?php
+    }
+
+    if (isset($_GET['success_save_changes']) && $_GET['success_save_changes'] == 'true') {
+        ?>
+        <div class="notice notice-success is-dismissible">
+            <p>Changes saved successfully</p>
         </div>
         <?php
     }

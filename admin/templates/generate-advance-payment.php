@@ -103,8 +103,7 @@
 								<th colspan="4">Payment</th>
 								<th colspan="2" style="text-align: center;">Expected payment date</th>
 								<th colspan="2" style="text-align: center;">Date of payment made</th>
-								<th colspan="1" style="text-align: center;">Amount</th>
-								<th colspan="1" style="text-align: center;">Order ID</th>
+								<th colspan="2" style="text-align: center;">Amount</th>
 								<th colspan="2" style="text-align: center;">Status</th>
 							</tr>
 						</thead>
@@ -118,24 +117,37 @@
 									?>
 									#<?= $payment->cuote ?> - <?= $name_product ?>
 									</td>
-									<td colspan="2" style="text-align: center;"><?= in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment; ?>
+									<td colspan="2" style="text-align: center;">
+										<?php if($payment->status_id == 1) { ?>
+											<?= in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment; ?>
+											<input type="hidden" name="date_payment[]" class="date_payment" value="<?= in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment; ?>" />
+										<?php } else { ?>
+											<input type="date" name="date_payment[]" class="date_payment" value="<?= in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment; ?>" />
+										<?php } ?>
 									</td>
 									<td colspan="2" style="text-align: center;"><?= $payment->status_id == 1 ? $payment->date_payment : 'N/A'; ?>
 									</td>
-									<td colspan="1" style="text-align: center;"><?= wc_price($payment->amount) ?>
-									</td>
-									<td colspan="1" style="text-align: center;">
+									<td colspan="2" style="text-align: center;">
 										<?php if($payment->status_id == 1) { ?>
-											<a target="_blank"
-											href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $payment->order_id) ?>"><?= $payment->order_id ?></a>
+											<?= wc_price($payment->amount) ?>
+											<input type="hidden" name="amount_payment[]" class="amount_payment" value="<?= $payment->amount ?>" />
 										<?php } else { ?>
-											N/A
+											<input type="number" step="0.01" name="amount_payment[]" class="amount_payment" value="<?= $payment->amount ?>" />
 										<?php } ?>
 									</td>
-									<td style="text-align: center;" colspan="2"><?= $payment->status_id == 1 ? '<span style="color: green">Completed</span>' : '<span style="color: orange">Pending</span>'; ?></td>
+									<td style="text-align: center;" colspan="2"><?= $payment->status_id == 1 ? '<a target="_blank" href="' . admin_url('admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $payment->order_id) . '"><span style="color: green">View payment</span></a>' : '<span style="color: gray">To pay</span>'; ?></td>
 								</tr>
 							<?php } ?>
 						</tbody>
+						<tfoot>
+							<tr>
+								<th colspan="6">Payments</th>
+								<th colspan="6" style="text-align: end">
+									<button type="submit" class="button button-success" name="save_changes" value="1"
+										style="margin: 10px" onclick="return confirm('Are you sure?');">Save changes</button>
+								</th>
+							</tr>
+						</tfoot>
 					</table>
 				</div>
 			<?php } else if (!$_GET['student_available'] && $_GET['id_document']) { ?>
