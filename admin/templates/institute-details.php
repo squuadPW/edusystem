@@ -514,3 +514,15 @@
 include(plugin_dir_path(__FILE__) . 'modal-status-institute.php');
 include(plugin_dir_path(__FILE__) . 'modal-delete-institute.php');
 ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    form.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+</script>
