@@ -119,13 +119,13 @@
 									</td>
 									<td colspan="2" style="text-align: center;">
 										<?php if($payment->status_id == 1) { ?>
-											<?= in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment; ?>
+											<?= date('m/d/Y', strtotime(in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment)); ?>
 											<input type="hidden" name="date_payment[]" class="date_payment" value="<?= in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment; ?>" />
 										<?php } else { ?>
 											<input type="date" name="date_payment[]" class="date_payment" value="<?= in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment; ?>" />
 										<?php } ?>
 									</td>
-									<td colspan="2" style="text-align: center;"><?= $payment->status_id == 1 ? $payment->date_payment : 'N/A'; ?>
+									<td colspan="2" style="text-align: center;"><?= $payment->status_id == 1 ? date('m/d/Y', strtotime($payment->date_payment)) : 'N/A'; ?>
 									</td>
 									<td colspan="2" style="text-align: center;">
 										<?php if($payment->status_id == 1) { ?>
