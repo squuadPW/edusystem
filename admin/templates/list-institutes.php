@@ -1,6 +1,8 @@
 <h2 class="nav-tab-wrapper">
 	<a href="<?= admin_url('admin.php?page=add_admin_institutes_content') ?>" class="nav-tab <?= (!isset($_GET['section_tab'])) ? 'nav-tab-active' : ''; ?>"><?= __('Institutes for review','edusystem'); ?></a>
 	<a href="<?= admin_url('admin.php?page=add_admin_institutes_content&section_tab=all_institutes'); ?>" class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'all_institutes') ? 'nav-tab-active' : ''; ?>"><?= __('All Approved Institutes','edusystem'); ?></a>
+	<a href="<?= admin_url('admin.php?page=add_admin_institutes_content&section_tab=all_declined_institutes'); ?>" class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'all_declined_institutes') ? 'nav-tab-active' : ''; ?>"><?= __('All Declined Institutes','edusystem'); ?></a>
+	<a href="<?= admin_url('admin.php?page=add_admin_institutes_content&section_tab=all_suspended_institutes'); ?>" class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'all_suspended_institutes') ? 'nav-tab-active' : ''; ?>"><?= __('All Suspended Institutes','edusystem'); ?></a>
 </h2>
 <div class="tabs-content">
 	<div class="wrap">

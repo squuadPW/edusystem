@@ -184,6 +184,18 @@ function add_admin_institutes_content()
             include(plugin_dir_path(__FILE__) . 'templates/list-institutes.php');
         }
 
+        if ($_GET['section_tab'] == 'all_declined_institutes') {
+            $list_institutes = new TT_institutes_declined_List_Table;
+            $list_institutes->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/list-institutes.php');
+        }
+
+        if ($_GET['section_tab'] == 'all_suspended_institutes') {
+            $list_institutes = new TT_institutes_suspended_List_Table;
+            $list_institutes->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/list-institutes.php');
+        }
+
         if ($_GET['section_tab'] == 'institute_details') {
             $institute_id = $_GET['institute_id'];
             $institute = get_institute_details($institute_id);
@@ -415,7 +427,7 @@ class TT_institutes_review_List_Table extends WP_List_Table
             $institutes = $wpdb->get_results(
                 "SELECT SQL_CALC_FOUND_ROWS * 
                 FROM {$table_institutes} WHERE 
-                status = 0  AND 
+                `status` = 0  AND 
                 ( `name` LIKE '%{$search}%' || 
                 email LIKE '%{$search}%' || 
                 name_rector LIKE '%{$search}%' || 
@@ -424,7 +436,7 @@ class TT_institutes_review_List_Table extends WP_List_Table
                 lastname_contact LIKE '%{$search}%') LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
 
         } else {
-            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE status = 0 LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status` = 0 LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
         }
 
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
@@ -577,7 +589,7 @@ class TT_institutes_List_Table extends WP_List_Table
 
             $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * 
                 FROM {$table_institutes}
-                WHERE status=1
+                WHERE `status`=1
                 AND 
                 ( `name` LIKE '%{$search}%' ||
                    email LIKE '%{$search}%' || 
@@ -588,7 +600,329 @@ class TT_institutes_List_Table extends WP_List_Table
                 ) LIMIT {$per_page} OFFSET {$offset}", 'ARRAY_A');
 
         } else {
-            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE status=1 LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status`=1 LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        }
+
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+        return ['data' => $institutes, 'total_count' => $total_count];
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function prepare_items()
+    {
+        $all_institutes = $this->get_list_institutes();
+        $data_institutes = $all_institutes['data'];
+        $data = $all_institutes['data'];
+        $total_count = (int) $all_institutes['total_count'];
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+        $this->items = $data;
+    }
+
+}
+
+class TT_institutes_declined_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(array(
+            'singular' => 'institute_review',
+            'plural' => 'institute_reviews',
+            'ajax' => true
+        ));
+
+    }
+
+    function column_default($item, $column_name)
+    {
+
+        global $current_user;
+
+        switch ($column_name) {
+            case 'name':
+                return ucwords($item[$column_name]);
+            case 'number_phone':
+                return $item['phone'];
+            case 'email':
+                return $item[$column_name];
+            case 'created_at':
+                return $item[$column_name];
+            case 'country':
+                $name = get_name_country($item[$column_name]);
+                return $name;
+            case 'name_rector':
+                return ucwords($item['name_rector']) . ' ' . ucwords($item['lastname_rector']);
+            case 'name_contact':
+                return ucwords($item['name_contact']) . ' ' . ucwords($item['lastname_contact']);
+            case 'view_details':
+                return "
+                    <a style='margin:3px;' href='" . admin_url('/admin.php?page=add_admin_institutes_content&section_tab=fee_institute&institute_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-money-alt'></span>" . __('Fees', 'edusystem') . "</a>
+                    <a style='margin:3px;' href='" . admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-edit'></span>" . __('Edit', 'edusystem') . "</a>
+                ";
+            default:
+                return print_r($item, true);
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return sprintf(
+            '%1$s',
+            ucwords($item['name']),
+        );
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'name' => __('Name', 'edusystem'),
+            'number_phone' => __('Phone', 'edusystem'),
+            'email' => __('Email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'name_rector' => __('Name Rector', 'edusystem'),
+            'name_contact' => __('Name Contact', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_list_institutes()
+    {
+
+        global $wpdb;
+        $table_institutes = $wpdb->prefix . 'institutes';
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
+
+            $search = $_POST['s'];
+
+            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * 
+                FROM {$table_institutes}
+                WHERE `status`=2
+                AND 
+                ( `name` LIKE '%{$search}%' ||
+                   email LIKE '%{$search}%' || 
+                   name_rector LIKE '%{$search}%' || 
+                   lastname_rector LIKE '%{$search}%' || 
+                   name_contact LIKE '%{$search}%' || 
+                   lastname_contact LIKE '%{$search}%'
+                ) LIMIT {$per_page} OFFSET {$offset}", 'ARRAY_A');
+
+        } else {
+            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status`=2 LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        }
+
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+        return ['data' => $institutes, 'total_count' => $total_count];
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function prepare_items()
+    {
+        $all_institutes = $this->get_list_institutes();
+        $data_institutes = $all_institutes['data'];
+        $data = $all_institutes['data'];
+        $total_count = (int) $all_institutes['total_count'];
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+        $this->items = $data;
+    }
+
+}
+
+class TT_institutes_suspended_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(array(
+            'singular' => 'institute_review',
+            'plural' => 'institute_reviews',
+            'ajax' => true
+        ));
+
+    }
+
+    function column_default($item, $column_name)
+    {
+
+        global $current_user;
+
+        switch ($column_name) {
+            case 'name':
+                return ucwords($item[$column_name]);
+            case 'number_phone':
+                return $item['phone'];
+            case 'email':
+                return $item[$column_name];
+            case 'created_at':
+                return $item[$column_name];
+            case 'country':
+                $name = get_name_country($item[$column_name]);
+                return $name;
+            case 'name_rector':
+                return ucwords($item['name_rector']) . ' ' . ucwords($item['lastname_rector']);
+            case 'name_contact':
+                return ucwords($item['name_contact']) . ' ' . ucwords($item['lastname_contact']);
+            case 'view_details':
+                return "
+                    <a style='margin:3px;' href='" . admin_url('/admin.php?page=add_admin_institutes_content&section_tab=fee_institute&institute_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-money-alt'></span>" . __('Fees', 'edusystem') . "</a>
+                    <a style='margin:3px;' href='" . admin_url('/admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-edit'></span>" . __('Edit', 'edusystem') . "</a>
+                ";
+            default:
+                return print_r($item, true);
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return sprintf(
+            '%1$s',
+            ucwords($item['name']),
+        );
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'name' => __('Name', 'edusystem'),
+            'number_phone' => __('Phone', 'edusystem'),
+            'email' => __('Email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'name_rector' => __('Name Rector', 'edusystem'),
+            'name_contact' => __('Name Contact', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_list_institutes()
+    {
+
+        global $wpdb;
+        $table_institutes = $wpdb->prefix . 'institutes';
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
+
+            $search = $_POST['s'];
+
+            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * 
+                FROM {$table_institutes}
+                WHERE `status`=3
+                AND 
+                ( `name` LIKE '%{$search}%' ||
+                   email LIKE '%{$search}%' || 
+                   name_rector LIKE '%{$search}%' || 
+                   lastname_rector LIKE '%{$search}%' || 
+                   name_contact LIKE '%{$search}%' || 
+                   lastname_contact LIKE '%{$search}%'
+                ) LIMIT {$per_page} OFFSET {$offset}", 'ARRAY_A');
+
+        } else {
+            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status`=3 LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
         }
 
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");

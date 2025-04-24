@@ -19,7 +19,7 @@
     <?php } ?>
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary"
-            href="<?= admin_url('admin.php?page=add_admin_institutes_content&section_tab=all_institutes'); ?>"><?= __('Back', 'edusystem'); ?></a>
+            href="<?= wp_get_referer() ? wp_get_referer() : admin_url('admin.php?page=add_admin_institutes_content&section_tab=all_institutes'); ?>"><?= __('Back', 'edusystem'); ?></a>
     </div>
     <?php if (isset($institute) && !empty($institute)): ?>
         <?php if ($institute->status == 1): ?>
@@ -480,8 +480,20 @@
                                 <?php elseif ($institute->status == 1): ?>
                                     <div
                                         style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
+                                        <button type="button" data-id="3"
+                                            data-title="<?= __('Suspend the institution', 'edusystem'); ?>"
+                                            data-message="<?= __('Do you want to suspend this institution?', 'edusystem'); ?>"
+                                            class="button button-warning change-status-institute"><?= __('Suspend', 'edusystem'); ?></button>
                                         <button type="submit"
                                             class="button button-primary"><?= __('Saves changes', 'edusystem'); ?></button>
+                                    </div>
+                                <?php elseif ($institute->status == 2 || $institute->status == 3): ?>
+                                    <div
+                                        style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
+                                        <button type="button" data-id="1"
+                                            data-title="<?= __('Approve Institution', 'edusystem'); ?>"
+                                            data-message="<?= __('Do you want to approve this institution?', 'edusystem'); ?>"
+                                            class="button button-primary change-status-institute"><?= __('Approve', 'edusystem'); ?></button>
                                     </div>
                                 <?php endif; ?>
                             <?php else: ?>
@@ -491,6 +503,7 @@
                                         class="button button-primary"><?= __('Add Institute', 'edusystem'); ?></button>
                                 </div>
                             <?php endif; ?>
+                        </form>
                     </div>
                 </div>
             </div>
