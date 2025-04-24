@@ -470,6 +470,7 @@ function create_tables()
         user_id INT(11) NOT NULL,
         old_amount DOUBLE(10, 2) NOT NULL,
         new_amount DOUBLE(10, 2) NOT NULL,
+        difference DOUBLE(10, 2) NOT NULL,
         description TEXT NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"

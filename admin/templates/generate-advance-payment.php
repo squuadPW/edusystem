@@ -167,28 +167,34 @@
 							<tr>
 								<th colspan="2" style="text-align: center;">Created at</th>
 								<th colspan="2" style="text-align: center;">User</th>
-								<th colspan="2" style="text-align: center;">Old amount</th>
-								<th colspan="2" style="text-align: center;">New amount</th>
-								<th colspan="4" style="text-align: center;">Description</th>
+								<th colspan="1" style="text-align: center;">Old amount</th>
+								<th colspan="1" style="text-align: center;">New amount</th>
+								<th colspan="1" style="text-align: center;">Diff</th>
+								<th colspan="5" style="text-align: center;">Description</th>
 							</tr>
 						</thead>
 						<tbody>
 							<?php foreach ($payments_log as $key => $payment_log) { ?>
 								<tr>
 									<td style="text-align: center;" colspan="2">
-										<?= $payment_log->created_at ?>
+										<?= date('m/d/Y', strtotime($payment_log->created_at)) ?>
 									</td>
 									<td style="text-align: center;" colspan="2">
 										<?= get_user_by('id', $payment_log->user_id)->first_name ?>
 										<?= get_user_by('id', $payment_log->user_id)->last_name ?>
 									</td>
-									<td style="text-align: center;" colspan="2">
+									<td style="text-align: center;" colspan="1">
 										<?= wc_price($payment_log->old_amount) ?>
 									</td>
-									<td style="text-align: center;" colspan="2">
+									<td style="text-align: center;" colspan="1">
 										<?= wc_price($payment_log->new_amount) ?>
 									</td>
-									<td style="text-align: center;" colspan="4">
+									<td style="text-align: center;" colspan="1">
+										<span style="color: <?= $payment_log->difference >= 0 ? 'green' : 'red' ?>">
+											<?= $payment_log->difference >= 0 ? '+' : ''?><?= wc_price($payment_log->difference) ?>
+										</span>
+									</td>
+									<td style="text-align: center;" colspan="5">
 										<?= $payment_log->description ?>
 									</td>
 								</tr>

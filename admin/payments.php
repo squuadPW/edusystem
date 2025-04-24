@@ -196,6 +196,7 @@ function add_admin_form_payments_content()
                     'student_id' => $student->id,
                     'old_amount' => $old_amount,
                     'new_amount' => $new_amount,
+                    'difference' => $new_amount - $old_amount,
                     'user_id' => $current_user->ID,
                     'description' => $_POST['description_payment_log']
                 ]);
