@@ -685,7 +685,7 @@ function view_pending_documents(){
 
 }
 
-add_action('woocommerce_account_dashboard','view_pending_documents');
+add_action('woocommerce_account_dashboard','view_pending_documents',3);
 
 function get_name_document($document_id){
     /*

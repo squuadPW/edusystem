@@ -877,6 +877,7 @@ function save_student_details()
 
 add_action('wp_loaded', 'save_student_details');
 
+add_action('woocommerce_account_dashboard', 'view_access_classroom', 1);
 function view_access_classroom()
 {
 
@@ -909,8 +910,26 @@ function view_access_classroom()
     include(plugin_dir_path(__FILE__) . 'templates/student-access-classroom.php');
 }
 
-add_action('woocommerce_account_dashboard', 'view_access_classroom');
+add_filter('woocommerce_account_dashboard', 'load_feed', 0);
+function load_feed()
+{
+    global $wpdb, $current_user;
+    $table_feed = $wpdb->prefix . 'feed';
+    $table_students = $wpdb->prefix . 'students';
+    $today = date('Y-m-d');
+    $roles = $current_user->roles;
 
+    $feeds = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_feed} WHERE max_date IS NULL OR max_date >= %s", $today));
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}' OR partner_id={$current_user->ID}");
+
+    $orders = wc_get_orders(array(
+        'status' => 'pending',
+        'customer_id' => $current_user->ID,
+    ));
+
+    // VERIFICAR FEE DE INSCRIPCION
+    include(plugin_dir_path(__FILE__) . 'templates/feed-student.php');
+}
 
 function set_max_date_student($student_id) {
     global $wpdb;

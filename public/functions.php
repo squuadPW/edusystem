@@ -1508,7 +1508,7 @@ function woocommerce_custom_price_to_cart_item($cart_object)
 add_action('woocommerce_before_calculate_totals', 'woocommerce_custom_price_to_cart_item', 99);
 
 
-add_filter('woocommerce_account_dashboard', 'fee_inscription_button', 0);
+add_filter('woocommerce_account_dashboard', 'fee_inscription_button', 2);
 function fee_inscription_button()
 {
     // VERIFICAR FEE DE INSCRIPCION
@@ -1525,18 +1525,6 @@ function fee_inscription_button()
     }
     // VERIFICAR FEE DE INSCRIPCION
     include(plugin_dir_path(__FILE__) . 'templates/fee-inscription-payment.php');
-}
-
-add_filter('woocommerce_account_dashboard', 'load_feed', 0);
-function load_feed()
-{
-    global $wpdb;
-    $table_feed = $wpdb->prefix . 'feed';
-    $today = date('Y-m-d');
-    $feeds = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_feed} WHERE max_date IS NULL OR max_date >= %s", $today));-
-
-    // VERIFICAR FEE DE INSCRIPCION
-    include(plugin_dir_path(__FILE__) . 'templates/feed-student.php');
 }
 
 function custom_coupon_applied_notice($message)

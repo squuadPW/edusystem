@@ -1,5 +1,5 @@
 <div class="content-dashboard">
-    <div style="margin-top:48px;">
+    <div>
         <?php if (!empty($students)): ?>
             <?php foreach ($students as $student): ?>
                 <?php $documents = get_documents($student->id); ?>
