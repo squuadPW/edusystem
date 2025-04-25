@@ -154,6 +154,19 @@ function is_search_student_by_email($student_id){
     }
 }
 
+function get_courses_moodle(){
+    $courses = [];
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+
+    if(!empty($moodle_url) && !empty($moodle_token)){
+        $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php',$moodle_token);
+        $courses = $MoodleRest->request('core_course_get_courses');
+
+        return $courses;
+    }
+}
+
 function change_password_user_moodle($student_id){
 
     global $wpdb;

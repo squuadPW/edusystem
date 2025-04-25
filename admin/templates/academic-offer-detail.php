@@ -39,6 +39,9 @@
                                 <div style="margin: 18px;">
                                     <input type="hidden" name="offer_id" value="<?= $offer->id ?>">
                                     <input type="hidden" name="old_subject_id" value="<?= $offer->subject_id ?>">
+                                    <div>
+                                        <?= print_r($courses); ?>
+                                    </div>
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="hc"><b><?= __('Subject', 'edusystem'); ?></b></label><br>
                                         <select name="subject_id" required>
@@ -102,8 +105,14 @@
                                         <label
                                             for="moodle_course_id"><b><?= __('Moodle course ID', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>
-                                        <input type="number" step="0" name="moodle_course_id"
-                                            value="<?= $offer->moodle_course_id; ?>" required>
+                                        <select name="moodle_course_id" required>
+                                            <option value=""><?= __('Select a course', 'edusystem'); ?></option>
+                                            <?php foreach ($courses as $course): ?>
+                                                <option value="<?= $course['id']; ?>" <?= ($offer->moodle_course_id == $course['id']) ? 'selected' : ''; ?>>
+                                                    <?= $course['fullname']; ?> (<?= $course['shortname']; ?>)
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
                                 </div>
                             </div>

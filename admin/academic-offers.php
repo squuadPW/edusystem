@@ -13,6 +13,7 @@ function add_admin_form_academic_offers_content()
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             $teachers = get_teachers_active();
             $offer = get_academic_offer_details($offer_id);
+            $courses = get_courses_moodle();
             include (plugin_dir_path(__FILE__) . 'templates/academic-offer-detail.php');
         } else if ($_GET['section_tab'] == 'add_offer') {
             global $wpdb;
