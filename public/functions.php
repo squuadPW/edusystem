@@ -129,6 +129,16 @@ function form_plugin_scripts()
         )
     );
     wp_enqueue_script('previous-form');
+
+    wp_register_script('functions-theme', plugins_url('edusystem') . '/public/assets/js/functions-theme.js', array('jquery'), $version, true);
+    wp_localize_script(
+        'functions-theme',
+        'ajax_object',
+        array(
+            'ajax_url' => admin_url('admin-ajax.php')
+        )
+    );
+    wp_enqueue_script('functions-theme');
 }
 
 add_action('wp_enqueue_scripts', 'form_plugin_scripts');
