@@ -12,13 +12,13 @@ function academic_period_changed(key) {
   document.querySelector(`input[name="completed[${key}]"]`).checked = true;
 
   if (current_period == selected_period && current_cut == selected_cut) {
-    document.querySelector(`input[name="this_cut[${key}]"]`).value = true;
+    document.querySelector(`input[name="this_cut[${key}]"]`).value = 1;
     document.querySelector(
       `input[name="calification[${key}]"]`
     ).required = false;
     document.getElementById(`row[${key}]`).classList.add("current-period");
   } else {
-    document.querySelector(`input[name="this_cut[${key}]"]`).value = false;
+    document.querySelector(`input[name="this_cut[${key}]"]`).value = 0;
     document.querySelector(
       `input[name="calification[${key}]"]`
     ).required = true;

@@ -211,7 +211,7 @@ function add_admin_form_academic_projection_content()
                 $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$projection_obj[$key]->subject_id}");
 
                 $is_completed = isset($completed[$key]) ? true : false;
-                $is_this_cut = $this_cut[$key] ?? false;
+                $is_this_cut = $this_cut[$key] == 1 ? true : false;
                 $period = $academic_period[$key] ?? null;
                 $cut = $academic_period_cut[$key] ?? null;
                 $calification_value = $calification[$key] ?? null;
