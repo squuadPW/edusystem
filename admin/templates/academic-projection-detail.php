@@ -85,7 +85,7 @@
                                             <div style="flex: 1; padding: 5px; align-content: center;">
                                                 <?php if($projection_for->type != 'equivalence') { ?>
                                                     <input type="checkbox" name="completed[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'checked style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
-                                                    <input type="hidden" name="this_cut[<?= $key ?>]" value="<?= $projection_for->this_cut ? 1 : 0 ?>">
+                                                    <input type="hidden" name="this_cut[<?= $key ?>]" value="<?= $projection_for->this_cut ? true : false ?>">
                                                 <?php } ?>
 
                                                 <label for="input_id"><b><?= __($projection_for->subject, 'edusystem'); ?></b></label>
