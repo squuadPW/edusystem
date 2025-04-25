@@ -713,10 +713,14 @@ function get_moodle_notes()
                                     SET status_id = %d, 
                                         calification = %d 
                                     WHERE student_id = %d 
+                                        AND code_period = %s 
+                                        AND cut_period = %s 
                                         AND (subject_id = %d OR code_subject = %s)",
                                     $status_id,
                                     $total_grade,
                                     $student->id,
+                                    $offer->code_period,
+                                    $offer->cut_period,
                                     $subject->id,
                                     $subject->code_subject
                                 );
