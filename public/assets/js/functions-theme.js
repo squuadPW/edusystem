@@ -15,6 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
       scrollLockElement.remove();
     }
   
-    document.documentElement.style.overflow = 'visible';
-    document.body.style.overflow = 'visible';
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
   });
