@@ -102,7 +102,7 @@
                                         <label
                                             for="moodle_course_id"><b><?= __('Moodle course ID', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>
-                                        <select name="moodle_course_id" required>
+                                        <select name="moodle_course_id" class="js-example-basic" style="width: 100%;" required>
                                             <option value=""><?= __('Select a course', 'edusystem'); ?></option>
                                             <?php foreach ($courses as $course): ?>
                                                 <option value="<?= $course['id']; ?>" <?= ($offer->moodle_course_id == $course['id']) ? 'selected' : ''; ?>>
