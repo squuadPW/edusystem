@@ -711,7 +711,7 @@ function get_moodle_notes()
                                 $query = $wpdb->prepare(
                                     "UPDATE {$table_student_period_inscriptions} 
                                     SET status_id = %d, 
-                                        calification = %d 
+                                        calification = %f 
                                     WHERE student_id = %d 
                                         AND code_period = %s 
                                         AND cut_period = %s 
