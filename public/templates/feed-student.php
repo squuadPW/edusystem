@@ -15,7 +15,7 @@
 </div>
 
 <?php if(count($feeds) > 0): ?>
-    <div class="swiper-container">
+    <div class="swiper-container content-dashboard">
         <div class="swiper">
             <div class="swiper-wrapper">
                 <?php foreach ($feeds as $feed): ?>
@@ -40,7 +40,7 @@
 <?php endif; ?>
 
 <?php if ($student && !$student->moodle_password) { ?>
-	<div class="text-center info-box">
+	<div class="text-center info-box content-dashboard">
 		<div>
 			<p>To help you get started on the right foot, we've put together a few simple steps to make your journey as
 				smooth and enjoyable as possible. Please take a few minutes to complete them, and let's get started on this
