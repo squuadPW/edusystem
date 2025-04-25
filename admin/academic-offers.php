@@ -307,7 +307,7 @@ function get_offer_by_moodle($moodle_course_id)
     global $wpdb;
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
 
-    $offer = $wpdb->get_row("SELECT * FROM {$table_academic_offers} WHERE moodle_course_id={$moodle_course_id}");
+    $offer = $wpdb->get_row("SELECT * FROM {$table_academic_offers} WHERE moodle_course_id={$moodle_course_id} ORDER BY id DESC");
     return $offer;
 }
 
