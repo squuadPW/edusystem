@@ -74,16 +74,20 @@
             <label for="virtual-access"><?= __('Show button for virtual classroom'); ?></label>
           </div>
           <div class="form-group" style="padding: 10px">
-            <input type="checkbox" id="virtual-access" name="auto_enroll_elective" <?php echo get_option('auto_enroll_elective') == 'on' ? 'checked' : '' ?>>
-            <label for="virtual-access"><?= __('Auto enroll elective student'); ?></label>
+            <input type="checkbox" id="auto-enroll-regular" name="auto_enroll_regular" <?php echo get_option('auto_enroll_regular') == 'on' ? 'checked' : '' ?>>
+            <label for="auto-enroll-regular"><?= __('Auto enroll regular student'); ?></label>
+          </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="auto-enroll-elective" name="auto_enroll_elective" <?php echo get_option('auto_enroll_elective') == 'on' ? 'checked' : '' ?>>
+            <label for="auto-enroll-elective"><?= __('Auto enroll elective student'); ?></label>
           </div>
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="aditional-electives" name="use_elective_aditional" <?php echo get_option('use_elective_aditional') == 'on' ? 'checked' : '' ?>>
-            <label for="virtual-access"><?= __('Use aditional electives'); ?></label>
+            <label for="aditional-electives"><?= __('Use aditional electives'); ?></label>
           </div>          
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="show-equivalence" name="show_equivalence_projection" <?php echo get_option('show_equivalence_projection') == 'on' ? 'checked' : '' ?>>
-            <label for="virtual-access"><?= __('Show equivalency subjects in student projection'); ?></label>
+            <label for="show-equivalence"><?= __('Show equivalency subjects in student projection'); ?></label>
           </div>
         </div>
         <div id="by_moodle" style="display: none">

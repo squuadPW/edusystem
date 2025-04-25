@@ -67,7 +67,10 @@ function create_user_moodle($student_id){
         ],['id' => $student_id]);
 
         generate_projection_student($student_id);
-        automatically_enrollment($student_id);
+
+        if (get_option('auto_enroll_regular')) {
+            automatically_enrollment($student_id);
+        }
 
         return $create_user;
     }

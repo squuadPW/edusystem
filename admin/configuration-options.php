@@ -17,11 +17,13 @@ function add_admin_form_configuration_options_content()
             $payment_due = sanitize_text_field($_POST['payment_due']) ?? get_option('payment_due');
             $virtual_access = sanitize_text_field($_POST['virtual_access']) ?? get_option('virtual_access');
             $auto_enroll_elective = sanitize_text_field($_POST['auto_enroll_elective']) ?? get_option('auto_enroll_elective');
+            $auto_enroll_regular = sanitize_text_field($_POST['auto_enroll_regular']) ?? get_option('auto_enroll_regular');
             $use_elective_aditional = sanitize_text_field($_POST['use_elective_aditional']) ?? get_option('use_elective_aditional');
             $show_equivalence_projection = sanitize_text_field($_POST['show_equivalence_projection']) ?? get_option('show_equivalence_projection');
             update_option('payment_due', $payment_due);
             update_option('virtual_access', $virtual_access);
             update_option('auto_enroll_elective', $auto_enroll_elective);
+            update_option('auto_enroll_regular', $auto_enroll_regular);
             update_option('use_elective_aditional', $use_elective_aditional);
             update_option('show_equivalence_projection', $show_equivalence_projection);
 
