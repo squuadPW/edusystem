@@ -1262,7 +1262,7 @@ body.modal-open {
 
 .swiper-container {
   max-width: 1920px;
-  margin: 0 auto;
+  margin: 10px auto;
 }
 
 @media (max-width: 767px) {
@@ -1272,20 +1272,21 @@ body.modal-open {
 }
 .swiper {
   width: 100%;
-  height: 160px;
+  height: 200px;
   overflow: hidden;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 767px) {
   .swiper {
-    height: 400px;
+    height: 100px;
   }
 }
 .swiper-slide {
   width: 100%;
   height: 100%;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
+  background-repeat: no-repeat;
   background-image: var(--mobile-image);
 }
 
