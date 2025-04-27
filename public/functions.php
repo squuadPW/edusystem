@@ -2049,7 +2049,7 @@ function modal_take_elective()
     global $wpdb, $current_user;
 
     $roles = $current_user->roles;
-    if (!in_array('student', $roles)) {
+    if (!in_array('student', $roles) || !get_option('show_modal_electives')) {
         return;
     }
 

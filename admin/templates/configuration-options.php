@@ -82,6 +82,10 @@
             <label for="auto-enroll-elective"><?= __('Auto enroll elective student'); ?></label>
           </div>
           <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="show-modal-elective" name="show_modal_electives" <?php echo get_option('show_modal_electives') == 'on' ? 'checked' : '' ?>>
+            <label for="show-modal-elective"><?= __('Show modal select elective'); ?></label>
+          </div>
+          <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="aditional-electives" name="use_elective_aditional" <?php echo get_option('use_elective_aditional') == 'on' ? 'checked' : '' ?>>
             <label for="aditional-electives"><?= __('Use aditional electives'); ?></label>
           </div>          
