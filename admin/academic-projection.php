@@ -833,26 +833,30 @@ function get_count_moodle_pending()
 
 function get_count_email_pending()
 {
-    global $wpdb;
-    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
-    $count = 0;
-    $students = [];
-
-    foreach ($projections as $key => $projection) {
-        $projection_obj = json_decode($projection->projection);
-        $filteredArray = array_filter($projection_obj, function ($item) {
-            return $item->this_cut === true && !$item->welcome_email;
-        });
-        $filteredArray = array_values($filteredArray);
-
-        if (count($filteredArray) > 0) {
-            $count++;
-            array_push($students, get_student_detail($projection->student_id));
+    try {
+        global $wpdb;
+        $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+        $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
+        $count = 0;
+        $students = [];
+    
+        foreach ($projections as $key => $projection) {
+            $projection_obj = json_decode($projection->projection);
+            $filteredArray = array_filter($projection_obj, function ($item) {
+                return $item->this_cut === true && !$item->welcome_email;
+            });
+            $filteredArray = array_values($filteredArray);
+    
+            if (count($filteredArray) > 0) {
+                $count++;
+                array_push($students, get_student_detail($projection->student_id));
+            }
         }
+    
+        return ['count' => $count, 'students' => $students];
+    } catch (\Throwable $th) {
+        return ['count' => 0, 'students' => []];
     }
-
-    return ['count' => $count, 'students' => $students];
 }
 
 function update_count_moodle_pending($count_fixed = '')
