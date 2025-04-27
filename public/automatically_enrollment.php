@@ -558,9 +558,11 @@ function send_welcome_subjects($student_id)
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
-    if (!$projection) {
+    $academic_ready = get_academic_ready($student_id);
+    if (!$projection || $academic_ready) {
         return;
     }
+
     $projection_obj = json_decode($projection->projection);
     $load = load_current_cut();
     $cut = $load['cut'];

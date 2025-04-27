@@ -157,7 +157,11 @@ function add_admin_form_academic_projection_content()
         } else if (isset($_GET['action']) && $_GET['action'] == 'send_welcome_email') {
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
-            $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
+            $query = $wpdb->prepare(
+                "SELECT * FROM {$table_students} WHERE status_id != %d ORDER BY id DESC",
+                5
+            );
+            $students = $wpdb->get_results($query);
             foreach ($students as $key => $student) {
                 send_welcome_subjects($student->id);
             }
