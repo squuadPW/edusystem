@@ -64,7 +64,7 @@
                 </div>
                 <div id="by_email" style="display: none">
                     <div class="form-group">
-                        <label for="email_student"><?= __('Student, alliance or institute mail', 'edusystem'); ?></label>
+                        <label for="email_student"><?= __('Student, parent, alliance or institute mail', 'edusystem'); ?></label>
                         <input type="email" name="email_student" id="email_student">
                     </div>
                 </div>

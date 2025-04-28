@@ -95,6 +95,21 @@ function get_student_by_email($email) {
     ));
 }
 
+function get_user_by_email($email) {
+    $user = get_user_by('email', $email);
+    if ($user) {
+        $user_obj = new stdClass();
+        $user_obj->id = $user->ID;
+        $user_obj->email = $user->user_email;
+        $user_obj->user_email = $user->user_email;
+        $user_obj->name = $user->first_name;
+        $user_obj->last_name = $user->last_name;
+        $user_obj->username = $user->user_login;
+        return $user_obj;
+    }
+    return null;
+}
+
 function get_alliance_by_email($email) {
     global $wpdb;
     $table_alliances = $wpdb->prefix . 'alliances';
@@ -157,6 +172,7 @@ function get_summary_email() {
             $student = get_student_by_email($email);
             $alliance = get_alliance_by_email($email);
             $institute = get_institute_by_email($email);
+            $user = get_user_by_email($email);
             
             $data = [];
             if ($student) {
@@ -167,6 +183,9 @@ function get_summary_email() {
             }
             if ($institute) {
                 $data[] = $institute;
+            }
+            if ($user) {
+                $data[] = $user;
             }
             
             if (empty($data)) {
@@ -267,6 +286,7 @@ function handle_email_sending($type, $post_data) {
             $student = get_student_by_email($email);
             $alliance = get_alliance_by_email($email);
             $institute = get_institute_by_email($email);
+            $user = get_user_by_email($email);
             
             $data = [];
             if ($student) {
@@ -290,6 +310,14 @@ function handle_email_sending($type, $post_data) {
                     $message_institute = set_variables_message($message, $institute);
                     $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
                     $email_user->trigger($user_institute, $subject, $message_institute);
+                }
+            }
+            if ($user) {
+                $data[] = $user;
+                if ($user) {
+                    $message_user = set_variables_message($message, $user);
+                    $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                    $email_user->trigger($user, $subject, $message_user);
                 }
             }
             
