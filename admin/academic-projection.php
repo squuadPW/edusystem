@@ -641,7 +641,7 @@ function generate_enroll_public_course()
         $enrollments = array_merge($enrollments, courses_enroll_student($student->id, [(int) get_option('public_course_id')]));
     }
 
-    enroll_student($enrollments);
+    enroll_student_public_course($enrollments);
 }
 
 function get_moodle_notes()

@@ -267,6 +267,32 @@ function enroll_student($enrollments = [], $errors_count = '') {
     }
 }
 
+function enroll_student_public_course($enrollments = []) {
+    global $wpdb;
+
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+
+    $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);
+    
+    // Dividir el array en chunks de 25 elementos
+    $chunks = array_chunk($enrollments, 25);
+    $all_responses = [];
+
+    foreach ($chunks as $chunk) {
+        $response = $MoodleRest->request('enrol_manual_enrol_users', ['enrolments' => $chunk]);
+        if (!empty($response)) {
+            $all_responses = array_merge($all_responses, $response);
+        }
+    }
+
+    if (empty($all_responses)) {
+        return [];
+    } else {
+        return $all_responses;
+    }
+}
+
 function courses_unenroll_student($student_id, $course_id) {
     global $wpdb;
     $table_students = $wpdb->prefix.'students';
