@@ -749,6 +749,8 @@ function get_moodle_notes()
                                 $prj->calification = '';
                                 $prj->welcome_email = false;
                             } else {
+                                $prj->cut = $offer->cut_period;
+                                $prj->code_period = $offer->code_period;
                                 $prj->is_completed = true;
                                 $prj->welcome_email = true;
                             }
