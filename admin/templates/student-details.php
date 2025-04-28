@@ -28,7 +28,7 @@
         <?php 
             include(plugin_dir_path(__FILE__).'connections-student.php');
         ?>
-        <?php if (in_array('administrator', $roles)) { ?>
+        <?php if (current_user_can('can_regenerate_projection')) { ?>
             <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projection_student&student_id=') . $student->id . '&projection_id='.$projection->id ?>" class="button button-outline-primary" onclick="return confirm('Estas seguro de volver a generar proyeccion academica?');"><?= __('Re-generate projection','edusystem'); ?></a>
         <?php } ?>
         <button style="margin-left: 5px;" data-id="<?= $student->id; ?>" id="button-export-xlsx"

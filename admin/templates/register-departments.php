@@ -169,6 +169,12 @@
                     </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="can_regenerate_projection" id="can_regenerate_projection" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['can_regenerate_projection'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="can_regenerate_projection" style="margin-left:20px;"><?= __('Can regenerate projection','edusystem'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
                             <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_school_subjects_aes" id="manager_school_subjects_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_school_subjects_aes'])) ? 'checked' : ''; ?>>
                         </th>
                         <td style="display:table-cell;padding:3px;"><label for="manager_school_subjects_aes" style="margin-left:20px;"><?= __('School subjects','edusystem'); ?></label></td>

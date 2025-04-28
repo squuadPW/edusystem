@@ -2,7 +2,7 @@
     <div class="modal-content" style="overflow: auto; padding: 0 !important">
     <div class="modal-header p-5">
         <h3 style="font-weight: 600">Select elective to study</h3>
-        <!-- <span class="modal-close" id="close-continue"><span class="dashicons dashicons-no-alt"></span></span> -->
+        <span class="modal-close" id="close-continue"><span class="dashicons dashicons-no-alt"></span></span>
       </div>
       <div class="modal-body">
           <div>
