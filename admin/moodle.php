@@ -248,8 +248,8 @@ function enroll_student($enrollments = [], $errors_count = '') {
 
     $MoodleRest = new MoodleRest($moodle_url.'webservice/rest/server.php', $moodle_token);
     
-    // Dividir el array en chunks de 50 elementos
-    $chunks = array_chunk($enrollments, 50);
+    // Dividir el array en chunks de 25 elementos
+    $chunks = array_chunk($enrollments, 25);
     $all_responses = [];
 
     foreach ($chunks as $chunk) {
