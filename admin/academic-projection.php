@@ -630,116 +630,166 @@ function get_moodle_notes()
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
-    $load = load_last_cut();
-    $academic_period = $load['code'];
-    $cut = $load['cut'];
-
-    $conditions = array();
-    $params = array();
-
-    if (!empty($cut)) {
-        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND code_subject IS NOT NULL AND code_subject <> ''");
-        $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
-        $params = array_merge($params, $cut_student_ids);
-    }
-
-    $query = "SELECT * FROM {$table_students}";
-
-    if (!empty($conditions)) {
-        $query .= " WHERE " . implode(" AND ", $conditions);
-    }
-
-    $students = $wpdb->get_results($wpdb->prepare($query, $params));
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
-    foreach ($students as $key => $student) {
-        $moodle_student_id = $student->moodle_student_id;
+    try {
+        // Get last cut information
+        $load = load_last_cut();
+        $academic_period = $load['code'];
+        $cut = $load['cut'];
 
-        if ($moodle_student_id) {
-            $projection_student = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student->id}");
-            $assignments = student_assignments_moodle($student->id);
-            $assignments_course = $assignments['assignments'];
-            $assignments_student = $assignments['grades'];
-            $formatted_assignments = [];
+        if (empty($cut)) {
+            return;
+        }
 
-            foreach ($assignments_course as $key => $assignment_c) {
-                $course_id = (int) $assignment_c['id'];
-                $filtered_course_student = array_filter($assignments_student, function ($entry) use ($course_id) {
-                    return $entry['course_id'] == $course_id;
-                });
-                $filtered_course_student = array_values($filtered_course_student);
+        // Get all relevant student IDs in one query
+        $cut_student_ids = $wpdb->get_col($wpdb->prepare(
+            "SELECT DISTINCT student_id 
+            FROM {$table_student_period_inscriptions} 
+            WHERE code_period = %s 
+            AND cut_period = %s 
+            AND code_subject IS NOT NULL 
+            AND code_subject <> ''",
+            $academic_period,
+            $cut
+        ));
 
-                if (isset($filtered_course_student[0])) {
-                    $assignments_student_filtered = $filtered_course_student[0]['grades'][0]['gradeitems'];
-                    $max_grade = 0;
-                    $assignments_total = 0;
-                    $total_grade = 0;
+        if (empty($cut_student_ids)) {
+            return;
+        }
 
-                    foreach ($assignments_student_filtered as $key => $work) {
-                        if (!isset($work['cmid'])) {
-                            $max_grade = (isset($work['gradeformatted']) && $work['gradeformatted'] != '') ? (float) $work['gradeformatted'] : 0;
-                        } else {
-                            $assignments_total = ($assignments_total + 1);
-                        }
+        // Get all students with moodle IDs in one query
+        $students = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$table_students} 
+            WHERE id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")
+            AND moodle_student_id IS NOT NULL",
+            $cut_student_ids
+        ));
+
+        if (empty($students)) {
+            return;
+        }
+
+        // Get all projections for these students in one query
+        $projections = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$table_student_academic_projection} 
+            WHERE student_id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")",
+            $cut_student_ids
+        ));
+
+        // Create a lookup array for projections
+        $projections_lookup = array();
+        foreach ($projections as $projection) {
+            $projections_lookup[$projection->student_id] = $projection;
+        }
+
+        // Process each student
+        foreach ($students as $student) {
+            if (empty($student->moodle_student_id)) {
+                continue;
+            }
+
+            // Get student assignments from Moodle
+            $assignments = student_assignments_moodle_only_grades($student->id);
+            if (empty($assignments['grades'])) {
+                continue;
+            }
+
+            $projection_student = $projections_lookup[$student->id] ?? null;
+            if (!$projection_student) {
+                continue;
+            }
+
+            $projection_obj = json_decode($projection_student->projection);
+            $updates_needed = false;
+
+            // Process each course assignment
+            foreach ($assignments['grades'] as $grade) {
+                $course_id = (int) $grade['course_id'];
+                $offer = get_offer_by_moodle($course_id);
+                if (!$offer) {
+                    continue;
+                }
+
+                foreach ($grade['grades'] as $grade_item) {
+                    $grade_items = $grade_item['gradeitems'];
+                    
+                    // Filter grade items without cmid
+                    $filtered_grade_items = array_filter($grade_items, function($item) {
+                        return !isset($item['cmid']);
+                    });
+                    $filtered_grade_items = array_values($filtered_grade_items);
+
+                    if (empty($filtered_grade_items)) {
+                        continue;
+                    }
+                    
+                    $grade_value = (float) $filtered_grade_items[0]['gradeformatted'];
+                    $total_grade = $grade_value > 100 ? 100 : $grade_value;
+
+                    $subject = get_subject_details($offer->subject_id);
+                    if (!$subject) {
+                        continue;
                     }
 
-                    // $total_grade = ($max_grade / $assignments_total);
-                    // usamos el total, la sumatoria de las 4 que en teoria deberia ser en base a 100
-                    $total_grade = ($max_grade > 100) ? 100 : $max_grade;
-                    if ($projection_student) {
-                        $projection_obj = json_decode($projection_student->projection);
+                    $status_id = $total_grade >= $subject->min_pass ? 3 : 4;
 
-                        $offer = get_offer_by_moodle($course_id);
-                        $subject = get_subject_details($offer->subject_id);
-                        $status_id = $total_grade >= $subject->min_pass ? 3 : 4;
+                    // Update projection object
+                    foreach ($projection_obj as $prj) {
+                        if ($prj->subject_id == $subject->id) {
+                            $prj->calification = $total_grade;
+                            $prj->this_cut = false;
 
-                        foreach ($projection_obj as $key => $prj) {
-                            if ($prj->subject_id == $subject->id) {
-                                $prj->calification = $total_grade;
+                            if ($status_id == 4) {
+                                $prj->is_completed = false;
                                 $prj->this_cut = false;
-
-                                if ($status_id == 4) {
-                                    $prj->is_completed = false;
-                                    $prj->this_cut = false;
-                                    $prj->cut = '';
-                                    $prj->code_period = '';
-                                    $prj->calification = '';
-                                    $prj->welcome_email = false;
-                                } else {
-                                    $prj->is_completed = true;
-                                    $prj->welcome_email = true;
-                                }
-
-                                $query = $wpdb->prepare(
-                                    "UPDATE {$table_student_period_inscriptions} 
-                                    SET status_id = %d, 
-                                        calification = %f 
-                                    WHERE student_id = %d 
-                                        AND code_period = %s 
-                                        AND cut_period = %s 
-                                        AND (subject_id = %d OR code_subject = %s)",
-                                    $status_id,
-                                    $total_grade,
-                                    $student->id,
-                                    $offer->code_period,
-                                    $offer->cut_period,
-                                    $subject->id,
-                                    $subject->code_subject
-                                );
-
-                                $wpdb->query($query);
+                                $prj->cut = '';
+                                $prj->code_period = '';
+                                $prj->calification = '';
+                                $prj->welcome_email = false;
+                            } else {
+                                $prj->is_completed = true;
+                                $prj->welcome_email = true;
                             }
-                        }
 
-                        $wpdb->update($table_student_academic_projection, [
-                            'projection' => json_encode($projection_obj)
-                        ], ['id' => $projection_student->id]);
+                            // Update inscription
+                            $wpdb->query($wpdb->prepare(
+                                "UPDATE {$table_student_period_inscriptions} 
+                                SET status_id = %d, 
+                                    calification = %f 
+                                WHERE student_id = %d 
+                                    AND code_period = %s 
+                                    AND cut_period = %s 
+                                    AND (subject_id = %d OR code_subject = %s)",
+                                $status_id,
+                                $total_grade,
+                                $student->id,
+                                $offer->code_period,
+                                $offer->cut_period,
+                                $subject->id,
+                                $subject->code_subject
+                            ));
+
+                            $updates_needed = true;
+                            break;
+                        }
                     }
                 }
             }
+
+            // Update projection if changes were made
+            if ($updates_needed) {
+                $wpdb->update(
+                    $table_student_academic_projection,
+                    ['projection' => json_encode($projection_obj)],
+                    ['id' => $projection_student->id]
+                );
+            }
         }
+    } catch (Exception $e) {
+        // Log error or handle it appropriately
+        error_log('Error in get_moodle_notes: ' . $e->getMessage());
     }
 }
 
