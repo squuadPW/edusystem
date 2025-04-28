@@ -1,5 +1,8 @@
-const segmentButtons = document.querySelectorAll(".segment-button");
+jQuery(document).ready(function ($) {
+    $(".js-example-basic").select2();
+});
 
+const segmentButtons = document.querySelectorAll(".segment-button");
 segmentButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
         // Remove active class from all buttons

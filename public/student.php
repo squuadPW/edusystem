@@ -956,3 +956,23 @@ function helper_get_student_logged() {
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
     return $student;
 }
+
+function get_active_students()
+{
+    global $wpdb;
+    $students_active = [];
+
+    $table_students = $wpdb->prefix . 'students';
+    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE status_id != 5 ORDER BY id DESC");
+
+    if ($students) {
+        foreach ($students as $student) {
+            $academic_ready = get_academic_ready($student->id);
+            if(!$academic_ready) {
+                array_push($students_active, $student);
+            }
+        }
+    }
+
+    return $students_active;
+}

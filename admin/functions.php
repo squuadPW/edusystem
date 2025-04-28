@@ -108,8 +108,18 @@ function aes_scripts_admin()
         wp_enqueue_script('feed', plugins_url('edusystem') . '/admin/assets/js/feed.js', array('jquery'), $version, true);
     }
 
-    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_configuration_options_content') {
-        wp_enqueue_script('configuration', plugins_url('edusystem') . '/admin/assets/js/configuration.js', array('jquery'), $version, true);
+    if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_configuration_options_content') {
+        wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
+        wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', ['jquery']);
+
+        // Especifica jQuery como dependencia y usa la versión empaquetada con WordPress
+        wp_enqueue_script(
+            'configuration',
+            plugins_url('edusystem') . '/admin/assets/js/configuration.js',
+            ['jquery', 'select2'], // Asegura que jQuery y Select2 se carguen primero
+            $version,
+            true
+        );
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_teachers_content') {

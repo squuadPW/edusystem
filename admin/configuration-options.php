@@ -32,8 +32,10 @@ function add_admin_form_configuration_options_content()
             // moodle
             $moodle_url = sanitize_text_field($_POST['moodle_url']) ?? get_option('moodle_url');
             $moodle_token = sanitize_text_field($_POST['moodle_token']) ?? get_option('moodle_token');
+            $public_course_id = sanitize_text_field($_POST['public_course_id']) ?? get_option('public_course_id');
             update_option('moodle_url', $moodle_url);
             update_option('moodle_token', $moodle_token);
+            update_option('public_course_id', $public_course_id);
 
             // offers
             $offer_complete = sanitize_text_field($_POST['offer_complete']) ?? get_option('offer_complete');
@@ -79,6 +81,7 @@ function add_admin_form_configuration_options_content()
         }
     }
 
+    $courses = get_courses_moodle();
     include(plugin_dir_path(__FILE__).'templates/configuration-options.php');
 }
 

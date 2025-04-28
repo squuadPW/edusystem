@@ -136,6 +136,11 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Students successfully enrolled in moodle.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
+        }  else if (isset($_GET['action']) && $_GET['action'] == 'enroll_public_course') {
+            generate_enroll_public_course();
+            setcookie('message', __('Students successfully enrolled in public course.', 'edusystem'), time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'auto_enroll') {
             global $wpdb;
             $student_id = $_GET['student_id'];
@@ -624,6 +629,19 @@ function generate_enroll_student()
 
     enroll_student($enrollments, $errors_count);
     setcookie('message-error', $errors, time() + 3600, '/');
+}
+
+function generate_enroll_public_course()
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $enrollments = [];
+    $students = get_active_students();
+    foreach ($students as $key => $student) {
+        $enrollments = array_merge($enrollments, courses_enroll_student($student->id, [(int) get_option('public_course_id')]));
+    }
+
+    enroll_student($enrollments);
 }
 
 function get_moodle_notes()

@@ -105,6 +105,17 @@
             <input class="full-input" name="moodle_token" type="text" id="moodle_token"
               value="<?= get_option('moodle_token'); ?>" required>
           </div>
+          <div class="form-group" style="padding: 0px 10px 10px 10px;">
+            <label for="offer_complete"><?= __('Public information course', 'edusystem'); ?></label> <br>
+            <select name="public_course_id" class="js-example-basic" style="width: 100%;">
+                <option value="" <?= get_option('public_course_id') == '' ? 'selected' : ''; ?>><?= __('Without course', 'edusystem'); ?></option>
+                <?php foreach ($courses as $course): ?>
+                    <option value="<?= $course['id']; ?>" <?= (get_option('public_course_id') == $course['id']) ? 'selected' : ''; ?>>
+                        <?= $course['fullname']; ?> (<?= $course['shortname']; ?>)
+                    </option>
+                <?php endforeach; ?>
+            </select>
+          </div>
         </div>
         <div id="by_offers" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
