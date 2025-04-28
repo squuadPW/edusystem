@@ -23,8 +23,6 @@
                                     class="nobr"><?= __('Course', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                                     class="nobr"><?= __('Assignment', 'edusystem'); ?></span></th>
-                            <!-- <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                            class="nobr"><?= __('Max date', 'edusystem'); ?></span></th> -->
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                                     class="nobr"><?= __('Calification', 'edusystem'); ?></span></th>
                         </tr>
@@ -33,26 +31,24 @@
                         <?php if (!empty($student['formatted_assignments'])): ?>
                             <?php foreach ($student['formatted_assignments'] as $row): ?>
 
-                                <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order"
-                                    style="background-color: blue !important">
-                                    <td style="background-color: #f8f8f8;"
-                                        class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                                        data-title="<?= __('Course', 'edusystem'); ?>">
-                                        <strong><?= strtoupper($row['course']) ?></strong>
-                                    </td>
-                                    <td style="background-color: #f8f8f8;"
-                                        class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
-                                        data-title="<?= __('Assignment', 'edusystem'); ?>">
-                                    </td>
-                                    <!-- <td style="background-color: #f8f8f8;"
-                                class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                data-title="<?= __('Max date', 'edusystem') ?>">
-                            </td> -->
-                                    <td style="background-color: #f8f8f8;"
-                                        class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                        data-title="<?= __('Calification', 'edusystem') ?>">
-                                    </td>
-                                </tr>
+                                <?php if(count($row['assignments']) > 0) { ?>
+                                    <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order"
+                                        style="background-color: blue !important">
+                                        <td style="background-color: #f8f8f8;"
+                                            class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
+                                            data-title="<?= __('Course', 'edusystem'); ?>">
+                                            <strong><?= strtoupper($row['course']) ?></strong>
+                                        </td>
+                                        <td style="background-color: #f8f8f8;"
+                                            class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
+                                            data-title="<?= __('Assignment', 'edusystem'); ?>">
+                                        </td>
+                                        <td style="background-color: #f8f8f8;"
+                                            class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
+                                            data-title="<?= __('Calification', 'edusystem') ?>">
+                                        </td>
+                                    </tr>
+                                <?php } ?>
 
                                 <?php foreach ($row['assignments'] as $key => $assignment) { ?>
                                     <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order"
@@ -65,10 +61,6 @@
                                             data-title="<?= __('Assignment', 'edusystem'); ?>">
                                             <?= $assignment['name'] ?>
                                         </td>
-                                        <!-- <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                    data-title="<?= __('Max date', 'edusystem') ?>">
-                                    <?= $assignment['max_date'] ?>
-                                </td> -->
                                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                                             data-title="<?= __('Calification', 'edusystem') ?>">
                                             <?= $assignment['grade'] ?> / <?= $assignment['max_grade'] ?>
