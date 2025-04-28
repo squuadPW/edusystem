@@ -81,13 +81,15 @@ function student_assignments_moodle($student_id) {
                         array_push($courseids, (int)$course['id']);
 
                         $grades_course = course_grade((int)$course['id']);
-                        $grades_course = $grades_course['usergrades'];
-                        $filtered_grades = array_filter($grades_course, function($entry) use ($moodle_student_id) {
-                            return $entry['userid'] == $moodle_student_id;
-                        });
-                        $filtered_grades = array_values($filtered_grades);
-
-                        array_push($grades, ['course_id' => (int)$course['id'], 'grades' => $filtered_grades]);
+                        if (isset($grades_course['usergrades'])) {
+                            $grades_course = $grades_course['usergrades'];
+                            $filtered_grades = array_filter($grades_course, function($entry) use ($moodle_student_id) {
+                                return $entry['userid'] == $moodle_student_id;
+                            });
+                            $filtered_grades = array_values($filtered_grades);
+    
+                            array_push($grades, ['course_id' => (int)$course['id'], 'grades' => $filtered_grades]);
+                        }
                     }
                 }
             }
@@ -120,13 +122,15 @@ function student_assignments_moodle_only_grades($student_id) {
                         array_push($courseids, (int)$course['id']);
 
                         $grades_course = course_grade((int)$course['id']);
-                        $grades_course = $grades_course['usergrades'];
-                        $filtered_grades = array_filter($grades_course, function($entry) use ($moodle_student_id) {
-                            return $entry['userid'] == $moodle_student_id;
-                        });
-                        $filtered_grades = array_values($filtered_grades);
-
-                        array_push($grades, ['course_id' => (int)$course['id'], 'grades' => $filtered_grades]);
+                        if (isset($grades_course['usergrades'])) {
+                            $grades_course = $grades_course['usergrades'];
+                            $filtered_grades = array_filter($grades_course, function($entry) use ($moodle_student_id) {
+                                return $entry['userid'] == $moodle_student_id;
+                            });
+                            $filtered_grades = array_values($filtered_grades);
+    
+                            array_push($grades, ['course_id' => (int)$course['id'], 'grades' => $filtered_grades]);
+                        }
                     }
                 }
             }
