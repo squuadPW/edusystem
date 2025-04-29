@@ -456,111 +456,122 @@ function generate_projection_student($student_id, $force = false) {
     global $wpdb;
     
     // Validar el ID del estudiante
-    if (!$student_id || !is_numeric($student_id)) {
+    if (!is_numeric($student_id) || $student_id <= 0) {
         return false;
     }
 
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $table_students = $wpdb->prefix . 'students';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
 
     // Verificar si existe proyección y si no es forzada
     if (!$force) {
         $existing_projection = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$table_student_academic_projection} WHERE student_id = %d",
+            "SELECT id FROM {$table_student_academic_projection} WHERE student_id = %d",
             $student_id
         ));
-        if ($existing_projection > 0) {
+        if ($existing_projection) {
             return false;
         }
     }
 
-    // Obtener matriz regular y proyección actual en una sola consulta si es necesario
+    // Obtener matriz regular y proyección actual en una sola consulta
     $matrix_regular = get_current_pensum();
-    $current_projection = $force ? get_projection_by_student($student_id) : null;
-    $projection_obj = $current_projection ? json_decode($current_projection->projection) : [];
+    if (empty($matrix_regular)) {
+        return false;
+    }
+
+    // Obtener inscripciones del estudiante
+    $inscriptions = get_inscriptions_by_student($student_id);
+    $inscriptions_by_code = [];
+    $elective_inscriptions = [];
     
-    // Preparar array de materias regulares
-    $projection = array_map(function($regular) use ($force, $projection_obj) {
-        if ($force && !empty($projection_obj)) {
-            $completed_subject = array_filter($projection_obj, function($item) use ($regular) {
-                return $item->subject_id == $regular->id && 
-                       $item->is_completed && 
-                       !$item->this_cut && 
-                       $item->calification;
-            });
-            
-            if (!empty($completed_subject)) {
-                return reset($completed_subject);
+    // Crear índice de inscripciones por código para búsqueda más rápida
+    if (!empty($inscriptions)) {
+        foreach ($inscriptions as $inscription) {
+            if ($inscription->type === 'elective') {
+                $elective_inscriptions[] = $inscription;
+            } else {
+                $inscriptions_by_code[$inscription->code_subject] = $inscription;
             }
         }
-        
-        $subject = get_subject_details($regular->id);
+    }
+
+    // Generar proyección base con materias regulares
+    $projection = array_map(function($matrix) use ($inscriptions_by_code) {
+        $inscription = $inscriptions_by_code[$matrix->code_subject] ?? null;
+        $status_id = $inscription ? $inscription->status_id : null;
+
         return [
-            'code_subject' => $subject->code_subject,
-            'subject_id' => $subject->id,
-            'subject' => $subject->name,
-            'hc' => $subject->hc,
-            'cut' => "",
-            'code_period' => "",
-            'calification' => "",
-            'is_completed' => false,
-            'this_cut' => false,
-            'welcome_email' => false,
-            'type' => $subject->type
+            'code_subject' => $matrix->code_subject,
+            'subject_id' => $matrix->id,
+            'subject' => $matrix->name,
+            'hc' => $matrix->hc,
+            'cut' => $status_id == 3 ? $inscription->cut_period : "",
+            'code_period' => $status_id == 3 ? $inscription->code_period : "",
+            'calification' => $status_id == 3 ? $inscription->calification : "",
+            'is_completed' => $status_id == 3,
+            'this_cut' => $status_id == 1,
+            'welcome_email' => $status_id == 3,
+            'type' => $matrix->type
         ];
     }, $matrix_regular);
 
-    // Agregar materias electivas si existen
-    if (!empty($projection_obj)) {
-        $elective_subjects = array_filter($projection_obj, function($prj) {
-            $subject = get_subject_details($prj->subject_id);
-            return $subject->type == 'elective';
-        });
-        $projection = array_merge($projection, $elective_subjects);
+    // Agregar materias electivas a la proyección
+    foreach ($elective_inscriptions as $inscription) {
+        // Solo agregar materias electivas completadas
+        if ($inscription->status_id != 3) {
+            continue;
+        }
+
+        // Obtener detalles de la materia electiva
+        $subject = get_subject_details($inscription->subject_id);
+
+        if ($subject) {
+            $projection[] = [
+                'code_subject' => $subject->code_subject,
+                'subject_id' => $subject->id,
+                'subject' => $subject->name,
+                'hc' => $subject->hc,
+                'cut' => $inscription->cut_period,
+                'code_period' => $inscription->code_period,
+                'calification' => $inscription->calification,
+                'is_completed' => true,
+                'this_cut' => false,
+                'welcome_email' => true,
+                'type' => 'elective'
+            ];
+        }
     }
 
     // Si es forzado, actualizar registros
     if ($force) {
-        // Iniciar transacción
         $wpdb->query('START TRANSACTION');
         
         try {
-            // Actualizar estudiante
+            // Actualizar estudiante y eliminar proyecciones existentes en una sola transacción
             $wpdb->update($table_students, ['elective' => 0], ['id' => $student_id]);
-            
-            // Eliminar proyecciones e inscripciones existentes
             $wpdb->delete($table_student_academic_projection, ['student_id' => $student_id]);
-            $wpdb->delete($table_student_period_inscriptions, ['student_id' => $student_id]);
             
-            // Insertar inscripciones completadas
-            foreach ($projection as $prj) {
-                if ($prj->is_completed && !$prj->this_cut && $prj->calification) {
-                    $subject = get_subject_details($prj->subject_id);
-                    $section = load_section_available($prj->subject_id, $prj->code_period, $prj->cut);
-                    
-                    $wpdb->insert($table_student_period_inscriptions, [
-                        'status_id' => 3,
-                        'section' => $section,
-                        'calification' => $prj->calification,
-                        'student_id' => $student_id,
-                        'subject_id' => $subject->id,
-                        'code_subject' => $subject->code_subject,
-                        'code_period' => $prj->code_period,
-                        'cut_period' => $prj->cut,
-                        'type' => $subject->type
-                    ]);
-                }
+            // Insertar nueva proyección
+            $result = $wpdb->insert($table_student_academic_projection, [
+                'student_id' => $student_id,
+                'projection' => json_encode($projection)
+            ]);
+
+            if ($result === false) {
+                throw new Exception('Error al insertar la proyección');
             }
-            
+
             $wpdb->query('COMMIT');
+            return true;
         } catch (Exception $e) {
             $wpdb->query('ROLLBACK');
             return false;
         }
     }
 
-    // Insertar nueva proyección
+    // Insertar nueva proyección sin forzar
     $result = $wpdb->insert($table_student_academic_projection, [
         'student_id' => $student_id,
         'projection' => json_encode($projection)
