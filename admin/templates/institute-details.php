@@ -22,7 +22,7 @@
             href="<?= wp_get_referer() ? wp_get_referer() : admin_url('admin.php?page=add_admin_institutes_content&section_tab=all_institutes'); ?>"><?= __('Back', 'edusystem'); ?></a>
     </div>
     <?php if (isset($institute) && !empty($institute)): ?>
-        <?php if ($institute->status == 1 || $institute->status == 2 || $institute->status == 3): ?>
+        <?php if ($institute->status == 0): ?>
             <div style="display:flex;width:100%;justify-content:end;">
                 <button data-id="<?= $_GET['institute_id']; ?>" id="button-delete-institute" class="button button-danger"><span
                         class="dashicons dashicons-trash"></span><?= __('Delete', 'edusystem'); ?></button>
