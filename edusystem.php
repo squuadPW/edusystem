@@ -76,6 +76,7 @@ function create_tables()
         title TEXT NOT NULL,
         attach_id_desktop INT(11) NULL,
         attach_id_mobile INT(11) NULL,
+        link TEXT NOT NULL,
         `max_date` DATE NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"

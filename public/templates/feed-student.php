@@ -24,10 +24,10 @@
                     $mobile_url = !empty($feed->attach_id_mobile) ? wp_get_attachment_url($feed->attach_id_mobile) : $desktop_url;
                     ?>
                     
-                    <div class="swiper-slide" 
-                        style="--desktop-image: url('<?php echo $desktop_url; ?>');
-                                --mobile-image: url('<?php echo $mobile_url; ?>');">
-                    </div>
+                    <a class="swiper-slide" 
+                            style="--desktop-image: url('<?php echo $desktop_url; ?>');
+                                    --mobile-image: url('<?php echo $mobile_url; ?>');" href="<?php echo $feed->link; ?>" target="_blank">
+                    </a>
                 <?php endforeach; ?>
             </div>
             <!-- Botones de navegación -->

@@ -23,6 +23,7 @@ function add_admin_form_feed_content()
             $feed_id = $_POST['feed_id'];
             $feed = get_feed_detail($feed_id);
             $title = strtoupper($_POST['title']);
+            $link = sanitize_text_field($_POST['link']);
             $max_date = (isset($_POST['max_date']) && $_POST['max_date'] !== '') ? $_POST['max_date'] : NULL;
 
             if (isset($_FILES['attach_id_desktop']) && !empty($_FILES['attach_id_desktop'])) {
@@ -61,6 +62,7 @@ function add_admin_form_feed_content()
                     'title' => $title,
                     'attach_id_desktop' => $attach_desktop_id,
                     'attach_id_mobile' => $attach_mobile_id,
+                    'link' => $link,
                     'max_date' => $max_date,
                 ], ['id' => $feed_id]);
                 wp_redirect(admin_url('admin.php?page=add_admin_form_feed_content&section_tab=feed_details&feed_id=').$feed_id);
@@ -69,6 +71,7 @@ function add_admin_form_feed_content()
                     'title' => $title,
                     'attach_id_desktop' => $attach_desktop_id,
                     'attach_id_mobile' => $attach_mobile_id,
+                    'link' => $link,
                     'max_date' => $max_date,
                 ]);
                 wp_redirect(admin_url('admin.php?page=add_admin_form_feed_content'));

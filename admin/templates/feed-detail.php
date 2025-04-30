@@ -56,6 +56,12 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
+                                        <label for="link"><b><?= __('Link', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        <input type="text" step="0" name="link"
+                                            value="<?= $feed->link; ?>" required>
+                                    </div>
+
+                                    <div style="font-weight:400;" class="space-offer">
                                         <input type="checkbox" name="use_max_date" id="use_max_date"
                                         <?= $feed->max_date ? 'checked' : ''; ?> style="width: auto">
                                         <label for="use_max_date"><b><?= __('Hide post after', 'edusystem'); ?></b></label>
