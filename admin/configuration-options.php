@@ -21,6 +21,7 @@ function add_admin_form_configuration_options_content()
             $use_elective_aditional = sanitize_text_field($_POST['use_elective_aditional']) ?? get_option('use_elective_aditional');
             $show_modal_electives = sanitize_text_field($_POST['show_modal_electives']) ?? get_option('show_modal_electives');
             $show_equivalence_projection = sanitize_text_field($_POST['show_equivalence_projection']) ?? get_option('show_equivalence_projection');
+            $show_table_subjects_coursing = sanitize_text_field($_POST['show_table_subjects_coursing']) ?? get_option('show_table_subjects_coursing');
             update_option('payment_due', $payment_due);
             update_option('virtual_access', $virtual_access);
             update_option('auto_enroll_elective', $auto_enroll_elective);
@@ -28,6 +29,7 @@ function add_admin_form_configuration_options_content()
             update_option('use_elective_aditional', $use_elective_aditional);
             update_option('show_modal_electives', $show_modal_electives);
             update_option('show_equivalence_projection', $show_equivalence_projection);
+            update_option('show_table_subjects_coursing', $show_table_subjects_coursing);
 
             // moodle
             $moodle_url = sanitize_text_field($_POST['moodle_url']) ?? get_option('moodle_url');

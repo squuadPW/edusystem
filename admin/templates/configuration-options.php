@@ -92,6 +92,10 @@
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="show-equivalence" name="show_equivalence_projection" <?php echo get_option('show_equivalence_projection') == 'on' ? 'checked' : '' ?>>
             <label for="show-equivalence"><?= __('Show equivalency subjects in student projection'); ?></label>
+          </div>          
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="show-table-subjects-coursing" name="show_table_subjects_coursing" <?php echo get_option('show_table_subjects_coursing') == 'on' ? 'checked' : '' ?>>
+            <label for="show-table-subjects-coursing"><?= __('Show table subjects coursing'); ?></label>
           </div>
         </div>
         <div id="by_moodle" style="display: none">

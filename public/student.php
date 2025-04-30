@@ -906,6 +906,16 @@ function view_access_classroom()
         return;
     }
 
+    $show_table_subjects_coursing = get_option('show_table_subjects_coursing');
+    $projection = get_projection_by_student($student_id);
+    if ($projection && $show_table_subjects_coursing) {
+        $projection_obj = json_decode($projection->projection);
+        $subjects_coursing = array_filter($projection_obj, function ($item) {
+            return $item->this_cut == true;
+        });
+        $subjects_coursing = array_values($subjects_coursing);
+    }
+
     $admin_virtual_access = get_option('virtual_access');
     include(plugin_dir_path(__FILE__) . 'templates/student-access-classroom.php');
 }
@@ -918,7 +928,7 @@ function load_feed()
     $table_students = $wpdb->prefix . 'students';
     $today = date('Y-m-d');
     $roles = $current_user->roles;
-
+    $subjects_coursing = [];
     $feeds = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_feed} WHERE max_date IS NULL OR max_date >= %s", $today));
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}' OR partner_id={$current_user->ID}");
 
