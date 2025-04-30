@@ -909,7 +909,7 @@ function view_access_classroom()
     }
 
     $show_table_subjects_coursing = get_option('show_table_subjects_coursing');
-    $projection = get_projection_by_student($student_id);
+    $projection = get_projection_by_student($student->id);
     if ($projection && $show_table_subjects_coursing) {
         $projection_obj = json_decode($projection->projection);
         $subjects_coursing = array_filter($projection_obj, function ($item) {
