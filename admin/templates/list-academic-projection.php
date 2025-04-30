@@ -46,12 +46,12 @@
 						$text_students = 'No students pending';
 					}
 				?>
-				<a data-tippy-content="<?= $text_students ?>"
+				<!-- <a data-tippy-content="<?= $text_students ?>"
 				style="margin-left: 10px; <?= $style_pending_email ?>"
 					href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_welcome_email') ?>"
 					class="button button-outline-primary help-tooltip" onclick="return confirm('Are you sure?');">
 					<?= __('Send welcome mailing', 'edusystem'); ?> (<?= $pending_emails_count ?>)
-				</a>
+				</a> -->
 			<?php } ?>
 		</div>
 		<form action="" id="post-filter" method="get">
