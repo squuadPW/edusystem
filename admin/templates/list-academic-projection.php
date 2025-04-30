@@ -38,22 +38,24 @@
 				<a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=get_moodle_notes'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to update the notes from Moodle?');"><?= __('Download moodle notes','edusystem'); ?></a>
 				<?php
 					$text_students = '';
+
+					if (!get_option('send_welcome_email_ready') || empty(get_option('send_welcome_email_ready'))) {
+						$text_students .= 'All mailings (including loaded, unloaded or elective) will be sent.';
+					}
+
+					if (get_option('send_welcome_email_ready') == $code_current_cut . ' - ' . $cut_current_cut) {
+						$text_students .= 'Only pending emails will be sent';
+					}
+
+					$text_students .= '<br>';
+					$text_students .= '<br>';
+
 					foreach ($pending_emails_students as $key => $student) {
 						$text_students .= $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . '<br>';
 					}
 
 					if (count($pending_emails_students) == 0) {
-						$text_students = 'No students pending';
-					}
-
-					if (!get_option('send_welcome_email_ready') || empty(get_option('send_welcome_email_ready'))) {
-						$text_students .= '<br>';
-						$text_students .= 'All mailings (including loaded, unloaded or elective) will be sent.';
-					}
-
-					if (get_option('send_welcome_email_ready') == $code_current_cut . ' - ' . $cut_current_cut) {
-						$text_students .= '<br>';
-						$text_students .= 'Only pending emails will be sent';
+						$text_students .= 'No students pending';
 					}
 				?>
 				<a data-tippy-content="<?= $text_students ?>"

@@ -20,6 +20,13 @@ function add_admin_form_academic_projection_content()
             $current_cut = $load['cut'];
             $download_grades = get_status_approved('CERTIFIED NOTES HIGH SCHOOL', $student->id);
 
+            $load_current_cut = load_current_cut();
+            $code_current_cut = $load_current_cut['code'];
+            $cut_current_cut = $load_current_cut['cut'];
+            if (get_option('send_welcome_email_ready') != $code_current_cut . ' - ' . $cut_current_cut) {
+                update_option('send_welcome_email_ready', '');
+            }
+
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-detail.php');
         }
 
@@ -175,6 +182,8 @@ function add_admin_form_academic_projection_content()
             foreach ($students as $key => $student) {
                 send_welcome_subjects($student->id);
             }
+
+            setcookie('message', __('Mails sent.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'fix_projections') {
@@ -397,7 +406,6 @@ function add_admin_form_academic_projection_content()
             $load_current_cut = load_current_cut();
             $code_current_cut = $load_current_cut['code'];
             $cut_current_cut = $load_current_cut['cut'];
-            update_option('send_welcome_email_ready', $code_current_cut . ' - ' . $cut_current_cut);
 
             $current_enroll_text = 'Current period and cutoff ' . $code . ' - ' . $cut;
             $enroll_moodle_count = get_count_moodle_pending();
