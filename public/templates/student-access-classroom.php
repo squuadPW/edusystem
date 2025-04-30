@@ -1,6 +1,6 @@
-<?php if ($student) { ?>
+<?php if ($student_access) { ?>
 	<div class="content-dashboard">
-		<?php if($student_access) { ?>
+		<?php if($admin_virtual_access) { ?>
 			<?php if(count($access) == 0) { ?>
 			<h4 style="font-size:18px;text-align:center; margin-bottom: 10px"><?= __('You will soon be assigned your corresponding courses and will have access to','edusystem'); ?></h4>
 		<?php } else { ?>
