@@ -886,17 +886,17 @@ function view_access_classroom()
     $roles = $current_user->roles;
     $url = URL_LARAVEL_PPADMIN;
     $student_access = false;
-    
-    if (in_array('student', $roles)) {
-        $access = is_enrolled_in_courses($student->id);
-        $student_access = true;
-    }
 
     $student_id = get_user_meta($current_user->ID, 'student_id', true);
     if (!$student_id) {
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
     } else {
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+    }
+
+    if (in_array('student', $roles)) {
+        $access = is_enrolled_in_courses($student->id);
+        $student_access = true;
     }
 
     if (!$student->moodle_student_id || $student->status_id < 2) {
