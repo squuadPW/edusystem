@@ -580,7 +580,7 @@ function generate_projection_student($student_id, $force = false) {
     return $result !== false;
 }
 
-function send_welcome_subjects($student_id)
+function send_welcome_subjects($student_id, $force = false)
 {
     global $wpdb;
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
@@ -611,12 +611,26 @@ function send_welcome_subjects($student_id)
     if (count($subjectsPendingWelcome) > 0) {
         $text = template_welcome_subjects($filteredArray, $student);
     } else {
-        if (count($filteredArray) == 0) {
-            if ($student->elective) {
-                $text = template_welcome_subjects($filteredArray, $student);
-            } else {
-                if ($student->initial_cut != $cut) {
-                    $text = template_not_enrolled($student);
+        if ($force) {
+            if (count($filteredArray) == 0) {
+                if ($student->elective) {
+                    $text = template_welcome_subjects($filteredArray, $student);
+                } else {
+                    if ($student->initial_cut != $cut) {
+                        $text = template_not_enrolled($student);
+                    }
+                }
+            }
+        } else {
+            if ((!get_option('send_welcome_email_ready') || empty(get_option('send_welcome_email_ready')))) {
+                if (count($filteredArray) == 0) {
+                    if ($student->elective) {
+                        $text = template_welcome_subjects($filteredArray, $student);
+                    } else {
+                        if ($student->initial_cut != $cut) {
+                            $text = template_not_enrolled($student);
+                        }
+                    }
                 }
             }
         }

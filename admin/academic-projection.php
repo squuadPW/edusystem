@@ -160,6 +160,11 @@ function add_admin_form_academic_projection_content()
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'send_welcome_email') {
+            $load = load_current_cut();
+            $code = $load['code'];
+            $cut = $load['cut'];
+            update_option('send_welcome_email_ready', $code . ' - ' . $cut);
+
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
             $query = $wpdb->prepare(
@@ -325,7 +330,7 @@ function add_admin_form_academic_projection_content()
             ], ['id' => $projection->id]);
 
             if ($action == 'send_email') {
-                send_welcome_subjects($projection->student_id);
+                send_welcome_subjects($projection->student_id, true);
             }
 
             setcookie('message', __('Projection adjusted successfully.', 'edusystem'), time() + 10, '/');
@@ -388,6 +393,12 @@ function add_admin_form_academic_projection_content()
             $load = load_current_cut_enrollment();
             $code = $load['code'];
             $cut = $load['cut'];
+
+            $load_current_cut = load_current_cut();
+            $code_current_cut = $load_current_cut['code'];
+            $cut_current_cut = $load_current_cut['cut'];
+            update_option('send_welcome_email_ready', $code_current_cut . ' - ' . $cut_current_cut);
+
             $current_enroll_text = 'Current period and cutoff ' . $code . ' - ' . $cut;
             $enroll_moodle_count = get_count_moodle_pending();
             $pending_emails = get_count_email_pending();
@@ -395,6 +406,11 @@ function add_admin_form_academic_projection_content()
             $pending_emails_students = $pending_emails['students'];
             $list_academic_projection = new TT_academic_projection_all_List_Table;
             $list_academic_projection->prepare_items();
+
+            if (get_option('send_welcome_email_ready') != $code_current_cut . ' - ' . $cut_current_cut) {
+                update_option('send_welcome_email_ready', '');
+            }
+
             include(plugin_dir_path(__FILE__) . 'templates/list-academic-projection.php');
         }
     }

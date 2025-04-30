@@ -45,13 +45,23 @@
 					if (count($pending_emails_students) == 0) {
 						$text_students = 'No students pending';
 					}
+
+					if (!get_option('send_welcome_email_ready') || empty(get_option('send_welcome_email_ready'))) {
+						$text_students .= '<br>';
+						$text_students .= 'All mailings (including loaded, unloaded or elective) will be sent.';
+					}
+
+					if (get_option('send_welcome_email_ready') == $code_current_cut . ' - ' . $cut_current_cut) {
+						$text_students .= '<br>';
+						$text_students .= 'Only pending emails will be sent';
+					}
 				?>
-				<!-- <a data-tippy-content="<?= $text_students ?>"
+				<a data-tippy-content="<?= $text_students ?>"
 				style="margin-left: 10px; <?= $style_pending_email ?>"
 					href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=send_welcome_email') ?>"
 					class="button button-outline-primary help-tooltip" onclick="return confirm('Are you sure?');">
 					<?= __('Send welcome mailing', 'edusystem'); ?> (<?= $pending_emails_count ?>)
-				</a> -->
+				</a>
 			<?php } ?>
 		</div>
 		<form action="" id="post-filter" method="get">
