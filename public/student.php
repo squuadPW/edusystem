@@ -885,27 +885,27 @@ function view_access_classroom()
     $table_students = $wpdb->prefix . 'students';
     $roles = $current_user->roles;
     $url = URL_LARAVEL_PPADMIN;
-    $student = false;
+    $student_access = false;
     
     if (in_array('student', $roles)) {
-        $student_id = get_user_meta($current_user->ID, 'student_id', true);
-
-        if (!$student_id) {
-            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
-        } else {
-            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
-        }
-
-        if (!$student->moodle_student_id || $student->status_id < 2) {
-            return;
-        }
-
-        $today = date('Y-m-d');
-        if ($student->max_access_date && $student->max_access_date < $today) {
-            return;
-        }
-
         $access = is_enrolled_in_courses($student->id);
+        $student_access = true;
+    }
+
+    $student_id = get_user_meta($current_user->ID, 'student_id', true);
+    if (!$student_id) {
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
+    } else {
+        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+    }
+
+    if (!$student->moodle_student_id || $student->status_id < 2) {
+        $student_access = false;
+    }
+
+    $today = date('Y-m-d');
+    if ($student->max_access_date && $student->max_access_date < $today) {
+        $student_access = false;
     }
 
     $show_table_subjects_coursing = get_option('show_table_subjects_coursing');
