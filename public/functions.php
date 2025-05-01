@@ -519,6 +519,10 @@ function change_billing_phone_checkout_field_value($order)
         $order->add_meta_data('is_scholarship', 1);
     }
 
+    if (isset($_COOKIE['crm_id']) && !empty($_COOKIE['crm_id'])) {
+        $order->add_meta_data('crm_id', $_COOKIE['crm_id']);
+    }
+
     $order->save();
 }
 
@@ -781,9 +785,8 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
             $wpdb->query($query);
         }
 
-        $crm_exist = crm_request('contacts', '?email='.$customer->user_email, 'GET', null);
-        if (count($crm_exist['items']) > 0) {
-            crm_request('contacts', $crm_exist['items'][0]['id'], 'PUT', array('status' => 'client'));
+        if ($order->get_meta('crm_id')) {
+            crm_request('contacts', $order->get_meta('crm_id'), 'PUT', array('status' => 'client'));
         }
 
         $student = get_student_detail($student_id);

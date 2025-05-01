@@ -8,9 +8,10 @@
         </div>
     </div>
 
-    <input type="hidden" id="x-api-key" value="<?= get_option('crm_token') ?? ''; ?>">
-    <input type="hidden" id="x-api-url" value="<?= get_option('crm_url') ?? ''; ?>">
-    <input type="hidden" id="x-api" value="contacts">
+    <input type="hidden" name="crm_token" id="x-api-key" value="<?= get_option('crm_token') ?? ''; ?>">
+    <input type="hidden" name="crm_url" id="x-api-url" value="<?= get_option('crm_url') ?? ''; ?>">
+    <input type="hidden" name="crm_id" id="x-api-id" value="<?= $_GET['crm_id'] ?? ''; ?>">
+    <input type="hidden" name="crm_api" id="x-api" value="contacts">
 
     <!-- DATOS DEL ESTUDIANTE -->
     <div class="grid grid-cols-12 gap-4">

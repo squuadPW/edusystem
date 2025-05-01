@@ -48,6 +48,16 @@ function save_student()
         $from_webinar = isset($_POST['from_webinar']) ? true : false;
         $one_time_payment = isset($_POST['one_time_payment']) ? true : false;
         $is_scholarship = isset($_POST['is_scholarship']) ? true : false;
+        $crm_id = isset($_POST['crm_id']) ? $_POST['crm_id'] : false;
+
+        if (!$crm_id) {
+            $crm_exist = crm_request('contacts', '?email='.$email_partner, 'GET', null);
+            if (count($crm_exist['items']) > 0) {
+                setcookie('crm_id', $crm_exist['items'][0]['id'], time() + 864000, '/');
+            }
+        } else {
+            setcookie('crm_id', $crm_id, time() + 864000, '/');
+        }
 
         if ($one_time_payment) {
             setcookie('one_time_payment', 1, time() + 864000, '/');
