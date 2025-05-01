@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("agent_last_name").value = parent.lastName;
       document.getElementById("number_partner").value = parent.phoneNumber;
       document.getElementById("email_partner").value = parent.email;
-      document.getElementById("email_partner").disabled = true;
+      document.getElementById("email_partner").readonly = true;
 
       document.getElementById("name_student").value = custom.cf_contact_nombre_del_alumno_znku_text;
       document.getElementById("lastname_student").value = custom.cf_contact_apellido_alumno_zgxz_text;
