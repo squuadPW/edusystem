@@ -51,9 +51,11 @@ function save_student()
         $crm_id = isset($_POST['crm_id']) ? $_POST['crm_id'] : false;
 
         if (!$crm_id) {
-            $crm_exist = crm_request('contacts', '?email='.$email_partner, 'GET', null);
-            if (count($crm_exist['items']) > 0) {
-                setcookie('crm_id', $crm_exist['items'][0]['id'], time() + 864000, '/');
+            if (get_option('crm_token') && get_option('crm_url')) {
+                $crm_exist = crm_request('contacts', '?email='.$email_partner, 'GET', null);
+                if (count($crm_exist['items']) > 0) {
+                    setcookie('crm_id', $crm_exist['items'][0]['id'], time() + 864000, '/');
+                }
             }
         } else {
             setcookie('crm_id', $crm_id, time() + 864000, '/');
