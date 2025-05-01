@@ -83,6 +83,47 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  const crm_id = getUrlParameter('crm_id');
+  if (crm_id) {
+    // 1. Configurar solicitud
+    let token = document.getElementById("x-api-key").value;
+    let url = document.getElementById("x-api-url").value;
+    let api = document.getElementById("x-api").value;
+    
+    const XHR = new XMLHttpRequest();
+    const endpoint = `${url}${api}/${crm_id}`;
+    
+    XHR.open("GET", endpoint, true);
+    XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    XHR.setRequestHeader("x-api-key", token);
+    XHR.responseType = "json";
+
+    // 4. Manejar respuesta
+    XHR.onload = () => {
+      // 5. Manejar errores HTTP
+      if (XHR.status !== 200) {
+        console.error('Error en la solicitud:', XHR.status, XHR.statusText);
+        return;
+      }
+
+      let custom = XHR.response.entity.custom;
+      let parent = XHR.response.entity.personal;
+      
+      //setamos valores
+      document.getElementById("agent_name").value = parent.firstName;
+      document.getElementById("agent_last_name").value = parent.lastName;
+      document.getElementById("number_partner").value = parent.phoneNumber;
+      document.getElementById("email_partner").value = parent.email;
+      document.getElementById("email_partner").disabled = true;
+
+      document.getElementById("name_student").value = custom.cf_contact_nombre_del_alumno_znku_text;
+      document.getElementById("lastname_student").value = custom.cf_contact_apellido_alumno_zgxz_text;
+    };
+
+    // 11. Enviar solicitud
+    XHR.send();
+  }
+
   if (document.getElementById("billing_first_name")) {
     document
       .getElementById("billing_first_name")
@@ -979,332 +1020,6 @@ segmentButtons.forEach((button) => {
     }
   });
 });
-
-const idBitrix = new URLSearchParams(window.location.search).get("idbitrix");
-
-if (idBitrix) {
-  document.getElementById("loading").style.display = "block";
-  const countries = {
-    AF: "Afghanistan",
-    AL: "Albania",
-    DZ: "Algeria",
-    AS: "American Samoa",
-    AD: "Andorra",
-    AO: "Angola",
-    AI: "Anguilla",
-    AQ: "Antarctica",
-    AG: "Antigua and Barbuda",
-    AR: "Argentina",
-    AM: "Armenia",
-    AW: "Aruba",
-    AU: "Australia",
-    AT: "Austria",
-    AZ: "Azerbaijan",
-    BS: "Bahamas (the)",
-    BH: "Bahrain",
-    BD: "Bangladesh",
-    BB: "Barbados",
-    BY: "Belarus",
-    BE: "Belgium",
-    BZ: "Belize",
-    BJ: "Benin",
-    BM: "Bermuda",
-    BT: "Bhutan",
-    BO: "Bolivia (Plurinational State of)",
-    BQ: "Bonaire, Sint Eustatius and Saba",
-    BA: "Bosnia and Herzegovina",
-    BW: "Botswana",
-    BV: "Bouvet Island",
-    BR: "Brazil",
-    IO: "British Indian Ocean Territory (the)",
-    BN: "Brunei Darussalam",
-    BG: "Bulgaria",
-    BF: "Burkina Faso",
-    BI: "Burundi",
-    CV: "Cabo Verde",
-    KH: "Cambodia",
-    CM: "Cameroon",
-    CA: "Canada",
-    KY: "Cayman Islands (the)",
-    CF: "Central African Republic (the)",
-    TD: "Chad",
-    CL: "Chile",
-    CN: "China",
-    CX: "Christmas Island",
-    CC: "Cocos (Keeling) Islands (the)",
-    CO: "Colombia",
-    KM: "Comoros (the)",
-    CD: "Congo (the Democratic Republic of the)",
-    CG: "Congo (the)",
-    CK: "Cook Islands (the)",
-    CR: "Costa Rica",
-    HR: "Croatia",
-    CU: "Cuba",
-    CW: "Curaçao",
-    CY: "Cyprus",
-    CZ: "Czechia",
-    CI: "Côte d'Ivoire",
-    DK: "Denmark",
-    DJ: "Djibouti",
-    DM: "Dominica",
-    DO: "Dominican Republic (the)",
-    EC: "Ecuador",
-    EG: "Egypt",
-    SV: "El Salvador",
-    GQ: "Equatorial Guinea",
-    ER: "Eritrea",
-    EE: "Estonia",
-    SZ: "Eswatini",
-    ET: "Ethiopia",
-    FK: "Falkland Islands (the) [Malvinas]",
-    FO: "Faroe Islands (the)",
-    FJ: "Fiji",
-    FI: "Finland",
-    FR: "France",
-    GF: "French Guiana",
-    PF: "French Polynesia",
-    TF: "French Southern Territories (the)",
-    GA: "Gabon",
-    GM: "Gambia (the)",
-    GE: "Georgia",
-    DE: "Germany",
-    GH: "Ghana",
-    GI: "Gibraltar",
-    GR: "Greece",
-    GL: "Greenland",
-    GD: "Grenada",
-    GP: "Guadeloupe",
-    GU: "Guam",
-    GT: "Guatemala",
-    GG: "Guernsey",
-    GN: "Guinea",
-    GW: "Guinea-Bissau",
-    GY: "Guyana",
-    HT: "Haiti",
-    HM: "Heard Island and McDonald Islands",
-    VA: "Holy See (the)",
-    HN: "Honduras",
-    HK: "Hong Kong",
-    HU: "Hungary",
-    IS: "Iceland",
-    IN: "India",
-    ID: "Indonesia",
-    IR: "Iran (Islamic Republic of)",
-    IQ: "Iraq",
-    IE: "Ireland",
-    IM: "Isle of Man",
-    IL: "Israel",
-    IT: "Italy",
-    JM: "Jamaica",
-    JP: "Japan",
-    JE: "Jersey",
-    JO: "Jordan",
-    KZ: "Kazakhstan",
-    KE: "Kenya",
-    KI: "Kiribati",
-    KP: "Korea (the Democratic People's Republic of)",
-    KR: "Korea (the Republic of)",
-    KW: "Kuwait",
-    KG: "Kyrgyzstan",
-    LA: "Lao People's Democratic Republic (the)",
-    LV: "Latvia",
-    LB: "Lebanon",
-    LS: "Lesotho",
-    LR: "Liberia",
-    LY: "Libya",
-    LI: "Liechtenstein",
-    LT: "Lithuania",
-    LU: "Luxembourg",
-    MO: "Macao",
-    MG: "Madagascar",
-    MW: "Malawi",
-    MY: "Malaysia",
-    MV: "Maldives",
-    ML: "Mali",
-    MT: "Malta",
-    MH: "Marshall Islands (the)",
-    MQ: "Martinique",
-    MR: "Mauritania",
-    MU: "Mauritius",
-    YT: "Mayotte",
-    MX: "Mexico",
-    FM: "Micronesia (Federated States of)",
-    MD: "Moldova (the Republic of)",
-    MC: "Monaco",
-    MN: "Mongolia",
-    ME: "Montenegro",
-    MS: "Montserrat",
-    MA: "Morocco",
-    MZ: "Mozambique",
-    MM: "Myanmar",
-    NA: "Namibia",
-    NR: "Nauru",
-    NP: "Nepal",
-    NL: "Netherlands (the)",
-    NC: "New Caledonia",
-    NZ: "New Zealand",
-    NI: "Nicaragua",
-    NE: "Niger (the)",
-    NG: "Nigeria",
-    NU: "Niue",
-    NF: "Norfolk Island",
-    MP: "Northern Mariana Islands (the)",
-    NO: "Norway",
-    OM: "Oman",
-    PK: "Pakistan",
-    PW: "Palau",
-    PS: "Palestine, State of",
-    PA: "Panama",
-    PG: "Papua New Guinea",
-    PY: "Paraguay",
-    PE: "Peru",
-    PH: "Philippines (the)",
-    PN: "Pitcairn",
-    PL: "Poland",
-    PT: "Portugal",
-    PR: "Puerto Rico",
-    QA: "Qatar",
-    MK: "Republic of North Macedonia",
-    RO: "Romania",
-    RU: "Russian Federation (the)",
-    RW: "Rwanda",
-    RE: "Réunion",
-    BL: "Saint Barthélemy",
-    SH: "Saint Helena, Ascension and Tristan da Cunha",
-    KN: "Saint Kitts and Nevis",
-    LC: "Saint Lucia",
-    MF: "Saint Martin (French part)",
-    PM: "Saint Pierre and Miquelon",
-    VC: "Saint Vincent and the Grenadines",
-    WS: "Samoa",
-    SM: "San Marino",
-    ST: "Sao Tome and Principe",
-    SA: "Saudi Arabia",
-    SN: "Senegal",
-    RS: "Serbia",
-    SC: "Seychelles",
-    SL: "Sierra Leone",
-    SG: "Singapore",
-    SX: "Sint Maarten (Dutch part)",
-    SK: "Slovakia",
-    SI: "Slovenia",
-    SB: "Solomon Islands",
-    SO: "Somalia",
-    ZA: "South Africa",
-    GS: "South Georgia and the South Sandwich Islands",
-    SS: "South Sudan",
-    ES: "Spain",
-    LK: "Sri Lanka",
-    SD: "Sudan (the)",
-    SR: "Suriname",
-    SJ: "Svalbard and Jan Mayen",
-    SE: "Sweden",
-    CH: "Switzerland",
-    SY: "Syrian Arab Republic",
-    TW: "Taiwan",
-    TJ: "Tajikistan",
-    TZ: "Tanzania, United Republic of",
-    TH: "Thailand",
-    TL: "Timor-Leste",
-    TG: "Togo",
-    TK: "Tokelau",
-    TO: "Tonga",
-    TT: "Trinidad and Tobago",
-    TN: "Tunisia",
-    TR: "Turkey",
-    TM: "Turkmenistan",
-    TC: "Turks and Caicos Islands (the)",
-    TV: "Tuvalu",
-    UG: "Uganda",
-    UA: "Ukraine",
-    AE: "United Arab Emirates (the)",
-    GB: "United Kingdom of Great Britain and Northern Ireland (the)",
-    UM: "United States Minor Outlying Islands (the)",
-    US: "United States of America (the)",
-    UY: "Uruguay",
-    UZ: "Uzbekistan",
-    VU: "Vanuatu",
-    VE: "Venezuela (Bolivarian Republic of)",
-    VN: "Viet Nam",
-    VG: "Virgin Islands (British)",
-    VI: "Virgin Islands (U.S.)",
-    WF: "Wallis and Futuna",
-    EH: "Western Sahara",
-    YE: "Yemen",
-    ZM: "Zambia",
-    ZW: "Zimbabwe",
-    AX: "Åland Islands",
-  };
-
-  const url = `https://api.luannerkerton.com/api/getLeadFromAes?id_bitrix=${idBitrix}`;
-  const data = { id_bitrix: idBitrix };
-
-  fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      let name = data.name.split(" ");
-      let last_name = data.last_name.split(" ");
-      let tutor = data.tutor.split(" ");
-
-      var fecha = new Date(data.birthdate);
-      fecha.setDate(fecha.getDate() + 1);
-      var fechaIso = fecha.toISOString().split("T")[0];
-      flatpickr("#birth_date_student", {
-        defaultDate: fechaIso,
-        altFormat: "m/d/Y",
-      });
-
-      // Refresh the intlTelInput library
-      document.querySelector('input[name="name_student"]').value = name[0];
-      document.querySelector('input[name="middle_name_student"]').value =
-        name[1] ?? "";
-      document.querySelector('input[name="lastname_student"]').value =
-        last_name[0];
-      document.querySelector('input[name="middle_last_name_student"]').value =
-        last_name[1] ?? "";
-      document.querySelector('input[name="agent_name"]').value = tutor[0];
-      document.querySelector('input[name="agent_last_name"]').value = tutor[1];
-      const input = document.querySelector('input[name="number_phone"]');
-      const iti = intlTelInput(input, {
-        // options
-        autoFormat: true, // disable auto formatting
-        separateDialCode: true, // separate dial code from the number
-      });
-
-      iti.setNumber(data.contact_phone);
-      document.querySelector('input[name="email_student"]').value =
-        data.contact_email;
-      switch (data.degree) {
-        case "9no (antepenúltimo)":
-          document.querySelector('select[name="grade"]').value = 1;
-          break;
-        case "10mo (penúltimo)":
-          document.querySelector('select[name="grade"]').value = 2;
-          break;
-        case "11vo (último)":
-          document.querySelector('select[name="grade"]').value = 3;
-          break;
-        case "Bachiller (Graduado)":
-          document.querySelector('select[name="grade"]').value = 4;
-          break;
-      }
-      const countryCode = Object.keys(countries).find(
-        (key) => countries[key].toLowerCase() === data.country.toLowerCase()
-      );
-      document.querySelector('select[name="country"]').value = countryCode;
-      document.querySelector('input[name="city"]').value = data.city;
-
-      document.getElementById("loading").style.display = "none";
-    })
-    .catch((error) => {
-      document.getElementById("loading").style.display = "none";
-    });
-}
 
 customFlatpickr();
 function customFlatpickr() {

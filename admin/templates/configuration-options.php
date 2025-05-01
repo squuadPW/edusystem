@@ -24,6 +24,7 @@
         <div class="segment-button active" data-option="admission"><?= __('Admission', 'edusystem'); ?></div>
         <div class="segment-button" data-option="administration"><?= __('Administration', 'edusystem'); ?></div>
         <div class="segment-button" data-option="moodle"><?= __('Moodle', 'edusystem'); ?></div>
+        <div class="segment-button" data-option="crm"><?= __('CRM', 'edusystem'); ?></div>
         <div class="segment-button" data-option="offers"><?= __('Offers', 'edusystem'); ?></div>
         <div class="segment-button" data-option="inscriptions"><?= __('Inscriptions', 'edusystem'); ?></div>
         <div class="segment-button" data-option="notifications"><?= __('Notifications', 'edusystem'); ?></div>
@@ -119,6 +120,18 @@
                     </option>
                 <?php endforeach; ?>
             </select>
+          </div>
+        </div>
+        <div id="by_crm" style="display: none">
+          <div class="form-group" style="padding: 0px 10px 10px 10px;">
+            <label for="crm_url"><?= __('CRM URL (example: https://crm.example.com/api/v1/)', 'edusystem'); ?></label> <br>
+            <input class="full-input" name="crm_url" type="text" id="crm_url"
+              value="<?= get_option('crm_url'); ?>" required>
+          </div>
+          <div class="form-group" style="padding: 0px 10px 10px 10px;">
+            <label for="crm_token"><?= __('CRM Token', 'edusystem'); ?></label> <br>
+            <input class="full-input" name="crm_token" type="text" id="crm_token"
+              value="<?= get_option('crm_token'); ?>" required>
           </div>
         </div>
         <div id="by_offers" style="display: none">

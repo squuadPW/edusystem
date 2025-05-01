@@ -39,6 +39,12 @@ function add_admin_form_configuration_options_content()
             update_option('moodle_token', $moodle_token);
             update_option('public_course_id', $public_course_id);
 
+            // crm
+            $crm_url = sanitize_text_field($_POST['crm_url']) ?? get_option('crm_url');
+            $crm_token = sanitize_text_field($_POST['crm_token']) ?? get_option('crm_token');
+            update_option('crm_url', $crm_url);
+            update_option('crm_token', $crm_token);
+
             // offers
             $offer_complete = sanitize_text_field($_POST['offer_complete']) ?? get_option('offer_complete');
             $offer_quote = sanitize_text_field($_POST['offer_quote']) ?? get_option('offer_quote');

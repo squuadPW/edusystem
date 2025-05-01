@@ -12,6 +12,7 @@ require plugin_dir_path(__FILE__) . 'academic_services.php';
 require plugin_dir_path(__FILE__) . 'endpoint.php';
 require plugin_dir_path(__FILE__) . 'moodle.php';
 require plugin_dir_path(__FILE__) . 'automatically_enrollment.php';
+require plugin_dir_path(__FILE__) . 'escala/rest.php';
 
 function form_plugin_scripts()
 {
@@ -760,6 +761,7 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
     update_user_meta($customer_id, 'cuote_pending', 0);
 
     if ($order->get_meta('student_id')) {
+        $customer = get_user_by('id', $customer_id);
         $student_id = $order->get_meta('student_id');
         create_user_student($student_id);
         $items = $order->get_items();
@@ -779,8 +781,9 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
             $wpdb->query($query);
         }
 
-        if ($order->get_meta('id_bitrix')) {
-            sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());
+        $crm_exist = crm_request('contacts', '?email='.$customer->user_email, 'GET', null);
+        if (count($crm_exist['items']) > 0) {
+            crm_request('contacts', $crm_exist['items'][0]['id'], 'PUT', array('status' => 'client'));
         }
 
         $student = get_student_detail($student_id);

@@ -5,11 +5,10 @@ document.addEventListener('DOMContentLoaded',function(){
     number_phone_account = document.getElementById('number_phone_account');
     number_billing_phone = document.getElementById('billing_phone');
     number_rector_phone = document.getElementById('rector_phone');
-    const idBitrix = new URLSearchParams(window.location.search).get('idbitrix');
 
     jQuery(function($){
 
-        if(number_phone && !idBitrix){
+        if(number_phone){
 
             let iti_number_phone = window.intlTelInput(number_phone, {
                 nationalMode: true,

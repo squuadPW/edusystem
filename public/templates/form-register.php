@@ -1,5 +1,5 @@
 <form method="POST"
-    action="<?php the_permalink(); ?>?action=save_student&idbitrix=<?php echo $_GET['idbitrix'] ?? null ?>"
+    action="<?php the_permalink(); ?>?action=save_student"
     class="form-aes" autocomplete="off">
     <div id="loading"
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); text-align: center; font-weight: 600; font-style: italic; z-index: 1000;">
@@ -7,6 +7,10 @@
             <div class="loader"></div>
         </div>
     </div>
+
+    <input type="hidden" id="x-api-key" value="<?= get_option('crm_token') ?? ''; ?>">
+    <input type="hidden" id="x-api-url" value="<?= get_option('crm_url') ?? ''; ?>">
+    <input type="hidden" id="x-api" value="contacts">
 
     <!-- DATOS DEL ESTUDIANTE -->
     <div class="grid grid-cols-12 gap-4">
@@ -45,7 +49,7 @@
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name_student"><?= __('Name', 'edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
+            <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" id="name_student" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="middle_name_student"><?= __('Second name', 'edusystem'); ?><span class="required">*</span></label>
@@ -53,7 +57,7 @@
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="lastname_student"><?= __('Last name', 'edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
+            <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" id="lastname_student" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="middle_last_name_student"><?= __('Second last name', 'edusystem'); ?><span class="required">*</span></label>

@@ -2,7 +2,7 @@
     <?= __('Applicant', 'edusystem'); ?>
 </div>
 <form method="POST"
-    action="<?php the_permalink(); ?>?action=save_student&idbitrix=<?php echo $_GET['idbitrix'] ?? null ?>"
+    action="<?php the_permalink(); ?>?action=save_student"
     class="form-aes">
 
     <!-- DATOS DEL ESTUDIANTE -->

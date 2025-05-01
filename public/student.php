@@ -76,11 +76,6 @@ function save_student()
         setcookie('gender', $gender, time() + 864000, '/');
         setcookie('password', $password, time() + 864000, '/');
 
-        $id_bitrix = $_GET['idbitrix'] ?? null;
-        if (isset($id_bitrix)) {
-            setcookie('id_bitrix', $id_bitrix, time() + 864000, '/');
-        }
-
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);
             $name_institute = strtoupper($institute->name);

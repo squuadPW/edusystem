@@ -2,6 +2,79 @@ jQuery(document).ready(function ($) {
     $(".js-example-basic").select2();
 });
 
+// Configuration object that maps options to their forms and required fields
+const formConfig = {
+    admission: {
+        formId: "by_admission",
+        requiredFields: ["documents_ok", "documents_warning", "documents_red"]
+    },
+    administration: {
+        formId: "by_administration",
+        requiredFields: ["payment_due"]
+    },
+    moodle: {
+        formId: "by_moodle",
+        requiredFields: ["moodle_url", "moodle_token"]
+    },
+    crm: {
+        formId: "by_crm",
+        requiredFields: ["crm_url", "crm_token"]
+    },
+    offers: {
+        formId: "by_offers",
+        requiredFields: []
+    },
+    inscriptions: {
+        formId: "inscriptions",
+        requiredFields: [],
+        hideSaveButton: true
+    },
+    notifications: {
+        formId: "by_notifications",
+        requiredFields: []
+    }
+};
+
+// Get all form IDs
+const allFormIds = Object.values(formConfig).map(config => config.formId);
+
+// Function to handle form visibility and required fields
+function handleFormSelection(selectedOption) {
+    // Hide all forms first
+    allFormIds.forEach(formId => {
+        const form = document.getElementById(formId);
+        if (form) form.style.display = "none";
+    });
+
+    // Get configuration for selected option
+    const config = formConfig[selectedOption] || formConfig.notifications;
+    
+    // Show selected form
+    const selectedForm = document.getElementById(config.formId);
+    if (selectedForm) selectedForm.style.display = "block";
+
+    // Handle save button visibility
+    const saveButton = document.getElementById("save-configuration");
+    if (saveButton) {
+        saveButton.style.display = config.hideSaveButton ? "none" : "block";
+    }
+
+    // Reset all required fields first
+    Object.values(formConfig).forEach(config => {
+        config.requiredFields.forEach(fieldName => {
+            const field = document.querySelector(`input[name="${fieldName}"]`);
+            if (field) field.required = false;
+        });
+    });
+
+    // Set required fields for selected form
+    config.requiredFields.forEach(fieldName => {
+        const field = document.querySelector(`input[name="${fieldName}"]`);
+        if (field) field.required = true;
+    });
+}
+
+// Add click event listeners to segment buttons
 const segmentButtons = document.querySelectorAll(".segment-button");
 segmentButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
@@ -11,237 +84,8 @@ segmentButtons.forEach((button) => {
         // Add active class to the clicked button
         event.target.classList.add("active");
 
-        // Get the currently selected option
+        // Get the currently selected option and handle form selection
         const selectedOption = event.target.getAttribute("data-option");
-        if (selectedOption == "admission") {
-            const formAdministration = document.getElementById("by_administration");
-            formAdministration.style.display = "none";
-
-            const formNotifications = document.getElementById("by_notifications");
-            formNotifications.style.display = "none";
-
-            const formMoodle = document.getElementById("by_moodle");
-            formMoodle.style.display = "none";
-
-            const formOffers = document.getElementById("by_offers");
-            formOffers.style.display = "none";
-
-            const formInscriptions = document.getElementById("inscriptions");
-            formInscriptions.style.display = "none";
-
-            const formAdmission = document.getElementById("by_admission");
-            formAdmission.style.display = "block";
-
-            const saveButtonConfiguration = document.getElementById("save-configuration");
-            saveButtonConfiguration.style.display = "block";
-
-            // form notifications
-            // document.querySelector('input[name="email_coordination"]').required = false;
-            // document.querySelector('input[name="email_academic_management"]').required = false;
-            // document.querySelector('input[name="email_manager"]').required = false;
-
-            // form administration
-            document.querySelector('input[name="payment_due"]').required = false;
-
-            // form moodle
-            document.querySelector('input[name="moodle_url"]').required = false;
-            document.querySelector('input[name="moodle_token"]').required = false;
-
-            // form admission
-            document.querySelector('input[name="documents_ok"]').required = true;
-            document.querySelector('input[name="documents_warning"]').required = true;
-            document.querySelector('input[name="documents_red"]').required = true;
-        } else if(selectedOption == "administration") {
-            const formAdmission = document.getElementById("by_admission");
-            formAdmission.style.display = "none";
-
-            const formNotifications = document.getElementById("by_notifications");
-            formNotifications.style.display = "none";
-
-            const formMoodle = document.getElementById("by_moodle");
-            formMoodle.style.display = "none";
-
-            const formOffers = document.getElementById("by_offers");
-            formOffers.style.display = "none";
-
-            const formInscriptions = document.getElementById("inscriptions");
-            formInscriptions.style.display = "none";
-
-            const formAdministration = document.getElementById("by_administration");
-            formAdministration.style.display = "block";
-
-            const saveButtonConfiguration = document.getElementById("save-configuration");
-            saveButtonConfiguration.style.display = "block";
-
-            // form notifications
-            // document.querySelector('input[name="email_coordination"]').required = false;
-            // document.querySelector('input[name="email_academic_management"]').required = false;
-            // document.querySelector('input[name="email_manager"]').required = false;
-
-            // form administration
-            document.querySelector('input[name="payment_due"]').required = true;
-
-            // form moodle
-            document.querySelector('input[name="moodle_url"]').required = false;
-            document.querySelector('input[name="moodle_token"]').required = false;
-
-            // form admission
-            document.querySelector('input[name="documents_ok"]').required = false;
-            document.querySelector('input[name="documents_warning"]').required = false;
-            document.querySelector('input[name="documents_red"]').required = false;
-        } else if(selectedOption == "moodle") {
-            const formAdmission = document.getElementById("by_admission");
-            formAdmission.style.display = "none";
-
-            const formNotifications = document.getElementById("by_notifications");
-            formNotifications.style.display = "none";
-
-            const formAdministration = document.getElementById("by_administration");
-            formAdministration.style.display = "none";
-
-            const formOffers = document.getElementById("by_offers");
-            formOffers.style.display = "none";
-
-            const formInscriptions = document.getElementById("inscriptions");
-            formInscriptions.style.display = "none";
-
-            const formMoodle = document.getElementById("by_moodle");
-            formMoodle.style.display = "block";
-
-            const saveButtonConfiguration = document.getElementById("save-configuration");
-            saveButtonConfiguration.style.display = "block";
-
-            // form notifications
-            // document.querySelector('input[name="email_coordination"]').required = false;
-            // document.querySelector('input[name="email_academic_management"]').required = false;
-            // document.querySelector('input[name="email_manager"]').required = false;
-
-            // form administration
-            document.querySelector('input[name="payment_due"]').required = false;
-
-            // form moodle
-            document.querySelector('input[name="moodle_url"]').required = true;
-            document.querySelector('input[name="moodle_token"]').required = true;
-
-            // form admission
-            document.querySelector('input[name="documents_ok"]').required = false;
-            document.querySelector('input[name="documents_warning"]').required = false;
-            document.querySelector('input[name="documents_red"]').required = false;
-        } else if(selectedOption == "offers") {
-            const formAdmission = document.getElementById("by_admission");
-            formAdmission.style.display = "none";
-
-            const formNotifications = document.getElementById("by_notifications");
-            formNotifications.style.display = "none";
-
-            const formAdministration = document.getElementById("by_administration");
-            formAdministration.style.display = "none";
-
-            const formMoodle = document.getElementById("by_moodle");
-            formMoodle.style.display = "none";
-
-            const formInscriptions = document.getElementById("inscriptions");
-            formInscriptions.style.display = "none";
-
-            const formOffers = document.getElementById("by_offers");
-            formOffers.style.display = "block";
-
-            const saveButtonConfiguration = document.getElementById("save-configuration");
-            saveButtonConfiguration.style.display = "block";
-
-            // form notifications
-            // document.querySelector('input[name="email_coordination"]').required = false;
-            // document.querySelector('input[name="email_academic_management"]').required = false;
-            // document.querySelector('input[name="email_manager"]').required = false;
-
-            // form administration
-            document.querySelector('input[name="payment_due"]').required = false;
-
-            // form moodle
-            document.querySelector('input[name="moodle_url"]').required = false;
-            document.querySelector('input[name="moodle_token"]').required = false;
-
-            // form admission
-            document.querySelector('input[name="documents_ok"]').required = false;
-            document.querySelector('input[name="documents_warning"]').required = false;
-            document.querySelector('input[name="documents_red"]').required = false;
-        } else if(selectedOption == "inscriptions") {
-            const formAdmission = document.getElementById("by_admission");
-            formAdmission.style.display = "none";
-
-            const formNotifications = document.getElementById("by_notifications");
-            formNotifications.style.display = "none";
-
-            const formAdministration = document.getElementById("by_administration");
-            formAdministration.style.display = "none";
-
-            const formMoodle = document.getElementById("by_moodle");
-            formMoodle.style.display = "none";
-
-            const formOffers = document.getElementById("by_offers");
-            formOffers.style.display = "none";
-
-            const formInscriptions = document.getElementById("inscriptions");
-            formInscriptions.style.display = "block";
-
-            const saveButtonConfiguration = document.getElementById("save-configuration");
-            saveButtonConfiguration.style.display = "none";
-
-            // form notifications
-            // document.querySelector('input[name="email_coordination"]').required = false;
-            // document.querySelector('input[name="email_academic_management"]').required = false;
-            // document.querySelector('input[name="email_manager"]').required = false;
-
-            // form administration
-            document.querySelector('input[name="payment_due"]').required = false;
-
-            // form moodle
-            document.querySelector('input[name="moodle_url"]').required = false;
-            document.querySelector('input[name="moodle_token"]').required = false;
-
-            // form admission
-            document.querySelector('input[name="documents_ok"]').required = false;
-            document.querySelector('input[name="documents_warning"]').required = false;
-            document.querySelector('input[name="documents_red"]').required = false;
-        } else {
-            const formAdmission = document.getElementById("by_admission");
-            formAdmission.style.display = "none";
-
-            const formAdministration = document.getElementById("by_administration");
-            formAdministration.style.display = "none";
-
-            const formMoodle = document.getElementById("by_moodle");
-            formMoodle.style.display = "none";
-
-            const formOffers = document.getElementById("by_offers");
-            formOffers.style.display = "none";
-
-            const formInscriptions = document.getElementById("inscriptions");
-            formInscriptions.style.display = "none";
-
-            const formNotifications = document.getElementById("by_notifications");
-            formNotifications.style.display = "block";
-
-            const saveButtonConfiguration = document.getElementById("save-configuration");
-            saveButtonConfiguration.style.display = "block";
-
-            // form notifications
-            // document.querySelector('input[name="email_coordination"]').required = true;
-            // document.querySelector('input[name="email_academic_management"]').required = true;
-            // document.querySelector('input[name="email_manager"]').required = true;
-
-            // form administration
-            document.querySelector('input[name="payment_due"]').required = false;
-
-            // form moodle
-            document.querySelector('input[name="moodle_url"]').required = false;
-            document.querySelector('input[name="moodle_token"]').required = false;
-
-            // form admission
-            document.querySelector('input[name="documents_ok"]').required = false;
-            document.querySelector('input[name="documents_warning"]').required = false;
-            document.querySelector('input[name="documents_red"]').required = false;
-            
-        }
+        handleFormSelection(selectedOption);
     });
 });
