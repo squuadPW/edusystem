@@ -2,6 +2,10 @@
 
 
 function crm_request($api, $query, $method, $body) {
+    if (!get_option('crm_token') || !get_option('crm_url')) {
+        return;
+    }
+
     $api_key = get_option('crm_token') ?? '';
     
     if (empty($api_key)) {
