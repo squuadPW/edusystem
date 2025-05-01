@@ -787,7 +787,7 @@ function status_order_completed($order, $order_id, $customer_id, $status_registe
 
         if ($order->get_meta('crm_id')) {
             crm_request('contacts', $order->get_meta('crm_id'), 'PUT', array('status' => 'client'));
-            $data = array('contactId' => $order->get_meta('crm_id'), 'duration' => 15, 'startAt' => date('Y-m-d\TH:i:s'), 'title' => 'Compra completada', 'type' => 'venta', 'status' => 'completed');
+            $data = array('contactId' => $order->get_meta('crm_id'), 'duration' => 15, 'startAt' => date('Y-m-d\TH:i:s'), 'title' => 'Compra completada', 'type' => 'SALE', 'status' => 'completed');
             crm_request('activities', '', 'POST', $data);
         }
 
