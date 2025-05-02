@@ -895,6 +895,7 @@ function view_access_classroom()
     $roles = $current_user->roles;
     $url = URL_LARAVEL_PPADMIN;
     $student_access = false;
+    $error_access = false;
 
     $student_id = get_user_meta($current_user->ID, 'student_id', true);
     if (!$student_id) {
@@ -908,13 +909,19 @@ function view_access_classroom()
         $student_access = true;
     }
 
-    if (!$student->moodle_student_id || $student->status_id < 2) {
+    if (!$student->moodle_student_id) {
         $student_access = false;
+    }
+
+    if ($student->moodle_student_id && $student->status_id < 2) {
+        $student_access = false;
+        $error_access = 'Some of your documents required for classroom access have been declined, please check the documents area for more information.';
     }
 
     $today = date('Y-m-d');
     if ($student->max_access_date && $student->max_access_date < $today) {
         $student_access = false;
+        $error_access = 'Classroom access has been removed because you have overdue payments. Please pay the outstanding fees in order to continue to have access to the classroom.';
     }
 
     $show_table_subjects_coursing = get_option('show_table_subjects_coursing');
