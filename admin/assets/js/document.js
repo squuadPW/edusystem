@@ -323,6 +323,20 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+
+  var modalCloseElementsChangeDeadline = document.querySelectorAll(
+    "#change-deadline-exit-icon, #change-deadline-exit-button"
+  );
+  if (modalCloseElementsChangeDeadline) {
+    modalCloseElementsChangeDeadline.forEach(function (element) {
+      element.addEventListener("click", function () {
+        document.getElementById('date_input_container').style.display = 'block';
+        document.getElementById("change-deadline-form").reset();
+        document.getElementById("change-deadline-modal").style.display = "none";
+      });
+    });
+  }
+
   var modalCloseElementsCertificateDocument = document.querySelectorAll(
     "#documentcertificate-exit-icon, #documentcertificate-exit-button"
   );
@@ -828,4 +842,33 @@ function uploadDocument(doc) {
 
   const modal = document.getElementById("upload-modal");
   modal.style.display = "block";
+}
+
+function changeDeadline(doc) {
+  document.querySelector("input[name=document_change_deadline_id]").value = doc.id;
+  document.querySelector("input[name=document_change_deadline_date]").value = doc.max_date_upload;
+  document.querySelector("input[name=document_change_deadline_name]").value =
+    doc.document_id;
+  document.getElementById("document_change_deadline_text").innerHTML = doc.document_id;
+
+  const modal = document.getElementById("change-deadline-modal");
+  modal.style.display = "block";
+}
+
+function toggleDateInput() {
+  // Obtiene referencias a los elementos del DOM
+  var checkbox = document.getElementById('allow_empty_date');
+  var dateContainer = document.getElementById('date_input_container');
+  var dateInput = document.getElementById('document_change_deadline_date');
+  
+  if (checkbox.checked) {
+      // Si el checkbox está marcado:
+      dateContainer.style.display = 'none';  // Oculta el contenedor del input de fecha
+      dateInput.removeAttribute('required');  // Quita el atributo required
+      dateInput.value = '';  // Limpia el valor del input
+  } else {
+      // Si el checkbox está desmarcado:
+      dateContainer.style.display = 'block';  // Muestra el contenedor del input de fecha
+      dateInput.setAttribute('required', 'required');  // Agrega el atributo required
+  }
 }

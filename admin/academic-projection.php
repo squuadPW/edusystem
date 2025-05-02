@@ -202,7 +202,7 @@ function add_admin_form_academic_projection_content()
         } else if (isset($_GET['action']) && $_GET['action'] == 'set_max_date_upload_at') {
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
-            $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
+            $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE initial_cut = 'E' ORDER BY id DESC");
             foreach ($students as $key => $student) {
                 update_max_upload_at($student->id);
             }

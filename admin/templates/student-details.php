@@ -493,8 +493,8 @@
             <thead>
                 <tr>
                     <th colspan="3" scope="col" class="manage-column column-primary column-title"><?= __('Document', 'edusystem') ?></th>
-                    <th colspan="2" scope="col" class="manage-column column-title-translate"><?= __('Status', 'edusystem') ?></th>
-                    <th colspan="7" scope="col" class="manage-column column-price"><?= __('Actions', 'edusystem') ?></th>
+                    <th colspan="1" scope="col" class="manage-column column-title-translate"><?= __('Status', 'edusystem') ?></th>
+                    <th colspan="8" scope="col" class="manage-column column-price"><?= __('Actions', 'edusystem') ?></th>
                 </tr>
             </thead>
             <tbody id="table-documents">
@@ -508,12 +508,12 @@
                                 <?php endif; ?>
                                 <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                             </td>
-                            <td colspan="2" id="<?= 'td_document_' . $document->document_id; ?>" data-colname="<?= __('Status', 'edusystem'); ?>">
+                            <td colspan="1" id="<?= 'td_document_' . $document->document_id; ?>" data-colname="<?= __('Status', 'edusystem'); ?>">
                                 <b>
                                     <?= $status = get_status_document($document->status); ?>
                                 </b>
                             </td>
-                            <td colspan="7" data-colname="<?= __('Actions', 'edusystem'); ?>">
+                            <td colspan="8" data-colname="<?= __('Actions', 'edusystem'); ?>">
                                 <a target="_blank" onclick='uploadDocument(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document" style="color: #149dcd; border-color: #149dcd;"><span class='dashicons dashicons-upload'></span><?= __('Upload', 'edusystem'); ?></button></a>
                                 <?php if ($document->status > 0): ?>
                                     <a target="_blank" onclick='watchDetails(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document" style="color: #737983; border-color: #737983;"><?= __('View detail', 'edusystem'); ?></button></a>
@@ -535,6 +535,7 @@
                                             data-status="3" class="button change-status button-danger-outline" style="color: red; border-color: red;"><?= __('Decline', 'edusystem'); ?></button>
                                     <?php endif; ?>
                                 <?php endif; ?>
+                                <a target="_blank" onclick='changeDeadline(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document" style="color: #cd1414; border-color: #cd1414;"><span class='dashicons dashicons-clock'></span><?= __('Change deadline', 'edusystem'); ?></button></a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -656,6 +657,34 @@
     </form>
 </div>
 
+<div id='change-deadline-modal' class='modal' style='display:none'>
+    <form id="change-deadline-form" method="post" action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=change_deadline'); ?>" enctype="multipart/form-data">
+        <div class='modal-content' style="width: 70%;">
+            <div class="modal-header">
+            <h3 style="font-size:20px;"><?= __('Change deadline') ?> <span id="document_change_deadline_text"></span></h3>
+                <span id="change-deadline-exit-icon" class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+            </div>
+            <div class="modal-body" style="padding:10px;">
+                <input type="hidden" name="document_change_deadline_id">
+                <input type="hidden" name="document_change_deadline_name">
+                <input type="hidden" name="student_id" value="<?= $student->id; ?>">
+                <div id="date_input_container">
+                    <label for="document_change_deadline_date">Date</label><br>
+                    <input type="date" name="document_change_deadline_date" id="document_change_deadline_date" required>
+                </div>
+                <div style="margin-top: 10px;">
+                    <input type="checkbox" id="allow_empty_date" name="allow_empty_date" onchange="toggleDateInput()">
+                    <label for="allow_empty_date"><?= __('Remove deadline', 'edusystem'); ?></label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="change-deadline-button" type="submit" class="button button-outline-primary modal-close"><?= __('Change','edusystem'); ?></button>
+                <button id="change-deadline-exit-button" type="button" class="button button-danger modal-close"><?= __('Exit','edusystem'); ?></button>
+            </div>
+        </div>
+    </form>
+</div>
+
 <?php if(!empty($documents_certificates)) { ?>
 <div id='documentcertificate-modal' class='modal' style='display:none'>
     <div class='modal-content' style="width: 70%;">
@@ -686,3 +715,20 @@
 </div>
 <?php include(plugin_dir_path(__FILE__) . 'document-export.php'); ?>
 <?php } ?>
+
+<script>
+function toggleDateInput() {
+    var checkbox = document.getElementById('allow_empty_date');
+    var dateContainer = document.getElementById('date_input_container');
+    var dateInput = document.getElementById('document_change_deadline_date');
+    
+    if (checkbox.checked) {
+        dateContainer.style.display = 'none';
+        dateInput.removeAttribute('required');
+        dateInput.value = '';
+    } else {
+        dateContainer.style.display = 'block';
+        dateInput.setAttribute('required', 'required');
+    }
+}
+</script>

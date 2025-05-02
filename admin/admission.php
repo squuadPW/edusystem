@@ -320,6 +320,25 @@ function add_admin_form_admission_content()
                 exit;
             }
 
+            if ($_GET['action'] == 'change_deadline') {
+                $table_student_documents = $wpdb->prefix . 'student_documents';
+                $id = $_POST['student_id'];
+                $document_id = $_POST['document_change_deadline_id'];
+                $allow_empty_date = $_POST['allow_empty_date'];
+                $document_name = $_POST['document_change_deadline_name'];
+                $date = $_POST['document_change_deadline_date'];
+
+                if ($allow_empty_date == 'on') {
+                    $date = null;
+                }
+
+                $wpdb->update($table_student_documents, ['max_date_upload' => $date], ['student_id' => $id, 'id' => $document_id]);
+
+                wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
+                exit;
+            }
+
+
             if ($_GET['action'] == 'update_status_student') {
                 $status_id = $_GET['status_id'];
                 $student_id = $_GET['student_id'];
@@ -1274,8 +1293,8 @@ function generate_documents_html($student_id, $document_id)
         if ($document->id == $document_id) {
             $html .= '<tr id="tr_document_' . $document->id . '">';
             $html .= '<td class="column-primary" colspan="3">' . get_name_document($document->document_id) . "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
-            $html .= '<td colspan="2" id="td_document_' . $document->document_id . '" data-colname="' . __('Status', 'edusystem') . '"><b>' . get_status_document($document->status) . '</b></td>';
-            $html .= '<td colspan="7" data-colname="' . __('Actions', 'edusystem') . '">';
+            $html .= '<td colspan="1" id="td_document_' . $document->document_id . '" data-colname="' . __('Status', 'edusystem') . '"><b>' . get_status_document($document->status) . '</b></td>';
+            $html .= '<td colspan="8" data-colname="' . __('Actions', 'edusystem') . '">';
             $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'  style='color: #149dcd; border-color: #149dcd;'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'edusystem') . "</button></a>";
 
             if ($document->status > 0) {
@@ -1295,9 +1314,10 @@ function generate_documents_html($student_id, $document_id)
                 }
 
                 if ($document->status != 5 && $document->status != 3) {
-                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="3" class="button change-status button-danger-outline" style="margin-left: 3px; margin-right: 3px; color: red; border-color: red;">' . __('Decline', 'edusystem') . '</button>';
+                    $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="3" class="button change-status button-danger-outline" style="margin-right: 3px; color: red; border-color: red;">' . __('Decline', 'edusystem') . '</button>';
                 }
             }
+            $html .= "<a style='margin-right: 3px;' target='_blank' onclick='changeDeadline(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'  style='color: #cd1414; border-color: #cd1414;'><span class='dashicons dashicons-clock'></span>" . __('Change deadline', 'edusystem') . "</button></a>";
             $html .= "</td></tr>";
         }
     }
