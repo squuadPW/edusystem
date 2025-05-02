@@ -503,6 +503,9 @@
                         <tr id="<?= 'tr_document_' . $document->id; ?>">
                             <td class="column-primary" colspan="3">
                                 <?= $name = get_name_document($document->document_id); ?>
+                                <?php if ($document->max_date_upload): ?>
+                                    <span class="deadline">- DEADLINE: <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
+                                <?php endif; ?>
                                 <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                             </td>
                             <td colspan="2" id="<?= 'td_document_' . $document->document_id; ?>" data-colname="<?= __('Status', 'edusystem'); ?>">
