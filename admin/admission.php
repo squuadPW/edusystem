@@ -1306,7 +1306,7 @@ function generate_documents_html($student_id, $document_id)
 
             if ($document->status > 0) {
                 $html .= "<a style='margin-right: 3px;' target='_blank' onclick='watchDetails(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document' style='color: #737983; border-color: #737983;'>" . __('View detail', 'edusystem') . "</button></a>";
-                $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '"><button type="button" class="button button-primary-outline other-buttons-document" style="color: #737983; border-color: #737983;">' . __('View documment', 'edusystem') . '</button></a>';
+                $html .= '<a target="_blank" href="' . wp_get_attachment_url($document->attachment_id) . '"><button type="button" class="button button-primary-outline other-buttons-document" style="color: #737983; border-color: #737983;">' . __('View document', 'edusystem') . '</button></a>';
 
                 if ($document->status != 1) {
                     $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="1" class="button change-status button-warning-outline" style="margin-left: 3px; margin-right: 3px; color: #c7850b; border-color: #c7850b;">' . __('Revert', 'edusystem') . '</button>';

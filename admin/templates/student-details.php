@@ -517,7 +517,7 @@
                                 <a target="_blank" onclick='uploadDocument(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document" style="color: #149dcd; border-color: #149dcd;"><span class='dashicons dashicons-upload'></span><?= __('Upload', 'edusystem'); ?></button></a>
                                 <?php if ($document->status > 0): ?>
                                     <a target="_blank" onclick='watchDetails(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document" style="color: #737983; border-color: #737983;"><?= __('View detail', 'edusystem'); ?></button></a>
-                                    <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>"><button type="button" class="button button-primary-outline other-buttons-document" style="color: #737983; border-color: #737983;"><?= __('View documment', 'edusystem'); ?></button></a>
+                                    <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>"><button type="button" class="button button-primary-outline other-buttons-document" style="color: #737983; border-color: #737983;"><?= __('View document', 'edusystem'); ?></button></a>
                                     <?php if ($document->status != 1) { ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
                                             data-status="1" class="button change-status button-warning-outline" style="color: #c7850b; border-color: #c7850b;"><?= __('Revert', 'edusystem'); ?></button>
