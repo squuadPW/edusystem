@@ -38,6 +38,7 @@ function add_admin_form_enrollments_content()
             $calification = $_POST['calification'];
 
             $subject = get_subject_details_code($code_subject);
+            update_max_upload_at($projection->student_id);
 
             //update
             if (isset($enrollment_id) && !empty($enrollment_id)) {

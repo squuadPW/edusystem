@@ -69,6 +69,7 @@ function adjust_projection_student(WP_REST_Request $request)
         'calification' => $calification,
     ]);
 
+    update_max_upload_at($projection->student_id);
     wp_send_json(array('success' => true));
     exit;
 }

@@ -351,6 +351,7 @@ function add_admin_form_academic_projection_content()
                 send_welcome_subjects($projection->student_id, true);
             }
 
+            update_max_upload_at($projection->student_id);
             setcookie('message', __('Projection adjusted successfully.', 'edusystem'), time() + 10, '/');
             setcookie('message-error', $errors, time() + 3600, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));

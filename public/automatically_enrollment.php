@@ -305,6 +305,8 @@ function load_automatically_enrollment($expected_projection, $student)
             update_elective_student($student->id, 1);
         }
     }
+
+    update_max_upload_at($student->id);
 }
 
 function load_available_electives($student, $code, $cut)
