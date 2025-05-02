@@ -687,6 +687,31 @@ function view_pending_documents(){
 
 add_action('woocommerce_account_dashboard','view_pending_documents',3);
 
+
+function get_document_status_class($status) {
+    $status_colors = [
+        'No sent' => '',
+        'Sent' => 'blue',
+        'Processing' => 'yellow',
+        'Declined' => 'red',
+        'Expired' => 'red',
+        'Waiting update' => 'red',
+        'Approved' => 'green'
+    ];
+    return isset($status_colors[$status]) ? $status_colors[$status] : '';
+}
+
+function should_display_document($document) {
+    $pending_statuses = [
+        0,
+        1,
+        3,
+        4,
+        6
+    ];
+    return in_array($document->status, $pending_statuses);
+}
+
 function get_name_document($document_id){
     /*
     $name = match ($document_id) {

@@ -924,6 +924,12 @@ function view_access_classroom()
         $error_access = 'Classroom access has been removed because you have overdue payments. Please pay the outstanding fees in order to continue to have access to the classroom.';
     }
 
+    $expired_documents = expired_documents($student->id);
+    if ($expired_documents) {
+        $student_access = false;
+        $error_access = 'The deadline for uploading some documents has expired, removing your access to the virtual classroom. We invite you to access your documents area for more information.';
+    }
+
     $show_table_subjects_coursing = get_option('show_table_subjects_coursing');
     $projection = get_projection_by_student($student->id);
     if ($projection && $show_table_subjects_coursing) {

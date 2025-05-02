@@ -63,6 +63,13 @@
             <span>></span><input type="number" id="payment-due" name="payment_due"
               value="<?php echo get_option('payment_due') ?>" required>
           </div>
+          <div class="form-group">
+            <a style="margin: 5px"
+              href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=set_max_access_date') ?>"
+              class="button button-outline-primary" onclick="return confirm('Are you sure?');">
+              <?= __('Update max date students', 'edusystem'); ?>
+            </a>
+          </div>
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
             <label
               for="payment-due"><?= __('Days allotted to upload proof of studies since first enrollment (greater than)'); ?></label>
@@ -72,9 +79,9 @@
           </div>
           <div class="form-group">
             <a style="margin: 5px"
-              href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=set_max_access_date') ?>"
+              href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=set_max_date_upload_at') ?>"
               class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-              <?= __('Update max date students', 'edusystem'); ?>
+              <?= __('Update max date upload at', 'edusystem'); ?>
             </a>
           </div>
           <div class="form-group" style="padding: 10px">

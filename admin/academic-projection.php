@@ -199,6 +199,15 @@ function add_admin_form_academic_projection_content()
             clear_students_electives();
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
             exit;
+        } else if (isset($_GET['action']) && $_GET['action'] == 'set_max_date_upload_at') {
+            global $wpdb;
+            $table_students = $wpdb->prefix . 'students';
+            $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
+            foreach ($students as $key => $student) {
+                update_max_upload_at($student->id);
+            }
+            wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
+            exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'get_moodle_notes') {
             get_moodle_notes();
             setcookie('message', __('Successfully updated notes for the students.', 'edusystem'), time() + 3600, '/');
@@ -1183,4 +1192,39 @@ function get_academic_ready($student_id)
     }
 
     return false;
+}
+
+function update_max_upload_at($student_id)
+{
+    try {
+        global $wpdb;
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+        $table_student_documents = $wpdb->prefix . 'student_documents';
+        $inscription = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id={$student_id} ORDER BY id ASC LIMIT 1");
+    
+        if (!$inscription || !$inscription->created_at) {
+            return;
+        }
+
+        $today = date('Y-m-d');
+        $date = date('Y-m-d', strtotime($inscription->created_at));
+        $days = (int) get_option('proof_due');
+        $max_date_proof = date('Y-m-d', strtotime("$date + $days days"));
+    
+        $wpdb->update($table_student_documents, [
+            'max_date_upload' => $max_date_proof
+        ], [
+            'document_id' => 'PROOF OF STUDY', 
+            'student_id' => $student_id,
+            'status' => ['<', 5]
+        ]);
+    } catch (\Throwable $th) {
+        $wpdb->update($table_student_documents, [
+            'max_date_upload' => NULL
+        ], [
+            'document_id' => 'PROOF OF STUDY', 
+            'student_id' => $student_id,
+            'status' => ['<', 5]
+        ]);
+    }
 }

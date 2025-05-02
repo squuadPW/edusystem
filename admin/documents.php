@@ -105,3 +105,15 @@ function get_documents_ready($student_id) {
     // Return true only if all documents are approved (status = 5)
     return $result->total === $result->approved;
 }
+
+function expired_documents($student_id) {
+    $documents = get_documents($student_id);
+    $expired_documents = false;
+    $today = date('Y-m-d');
+    foreach ($documents as $document) {
+        if ($document->max_date_upload && $document->max_date_upload < $today) {
+            $expired_documents = true;
+        }
+    }
+    return $expired_documents;
+}

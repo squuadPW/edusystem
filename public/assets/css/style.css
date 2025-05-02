@@ -1294,4 +1294,90 @@ body.modal-open {
   .swiper-slide {
     background-image: var(--desktop-image);
   }
+}
+.document-container {
+  background-color: #f7f7f7;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.document-header {
+  border-bottom: 1px solid #a9a9a9;
+  margin: 0 0 20px 0;
+}
+
+.document-header h4 {
+  font-size: 20px;
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+.document-row {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+
+.document-name {
+  width: 70%;
+}
+
+.document-status {
+  width: 30%;
+  text-align: end;
+}
+
+.document-link {
+  text-decoration: none;
+}
+
+.document-link.blue {
+  color: blue;
+}
+
+.document-link.yellow {
+  color: yellow;
+}
+
+.document-link.red {
+  color: red;
+}
+
+.document-link.green {
+  color: green;
+}
+
+.document-status.blue {
+  color: blue;
+}
+
+.document-status.yellow {
+  color: yellow;
+}
+
+.document-status.red {
+  color: red;
+}
+
+.document-status.green {
+  color: green;
+}
+
+.deadline {
+  color: red;
+}
+
+.upload-link {
+  text-align: center;
+}
+
+.upload-link a {
+  text-decoration: underline;
+  color: #002fbd;
+  font-size: 14px;
 }/*# sourceMappingURL=style.css.map */

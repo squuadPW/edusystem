@@ -80,6 +80,9 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <?php endif; ?>
 
                                     <?= $name; ?>
+                                    <?php if ($document->max_date_upload): ?>
+                                        <span class="deadline">- DEADLINE: <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
+                                    <?php endif; ?>
 
                                     <span class="help-tooltip"
                                         data-tippy-content="<?php echo get_help_info_document($document->document_id) ?>">
@@ -139,6 +142,9 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <?php $name = get_name_document($document->document_id); ?>
 
                                         <strong><?= $name; ?></strong>
+                                        <?php if ($document->max_date_upload): ?>
+                                                <span class="deadline">- DEADLINE: <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
+                                            <?php endif; ?>
                                     </td>
                                 <?php
                                 $status = get_status_document($document->status);
