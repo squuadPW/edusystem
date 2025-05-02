@@ -1087,9 +1087,11 @@ function update_status_documents() {
         handle_status_notifications($status_id, $users, $description);
         
         $document = get_document_details($document_id);
+        $rejected_document = handle_status_specific_actions($status_id, $student_id, $document, $users);
+        $html = generate_documents_html($student_id, $document_id);
         $response = [
-            'html' => generate_documents_html($student_id, $document_id),
-            'rejected_document' => handle_status_specific_actions($status_id, $student_id, $document, $users)
+            'rejected_document' => $rejected_document,
+            'html' => $html
         ];
 
         send_json_response($response);
@@ -1209,7 +1211,7 @@ function handle_document_approval($student_id, $document) {
     global $wpdb;
     
     $table_student_documents = $wpdb->prefix . 'student_documents';
-    $wpdb->update($table_student_documents, ['max_date_upload' => NULL], ['student_id' => $student_id, 'id' => $document->document_id]);
+    $wpdb->update($table_student_documents, ['max_date_upload' => NULL], ['student_id' => $student_id, 'id' => $document->id]);
 
     if (in_array($document->document_id, ['PHOTO OF STUDENT CARD', "STUDENT'S PHOTO"])) {
         $wpdb->update("{$wpdb->prefix}students", 
@@ -1295,7 +1297,9 @@ function generate_documents_html($student_id, $document_id)
     foreach ($documents as $document) {
         if ($document->id == $document_id) {
             $html .= '<tr id="tr_document_' . $document->id . '">';
-            $html .= '<td class="column-primary" colspan="3">' . get_name_document($document->document_id) . "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
+            $html .= '<td class="column-primary" colspan="3">' . get_name_document($document->document_id) . 
+                ($document->max_date_upload ? '<span class="deadline">- DEADLINE: ' . date('m/d/Y', strtotime($document->max_date_upload)) . '</span>' : '') . 
+                "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
             $html .= '<td colspan="1" id="td_document_' . $document->document_id . '" data-colname="' . __('Status', 'edusystem') . '"><b>' . get_status_document($document->status) . '</b></td>';
             $html .= '<td colspan="8" data-colname="' . __('Actions', 'edusystem') . '">';
             $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'  style='color: #149dcd; border-color: #149dcd;'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'edusystem') . "</button></a>";
