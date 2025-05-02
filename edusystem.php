@@ -535,6 +535,7 @@ function create_tables()
         description TEXT NULL,
         is_required INT(11) NOT NULL DEFAULT 0,
         is_visible BOOLEAN NOT NULL DEFAULT 1,
+        max_date_upload DATE NULL,
         upload_at DATETIME NULL,
         updated_at DATETIME NULL,
         created_at DATETIME NOT NULL,

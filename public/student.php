@@ -51,9 +51,9 @@ function save_student()
         $crm_id = isset($_POST['crm_id']) ? $_POST['crm_id'] : false;
 
         if (!$crm_id) {
-            if (get_option('crm_token') && get_option('crm_url')) {
+            if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
                 $crm_exist = crm_request('contacts', '?email='.$email_partner, 'GET', null);
-                if (count($crm_exist['items']) > 0) {
+                if (isset($crm_exist['items']) && count($crm_exist['items']) > 0) {
                     setcookie('crm_id', $crm_exist['items'][0]['id'], time() + 864000, '/');
                 }
             }
@@ -685,8 +685,10 @@ function insert_register_documents($student_id, $grade_id) {
 
         // Lógica de is_required mejorada
         $isRequired = 0;
+        $isVisible = $document->is_visible;
         if ($document->is_required) {
             $isRequired = ($document->name === 'ID OR CI OF THE PARENTS' && $legal_age) ? 0 : 1;
+            $isVisible = ($document->name === 'ID OR CI OF THE PARENTS' && $legal_age) ? 0 : 1;
         }
 
         // Inserción segura
@@ -694,7 +696,7 @@ function insert_register_documents($student_id, $grade_id) {
             'student_id' => $student_id,
             'document_id' => $document->name,
             'is_required' => $isRequired,
-            'is_visible' => $document->is_visible,
+            'is_visible' => $isVisible,
             'status' => 0,
             'created_at' => current_time('mysql')
         ]);

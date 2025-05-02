@@ -78,16 +78,30 @@ function get_status_approved($document_id = "", $student_id = ""){
     return $document->status == 5 ? true : false;
 }
 
-function get_documents_ready($student_id){
-    global $wpdb;
-    $table_student_documents = $wpdb->prefix.'student_documents';
-    $documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
-    $ready = true;
-    foreach ($documents as $key => $document) {
-        if ($document->status != 5) {
-            $ready = false;
-        }
+function get_documents_ready($student_id) {
+    if (!is_numeric($student_id)) {
+        return false;
     }
 
-    return $ready;
+    global $wpdb;
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+    
+    // Optimized query to only get required fields and exclude specific documents
+    $query = $wpdb->prepare(
+        "SELECT COUNT(*) as total, 
+         SUM(CASE WHEN status = 5 THEN 1 ELSE 0 END) as approved
+         FROM {$table_student_documents} 
+         WHERE student_id = %d 
+         AND document_id NOT IN ('PROOF OF STUDY', 'ID OR CI OF THE PARENTS')",
+        $student_id
+    );
+    
+    $result = $wpdb->get_row($query);
+    
+    if (!$result || $result->total === 0) {
+        return false;
+    }
+    
+    // Return true only if all documents are approved (status = 5)
+    return $result->total === $result->approved;
 }
