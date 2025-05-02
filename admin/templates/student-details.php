@@ -535,7 +535,9 @@
                                             data-status="3" class="button change-status button-danger-outline" style="color: red; border-color: red;"><?= __('Decline', 'edusystem'); ?></button>
                                     <?php endif; ?>
                                 <?php endif; ?>
-                                <a target="_blank" onclick='changeDeadline(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document" style="color: #cd1414; border-color: #cd1414;"><span class='dashicons dashicons-clock'></span><?= __('Change deadline', 'edusystem'); ?></button></a>
+                                <?php if ($document->status != 5): ?>
+                                    <a target="_blank" onclick='changeDeadline(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'><button type="button" class="button button-primary-outline other-buttons-document" style="color: #cd1414; border-color: #cd1414;"><span class='dashicons dashicons-clock'></span><?= __('Change deadline', 'edusystem'); ?></button></a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

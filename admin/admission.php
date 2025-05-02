@@ -1208,6 +1208,9 @@ function handle_document_rejection($student_id, $document, $remove_access = true
 function handle_document_approval($student_id, $document) {
     global $wpdb;
     
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+    $wpdb->update($table_student_documents, ['max_date_upload' => NULL], ['student_id' => $student_id, 'id' => $document->document_id]);
+
     if (in_array($document->document_id, ['PHOTO OF STUDENT CARD', "STUDENT'S PHOTO"])) {
         $wpdb->update("{$wpdb->prefix}students", 
             ['profile_picture' => $document->attachment_id], 
@@ -1317,7 +1320,9 @@ function generate_documents_html($student_id, $document_id)
                     $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="3" class="button change-status button-danger-outline" style="margin-right: 3px; color: red; border-color: red;">' . __('Decline', 'edusystem') . '</button>';
                 }
             }
-            $html .= "<a style='margin-right: 3px;' target='_blank' onclick='changeDeadline(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'  style='color: #cd1414; border-color: #cd1414;'><span class='dashicons dashicons-clock'></span>" . __('Change deadline', 'edusystem') . "</button></a>";
+            if ($document->status != 5) {
+                $html .= "<a style='margin-right: 3px;' target='_blank' onclick='changeDeadline(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'  style='color: #cd1414; border-color: #cd1414;'><span class='dashicons dashicons-clock'></span>" . __('Change deadline', 'edusystem') . "</button></a>";
+            }
             $html .= "</td></tr>";
         }
     }

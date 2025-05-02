@@ -111,7 +111,7 @@ function expired_documents($student_id) {
     $expired_documents = false;
     $today = date('Y-m-d');
     foreach ($documents as $document) {
-        if ($document->max_date_upload && $document->max_date_upload < $today) {
+        if ($document->status != 5 && ($document->max_date_upload && $document->max_date_upload < $today)) {
             $expired_documents = true;
         }
     }
