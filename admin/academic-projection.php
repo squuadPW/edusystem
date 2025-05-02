@@ -204,7 +204,7 @@ function add_admin_form_academic_projection_content()
             $table_students = $wpdb->prefix . 'students';
             $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE initial_cut = 'E' ORDER BY id DESC");
             foreach ($students as $key => $student) {
-                update_max_upload_at($student->id);
+                // update_max_upload_at($student->id);
             }
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
             exit;
