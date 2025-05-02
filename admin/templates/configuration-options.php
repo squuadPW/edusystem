@@ -63,6 +63,13 @@
             <span>></span><input type="number" id="payment-due" name="payment_due"
               value="<?php echo get_option('payment_due') ?>" required>
           </div>
+          <div class="form-group" style="padding: 0px 10px 10px 10px;">
+            <label
+              for="payment-due"><?= __('Days allotted to upload proof of studies since first enrollment (greater than)'); ?></label>
+            <br>
+            <span>></span><input type="number" id="proof-due" name="proof_due"
+              value="<?php echo get_option('proof_due') ?>" required>
+          </div>
           <div class="form-group">
             <a style="margin: 5px"
               href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=set_max_access_date') ?>"

@@ -15,6 +15,7 @@ function add_admin_form_configuration_options_content()
 
             // administration
             $payment_due = sanitize_text_field($_POST['payment_due']) ?? get_option('payment_due');
+            $proof_due = sanitize_text_field($_POST['proof_due']) ?? get_option('proof_due');
             $virtual_access = sanitize_text_field($_POST['virtual_access']) ?? get_option('virtual_access');
             $auto_enroll_elective = sanitize_text_field($_POST['auto_enroll_elective']) ?? get_option('auto_enroll_elective');
             $auto_enroll_regular = sanitize_text_field($_POST['auto_enroll_regular']) ?? get_option('auto_enroll_regular');
@@ -23,6 +24,7 @@ function add_admin_form_configuration_options_content()
             $show_equivalence_projection = sanitize_text_field($_POST['show_equivalence_projection']) ?? get_option('show_equivalence_projection');
             $show_table_subjects_coursing = sanitize_text_field($_POST['show_table_subjects_coursing']) ?? get_option('show_table_subjects_coursing');
             update_option('payment_due', $payment_due);
+            update_option('proof_due', $proof_due);
             update_option('virtual_access', $virtual_access);
             update_option('auto_enroll_elective', $auto_enroll_elective);
             update_option('auto_enroll_regular', $auto_enroll_regular);
