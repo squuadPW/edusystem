@@ -396,7 +396,7 @@ function get_teacher_details($teacher_id)
     global $wpdb;
     $table_teachers = $wpdb->prefix . 'teachers';
 
-    $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id='{$teacher_id}' OR id='{$teacher_id}'");
+    $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id={$teacher_id} OR email='{$teacher_id}'");
     return $teacher;
 }
 
