@@ -12,11 +12,11 @@
 				</div>
 			</div>
 		<?php } else { ?>
-			<h4 style="font-size: 18px; text-align: center; margin-bottom: 10px; background-color: #e71f3b6e; padding: 20px; border-radius: 10px;"><?= __('For now the virtual classroom is under maintenance, we invite you to be attentive to your email to receive information about the next academic term.','edusystem'); ?></h4>
+			<h4 style="font-size: 18px; text-align: center; margin: 10px 0px; background-color: #e71f3b6e; padding: 20px; border-radius: 10px;"><?= __('For now the virtual classroom is under maintenance, we invite you to be attentive to your email to receive information about the next academic term.','edusystem'); ?></h4>
 		<?php } ?>
 	</div>
 <?php } else if ($error_access) { ?>
-	<h4 style="font-size: 18px; text-align: center; margin-bottom: 10px; background-color: #e71f3b6e; padding: 20px; border-radius: 10px;"><?= $error_access; ?></h4>
+	<h4 style="font-size: 18px; text-align: center; margin: 10px 0px; background-color: #e71f3b6e; padding: 20px; border-radius: 10px;"><?= $error_access; ?></h4>
 <?php } ?>
 
 <?php if (get_option('show_table_subjects_coursing') && isset($subjects_coursing) && count($subjects_coursing) > 0): ?>
