@@ -633,7 +633,7 @@ function generate_enroll_student() {
         $table_students = $wpdb->prefix . 'students';
         
         // Get current enrollment period
-        $load = load_current_cut_enrollment();
+        $load = load_current_cut();
         if (empty($load['code']) || empty($load['cut'])) {
             throw new Exception('Invalid enrollment period');
         }
