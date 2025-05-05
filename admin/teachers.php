@@ -393,11 +393,35 @@ class TT_teachers_all_List_Table extends WP_List_Table
 
 function get_teacher_details($teacher_id)
 {
-    global $wpdb;
-    $table_teachers = $wpdb->prefix . 'teachers';
+    try {
+        if (empty($teacher_id)) {
+            return null;
+        }
 
-    $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id={$teacher_id} OR email='{$teacher_id}'");
-    return $teacher;
+        global $wpdb;
+        $table_teachers = $wpdb->prefix . 'teachers';
+
+        // Prepare the query with proper parameter binding
+        $query = $wpdb->prepare(
+            "SELECT * FROM {$table_teachers} 
+            WHERE id = %d OR email = %s 
+            LIMIT 1",
+            $teacher_id,
+            $teacher_id
+        );
+
+        $teacher = $wpdb->get_row($query);
+        
+        if (!$teacher) {
+            return null;
+        }
+
+        return $teacher;
+
+    } catch (Exception $e) {
+        error_log('Error in get_teacher_details: ' . $e->getMessage());
+        return null;
+    }
 }
 
 function get_teachers_active()

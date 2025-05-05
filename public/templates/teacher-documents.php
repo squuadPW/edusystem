@@ -1,7 +1,6 @@
 <?php
 
-global $wpdb;
-$current_user = wp_get_current_user();
+global $wpdb, $current_user;
 $table_teachers = $wpdb->prefix . 'teachers';
 $teacher = get_teacher_details($current_user->user_email);
 ?>
