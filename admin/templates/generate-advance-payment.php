@@ -93,6 +93,7 @@
 									<?php 
 									$fee_registration_exists = get_payments($student_id, FEE_INSCRIPTION);
 									$fee_graduation_exists = get_payments($student_id, FEE_GRADUATION);
+									$has_pending_payments = get_payments($student_id);
 									
 									if (!$fee_registration_exists) { ?>
 										<button type="submit" class="button button-secondary"
@@ -103,8 +104,11 @@
 										<button type="submit" class="button button-secondary"
 											style="margin: 4px" onclick="return confirm('Are you sure?');" name="generate_fee_graduation" value="1">Generate fee graduation</button>
 									<?php } ?>
-									<button type="submit" class="button button-success"
-										style="margin: 4px" onclick="return confirm('Are you sure?');">Generate next quota order</button>
+
+									<?php if ($has_pending_payments == 2) { ?>
+										<button type="submit" class="button button-success" style="margin: 4px" onclick="return confirm('Are you sure?');">Generate next quota order</button>
+									<?php } ?>
+
 									<input type="hidden" id="amount" name="amount"
 										value="<?php echo $order_amount ?>" required>
 									<input type="hidden" id="product_id" name="product_id"
