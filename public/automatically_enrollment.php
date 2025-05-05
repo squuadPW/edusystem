@@ -514,7 +514,7 @@ function generate_projection_student($student_id, $force = false) {
             'calification' => $status_id == 3 ? $inscription->calification : "",
             'is_completed' => ($status_id == 3 || $status_id == 1),
             'this_cut' => $status_id == 1,
-            'welcome_email' => $status_id == 3,
+            'welcome_email' => ($status_id == 3 || $status_id == 1),
             'type' => $matrix->type
         ];
     }, $matrix_regular);
