@@ -626,42 +626,99 @@ function get_inscriptions_by_student_period($student_id, $code_period, $cut_peri
     return $inscriptions;
 }
 
-function generate_enroll_student()
-{
-    global $wpdb;
-    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $load = load_current_cut_enrollment();
-    $code = $load['code'];
-    $cut = $load['cut'];
+function generate_enroll_student() {
+    try {
+        global $wpdb;
+        $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+        $table_students = $wpdb->prefix . 'students';
+        
+        // Get current enrollment period
+        $load = load_current_cut_enrollment();
+        if (empty($load['code']) || empty($load['cut'])) {
+            throw new Exception('Invalid enrollment period');
+        }
+        
+        $code = $load['code'];
+        $cut = $load['cut'];
+        
+        // Get all projections with student data in a single query
+        $query = $wpdb->prepare(
+            "SELECT p.*, s.last_name, s.middle_last_name, s.name, s.middle_name 
+            FROM {$table_student_academic_projection} p
+            INNER JOIN {$table_students} s ON p.student_id = s.id"
+        );
+        
+        $projections = $wpdb->get_results($query);
+        if (empty($projections)) {
+            return;
+        }
 
-    $enrollments = [];
-    $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
-    $errors = '';
-    $errors_count = 0;
-    foreach ($projections as $key => $projection) {
-        $projection_obj = json_decode($projection->projection);
+        $enrollments = [];
+        $errors = [];
+        $errors_count = 0;
 
-        $filteredArray = array_filter($projection_obj, function ($item) {
-            return $item->this_cut === true;
-        });
-        $filteredArray = array_values($filteredArray);
+        foreach ($projections as $projection) {
+            $projection_obj = json_decode($projection->projection);
+            if (!is_array($projection_obj)) {
+                continue;
+            }
 
-        foreach ($filteredArray as $key => $projection_filtered) {
-            $offer = get_offer_filtered($projection_filtered->subject_id, $code, $cut);
-            if ($offer) {
-                $enrollments = array_merge($enrollments, courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id]));
-            } else {
-                $student = get_student_detail($projection->student_id);
-                if ($student) {
-                    $errors .= 'The student ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name . ' could not be enrolled because no offers were found for the current period (' . $cut . ') <br>';
+            // Filter subjects for current period
+            $filteredArray = array_filter($projection_obj, function ($item) use ($code, $cut) {
+                return isset($item->this_cut) && 
+                       $item->this_cut === true && 
+                       $item->code_period == $code && 
+                       $item->cut == $cut;
+            });
+
+            if (empty($filteredArray)) {
+                continue;
+            }
+
+            foreach ($filteredArray as $projection_filtered) {
+                if (!isset($projection_filtered->subject_id)) {
+                    continue;
+                }
+
+                $offer = get_offer_filtered($projection_filtered->subject_id, $code, $cut);
+                if ($offer && isset($offer->moodle_course_id)) {
+                    $enrollments = array_merge(
+                        $enrollments, 
+                        courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id])
+                    );
+                } else {
+                    $student_name = sprintf(
+                        '%s %s %s %s',
+                        $projection->last_name,
+                        $projection->middle_last_name,
+                        $projection->name,
+                        $projection->middle_name
+                    );
+                    
+                    $errors[] = sprintf(
+                        'The student %s could not be enrolled because no offers were found for the current period (%s)',
+                        $student_name,
+                        $cut
+                    );
                     $errors_count++;
                 }
             }
         }
-    }
 
-    enroll_student($enrollments, $errors_count);
-    setcookie('message-error', $errors, time() + 3600, '/');
+        // Process enrollments
+        if (!empty($enrollments)) {
+            enroll_student($enrollments, $errors_count);
+        }
+
+        // Set error message if any
+        if (!empty($errors)) {
+            setcookie('message-error', implode('<br>', $errors), time() + 3600, '/');
+        }
+
+    } catch (Exception $e) {
+        error_log('Error in generate_enroll_student: ' . $e->getMessage());
+        setcookie('message-error', 'An error occurred while processing enrollments', time() + 3600, '/');
+    }
 }
 
 function generate_enroll_public_course()
