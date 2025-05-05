@@ -88,10 +88,23 @@
 					<table class="wp-list-table widefat fixed posts striped">
 						<thead>
 							<tr>
-								<th colspan="6">Payments</th>
-								<th colspan="6" style="text-align: end">
-									<button type="submit" class="button button-primary"
-										style="margin: 10px" onclick="return confirm('Are you sure?');">Generate next quota order</button>
+								<th colspan="2">Payments</th>
+								<th colspan="10" style="text-align: end">
+									<?php 
+									$fee_registration_exists = get_payments($student_id, FEE_INSCRIPTION);
+									$fee_graduation_exists = get_payments($student_id, FEE_GRADUATION);
+									
+									if (!$fee_registration_exists) { ?>
+										<button type="submit" class="button button-secondary"
+											style="margin: 4px" onclick="return confirm('Are you sure?');" name="generate_fee_registration" value="1">Generate fee registration</button>
+									<?php } ?>
+									
+									<?php if (!$fee_graduation_exists) { ?>
+										<button type="submit" class="button button-secondary"
+											style="margin: 4px" onclick="return confirm('Are you sure?');" name="generate_fee_graduation" value="1">Generate fee graduation</button>
+									<?php } ?>
+									<button type="submit" class="button button-success"
+										style="margin: 4px" onclick="return confirm('Are you sure?');">Generate next quota order</button>
 									<input type="hidden" id="amount" name="amount"
 										value="<?php echo $order_amount ?>" required>
 									<input type="hidden" id="product_id" name="product_id"

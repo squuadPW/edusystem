@@ -175,6 +175,8 @@ function add_admin_form_payments_content()
             $id_document = $_POST['id_document'];
             $generate = $_POST['generate'];
             $save_changes = $_POST['save_changes'];
+            $generate_fee_registration = $_POST['generate_fee_registration'];
+            $generate_fee_graduation = $_POST['generate_fee_graduation'];
             $date_payment = $_POST['date_payment'] ?? [];
             $amount_payment = $_POST['amount_payment'] ?? [];
             $table_students = $wpdb->prefix . 'students';
@@ -182,6 +184,184 @@ function add_admin_form_payments_content()
             $table_student_payments_log = $wpdb->prefix . 'student_payments_log';
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}' OR email='{$id_document}'");
             $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY cuote ASC");
+
+            if ($generate_fee_registration) {
+                try {
+                    // Validate student and get required data
+                    if (!$student || !$student->partner_id) {
+                        throw new Exception('Invalid student data');
+                    }
+
+                    $product_id = FEE_INSCRIPTION;
+                    $customer_id = $student->partner_id;
+
+                    // Get first order for customer
+                    $orders_customer = wc_get_orders([
+                        'customer_id' => $customer_id,
+                        'limit' => 1,
+                        'orderby' => 'date',
+                        'order' => 'ASC'
+                    ]);
+
+                    if (empty($orders_customer)) {
+                        throw new Exception('No previous orders found for customer');
+                    }
+
+                    $order_old = $orders_customer[0];
+                    
+                    // Create new order with basic data
+                    $new_order = wc_create_order([
+                        'customer_id' => $customer_id,
+                        'status' => 'pending-payment'
+                    ]);
+
+                    // Copy metadata from old order
+                    $meta_keys = [
+                        'alliance_id',
+                        'institute_id',
+                        'student_id',
+                        'student_data'
+                    ];
+
+                    foreach ($meta_keys as $key) {
+                        $new_order->add_meta_data($key, $order_old->get_meta($key));
+                    }
+
+                    // Add additional metadata
+                    $new_order->add_meta_data('old_order_primary', $order_old->get_id());
+                    $new_order->add_meta_data('cuote_payment', 1);
+                    $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin');
+
+                    // Add product to order
+                    $product = wc_get_product($product_id);
+                    if (!$product) {
+                        throw new Exception('Invalid product');
+                    }
+                    $new_order->add_product($product, 1);
+
+                    // Copy billing address if exists
+                    if ($billing_address = $order_old->get_address('billing')) {
+                        $new_order->set_address($billing_address, 'billing');
+                    }
+
+                    // Calculate totals and save order
+                    $new_order->calculate_totals();
+                    $new_order->save();
+
+                    // Set institute in order
+                    set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
+
+                    // Send notification email
+                    $user_customer = get_user_by('id', $customer_id);
+                    if ($user_customer) {
+                        $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                        $email_user->trigger(
+                            $user_customer,
+                            'You have pending payments',
+                            'We invite you to log in to our platform as soon as possible so you can see your pending payments.'
+                        );
+                    }
+
+                    // Redirect with success message
+                    wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&success_save_changes=true'));
+                    exit;
+
+                } catch (Exception $e) {
+                    // Log error and redirect with error message
+                    error_log('Error generating fee graduation: ' . $e->getMessage());
+                    wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&error=' . urlencode($e->getMessage())));
+                    exit;
+                }
+            }
+
+            if ($generate_fee_graduation) {
+                try {
+                    // Validate student and get required data
+                    if (!$student || !$student->partner_id) {
+                        throw new Exception('Invalid student data');
+                    }
+
+                    $product_id = FEE_GRADUATION;
+                    $customer_id = $student->partner_id;
+
+                    // Get first order for customer
+                    $orders_customer = wc_get_orders([
+                        'customer_id' => $customer_id,
+                        'limit' => 1,
+                        'orderby' => 'date',
+                        'order' => 'ASC'
+                    ]);
+
+                    if (empty($orders_customer)) {
+                        throw new Exception('No previous orders found for customer');
+                    }
+
+                    $order_old = $orders_customer[0];
+                    
+                    // Create new order with basic data
+                    $new_order = wc_create_order([
+                        'customer_id' => $customer_id,
+                        'status' => 'pending-payment'
+                    ]);
+
+                    // Copy metadata from old order
+                    $meta_keys = [
+                        'alliance_id',
+                        'institute_id',
+                        'student_id',
+                        'student_data'
+                    ];
+
+                    foreach ($meta_keys as $key) {
+                        $new_order->add_meta_data($key, $order_old->get_meta($key));
+                    }
+
+                    // Add additional metadata
+                    $new_order->add_meta_data('old_order_primary', $order_old->get_id());
+                    $new_order->add_meta_data('cuote_payment', 1);
+                    $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin');
+
+                    // Add product to order
+                    $product = wc_get_product($product_id);
+                    if (!$product) {
+                        throw new Exception('Invalid product');
+                    }
+                    $new_order->add_product($product, 1);
+
+                    // Copy billing address if exists
+                    if ($billing_address = $order_old->get_address('billing')) {
+                        $new_order->set_address($billing_address, 'billing');
+                    }
+
+                    // Calculate totals and save order
+                    $new_order->calculate_totals();
+                    $new_order->save();
+
+                    // Set institute in order
+                    set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
+
+                    // Send notification email
+                    $user_customer = get_user_by('id', $customer_id);
+                    if ($user_customer) {
+                        $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                        $email_user->trigger(
+                            $user_customer,
+                            'You have pending payments',
+                            'We invite you to log in to our platform as soon as possible so you can see your pending payments.'
+                        );
+                    }
+
+                    // Redirect with success message
+                    wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&success_save_changes=true'));
+                    exit;
+
+                } catch (Exception $e) {
+                    // Log error and redirect with error message
+                    error_log('Error generating fee graduation: ' . $e->getMessage());
+                    wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&error=' . urlencode($e->getMessage())));
+                    exit;
+                }
+            }
 
             if ($save_changes) {
                 $old_amount = 0;
