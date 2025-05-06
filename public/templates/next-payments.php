@@ -46,7 +46,7 @@ foreach ($student_payments as $student_id => $payments) {
     $name_product = $product->get_name();
     $price_product = $product->get_price();
 ?>
-<h2 class="mb-4" style="font-size:24px;text-align:center;">
+<!--<h2 class="mb-4" style="font-size:24px;text-align:center;">
     <?= __('Student Graduation Fees', 'edusystem'); ?>
 </h2>
 <table
@@ -79,14 +79,14 @@ foreach ($student_payments as $student_id => $payments) {
                     <?php 
                     // $fee_graduation_ready = get_payments($student->id, product_id: FEE_GRADUATION);
                     // if (!$fee_graduation_ready) { ?>
-                        <!-- <form method="POST" action="<?= the_permalink() . '?action=pay_graduation_fee&student_id='.$student->id; ?>" style="margin-bottom: 0;">
+                        <form method="POST" action="<?= the_permalink() . '?action=pay_graduation_fee&student_id='.$student->id; ?>" style="margin-bottom: 0;">
                             <button style="width: 70px;" type="submit" class="button button-primary">Pay</button>
-                        </form> -->
+                        </form>
                     <?php // } else { ?>
-                        <!-- <button style="width: 90px; cursor: not-allowed; opacity: 0.5;" type="submit" class="button button-primary">Ready</button> -->
+                        <button style="width: 90px; cursor: not-allowed; opacity: 0.5;" type="submit" class="button button-primary">Ready</button> 
                     <?php // } ?>
                 </td>
             </tr>
         <?php } ?>
     </tbody>
-</table>
+</table> -->
