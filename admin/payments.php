@@ -217,8 +217,21 @@ function add_admin_form_payments_content()
                     ]);
 
                     if (empty($orders_customer)) {
+                        $user_customer = get_user_by('id', $customer_id);
+
                         $new_order->add_meta_data('student_id', $student->id);
-                        $new_order->update_meta_data('_order_origin', 'Fee registration - Admin');
+                        $new_order->update_meta_data('_order_origin', 'Fee graduation - Admin');
+
+                        $new_order->set_billing_first_name($user_customer->first_name);
+                        $new_order->set_billing_last_name($user_customer->last_name);
+                        $new_order->set_billing_address_1($user_customer->address_1);
+                        $new_order->set_billing_address_2($user_customer->address_2);
+                        $new_order->set_billing_city($user_customer->city);
+                        $new_order->set_billing_state($user_customer->state);
+                        $new_order->set_billing_postcode($user_customer->postcode);
+                        $new_order->set_billing_country($user_customer->country);
+                        $new_order->set_billing_email($user_customer->email);
+                        $new_order->set_billing_phone($user_customer->phone);
                     } else {
                         $order_old = $orders_customer[0];
                     
