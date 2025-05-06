@@ -65,7 +65,7 @@ function send_pending_prepayments_email()
         "SELECT sp.*, s.email, s.name, s.last_name, s.partner_id
          FROM {$table_student_payments} sp
          JOIN {$table_students} s ON sp.student_id = s.id
-         WHERE sp.status = 0 
+         WHERE sp.status_id = 0 
          AND sp.date_next_payment BETWEEN %s AND %s",
         $three_weeks_from_now,
         $current_date
