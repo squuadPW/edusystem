@@ -203,35 +203,6 @@ function add_admin_form_payments_content()
                         'order' => 'ASC'
                     ]);
 
-                    if (empty($orders_customer)) {
-                        throw new Exception('No previous orders found for customer');
-                    }
-
-                    $order_old = $orders_customer[0];
-                    
-                    // Create new order with basic data
-                    $new_order = wc_create_order([
-                        'customer_id' => $customer_id,
-                        'status' => 'pending-payment'
-                    ]);
-
-                    // Copy metadata from old order
-                    $meta_keys = [
-                        'alliance_id',
-                        'institute_id',
-                        'student_id',
-                        'student_data'
-                    ];
-
-                    foreach ($meta_keys as $key) {
-                        $new_order->add_meta_data($key, $order_old->get_meta($key));
-                    }
-
-                    // Add additional metadata
-                    $new_order->add_meta_data('old_order_primary', $order_old->get_id());
-                    $new_order->add_meta_data('cuote_payment', 1);
-                    $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin');
-
                     // Add product to order
                     $product = wc_get_product($product_id);
                     if (!$product) {
@@ -239,9 +210,40 @@ function add_admin_form_payments_content()
                     }
                     $new_order->add_product($product, 1);
 
-                    // Copy billing address if exists
-                    if ($billing_address = $order_old->get_address('billing')) {
-                        $new_order->set_address($billing_address, 'billing');
+                    // Create new order with basic data
+                    $new_order = wc_create_order([
+                        'customer_id' => $customer_id,
+                        'status' => 'pending-payment'
+                    ]);
+
+                    if (empty($orders_customer)) {
+                        $new_order->add_meta_data('student_id', $student->id);
+                        $new_order->update_meta_data('_order_origin', 'Fee registration - Admin');
+                    } else {
+                        $order_old = $orders_customer[0];
+                    
+                        // Copy metadata from old order
+                        $meta_keys = [
+                            'alliance_id',
+                            'institute_id',
+                            'student_id',
+                            'student_data'
+                        ];
+    
+                        foreach ($meta_keys as $key) {
+                            $new_order->add_meta_data($key, $order_old->get_meta($key));
+                        }
+    
+                        // Add additional metadata
+                        $new_order->add_meta_data('old_order_primary', $order_old->get_id());
+                        $new_order->add_meta_data('cuote_payment', 1);
+                        $new_order->update_meta_data('_order_origin', 'Fee registration - Admin');
+
+                        // Copy billing address if exists
+                        if ($billing_address = $order_old->get_address('billing')) {
+                            $new_order->set_address($billing_address, 'billing');
+                        }
+
                     }
 
                     // Calculate totals and save order
@@ -249,7 +251,9 @@ function add_admin_form_payments_content()
                     $new_order->save();
 
                     // Set institute in order
-                    set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
+                    if ($order_old) {
+                        set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
+                    }
 
                     // Send notification email
                     $user_customer = get_user_by('id', $customer_id);
@@ -292,34 +296,11 @@ function add_admin_form_payments_content()
                         'order' => 'ASC'
                     ]);
 
-                    if (empty($orders_customer)) {
-                        throw new Exception('No previous orders found for customer');
-                    }
-
-                    $order_old = $orders_customer[0];
-                    
                     // Create new order with basic data
                     $new_order = wc_create_order([
                         'customer_id' => $customer_id,
                         'status' => 'pending-payment'
                     ]);
-
-                    // Copy metadata from old order
-                    $meta_keys = [
-                        'alliance_id',
-                        'institute_id',
-                        'student_id',
-                        'student_data'
-                    ];
-
-                    foreach ($meta_keys as $key) {
-                        $new_order->add_meta_data($key, $order_old->get_meta($key));
-                    }
-
-                    // Add additional metadata
-                    $new_order->add_meta_data('old_order_primary', $order_old->get_id());
-                    $new_order->add_meta_data('cuote_payment', 1);
-                    $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin');
 
                     // Add product to order
                     $product = wc_get_product($product_id);
@@ -328,9 +309,33 @@ function add_admin_form_payments_content()
                     }
                     $new_order->add_product($product, 1);
 
-                    // Copy billing address if exists
-                    if ($billing_address = $order_old->get_address('billing')) {
-                        $new_order->set_address($billing_address, 'billing');
+                    if (empty($orders_customer)) {
+                        $new_order->add_meta_data('student_id', $student->id);
+                        $new_order->update_meta_data('_order_origin', 'Fee graduation - Admin');
+                    } else {
+                        $order_old = $orders_customer[0];
+
+                        // Copy metadata from old order
+                        $meta_keys = [
+                            'alliance_id',
+                            'institute_id',
+                            'student_id',
+                            'student_data'
+                        ];
+    
+                        foreach ($meta_keys as $key) {
+                            $new_order->add_meta_data($key, $order_old->get_meta($key));
+                        }
+    
+                        // Add additional metadata
+                        $new_order->add_meta_data('old_order_primary', $order_old->get_id());
+                        $new_order->add_meta_data('cuote_payment', 1);
+                        $new_order->update_meta_data('_order_origin', 'Fee graduation - Admin');
+
+                        // Copy billing address if exists
+                        if ($billing_address = $order_old->get_address('billing')) {
+                            $new_order->set_address($billing_address, 'billing');
+                        }
                     }
 
                     // Calculate totals and save order
@@ -338,7 +343,9 @@ function add_admin_form_payments_content()
                     $new_order->save();
 
                     // Set institute in order
-                    set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
+                    if ($order_old) {
+                        set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
+                    }
 
                     // Send notification email
                     $user_customer = get_user_by('id', $customer_id);

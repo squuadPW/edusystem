@@ -65,11 +65,16 @@ function send_pending_prepayments_email()
         "SELECT sp.*, s.id, s.email, s.name, s.last_name, s.partner_id
          FROM {$table_student_payments} sp
          JOIN {$table_students} s ON sp.student_id = s.id
-         WHERE sp.status_id = 0 
-         AND DATE(sp.date_next_payment) BETWEEN DATE(%s) AND DATE(%s)",
+         WHERE sp.status = 0 
+         AND DATE(sp.date_next_payment) BETWEEN DATE(%s) AND DATE(%s)
+         ORDER BY sp.date_next_payment ASC",
         $current_date,
         $three_weeks_from_now
     ));
+
+    error_log('Current date: ' . $current_date);
+    error_log('Three weeks from now: ' . $three_weeks_from_now);
+    error_log('Found payments: ' . print_r($student_payments, true));
     
     $sent_customers = [];
     foreach ($student_payments as $payment) {
