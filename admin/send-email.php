@@ -21,26 +21,44 @@ function add_admin_form_send_email_content()
 
 function send_pending_payments_email()
 {
-    // Obtener órdenes con estado 'pending'
-    $orders = wc_get_orders(array(
-        'status' => 'pending'
+    global $wpdb;
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+    $table_students = $wpdb->prefix . 'students';
+    
+    // Obtener la fecha actual y la fecha con 3 semanas menos
+    $current_date = current_time('mysql');
+    $three_weeks_from_now = date('Y-m-d', strtotime($current_date . ' -3 weeks'));
+    
+    // Consultar pagos pendientes que vencen con 3 semanas menos
+    $student_payments = $wpdb->get_results($wpdb->prepare(
+        "SELECT sp.*, s.email, s.name, s.last_name, s.partner_id
+         FROM {$table_student_payments} sp
+         JOIN {$table_students} s ON sp.student_id = s.id
+         WHERE sp.status = 0 
+         AND sp.date_next_payment BETWEEN %s AND %s",
+        $three_weeks_from_now,
+        $current_date
     ));
 
-    $sent_customers = array(); // Almacena IDs de clientes ya notificados
-
-    foreach ($orders as $order) {
-        $customer_id = $order->get_user_id();
-
-        // Verificar si ya se notificó a este cliente
+    $sent_customers = [];
+    foreach ($student_payments as $payment) {
+        $customer_id = $payment->partner_id;
         if (!in_array($customer_id, $sent_customers) && $customer_id > 0) { // Asegúrate de que el ID del cliente sea válido
             $user_customer = get_user_by('id', $customer_id);
 
             if ($user_customer) {
+                // Preparar el mensaje con la fecha de vencimiento
+                $message = sprintf(
+                    'We hope you are well. We remind you that your payment of %s is due on %s.',
+                    wc_price($payment->amount),
+                    date('F j, Y', strtotime($payment->date_next_payment))
+                );
+
                 $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
                 $email_user->trigger(
                     $user_customer,
-                    'You have pending payments',
-                    'We invite you to log in to our platform as soon as possible to make your pending payments and avoid being suspended from the virtual classroom.'
+                    'Reminder: Payment of installments due soon',
+                    $message
                 );
 
                 // Registrar al cliente como notificado

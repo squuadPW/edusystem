@@ -932,6 +932,13 @@ function weekly_pending_payment()
     exit;
 }
 
+add_action('create_pending_prepayment_email_weekly', 'weekly_pending_prepayment');
+function weekly_pending_prepayment()
+{
+    send_pending_prepayments_email();
+    exit;
+}
+
 add_action('send_email_remember_documents_student', 'send_email_remember_documents_student');
 function send_email_remember_documents_student()
 {
