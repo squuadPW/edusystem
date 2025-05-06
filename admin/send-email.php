@@ -21,6 +21,37 @@ function add_admin_form_send_email_content()
 
 function send_pending_payments_email()
 {
+    // Obtener órdenes con estado 'pending'
+    $orders = wc_get_orders(array(
+        'status' => 'pending'
+    ));
+
+    $sent_customers = array(); // Almacena IDs de clientes ya notificados
+
+    foreach ($orders as $order) {
+        $customer_id = $order->get_user_id();
+
+        // Verificar si ya se notificó a este cliente
+        if (!in_array($customer_id, $sent_customers) && $customer_id > 0) { // Asegúrate de que el ID del cliente sea válido
+            $user_customer = get_user_by('id', $customer_id);
+
+            if ($user_customer) {
+                $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+                $email_user->trigger(
+                    $user_customer,
+                    'You have pending payments',
+                    'We invite you to log in to our platform as soon as possible to make your pending payments and avoid being suspended from the virtual classroom.'
+                );
+
+                // Registrar al cliente como notificado
+                $sent_customers[] = $customer_id;
+            }
+        }
+    }
+}
+
+function send_pending_prepayments_email()
+{
     global $wpdb;
     $table_student_payments = $wpdb->prefix . 'student_payments';
     $table_students = $wpdb->prefix . 'students';
