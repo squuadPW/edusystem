@@ -56,25 +56,25 @@ function send_pending_prepayments_email()
     $table_student_payments = $wpdb->prefix . 'student_payments';
     $table_students = $wpdb->prefix . 'students';
     
-    // Obtener la fecha actual y la fecha con 3 semanas menos
+    // Obtener la fecha actual y la fecha con 3 semanas más
     $current_date = current_time('mysql');
-    $three_weeks_from_now = date('Y-m-d', strtotime($current_date . ' -3 weeks'));
+    $three_weeks_from_now = date('Y-m-d', strtotime($current_date . ' +3 weeks'));
     
-    // Consultar pagos pendientes que vencen con 3 semanas menos
+    // Consultar pagos pendientes que vencen en las próximas 3 semanas
     $student_payments = $wpdb->get_results($wpdb->prepare(
-        "SELECT sp.*, s.email, s.name, s.last_name, s.partner_id
+        "SELECT sp.*, s.id, s.email, s.name, s.last_name, s.partner_id
          FROM {$table_student_payments} sp
          JOIN {$table_students} s ON sp.student_id = s.id
          WHERE sp.status_id = 0 
-         AND sp.date_next_payment BETWEEN %s AND %s",
-        $three_weeks_from_now,
-        $current_date
+         AND DATE(sp.date_next_payment) BETWEEN DATE(%s) AND DATE(%s)",
+        $current_date,
+        $three_weeks_from_now
     ));
-
+    
     $sent_customers = [];
     foreach ($student_payments as $payment) {
         $customer_id = $payment->partner_id;
-        if (!in_array($customer_id, $sent_customers) && $customer_id > 0) { // Asegúrate de que el ID del cliente sea válido
+        if (!in_array($customer_id, $sent_customers) && $customer_id > 0) {
             $user_customer = get_user_by('id', $customer_id);
 
             if ($user_customer) {
