@@ -14,7 +14,7 @@
 <div class="tabs-content">
 	<div class="wrap">
 		<div style="text-align:start;">
-			<h1 class="wp-heading-line"><?= __('Generate user invoice', 'edusystem'); ?></h1>
+			<h1 class="wp-heading-line"><?= __('Manage payments', 'edusystem'); ?></h1>
 		</div>
 		<div style="display:flex;width:100%;justify-content:end">
 			<?php
@@ -23,21 +23,17 @@
 		</div>
 		<form method="post"
 			action="<?= admin_url('admin.php?page=add_admin_form_payments_content&action=generate_payment'); ?>">
-			<div class="form-group" style="padding: 0px 10px 10px 10px; text-align: center">
-				<label for="id_document">Search by student email or id document</label> <br>
-				<input style="width: 100%" type="text" id="id_document" name="id_document" <?php echo $_GET['student_available'] == 1 ? 'readonly' : '' ?> value="<?php echo $_GET['id_document'] ?>"
-					required> <br>
-				<input type="hidden" id="generate" name="generate"
-					value="<?php echo $_GET['student_available'] == 1 && isset($payments) ? true : false ?>" required>
+			<?php if (!$_GET['student_available']) { ?>
+				<div class="form-group" style="padding: 0px 10px 10px 10px; text-align: center">
+					<label for="hc"><b><?= __('Search student', 'edusystem'); ?></b></label><br>
+					<select class="js-example-basic" name="student_id"></select>
+					<br>
+					<button type="submit" class="button button-primary" style="margin: 10px">Load payments</button>
+				</div>
+			<?php } ?>
 
-				<?php if ($_GET['student_available']) { ?>
-					<button type="submit" class="button button-primary-outline" name="cancel" value="1"
-						style="margin: 10px">Cancel</button>
-				<?php } else { ?>
-					<button type="submit" class="button button-primary"
-						style="margin: 10px"><?php echo $_GET['student_available'] && isset($payments) ? 'Generate order' : 'Search student' ?></button>
-				<?php } ?>
-			</div>
+			<input type="hidden" id="id_document" name="id_document" value="<?= $_GET['id_document'] ?>" required>
+			<input type="hidden" id="generate" name="generate" value="<?php echo $_GET['student_available'] == 1 && isset($payments) ? true : false ?>" required>
 
 			<?php if ($_GET['student_available']) { ?>
 				<div style="padding: 10px">
@@ -82,6 +78,10 @@
 							</tr>
 						</tbody>
 					</table>
+				</div>
+
+				<div style="display:flex;width:100%;justify-content:center">
+					<button type="submit" class="button button-primary-outline" name="cancel" value="1" style="margin: 10px">Change student</button>
 				</div>
 
 				<div style="padding: 10px">

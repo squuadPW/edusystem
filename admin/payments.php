@@ -665,6 +665,7 @@ function add_admin_form_payments_content()
             $order_amount = 0;
             $order_variation_id = 0;
             $order_product_id = 0;
+            $url = '';
             if ($student) {
                 $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY cuote ASC");
                 $payments_log = $wpdb->get_results("SELECT * FROM {$table_student_payments_log} WHERE student_id={$student->id} ORDER BY created_at DESC");
@@ -676,6 +677,7 @@ function add_admin_form_payments_content()
                         break;
                     }
                 }
+                $url = wp_get_attachment_url($student->profile_picture);
             }
             include(plugin_dir_path(__FILE__) . 'templates/generate-advance-payment.php');
         }
@@ -1533,3 +1535,40 @@ function generate_quote_public_callback() {
     wp_send_json_success(array('url' => $checkout_url));
     die();
 }
+
+function manage_payments_search_student_callback() {
+    global $wpdb;
+    $search_term = sanitize_text_field($_POST['q']);
+    $table_students = $wpdb->prefix . 'students';
+    
+    // Preparar la consulta SQL de manera segura
+    $query = $wpdb->prepare(
+        "SELECT * FROM {$table_students} 
+        WHERE `name` LIKE %s 
+        OR last_name LIKE %s 
+        OR middle_last_name LIKE %s 
+        OR middle_name LIKE %s 
+        OR email LIKE %s 
+        OR id_document LIKE %s",
+        '%' . $wpdb->esc_like($search_term) . '%',
+        '%' . $wpdb->esc_like($search_term) . '%',
+        '%' . $wpdb->esc_like($search_term) . '%',
+        '%' . $wpdb->esc_like($search_term) . '%',
+        '%' . $wpdb->esc_like($search_term) . '%',
+        '%' . $wpdb->esc_like($search_term) . '%'
+    );
+    $data = [];
+    $students = $wpdb->get_results($query);
+    foreach ($students as $student) {
+        $data[] = [
+            'id' => $student->id_document,
+            'description' => $student->id_document . ' - ' . $student->email,
+            'text' => $student->name . ' ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->middle_name
+        ];
+    }
+
+    wp_send_json(['items' => $data]);
+}
+
+add_action('wp_ajax_nopriv_manage_payments_search_student', 'manage_payments_search_student_callback');
+add_action('wp_ajax_manage_payments_search_student', 'manage_payments_search_student_callback');

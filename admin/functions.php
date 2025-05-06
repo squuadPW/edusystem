@@ -73,6 +73,25 @@ function aes_scripts_admin()
         );
     }
 
+    if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_payments_content' && $_GET['section_tab'] === 'generate_advance_payment') {
+        wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
+        wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', ['jquery']);
+
+        // Especifica jQuery como dependencia y usa la versión empaquetada con WordPress
+        wp_enqueue_script(
+            'manage-payments',
+            plugins_url('edusystem') . '/admin/assets/js/manage-payments.js',
+            ['jquery', 'select2'], // Asegura que jQuery y Select2 se carguen primero
+            $version,
+            true
+        );
+
+        wp_localize_script('manage-payments', 'manage_payments', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'manage_payments_search_student'
+        ]);
+    }
+
     if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_academic_offers_content') {
         wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
         wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', ['jquery']);
