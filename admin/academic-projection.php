@@ -716,7 +716,6 @@ function generate_enroll_student() {
         }
 
     } catch (Exception $e) {
-        error_log('Error in generate_enroll_student: ' . $e->getMessage());
         setcookie('message-error', 'An error occurred while processing enrollments', time() + 3600, '/');
     }
 }
@@ -899,7 +898,6 @@ function get_moodle_notes()
         }
     } catch (Exception $e) {
         // Log error or handle it appropriately
-        error_log('Error in get_moodle_notes: ' . $e->getMessage());
     }
 }
 

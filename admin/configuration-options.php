@@ -81,7 +81,6 @@ function add_admin_form_configuration_options_content()
                 update_option('max_date_offer', $expiration_timestamp);
             } catch (Exception $e) {
                 // Log error and handle gracefully
-                error_log('Error updating offers: ' . $e->getMessage());
                 wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content&error=' . urlencode($e->getMessage())));
                 exit;
             }

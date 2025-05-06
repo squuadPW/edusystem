@@ -419,7 +419,6 @@ function get_teacher_details($teacher_id)
         return $teacher;
 
     } catch (Exception $e) {
-        error_log('Error in get_teacher_details: ' . $e->getMessage());
         return null;
     }
 }

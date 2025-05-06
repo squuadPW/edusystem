@@ -285,7 +285,6 @@ function add_admin_form_payments_content()
 
                 } catch (Exception $e) {
                     // Log error and redirect with error message
-                    error_log('Error generating fee graduation: ' . $e->getMessage());
                     wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&error=' . urlencode($e->getMessage())));
                     exit;
                 }
@@ -390,7 +389,6 @@ function add_admin_form_payments_content()
 
                 } catch (Exception $e) {
                     // Log error and redirect with error message
-                    error_log('Error generating fee graduation: ' . $e->getMessage());
                     wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&error=' . urlencode($e->getMessage())));
                     exit;
                 }

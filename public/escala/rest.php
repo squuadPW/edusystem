@@ -9,13 +9,11 @@ function crm_request($api, $query = '', $method, $body) {
     $api_key = get_option('crm_token') ?? '';
     
     if (empty($api_key)) {
-        error_log('Error Escala API: API Token no definido');
         return new WP_Error('missing_api_key', __('Configuración del servicio incompleta', 'text-domain'), array('status' => 500));
     }
 
     // 3. Configurar solicitud
     $endpoint = get_option('crm_url').$api.'/'.$query;
-    error_log($endpoint);
     $args = array(
         'method' => $method,
         'headers' => array(
@@ -35,7 +33,6 @@ function crm_request($api, $query = '', $method, $body) {
 
     // 6. Manejar errores HTTP
     if (is_wp_error($response)) {
-        error_log('Error en la solicitud: ' . $response->get_error_message());
         return new WP_Error('http_error', __('Error de conexión con el servicio', 'text-domain'), array('status' => 500));
     }
 

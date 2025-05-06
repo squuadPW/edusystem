@@ -72,10 +72,6 @@ function send_pending_prepayments_email()
         $three_weeks_from_now
     ));
 
-    error_log('Current date: ' . $current_date);
-    error_log('Three weeks from now: ' . $three_weeks_from_now);
-    error_log('Found payments: ' . print_r($student_payments, true));
-    
     $sent_customers = [];
     foreach ($student_payments as $payment) {
         $customer_id = $payment->partner_id;
