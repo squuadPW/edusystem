@@ -630,6 +630,7 @@ function add_admin_form_payments_content()
             $roles = $current_user->roles;
             $order_id = $_GET['order_id'];
             $order = wc_get_order($order_id);
+            $student = get_student_detail($order->get_meta('student_id'));
 
             include(plugin_dir_path(__FILE__) . 'templates/payment-details.php');
         } else if ($_GET['section_tab'] == 'invoices_alliances') {
@@ -835,31 +836,17 @@ class TT_payment_pending_List_Table extends WP_List_Table
         if ($orders) {
             foreach ($orders as $order) {
 
-                $student_data = $order->get_meta('student_data');
+                $student = get_student_detail($order->get_meta('student_id'));
 
-                // Si es un string JSON, decodificarlo
-                if (is_string($student_data)) {
-                    $student_data = json_decode($student_data, true);
+                $student_name = '';
+                if ($student) {
+                    $student_name = $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name;
                 }
-
-                // Verificar si es un array antes de acceder a las claves
-                if (is_array($student_data)) {
-                    $student_name = ($student_data['name_student'] ?? '') . ' ' . 
-                                ($student_data['middle_name_student'] ?? '') . ' ' . 
-                                ($student_data['last_name_student'] ?? '') . ' ' . 
-                                ($student_data['middle_last_name_student'] ?? '');
-                } else {
-                    // Manejar el caso donde no es un array (opcional)
-                    $student_name = '';
-                }
-
-                // Eliminar espacios extras
-                $student_name = trim(preg_replace('/\s+/', ' ', $student_name));
 
                 array_push($orders_array, [
                     'payment_id' => $order->get_id(),
                     'date' => $order->get_date_created()->format('F j, Y g:i a'),
-                    'partner_name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+                    'partner_name' => $order->get_billing_last_name() . ' ' . $order->get_billing_first_name(),
                     'student_name' => $student_name,
                     'total' => wc_price($order->get_total()),
                     'status' => ($order->get_status() == 'pending') ? 'Payment pending' : $order->get_status(),

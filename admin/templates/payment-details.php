@@ -43,13 +43,13 @@
                                 <?php if(!in_array('institutes',$roles)): ?>
                                     <tr>
                                         <th scope="row"><label for="input_id"><?= __('Parent Name','edusystem').':'; ?></label></th>
-                                        <td><?= $order->get_billing_first_name().' '.$order->get_billing_last_name() ?></td>
+                                        <td><?= $order->get_billing_last_name().' '.$order->get_billing_first_name() ?></td>
                                     </tr>
                                 <?php endif; ?>
-                                <?php if(!in_array('institutes',$roles) && $order->get_meta('student_data')): ?>
+                                <?php if(!in_array('institutes',$roles) && $student): ?>
                                     <tr>
                                         <th scope="row"><label for="input_id"><?= __('Student Name','edusystem').':'; ?></label></th>
-                                        <td><?= $order->get_meta('student_data')['name_student'] . ' ' .  $order->get_meta('student_data')['middle_name_student'] . ' ' .  $order->get_meta('student_data')['last_name_student'] . ' ' .  $order->get_meta('student_data')['middle_last_name_student'] ?></td>
+                                        <td><?= $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name; ?></td>
 
                                     </tr>
                                 <?php endif; ?>
