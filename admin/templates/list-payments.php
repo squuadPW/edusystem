@@ -23,7 +23,7 @@
 		<form action="" id="post-filter" method="post">
 			<p class="search-box">
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','edusystem').':'; ?></label>
-				<input type="search" id="search-box-id-search-input" name="s" placeholder="<?= __('Search for payment ID','edusystem'); ?>" value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
+				<input type="search" id="search-box-id-search-input" name="s" placeholder="<?= __('Search for student','edusystem'); ?>" value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
 				<input type="submit" id="search-submit" class="button" value="Search">
 			</p>
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
