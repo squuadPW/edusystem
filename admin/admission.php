@@ -1145,6 +1145,10 @@ function build_status_description($status_id, $description, $document) {
         5 => 'Document approved'
     ];
     
+    if ($status_id == 5) {
+        return $status_map[$status_id];
+    }
+
     return ($status_map[$status_id] ?? '') . ($description ? $description : $document->description);
 }
 
