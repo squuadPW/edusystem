@@ -163,6 +163,12 @@
                     </tr>
                     <tr>
                         <th scope="row" style="width:10px;padding:3px;">
+                            <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_programs" id="manager_programs" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_programs'])) ? 'checked' : ''; ?>>
+                        </th>
+                        <td style="display:table-cell;padding:3px;"><label for="manager_programs" style="margin-left:20px;"><?= __('Program','edusystem'); ?></label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="width:10px;padding:3px;">
                             <input type="checkbox" style="margin-left:20px;" name="capabilities[]" value="manager_enrollments_aes" id="manager_enrollments_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_enrollments_aes'])) ? 'checked' : ''; ?>>
                         </th>
                         <td style="display:table-cell;padding:3px;"><label for="manager_enrollments_aes" style="margin-left:20px;"><?= __('Enrollments','edusystem'); ?></label></td>

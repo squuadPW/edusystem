@@ -64,9 +64,11 @@ function create_tables()
     dbDelta(
       "CREATE TABLE " . $table_programs . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
-        `identificator` TEXT NOT NULL,
+        `is_active` tinyint(1) DEFAULT 1,
+        identificator TEXT NOT NULL,
         name TEXT NOT NULL,
         description TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
   }
