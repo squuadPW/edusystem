@@ -145,7 +145,7 @@ function get_student_by_email($email) {
     ));
 }
 
-function get_user_by_email($email) {
+function custom_get_user_by_email($email) {
     $user = get_user_by('email', $email);
     if ($user) {
         $user_obj = new stdClass();
@@ -219,7 +219,7 @@ function get_summary_email() {
             }
             
             $email = $_POST['email_student'];
-            $user = get_user_by_email($email);
+            $user = custom_get_user_by_email($email);
             
             $data = [];
             if ($user) {
@@ -322,7 +322,7 @@ function handle_email_sending($type, $post_data) {
             
             $email = $_POST['email_student'];
             $student = get_student_by_email($email);
-            $user = get_user_by_email($email);
+            $user = custom_get_user_by_email($email);
             
             $data = [];
             if ($student && $user->user_email == $student->email) {

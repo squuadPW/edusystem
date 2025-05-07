@@ -58,6 +58,18 @@ function create_tables()
   $table_pensum = $wpdb->prefix . 'pensum';
   $table_feed = $wpdb->prefix . 'feed';
   $table_templates_email = $wpdb->prefix . 'templates_email';
+  $table_programs = $wpdb->prefix . 'programs';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_programs}'") != $table_programs) {
+    dbDelta(
+      "CREATE TABLE " . $table_programs . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        `identificator` TEXT NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_templates_email}'") != $table_templates_email) {
     dbDelta(
