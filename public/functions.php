@@ -1755,7 +1755,8 @@ function select_elective_callback()
     $load = load_current_cut_enrollment();
     $code = $load['code'];
     $cut = $load['cut'];
-
+    error_log($code);
+    error_log($cut);
     $student_id = null;
     if (in_array('parent', $roles)) {
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
@@ -2603,7 +2604,7 @@ function load_current_cut_enrollment() {
     // 1. Buscar el periodo académico actual (basado en fechas ajustadas)
     $period_data = $wpdb->get_row($wpdb->prepare(
         "SELECT * FROM {$table_academic_periods} 
-        AND DATE_SUB(`start_date`, INTERVAL 2 MONTH) <= %s 
+        WHERE DATE_SUB(`start_date`, INTERVAL 2 MONTH) <= %s 
         AND `end_date` >= %s
         ORDER BY start_date ASC
         LIMIT 1",
