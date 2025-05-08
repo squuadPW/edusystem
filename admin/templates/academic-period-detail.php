@@ -303,7 +303,7 @@
                                     </div>
                                 </div>
 
-                                <h3
+                                <!-- <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
                                     <b><?= __('Inscriptions', 'edusystem'); ?></b>
                                 </h3>
@@ -332,9 +332,9 @@
                                             <input type="date" name="end_date_inscriptions" value="" required>
                                         <?php endif; ?>
                                     </div>
-                                </div>
+                                </div> -->
 
-                                <h3
+                                <!-- <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
                                     <b><?= __('Pre-Inscriptions', 'edusystem'); ?></b>
                                 </h3>
@@ -363,7 +363,7 @@
                                             <input type="date" name="end_date_pre_inscriptions" value="" required>
                                         <?php endif; ?>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">

@@ -42,10 +42,10 @@ function add_admin_form_academic_periods_content()
             $year = $_POST['year'];
             $start_date = $_POST['start_date'];
             $end_date = $_POST['end_date'];
-            $start_date_inscriptions = $_POST['start_date_inscriptions'];
-            $end_date_inscriptions = $_POST['end_date_inscriptions'];
-            $start_date_pre_inscriptions = $_POST['start_date_pre_inscriptions'];
-            $end_date_pre_inscriptions = $_POST['end_date_pre_inscriptions'];
+            $start_date_inscriptions = $_POST['start_date_inscriptions'] ?? null;
+            $end_date_inscriptions = $_POST['end_date_inscriptions'] ?? null;
+            $start_date_pre_inscriptions = $_POST['start_date_pre_inscriptions'] ?? null;
+            $end_date_pre_inscriptions = $_POST['end_date_pre_inscriptions'] ?? null;
             $status_id = $_POST['status_id'] ?? 0;
             $cuts = ['A', 'B', 'C', 'D', 'E'];
             $cuts_arr = [
