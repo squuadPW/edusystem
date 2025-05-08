@@ -72,7 +72,7 @@ function create_user_moodle($student_id){
                 automatically_enrollment($student_id);
             }
 
-            if (get_option('public_course_id') != '') {
+            if (get_option('public_course_id')) {
                 enroll_student_public_course(courses_enroll_student($student_id, [(int) get_option('public_course_id')]));
             }
     

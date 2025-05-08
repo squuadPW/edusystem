@@ -31,7 +31,7 @@
 				<a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollments'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to validate enrollments?');"><?= __('Enrollment history','edusystem'); ?></a>
 				<a data-tippy-content="<?= $current_enroll_text ?>" style="margin-left: 10px; <?= $style_pending ?>" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_enrollments_moodle'); ?>" class="button button-outline-primary  help-tooltip" onclick="return confirm('Are you sure you want to generate enrollments in Moodle?');"><?= __('Enroll in moodle','edusystem'); ?> (<?= $enroll_moodle_count ?>)</a>
 
-				<?php if(get_option('public_course_id') != '') { ?>
+				<?php if(get_option('public_course_id')) { ?>
 					<a style="margin-left: 10px" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=enroll_public_course'); ?>" class="button button-outline-primary" onclick="return confirm('Are you sure you want to enroll?');"><?= __('Enroll public course','edusystem'); ?></a>
 				<?php } ?>
 				
