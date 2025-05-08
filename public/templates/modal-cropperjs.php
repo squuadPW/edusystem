@@ -10,7 +10,9 @@
       </div>
 
       <div id="preview" style="display: none">
-        <div id="result"></div>
+        <div id="result" style="height: 200px; width: 200px; background-color: gray; margin: auto; border-radius: 100%; overflow: hidden; position: relative; border: 3px solid #E71F3B; margin: 20px auto;">
+          
+        </div>
       </div>
 
       <div style="display: flex; margin-top: 3rem; gap: 10px;" id="pre-image-buttons">

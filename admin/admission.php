@@ -1320,11 +1320,11 @@ function generate_documents_html($student_id, $document_id)
                     $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="6" class="button change-status button-secondary" style="margin-left: 3px; margin-right: 3px; color: purple; border-color: purple;">' . __('Request update', 'edusystem') . '</button>';
                 }
 
-                if ($document->status != 5 && $document->status != 3) {
+                if ($document->status != 5 && $document->status != 6 && $document->status != 3) {
                     $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="5" class="button change-status button-success-outline" style="margin-left: 3px; margin-right: 3px; color: green; border-color: green;">' . __('Approve', 'edusystem') . '</button>';
                 }
 
-                if ($document->status != 5 && $document->status != 3) {
+                if ($document->status != 5 && $document->status != 6 && $document->status != 3) {
                     $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="3" class="button change-status button-danger-outline" style="margin-right: 3px; color: red; border-color: red;">' . __('Decline', 'edusystem') . '</button>';
                 }
             }

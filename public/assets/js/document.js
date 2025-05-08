@@ -102,10 +102,18 @@ document.getElementById("btnCrop").addEventListener("click", function () {
       // Asignar los archivos al input
       document.getElementById("student_photo").files = dataTransfer.files;
 
-      // Mostrar previsualización
       const croppedImage = document.createElement("img");
       croppedImage.src = URL.createObjectURL(blob);
-      $result.innerHTML = ""; // Limpiar contenido anterior
+      croppedImage.style.cssText = `
+        width: 100%;
+        height: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -45%);
+      `;
+      
+      $result.innerHTML = "";
       $result.appendChild(croppedImage);
 
       // Limpiar cropper si es necesario

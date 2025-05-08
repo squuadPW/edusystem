@@ -526,11 +526,11 @@
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
                                             data-status="6" class="button change-status button-secondary" style="color: purple; border-color: purple;"><?= __('Request update', 'edusystem'); ?></button>
                                     <?php } ?>
-                                    <?php if ($document->status != 5 && $document->status != 3): ?>
+                                    <?php if ($document->status != 5 && $document->status != 6 &&  $document->status != 3): ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
                                             data-status="5" class="button change-status button-success-outline" style="color: green; border-color: green;"><?= __('Approve', 'edusystem'); ?></button>
                                     <?php endif; ?>
-                                    <?php if ($document->status != 5 && $document->status != 3): ?>
+                                    <?php if ($document->status != 5 && $document->status != 6 && $document->status != 3): ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
                                             data-status="3" class="button change-status button-danger-outline" style="color: red; border-color: red;"><?= __('Decline', 'edusystem'); ?></button>
                                     <?php endif; ?>
