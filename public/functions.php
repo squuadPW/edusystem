@@ -1755,8 +1755,7 @@ function select_elective_callback()
     $load = load_current_cut_enrollment();
     $code = $load['code'];
     $cut = $load['cut'];
-    error_log($code);
-    error_log($cut);
+
     $student_id = null;
     if (in_array('parent', $roles)) {
         $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
