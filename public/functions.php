@@ -2603,7 +2603,7 @@ function load_current_cut_enrollment() {
     // 1. Buscar el periodo académico actual (basado en fechas ajustadas)
     $period_data = $wpdb->get_row($wpdb->prepare(
         "SELECT * FROM {$table_academic_periods} 
-        WHERE `start_date` <= %s 
+        AND DATE_SUB(`start_date`, INTERVAL 2 MONTH) <= %s 
         AND `end_date` >= %s
         ORDER BY start_date ASC
         LIMIT 1",
@@ -2617,7 +2617,7 @@ function load_current_cut_enrollment() {
         $cut_query = $wpdb->prepare(
             "SELECT * FROM {$table_academic_periods_cut} 
             WHERE code = %s 
-            AND DATE_SUB(`start_date`, INTERVAL 1 MONTH) <= %s 
+            AND DATE_SUB(`start_date`, INTERVAL 2 MONTH) <= %s 
             AND `end_date` >= %s
             AND `max_date` >= %s
             ORDER BY start_date ASC
