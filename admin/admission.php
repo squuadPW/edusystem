@@ -1316,7 +1316,7 @@ function generate_documents_html($student_id, $document_id)
                     $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="1" class="button change-status button-warning-outline" style="margin-left: 3px; margin-right: 3px; color: #c7850b; border-color: #c7850b;">' . __('Revert', 'edusystem') . '</button>';
                 }
 
-                if ($document->status != 6 && $document->status != 1) {
+                if ($document->status != 5 && $document->status != 6 && $document->status != 1) {
                     $html .= '<button data-document-id="' . $document->id . '" data-student-id="' . $document->student_id . '" data-status="6" class="button change-status button-secondary" style="margin-left: 3px; margin-right: 3px; color: purple; border-color: purple;">' . __('Request update', 'edusystem') . '</button>';
                 }
 

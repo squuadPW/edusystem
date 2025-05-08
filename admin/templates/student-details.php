@@ -524,7 +524,7 @@
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
                                             data-status="1" class="button change-status button-warning-outline" style="color: #c7850b; border-color: #c7850b;"><?= __('Revert', 'edusystem'); ?></button>
                                     <?php } ?>
-                                    <?php if ($document->status != 6 && $document->status != 1) { ?>
+                                    <?php if ($document->status != 5 && $document->status != 6 && $document->status != 1) { ?>
                                         <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
                                             data-status="6" class="button change-status button-secondary" style="color: purple; border-color: purple;"><?= __('Request update', 'edusystem'); ?></button>
                                     <?php } ?>
