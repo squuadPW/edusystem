@@ -135,6 +135,7 @@
                                         <th scope="row" style="font-weight:400; text-align: center">
                                             <label for="academic_period"><b><?php _e('School Year', 'edusystem'); ?></b></label><br>
                                             <select name="academic_period" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                <option value="" <?= $student->academic_period == 'noperiod' || $student->academic_period == 'out' ? 'selected' : '' ?>>Out of school year</option>
                                                 <?php foreach ($periods as $key => $period) { ?>
                                                     <option value="<?= $period->code ?>" <?= $student->academic_period == $period->code ? 'selected' : '' ?>><?= $period->name ?></option>
                                                 <?php } ?>
@@ -143,6 +144,7 @@
                                         <th scope="row" style="font-weight:400; text-align: center">
                                             <label for="academic_period_cut"><b><?php _e('Student\'s entry cut', 'edusystem'); ?></b></label><br>
                                             <select name="academic_period_cut" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                <option value="" <?= $student->initial_cut == 'nocut' || $student->initial_cut == 'out' ? 'selected' : '' ?>>Out of term</option>
                                                 <option value="A" <?= $student->initial_cut == 'A' ? 'selected' : '' ?>>A</option>
                                                 <option value="B" <?= $student->initial_cut == 'B' ? 'selected' : '' ?>>B</option>
                                                 <option value="C" <?= $student->initial_cut == 'C' ? 'selected' : '' ?>>C</option>

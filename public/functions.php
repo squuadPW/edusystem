@@ -2597,8 +2597,8 @@ function load_current_cut_enrollment() {
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
     $current_time = current_time('mysql');
-    $code = 'noperiod';
-    $cut = 'nocut';
+    $code = 'out';
+    $cut = 'out';
 
     // 1. Buscar el periodo académico actual (basado en fechas ajustadas)
     $period_data = $wpdb->get_row($wpdb->prepare(
@@ -2672,12 +2672,11 @@ function load_current_cut()
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
     $current_time = current_time('mysql');
-    $code = 'noperiod';
-    $cut = 'nocut';
+    $code = 'out';
+    $cut = 'out';
 
     $period_data = $wpdb->get_row($wpdb->prepare(
-        "
-        SELECT * FROM {$table_academic_periods} 
+        "SELECT * FROM {$table_academic_periods} 
         WHERE `start_date` <= %s 
         AND `end_date` >= %s",
         array($current_time, $current_time)
@@ -2687,8 +2686,7 @@ function load_current_cut()
         $code = $period_data->code;
 
         $period_data_cut = $wpdb->get_row($wpdb->prepare(
-            "
-            SELECT * FROM {$table_academic_periods_cut} 
+            "SELECT * FROM {$table_academic_periods_cut} 
             WHERE `start_date` <= %s 
             AND `end_date` >= %s",
             array($current_time, $current_time)
@@ -2698,8 +2696,7 @@ function load_current_cut()
             $cut = $period_data_cut->cut;
         } else {
             $period_data_cut = $wpdb->get_row($wpdb->prepare(
-                "
-                SELECT * FROM {$table_academic_periods_cut} 
+                "SELECT * FROM {$table_academic_periods_cut} 
                 WHERE `start_date` >= %s",
                 array($current_time)
             ));

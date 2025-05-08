@@ -622,7 +622,7 @@ class TT_document_review_List_Table extends WP_List_Table
             //     $status_id = $item['status_id'];
             //     return $status_id < 2 ? 'No' : 'Yes';
             case 'grade':
-                $grade = get_name_grade($item['grade_id']) . ' - ' . $item['initial_cut'];
+                $grade = get_name_grade($item['grade_id']) . ' (' . $item['academic_period'] . ' - ' . $item['initial_cut'] . ')';
                 return $grade;
             case 'pending_documents':
                 return $item['count_pending_documents'];
