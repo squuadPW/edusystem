@@ -824,12 +824,24 @@ class TT_document_review_List_Table extends WP_List_Table
         $data = array();
         foreach ($data_categories as $key => $value) {
             $value['index'] = $key + 1;
-            $moodleActive = isset($value['moodle_student_id']) ? 'Yes' : 'No';
-            $moodleActiveText = $moodleActive == 'Yes' ? $value['status_id'] < 2 ? $moodleActive . ' - No access' : $moodleActive . ' - Full access' : $moodleActive;
-            $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; font-size: 10px; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px; cursor: not-allowed; font-size: 10px;"';
-            $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" ' . $moodleActiveStyle . '>' . $moodleActiveText . '</span>';
+            $hasMoodleAccess = isset($value['moodle_student_id']);
+            
+            $statusText = $hasMoodleAccess 
+                ? ($value['status_id'] < 2 ? 'Classroom access removed' : 'Full access to classroom') 
+                : 'Without classroom';
+        
+            $backgroundColor = $hasMoodleAccess 
+                ? ($value['status_id'] < 2 ? '#f980127d' : '#f98012') 
+                : '#dfdedd';
+        
+            $style = "background-color: $backgroundColor; text-align: center; font-size: 10px; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; padding: 4px;";
+            $style .= $hasMoodleAccess ? ' cursor: pointer;' : ' cursor: not-allowed;';
+            $style .= ' width: 100%;';
+        
+            $value['moodle_active'] = '<div class="moodle-active" data-moodle="' . ($hasMoodleAccess ? 'Yes' : 'No') . '" data-student_id="' . $value['id'] . '" style="' . $style . '">' . $statusText . '</div>';
             $data[] = $value;
         }
+        
 
         $per_page = 20; // items per page
         $this->set_pagination_args(array(
@@ -1026,9 +1038,21 @@ class TT_all_student_List_Table extends WP_List_Table
                 $value['student'] = '<label class="text-uppercase">'.$value['last_name'] . ' ' . $value['middle_last_name'] . ' ' . $value['name'] . ' ' . $value['middle_name'].'</label>';
                 $value['parent'] = '<label class="text-uppercase">'.$parent->last_name . ' ' . $parent->first_name.'</label>';
             }
-            $moodleActive = isset($value['moodle_student_id']) ? 'Yes' : 'No';
-            $moodleActiveStyle = $moodleActive == 'Yes' ? 'style="background-color: #f98012; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; cursor: pointer;padding: 4px"' : 'style="background-color: #dfdedd; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px;padding: 4px; cursor: not-allowed"';
-            $value['moodle_active'] = '<span class="moodle-active" data-moodle="' . $moodleActive . '" data-student_id="' . $value['id'] . '" ' . $moodleActiveStyle . '>' . $moodleActive . '</span>';
+            $hasMoodleAccess = isset($value['moodle_student_id']);
+            
+            $statusText = $hasMoodleAccess 
+                ? ($value['status_id'] < 2 ? 'Classroom access removed' : 'Full access to classroom') 
+                : 'Without classroom';
+        
+            $backgroundColor = $hasMoodleAccess 
+                ? ($value['status_id'] < 2 ? '#f980127d' : '#f98012') 
+                : '#dfdedd';
+        
+            $style = "background-color: $backgroundColor; text-align: center; font-size: 10px; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; padding: 4px;";
+            $style .= $hasMoodleAccess ? ' cursor: pointer;' : ' cursor: not-allowed;';
+            $style .= ' width: 100%;';
+
+            $value['moodle_active'] = '<div class="moodle-active" data-moodle="' . ($hasMoodleAccess ? 'Yes' : 'No') . '" data-student_id="' . $value['id'] . '" style="' . $style . '">' . $statusText . '</div>';
             $data[] = $value;
         }
 
