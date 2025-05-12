@@ -144,10 +144,13 @@ function get_students_by_period($academic_period, $cut, $filter, $graduating_stu
 
     // Si se requiere filtrar estudiantes que estén "academic ready", se utiliza array_filter.
     if ($graduating_students == 2) {
+        // Filtramos los estudiantes que no están "academic ready".
         $students = array_filter($students, function($student) {
-            // get_academic_ready() retorna true si el estudiante ya está listo; se excluye en ese caso.
             return !get_academic_ready($student->id);
         });
+
+        // Re-indexamos el array para obtener índices consecutivos
+        $students = array_values($students);
     }
 
     return $students;
