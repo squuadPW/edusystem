@@ -303,16 +303,10 @@ function add_admin_form_admission_content()
                         wp_update_attachment_metadata($attach_id, $attach_data);
                         $wpdb->update($table_student_documents, ['status' => 5, 'attachment_id' => $attach_id, 'description' => 'The file was uploaded from the administration and approved immediately.', 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $id, 'id' => $document_id]);
             
-                        $document_changed = $wpdb->get_row("SELECT * FROM {$table_student_documents} WHERE id = {$document_id}");
-                        if ($document_changed->document_id == 'PHOTO OF STUDENT CARD' || $document_changed->document_id == "STUDENT'S PHOTO") {                
-                            $wpdb->update($table_students, [
-                                'profile_picture' => $document_changed->attachment_id,
-                            ], ['id' => $id]);
-                        }
-
-                        if ($document_changed->document_id == 'CERTIFIED NOTES HIGH SCHOOL') {
-                            update_equivalence_califications($id);
-                        }
+                        $document = get_document_details($document_id);
+                        $student = get_student_detail($id);
+                        $users = get_related_users($student);
+                        $rejected_document = handle_status_specific_actions(5, $id, $document, $users);
                     }
                 }
 
