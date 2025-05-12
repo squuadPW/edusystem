@@ -304,9 +304,7 @@ function add_admin_form_admission_content()
                         $wpdb->update($table_student_documents, ['status' => 5, 'attachment_id' => $attach_id, 'description' => 'The file was uploaded from the administration and approved immediately.', 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $id, 'id' => $document_id]);
             
                         $document = get_document_details($document_id);
-                        $student = get_student_detail($id);
-                        $users = get_related_users($student);
-                        $rejected_document = handle_status_specific_actions(5, $id, $document, $users);
+                        $rejected_document = handle_status_specific_actions(5, $id, $document);
                     }
                 }
 
@@ -1190,7 +1188,7 @@ function handle_status_notifications($status_id, $users, $description) {
     }
 }
 
-function handle_status_specific_actions($status_id, $student_id, $document, $users) {
+function handle_status_specific_actions($status_id, $student_id, $document, $users = null) {
     if ($status_id === 3) {
         handle_document_rejection($student_id, $document);
         return [
