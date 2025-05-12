@@ -69,7 +69,7 @@ segmentButtons.forEach((button) => {
       formEmail.style.display = "none";
 
       const formGroup = document.getElementById("by_group");
-      formGroup.style.display = "block";
+      formGroup.style.display = "grid";
 
       document.querySelector('input[name="type"]').value = "1";
 
@@ -158,6 +158,9 @@ if (summaryEmailButton) {
     let academic_period = document.querySelector(
       'select[name="academic_period"]'
     ).value;
+    let graduating_students = document.querySelector(
+      'select[name="graduating_students"]'
+    ).value;
     let cut = document.querySelector(
       'select[name="academic_period_cut"]'
     ).value;
@@ -174,7 +177,7 @@ if (summaryEmailButton) {
     XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     XHR.responseType = "json";
     XHR.send(
-      `action=${summary_email.action}&academic_period=${academic_period}&cut=${cut}&filter=${filter}&email_student=${email_student}&type=${type}`
+      `action=${summary_email.action}&academic_period=${academic_period}&cut=${cut}&filter=${filter}&email_student=${email_student}&type=${type}&graduating_students=${graduating_students}`
     );
     XHR.onload = function () {
       if (this.readyState == "4" && XHR.status === 200) {

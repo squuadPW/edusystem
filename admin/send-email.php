@@ -108,33 +108,51 @@ function set_variables_message($message, $student, $code_period = null, $cut_per
     return $message;
 }
 
-function get_students_by_period($academic_period, $cut, $filter) {
+function get_students_by_period($academic_period, $cut, $filter, $graduating_students) {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $students = [];
 
     if ($filter == 1) {
-        return $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM {$table_students} WHERE academic_period = %s AND initial_cut = %s",
+        // Obtiene los estudiantes filtrando por período académico, corte inicial y status.
+        $query = $wpdb->prepare(
+            "SELECT * FROM {$table_students} WHERE academic_period = %s AND initial_cut = %s AND status_id <> %d",
             $academic_period,
-            $cut
-        ));
+            $cut,
+            5
+        );
+        $students = $wpdb->get_results($query);
     } else {
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+        // Obtiene los IDs de estudiantes según el período y corte en la otra tabla.
         $cut_student_ids = $wpdb->get_col($wpdb->prepare(
-            "SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s",
+            "SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s AND status_ud <> %d",
             $academic_period,
-            $cut
+            $cut,
+            5
         ));
-        $elective_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE elective = 1");
-        $all_ids = array_merge($cut_student_ids, $elective_ids);
         
-        if (empty($all_ids)) {
+        if (empty($cut_student_ids)) {
             return [];
         }
-        
-        return $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', array_map('intval', $all_ids)) . ")");
+
+        // Aseguramos que los IDs son enteros.
+        $student_ids_str = implode(',', array_map('intval', $cut_student_ids));
+        $query = "SELECT * FROM {$table_students} WHERE id IN ($student_ids_str)";
+        $students = $wpdb->get_results($query);
     }
+
+    // Si se requiere filtrar estudiantes que estén "academic ready", se utiliza array_filter.
+    if ($graduating_students == 2) {
+        $students = array_filter($students, function($student) {
+            // get_academic_ready() retorna true si el estudiante ya está listo; se excluye en ese caso.
+            return !get_academic_ready($student->id);
+        });
+    }
+
+    return $students;
 }
+
 
 function get_student_by_email($email) {
     global $wpdb;
@@ -197,6 +215,7 @@ function get_summary_email() {
     }
 
     $type = $_POST['type'];
+    $graduating_students = (int)$_POST['graduating_students'];
     $data = [];
 
     switch ($type) {
@@ -208,7 +227,8 @@ function get_summary_email() {
             $data = get_students_by_period(
                 $_POST['academic_period'],
                 $_POST['cut'],
-                $_POST['filter']
+                $_POST['filter'],
+                $graduating_students
             );
             break;
 
@@ -299,29 +319,19 @@ function handle_email_sending($type, $post_data) {
     $message = isset($post_data['message']) ? wp_unslash($post_data['message']) : '';
     $send_to_parent = isset($post_data['email_parent']) && $post_data['email_parent'] == 'on';
     $save_template = isset($post_data['save_template']) && $post_data['save_template'] == 'on';
+    $graduating_students = (int)$_POST['graduating_students'];
 
     switch ($type) {
         case '1':
             $academic_period = $post_data['academic_period'];
             $cut = $post_data['academic_period_cut'];
-            
-            if ($post_data['academic_period_cut_filter'] == 1) {
-                $cut_student_ids = $wpdb->get_col($wpdb->prepare(
-                    "SELECT id FROM {$table_students} WHERE academic_period = %s AND initial_cut = %s",
-                    $academic_period,
-                    $cut
-                ));
-            } else {
-                $cut_student_ids = $wpdb->get_col($wpdb->prepare(
-                    "SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s",
-                    $academic_period,
-                    $cut
-                ));
-                $elective_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE elective = 1");
-                $cut_student_ids = array_merge($cut_student_ids, $elective_ids);
-            }
 
-            $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', array_map('intval', $cut_student_ids)) . ")");
+            $students = get_students_by_period(
+                $academic_period,
+                $cut,
+                $_POST['academic_period_cut_filter'],
+                $graduating_students
+            );
             send_email_to_students($students, $subject, $message, $academic_period, $cut, $send_to_parent);
             break;
 

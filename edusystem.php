@@ -495,7 +495,7 @@ function create_tables()
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_students}'") != $table_students) {
 
     // condition_student (0 retirado, 1 activo, 2 pausado)
-    // status_id (0 pendiente, 1 aprobado, 2 documentos subidos con acceso al moodle)
+    // status_id (0 pendiente, 1 aprobado, 2 documentos subidos con acceso al moodle, 5 graduado)
     dbDelta(
       "CREATE TABLE " . $table_students . " (
         id INT(11) NOT NULL AUTO_INCREMENT,

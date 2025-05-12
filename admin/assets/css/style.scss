@@ -682,3 +682,9 @@ div#application-passwords-section {
 .postbox {
   border-radius: 8px;
 }
+
+#by_group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
