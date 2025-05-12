@@ -1248,7 +1248,8 @@ function handle_document_approval($student_id, $document) {
         update_status_student($student_id, 3);
     }
     
-    if ($document->is_required && check_access_virtual($student_id)) {
+    $student = get_student_detail($student_id);
+    if ($document->is_required && check_access_virtual($student_id) && !$student->moodle_student_id) {
         handle_virtual_classroom_access($student_id);
     }
 }
