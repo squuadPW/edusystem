@@ -83,7 +83,7 @@
 
                 <div class="accordion">
                     <!-- Primer acordeón: Variables -->
-                    <details style="cursor: pointer; background-color: #002fbd; padding: 10px 10px; border-radius: 10px; color: white; margin: 10px;">
+                    <details style="cursor: pointer; background-color: #002fbd30; padding: 10px 10px; border-radius: 10px; color: black; margin: 10px;">
                         <summary><?= __('Variables', 'edusystem'); ?></summary>
                         <div style="font-weight:400; font-size: 12px">
                             <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; cursor: auto;">
@@ -96,7 +96,7 @@
 
                     <!-- Segundo acordeón: Templates -->
                     <?php if (count($templates) > 0): ?>
-                        <details style="cursor: pointer; background-color: #002fbd; padding: 10px 10px; border-radius: 10px; color: white; margin: 10px;">
+                        <details style="cursor: pointer; background-color: #002fbd30; padding: 10px 10px; border-radius: 10px; color: black; margin: 10px;">
                             <summary><?= __('Templates', 'edusystem'); ?></summary>
                             <div style="font-weight:400; cursor: auto; margin: 10px auto;">
                                 <select id="templates-select" style="width: 100%; padding: 8px;">
