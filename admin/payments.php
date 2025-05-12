@@ -175,6 +175,7 @@ function add_admin_form_payments_content()
             $id_document = $_POST['id_document'];
             $generate = $_POST['generate'];
             $save_changes = $_POST['save_changes'];
+            $delete_quote = $_POST['delete_quote'];
             $generate_fee_registration = $_POST['generate_fee_registration'];
             $generate_fee_graduation = $_POST['generate_fee_graduation'];
             $date_payment = $_POST['date_payment'] ?? [];
@@ -184,6 +185,13 @@ function add_admin_form_payments_content()
             $table_student_payments_log = $wpdb->prefix . 'student_payments_log';
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}' OR email='{$id_document}'");
             $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY cuote ASC");
+            
+            if ($delete_quote) {
+                $wpdb->delete($table_student_payments, ['id' => $delete_quote]);
+
+                wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&success_save_changes=true'));
+                exit;
+            }
 
             if ($generate_fee_registration) {
                 try {
