@@ -218,16 +218,27 @@ function get_summary_email() {
                 return;
             }
             
-            $email = $_POST['email_student'];
-            $user = custom_get_user_by_email($email);
+            // Recibimos la cadena de emails separados por comas
+            $emails_string = $_POST['email_student'];
+            
+            // Separamos la cadena en un array y eliminamos espacios en blanco de cada email
+            $emails_array = array_map('trim', explode(',', $emails_string));
             
             $data = [];
-            if ($user) {
-                $data[] = $user;
+            foreach ($emails_array as $email) {
+                // Verifica que el email no esté vacío y que tenga un formato válido
+                if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    continue; // O podrías acumular errores si lo prefieres
+                }
+                
+                $user = custom_get_user_by_email($email);
+                if ($user) {
+                    $data[] = $user;
+                }
             }
             
             if (empty($data)) {
-                wp_send_json(['success' => false, 'message' => 'No records found with this email']);
+                wp_send_json(['success' => false, 'message' => 'No records found with these emails']);
                 return;
             }
             break;
@@ -319,28 +330,41 @@ function handle_email_sending($type, $post_data) {
                 wp_send_json(['success' => false, 'message' => 'Missing email parameter']);
                 return;
             }
-            
-            $email = $_POST['email_student'];
-            $student = get_student_by_email($email);
-            $user = custom_get_user_by_email($email);
-            
+
+            // Se recibe y separa la cadena de emails, removiendo espacios en blanco
+            $emails_string = $_POST['email_student'];
+            $emails_array  = array_map('trim', explode(',', $emails_string));
+
             $data = [];
-            if ($student && $user->user_email == $student->email) {
-                $data[] = $student;
-                $message_student = set_variables_message($message, $student);
-                send_email_to_students([$student], $subject, $message_student, null, null, $send_to_parent);
-            }
-            if ($user && (!$student || $user->user_email != $student->email)) {
-                $data[] = $user;
-                if ($user) {
+
+            // Se recorre cada email
+            foreach ($emails_array as $email) {
+                // Validar que el email no sea vacío y tenga un formato correcto
+                if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    continue;
+                }
+
+                $student = get_student_by_email($email);
+                $user    = custom_get_user_by_email($email);
+
+                // Caso en que se encuentra alumno y además el correo de usuario coincide
+                if ($student && isset($user->user_email) && $user->user_email === $student->email) {
+                    $data[] = $student;
+                    $message_student = set_variables_message($message, $student);
+                    send_email_to_students([$student], $subject, $message_student, null, null, $send_to_parent);
+                }
+
+                // Caso en que se encuentra usuario pero no coincide con un alumno o no existe alumno
+                if ($user && (!$student || ($student && $user->user_email !== $student->email))) {
+                    $data[] = $user;
                     $message_user = set_variables_message($message, $user);
                     $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
                     $email_user->trigger($user, $subject, $message_user);
                 }
             }
-            
+
             if (empty($data)) {
-                wp_send_json(['success' => false, 'message' => 'No records found with this email']);
+                wp_send_json(['success' => false, 'message' => 'No records found with these emails']);
                 return;
             }
             break;

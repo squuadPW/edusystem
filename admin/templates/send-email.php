@@ -64,13 +64,15 @@
                 </div>
                 <div id="by_email" style="display: none">
                     <div class="form-group">
-                        <label for="email_student"><?= __('Student, parent, alliance or institute mail', 'edusystem'); ?></label>
-                        <input type="email" name="email_student" id="email_student">
+                        <label for="email_student">
+                            <?= __('Student, parent, alliance or institute email address (you can enter several, separate them with commas)', 'edusystem'); ?>
+                        </label>
+                        <input type="email" name="email_student" id="email_student" multiple placeholder="example1@email.com, example2@email.com">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="subject"><?= __('Subject', 'edusystem'); ?></label>
-                    <input type="text" name="subject" id="subject" required>
+                    <input type="text" name="subject" id="subject" required placeholder="Subject of email">
                 </div>
 
                 <?php if(count($templates) > 0) { ?>
