@@ -335,6 +335,7 @@ class TT_All_Institute_Students_List_Table extends WP_List_Table
             'student' => __('Student', 'edusystem'),
             'email' => __('Email', 'edusystem'),
             'initial' => __('Initial term', 'edusystem'),
+            'institute_name' => __('Institute', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
         );
 
@@ -368,7 +369,7 @@ class TT_All_Institute_Students_List_Table extends WP_List_Table
          * - "institutes" tiene la columna "alliance_id" para relacionarse con "alliances".
          * - "students" tiene la columna "institute_id" para relacionarse con "institutes".
          */
-        $sql = "SELECT SQL_CALC_FOUND_ROWS s.*
+        $sql = "SELECT SQL_CALC_FOUND_ROWS s.*, i.name AS institute_name
             FROM {$table_students} AS s
             INNER JOIN {$table_institutes} AS i ON s.institute_id = i.id
             INNER JOIN {$table_alliances} AS a ON i.alliance_id = a.id
