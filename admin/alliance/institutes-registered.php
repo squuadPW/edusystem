@@ -12,6 +12,13 @@ function list_admin_institutes_partner_registered_content(){
             $states = get_states_by_country_code($institute->country);
             include(plugin_dir_path(__FILE__).'../templates/institute-details-alliance.php');
 
+        }else if($_GET['action'] == 'institute-students'){
+
+            $list_students_institute = new TT_Institute_Students_List_Table;
+            $list_students_institute->prepare_items();
+
+            include(plugin_dir_path(__FILE__).'../templates/institute-students-alliance.php');
+
         }else if($_GET['action'] == 'add_institute'){
             $countries = get_countries();
             include(plugin_dir_path(__FILE__).'../templates/institute-details-alliance.php');
@@ -189,11 +196,13 @@ class TT_all_Institutes_Alliance_List_Table extends WP_List_Table{
                 return $datetime->format('F j, Y');
             case 'view_details':
                 if($item['status'] == 1){
-                        return "
-                        <a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=fee-institute&institute_id='.$item['id'])."'><span class='dashicons dashicons-money-alt'></span>".__('Fees','edusystem')."</a>
-                        <a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-detail&institute_id='.$item['id'])."'><span class='dashicons dashicons-edit'></span>".__('Edit','edusystem')."</a>";
+                    $buttons = "<a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=fee-institute&institute_id='.$item['id'])."'><span class='dashicons dashicons-money-alt'></span>".__('Fees','edusystem')."</a>";
+                    // $buttons .= "<a style='margin-left: 10px' class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-detail&institute_id='.$item['id'])."'><span class='dashicons dashicons-edit'></span>".__('Edit','edusystem')."</a>";
+                    $buttons .= "<a style='margin-left: 4px' class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-students&institute_id='.$item['id'])."'><span class='dashicons dashicons-admin-users'></span>".__('Students','edusystem')."</a>";
+                    return $buttons;
                 }else{
-                    return "<a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-detail&institute_id='.$item['id'])."'><span class='dashicons dashicons-edit'></span>".__('Edit','edusystem')."</a>";
+                    // return "<a class='button button-primary' href='".admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-detail&institute_id='.$item['id'])."'><span class='dashicons dashicons-edit'></span>".__('Edit','edusystem')."</a>";
+                    return '';
                 }
                
 			default:
@@ -299,5 +308,158 @@ class TT_all_Institutes_Alliance_List_Table extends WP_List_Table{
 		
         $this->items = $data;
 	}
+
+}
+
+class TT_Institute_Students_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'school_subject_',
+                'plural' => 'school_subject_s',
+                'ajax' => true
+            ));
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'student':
+                $student = $item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name'];
+                return $student;
+            case 'initial':
+                $initial = $item['academic_period'] . ' - ' . $item['initial_cut'];
+                return $initial;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'student' => __('Student', 'edusystem'),
+            'email' => __('Email', 'edusystem'),
+            'initial' => __('Initial term', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_students()
+    {
+        global $wpdb;
+        $students_array = [];
+        $institute_id = isset($_GET['institute_id']) ? (int) $_GET['institute_id'] : '';
+    
+        // PAGINATION
+        $per_page = 20;
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+    
+        $table_students = $wpdb->prefix . 'students';
+    
+        // Construir WHERE dinámicamente
+        $where_clauses = array();
+        $params = array();
+    
+        if (!empty($institute_id)) {
+            $where_clauses[] = 'institute_id = %d';
+            $params[] = $institute_id;
+        }
+    
+        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students}";
+    
+        if (!empty($where_clauses)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
+        }
+    
+        $sql .= ' ORDER BY id DESC LIMIT %d OFFSET %d';
+        $params[] = $per_page;
+        $params[] = $offset;
+    
+        // Preparar y ejecutar consulta segura
+        $prepared_sql = $wpdb->prepare($sql, $params);
+        $students = $wpdb->get_results($prepared_sql, ARRAY_A);
+    
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+    
+        return ['data' => $students, 'total_count' => $total_count];
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function prepare_items()
+    {
+
+        $data_get = $this->get_students();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+        
+        $data = $data_get['data'];
+        $total_count = (int) $data_get['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
 
 }

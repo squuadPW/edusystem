@@ -1008,3 +1008,14 @@ function create_user_institute($institute)
         update_user_meta($user->id, 'institute_id', $institute->id);
     }
 }
+
+function get_students_institute($institute_id) {
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $query = $wpdb->prepare(
+        "SELECT * FROM {$table_students} WHERE institute_id = %d ORDER BY id DESC",
+        $institute_id
+    );
+    $students = $wpdb->get_results($query);
+    return $students;
+}
