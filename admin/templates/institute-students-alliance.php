@@ -1,7 +1,7 @@
 <div class="tabs-content">
 	<div class="wrap">
         <div style="text-align:start;">
-			<h1 class="wp-heading-line"><?= __('All Students','edusystem'); ?></h1>
+			<h1 class="wp-heading-line"><?= __('Students of institute','edusystem'); ?></h1>
 		</div>
 
 		<?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
