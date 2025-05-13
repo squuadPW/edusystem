@@ -228,26 +228,11 @@ function get_order_institutes($start, $end, $id = "")
 
         if ($order->get_meta('institute_id') == $institute_id) {
 
-            $student_data = $order->get_meta('student_data');
-
-            // Si es un string JSON, decodificarlo
-            if (is_string($student_data)) {
-                $student_data = json_decode($student_data, true);
+            $student = get_student_detail($order->get_meta('student_id'));
+            $student_name = '';
+            if ($student) {
+                $student_name = $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name;
             }
-
-            // Verificar si es un array antes de acceder a las claves
-            if (is_array($student_data)) {
-                $student_name = ($student_data['name_student'] ?? '') . ' ' . 
-                            ($student_data['middle_name_student'] ?? '') . ' ' . 
-                            ($student_data['last_name_student'] ?? '') . ' ' . 
-                            ($student_data['middle_last_name_student'] ?? '');
-            } else {
-                // Manejar el caso donde no es un array (opcional)
-                $student_name = '';
-            }
-
-            // Eliminar espacios extras
-            $student_name = trim(preg_replace('/\s+/', ' ', $student_name));
 
             array_push($data_fees, [
                 'order_id' => $order->get_id(),
