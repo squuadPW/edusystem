@@ -168,7 +168,7 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 									<div class="payment-actions">
 										<div class="payment-description">
 											<textarea name="description_payment_log" id="description_payment_log"
-												placeholder="Description"></textarea>
+												placeholder="Description" style="width: 100%"></textarea>
 										</div>
 										<div>
 											<button type="submit" class="button button-success" name="save_changes"
