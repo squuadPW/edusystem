@@ -51,7 +51,7 @@ function list_admin_partner_payments_content()
 
 function list_admin_partner_students_content()
 {
-    $list_students_institute = new TT_Institute_Students_List_Table;
+    $list_students_institute = new TT_All_Institute_Students_List_Table;
     $list_students_institute->prepare_items();
     include(plugin_dir_path(__FILE__) . '../templates/list-all-students-institute.php');
 }
