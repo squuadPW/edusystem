@@ -335,6 +335,16 @@ function add_custom_admin_page()
         );
 
         add_menu_page(
+            __('Students', 'edusystem'),
+            __('Students', 'edusystem'),
+            'read',
+            'list_admin_partner_students_content',
+            'list_admin_partner_students_content',
+            'dashicons-admin-users',
+            11
+        );
+
+        add_menu_page(
             __('Invoice', 'edusystem'),
             __('Invoice', 'edusystem'),
             'read',

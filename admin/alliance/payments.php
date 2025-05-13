@@ -24,75 +24,85 @@ function list_admin_partner_invoice_content()
     }
 }
 
-function list_admin_partner_payments_content(){
+function list_admin_partner_payments_content()
+{
 
-    if(isset($_GET['action']) && !empty($_GET['action'])){
+    if (isset($_GET['action']) && !empty($_GET['action'])) {
 
-        if($_GET['action'] == 'payment-detail'){
+        if ($_GET['action'] == 'payment-detail') {
 
             global $current_user;
             $roles = $current_user->roles;
             $order_id = $_GET['payment_id'];
             $order = wc_get_order($order_id);
-            include(plugin_dir_path(__FILE__).'../templates/payment-details.php');
+            include(plugin_dir_path(__FILE__) . '../templates/payment-details.php');
         }
 
-    }else{
+    } else {
 
         global $current_user;
         $roles = $current_user->roles;
-        $date = get_dates_search('today','');
-        $start_date = date('m/d/Y',strtotime('today'));
-        $orders = get_order_alliance($date[0],$date[1]);
-        include(plugin_dir_path(__FILE__).'../templates/list-payment-alliance.php');
+        $date = get_dates_search('today', '');
+        $start_date = date('m/d/Y', strtotime('today'));
+        $orders = get_order_alliance($date[0], $date[1]);
+        include(plugin_dir_path(__FILE__) . '../templates/list-payment-alliance.php');
     }
 }
 
-function handle_custom_query_meta_alliance( $query, $query_vars ) {
-	if(!empty( $query_vars['alliance_id'])){
-		$query['meta_query'][] = array(
-			'key' => 'alliance_id',
-			'value' => esc_attr( $query_vars['alliance_id'] ),
-		);
-	}
-
-	return $query;
+function list_admin_partner_students_content()
+{
+    $list_students_institute = new TT_Institute_Students_List_Table;
+    $list_students_institute->prepare_items();
+    include(plugin_dir_path(__FILE__) . '../templates/list-all-students-institute.php');
 }
-add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'handle_custom_query_meta_alliance', 10, 2 );
 
-function get_order_alliance($start_date,$end_date,$id = ""){
+function handle_custom_query_meta_alliance($query, $query_vars)
+{
+    if (!empty($query_vars['alliance_id'])) {
+        $query['meta_query'][] = array(
+            'key' => 'alliance_id',
+            'value' => esc_attr($query_vars['alliance_id']),
+        );
+    }
+
+    return $query;
+}
+add_filter('woocommerce_order_data_store_cpt_get_orders_query', 'handle_custom_query_meta_alliance', 10, 2);
+
+function get_order_alliance($start_date, $end_date, $id = "")
+{
 
     $data_fees = [];
-    $alliance_id = get_user_meta(get_current_user_id(),'alliance_id',true);
+    $alliance_id = get_user_meta(get_current_user_id(), 'alliance_id', true);
     $strtotime_start = strtotime($start_date);
     $strtotime_end = strtotime($end_date);
     $total = 0.00;
 
-    if(isset($_GET['alliance_id']) && !empty($_GET['alliance_id'])){
+    if (isset($_GET['alliance_id']) && !empty($_GET['alliance_id'])) {
         $alliance_id = $_GET['alliance_id'];
     }
 
-    if(!empty($id)){
+    if (!empty($id)) {
         $alliance_id = $id;
     }
 
-    if(empty($alliance_id)){
+    if (empty($alliance_id)) {
         return [];
     }
 
     $args['alliance_id'] = $alliance_id;
     $args['limit'] = -1;
-    $args['status'] = 'wc-completed';    
-    $args['date_created'] = $strtotime_start.'...'.$strtotime_end;
+    $args['status'] = 'wc-completed';
+    $args['date_created'] = $strtotime_start . '...' . $strtotime_end;
     $orders = wc_get_orders($args);
-    
-    foreach($orders as $order){
 
-        if($order->get_meta('alliance_id') == $alliance_id){
+    foreach ($orders as $order) {
 
-            array_push($data_fees,[
-                'order_id' => $order->get_id(),  
-                'customer' => $order->get_billing_first_name().' '.$order->get_billing_last_name(),
+        if ($order->get_meta('alliance_id') == $alliance_id) {
+
+            array_push($data_fees, [
+                'order_id' => $order->get_id(),
+                'customer' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
                 'fee' => $order->get_meta('alliance_fee'),
                 'created_at' => $order->get_date_created()->format('F j, Y g:i a')
             ]);
@@ -101,17 +111,18 @@ function get_order_alliance($start_date,$end_date,$id = ""){
         }
     }
 
-    return ['total' => number_format($total,2,'.',','),'orders' => $data_fees];
-} 
+    return ['total' => number_format($total, 2, '.', ','), 'orders' => $data_fees];
+}
 
-function get_list_fee_alliance(){
+function get_list_fee_alliance()
+{
 
-    if(isset($_POST['filter']) && !empty($_POST['filter'])){
+    if (isset($_POST['filter']) && !empty($_POST['filter'])) {
 
         $filter = $_POST['filter'];
         $custom = $_POST['custom'];
         $alliance_id = $_POST['alliance_id'] || $_GET['alliance_id'];
-        
+
         $html = "";
         $html_transactions = "";
         $dates = get_dates_search($filter, $custom);
@@ -134,10 +145,10 @@ function get_list_fee_alliance(){
                 $html .= "<td class='column' data-colname='" . __('Created', 'edusystem') . "'><b>" . $order['created_at'] . "</b></td>";
                 $html .= "<td class='column' data-colname='" . __('Action', 'edusystem') . "'>";
 
-                if($alliance_id) {
-                    $html .= "<a class='button button-primary' href=". admin_url('admin.php?page=add_admin_partners_content&section_tab=payment-detail&payment_id='.$order['order_id']) .">".__('View details','edusystem')."</a>";
+                if ($alliance_id) {
+                    $html .= "<a class='button button-primary' href=" . admin_url('admin.php?page=add_admin_partners_content&section_tab=payment-detail&payment_id=' . $order['order_id']) . ">" . __('View details', 'edusystem') . "</a>";
                 } else {
-                    $html .= "<a class='button button-primary' href=". admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id='.$order['order_id']) .">".__('View details','edusystem')."</a>";
+                    $html .= "<a class='button button-primary' href=" . admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . ">" . __('View details', 'edusystem') . "</a>";
                 }
 
 
@@ -181,10 +192,11 @@ function get_list_fee_alliance(){
     }
 }
 
-add_action( 'wp_ajax_nopriv_list_fee_alliance', 'get_list_fee_alliance');
-add_action( 'wp_ajax_list_fee_alliance', 'get_list_fee_alliance');
+add_action('wp_ajax_nopriv_list_fee_alliance', 'get_list_fee_alliance');
+add_action('wp_ajax_list_fee_alliance', 'get_list_fee_alliance');
 
-function get_invoices_alliances($start, $end, $id = ""){
+function get_invoices_alliances($start, $end, $id = "")
+{
 
     $data_fees = [];
     $total = 0.00;
@@ -224,14 +236,15 @@ function get_invoices_alliances($start, $end, $id = ""){
                 'created_at' => $order->get_date_created()->format('F j, Y g:i a')
             ]);
 
-            $total += (float)$order->get_meta('alliance_fee');
+            $total += (float) $order->get_meta('alliance_fee');
         }
     }
 
     return ['total' => $total, 'orders' => $data_fees];
 }
 
-function get_transactions_alliances($start, $end, $id = "", $status = 0){
+function get_transactions_alliances($start, $end, $id = "", $status = 0)
+{
     global $wpdb;
     $data_fees = [];
     $total = 0.00;
@@ -272,4 +285,160 @@ function get_transactions_alliances($start, $end, $id = "", $status = 0){
     }
 
     return ['total' => $total, 'orders' => $data_fees];
+}
+
+class TT_All_Institute_Students_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'school_subject_',
+                'plural' => 'school_subject_s',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'student':
+                $student = $item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name'];
+                return $student;
+            case 'initial':
+                $initial = $item['academic_period'] . ' - ' . $item['initial_cut'];
+                return $initial;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'student' => __('Student', 'edusystem'),
+            'email' => __('Email', 'edusystem'),
+            'initial' => __('Initial term', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_students()
+    {
+        global $wpdb, $current_user;
+
+        // PAGINACIÓN
+        $per_page = 20;
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = ($pagenum - 1) * $per_page;
+
+        // Tablas
+        $table_students = $wpdb->prefix . 'students';
+        $table_institutes = $wpdb->prefix . 'institutes';
+        $table_alliances = $wpdb->prefix . 'alliances';
+        $email = $current_user->user_email;
+
+        // Si no se tiene email, se retorna un conjunto vacío
+        if (empty($email)) {
+            return ['data' => [], 'total_count' => 0];
+        }
+
+        /* 
+         * Realizamos un único query que une las tres tablas.
+         * Se asume que:
+         * - En "alliances" existe una columna "email" que relaciona la alianza con el usuario actual.
+         * - "institutes" tiene la columna "alliance_id" para relacionarse con "alliances".
+         * - "students" tiene la columna "institute_id" para relacionarse con "institutes".
+         */
+        $sql = "SELECT SQL_CALC_FOUND_ROWS s.*
+            FROM {$table_students} AS s
+            INNER JOIN {$table_institutes} AS i ON s.institute_id = i.id
+            INNER JOIN {$table_alliances} AS a ON i.alliance_id = a.id
+            WHERE a.email = %s
+            ORDER BY s.id DESC
+            LIMIT %d OFFSET %d";
+
+        $prepared_sql = $wpdb->prepare($sql, $email, $per_page, $offset);
+        $students = $wpdb->get_results($prepared_sql, ARRAY_A);
+
+        // Obtenemos el total de resultados sin el LIMIT
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        return ['data' => $students, 'total_count' => $total_count];
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function prepare_items()
+    {
+
+        $data_get = $this->get_students();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $data_get['data'];
+        $total_count = (int) $data_get['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
 }
