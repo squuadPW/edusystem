@@ -18,7 +18,7 @@
 		<?php } ?>
         <div style="display:flex;width:100%;">
             <a class="button button-outline-primary"
-                href="<?= wp_get_referer() ? wp_get_referer() : admin_url('admin.php?page=list_admin_institutes_partner_registered_content'); ?>"><?= __('Back', 'edusystem'); ?></a>
+                href="<?= admin_url('admin.php?page=list_admin_institutes_partner_registered_content'); ?>"><?= __('Back', 'edusystem'); ?></a>
         </div>
 		<form action="" id="post-filter" method="get">
 			<!-- <p class="search-box">
