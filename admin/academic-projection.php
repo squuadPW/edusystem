@@ -1216,9 +1216,10 @@ function table_notes_summary_html($projection)
     $gpa = 0;
 
     foreach (json_decode($projection->projection) as $key => $projection_for) {
+        $earned_ch += (int) $projection_for->hc;
+
         if ($projection_for->is_completed && (int) $projection_for->calification) {
             $total_quality++;
-            $earned_ch += (int) $projection_for->hc;
             $sum_quality += get_calc_note((int) $projection_for->calification);
         }
     }
