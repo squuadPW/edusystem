@@ -491,7 +491,9 @@ function generate_projection_student($student_id, $force = false) {
     // Crear índice de inscripciones por código para búsqueda más rápida
     if (!empty($inscriptions)) {
         foreach ($inscriptions as $inscription) {
-            if ($inscription->type === 'elective') {
+            $subject = $inscription->subject_id && $inscription->subject_id != '' ? get_subject_details($inscription->subject_id) : get_subject_details_code($inscription->code_subject);
+
+            if ($subject->type === 'elective') {
                 $elective_inscriptions[] = $inscription;
             } else {
                 $inscriptions_by_code[$inscription->code_subject] = $inscription;
@@ -527,7 +529,7 @@ function generate_projection_student($student_id, $force = false) {
         }
 
         // Obtener detalles de la materia electiva
-        $subject = get_subject_details($inscription->subject_id);
+        $subject = $inscription->subject_id && $inscription->subject_id != '' ? get_subject_details($inscription->subject_id) : get_subject_details_code($inscription->code_subject);
 
         if ($subject) {
             $projection[] = [
