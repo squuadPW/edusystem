@@ -1224,7 +1224,7 @@ function table_notes_summary_html($projection)
     }
 
     // Calcular GPA solo si hay materias completadas
-    $gpa = ($total_quality > 0) ? ($sum_quality / $total_quality) : 0;
+    $gpa = ($total_quality > 0) ? round($sum_quality / $total_quality, 2) : 0;
 
     $html = '';
     $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
