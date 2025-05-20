@@ -740,7 +740,7 @@ function status_changed_payment($order_id)
         clear_all_cookies();
     }
 
-    if (!in_array($current_status, ['on-hold'])) {
+    if (in_array($current_status, ['on-hold'])) {
         send_notification_staff_particular('New payment received for approval', 'Please be informed that we have received a new student that your payment must be manually approved, please login to the platform to confirm.', 3);
     }
 
