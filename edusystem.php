@@ -125,15 +125,15 @@ function create_tables()
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_requests}'") != $table_requests) {
     dbDelta(
       "CREATE TABLE " . $table_requests . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        partner_id INT(11) NOT NULL,
-        student_id INT(11) NULL,
-        description TEXT NULL,
-        by TEXT NULL,
-        type_id INT(11) NULL,
-        status_id INT(11) NULL,
-        response TEXT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `id` INT(11) NOT NULL AUTO_INCREMENT,
+        `partner_id` INT(11) NOT NULL,
+        `student_id` INT(11) NULL,
+        `description` TEXT NULL,
+        `by` TEXT NULL,
+        `type_id` INT(11) NULL,
+        `status_id` INT(11) NULL,
+        `response` TEXT NULL,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
   }
