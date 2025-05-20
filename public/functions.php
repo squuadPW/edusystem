@@ -741,7 +741,7 @@ function status_changed_payment($order_id)
     }
 
     if (in_array($current_status, ['on-hold'])) {
-        send_notification_staff_particular('New payment received for approval', 'Please be informed that we have received a new student that your payment must be manually approved, please login to the platform to confirm.', 3);
+        send_notification_staff_particular('New payment received for approval', 'There is a new payment waiting for approval, please login to the platform as soon as possible.', 3);
     }
 
     // Determinar qué función ejecutar
