@@ -264,7 +264,8 @@ function send_request_callback()
         'status_id' => 0,
     ]);
 
-    send_notification_staff('New request', 'Please be informed that we have received a new request to the system, so please check it in the system as soon as possible in order to be able to attend it.');
+    send_notification_staff_particular('New request', 'Please be informed that we have received a new request to the system, so please check it in the system as soon as possible in order to be able to attend it.', 0);
+    send_notification_staff_particular('New request', 'Please be informed that we have received a new request to the system, so please check it in the system as soon as possible in order to be able to attend it.', 2);
     wp_send_json_success(array('success' => true));
     exit;
 }
