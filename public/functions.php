@@ -439,12 +439,6 @@ function woocommerce_checkout_order_created_action($order)
     }
 
     set_institute_in_order($order);
-
-    if ($order->get_payment_method_title() != 'Credit Card') {
-        send_notification_staff_particular('New payment received for approval', 'Please be informed that we have received a new student that your payment must be manually approved, please login to the platform to confirm.', 3);
-    }
-
-    // clear_all_cookies();
 }
 
 add_action('woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action');
@@ -744,6 +738,10 @@ function status_changed_payment($order_id)
     // Limpiar cookies solo para estados válidos
     if (!in_array($current_status, ['failed', 'pending'])) {
         clear_all_cookies();
+    }
+
+    if (!in_array($current_status, ['on-hold'])) {
+        send_notification_staff_particular('New payment received for approval', 'Please be informed that we have received a new student that your payment must be manually approved, please login to the platform to confirm.', 3);
     }
 
     // Determinar qué función ejecutar
