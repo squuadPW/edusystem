@@ -66,8 +66,10 @@ if (send_request) {
   });
 }
 
-function view_details_request(type, description, response, status) {
+function view_details_request(type, description, response, status, created_at) {
   document.getElementById("request_type").innerText = type == "" ? "N/A" : type;
+  document.getElementById("created_at").innerText =
+    created_at == "" ? "N/A" : created_at;
   document.getElementById("request_description").innerText =
     description == "" ? "N/A" : description;
   document.getElementById("request_response").innerText =

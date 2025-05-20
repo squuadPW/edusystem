@@ -37,7 +37,7 @@
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                         data-title="<?= __('Message', 'edusystem') ?>" style="text-align: end">
-                        <span><button type="button" class="submit" style="font-size: 12px !important; width: 120px !important;" onclick="view_details_request('<?= $type_detail->type; ?>', '<?= htmlspecialchars($row->description, ENT_QUOTES) ?>', '<?= htmlspecialchars($row->response, ENT_QUOTES) ?>', '<?= get_request_status($row->status_id); ?>')">View details</button></span>
+                        <span><button type="button" class="submit" style="font-size: 12px !important; width: 120px !important;" onclick="view_details_request('<?= $type_detail->type; ?>', '<?= htmlspecialchars($row->description, ENT_QUOTES) ?>', '<?= htmlspecialchars($row->response, ENT_QUOTES) ?>', '<?= get_request_status($row->status_id); ?>', '<?= $row->created_at ?>')">View details</button></span>
                     </td>
                 </tr>
             <?php endforeach; ?>

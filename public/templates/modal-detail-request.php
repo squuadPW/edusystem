@@ -7,6 +7,10 @@
     <div class="modal-body">
       <div>      
         <div style="margin-bottom: 10px;">
+          <label for=""><strong>Created at</strong></label><br>
+          <span id="created_at"></span>
+        </div>
+        <div style="margin-bottom: 10px;">
           <label for=""><strong>Type</strong></label><br>
           <span id="request_type"></span>
         </div>
