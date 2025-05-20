@@ -9,7 +9,7 @@ function list_admin_form_department_content(){
 
         if($_GET['action'] == 'add'){
 
-            $departments_subscription = json_decode(get_option('site_departments_subscription'));
+            $departments_subscription = get_option('site_departments_subscription') ? json_decode(get_option('site_departments_subscription')) : [];
             include(plugin_dir_path(__FILE__).'templates/register-departments.php');
 
         }else if($_GET['action'] == 'add_department'){
@@ -81,7 +81,7 @@ function list_admin_form_department_content(){
             if(wp_roles()->is_role($role_name)){
                 
                 $message = __('Existing department.','edusystem');
-                $departments_subscription = json_decode(get_option('site_departments_subscription'));
+                $departments_subscription = get_option('site_departments_subscription') ? json_decode(get_option('site_departments_subscription')) : [];
                 include(plugin_dir_path(__FILE__).'templates/register-departments.php');
                 exit;
             }
@@ -110,7 +110,7 @@ function list_admin_form_department_content(){
             $role = get_role(str_replace('','_',$name));
             $name = ucwords($department->name);
             $capabilities = $role->capabilities;
-            $departments_subscription = json_decode(get_option('site_departments_subscription'));
+            $departments_subscription = get_option('site_departments_subscription') ? json_decode(get_option('site_departments_subscription')) : [];
             include(plugin_dir_path(__FILE__).'templates/register-departments.php');
 
         }else if($_GET['action'] == 'delete'){
