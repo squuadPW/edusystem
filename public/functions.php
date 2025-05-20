@@ -263,6 +263,8 @@ function send_request_callback()
         'type_id' => $type_id,
         'status_id' => 0,
     ]);
+
+    send_notification_staff('New request', 'Please be informed that we have received a new request to the system, so please check it in the system as soon as possible in order to be able to attend it.');
     wp_send_json_success(array('success' => true));
     exit;
 }
