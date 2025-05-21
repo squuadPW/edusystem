@@ -257,58 +257,79 @@ function get_department($id){
 
 function reload_capabilities() {
     global $wpdb;
-    $table_departments = $wpdb->prefix.'departments';
+    $table_departments = $wpdb->prefix . 'departments';
     $departments = $wpdb->get_results("SELECT * FROM {$table_departments}");
-    $departments_subscription = get_option('site_departments_subscription') ? json_decode(get_option('site_departments_subscription')) : [];
 
-    foreach ($departments as $key => $department) {
-        $name = $department->name;
-        $description = $department->description;
-        $department_id = $department->id;
+    // Obtener y decodificar la opción solo una vez.
+    $departments_subscription_option = get_option('site_departments_subscription');
+    $departments_subscription = $departments_subscription_option ? json_decode($departments_subscription_option, true) : [];
+    $departments_subscription = is_array($departments_subscription) ? $departments_subscription : [];
 
-        $role_name = str_replace('','_',$name);
+    // Optimización: convertir el arreglo de suscripciones a claves para búsqueda rápida.
+    $subscribed_caps = array_flip($departments_subscription);
+
+    // Definir arrays de capacidades adicionales por módulo.
+    $manager_users_caps = [
+        'create_users',
+        'delete_users',
+        'edit_users',
+        'list_users',
+        'promote_users',
+        'remove_users'
+    ];
+
+    $manager_media_caps = [
+        'upload_files',
+        'edit_posts',
+        'delete_posts',
+        'edit_others_posts',
+        'delete_others_posts'
+    ];
+
+    // Iterar sobre cada departamento.
+    foreach ($departments as $department) {
+        // Convertir el nombre del departamento a slug.
+        $role_name = sanitize_title($department->name);
         $role = get_role($role_name);
-        $capabilities = $role->capabilities;
-        $current_capabilities = $role->capabilities;
 
-        $cap = [];
-        foreach($capabilities as $capability){
-            $cap[$capability] = true;
+        // Si el rol no existe, se omite la iteración.
+        if (!$role) {
+            continue;
         }
 
-        if($current_capabilities){
-            foreach($current_capabilities as $index => $current){
-                $role->remove_cap($index);
+        // Obtener las claves actuales de las capacidades.
+        $cap_keys = array_keys($role->capabilities);
+
+        // Eliminar todas las capacidades existentes.
+        foreach ($cap_keys as $cap) {
+            $role->remove_cap($cap);
+        }
+
+        // Reagregar únicamente aquellas capacidades que estén en la suscripción.
+        foreach ($cap_keys as $cap) {
+            if (isset($subscribed_caps[$cap])) {
+                $role->add_cap($cap);
             }
         }
 
-        foreach($cap as $index =>  $c){
-            if (in_array($index, $departments_subscription)) {
-                $role->add_cap($index);
+        // Agregar las capacidades básicas siempre.
+        $base_caps = ['edit_posts', 'manage_options', 'read'];
+        foreach ($base_caps as $cap) {
+            $role->add_cap($cap);
+        }
+
+        // Agregar capacidades adicionales para usuarios si aplica.
+        if (in_array('manager_users_aes', $cap_keys) && isset($subscribed_caps['manager_users_aes'])) {
+            foreach ($manager_users_caps as $cap) {
+                $role->add_cap($cap);
             }
         }
 
-        $role->add_cap('edit_posts');
-        $role->add_cap('manage_options');
-        $role->add_cap('read');
-        
-        if (in_array('manager_users_aes', $capabilities) && in_array('manager_users_aes', $departments_subscription)) {
-            $role->add_cap('create_users');
-            $role->add_cap('delete_users');
-            $role->add_cap('edit_users');
-            $role->add_cap('list_users');
-            $role->add_cap('promote_users');
-            $role->add_cap('remove_users');
+        // Agregar capacidades adicionales para medios si aplica.
+        if (in_array('manager_media_aes', $cap_keys) && isset($subscribed_caps['manager_media_aes'])) {
+            foreach ($manager_media_caps as $cap) {
+                $role->add_cap($cap);
+            }
         }
-
-        if (in_array('manager_media_aes', $capabilities) && in_array('manager_media_aes', $departments_subscription)) {
-            $role->add_cap('upload_files');
-            $role->add_cap('edit_posts');
-            $role->add_cap('delete_posts');
-            $role->add_cap('edit_others_posts');
-            $role->add_cap('delete_others_posts');
-        }
-
-        $wpdb->update($table_departments,['description' => $description],['id' => $department_id]);
     }
 }
