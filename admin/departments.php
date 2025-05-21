@@ -269,15 +269,13 @@ function reload_capabilities() {
         $role_name = str_replace('','_',$name);
         $role = get_role($role_name);
         $capabilities = $role->capabilities;
+        $current_capabilities = $role->capabilities;
 
         $cap = [];
         foreach($capabilities as $capability){
             $cap[$capability] = true;
         }
 
-        $role = get_role($role_name);
-
-        $current_capabilities = $role->capabilities;
         if($current_capabilities){
             foreach($current_capabilities as $index => $current){
                 $role->remove_cap($index);
