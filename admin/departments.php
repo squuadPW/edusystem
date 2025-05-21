@@ -254,3 +254,63 @@ function get_department($id){
     $data = $wpdb->get_row("SELECT * FROM {$table_departments} WHERE id={$id}");
     return $data;
 }
+
+function reload_capabilities() {
+    global $wpdb;
+    $table_departments = $wpdb->prefix.'departments';
+    $departments = $wpdb->get_results("SELECT * FROM {$table_departments}");
+    $departments_subscription = get_option('site_departments_subscription') ? json_decode(get_option('site_departments_subscription')) : [];
+
+    foreach ($departments as $key => $department) {
+        $name = $department->name;
+        $description = $department->description;
+        $department_id = $department->id;
+
+        $role_name = str_replace('','_',$name);
+        $role = get_role($role_name);
+        $capabilities = $role->capabilities;
+
+        $cap = [];
+        foreach($capabilities as $capability){
+            $cap[$capability] = true;
+        }
+
+        $role = get_role($role_name);
+
+        $current_capabilities = $role->capabilities;
+        if($current_capabilities){
+            foreach($current_capabilities as $index => $current){
+                $role->remove_cap($index);
+            }
+        }
+
+        foreach($cap as $index =>  $c){
+            if (in_array($index, $departments_subscription)) {
+                $role->add_cap($index);
+            }
+        }
+
+        $role->add_cap('edit_posts');
+        $role->add_cap('manage_options');
+        $role->add_cap('read');
+        
+        if (in_array('manager_users_aes', $capabilities) && in_array('manager_users_aes', $departments_subscription)) {
+            $role->add_cap('create_users');
+            $role->add_cap('delete_users');
+            $role->add_cap('edit_users');
+            $role->add_cap('list_users');
+            $role->add_cap('promote_users');
+            $role->add_cap('remove_users');
+        }
+
+        if (in_array('manager_media_aes', $capabilities) && in_array('manager_media_aes', $departments_subscription)) {
+            $role->add_cap('upload_files');
+            $role->add_cap('edit_posts');
+            $role->add_cap('delete_posts');
+            $role->add_cap('edit_others_posts');
+            $role->add_cap('delete_others_posts');
+        }
+
+        $wpdb->update($table_departments,['description' => $description],['id' => $department_id]);
+    }
+}
