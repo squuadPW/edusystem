@@ -318,7 +318,7 @@ class TT_All_Requests_List_Table extends WP_List_Table
                 $student = get_student_detail($request['student_id']);
                 array_push($requests_array, [
                     'id' => $request['id'],
-                    'type' => $request['type'],
+                    'type' => get_type_request_details($request['type_id'])->type,
                     'partner' => $user->first_name . ' ' . $user->last_name,
                     'student' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
                     'created_at' => $request['created_at'],
