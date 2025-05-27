@@ -1,4 +1,4 @@
-<h2 style="font-size:24px;text-align:center;"><?= __('Califications', 'edusystem'); ?></h2>
+<h2 style="font-size:24px;text-align:center;"><?= __('My courses', 'edusystem'); ?></h2>
 
 <section class="segment" style="margin-top: 20px">
     <div class="segment-button-history active" data-option="current"><?= __('Current', 'edusystem'); ?></div>
