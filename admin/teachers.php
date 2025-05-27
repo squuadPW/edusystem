@@ -391,63 +391,42 @@ class TT_teachers_all_List_Table extends WP_List_Table
 
 }
 
-function get_teacher_details($teacher_id)
+function get_teacher_details($teacher_identifier)
 {
-    try {
-        if (empty($teacher_id)) {
-            return null;
-        }
-
-        global $wpdb;
-        $table_teachers = $wpdb->prefix . 'teachers';
-
-        // Prepare the query with proper parameter binding
-        $query = $wpdb->prepare(
-            "SELECT * FROM {$table_teachers} 
-            WHERE id = %d OR email = %s 
-            LIMIT 1",
-            $teacher_id,
-            $teacher_id
-        );
-
-        $teacher = $wpdb->get_row($query);
-
-        if (!$teacher) {
-            return null;
-        }
-
-        return $teacher;
-
-    } catch (Exception $e) {
+    // Validar el identificador de entrada de forma temprana.
+    // Usamos is_numeric para ids y filter_var para validar emails.
+    if (empty($teacher_identifier)) {
         return null;
     }
-}
 
-function get_teacher_details_by_user_id($user_id)
-{
     global $wpdb;
     $table_teachers = $wpdb->prefix . 'teachers';
 
-    if (!is_numeric($user_id)) {
-        return new WP_Error('invalid_user_id', __('Invalid user ID provided.', 'edusystem'));
+    // Determinar si el identificador es un ID numérico o un email.
+    // Esto permite una consulta más específica y eficiente.
+    if (is_numeric($teacher_identifier)) {
+        $query = $wpdb->prepare(
+            "SELECT * FROM {$table_teachers} WHERE id = %d LIMIT 1",
+            $teacher_identifier
+        );
+    } elseif (filter_var($teacher_identifier, FILTER_VALIDATE_EMAIL)) {
+        $query = $wpdb->prepare(
+            "SELECT * FROM {$table_teachers} WHERE email = %s LIMIT 1",
+            $teacher_identifier
+        );
+    } else {
+        // Si no es un ID numérico ni un email válido, no tiene sentido consultar.
+        return null;
     }
 
-    $teacher = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM {$table_teachers} WHERE user_id = %d",
-        $user_id
-    ));
+    $teacher = $wpdb->get_row($query);
 
-    if (!$teacher) {
-        $user_info = get_userdata($user_id);
-        if ($user_info && $user_info->user_email) {
-            $teacher = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM {$table_teachers} WHERE email = %s",
-                $user_info->user_email
-            ));
-        }
+    // Simplificar la verificación del resultado.
+    if ($teacher) {
+        return $teacher;
+    } else {
+        return null;
     }
-
-    return $teacher;
 }
 
 function get_teachers_active()

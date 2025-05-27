@@ -527,15 +527,9 @@ add_action('woocommerce_account_califications_endpoint', function () {
 });
 
 add_action('woocommerce_account_teacher-califications_endpoint', function () {
-    global $wpdb;
+    global $wpdb, $current_user;
 
-    $current_user_id = get_current_user_id();
-    if (!$current_user_id) {
-        wc_print_notice(__('You must be logged in to view this page.', 'edusystem'), 'error');
-        return;
-    }
-
-    $teacher = get_teacher_details_by_user_id($current_user_id);
+    $teacher = get_teacher_details($current_user->user_email);
     if (is_wp_error($teacher)) {
         wc_print_notice($teacher->get_error_message(), 'error');
         return;
