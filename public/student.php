@@ -539,62 +539,58 @@ add_action('woocommerce_account_teacher-califications_endpoint', function () {
         return;
     }
 
-    $admin_virtual_access = true;
     $load = load_current_cut();
     $code = $load['code'];
     $cut = $load['cut'];
+
     $history = get_teacher_offers($teacher->id, $code, $cut, 'history');
     $current = get_teacher_offers($teacher->id, $code, $cut, 'current');
 
-    $subject_ids = array_unique(array_column($history, 'subject_id'));
-    $subjects = get_subjects_details_multiple($subject_ids);
+    // Combina todos los subject_id de 'history' y 'current'
+    $all_offers = array_merge($history, $current);
+    $subject_ids = array_unique(array_column($all_offers, 'subject_id'));
 
     $subjects_map = [];
-    if (!is_wp_error($subjects) && !empty($subjects)) {
-        foreach ($subjects as $subject) {
-            $subjects_map[$subject->id] = $subject;
+    if (!empty($subject_ids)) {
+        $subjects = get_subjects_details_multiple($subject_ids);
+        if (!is_wp_error($subjects) && !empty($subjects)) {
+            foreach ($subjects as $subject) {
+                $subjects_map[$subject->id] = $subject;
+            }
         }
     }
 
-    foreach ($history as $key => $offer) {
-        // Assign subject details and code_subject for the query
-        $subject_name = __('N/A', 'edusystem');
-        $subject_code = __('N/A', 'edusystem');
+    // Función auxiliar para procesar las ofertas
+    $process_offers = function (&$offers, $subjects_map, $is_history = false) {
+        foreach ($offers as $key => $offer) {
+            $subject_name = __('N/A', 'edusystem');
+            $subject_code = __('N/A', 'edusystem');
 
-        if (isset($subjects_map[$offer->subject_id])) {
-            $subject = $subjects_map[$offer->subject_id];
-            $subject_name = $subject->name;
-            $subject_code = $subject->code_subject;
+            if (isset($subjects_map[$offer->subject_id])) {
+                $subject = $subjects_map[$offer->subject_id];
+                $subject_name = $subject->name;
+                $subject_code = $subject->code_subject;
+            }
+
+            $offers[$key]->subject = $subject_name;
+            $offers[$key]->code_subject = $subject_code;
+
+            if ($is_history) {
+                // Obtener calificación promedio solo para el historial
+                $average_calification_data = get_average_calification_for_subject_period(
+                    $offer->subject_id,
+                    $subject_code,
+                    $offer->code_period,
+                    $offer->cut_period
+                );
+                $offers[$key]->prom_calification = $average_calification_data ? (float) $average_calification_data->average_calification : 0;
+            }
         }
+    };
 
-        $history[$key]->subject = $subject_name;
-        $history[$key]->code_subject = $subject_code;
-
-        // Get average calification directly from the database
-        $average_calification_data = get_average_calification_for_subject_period(
-            $offer->subject_id,
-            $subject_code, // Pass the subject code here
-            $offer->code_period,
-            $offer->cut_period
-        );
-
-        $history[$key]->prom_calification = $average_calification_data ? (float) $average_calification_data->average_calification : 0;
-    }
-
-    foreach ($current as $key => $offer) {
-        // Assign subject details and code_subject for the query
-        $subject_name = __('N/A', 'edusystem');
-        $subject_code = __('N/A', 'edusystem');
-
-        if (isset($subjects_map[$offer->subject_id])) {
-            $subject = $subjects_map[$offer->subject_id];
-            $subject_name = $subject->name;
-            $subject_code = $subject->code_subject;
-        }
-
-        $current[$key]->subject = $subject_name;
-        $current[$key]->code_subject = $subject_code;
-    }
+    // Procesar las ofertas de historial y actuales
+    $process_offers($history, $subjects_map, true);
+    $process_offers($current, $subjects_map);
 
     include(plugin_dir_path(__FILE__) . 'templates/teacher-califications.php');
 });

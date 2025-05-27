@@ -327,19 +327,31 @@ function get_teacher_offers($teacher_id, $code_period = '', $cut_period = '', $t
     $prepare_args = [$teacher_id];
 
     // Lógica condicional basada en el tipo (current o history)
-    if (!empty($code_period)) {
+    if (!empty($code_period) && !empty($cut_period)) { // Asegurarse de tener ambos para la lógica de exclusión combinada
+        if ($type === 'current') {
+            $query .= " AND code_period = %s AND cut_period = %s";
+            $prepare_args[] = $code_period;
+            $prepare_args[] = $cut_period;
+        } else { // type === 'history'
+            // Para historial: traer todo lo que NO sea la combinación exacta de code_period y cut_period
+            $query .= " AND NOT (code_period = %s AND cut_period = %s)";
+            $prepare_args[] = $code_period;
+            $prepare_args[] = $cut_period;
+        }
+    } elseif (!empty($code_period)) { // Si solo se proporciona code_period
+        // En este caso, la lógica de 'history' no tiene sentido sin cut_period para la exclusión combinada
+        // Por simplicidad, si solo hay code_period, 'history' excluirá ese code_period
         if ($type === 'current') {
             $query .= " AND code_period = %s";
-        } else { // type === 'history'
+        } else {
             $query .= " AND code_period <> %s";
         }
         $prepare_args[] = $code_period;
-    }
-
-    if (!empty($cut_period)) {
+    } elseif (!empty($cut_period)) { // Si solo se proporciona cut_period
+        // Similar al caso anterior, si solo hay cut_period, 'history' excluirá ese cut_period
         if ($type === 'current') {
             $query .= " AND cut_period = %s";
-        } else { // type === 'history'
+        } else {
             $query .= " AND cut_period <> %s";
         }
         $prepare_args[] = $cut_period;

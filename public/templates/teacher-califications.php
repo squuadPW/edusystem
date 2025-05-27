@@ -1,14 +1,12 @@
 <h2 style="font-size:24px;text-align:center;"><?= __('Califications', 'edusystem'); ?></h2>
 
-<?php if ($admin_virtual_access) { ?>
-    <section class="segment" style="margin-top: 20px">
-        <div class="segment-button-history active" data-option="current"><?= __('Current', 'edusystem'); ?></div>
-        <div class="segment-button-history" data-option="history"><?= __('History', 'edusystem'); ?></div>
-    </section>
-<?php } ?>
+<section class="segment" style="margin-top: 20px">
+    <div class="segment-button-history active" data-option="current"><?= __('Current', 'edusystem'); ?></div>
+    <div class="segment-button-history" data-option="history"><?= __('History', 'edusystem'); ?></div>
+</section>
 
 <div>
-    <div id="current" style="display: <?php echo $admin_virtual_access ? 'block' : 'none'; ?>">
+    <div id="current" style="display: block">
         <?php if (!empty($current)): ?>
             <table
                 class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
@@ -56,7 +54,7 @@
             </div>
         <?php endif; ?>
     </div>
-    <div id="history" style="display: <?php echo $admin_virtual_access ? 'none' : 'block'; ?>">
+    <div id="history" style="display: none">
         <?php if (!empty($history)): ?>
             <table
                 class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
