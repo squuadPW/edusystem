@@ -575,16 +575,15 @@ add_action('woocommerce_account_teacher-califications_endpoint', function () {
             $offers[$key]->subject = $subject_name;
             $offers[$key]->code_subject = $subject_code;
 
-            if ($is_history) {
-                // Obtener calificación promedio solo para el historial
-                $average_calification_data = get_average_calification_for_subject_period(
-                    $offer->subject_id,
-                    $subject_code,
-                    $offer->code_period,
-                    $offer->cut_period
-                );
-                $offers[$key]->prom_calification = $average_calification_data ? (float) $average_calification_data->average_calification : 0;
-            }
+            // Obtener calificación promedio solo para el historial
+            $average_calification_data = get_average_calification_for_subject_period(
+                $offer->subject_id,
+                $subject_code,
+                $offer->code_period,
+                $offer->cut_period
+            );
+            $offers[$key]->prom_calification = ($is_history) ? ($average_calification_data ? (float) $average_calification_data->average_calification : 0) : 0;
+            $offers[$key]->count_students = $average_calification_data ? (int) $average_calification_data->inscription_count : 0;
         }
     };
 
@@ -622,8 +621,8 @@ function get_average_calification_for_subject_period($subject_id, $code_subject,
     $subject_condition = implode(' OR ', $where_clauses);
 
     // Add period and status conditions
-    // Modificación aquí: Usar ROUND(AVG(calification), 2) para limitar a 2 decimales
-    $query = "SELECT ROUND(AVG(calification), 2) as average_calification
+    // Modificación aquí: Incluir COUNT(*) para obtener el conteo de inscripciones
+    $query = "SELECT ROUND(AVG(calification), 2) as average_calification, COUNT(*) as inscription_count
               FROM {$table_student_period_inscriptions}
               WHERE ({$subject_condition})
               AND code_period = %s
@@ -633,13 +632,13 @@ function get_average_calification_for_subject_period($subject_id, $code_subject,
     $prepare_args[] = $code_period;
     $prepare_args[] = $cut_period;
 
-    $avg_calification = $wpdb->get_row($wpdb->prepare(
+    $results = $wpdb->get_row($wpdb->prepare(
         $query,
         ...$prepare_args // Use the spread operator to pass all arguments
     ));
 
-    // El resultado ya vendrá formateado con 2 decimales desde la base de datos
-    return $avg_calification;
+    // El resultado ahora incluirá average_calification y inscription_count
+    return $results;
 }
 
 add_action('woocommerce_account_student-details_endpoint', function () {

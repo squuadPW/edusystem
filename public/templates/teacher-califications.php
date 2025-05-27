@@ -18,6 +18,8 @@
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-subject-code"><span
                                 class="nobr"><?= __('Subject - Code', 'edusystem'); ?></span></th>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-section"><span
+                                class="nobr"><?= __('Students', 'edusystem'); ?></span></th>
+                        <th class="woocommerce-orders-table__header woocommerce-orders-table__header-section"><span
                                 class="nobr"><?= __('Section', 'edusystem'); ?></span></th>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-term"><span
                                 class="nobr"><?= __('Term', 'edusystem'); ?></span></th>
@@ -34,6 +36,10 @@
                             <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-subject-code"
                                 data-title="<?= __('Subject - Code', 'edusystem'); ?>">
                                 <?= strtoupper($row->subject) . ' - ' . strtoupper($row->code_subject) ?>
+                            </td>
+                            <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-section"
+                                data-title="<?= __('Students', 'edusystem'); ?>">
+                                <?= strtoupper($row->count_students) ?>
                             </td>
                             <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-section"
                                 data-title="<?= __('Section', 'edusystem'); ?>">
@@ -65,6 +71,8 @@
                                 class="nobr"><?= __('Type', 'edusystem'); ?></span></th>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-subject-code"><span
                                 class="nobr"><?= __('Subject - Code', 'edusystem'); ?></span></th>
+                        <th class="woocommerce-orders-table__header woocommerce-orders-table__header-section"><span
+                                class="nobr"><?= __('Students', 'edusystem'); ?></span></th>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-subject-code"><span
                                 class="nobr"><?= __('Prom califications', 'edusystem'); ?></span></th>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-section"><span
@@ -84,6 +92,10 @@
                             <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-subject-code"
                                 data-title="<?= __('Subject - Code', 'edusystem'); ?>">
                                 <?= strtoupper($row->subject) . ' - ' . strtoupper($row->code_subject) ?>
+                            </td>
+                            <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-section"
+                                data-title="<?= __('Students', 'edusystem'); ?>">
+                                <?= strtoupper($row->count_students) ?>
                             </td>
                             <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-section"
                                 data-title="<?= __('Prom califications', 'edusystem'); ?>">
