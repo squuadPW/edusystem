@@ -561,7 +561,8 @@ add_action('woocommerce_account_teacher-califications_endpoint', function () {
     }
 
     // Función auxiliar para procesar las ofertas
-    $process_offers = function (&$offers, $subjects_map, $is_history = false) {
+    // Se añade un nuevo parámetro $status_to_check para la función de calificación
+    $process_offers = function (&$offers, $subjects_map, $status_to_check) {
         foreach ($offers as $key => $offer) {
             $subject_name = __('N/A', 'edusystem');
             $subject_code = __('N/A', 'edusystem');
@@ -575,26 +576,27 @@ add_action('woocommerce_account_teacher-califications_endpoint', function () {
             $offers[$key]->subject = $subject_name;
             $offers[$key]->code_subject = $subject_code;
 
-            // Obtener calificación promedio solo para el historial
+            // Obtener calificación promedio
             $average_calification_data = get_average_calification_for_subject_period(
                 $offer->subject_id,
                 $subject_code,
                 $offer->code_period,
-                $offer->cut_period
+                $offer->cut_period,
+                $status_to_check // Pasar el status_id aquí
             );
-            $offers[$key]->prom_calification = ($is_history) ? ($average_calification_data ? (float) $average_calification_data->average_calification : 0) : 0;
-            $offers[$key]->count_students = $average_calification_data ? (int) $average_calification_data->inscription_count : 0;
+            $offers[$key]->prom_calification = ($average_calification_data && $average_calification_data->average_calification !== null) ? (float) $average_calification_data->average_calification : 0;
+            $offers[$key]->count_students = ($average_calification_data && $average_calification_data->inscription_count !== null) ? (int) $average_calification_data->inscription_count : 0;
         }
     };
 
-    // Procesar las ofertas de historial y actuales
-    $process_offers($history, $subjects_map, true);
-    $process_offers($current, $subjects_map);
+    // Procesar las ofertas de historial (status_id = 3) y actuales (status_id = 1)
+    $process_offers($history, $subjects_map, 3); // Para historial, usar status_id 3
+    $process_offers($current, $subjects_map, 1); // Para current, usar status_id 1
 
     include(plugin_dir_path(__FILE__) . 'templates/teacher-califications.php');
 });
 
-function get_average_calification_for_subject_period($subject_id, $code_subject, $code_period, $cut_period)
+function get_average_calification_for_subject_period($subject_id, $code_subject, $code_period, $cut_period, $status_id_to_check)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
@@ -621,23 +623,28 @@ function get_average_calification_for_subject_period($subject_id, $code_subject,
     $subject_condition = implode(' OR ', $where_clauses);
 
     // Add period and status conditions
-    // Modificación aquí: Incluir COUNT(*) para obtener el conteo de inscripciones
     $query = "SELECT ROUND(AVG(calification), 2) as average_calification, COUNT(*) as inscription_count
               FROM {$table_student_period_inscriptions}
               WHERE ({$subject_condition})
               AND code_period = %s
               AND cut_period = %s
-              AND `status_id` = 3"; // Assuming 'status' is an integer
+              AND `status_id` = %d"; // Se usa el nuevo parámetro $status_id_to_check
 
     $prepare_args[] = $code_period;
     $prepare_args[] = $cut_period;
+    $prepare_args[] = $status_id_to_check; // Añadir el nuevo parámetro a los argumentos de preparación
 
     $results = $wpdb->get_row($wpdb->prepare(
         $query,
         ...$prepare_args // Use the spread operator to pass all arguments
     ));
 
-    // El resultado ahora incluirá average_calification y inscription_count
+    // Si no hay resultados (ej. ninguna inscripción con ese status_id), AVG() y COUNT() devuelven NULL.
+    // Aseguramos que average_calification y inscription_count existan en el objeto incluso si son NULL.
+    if (null === $results) {
+        $results = (object) ['average_calification' => null, 'inscription_count' => null];
+    }
+    
     return $results;
 }
 
