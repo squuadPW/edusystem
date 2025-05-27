@@ -8,11 +8,11 @@ function add_admin_form_school_subjects_content()
             $subject_id = $_GET['subject_id'];
             $subject = get_subject_details($subject_id);
             $teachers = get_teachers_active();
-            include (plugin_dir_path(__FILE__) . 'templates/school-subject-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/school-subject-detail.php');
         }
         if ($_GET['section_tab'] == 'add_subject') {
             $teachers = get_teachers_active();
-            include (plugin_dir_path(__FILE__) . 'templates/school-subject-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/school-subject-detail.php');
         }
 
     } else {
@@ -20,7 +20,7 @@ function add_admin_form_school_subjects_content()
         if ($_GET['action'] == 'save_subject_details') {
             global $wpdb;
 
-            $table = $wpdb->prefix . 'school_subjects';   
+            $table = $wpdb->prefix . 'school_subjects';
             $subject_id = $_POST['subject_id'];
             $name = strtoupper($_POST['name']);
             $code_subject = strtoupper($_POST['code_subject']) ?? null;
@@ -74,7 +74,7 @@ function add_admin_form_school_subjects_content()
         } else {
             $list_school_subjects = new TT_school_subjects_all_List_Table;
             $list_school_subjects->prepare_items();
-            include (plugin_dir_path(__FILE__) . 'templates/list-school-subjects.php');
+            include(plugin_dir_path(__FILE__) . 'templates/list-school-subjects.php');
         }
     }
 }
@@ -91,7 +91,8 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
                 'singular' => 'school_subject_',
                 'plural' => 'school_subject_s',
                 'ajax' => true
-            ));
+            )
+        );
 
     }
 
@@ -153,16 +154,16 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
         $query_search = "";
         if (isset($_GET['s']) && !empty($_GET['s'])) {
             $search = $_GET['s'];
-            $query_search  = "WHERE (`name` LIKE '%{$search}%' || code_subject LIKE '%{$search}%')";
+            $query_search = "WHERE (`name` LIKE '%{$search}%' || code_subject LIKE '%{$search}%')";
         }
 
         $query_electives = "";
         if (isset($_GET['subject_type']) && $_GET['subject_type'] != '') {
             $search = $_GET['subject_type'];
             if ($query_search != '') {
-                $query_electives  = "AND (`type` = '{$search}')";
+                $query_electives = "AND (`type` = '{$search}')";
             } else {
-                $query_electives  = "WHERE (`type` = '{$search}')";
+                $query_electives = "WHERE (`type` = '{$search}')";
             }
         }
 
@@ -220,7 +221,7 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
 
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        
+
         $data = $data_school_subjects['data'];
         $total_count = (int) $data_school_subjects['total_count'];
 
@@ -246,16 +247,36 @@ class TT_school_subjects_all_List_Table extends WP_List_Table
 function get_subject_details($subject_id)
 {
     global $wpdb;
-    $table = $wpdb->prefix.'school_subjects';
+    $table = $wpdb->prefix . 'school_subjects';
 
     $subject = $wpdb->get_row("SELECT * FROM {$table} WHERE id={$subject_id}");
     return $subject;
 }
 
+function get_subjects_details_multiple(array $subject_ids)
+{
+    global $wpdb;
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+
+    if (empty($subject_ids)) {
+        return [];
+    }
+
+    $cleaned_subject_ids = array_map('intval', $subject_ids);
+    $placeholders = implode(', ', array_fill(0, count($cleaned_subject_ids), '%d'));
+
+    $subjects = $wpdb->get_results($wpdb->prepare(
+        "SELECT id, name, code_subject FROM {$table_school_subjects} WHERE id IN ({$placeholders})",
+        $cleaned_subject_ids
+    ));
+
+    return $subjects;
+}
+
 function get_subject_details_code($code_subject)
 {
     global $wpdb;
-    $table_school_subjects = $wpdb->prefix.'school_subjects';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
 
     $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE code_subject='{$code_subject}'");
     return $subject;

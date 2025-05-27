@@ -1317,6 +1317,12 @@ body.modal-open {
   margin-right: 8px;
 }
 
+.woocommerce-MyAccount-navigation-link--teacher-califications a:before {
+  font-family: "Dashicons" !important;
+  content: "\f535" !important;
+  margin-right: 8px;
+}
+
 .woocommerce-MyAccount-navigation-link--my-card a:before {
   font-family: "Dashicons" !important;
   content: "\f484" !important;

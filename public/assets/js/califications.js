@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const segmentButtons = document.querySelectorAll(".segment-button-history");
   segmentButtons.forEach((button) => {
+    console.log(button)
     button.addEventListener("click", (event) => {
       segmentButtons.forEach((btn) => btn.classList.remove("active"));
       event.target.classList.add("active");

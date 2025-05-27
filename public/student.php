@@ -52,7 +52,7 @@ function save_student()
 
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
-                $crm_exist = crm_request('contacts', '?email='.$email_partner, 'GET', null);
+                $crm_exist = crm_request('contacts', '?email=' . $email_partner, 'GET', null);
                 if (isset($crm_exist['items']) && count($crm_exist['items']) > 0) {
                     setcookie('crm_id', $crm_exist['items'][0]['id'], time() + 864000, '/');
                 }
@@ -232,7 +232,7 @@ function save_student()
         $billing_address_1 = isset($_POST['billing_address_1']) ? strtolower($_POST['billing_address_1']) : null;
         $billing_state = isset($_POST['billing_state']) ? strtolower($_POST['billing_state']) : null;
         $billing_postcode = isset($_POST['billing_postcode']) ? strtolower($_POST['billing_postcode']) : null;
-    
+
         // Establecer cookies
         setcookie('payment_method_selected', $payment_method_selected, time() + 864000, '/');
         setcookie('billing_city', ucwords($city), time() + 864000, '/');
@@ -240,7 +240,7 @@ function save_student()
         setcookie('billing_address_1', ucwords($billing_address_1), time() + 864000, '/');
         setcookie('billing_state', strtoupper($billing_state), time() + 864000, '/');
         setcookie('billing_postcode', ucwords($billing_postcode), time() + 864000, '/');
-    
+
         // Redirigir al checkout
         redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false);
     }
@@ -253,10 +253,10 @@ function save_student()
 
         // Vaciar carrito existente
         WC()->cart->empty_cart();
-        
+
         // Agregar nuevo producto
         WC()->cart->add_to_cart(FEE_GRADUATION, 1);
-        
+
         // Redireccionar a checkout
         wp_redirect(wc_get_checkout_url());
         exit;
@@ -504,7 +504,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
                         $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE code_subject = '{$inscription->code_subject}'");
                     }
                     array_push($formatted_assignments_history, [
-                        'subject' => $subject->name,
+                        $key => $subject->name,
                         'code_subject' => $subject->code_subject,
                         'code_period' => $inscription->code_period,
                         'cut' => $inscription->cut_period,
@@ -525,6 +525,122 @@ add_action('woocommerce_account_califications_endpoint', function () {
     $admin_virtual_access = get_option('virtual_access');
     include(plugin_dir_path(__FILE__) . 'templates/califications.php');
 });
+
+add_action('woocommerce_account_teacher-califications_endpoint', function () {
+    global $wpdb;
+
+    $current_user_id = get_current_user_id();
+    if (!$current_user_id) {
+        wc_print_notice(__('You must be logged in to view this page.', 'your-text-domain'), 'error');
+        return;
+    }
+
+    $teacher = get_teacher_details_by_user_id($current_user_id);
+    if (is_wp_error($teacher)) {
+        wc_print_notice($teacher->get_error_message(), 'error');
+        return;
+    }
+    if (!$teacher) {
+        wc_print_notice(__('Teacher profile not found.', 'your-text-domain'), 'error');
+        return;
+    }
+
+    $history = get_offers_by_teacher($teacher->id);
+
+    if (empty($history)) {
+        $admin_virtual_access = false;
+        include(plugin_dir_path(__FILE__) . 'templates/teacher-califications.php');
+        return;
+    }
+
+    $subject_ids = array_unique(array_column($history, 'subject_id'));
+    error_log(print_r($subject_ids, true));
+    $subjects = get_subjects_details_multiple($subject_ids);
+    error_log(print_r($subjects, true));
+
+    $subjects_map = [];
+    if (!is_wp_error($subjects) && !empty($subjects)) {
+        foreach ($subjects as $subject) {
+            $subjects_map[$subject->id] = $subject;
+        }
+    }
+
+    foreach ($history as $key => $offer) {
+        // Assign subject details and code_subject for the query
+        $subject_name = __('N/A', 'your-text-domain');
+        $subject_code = __('N/A', 'your-text-domain');
+
+        if (isset($subjects_map[$offer->subject_id])) {
+            $subject = $subjects_map[$offer->subject_id];
+            $subject_name = $subject->name;
+            $subject_code = $subject->code_subject;
+        }
+
+        $history[$key]->subject = $subject_name;
+        $history[$key]->code_subject = $subject_code;
+
+        // Get average calification directly from the database
+        $average_calification_data = get_average_calification_for_subject_period(
+            $offer->subject_id,
+            $subject_code, // Pass the subject code here
+            $offer->code_period,
+            $offer->cut_period
+        );
+
+        $history[$key]->prom_calification = $average_calification_data ? (float) $average_calification_data->average_calification : 0;
+    }
+
+    $admin_virtual_access = true;
+
+    include(plugin_dir_path(__FILE__) . 'templates/teacher-califications.php');
+});
+
+function get_average_calification_for_subject_period($subject_id, $code_subject, $code_period, $cut_period)
+{
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+
+    // At least one of subject_id or code_subject must be provided
+    if (empty($subject_id) && empty($code_subject)) {
+        return new WP_Error('missing_subject_identifier', __('Either subject ID or subject code must be provided.', 'your-text-domain'));
+    }
+
+    $where_clauses = [];
+    $prepare_args = [];
+
+    if (!empty($subject_id) && filter_var($subject_id, FILTER_VALIDATE_INT)) {
+        $where_clauses[] = 'subject_id = %d';
+        $prepare_args[] = $subject_id;
+    }
+
+    if (!empty($code_subject)) {
+        $where_clauses[] = 'code_subject = %s';
+        $prepare_args[] = $code_subject;
+    }
+
+    // Combine conditions with OR
+    $subject_condition = implode(' OR ', $where_clauses);
+
+    // Add period and status conditions
+    // Modificación aquí: Usar ROUND(AVG(calification), 2) para limitar a 2 decimales
+    $query = "SELECT ROUND(AVG(calification), 2) as average_calification
+              FROM {$table_student_period_inscriptions}
+              WHERE ({$subject_condition})
+              AND code_period = %s
+              AND cut_period = %s
+              AND `status_id` = 3"; // Assuming 'status' is an integer
+
+    $prepare_args[] = $code_period;
+    $prepare_args[] = $cut_period;
+
+    $avg_calification = $wpdb->get_row($wpdb->prepare(
+        $query,
+        ...$prepare_args // Use the spread operator to pass all arguments
+    ));
+
+    // El resultado ya vendrá formateado con 2 decimales desde la base de datos
+    return $avg_calification;
+}
 
 add_action('woocommerce_account_student-details_endpoint', function () {
 
@@ -652,9 +768,10 @@ function update_elective_student($student_id, $status_id)
     ], ['id' => $student_id]);
 }
 
-function insert_register_documents($student_id, $grade_id) {
+function insert_register_documents($student_id, $grade_id)
+{
     global $wpdb;
-    
+
     $student = get_student_detail($student_id);
     $birthDate = new DateTime($student->birth_date);
     $today = new DateTime();
@@ -668,7 +785,8 @@ function insert_register_documents($student_id, $grade_id) {
         $wpdb->prepare("SELECT * FROM {$table_documents} WHERE grade_id = %d", $grade_id)
     );
 
-    if (!$documents) return;
+    if (!$documents)
+        return;
 
     foreach ($documents as $document) {
         // Verificar existencia usando el ID del documento
@@ -681,7 +799,8 @@ function insert_register_documents($student_id, $grade_id) {
             )
         );
 
-        if ($exist) continue;
+        if ($exist)
+            continue;
 
         // Lógica de is_required mejorada
         $isRequired = 0;
@@ -737,7 +856,7 @@ function get_payments($student_id, $product_id = false)
             AND status_id = 0"
         );
 
-        $program = $payments ? ($has_pending_payments ? 2 : 1) : 0; 
+        $program = $payments ? ($has_pending_payments ? 2 : 1) : 0;
         return $program;
     }
 }
@@ -965,7 +1084,8 @@ function load_feed()
     include(plugin_dir_path(__FILE__) . 'templates/feed-student.php');
 }
 
-function set_max_date_student($student_id) {
+function set_max_date_student($student_id)
+{
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $table_student_payments = $wpdb->prefix . 'student_payments';
@@ -984,7 +1104,8 @@ function set_max_date_student($student_id) {
     }
 }
 
-function helper_get_student_logged() {
+function helper_get_student_logged()
+{
     global $wpdb, $current_user;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
@@ -1002,7 +1123,7 @@ function get_active_students()
     if ($students) {
         foreach ($students as $student) {
             $academic_ready = get_academic_ready($student->id);
-            if(!$academic_ready) {
+            if (!$academic_ready) {
                 array_push($students_active, $student);
             }
         }

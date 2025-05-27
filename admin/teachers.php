@@ -179,13 +179,13 @@ function add_admin_form_teachers_content()
             $description = (!$_POST['description'] || $_POST['description'] == 'null') ? null : $_POST['description'];
             $teacher = get_teacher_details($teacher_id);
             $user_teacher = get_user_by('email', $teacher->email);
-            $table_users_notices =  $wpdb->prefix.'users_notices';
+            $table_users_notices = $wpdb->prefix . 'users_notices';
             switch ($status_id) {
                 case 5:
                     $description = "Document approved";
                     break;
                 case 3:
-                        // $description = "Document approved";
+                    // $description = "Document approved";
                     break;
                 default:
                     $description = "Status of document changed";
@@ -200,7 +200,7 @@ function add_admin_form_teachers_content()
 
             $wpdb->insert($table_users_notices, $data);
 
-            $table_teacher_documents =  $wpdb->prefix.'teacher_documents';
+            $table_teacher_documents = $wpdb->prefix . 'teacher_documents';
             $wpdb->update($table_teacher_documents, ['approved_by' => $current_user->ID, 'status' => $status_id, 'updated_at' => date('Y-m-d H:i:s'), 'description' => $description], ['id' => $document_id]);
 
             $document_updated = $wpdb->get_row("SELECT * FROM {$table_teacher_documents} WHERE id = {$document_id}");
@@ -210,7 +210,7 @@ function add_admin_form_teachers_content()
                 } else {
                     $url = wp_get_attachment_url($document_updated->attachment_id);
                     actualizar_avatar_usuario($user_teacher->ID, $url);
-                }    
+                }
             }
 
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
@@ -411,7 +411,7 @@ function get_teacher_details($teacher_id)
         );
 
         $teacher = $wpdb->get_row($query);
-        
+
         if (!$teacher) {
             return null;
         }
@@ -421,6 +421,33 @@ function get_teacher_details($teacher_id)
     } catch (Exception $e) {
         return null;
     }
+}
+
+function get_teacher_details_by_user_id($user_id)
+{
+    global $wpdb;
+    $table_teachers = $wpdb->prefix . 'teachers';
+
+    if (!is_numeric($user_id)) {
+        return new WP_Error('invalid_user_id', __('Invalid user ID provided.', 'your-text-domain'));
+    }
+
+    $teacher = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$table_teachers} WHERE user_id = %d",
+        $user_id
+    ));
+
+    if (!$teacher) {
+        $user_info = get_userdata($user_id);
+        if ($user_info && $user_info->user_email) {
+            $teacher = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM {$table_teachers} WHERE email = %s",
+                $user_info->user_email
+            ));
+        }
+    }
+
+    return $teacher;
 }
 
 function get_teachers_active()
@@ -442,13 +469,15 @@ function get_teacher_documents($teacher_id)
 }
 
 // Función para actualizar el avatar de un usuario
-function actualizar_avatar_usuario($user_id, $avatar_url) {
+function actualizar_avatar_usuario($user_id, $avatar_url)
+{
     // Actualiza el meta del usuario con la URL del avatar
     update_user_meta($user_id, 'custom_avatar', esc_url($avatar_url));
 }
 
 // Función para obtener el avatar personalizado
-function obtener_avatar_personalizado($avatar, $id_or_email, $size, $default, $alt) {
+function obtener_avatar_personalizado($avatar, $id_or_email, $size, $default, $alt)
+{
     $user_id = null;
 
     // Verifica si se trata de un ID de usuario o un objeto de usuario
