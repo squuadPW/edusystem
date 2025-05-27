@@ -552,7 +552,7 @@ function remove_my_account_links($menu_links)
     // Agregar "Documents" para el rol "teacher"
     if (in_array('teacher', $roles)) {
         $menu_links['teacher-documents'] = __('Documents', 'edusystem');
-        $menu_links['teacher-califications'] = __('My courses', 'edusystem');
+        $menu_links['teacher-courses'] = __('My courses', 'edusystem');
     }
 
     // Lógica para roles "parent" y "student"
@@ -597,7 +597,7 @@ add_action('init', function () {
     add_rewrite_endpoint('my-tickets', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('my-requests', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('califications', EP_ROOT | EP_PAGES);
-    add_rewrite_endpoint('teacher-califications', EP_ROOT | EP_PAGES);
+    add_rewrite_endpoint('teacher-courses', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('notes', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('academic-services', EP_ROOT | EP_PAGES);
 });

@@ -526,7 +526,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
     include(plugin_dir_path(__FILE__) . 'templates/califications.php');
 });
 
-add_action('woocommerce_account_teacher-califications_endpoint', function () {
+add_action('woocommerce_account_teacher-courses_endpoint', function () {
     global $wpdb, $current_user;
 
     $teacher = get_teacher_details($current_user->user_email);
@@ -593,7 +593,7 @@ add_action('woocommerce_account_teacher-califications_endpoint', function () {
     $process_offers($history, $subjects_map, 3); // Para historial, usar status_id 3
     $process_offers($current, $subjects_map, 1); // Para current, usar status_id 1
 
-    include(plugin_dir_path(__FILE__) . 'templates/teacher-califications.php');
+    include(plugin_dir_path(__FILE__) . 'templates/teacher-courses.php');
 });
 
 function get_average_calification_for_subject_period($subject_id, $code_subject, $code_period, $cut_period, $status_id_to_check)
