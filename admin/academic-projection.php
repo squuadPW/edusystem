@@ -626,11 +626,26 @@ function get_inscriptions_by_student_period($student_id, $code_period, $cut_peri
     return $inscriptions;
 }
 
-function get_inscriptions_by_subject_period($subject_id, $code_subject, $code_period, $cut_period)
-{
+function get_inscriptions_by_subject_period($subject_id, $code_subject, $code_period, $cut_period, $status) {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$subject_id} OR code_subject = {$code_subject} AND code_period = '{$code_period}' AND cut_period = '{$cut_period}' AND `status` = 3");
+
+    // Usamos $wpdb->prepare() para proteger contra la inyección SQL.
+    // Los paréntesis son cruciales para asegurar la lógica correcta del OR.
+    $query = $wpdb->prepare(
+        "SELECT * FROM {$table_student_period_inscriptions} 
+         WHERE (subject_id = %d OR code_subject = %s) 
+           AND code_period = %s 
+           AND cut_period = %s
+           AND status_id = %d",
+        $subject_id,
+        $code_subject,
+        $code_period,
+        $cut_period,
+        $status
+    );
+
+    $inscriptions = $wpdb->get_results($query);
     return $inscriptions;
 }
 

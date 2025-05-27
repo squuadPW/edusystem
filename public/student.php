@@ -526,6 +526,24 @@ add_action('woocommerce_account_califications_endpoint', function () {
     include(plugin_dir_path(__FILE__) . 'templates/califications.php');
 });
 
+add_action('woocommerce_account_teacher-course-students_endpoint', function () {
+    global $wpdb, $current_user;
+    $offer_id = $_GET['offer_id'];
+    $status = $_GET['status'];
+    $offer = get_academic_offer_details($offer_id);
+    $subject = get_subject_details($offer->subject_id);
+    $inscriptions = get_inscriptions_by_subject_period($subject->id, $subject->code_subject, $offer->code_period, $offer->cut_period, $status);
+
+    $students = [];
+    foreach ($inscriptions as $key => $inscription) {
+        $student = get_student_detail($inscription->student_id);
+        $student->inscription_at = $inscription->created_at;
+        array_push($students, $student);
+    }
+
+    include(plugin_dir_path(__FILE__) . 'templates/teacher-course-students.php');
+});
+
 add_action('woocommerce_account_teacher-courses_endpoint', function () {
     global $wpdb, $current_user;
 

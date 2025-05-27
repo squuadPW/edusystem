@@ -598,6 +598,7 @@ add_action('init', function () {
     add_rewrite_endpoint('my-requests', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('califications', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('teacher-courses', EP_ROOT | EP_PAGES);
+    add_rewrite_endpoint('teacher-course-students', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('notes', EP_ROOT | EP_PAGES);
     add_rewrite_endpoint('academic-services', EP_ROOT | EP_PAGES);
 });
