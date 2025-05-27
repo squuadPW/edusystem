@@ -314,7 +314,7 @@ function get_offer_by_moodle($moodle_course_id)
     return $offer;
 }
 
-function get_offers_by_teacher($teacher_id, $code_period = '', $cut_period = '')
+function get_teacher_offers($teacher_id, $code_period = '', $cut_period = '', $type = 'current')
 {
     global $wpdb;
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
@@ -326,15 +326,22 @@ function get_offers_by_teacher($teacher_id, $code_period = '', $cut_period = '')
     $query = "SELECT * FROM {$table_academic_offers} WHERE teacher_id = %d";
     $prepare_args = [$teacher_id];
 
-    // Add code_period condition if provided
+    // Lógica condicional basada en el tipo (current o history)
     if (!empty($code_period)) {
-        $query .= " AND code_period = %s";
+        if ($type === 'current') {
+            $query .= " AND code_period = %s";
+        } else { // type === 'history'
+            $query .= " AND code_period <> %s";
+        }
         $prepare_args[] = $code_period;
     }
 
-    // Add cut_period condition if provided
     if (!empty($cut_period)) {
-        $query .= " AND cut_period = %s";
+        if ($type === 'current') {
+            $query .= " AND cut_period = %s";
+        } else { // type === 'history'
+            $query .= " AND cut_period <> %s";
+        }
         $prepare_args[] = $cut_period;
     }
 
@@ -342,7 +349,7 @@ function get_offers_by_teacher($teacher_id, $code_period = '', $cut_period = '')
 
     $offers = $wpdb->get_results($wpdb->prepare(
         $query,
-        ...$prepare_args // Use the spread operator to pass all arguments dynamically
+        ...$prepare_args
     ));
 
     return $offers;

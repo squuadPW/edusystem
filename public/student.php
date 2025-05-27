@@ -549,8 +549,8 @@ add_action('woocommerce_account_teacher-califications_endpoint', function () {
     $load = load_current_cut();
     $code = $load['code'];
     $cut = $load['cut'];
-    $history = get_offers_by_teacher($teacher->id);
-    $current = get_offers_by_teacher($teacher->id, $code, $cut);
+    $history = get_teacher_offers($teacher->id, $code, $cut, 'history');
+    $current = get_teacher_offers($teacher->id, $code, $cut, 'current');
 
     $subject_ids = array_unique(array_column($history, 'subject_id'));
     $subjects = get_subjects_details_multiple($subject_ids);
