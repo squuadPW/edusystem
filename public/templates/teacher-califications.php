@@ -74,8 +74,7 @@
             <?php } ?>
         <?php else: ?>
             <div style="margin: 0 auto; text-align: center; padding: 18px;">
-                <span>Oops! it looks like you don't have any students logged into moodle yet. Please come back when you have
-                    access to moodle 👋</span>
+                <span>It looks like you don't have any courses registered in moodle yet. Please check back shortly when you are assigned 👋</span>
             </div>
         <?php endif; ?>
     </div>
