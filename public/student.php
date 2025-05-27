@@ -592,8 +592,8 @@ add_action('woocommerce_account_teacher-califications_endpoint', function () {
             $subject_code = $subject->code_subject;
         }
 
-        $history[$key]->subject = $subject_name;
-        $history[$key]->code_subject = $subject_code;
+        $current[$key]->subject = $subject_name;
+        $current[$key]->code_subject = $subject_code;
     }
 
     include(plugin_dir_path(__FILE__) . 'templates/teacher-califications.php');
