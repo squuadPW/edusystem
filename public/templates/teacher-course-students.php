@@ -10,11 +10,11 @@
         style="margin-top:20px;">
         <thead>
             <tr>
-                <th class="woocommerce-orders-table__header woocommerce-orders-table__header-subject-code"><span
+                <th class="woocommerce-orders-table__header woocommerce-orders-table__header-names"><span
                         class="nobr"><?= __('Names(s)', 'edusystem'); ?></span></th>
-                <th class="woocommerce-orders-table__header woocommerce-orders-table__header-subject-code"><span
+                <th class="woocommerce-orders-table__header woocommerce-orders-table__header-email"><span
                         class="nobr"><?= __('Email', 'edusystem'); ?></span></th>
-                <th class="woocommerce-orders-table__header woocommerce-orders-table__header-section"><span
+                <th class="woocommerce-orders-table__header woocommerce-orders-table__header-inscription-date"><span
                         class="nobr"><?= __('Inscription date', 'edusystem'); ?></span></th>
             </tr>
         </thead>
@@ -22,15 +22,15 @@
             <?php foreach ($students as $row): ?>
                 <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order"
                     style="background-color: blue !important">
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-type"
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-names"
                         data-title="<?= __('Name(s)', 'edusystem'); ?>">
                         <?= $row->last_name . ' ' . $row->middle_last_name . ' ' . $row->name . ' ' . $row->middle_name ?>
                     </td>
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-type"
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-email"
                         data-title="<?= __('Email', 'edusystem'); ?>">
                         <?= $row->email ?>
                     </td>
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-type"
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-inscription-date"
                         data-title="<?= __('Inscription date', 'edusystem'); ?>">
                         <?php
                             echo date('m/d/Y', strtotime($row->inscription_at));
