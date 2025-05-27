@@ -429,7 +429,7 @@ function get_teacher_details_by_user_id($user_id)
     $table_teachers = $wpdb->prefix . 'teachers';
 
     if (!is_numeric($user_id)) {
-        return new WP_Error('invalid_user_id', __('Invalid user ID provided.', 'your-text-domain'));
+        return new WP_Error('invalid_user_id', __('Invalid user ID provided.', 'edusystem'));
     }
 
     $teacher = $wpdb->get_row($wpdb->prepare(

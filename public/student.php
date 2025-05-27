@@ -531,7 +531,7 @@ add_action('woocommerce_account_teacher-califications_endpoint', function () {
 
     $current_user_id = get_current_user_id();
     if (!$current_user_id) {
-        wc_print_notice(__('You must be logged in to view this page.', 'your-text-domain'), 'error');
+        wc_print_notice(__('You must be logged in to view this page.', 'edusystem'), 'error');
         return;
     }
 
@@ -541,22 +541,19 @@ add_action('woocommerce_account_teacher-califications_endpoint', function () {
         return;
     }
     if (!$teacher) {
-        wc_print_notice(__('Teacher profile not found.', 'your-text-domain'), 'error');
+        wc_print_notice(__('Teacher profile not found.', 'edusystem'), 'error');
         return;
     }
 
+    $admin_virtual_access = true;
+    $load = load_current_cut();
+    $code = $load['code'];
+    $cut = $load['cut'];
     $history = get_offers_by_teacher($teacher->id);
-
-    if (empty($history)) {
-        $admin_virtual_access = false;
-        include(plugin_dir_path(__FILE__) . 'templates/teacher-califications.php');
-        return;
-    }
+    $current = get_offers_by_teacher($teacher->id, $code, $cut);
 
     $subject_ids = array_unique(array_column($history, 'subject_id'));
-    error_log(print_r($subject_ids, true));
     $subjects = get_subjects_details_multiple($subject_ids);
-    error_log(print_r($subjects, true));
 
     $subjects_map = [];
     if (!is_wp_error($subjects) && !empty($subjects)) {
@@ -567,8 +564,8 @@ add_action('woocommerce_account_teacher-califications_endpoint', function () {
 
     foreach ($history as $key => $offer) {
         // Assign subject details and code_subject for the query
-        $subject_name = __('N/A', 'your-text-domain');
-        $subject_code = __('N/A', 'your-text-domain');
+        $subject_name = __('N/A', 'edusystem');
+        $subject_code = __('N/A', 'edusystem');
 
         if (isset($subjects_map[$offer->subject_id])) {
             $subject = $subjects_map[$offer->subject_id];
@@ -590,7 +587,20 @@ add_action('woocommerce_account_teacher-califications_endpoint', function () {
         $history[$key]->prom_calification = $average_calification_data ? (float) $average_calification_data->average_calification : 0;
     }
 
-    $admin_virtual_access = true;
+    foreach ($current as $key => $offer) {
+        // Assign subject details and code_subject for the query
+        $subject_name = __('N/A', 'edusystem');
+        $subject_code = __('N/A', 'edusystem');
+
+        if (isset($subjects_map[$offer->subject_id])) {
+            $subject = $subjects_map[$offer->subject_id];
+            $subject_name = $subject->name;
+            $subject_code = $subject->code_subject;
+        }
+
+        $history[$key]->subject = $subject_name;
+        $history[$key]->code_subject = $subject_code;
+    }
 
     include(plugin_dir_path(__FILE__) . 'templates/teacher-califications.php');
 });
@@ -602,7 +612,7 @@ function get_average_calification_for_subject_period($subject_id, $code_subject,
 
     // At least one of subject_id or code_subject must be provided
     if (empty($subject_id) && empty($code_subject)) {
-        return new WP_Error('missing_subject_identifier', __('Either subject ID or subject code must be provided.', 'your-text-domain'));
+        return new WP_Error('missing_subject_identifier', __('Either subject ID or subject code must be provided.', 'edusystem'));
     }
 
     $where_clauses = [];

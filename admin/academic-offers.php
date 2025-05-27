@@ -314,18 +314,35 @@ function get_offer_by_moodle($moodle_course_id)
     return $offer;
 }
 
-function get_offers_by_teacher($teacher_id)
+function get_offers_by_teacher($teacher_id, $code_period = '', $cut_period = '')
 {
     global $wpdb;
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
 
     if (!is_numeric($teacher_id)) {
-        return new WP_Error('invalid_teacher_id', __('Invalid teacher ID provided.', 'your-text-domain'));
+        return new WP_Error('invalid_teacher_id', __('Invalid teacher ID provided.', 'edusystem'));
     }
 
+    $query = "SELECT * FROM {$table_academic_offers} WHERE teacher_id = %d";
+    $prepare_args = [$teacher_id];
+
+    // Add code_period condition if provided
+    if (!empty($code_period)) {
+        $query .= " AND code_period = %s";
+        $prepare_args[] = $code_period;
+    }
+
+    // Add cut_period condition if provided
+    if (!empty($cut_period)) {
+        $query .= " AND cut_period = %s";
+        $prepare_args[] = $cut_period;
+    }
+
+    $query .= " ORDER BY id DESC";
+
     $offers = $wpdb->get_results($wpdb->prepare(
-        "SELECT * FROM {$table_academic_offers} WHERE teacher_id = %d ORDER BY id DESC",
-        $teacher_id
+        $query,
+        ...$prepare_args // Use the spread operator to pass all arguments dynamically
     ));
 
     return $offers;

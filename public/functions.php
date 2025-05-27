@@ -1991,7 +1991,7 @@ function verificar_contraseña()
                         $order->save();
 
                         if (!$complete && !$order->get_meta('one_time_payment')) {
-                            // wc_add_notice(__('Your payment has been received. Please continue with the remaining amount.', 'your-text-domain'), 'success');
+                            // wc_add_notice(__('Your payment has been received. Please continue with the remaining amount.', 'edusystem'), 'success');
                             wp_redirect($checkout_url);
                             exit;
                         }
