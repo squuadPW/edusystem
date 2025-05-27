@@ -541,6 +541,11 @@ add_action('woocommerce_account_teacher-course-students_endpoint', function () {
         array_push($students, $student);
     }
 
+    // Sort the $students array by last_name
+    usort($students, function ($a, $b) {
+        return strcmp($a->last_name, $b->last_name);
+    });
+
     include(plugin_dir_path(__FILE__) . 'templates/teacher-course-students.php');
 });
 
