@@ -12,6 +12,8 @@
             <tr>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-subject-code"><span
                         class="nobr"><?= __('Names(s)', 'edusystem'); ?></span></th>
+                <th class="woocommerce-orders-table__header woocommerce-orders-table__header-subject-code"><span
+                        class="nobr"><?= __('Email', 'edusystem'); ?></span></th>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-section"><span
                         class="nobr"><?= __('Inscription date', 'edusystem'); ?></span></th>
             </tr>
@@ -23,6 +25,10 @@
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-type"
                         data-title="<?= __('Name(s)', 'edusystem'); ?>">
                         <?= $row->last_name . ' ' . $row->middle_last_name . ' ' . $row->name . ' ' . $row->middle_name ?>
+                    </td>
+                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-type"
+                        data-title="<?= __('Email', 'edusystem'); ?>">
+                        <?= $row->email ?>
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-type"
                         data-title="<?= __('Inscription date', 'edusystem'); ?>">
