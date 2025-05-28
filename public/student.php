@@ -538,6 +538,7 @@ add_action('woocommerce_account_teacher-course-students_endpoint', function () {
     foreach ($inscriptions as $key => $inscription) {
         $student = get_student_detail($inscription->student_id);
         $student->inscription_at = $inscription->created_at;
+        $student->inscription_status_id = $inscription->status_id;
         array_push($students, $student);
     }
 

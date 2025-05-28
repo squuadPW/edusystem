@@ -30,7 +30,7 @@
                         $endpoint_url = wc_get_account_endpoint_url('teacher-course-students');
                         $query_params = array(
                             'offer_id' => $row->id, // Si tienes un ID único para la oferta
-                            'status' => 1
+                            'status' => 'current'
                         );
                         $full_url = add_query_arg($query_params, $endpoint_url);
                         ?>
@@ -93,7 +93,7 @@
                         $endpoint_url = wc_get_account_endpoint_url('teacher-course-students');
                         $query_params = array(
                             'offer_id' => $row->id, // Si tienes un ID único para la oferta
-                            'status' => 3
+                            'status' => 'history'
                         );
                         $full_url = add_query_arg($query_params, $endpoint_url);
                         ?>

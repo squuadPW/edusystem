@@ -630,6 +630,22 @@ function get_inscriptions_by_subject_period($subject_id, $code_subject, $code_pe
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
+    // Determinar los status_id según el valor de $status
+    $status_ids = [];
+    if ($status === 'current') {
+        $status_ids[] = 1;
+    } elseif ($status === 'history') {
+        $status_ids[] = 2;
+        $status_ids[] = 3;
+        $status_ids[] = 4;
+    } else {
+        // Manejar un caso por defecto o lanzar un error si $status no es 'current' ni 'history'
+        return false;
+    }
+
+    // Convertir el array de IDs a una cadena para la cláusula IN de SQL
+    $status_ids_in_clause = implode(',', array_map('intval', $status_ids));
+
     // Usamos $wpdb->prepare() para proteger contra la inyección SQL.
     // Los paréntesis son cruciales para asegurar la lógica correcta del OR.
     $query = $wpdb->prepare(
@@ -637,12 +653,11 @@ function get_inscriptions_by_subject_period($subject_id, $code_subject, $code_pe
          WHERE (subject_id = %d OR code_subject = %s) 
            AND code_period = %s 
            AND cut_period = %s
-           AND status_id = %d",
+           AND status_id IN ({$status_ids_in_clause})", // Usamos IN para múltiples valores
         $subject_id,
         $code_subject,
         $code_period,
-        $cut_period,
-        $status
+        $cut_period
     );
 
     $inscriptions = $wpdb->get_results($query);

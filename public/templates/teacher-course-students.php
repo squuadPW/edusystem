@@ -16,6 +16,10 @@
                         class="nobr"><?= __('Email', 'edusystem'); ?></span></th>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-inscription-date"><span
                         class="nobr"><?= __('Inscription date', 'edusystem'); ?></span></th>
+                <?php if($_GET['status'] == 'history') { ?>
+                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-status"><span
+                            class="nobr"><?= __('Status', 'edusystem'); ?></span></th>
+                <?php } ?>
             </tr>
         </thead>
         <tbody>
@@ -36,6 +40,30 @@
                             echo date('m/d/Y', strtotime($row->inscription_at));
                         ?>
                     </td>
+                    <?php if($_GET['status'] == 'history') { ?>
+                        <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-status"
+                            data-title="<?= __('Status', 'edusystem'); ?>">
+                            <?php
+                                switch ($row->inscription_status_id) {
+                                    case 0:
+                                        echo '<div style="color: gray; font-weight: 600">'. strtoupper('To begin') . '</div>';
+                                        break;
+                                    case 1:
+                                        echo '<div style="color: blue; font-weight: 600">'. strtoupper('Active') . '</div>';
+                                        break;
+                                    case 2:
+                                        echo '<div style="color: red; font-weight: 600">'. strtoupper('Unsubscribed') . '</div>';
+                                        break;
+                                    case 3:
+                                        echo '<div style="color: green; font-weight: 600">'. strtoupper('Approved') . '</div>';
+                                        break;
+                                    case 4:
+                                        echo '<div style="color: red; font-weight: 600">'. strtoupper('Reproved') . '</div>';
+                                        break;
+                                }
+                            ?>
+                        </td>
+                    <?php } ?>
                 </tr>
             <?php endforeach; ?>
         </tbody>
