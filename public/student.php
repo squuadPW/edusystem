@@ -1159,6 +1159,14 @@ function helper_get_student_logged()
     return $student;
 }
 
+function helper_get_teacher_logged()
+{
+    global $wpdb, $current_user;
+    $table_teachers = $wpdb->prefix . 'teachers';
+    $student = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE email='{$current_user->user_email}'");
+    return $student;
+}
+
 function get_active_students()
 {
     global $wpdb;
