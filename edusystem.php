@@ -189,6 +189,7 @@ function create_tables()
         middle_last_name TEXT NULL,
         birth_date DATE NULL,
         gender TEXT NULL,
+        nacionality TEXT NULL,
         email TEXT NOT NULL,
         phone TEXT NOT NULL,
         address TEXT NULL,
