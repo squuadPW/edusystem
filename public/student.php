@@ -614,13 +614,13 @@ add_action('woocommerce_account_teacher-courses_endpoint', function () {
     };
 
     // Procesar las ofertas de historial (status_id = 3) y actuales (status_id = 1)
-    $process_offers($history, $subjects_map, 3); // Para historial, usar status_id 3
-    $process_offers($current, $subjects_map, 1); // Para current, usar status_id 1
+    $process_offers($history, $subjects_map, 'history'); // Para historial, usar status_id 2,3,4
+    $process_offers($current, $subjects_map, 'current'); // Para current, usar status_id 1
 
     include(plugin_dir_path(__FILE__) . 'templates/teacher-courses.php');
 });
 
-function get_average_calification_for_subject_period($subject_id, $code_subject, $code_period, $cut_period, $status_id_to_check)
+function get_average_calification_for_subject_period($subject_id, $code_subject, $code_period, $cut_period, $status)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
@@ -629,6 +629,22 @@ function get_average_calification_for_subject_period($subject_id, $code_subject,
     if (empty($subject_id) && empty($code_subject)) {
         return new WP_Error('missing_subject_identifier', __('Either subject ID or subject code must be provided.', 'edusystem'));
     }
+
+    // Determinar los status_id según el valor de $status
+    $status_ids = [];
+    if ($status === 'current') {
+        $status_ids[] = 1;
+    } elseif ($status === 'history') {
+        $status_ids[] = 2;
+        $status_ids[] = 3;
+        $status_ids[] = 4;
+    } else {
+        // Manejar un caso por defecto o lanzar un error si $status no es 'current' ni 'history'
+        return new WP_Error('invalid_status', __('Invalid status provided. Must be "current" or "history".', 'edusystem'));
+    }
+
+    // Convertir el array de IDs a una cadena para la cláusula IN de SQL
+    $status_ids_in_clause = implode(',', array_map('intval', $status_ids));
 
     $where_clauses = [];
     $prepare_args = [];
@@ -647,16 +663,17 @@ function get_average_calification_for_subject_period($subject_id, $code_subject,
     $subject_condition = implode(' OR ', $where_clauses);
 
     // Add period and status conditions
+    // NOTA: status_id IN ({$status_ids_in_clause}) no se pasa como un placeholder de prepare
+    // porque ya está sanitizado con implode y array_map('intval').
     $query = "SELECT ROUND(AVG(calification), 2) as average_calification, COUNT(*) as inscription_count
               FROM {$table_student_period_inscriptions}
               WHERE ({$subject_condition})
               AND code_period = %s
               AND cut_period = %s
-              AND `status_id` = %d"; // Se usa el nuevo parámetro $status_id_to_check
+              AND `status_id` IN ({$status_ids_in_clause})";
 
     $prepare_args[] = $code_period;
     $prepare_args[] = $cut_period;
-    $prepare_args[] = $status_id_to_check; // Añadir el nuevo parámetro a los argumentos de preparación
 
     $results = $wpdb->get_row($wpdb->prepare(
         $query,
@@ -666,7 +683,7 @@ function get_average_calification_for_subject_period($subject_id, $code_subject,
     // Si no hay resultados (ej. ninguna inscripción con ese status_id), AVG() y COUNT() devuelven NULL.
     // Aseguramos que average_calification y inscription_count existan en el objeto incluso si son NULL.
     if (null === $results) {
-        $results = (object) ['average_calification' => null, 'inscription_count' => null];
+        $results = (object) ['average_calification' => null, 'inscription_count' => 0]; // Cambié null a 0 para count
     }
     
     return $results;
