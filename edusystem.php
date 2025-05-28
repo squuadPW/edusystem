@@ -190,6 +190,7 @@ function create_tables()
         birth_date DATE NULL,
         gender TEXT NULL,
         nacionality TEXT NULL,
+        profile_picture INT(11) NULL,
         email TEXT NOT NULL,
         phone TEXT NOT NULL,
         address TEXT NULL,

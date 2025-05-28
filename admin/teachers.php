@@ -94,7 +94,6 @@ function add_admin_form_teachers_content()
                     update_user_meta($user_teacher->ID, 'document_type', $type_document);
                     update_user_meta($user_teacher->ID, 'type_document', $type_document);
                     update_user_meta($user_teacher->ID, 'id_document', $id_document);
-                    actualizar_avatar_usuario($user_teacher->ID, '');
                 }
 
 
@@ -180,6 +179,7 @@ function add_admin_form_teachers_content()
             $teacher = get_teacher_details($teacher_id);
             $user_teacher = get_user_by('email', $teacher->email);
             $table_users_notices = $wpdb->prefix . 'users_notices';
+            $table_teachers = $wpdb->prefix . 'teachers';
             switch ($status_id) {
                 case 5:
                     $description = "Document approved";
@@ -206,10 +206,9 @@ function add_admin_form_teachers_content()
             $document_updated = $wpdb->get_row("SELECT * FROM {$table_teacher_documents} WHERE id = {$document_id}");
             if ($document_updated->document_id == 'PHOTO') {
                 if ($status_id != 5) {
-                    actualizar_avatar_usuario($user_teacher->ID, '');
+                    $wpdb->update($table_teachers, ['profile_picture' => NULL], ['id' => $teacher->id]);
                 } else {
-                    $url = wp_get_attachment_url($document_updated->attachment_id);
-                    actualizar_avatar_usuario($user_teacher->ID, $url);
+                    $wpdb->update($table_teachers, ['profile_picture' => $document_updated->attachment_id], ['id' => $teacher->id]);
                 }
             }
 
@@ -325,7 +324,7 @@ class TT_teachers_all_List_Table extends WP_List_Table
                 array_push($teachers_array, [
                     'id' => $teacher->id,
                     'pending_documents' => count($pending_documents),
-                    'avatar' => get_user_meta($user_teacher->ID, 'custom_avatar', true),
+                    'avatar' => wp_get_attachment_image_url($teacher->profile_picture, 'full'),
                     'identification' => get_type_document_student($teacher->type_document) . ' - ' . $teacher->id_document,
                     'full_name' => $teacher->name . ' ' . $teacher->middle_name . ' ' . $teacher->last_name . ' ' . $teacher->middle_last_name,
                     'email' => $teacher->email,
@@ -446,36 +445,3 @@ function get_teacher_documents($teacher_id)
     $documents = $wpdb->get_results("SELECT * FROM {$table_teacher_documents} WHERE teacher_id={$teacher_id}");
     return $documents;
 }
-
-// Función para actualizar el avatar de un usuario
-function actualizar_avatar_usuario($user_id, $avatar_url)
-{
-    // Actualiza el meta del usuario con la URL del avatar
-    update_user_meta($user_id, 'custom_avatar', esc_url($avatar_url));
-}
-
-// Función para obtener el avatar personalizado
-function obtener_avatar_personalizado($avatar, $id_or_email, $size, $default, $alt)
-{
-    $user_id = null;
-
-    // Verifica si se trata de un ID de usuario o un objeto de usuario
-    if (is_numeric($id_or_email)) {
-        $user_id = (int) $id_or_email;
-    } elseif (is_object($id_or_email) && !empty($id_or_email->user_id)) {
-        $user_id = (int) $id_or_email->user_id;
-    }
-
-    // Si hay un ID de usuario, busca el avatar personalizado
-    if ($user_id) {
-        $custom_avatar = get_user_meta($user_id, 'custom_avatar', true);
-        if ($custom_avatar) {
-            return '<img alt="' . esc_attr($alt) . '" src="' . esc_url($custom_avatar) . '" class="avatar avatar-' . (int) $size . ' photo" height="' . (int) $size . '" width="' . (int) $size . '" />';
-        }
-    }
-
-    // Retorna el avatar por defecto si no hay avatar personalizado
-    return $avatar;
-}
-
-add_filter('get_avatar', 'obtener_avatar_personalizado', 10, 5);
