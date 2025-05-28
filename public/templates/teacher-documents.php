@@ -5,12 +5,27 @@ $table_teachers = $wpdb->prefix . 'teachers';
 $teacher = get_teacher_details($current_user->user_email);
 ?>
 
+<style>
+    container */ img {
+        max-width: 100%;
+        /* This rule is very important, please do not ignore this! */
+    }
+
+    #canvas-crop-document {
+        height: 600px;
+        width: 600px;
+        background-color: #ffffff;
+        cursor: default;
+        border: 1px solid black;
+    }
+</style>
+
 <h2 style="font-size:24px;text-align:center;"><?= __('Documents', 'edusystem'); ?></h2>
 
-<form method="post"
+<form id="send-documents-teacher" method="post"
     action="<?= wc_get_endpoint_url('teacher-documents', '', get_permalink(get_option('woocommerce_myaccount_page_id'))) . '?actions=save_documents_teacher'; ?>"
     enctype="multipart/form-data">
-
+    <input type="hidden" name="action" value="save_documents_teacher">
     <input type="hidden" name="teachers[]" value="<?= $teacher->id; ?>">
     <table
         class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
@@ -28,12 +43,13 @@ $teacher = get_teacher_details($current_user->user_email);
             <?php $documents = get_teacher_documents($teacher->id); ?>
             <?php foreach ($documents as $document): ?>
                 <?php if ($document->is_visible) { ?>
+                    <?php $name = get_name_document($document->document_id); ?>
+                    <?php $document_name_complete = get_name_document($document->document_id); ?>
                     <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                             data-title="<?= __('Document', 'edusystem'); ?>">
                             <input type="hidden" name="<?= 'file_teacher_' . $teacher->id . '_id[]'; ?>"
                                 value="<?= $document->id; ?>">
-                            <?php $name = get_name_document($document->document_id); ?>
 
                             <?php if ($document->is_required): ?>
                                 <?php $name = $name . "<span class='required' style='font-size:24px;'>*</span>"; ?>
@@ -59,11 +75,11 @@ $teacher = get_teacher_details($current_user->user_email);
                             data-title="<?= __('Action', 'edusystem'); ?>">
                             <?php if ($document->status == 0 || $document->status == 3 || $document->status == 4) { ?>
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input"
+                                    <input type="file" class="custom-file-input" <?= $document_name_complete == 'PHOTO' ? 'id=teacher_photo' : '' ?>
                                         name="<?= 'document_' . $document->id . '_teacher_id_' . $teacher->id; ?>"
                                         accept="<?php echo get_type_file_document_teacher($document->document_id) ?>"
                                         data-fileallowed="<?php echo get_type_file_document_teacher($document->document_id) ?>">
-                                    <span class="custom-file-label">Select file</span>
+                                    <span class="custom-file-label" <?= $document_name_complete == 'PHOTO' ? 'id=teacher_photo_label_input' : '' ?>>Select file</span>
                                 </div>
                             <?php } else { ?>
                                 <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" type="button"
@@ -77,16 +93,20 @@ $teacher = get_teacher_details($current_user->user_email);
     </table>
 
     <div style="display:block;text-align:center;">
-        <button class="submit" type="submit"><?= __('Send Documents', 'edusystem'); ?></button>
+        <button class="submit" type="submit" style="display: none"
+            id="send_real"><?= __('Send Documents', 'edusystem'); ?></button>
+        <div id="progressButton">
+            <div id="progressBar"></div>
+            <div id="buttonText">Send Documents</div>
+        </div>
     </div>
 </form>
 
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
-<script>
-    // With the above scripts loaded, you can call `tippy()` with a CSS
-    // selector and a `content` prop:
-    tippy('.help-tooltip', {
-        allowHTML: true
-    });
-</script>
+<link href="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.css" rel="stylesheet">
+<script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>
+
+<?php
+include('modal-cropperjs.php');
+?>

@@ -10,7 +10,7 @@
       </div>
 
       <div id="preview" style="display: none">
-        <div style="text-align: center">This is a preview of the student ID card</div>
+        <div style="text-align: center">This is a preview of the ID card</div>
         <div id="result" style="height: 200px; width: 200px; background-color: gray; margin: auto; border-radius: 100%; overflow: hidden; position: relative; border: 3px solid #E71F3B; margin: 20px auto;">
           
         </div>

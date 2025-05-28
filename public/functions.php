@@ -92,6 +92,14 @@ function form_plugin_scripts()
         ]);
     }
 
+    if (str_contains(home_url($wp->request), 'teacher-documents')) {
+        wp_enqueue_script('document', plugins_url('edusystem') . '/public/assets/js/teacher-document.js', array('jquery'), $version, true);
+        wp_localize_script('document', 'save_documents_teacher', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'save_documents_teacher'
+        ]);
+    }
+
     if (str_contains(home_url($wp->request), 'orders')) {
         wp_enqueue_script('next-payment', plugins_url('edusystem') . '/public/assets/js/next-payment.js', array('jquery'), $version, true);
         wp_localize_script('next-payment', 'ajax_object', [

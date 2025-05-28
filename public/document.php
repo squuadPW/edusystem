@@ -346,6 +346,14 @@ function handle_missing_documents_redirect($wpdb, $current_user) {
 add_action('wp_loaded','save_document');
 
 
+add_action('wp_ajax_nopriv_save_documents_teacher', 'save_documents_teacher');
+add_action('wp_ajax_save_documents_teacher', 'save_documents_teacher');
+
+function save_documents_teacher() {
+    global $wpdb, $current_user;
+    handle_teacher_documents($wpdb, $current_user);
+}
+
 add_action('wp_ajax_nopriv_save_documents', 'save_documents');
 add_action('wp_ajax_save_documents', 'save_documents');
 function save_documents()
