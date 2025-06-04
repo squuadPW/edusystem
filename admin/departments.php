@@ -270,12 +270,12 @@ function reload_capabilities() {
 
     // Definir arrays de capacidades adicionales por módulo.
     $manager_users_caps = [
-        'create_users',
-        'delete_users',
-        'edit_users',
+        // 'create_users',
+        // 'delete_users',
+        // 'edit_users',
         'list_users',
-        'promote_users',
-        'remove_users'
+        // 'promote_users',
+        // 'remove_users'
     ];
 
     $manager_media_caps = [
