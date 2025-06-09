@@ -171,9 +171,24 @@
             </select>
           </div>
           <div class="form-group" style="padding: 10px">
-            <input type="date" id="max-date-offer" name="max_date_offer"
-              value="<?= !empty(get_option('max_date_offer')) ? esc_attr(date('Y-m-d', get_option('max_date_offer'))) : '' ?>">
-            <label for="virtual-access"><?= __('Max date'); ?></label>
+              <label for="max-date-offer"><?= __('Max date'); ?></label>
+              <input type="date" id="max-date-offer" name="max_date_offer"
+                  value="<?php
+                      $saved_timestamp = get_option('max_date_offer');
+                      $date_value = '';
+                      if (!empty($saved_timestamp)) {
+                          // Crear un objeto DateTime a partir del timestamp (que es UTC)
+                          $datetime_obj = new DateTimeImmutable('@' . $saved_timestamp);
+                          
+                          // Establecer la zona horaria al objeto DateTime para que represente
+                          // la fecha y hora en la zona horaria de WordPress
+                          $datetime_obj = $datetime_obj->setTimezone(new DateTimeZone(wp_timezone_string()));
+                          
+                          // Formatear para el input type="date"
+                          $date_value = $datetime_obj->format('Y-m-d');
+                      }
+                      echo esc_attr($date_value);
+                  ?>">
           </div>
         </div>
         <div id="by_notifications" style="display: none">
