@@ -52,7 +52,7 @@ function add_admin_form_configuration_options_content()
                 $offer_complete = sanitize_text_field($_POST['offer_complete'] ?? get_option('offer_complete'));
                 $offer_quote = sanitize_text_field($_POST['offer_quote'] ?? get_option('offer_quote'));
                 $max_date_offer = sanitize_text_field($_POST['max_date_offer'] ?? get_option('max_date_offer'));
-                
+
                 // Update WordPress options
                 update_option('offer_complete', $offer_complete);
                 update_option('offer_quote', $offer_quote);
@@ -60,14 +60,14 @@ function add_admin_form_configuration_options_content()
                 // Set expiration date for coupons
                 $timezone = new DateTimeZone(wp_timezone_string());
                 $expiration_date = DateTime::createFromFormat('Y-m-d', $max_date_offer, $timezone);
-                
+
                 if ($expiration_date === false) {
                     throw new Exception('Invalid date format for max_date_offer');
                 }
-                
+
                 $expiration_date->setTime(23, 59, 59);
                 $expiration_timestamp = $expiration_date->getTimestamp();
-                
+
                 // Update coupons expiration dates
                 $coupons = array_filter([$offer_complete, $offer_quote]);
                 foreach ($coupons as $coupon_code) {
@@ -77,7 +77,7 @@ function add_admin_form_configuration_options_content()
                         $coupon->save();
                     }
                 }
-                
+
                 update_option('max_date_offer', $expiration_timestamp);
             } catch (Exception $e) {
                 // Log error and handle gracefully
@@ -96,26 +96,27 @@ function add_admin_form_configuration_options_content()
             update_option('email_academic_management', $email_academic_management);
             update_option('email_manager', $email_manager);
             update_option('email_admission', $email_admission);
-        
+
             // Redirect to the same page with a success message
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content&success=true'));
         }
     }
 
     $courses = get_courses_moodle();
-    include(plugin_dir_path(__FILE__).'templates/configuration-options.php');
+    include(plugin_dir_path(__FILE__) . 'templates/configuration-options.php');
 }
 
 // Add a success message if the options have been saved
-function add_success_message() {
+function add_success_message()
+{
     if (isset($_GET['success']) && $_GET['success'] == 'true') {
-      ?>
-      <div class="notice notice-success is-dismissible">
-        <p>Options saved successfully!</p>
-      </div>
-      <?php
+        ?>
+        <div class="notice notice-success is-dismissible">
+            <p>Options saved successfully!</p>
+        </div>
+        <?php
     }
-  }
-  
-  // Add the success message to the admin_notices action
-  add_action('admin_notices', 'add_success_message');
+}
+
+// Add the success message to the admin_notices action
+add_action('admin_notices', 'add_success_message');

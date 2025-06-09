@@ -103,11 +103,11 @@
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="aditional-electives" name="use_elective_aditional" <?php echo get_option('use_elective_aditional') == 'on' ? 'checked' : '' ?>>
             <label for="aditional-electives"><?= __('Use aditional electives'); ?></label>
-          </div>          
+          </div>
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="show-equivalence" name="show_equivalence_projection" <?php echo get_option('show_equivalence_projection') == 'on' ? 'checked' : '' ?>>
             <label for="show-equivalence"><?= __('Show equivalency subjects in student projection'); ?></label>
-          </div>          
+          </div>
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="show-table-subjects-coursing" name="show_table_subjects_coursing" <?php echo get_option('show_table_subjects_coursing') == 'on' ? 'checked' : '' ?>>
             <label for="show-table-subjects-coursing"><?= __('Show table subjects coursing'); ?></label>
@@ -127,20 +127,22 @@
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
             <label for="offer_complete"><?= __('Public information course', 'edusystem'); ?></label> <br>
             <select name="public_course_id" class="js-example-basic" style="width: 100%;">
-                <option value="" <?= get_option('public_course_id') == '' ? 'selected' : ''; ?>><?= __('Without course', 'edusystem'); ?></option>
-                <?php foreach ($courses as $course): ?>
-                    <option value="<?= $course['id']; ?>" <?= (get_option('public_course_id') == $course['id']) ? 'selected' : ''; ?>>
-                        <?= $course['fullname']; ?> (<?= $course['shortname']; ?>)
-                    </option>
-                <?php endforeach; ?>
+              <option value="" <?= get_option('public_course_id') == '' ? 'selected' : ''; ?>>
+                <?= __('Without course', 'edusystem'); ?></option>
+              <?php foreach ($courses as $course): ?>
+                <option value="<?= $course['id']; ?>" <?= (get_option('public_course_id') == $course['id']) ? 'selected' : ''; ?>>
+                  <?= $course['fullname']; ?> (<?= $course['shortname']; ?>)
+                </option>
+              <?php endforeach; ?>
             </select>
           </div>
         </div>
         <div id="by_crm" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
-            <label for="crm_url"><?= __('CRM URL (example: https://crm.example.com/api/v1/)', 'edusystem'); ?></label> <br>
-            <input class="full-input" name="crm_url" type="text" id="crm_url"
-              value="<?= get_option('crm_url'); ?>" required>
+            <label for="crm_url"><?= __('CRM URL (example: https://crm.example.com/api/v1/)', 'edusystem'); ?></label>
+            <br>
+            <input class="full-input" name="crm_url" type="text" id="crm_url" value="<?= get_option('crm_url'); ?>"
+              required>
           </div>
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
             <label for="crm_token"><?= __('CRM Token', 'edusystem'); ?></label> <br>
@@ -150,7 +152,8 @@
         </div>
         <div id="by_offers" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
-            <label for="offer_complete"><?= __('Coupon registration fee in complete payment', 'edusystem'); ?></label> <br>
+            <label for="offer_complete"><?= __('Coupon registration fee in complete payment', 'edusystem'); ?></label>
+            <br>
             <select class="full-input" name="offer_complete" id="offer_complete">
               <option value="" <?= get_option('offer_complete') == '' ? 'selected' : ''; ?>>Without offer</option>
               <option value="50% Registration fee" <?= get_option('offer_complete') == '50% Registration fee' ? 'selected' : ''; ?>>50% Registration fee</option>
@@ -158,7 +161,8 @@
             </select>
           </div>
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
-            <label for="offer_quote"><?= __('Coupon for registration fee with installment payments', 'edusystem'); ?></label>
+            <label
+              for="offer_quote"><?= __('Coupon for registration fee with installment payments', 'edusystem'); ?></label>
             <br>
             <select class="full-input" name="offer_quote" id="offer_quote">
               <option value="" <?= get_option('offer_quote') == '' ? 'selected' : ''; ?>>Without offer</option>
