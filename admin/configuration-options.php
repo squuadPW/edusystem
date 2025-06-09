@@ -52,38 +52,33 @@ function add_admin_form_configuration_options_content()
                 // Recuperar y sanitizar los valores de los campos de texto
                 $offer_complete = sanitize_text_field($_POST['offer_complete'] ?? get_option('offer_complete'));
                 $offer_quote    = sanitize_text_field($_POST['offer_quote'] ?? get_option('offer_quote'));
-
-                // Actualizar las opciones en la base de datos de WordPress
                 update_option('offer_complete', $offer_complete);
                 update_option('offer_quote', $offer_quote);
 
                 // --- Manejo de la fecha de la oferta ---
                 if (isset($_POST['max_date_offer']) && !empty($_POST['max_date_offer'])) {
                     $date_string = sanitize_text_field($_POST['max_date_offer']);
-
-                    // Crear un objeto DateTime con la zona horaria de WordPress
                     $timezone = new DateTimeZone(wp_timezone_string());
-                    
-                    // NOTA CLAVE: Para asegurar que el timestamp represente el FINAL del día
-                    // en la zona horaria de WordPress, es mejor crear el objeto DateTime
-                    // con la hora final de una vez.
                     $expiration_date = DateTime::createFromFormat('Y-m-d H:i:s', $date_string . ' 23:59:59', $timezone);
 
                     if ($expiration_date === false) {
-                        // Manejar el error adecuadamente, por ejemplo, con un mensaje de admin
                         wc_add_notice(__('Invalid date format for max date offer.', 'your-text-domain'), 'error');
-                        return; // Detener la ejecución si hay un error crítico
+                        return;
                     }
 
                     $expiration_timestamp = $expiration_date->getTimestamp();
-
-                    // Guardar el timestamp en la opción de WordPress
                     update_option('max_date_offer', $expiration_timestamp);
 
-                    // ... (resto del código de actualización de cupones) ...
-
-                } else {
-                    // ... (código para eliminar la opción y limpiar cupones) ...
+                    $coupons = array_filter([$offer_complete, $offer_quote]);
+                    foreach ($coupons as $coupon_code) {
+                        if (!empty($coupon_code)) {
+                            $coupon = new WC_Coupon($coupon_code);
+                            if ($coupon->get_id()) { 
+                                $coupon->set_date_expires($expiration_timestamp);
+                                $coupon->save();
+                            }
+                        }
+                    }
                 }
             } catch (Exception $e) {
                 // Log error and handle gracefully
