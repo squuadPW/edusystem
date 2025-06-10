@@ -691,14 +691,18 @@ div#application-passwords-section {
   gap: 15px;
 }
 
-// .wp-list-table
-//   tr:not(.inline-edit-row):not(.no-items)
-//   td:not(.column-primary)::before {
-//   width: auto;
-//   text-align: left;
-// }
+@media screen and (max-width: 782px) {
+  .wp-list-table
+    tr:not(.inline-edit-row):not(.no-items)
+    td:not(.column-primary)::before {
+    width: auto;
+    text-align: left;
+  }
 
-// .wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary) {
-//   width: auto;
-//   text-align: right;
-// }
+  .wp-list-table
+    tr:not(.inline-edit-row):not(.no-items)
+    td:not(.column-primary) {
+    width: auto;
+    text-align: right;
+  }
+}

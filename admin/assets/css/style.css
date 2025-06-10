@@ -638,4 +638,15 @@ div#application-passwords-section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 15px;
+}
+
+@media screen and (max-width: 782px) {
+  .wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary)::before {
+    width: auto;
+    text-align: left;
+  }
+  .wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary) {
+    width: auto;
+    text-align: right;
+  }
 }/*# sourceMappingURL=style.css.map */
