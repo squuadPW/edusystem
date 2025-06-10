@@ -207,27 +207,35 @@ if ( ! function_exists( 'cor_remove_personal_options' ) ) {
 add_action( 'admin_head', 'cor_profile_subject_start' );
 add_action( 'admin_footer', 'cor_profile_subject_end' );
 
-add_action('wp_dashboard_setup', 'wpdocs_remove_dashboard_widgets', 100000000000000);
+function wpdocs_remove_dashboard_widgets_optimized() {
+    // Widgets de WordPress por defecto
+    remove_meta_box('dashboard_right_now', 'dashboard', 'normal');      // Estado del sitio y actividad (anteriormente "De un vistazo")
+    remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal'); // Comentarios recientes
+    remove_meta_box('dashboard_incoming_links', 'dashboard', 'normal');  // Enlaces entrantes (ya no se usa en versiones recientes de WP)
+    remove_meta_box('dashboard_plugins', 'dashboard', 'normal');         // Plugins (ya no se usa en versiones recientes de WP)
+    remove_meta_box('dashboard_quick_press', 'dashboard', 'side');       // Borrador rápido
+    remove_meta_box('dashboard_recent_drafts', 'dashboard', 'side');     // Borradores recientes
+    remove_meta_box('dashboard_primary', 'dashboard', 'side');           // Noticias y eventos de WordPress (anteriormente blog de WordPress)
+    remove_meta_box('dashboard_secondary', 'dashboard', 'side');         // Otras noticias de WordPress (ya no se usa en versiones recientes de WP)
 
-/**
- * Remove all dashboard widgets
- */
-function wpdocs_remove_dashboard_widgets(){
-	remove_meta_box('dashboard_right_now', 'dashboard', 'normal');   // Right Now
-	remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal'); // Recent Comments
-	remove_meta_box('dashboard_incoming_links', 'dashboard', 'normal');  // Incoming Links
-	remove_meta_box('dashboard_plugins', 'dashboard', 'normal');   // Plugins
-	remove_meta_box('dashboard_quick_press', 'dashboard', 'side');  // Quick Press
-	remove_meta_box('dashboard_recent_drafts', 'dashboard', 'side');  // Recent Drafts
-	remove_meta_box('dashboard_primary', 'dashboard', 'side');   // WordPress blog
-	remove_meta_box('dashboard_secondary', 'dashboard', 'side');   // Other WordPress News
-	remove_meta_box('wc_admin_dashboard_setup', 'dashboard', 'side');   // Other WordPress News
-	remove_meta_box('dashboard_site_health', 'dashboard', 'side');   // Other WordPress News
-	remove_meta_box('dashboard_activity', 'dashboard', 'side');   // Other WordPress News
-	remove_meta_box('wp_mail_smtp_reports_widget_lite', 'dashboard', 'side');   // Other WordPress News
-	// use 'dashboard-network' as the second parameter to remove widgets from a network dashboard.
+    // Widgets comunes de WooCommerce
+    remove_meta_box('wc_admin_dashboard_setup', 'dashboard', 'normal');  // Configuración de WooCommerce (puede ser 'normal' o 'side')
+    remove_meta_box('woocommerce_dashboard_status', 'dashboard', 'normal'); // Estado de la tienda WooCommerce (puede ser 'normal' o 'side')
+
+    // Widgets de salud del sitio y actividad (introducidos en WP 5.2+)
+    remove_meta_box('dashboard_site_health', 'dashboard', 'normal');     // Salud del sitio
+    remove_meta_box('dashboard_activity', 'dashboard', 'normal');        // Actividad (normalmente 'normal', no 'side')
+
+    // Ejemplo de widget de plugin de terceros (ej. WP Mail SMTP)
+    remove_meta_box('wp_mail_smtp_reports_widget_lite', 'dashboard', 'normal'); // Reportes de WP Mail SMTP (puede ser 'normal' o 'side')
+
+    // Para un network dashboard (Multisitio)
+    // remove_meta_box('dashboard_right_now', 'dashboard-network', 'normal');
+    // remove_meta_box('dashboard_recent_comments', 'dashboard-network', 'normal');
+    // remove_meta_box('dashboard_recent_drafts', 'dashboard-network', 'side');
 }
 
+add_action('wp_dashboard_setup', 'wpdocs_remove_dashboard_widgets_optimized', 99999999999);
 add_filter('screen_options_show_screen', '__return_false');
 
 function replace_howdy( $wp_admin_bar ) {

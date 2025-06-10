@@ -1287,6 +1287,15 @@ function wp_add_widgets_edusof() {
             'wp_widget_documents_review_callback' // Callback function for content
         );
     }
+
+    // Check if the current user has the 'manager_admission_aes' capability
+    if ( current_user_can( 'manager_requests_aes' ) ) {
+        wp_add_dashboard_widget(
+            'wp_widget_requests_review', // Unique ID for your widget
+            'Requests Status', // Title displayed in the widget
+            'wp_widget_requests_review_callback' // Callback function for content
+        );
+    }
 }
 add_action( 'wp_dashboard_setup', 'wp_add_widgets_edusof' );
 
@@ -1331,4 +1340,15 @@ function wp_widget_documents_review_callback() {
         'link' => admin_url('admin.php?page=add_admin_form_admission_content')
     );
     include(plugin_dir_path(__FILE__) . 'templates/widget-documents-review.php');
+}
+
+function wp_widget_requests_review_callback() {
+    global $wpdb;
+    $table_requests = $wpdb->prefix . 'requests';
+    $pending_requests = $wpdb->get_results("SELECT * FROM {$table_requests} WHERE `status_id`=0");
+    $widget_data = array(
+        'count' => count($pending_requests),
+        'link' => admin_url('admin.php?page=add_admin_form_requests_content')
+    );
+    include(plugin_dir_path(__FILE__) . 'templates/widget-requests-review.php');
 }
