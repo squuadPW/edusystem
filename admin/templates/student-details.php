@@ -54,15 +54,20 @@ $url = wp_get_attachment_url($student->profile_picture);
             <thead>
                 <tr>
                     <th scope="col" style="text-align: center" class="manage-column column-primary column-title">
-                        <?= __('Registration fee paid', 'edusystem') ?></th>
+                        <?= __('Registration fee paid', 'edusystem') ?>
+                    </th>
                     <th scope="col" style="text-align: center" class="manage-column column-title-translate">
-                        <?= __('Paid program', 'edusystem') ?></th>
+                        <?= __('Paid program', 'edusystem') ?>
+                    </th>
                     <th scope="col" style="text-align: center" class="manage-column column-price">
-                        <?= __('Graduation fee paid', 'edusystem') ?></th>
+                        <?= __('Graduation fee paid', 'edusystem') ?>
+                    </th>
                     <th scope="col" style="text-align: center" class="manage-column column-price">
-                        <?= __('Approved documents', 'edusystem') ?></th>
+                        <?= __('Approved documents', 'edusystem') ?>
+                    </th>
                     <th scope="col" style="text-align: center" class="manage-column column-price">
-                        <?= __('Academic requirements fulfilled', 'edusystem') ?></th>
+                        <?= __('Academic requirements fulfilled', 'edusystem') ?>
+                    </th>
                 </tr>
             </thead>
             <tbody id="table-documents">
@@ -158,7 +163,8 @@ $url = wp_get_attachment_url($student->profile_picture);
                                             <select name="grade" autocomplete="off" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($grades as $grade): ?>
                                                     <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>>
-                                                        <?= $grade->name; ?>     <?= $grade->description; ?></option>
+                                                        <?= $grade->name; ?>     <?= $grade->description; ?>
+                                                    </option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </th>
@@ -173,7 +179,8 @@ $url = wp_get_attachment_url($student->profile_picture);
                                                 <?php foreach ($periods as $key => $period) { ?>
                                                     <option value="<?= $period->code ?>"
                                                         <?= $student->academic_period == $period->code ? 'selected' : '' ?>>
-                                                        <?= $period->name ?></option>
+                                                        <?= $period->name ?>
+                                                    </option>
                                                 <?php } ?>
                                             </select>
                                         </th>
@@ -425,7 +432,8 @@ $url = wp_get_attachment_url($student->profile_picture);
                                                 <option value="identification_document" <?= (get_user_meta($partner->ID, 'type_document', true) == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'edusystem'); ?>
                                                 </option>
                                                 <option value="passport" <?= (get_user_meta($partner->ID, 'type_document', true) == 'passport') ? 'selected' : ''; ?>>
-                                                    <?= __('Passport', 'edusystem'); ?></option>
+                                                    <?= __('Passport', 'edusystem'); ?>
+                                                </option>
                                                 <option value="ssn" <?= (get_user_meta($partner->ID, 'type_document', true) == 'ssn') ? 'selected' : ''; ?>><?= __('SNN', 'edusystem'); ?>
                                                 </option>
                                             </select>
@@ -481,7 +489,8 @@ $url = wp_get_attachment_url($student->profile_picture);
                                                 <option value="male" <?= (get_user_meta($partner->ID, 'gender', true) == 'male') ? 'selected' : ''; ?>><?= __('Male', 'edusystem'); ?>
                                                 </option>
                                                 <option value="female" <?= (get_user_meta($partner->ID, 'gender', true) == 'female') ? 'selected' : ''; ?>>
-                                                    <?= __('Female', 'edusystem'); ?></option>
+                                                    <?= __('Female', 'edusystem'); ?>
+                                                </option>
                                             </select>
                                         </td>
                                         <td colspan="4">
@@ -562,9 +571,11 @@ $url = wp_get_attachment_url($student->profile_picture);
             <thead>
                 <tr>
                     <th colspan="3" scope="col" class="manage-column column-primary column-title">
-                        <?= __('Document', 'edusystem') ?></th>
+                        <?= __('Document', 'edusystem') ?>
+                    </th>
                     <th colspan="1" scope="col" class="manage-column column-title-translate">
-                        <?= __('Status', 'edusystem') ?></th>
+                        <?= __('Status', 'edusystem') ?>
+                    </th>
                     <th colspan="8" scope="col" class="manage-column column-price"><?= __('Actions', 'edusystem') ?></th>
                 </tr>
             </thead>
@@ -644,9 +655,11 @@ $url = wp_get_attachment_url($student->profile_picture);
             <thead>
                 <tr>
                     <th colspan="6" scope="col" class="manage-column column-primary column-title">
-                        <?= __('Document', 'edusystem') ?></th>
+                        <?= __('Document', 'edusystem') ?>
+                    </th>
                     <th colspan="6" scope="col" class="manage-column column-price" style="text-align: end;">
-                        <?= __('Actions', 'edusystem') ?></th>
+                        <?= __('Actions', 'edusystem') ?>
+                    </th>
                 </tr>
             </thead>
             <tbody id="table-documents-certificates">
@@ -712,9 +725,11 @@ $url = wp_get_attachment_url($student->profile_picture);
                         <th scope="col" class=" manage-column column"><?= __('Date user registered', 'edusystem'); ?>
                         </th>
                         <th scope="col" class=" manage-column column-primary">
-                            <?= __('Date upload documents', 'edusystem'); ?></th>
+                            <?= __('Date upload documents', 'edusystem'); ?>
+                        </th>
                         <th scope="col" class=" manage-column column-email">
-                            <?= __('Date status change', 'edusystem'); ?></th>
+                            <?= __('Date status change', 'edusystem'); ?>
+                        </th>
                         <th scope="col" class=" manage-column column-email"><?= __('Status changed by', 'edusystem'); ?>
                         </th>
                         <th scope="col" class=" manage-column column-email"><?= __('Message', 'edusystem'); ?></th>

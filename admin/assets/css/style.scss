@@ -137,7 +137,7 @@ div#application-passwords-section {
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   width: 50%;
-  @media screen and (max-width: 767px){
+  @media screen and (max-width: 767px) {
     width: 100% !important;
     border-radius: 0px !important;
     margin: 0;
@@ -433,7 +433,7 @@ div#application-passwords-section {
     display: block;
     margin-bottom: 10px;
   }
-  
+
   input:not([type="checkbox"]),
   textarea {
     width: 100%;
@@ -455,7 +455,7 @@ div#application-passwords-section {
   //   display: block;
   //   margin-bottom: 10px;
   // }
-  
+
   input:not([type="checkbox"]),
   textarea {
     // width: 100%;
@@ -508,7 +508,8 @@ div#application-passwords-section {
     width: 100% !important;
   }
 
-  input, select {
+  input,
+  select {
     width: 100%;
   }
 
@@ -530,9 +531,10 @@ div#application-passwords-section {
   transition: 0.3s;
 
   @media screen and (max-width: 900px) {
-    display: block !important; 
+    display: block !important;
     text-align: center;
-    select, input:not([type="checkbox"]) {
+    select,
+    input:not([type="checkbox"]) {
       width: 100%;
     }
   }
@@ -558,7 +560,7 @@ div#application-passwords-section {
   border-radius: 0px !important;
   width: 210mm !important;
   overflow: auto;
-  @media screen and (max-width: 767px){
+  @media screen and (max-width: 767px) {
     width: 100% !important;
     margin: 0 !important;
   }
@@ -568,7 +570,7 @@ div#application-passwords-section {
   border-radius: 0px;
   width: 210mm;
   overflow: auto;
-  @media screen and (max-width: 767px){
+  @media screen and (max-width: 767px) {
     width: 100% !important;
     margin: 0 !important;
   }
@@ -689,12 +691,14 @@ div#application-passwords-section {
   gap: 15px;
 }
 
-.wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary)::before {
-  width: auto;
-  text-align: left;
-}
+// .wp-list-table
+//   tr:not(.inline-edit-row):not(.no-items)
+//   td:not(.column-primary)::before {
+//   width: auto;
+//   text-align: left;
+// }
 
-.wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary) {
-  width: auto;
-  text-align: right;
-}
+// .wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary) {
+//   width: auto;
+//   text-align: right;
+// }

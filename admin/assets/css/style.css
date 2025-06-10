@@ -481,7 +481,8 @@ div#application-passwords-section {
     width: 100% !important;
   }
 }
-.admin-add-offer input, .admin-add-offer select {
+.admin-add-offer input,
+.admin-add-offer select {
   width: 100%;
 }
 .admin-add-offer .space-offer {
@@ -505,7 +506,8 @@ div#application-passwords-section {
     display: block !important;
     text-align: center;
   }
-  .row-projection select, .row-projection input:not([type=checkbox]) {
+  .row-projection select,
+  .row-projection input:not([type=checkbox]) {
     width: 100%;
   }
 }
@@ -636,14 +638,4 @@ div#application-passwords-section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 15px;
-}
-
-.wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary)::before {
-  width: auto;
-  text-align: left;
-}
-
-.wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary) {
-  width: auto;
-  text-align: right;
 }/*# sourceMappingURL=style.css.map */
