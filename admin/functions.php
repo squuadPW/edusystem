@@ -1269,3 +1269,66 @@ function filter_media_library_modal($query) {
     return $query;
 }
 add_filter('ajax_query_attachments_args', 'filter_media_library_modal');
+function wp_add_widgets_edusof() {
+    // Check if the current user has the 'manager_payments_aes' capability
+    if ( current_user_can( 'manager_payments_aes' ) ) {
+        wp_add_dashboard_widget(
+            'wp_widget_pending_payments', // Unique ID for your widget
+            'Payments Status', // Title displayed in the widget
+            'wp_widget_pending_payments_callback' // Callback function for content
+        );
+    }
+
+    // Check if the current user has the 'manager_admission_aes' capability
+    if ( current_user_can( 'manager_admission_aes' ) ) {
+        wp_add_dashboard_widget(
+            'wp_widget_documents_review', // Unique ID for your widget
+            'Admission Status', // Title displayed in the widget
+            'wp_widget_documents_review_callback' // Callback function for content
+        );
+    }
+}
+add_action( 'wp_dashboard_setup', 'wp_add_widgets_edusof' );
+
+function wp_widget_pending_payments_callback() {
+    // Initialize counts
+    $pending_payments_count = 0;
+    $payments_to_review_count = 0;
+
+    if ( class_exists( 'WC_Order_Query' ) ) {
+        // Query for 'pending payment' orders
+        $pending_orders = wc_get_orders( array(
+            'status'     => 'pending', // 'pending' status usually refers to 'pending payment'
+            'limit'      => -1, // Get all orders with this status
+            'return'     => 'ids', // Return only order IDs for counting
+        ) );
+        $pending_payments_count = count( $pending_orders );
+
+        // Query for 'on-hold' orders (often used for 'to review' or manual processing)
+        $on_hold_orders = wc_get_orders( array(
+            'status'     => 'on-hold',
+            'limit'      => -1,
+            'return'     => 'ids',
+        ) );
+        $payments_to_review_count = count( $on_hold_orders );
+    }
+
+    $widget_data = array(
+        'pending_payments_count' => $pending_payments_count,
+        'payments_to_review_count' => $payments_to_review_count,
+        'pending_payments_link' => admin_url('admin.php?page=add_admin_form_payments_content')
+    );
+
+    include(plugin_dir_path(__FILE__) . 'templates/widget-pending-payments.php');
+}
+
+function wp_widget_documents_review_callback() {
+    global $wpdb;
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+    $pending_documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE `status`=1");
+    $widget_data = array(
+        'count' => count($pending_documents),
+        'link' => admin_url('admin.php?page=add_admin_form_admission_content')
+    );
+    include(plugin_dir_path(__FILE__) . 'templates/widget-documents-review.php');
+}

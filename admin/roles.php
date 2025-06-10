@@ -207,11 +207,25 @@ if ( ! function_exists( 'cor_remove_personal_options' ) ) {
 add_action( 'admin_head', 'cor_profile_subject_start' );
 add_action( 'admin_footer', 'cor_profile_subject_end' );
 
-add_action('wp_dashboard_setup', 'wpdocs_remove_dashboard_widgets');
+add_action('wp_dashboard_setup', 'wpdocs_remove_dashboard_widgets', 100000000000000);
 
+/**
+ * Remove all dashboard widgets
+ */
 function wpdocs_remove_dashboard_widgets(){
-   remove_meta_box('dashboard_quick_press', 'dashboard', 'side');
-   remove_meta_box('dashboard_right_now','dashboard','side');
+	remove_meta_box('dashboard_right_now', 'dashboard', 'normal');   // Right Now
+	remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal'); // Recent Comments
+	remove_meta_box('dashboard_incoming_links', 'dashboard', 'normal');  // Incoming Links
+	remove_meta_box('dashboard_plugins', 'dashboard', 'normal');   // Plugins
+	remove_meta_box('dashboard_quick_press', 'dashboard', 'side');  // Quick Press
+	remove_meta_box('dashboard_recent_drafts', 'dashboard', 'side');  // Recent Drafts
+	remove_meta_box('dashboard_primary', 'dashboard', 'side');   // WordPress blog
+	remove_meta_box('dashboard_secondary', 'dashboard', 'side');   // Other WordPress News
+	remove_meta_box('wc_admin_dashboard_setup', 'dashboard', 'side');   // Other WordPress News
+	remove_meta_box('dashboard_site_health', 'dashboard', 'side');   // Other WordPress News
+	remove_meta_box('dashboard_activity', 'dashboard', 'side');   // Other WordPress News
+	remove_meta_box('wp_mail_smtp_reports_widget_lite', 'dashboard', 'side');   // Other WordPress News
+	// use 'dashboard-network' as the second parameter to remove widgets from a network dashboard.
 }
 
 add_filter('screen_options_show_screen', '__return_false');
