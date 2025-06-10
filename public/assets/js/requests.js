@@ -18,10 +18,15 @@ if (modal_close) {
 let send_request = document.getElementById("send-request");
 if (send_request) {
   send_request.addEventListener("click", function () {
-    document.getElementById("send-request").disabled = true;
-    document.getElementById("send-request").innerText = "Loading...";
     let type_id = document.querySelector('select[name="type_id"]').value;
     let reason = document.querySelector('textarea[name="reason"]').value;
+    if (!type_id || !reason) {
+      alert('The request type and reason fields are required.');
+      return;
+    }
+
+    document.getElementById("send-request").disabled = true;
+    document.getElementById("send-request").innerText = "Loading...";
     let student_id = null;
     let partner_id = null;
     let by = "Parent";
