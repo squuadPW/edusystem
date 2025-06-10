@@ -24,7 +24,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                 href="<?php echo admin_url('/admin.php?page=add_admin_form_admission_content') ?>"><?= __('Back') ?></a>
         <?php endif; ?>
     </div>
-    <div style="display:flex;width:100%;justify-content:end;">
+    <div class="action-student-admission">
         <?php
         include(plugin_dir_path(__FILE__) . 'connections-student.php');
         ?>
@@ -50,61 +50,44 @@ $url = wp_get_attachment_url($student->profile_picture);
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">
             <p><?= __('Status change successfully', 'edusystem'); ?></p>
         </div>
-        <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
-            <thead>
-                <tr>
-                    <th scope="col" style="text-align: center" class="manage-column column-primary column-title">
-                        <?= __('Registration fee paid', 'edusystem') ?>
-                    </th>
-                    <th scope="col" style="text-align: center" class="manage-column column-title-translate">
-                        <?= __('Paid program', 'edusystem') ?>
-                    </th>
-                    <th scope="col" style="text-align: center" class="manage-column column-price">
-                        <?= __('Graduation fee paid', 'edusystem') ?>
-                    </th>
-                    <th scope="col" style="text-align: center" class="manage-column column-price">
-                        <?= __('Approved documents', 'edusystem') ?>
-                    </th>
-                    <th scope="col" style="text-align: center" class="manage-column column-price">
-                        <?= __('Academic requirements fulfilled', 'edusystem') ?>
-                    </th>
-                </tr>
-            </thead>
-            <tbody id="table-documents">
-                <tr id="<?= 'tr_payment_'; ?>">
-                    <td style="text-align: center" id="<?= 'td_payment_fee'; ?>"
-                        data-colname="<?= __('Registration fee paid', 'edusystem'); ?>">
-                        <b>
-                            <?= isset($fee_payment_ready) && $fee_payment_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
-                        </b>
-                    </td>
-                    <td style="text-align: center" id="<?= 'td_payment_product'; ?>"
-                        data-colname="<?= __('Paid program', 'edusystem'); ?>">
-                        <b>
-                            <?= isset($product_ready) && $product_ready ? ($product_ready == 1 ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-money-alt" style="color: #b97b0b"></span>') : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
-                        </b>
-                    </td>
-                    <td style="text-align: center" id="<?= 'td_payment_graduation'; ?>"
-                        data-colname="<?= __('Graduation fee paid', 'edusystem'); ?>">
-                        <b>
-                            <?= isset($fee_graduation_ready) && $fee_graduation_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
-                        </b>
-                    </td>
-                    <td style="text-align: center" id="<?= 'td_documents_ready'; ?>"
-                        data-colname="<?= __('Approved documents', 'edusystem'); ?>">
-                        <b>
-                            <?= isset($documents_ready) && $documents_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
-                        </b>
-                    </td>
-                    <td style="text-align: center" id="<?= 'td_academic_ready'; ?>"
-                        data-colname="<?= __('Academic requirements fulfilled', 'edusystem'); ?>">
-                        <b>
-                            <?= isset($academic_ready) && $academic_ready ? '<span class="dashicons dashicons-yes-alt" style="color: green"></span>' : '<span class="dashicons dashicons-dismiss" style="color: red"></span>'; ?>
-                        </b>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div id="product-status-container" class="status-grid-wrapper">
+            <div class="status-grid header-row">
+                <div class="status-item header">
+                    <?= __('Registration fee paid', 'edusystem') ?>
+                </div>
+                <div class="status-item header">
+                    <?= __('Paid program', 'edusystem') ?>
+                </div>
+                <div class="status-item header">
+                    <?= __('Graduation fee paid', 'edusystem') ?>
+                </div>
+                <div class="status-item header">
+                    <?= __('Approved documents', 'edusystem') ?>
+                </div>
+                <div class="status-item header">
+                    <?= __('Academic requirements fulfilled', 'edusystem') ?>
+                </div>
+            </div>
+
+            <div class="status-grid data-row">
+                <div class="status-item data" data-colname="<?= esc_attr(__('Registration fee paid', 'edusystem')); ?>">
+                    <?= isset($fee_payment_ready) && $fee_payment_ready ? '<span class="status-icon status-approved"></span>' : '<span class="status-icon status-pending"></span>'; ?>
+                </div>
+                <div class="status-item data" data-colname="<?= esc_attr(__('Paid program', 'edusystem')); ?>">
+                    <?= isset($product_ready) && $product_ready ? ($product_ready == 1 ? '<span class="status-icon status-approved"></span>' : '<span class="status-icon status-partial"></span>') : '<span class="status-icon status-pending"></span>'; ?>
+                </div>
+                <div class="status-item data" data-colname="<?= esc_attr(__('Graduation fee paid', 'edusystem')); ?>">
+                    <?= isset($fee_graduation_ready) && $fee_graduation_ready ? '<span class="status-icon status-approved"></span>' : '<span class="status-icon status-pending"></span>'; ?>
+                </div>
+                <div class="status-item data" data-colname="<?= esc_attr(__('Approved documents', 'edusystem')); ?>">
+                    <?= isset($documents_ready) && $documents_ready ? '<span class="status-icon status-approved"></span>' : '<span class="status-icon status-pending"></span>'; ?>
+                </div>
+                <div class="status-item data"
+                    data-colname="<?= esc_attr(__('Academic requirements fulfilled', 'edusystem')); ?>">
+                    <?= isset($academic_ready) && $academic_ready ? '<span class="status-icon status-approved"></span>' : '<span class="status-icon status-pending"></span>'; ?>
+                </div>
+            </div>
+        </div>
         <?php if ($student->status_id < 5 && ($fee_payment_ready && $product_ready && $fee_graduation_ready && $documents_ready && $academic_ready)) { ?>
             <form method="post"
                 action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=update_status_student&status_id=5&student_id=' . $student->id); ?>">

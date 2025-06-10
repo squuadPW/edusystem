@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .table-customize tbody tr th {
   padding-top: 10px;
   width: 300px;
@@ -648,5 +649,194 @@ div#application-passwords-section {
   .wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary) {
     width: auto;
     text-align: right;
+  }
+}
+/* Contenedor principal que envuelve las filas (header y data) */
+.status-grid-wrapper {
+  margin-top: 20px;
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  color: #333;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden; /* Asegura que la sombra y bordes redondeados se apliquen bien */
+}
+
+/* Estilos para cada "fila" (tanto la de encabezados como la de datos) */
+.status-grid {
+  display: flex;
+  flex-wrap: nowrap; /* ¡Mantiene los ítems en una sola fila en escritorio! */
+  justify-content: space-between; /* Distribuye el espacio uniformemente */
+  align-items: center; /* Centra los elementos verticalmente */
+  padding: 0 15px; /* Padding horizontal para el contenido de la fila */
+}
+
+/* Estilos específicos para la fila de encabezados */
+.header-row {
+  background-color: #f8f8f8;
+  border-bottom: 2px solid #ddd;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* Estilos específicos para la fila de datos */
+.data-row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* Estilos para cada "celda" o "ítem" */
+.status-item {
+  flex-grow: 1; /* Permite que los ítems crezcan para ocupar el espacio */
+  flex-shrink: 0; /* Evita que los ítems se encojan más allá de su contenido */
+  flex-basis: 0; /* Punto de partida para el crecimiento */
+  padding: 8px 10px; /* Padding más compacto para el contenido */
+  text-align: center;
+  box-sizing: border-box; /* Incluye padding y borde en el ancho total */
+}
+
+/* Estilos específicos para los encabezados */
+.status-item.header {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8em; /* Fuente un poco más pequeña para los títulos */
+  color: #555;
+  letter-spacing: 0.5px;
+}
+
+/* Estilos para los iconos (sin cambios, ya son compactos y se ven bien) */
+.status-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  position: relative;
+  vertical-align: middle;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.status-icon.status-approved {
+  background-color: #4caf50;
+} /* Verde */
+.status-icon.status-pending {
+  background-color: #f44336;
+} /* Rojo */
+.status-icon.status-partial {
+  background-color: #ffc107;
+} /* Amarillo/Naranja */
+.status-icon.status-approved::after {
+  content: "✓";
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.status-icon.status-pending::after {
+  content: "✖";
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.status-icon.status-partial::after {
+  content: "$";
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ... (Mantener todos los estilos de escritorio anteriores, son correctos) ... */
+@media (max-width: 768px) {
+  .status-grid-wrapper {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    background-color: transparent;
+  }
+  .status-grid {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+  .header-row {
+    border-bottom: none;
+    padding: 10px 15px;
+    background-color: #f8f8f8;
+    display: none;
+  }
+  .data-row {
+    padding: 0;
+  }
+  .status-item {
+    flex-basis: auto;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px dashed #eee;
+  }
+  .status-item:last-child {
+    border-bottom: none;
+  }
+  .status-item.header {
+    display: none;
+  }
+  /* ¡Esta es la sección clave para el label en móvil! */
+  .status-item.data::before {
+    content: attr(data-colname); /* Verificamos la sintaxis */
+    font-weight: 600;
+    color: #666;
+    margin-right: 8px;
+    font-size: 0.95em;
+    flex-shrink: 0;
+    /* Asegúrate de que el atributo data-colname siempre tenga un valor.
+           Si por alguna razón no lo tiene, el contenido sería vacío o " " */
+  }
+  .status-item.data .status-icon {
+    margin-left: auto;
+  }
+}
+@media (max-width: 768px) and (max-width: 480px) {
+  .status-item {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+  .status-item.data::before {
+    font-size: 0.85em;
+  }
+}
+.action-student-admission {
+  display: flex;
+  width: 100%;
+  justify-content: end;
+}
+
+@media (max-width: 768px) {
+  .action-student-admission {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-end;
+    align-content: flex-end;
   }
 }/*# sourceMappingURL=style.css.map */
