@@ -1042,7 +1042,7 @@ class TT_all_student_List_Table extends WP_List_Table
 
             $style = "background-color: $backgroundColor; text-align: center; font-size: 10px; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; padding: 4px;";
             $style .= $hasMoodleAccess ? ' cursor: pointer;' : ' cursor: not-allowed;';
-            $style .= ' width: 100%;';
+            $style .= ' width: auto; float: right;';
 
             $value['moodle_active'] = '<div class="moodle-active" data-moodle="' . ($hasMoodleAccess ? 'Yes' : 'No') . '" data-student_id="' . $value['id'] . '" style="' . $style . '">' . $statusText . '</div>';
             $data[] = $value;
