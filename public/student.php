@@ -382,7 +382,7 @@ add_action('woocommerce_account_my-tickets_endpoint', function () {
 
     global $current_user, $wpdb;
     $table_tickets_created = $wpdb->prefix . 'tickets_created';
-    $tickets = $wpdb->get_results("SELECT * FROM {$table_tickets_created}  WHERE user_id = {$current_user->ID}");
+    $tickets = $wpdb->get_results("SELECT * FROM {$table_tickets_created}  WHERE user_id = {$current_user->ID} ORDER BY id DESC");
 
     include(plugin_dir_path(__FILE__) . 'templates/my-tickets.php');
 });
