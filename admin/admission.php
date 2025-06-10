@@ -302,7 +302,7 @@ function add_admin_form_admission_content()
                         $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
                         wp_update_attachment_metadata($attach_id, $attach_data);
                         $wpdb->update($table_student_documents, ['status' => 5, 'attachment_id' => $attach_id, 'description' => 'The file was uploaded from the administration and approved immediately.', 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $id, 'id' => $document_id]);
-            
+
                         $document = get_document_details($document_id);
                         $rejected_document = handle_status_specific_actions(5, $id, $document);
                     }
@@ -604,7 +604,7 @@ class TT_document_review_List_Table extends WP_List_Table
                     $user_student = get_user_by('email', $item['email']);
                     return '<a class="text-uppercase" href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name']) . '</a>';
                 } else {
-                    return '<label class="text-uppercase">'. strtoupper($item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name']) . '</label>';
+                    return '<label class="text-uppercase">' . strtoupper($item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name']) . '</label>';
                 }
 
             // case 'program':
@@ -817,23 +817,23 @@ class TT_document_review_List_Table extends WP_List_Table
         foreach ($data_categories as $key => $value) {
             $value['index'] = $key + 1;
             $hasMoodleAccess = isset($value['moodle_student_id']);
-            
-            $statusText = $hasMoodleAccess 
-                ? ($value['status_id'] < 2 ? 'Classroom access removed' : 'Full access to classroom') 
+
+            $statusText = $hasMoodleAccess
+                ? ($value['status_id'] < 2 ? 'Classroom access removed' : 'Full access to classroom')
                 : 'Without classroom';
-        
-            $backgroundColor = $hasMoodleAccess 
-                ? ($value['status_id'] < 2 ? '#f980127d' : '#f98012') 
+
+            $backgroundColor = $hasMoodleAccess
+                ? ($value['status_id'] < 2 ? '#f980127d' : '#f98012')
                 : '#dfdedd';
-        
+
             $style = "background-color: $backgroundColor; text-align: center; font-size: 10px; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; padding: 4px;";
             $style .= $hasMoodleAccess ? ' cursor: pointer;' : ' cursor: not-allowed;';
             $style .= ' width: 100%;';
-        
+
             $value['moodle_active'] = '<div class="moodle-active" data-moodle="' . ($hasMoodleAccess ? 'Yes' : 'No') . '" data-student_id="' . $value['id'] . '" style="' . $style . '">' . $statusText . '</div>';
             $data[] = $value;
         }
-        
+
 
         $per_page = 20; // items per page
         $this->set_pagination_args(array(
@@ -1027,19 +1027,19 @@ class TT_all_student_List_Table extends WP_List_Table
                 $value['student'] = '<a class="text-uppercase" href="' . $url . $student->ID . '" target="_blank">' . $value['last_name'] . ' ' . $value['middle_last_name'] . ' ' . $value['name'] . ' ' . $value['middle_name'] . '</a>';
                 $value['parent'] = '<a class="text-uppercase" href="' . $url . $parent->ID . '" target="_blank">' . $parent->last_name . ' ' . $parent->first_name . '</a>';
             } else {
-                $value['student'] = '<label class="text-uppercase">'.$value['last_name'] . ' ' . $value['middle_last_name'] . ' ' . $value['name'] . ' ' . $value['middle_name'].'</label>';
-                $value['parent'] = '<label class="text-uppercase">'.$parent->last_name . ' ' . $parent->first_name.'</label>';
+                $value['student'] = '<label class="text-uppercase">' . $value['last_name'] . ' ' . $value['middle_last_name'] . ' ' . $value['name'] . ' ' . $value['middle_name'] . '</label>';
+                $value['parent'] = '<label class="text-uppercase">' . $parent->last_name . ' ' . $parent->first_name . '</label>';
             }
             $hasMoodleAccess = isset($value['moodle_student_id']);
-            
-            $statusText = $hasMoodleAccess 
-                ? ($value['status_id'] < 2 ? 'Classroom access removed' : 'Full access to classroom') 
+
+            $statusText = $hasMoodleAccess
+                ? ($value['status_id'] < 2 ? 'Classroom access removed' : 'Full access to classroom')
                 : 'Without classroom';
-        
-            $backgroundColor = $hasMoodleAccess 
-                ? ($value['status_id'] < 2 ? '#f980127d' : '#f98012') 
+
+            $backgroundColor = $hasMoodleAccess
+                ? ($value['status_id'] < 2 ? '#f980127d' : '#f98012')
                 : '#dfdedd';
-        
+
             $style = "background-color: $backgroundColor; text-align: center; font-size: 10px; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; padding: 4px;";
             $style .= $hasMoodleAccess ? ' cursor: pointer;' : ' cursor: not-allowed;';
             $style .= ' width: 100%;';
@@ -1086,10 +1086,11 @@ function get_student_detail_partner($partner_id)
     return $data;
 }
 
-function update_status_documents() {
+function update_status_documents()
+{
     try {
         validate_required_params(['document_id', 'status', 'student_id']);
-        
+
         global $wpdb, $current_user;
         $params = sanitize_input_params();
         extract($params);
@@ -1101,7 +1102,7 @@ function update_status_documents() {
         $description = build_status_description($status_id, $description, $document);
         update_document_status($document_id, $student_id, $status_id, $description);
         handle_status_notifications($status_id, $users, $description);
-        
+
         $document = get_document_details($document_id);
         $rejected_document = handle_status_specific_actions($status_id, $student_id, $document, $users);
         $html = generate_documents_html($student_id, $document_id);
@@ -1118,13 +1119,16 @@ function update_status_documents() {
 }
 
 /* Helper Functions */
-function validate_required_params($required) {
+function validate_required_params($required)
+{
     foreach ($required as $param) {
-        if (empty($_POST[$param])) throw new Exception("Missing parameter: $param");
+        if (empty($_POST[$param]))
+            throw new Exception("Missing parameter: $param");
     }
 }
 
-function sanitize_input_params() {
+function sanitize_input_params()
+{
     return [
         'document_id' => intval($_POST['document_id']),
         'status_id' => intval($_POST['status']),
@@ -1133,7 +1137,8 @@ function sanitize_input_params() {
     ];
 }
 
-function get_related_users($student) {
+function get_related_users($student)
+{
     $student_user = get_user_by('email', $student->email);
     $parent_user = get_user_by('id', $student->partner_id);
 
@@ -1147,20 +1152,22 @@ function get_related_users($student) {
         'parent' => $parent_user
     ];
 }
-function get_document_details($document_id) {
+function get_document_details($document_id)
+{
     global $wpdb;
     return $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM {$wpdb->prefix}student_documents WHERE id = %d", 
+        "SELECT * FROM {$wpdb->prefix}student_documents WHERE id = %d",
         $document_id
     ));
 }
 
-function build_status_description($status_id, $description, $document) {
+function build_status_description($status_id, $description, $document)
+{
     $status_map = [
         3 => 'Document rejected: ',
         5 => 'Document approved'
     ];
-    
+
     if ($status_id == 5) {
         return $status_map[$status_id];
     }
@@ -1168,9 +1175,10 @@ function build_status_description($status_id, $description, $document) {
     return ($status_map[$status_id] ?? '') . ($description ? $description : $document->description);
 }
 
-function update_document_status($document_id, $student_id, $status_id, $description) {
+function update_document_status($document_id, $student_id, $status_id, $description)
+{
     global $wpdb, $current_user;
-    
+
     $wpdb->update("{$wpdb->prefix}student_documents", [
         'approved_by' => $current_user->ID,
         'status' => $status_id,
@@ -1179,16 +1187,18 @@ function update_document_status($document_id, $student_id, $status_id, $descript
     ], ['id' => $document_id, 'student_id' => $student_id]);
 }
 
-function handle_status_notifications($status_id, $users, $description) {
+function handle_status_notifications($status_id, $users, $description)
+{
     if (in_array($status_id, [3, 5])) {
         $priority = ($status_id === 3) ? 3 : 1;
-        array_walk($users, function($user) use ($description, $priority) {
+        array_walk($users, function ($user) use ($description, $priority) {
             send_notification_user($user->ID, $description, $priority, 'documents');
         });
     }
 }
 
-function handle_status_specific_actions($status_id, $student_id, $document, $users = null) {
+function handle_status_specific_actions($status_id, $student_id, $document, $users = null)
+{
     if ($status_id === 3) {
         handle_document_rejection($student_id, $document);
         return [
@@ -1197,7 +1207,7 @@ function handle_status_specific_actions($status_id, $student_id, $document, $use
             'description' => $document->description
         ];
     }
-    
+
     if ($status_id == 5) {
         handle_document_approval($student_id, $document);
     }
@@ -1208,34 +1218,37 @@ function handle_status_specific_actions($status_id, $student_id, $document, $use
     return null;
 }
 
-function handle_document_rejection($student_id, $document, $remove_access = true) {
+function handle_document_rejection($student_id, $document, $remove_access = true)
+{
     global $wpdb;
-    
+
     if ($document->is_required && $remove_access) {
         update_status_student($student_id, 1);
     }
-    
+
     if (in_array($document->document_id, ['PHOTO OF STUDENT CARD', "STUDENT'S PHOTO"])) {
         $wpdb->update("{$wpdb->prefix}students", ['profile_picture' => null], ['id' => $student_id]);
     }
-    
+
     handle_rejected_document(
-        $student_id, 
-        $document->id, 
+        $student_id,
+        $document->id,
         get_student_detail($student_id)->partner_id,
         $document->description
     );
 }
 
-function handle_document_approval($student_id, $document) {
+function handle_document_approval($student_id, $document)
+{
     global $wpdb;
-    
+
     $table_student_documents = $wpdb->prefix . 'student_documents';
     $wpdb->update($table_student_documents, ['max_date_upload' => NULL], ['student_id' => $student_id, 'id' => $document->id]);
 
     if (in_array($document->document_id, ['PHOTO OF STUDENT CARD', "STUDENT'S PHOTO"])) {
-        $wpdb->update("{$wpdb->prefix}students", 
-            ['profile_picture' => $document->attachment_id], 
+        $wpdb->update(
+            "{$wpdb->prefix}students",
+            ['profile_picture' => $document->attachment_id],
             ['id' => $student_id]
         );
     }
@@ -1243,11 +1256,11 @@ function handle_document_approval($student_id, $document) {
     if (in_array($document->document_id, ['CERTIFIED NOTES HIGH SCHOOL'])) {
         update_equivalence_califications($student_id);
     }
-    
+
     if (check_solvency_administrative($student_id)) {
         update_status_student($student_id, 3);
     }
-    
+
     $student = get_student_detail($student_id);
     if ($document->is_required && check_access_virtual($student_id) && !$student->moodle_student_id) {
         handle_virtual_classroom_access($student_id);
@@ -1256,7 +1269,8 @@ function handle_document_approval($student_id, $document) {
     }
 }
 
-function send_json_response($data, $status_code = 200) {
+function send_json_response($data, $status_code = 200)
+{
     wp_send_json(array_merge(
         ['status' => $status_code === 200 ? 'success' : 'error'],
         $data
@@ -1265,7 +1279,7 @@ function send_json_response($data, $status_code = 200) {
 
 function get_status_description($status_id, $description, $document_changed = false)
 {
-    $name_document = $document_changed ? $document_changed->document_id.': ' : '';
+    $name_document = $document_changed ? $document_changed->document_id . ': ' : '';
     switch ($status_id) {
         case 3:
             return $name_document . $description;
@@ -1320,8 +1334,8 @@ function generate_documents_html($student_id, $document_id)
     foreach ($documents as $document) {
         if ($document->id == $document_id) {
             $html .= '<tr id="tr_document_' . $document->id . '">';
-            $html .= '<td class="column-primary" colspan="3">' . get_name_document($document->document_id) . 
-                ($document->max_date_upload ? '<span class="deadline">- DEADLINE: ' . date('m/d/Y', strtotime($document->max_date_upload)) . '</span>' : '') . 
+            $html .= '<td class="column-primary" colspan="3">' . get_name_document($document->document_id) .
+                ($document->max_date_upload ? '<span class="deadline">- DEADLINE: ' . date('m/d/Y', strtotime($document->max_date_upload)) . '</span>' : '') .
                 "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
             $html .= '<td colspan="1" id="td_document_' . $document->document_id . '" data-colname="' . __('Status', 'edusystem') . '"><b>' . get_status_document($document->status) . '</b></td>';
             $html .= '<td colspan="8" data-colname="' . __('Actions', 'edusystem') . '">';
@@ -1516,10 +1530,11 @@ add_action('wp_ajax_nopriv_last_access_moodle', 'last_access_moodle');
 add_action('wp_ajax_last_access_moodle', 'last_access_moodle');
 
 
-function process_template($template, $replacements) {
+function process_template($template, $replacements)
+{
     $span_open = '<span class="text-uppercase">';
     $span_close = '</span>';
-    
+
     foreach ($replacements as $placeholder => $config) {
         $tag = '{{' . $placeholder . '}}';
         if (strpos($template, $tag) !== false) {
@@ -1558,7 +1573,7 @@ function generate_document()
         $replacements['user_sign'] = ['value' => $user_sign, 'wrap' => true];
         $replacements['position_user_charge'] = ['value' => $signature->charge, 'wrap' => true];
         $replacements['signature'] = [
-            'value' => '<img style="width: auto !important; height: 100px !important;" src="'. wp_get_attachment_url($signature->attach_id) .'"/>',
+            'value' => '<img style="width: auto !important; height: 100px !important;" src="' . wp_get_attachment_url($signature->attach_id) . '"/>',
             'wrap' => false
         ];
     }
