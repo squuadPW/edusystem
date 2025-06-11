@@ -98,8 +98,8 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 						style="margin: 10px">Change student</button>
 				</div>
 
-				<div style="padding: 10px">
-					<table class="wp-list-table widefat fixed posts striped">
+				<div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+					<table class="wp-list-table widefat posts striped">
 						<thead>
 							<tr>
 								<th colspan="2">Payments</th>
@@ -203,8 +203,8 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 					</table>
 				</div>
 
-				<div style="padding: 10px">
-					<table class="wp-list-table widefat fixed posts striped">
+				<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; padding-top: 20px;">
+					<table class="wp-list-table widefat posts striped">
 						<thead>
 							<tr>
 								<th colspan="12" style="text-align: center;">Payments log</th>
