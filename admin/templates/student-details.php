@@ -654,7 +654,7 @@ $url = wp_get_attachment_url($student->profile_picture);
             <p><?= __('Status change successfully', 'edusystem'); ?></p>
         </div>
 
-        <table id="table-products" class="widefat striped documents-table" style="margin-top:20px;">
+        <table id="table-products" class="widefat striped documents-table" style="margin-top:20px; border-radius: 10px;">
             <thead>
                 <tr>
                     <th scope="col" class="manage-column column-primary column-document">
