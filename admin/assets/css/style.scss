@@ -924,3 +924,63 @@ div#application-passwords-section {
     margin: 20px 0;
   }
 }
+
+@media screen and (max-width: 782px) {
+    /* Resetea los anchos fijos para permitir que las columnas se adapten */
+    .wp-list-table.fixed td,
+    .wp-list-table.fixed th {
+        width: auto !important; 
+    }
+
+    /* Oculta los encabezados de la tabla en pantallas pequeñas */
+    .wp-list-table thead {
+        display: none; 
+    }
+
+    /* Estilos para las celdas del cuerpo de la tabla */
+    .wp-list-table tbody td {
+        display: block; /* Cada celda se comporta como un bloque */
+        text-align: start; /* Alinea el contenido (y el botón de dropdown si está ahí) a la derecha */
+        //padding-left: 50% !important; /* Espacio para la etiqueta ::before */
+        position: relative;
+        /* Asegúrate de que haya suficiente espacio en la parte inferior si el botón de dropdown está en la misma línea */
+        padding-bottom: 10px; /* Agrega un poco de padding inferior para que el botón no se pegue al borde */
+    }
+
+    /* Estilos para la etiqueta generada por data-colname */
+    // .wp-list-table tbody td::before {
+    //     content: attr(data-colname); /* Muestra el valor de data-colname */
+    //     position: absolute;
+    //     left: 10px; /* Mantén la etiqueta a la izquierda */
+    //     top: 50%; /* Centra verticalmente la etiqueta */
+    //     transform: translateY(-50%); /* Ajuste fino para centrado vertical */
+    //     font-weight: bold;
+    //     text-align: left;
+    //     width: calc(50% - 20px); /* Ancho de la etiqueta, dejando espacio a los lados */
+    //     white-space: nowrap; /* Evita que el texto se rompa */
+    //     overflow: hidden;
+    //     text-overflow: ellipsis;
+    //     box-sizing: border-box; /* Incluye padding y border en el ancho */
+    //     z-index: 1; /* Asegura que la etiqueta esté por encima del contenido normal si hay solapamiento de texto, pero debajo de los botones */
+    // }
+
+    /* Estilos específicos para el botón de toggle de WordPress */
+    .wp-list-table .toggle-row {
+        float: right; /* Asegura que el botón flote a la derecha */
+        margin-left: 5px; /* Espacio entre el botón y el contenido */
+        /* Puede que necesites ajustar la posición con un poco de margin-top/bottom si no se ve bien */
+        margin-top: -5px; /* Ejemplo de ajuste, puede variar */
+        position: relative; /* Asegura que no se superponga si hay un z-index en ::before */
+        z-index: 10; /* Asegura que el botón esté siempre por encima de la etiqueta ::before */
+    }
+
+
+    /* Ajustes para los botones dentro de las celdas de acción */
+    .wp-list-table .column-actions-cell .document-actions-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end; /* Alinea los botones a la derecha */
+        gap: 5px; /* Espacio entre los botones */
+        margin-top: 5px; /* Puede ser necesario un pequeño margen superior si el ::before es muy alto */
+    }
+}

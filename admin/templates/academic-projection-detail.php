@@ -188,22 +188,19 @@ $roles = $current_user->roles;
                                 <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
                                     <thead>
                                         <tr>
-                                            <th scope="col" class=" manage-column column">
-                                                <?= __('Status', 'edusystem'); ?>
-                                            </th>
-                                            <th scope="col" class=" manage-column column-primary">
-                                                <?= __('Student', 'edusystem'); ?>
-                                            </th>
-                                            <th scope="col" class=" manage-column">
+                                            <th scope="col" class="manage-column column-primary column-subject-code-header" style="width: 40%;">
                                                 <?= __('Subject - Code', 'edusystem'); ?>
                                             </th>
-                                            <th scope="col" class=" manage-column">
+                                            <th scope="col" class="manage-column column-period-cut-header">
                                                 <?= __('Period - cut', 'edusystem'); ?>
                                             </th>
-                                            <th scope="col" class=" manage-column">
+                                            <th scope="col" class="manage-column column-calification-header">
                                                 <?= __('Calification', 'edusystem'); ?>
                                             </th>
-                                            <th scope="col" class=" manage-column" style="text-align: end">
+                                            <th scope="col" class="manage-column column-status-header">
+                                                <?= __('Status', 'edusystem'); ?>
+                                            </th>
+                                            <th scope="col" class="manage-column column-action-header" style="text-align: end">
                                                 <?= __('Action', 'edusystem'); ?>
                                             </th>
                                         </tr>
@@ -211,7 +208,18 @@ $roles = $current_user->roles;
                                     <tbody>
                                         <?php foreach ($inscriptions as $key => $inscription) { ?>
                                             <tr>
-                                                <td>
+                                                <td  class="column-primary" data-colname="<?= __('Subject - Code', 'edusystem'); ?>">
+                                                    <?php $subject = get_subject_details_code($inscription->code_subject); ?>
+                                                    <?php echo $subject ? ($subject->name . ' - ' . $subject->code_subject) : 'N/A'; ?>
+                                                    <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
+                                                </td>
+                                                <td data-colname="<?= __('Period - cut', 'edusystem'); ?>">
+                                                    <?php echo $inscription->code_period . ' - ' . $inscription->cut_period; ?>
+                                                </td>
+                                                <td data-colname="<?= __('Calification', 'edusystem'); ?>">
+                                                    <?php echo isset($inscription->calification) ? number_format($inscription->calification, 2) : 'N/A'; ?>
+                                                </td>
+                                                <td data-colname="<?= __('Status', 'edusystem'); ?>">
                                                     <?php
                                                     switch ($inscription->status_id) {
                                                         case 0:
@@ -232,20 +240,7 @@ $roles = $current_user->roles;
                                                     }
                                                     ?>
                                                 </td>
-                                                <td>
-                                                    <?php echo strtoupper($student->last_name) . ' ' . strtoupper($student->middle_last_name) . ' ' . strtoupper($student->name) . ' ' . strtoupper($student->middle_name); ?>
-                                                </td>
-                                                <td>
-                                                    <?php $subject = get_subject_details_code($inscription->code_subject); ?>
-                                                    <?php echo $subject ? ($subject->name . ' - ' . $subject->code_subject) : 'N/A'; ?>
-                                                </td>
-                                                <td>
-                                                    <?php echo $inscription->code_period . ' - ' . $inscription->cut_period; ?>
-                                                </td>
-                                                <td>
-                                                    <?php echo isset($inscription->calification) ? number_format($inscription->calification, 2) : 'N/A'; ?>
-                                                </td>
-                                                <td style="text-align: end">
+                                                <td data-colname="<?= __('Action', 'edusystem'); ?>" style="text-align: end">
                                                     <?php if (current_user_can('manager_enrollments_aes')) { ?>
                                                         <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=delete_inscription&inscription_id=' . $inscription->id . '&projection_id=' . $projection->id); ?>"
                                                             class="button button-danger"

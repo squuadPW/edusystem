@@ -654,13 +654,13 @@ $url = wp_get_attachment_url($student->profile_picture);
             <p><?= __('Status change successfully', 'edusystem'); ?></p>
         </div>
 
-        <table id="table-products" class="widefat striped documents-table" style="margin-top:20px; border-radius: 10px;">
+        <table id="table-products" class="wp-list-table widefat fixed striped documents-table" style="margin-top:20px;">
             <thead>
                 <tr>
-                    <th scope="col" class="manage-column column-primary column-document">
+                    <th scope="col" class="manage-column column-primary column-document" style="width: 30%">
                         <?= __('Document', 'edusystem') ?>
                     </th>
-                    <th scope="col" class="manage-column column-actions" style="text-align: end;">
+                    <th scope="col" class="manage-column column-actions" style="width: 60%">
                         <?= __('Actions', 'edusystem') ?>
                     </th>
                 </tr>
@@ -672,8 +672,9 @@ $url = wp_get_attachment_url($student->profile_picture);
                             <tr id="<?= 'tr_document_' . $document->id; ?>">
                                 <td class="column-primary" data-colname="<?= __('Document', 'edusystem'); ?>">
                                     <?= $document->title; ?>
+                                    <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                                 </td>
-                                <td data-colname="<?= __('Actions', 'edusystem'); ?>" class="column-actions-cell" style="text-align: end;">
+                                <td data-colname="<?= __('Actions', 'edusystem'); ?>" class="column-actions-cell">
                                     <button type="button" data-documentcertificate="<?= $document->id; ?>"
                                         data-signaturerequired="<?= $document->signature_required; ?>"
                                         class="button download-document-certificate button-success"><?= __('Generate', 'edusystem'); ?></button>
