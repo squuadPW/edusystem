@@ -554,11 +554,13 @@ $url = wp_get_attachment_url($student->profile_picture);
             <thead>
                 <tr>
                     <th scope="col" class="manage-column column-primary column-document" style="width: 30%">
-                        <?= __('Document', 'edusystem') ?></th>
+                        <?= __('Document', 'edusystem') ?>
+                    </th>
                     <th scope="col" class="manage-column column-status" style="width: 10%"><?= __('Status', 'edusystem') ?>
                     </th>
                     <th scope="col" class="manage-column column-actions" style="width: 60%">
-                        <?= __('Actions', 'edusystem') ?></th>
+                        <?= __('Actions', 'edusystem') ?>
+                    </th>
                 </tr>
             </thead>
             <tbody id="table-documents">
@@ -651,33 +653,38 @@ $url = wp_get_attachment_url($student->profile_picture);
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">
             <p><?= __('Status change successfully', 'edusystem'); ?></p>
         </div>
-        <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
+
+        <table id="table-products" class="widefat striped documents-table" style="margin-top:20px;">
             <thead>
                 <tr>
-                    <th scope="col" class="manage-column column-primary column-title"><?= __('Document', 'edusystem') ?>
+                    <th scope="col" class="manage-column column-primary column-document">
+                        <?= __('Document', 'edusystem') ?>
                     </th>
-                    <th scope="col" class="manage-column column-actions"><?= __('Actions', 'edusystem') ?></th>
+                    <th scope="col" class="manage-column column-actions">
+                        <?= __('Actions', 'edusystem') ?>
+                    </th>
                 </tr>
             </thead>
-            <tbody id="table-documents-certificates">
+            <tbody id="table-documents">
                 <?php if (!empty($documents_certificates)): ?>
                     <?php foreach ($documents_certificates as $document): ?>
-                        <?php if (!$document->graduated_required || ($document->graduated_required && $student->status_id == 5)) { ?>
-                            <tr id="<?= 'tr_document_certificate_' . $document->id; ?>">
-                                <td data-label="<?= __('Document', 'edusystem') ?>" class="column-primary text-uppercase">
+                        <?php if (!$document->graduated_required || ($document->graduated_required && $student->status_id == 5)): ?>
+                            <tr id="<?= 'tr_document_' . $document->id; ?>">
+                                <td class="column-primary" data-colname="<?= __('Document', 'edusystem'); ?>">
                                     <?= $document->title; ?>
                                 </td>
-                                <td data-label="<?= __('Actions', 'edusystem') ?>" class="column-actions">
+                                <td data-colname="<?= __('Actions', 'edusystem'); ?>" class="column-actions-cell">
                                     <button type="button" data-documentcertificate="<?= $document->id; ?>"
                                         data-signaturerequired="<?= $document->signature_required; ?>"
                                         class="button download-document-certificate button-success"><?= __('Generate', 'edusystem'); ?></button>
                                 </td>
                             </tr>
-                        <?php } ?>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
         </table>
+
     <?php endif; ?>
 </div>
 
