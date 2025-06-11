@@ -103,10 +103,8 @@ div#application-passwords-section {
   width: 100%;
 }
 
-.dashicons {
-  &:before {
-    vertical-align: middle;
-  }
+.dashicons:not(.no-vertical)::before {
+  vertical-align: middle;
 }
 
 #inputStartDate {

@@ -29,47 +29,68 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 
 			<?php if ($_GET['student_available']) { ?>
 				<div style="padding: 10px">
-					<table class="wp-list-table widefat fixed posts striped">
-						<thead>
-							<tr>
-								<th>Student details</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td><span style="margin-top: -6px;" class='dashicons dashicons-businessperson'></span>
-									Name: <?php echo $student->name ?>
-									<?php echo $student->middle_name ?>
-									<?php echo $student->last_name ?>
-									<?php echo $student->middle_last_name ?>
-								</td>
-							</tr>
-							<tr>
-								<td><span style="margin-top: -6px;" class='dashicons dashicons-email'></span> Email:
-									<?php echo $student->email ?>
-								</td>
-							</tr>
-							<tr>
-								<td><span style="margin-top: -6px;" class='dashicons dashicons-phone'></span> Phone:
-									<?php echo $student->phone ?>
-								</td>
-							</tr>
-							<tr>
-								<td><span style="margin-top: -6px;" class='dashicons dashicons-location-alt'></span>
-									Country: <?php echo $student->country ?>
-								</td>
-							</tr>
-							<tr>
-								<td><span style="margin-top: -6px;" class='dashicons dashicons-text-page'></span>
-									Academic period: <?php echo $student->academic_period ?></td>
-							</tr>
-							<tr>
-								<td><span style="margin-top: -6px;" class='dashicons dashicons-location-alt'></span> Initial
-									cut: <?php echo $student->initial_cut ?>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<div
+						style="font-family: Arial, sans-serif; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #ffffff;">
+						<h2 style="text-align: center; color: #333; margin-bottom: 25px; font-weight: bold;">Detalles del
+							Estudiante</h2>
+
+						<div style="display: flex; align-items: center; margin-bottom: 15px;">
+							<span class="dashicons dashicons-businessperson no-vertical"
+								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
+							<p style="margin: 0; font-size: 16px; color: #555;">
+								<strong style="color: #333;">Nombre:</strong>
+								<?php echo $student->name ?>
+								<?php echo $student->middle_name ?>
+								<?php echo $student->last_name ?>
+								<?php echo $student->middle_last_name ?>
+							</p>
+						</div>
+
+						<div style="display: flex; align-items: center; margin-bottom: 15px;">
+							<span class="dashicons dashicons-email no-vertical"
+								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
+							<p style="margin: 0; font-size: 16px; color: #555;">
+								<strong style="color: #333;">Email:</strong>
+								<?php echo $student->email ?>
+							</p>
+						</div>
+
+						<div style="display: flex; align-items: center; margin-bottom: 15px;">
+							<span class="dashicons dashicons-phone no-vertical"
+								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
+							<p style="margin: 0; font-size: 16px; color: #555;">
+								<strong style="color: #333;">Teléfono:</strong>
+								<?php echo $student->phone ?>
+							</p>
+						</div>
+
+						<div style="display: flex; align-items: center; margin-bottom: 15px;">
+							<span class="dashicons dashicons-location-alt no-vertical"
+								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
+							<p style="margin: 0; font-size: 16px; color: #555;">
+								<strong style="color: #333;">País:</strong>
+								<?php echo $student->country ?>
+							</p>
+						</div>
+
+						<div style="display: flex; align-items: center; margin-bottom: 15px;">
+							<span class="dashicons dashicons-text-page no-vertical"
+								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
+							<p style="margin: 0; font-size: 16px; color: #555;">
+								<strong style="color: #333;">Período Académico:</strong>
+								<?php echo $student->academic_period ?>
+							</p>
+						</div>
+
+						<div style="display: flex; align-items: center;">
+							<span class="dashicons dashicons-location-alt no-vertical"
+								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
+							<p style="margin: 0; font-size: 16px; color: #555;">
+								<strong style="color: #333;">Corte Inicial:</strong>
+								<?php echo $student->initial_cut ?>
+							</p>
+						</div>
+					</div>
 				</div>
 
 				<div style="display:flex;width:100%;justify-content:center">
@@ -125,12 +146,13 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 									<td colspan="4">
 										<div style="display: flex; align-items: center; gap: 10px;">
 											<?php if ($payment->status_id == 0) { ?>
-												<button type="submit" class="button button-danger" name="delete_quote" value="<?= $payment->id ?>" onclick="return confirm('Are you sure?');">
+												<button type="submit" class="button button-danger" name="delete_quote"
+													value="<?= $payment->id ?>" onclick="return confirm('Are you sure?');">
 													<span class='dashicons dashicons-trash'></span>
 												</button>
 											<?php } ?>
 
-											<?php 
+											<?php
 											$product = wc_get_product($payment->variation_id ?: $payment->product_id);
 											$name_product = $product->get_name();
 											?>

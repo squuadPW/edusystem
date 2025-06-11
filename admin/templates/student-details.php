@@ -660,7 +660,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                     <th scope="col" class="manage-column column-primary column-document">
                         <?= __('Document', 'edusystem') ?>
                     </th>
-                    <th scope="col" class="manage-column column-actions">
+                    <th scope="col" class="manage-column column-actions" style="text-align: end;">
                         <?= __('Actions', 'edusystem') ?>
                     </th>
                 </tr>
@@ -673,7 +673,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                                 <td class="column-primary" data-colname="<?= __('Document', 'edusystem'); ?>">
                                     <?= $document->title; ?>
                                 </td>
-                                <td data-colname="<?= __('Actions', 'edusystem'); ?>" class="column-actions-cell">
+                                <td data-colname="<?= __('Actions', 'edusystem'); ?>" class="column-actions-cell" style="text-align: end;">
                                     <button type="button" data-documentcertificate="<?= $document->id; ?>"
                                         data-signaturerequired="<?= $document->signature_required; ?>"
                                         class="button download-document-certificate button-success"><?= __('Generate', 'edusystem'); ?></button>

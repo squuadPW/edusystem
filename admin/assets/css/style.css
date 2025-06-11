@@ -89,7 +89,7 @@ div#application-passwords-section {
   width: 100%;
 }
 
-.dashicons:before {
+.dashicons:not(.no-vertical)::before {
   vertical-align: middle;
 }
 
