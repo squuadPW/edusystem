@@ -839,4 +839,22 @@ div#application-passwords-section {
     align-items: flex-end;
     align-content: flex-end;
   }
+}
+.buttons-academic-projection {
+  display: flex;
+  width: 100%;
+  justify-content: end;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .buttons-academic-projection {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: baseline;
+    margin: 20px 0;
+  }
 }/*# sourceMappingURL=style.css.map */
