@@ -101,8 +101,7 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 				<table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
 					<thead>
 						<tr>
-							<th scope="col"
-								class="manage-column column-payments-log-header">
+							<th scope="col" class="manage-column column-payments-log-header">
 								<?= __('Payments', 'edusystem'); ?>
 							</th>
 							<th style="text-align: end">
