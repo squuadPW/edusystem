@@ -315,8 +315,6 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 				</table>
 
 				<div class="table-actions-container">
-					<h2 class="section-title"><?= __('Edit payment', 'edusystem'); ?></h2>
-
 					<div class="payment-actions">
 						<div class="payment-description">
 							<textarea name="description_payment_log" id="description_payment_log"
