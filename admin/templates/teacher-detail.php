@@ -68,7 +68,8 @@
                                         </th>
 
                                         <th scope="row">
-                                            <label for="birth_date"><b><?php _e('Birth date', 'edusystem'); ?></b></label><br>
+                                            <label
+                                                for="birth_date"><b><?php _e('Birth date', 'edusystem'); ?></b></label><br>
                                             <input autocomplete="off" type="date" id="birth_date" name="birth_date"
                                                 value="<?php echo $teacher->birth_date; ?>">
                                         </th>
@@ -96,7 +97,8 @@
                                                 value="<?php echo $teacher->middle_name; ?>">
                                         </th>
                                         <th scope="row">
-                                            <label for="last_name"><b><?php _e('Last name', 'edusystem'); ?></b></label><br>
+                                            <label
+                                                for="last_name"><b><?php _e('Last name', 'edusystem'); ?></b></label><br>
                                             <input autocomplete="off" type="text" id="last_name" name="last_name"
                                                 value="<?php echo $teacher->last_name; ?>">
                                         </th>
@@ -129,7 +131,8 @@
                                                 value="<?php echo $teacher->address; ?>">
                                         </th>
                                         <th scope="row">
-                                            <label for="password"><b><?php _e('Password', 'edusystem'); ?></b></label><br>
+                                            <label
+                                                for="password"><b><?php _e('Password', 'edusystem'); ?></b></label><br>
                                             <input type="password" id="password" name="password" autocomplete="off"
                                                 <?= !isset($teacher) ? 'required' : '' ?>>
                                         </th>
@@ -159,62 +162,76 @@
                             </div>
 
                             <div>
-                                <table class="wp-list-table widefat fixed posts striped">
+                                <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
                                     <thead>
                                         <tr>
-                                            <th>Document</th>
-                                            <th>Upload at</th>
-                                            <th>Status changed by</th>
-                                            <th>Actions</th>
+                                            <th scope="col" class="manage-column column-primary column-document-header">
+                                                <?= __('Document', 'edusystem'); ?>
+                                            </th>
+                                            <th scope="col" class="manage-column column-upload-header">
+                                                <?= __('Upload at', 'edusystem'); ?>
+                                            </th>
+                                            <th scope="col" class="manage-column column-status-changed-by-header">
+                                                <?= __('Status changed by', 'edusystem'); ?>
+                                            </th>
+                                            <th scope="col" class="manage-column column-actions-header">
+                                                <?= __('Actions', 'edusystem'); ?>
+                                            </th>
                                         </tr>
                                     </thead>
-                                    <?php foreach ($documents as $key => $document) { ?>
-                                        <form method="post"
-                                            action="<?= admin_url('admin.php?page=add_admin_form_teachers_content&action=update_document_teacher'); ?>">
-                                            <input type="hidden" name="document_id" value="<?= $document->id ?>">
-                                            <input type="hidden" name="teacher_id" value="<?= $teacher->id ?>">
-                                            <?php
-                                            $approved_by = $document->approved_by ? get_user_by('id', $document->approved_by) : false;
-                                            ?>
-                                            <tr>
-                                                </td>
-                                                <td>
-                                                    <?php
-                                                    switch ($document->status) {
-                                                        case 5:
-                                                            echo '<span class="dashicons dashicons-yes-alt" style="color: green; margin-top: -5px;"></span>';
-                                                            break;
+                                    <tbody>
+                                        <?php foreach ($documents as $key => $document) { ?>
+                                            <form method="post"
+                                                action="<?= admin_url('admin.php?page=add_admin_form_teachers_content&action=update_document_teacher'); ?>">
+                                                <input type="hidden" name="document_id" value="<?= $document->id ?>">
+                                                <input type="hidden" name="teacher_id" value="<?= $teacher->id ?>">
+                                                <?php
+                                                $approved_by = $document->approved_by ? get_user_by('id', $document->approved_by) : false;
+                                                ?>
+                                                <tr>
+                                                    <td class="column-primary"
+                                                        data-colname="<?= __('Document', 'edusystem'); ?>">
+                                                        <?php
+                                                        switch ($document->status) {
+                                                            case 5:
+                                                                echo '<span class="dashicons dashicons-yes-alt" style="color: green; margin-top: -5px;"></span>';
+                                                                break;
 
-                                                        case 3:
-                                                            echo '<span class="declined-document" data-tippy-content="'. $document->description .'"><span class="dashicons dashicons-dismiss" style="color: red; margin-top: -5px;"></span>';
-                                                            break;
+                                                            case 3:
+                                                                echo '<span class="declined-document" data-tippy-content="' . $document->description . '"><span class="dashicons dashicons-dismiss" style="color: red; margin-top: -5px;"></span>';
+                                                                break;
 
-                                                        case 1:
-                                                            echo '<span class="dashicons dashicons-info-outline" style="color: yellow; margin-top: -5px;"></span>';
-                                                            break;
+                                                            case 1:
+                                                                echo '<span class="dashicons dashicons-info-outline" style="color: yellow; margin-top: -5px;"></span>';
+                                                                break;
 
-                                                        default:
-                                                            echo '<span class="dashicons dashicons-minus" style="color: gray; margin-top: -5px;"></span>';
-                                                            break;
-                                                    }
-                                                    ?>
-                                                    <span><?php echo $document->document_id ?></span>
-                                                </td>
-                                                <td><?php echo $document->upload_at ?? 'N/A' ?>
-                                                </td>
-                                                <td><?php echo $approved_by ? $approved_by->first_name . ' ' . $approved_by->last_name : 'N/A' ?>
-                                                </td>
-                                                <td><?php echo $document->attachment_id != 0 ? "
+                                                            default:
+                                                                echo '<span class="dashicons dashicons-minus" style="color: gray; margin-top: -5px;"></span>';
+                                                                break;
+                                                        }
+                                                        ?>
+                                                        <span><?php echo $document->document_id ?></span>
+                                                        <button type='button' class='toggle-row'><span
+                                                                class='screen-reader-text'></span></button>
+                                                    </td>
+                                                    <td data-colname="<?= __('Upload at', 'edusystem'); ?>">
+                                                        <?php echo $document->upload_at ?? 'N/A' ?>
+                                                    </td>
+                                                    <td data-colname="<?= __('Status changed by', 'edusystem'); ?>">
+                                                        <?php echo $approved_by ? $approved_by->first_name . ' ' . $approved_by->last_name : 'N/A' ?>
+                                                    </td>
+                                                    <td data-colname="<?= __('Actions', 'edusystem'); ?>">
+                                                        <?php echo $document->attachment_id != 0 ? "
     <a href=" . wp_get_attachment_url($document->attachment_id) . " target='_blank'><button type='button' class='button button-primary'>View document</button></a>" .
-                                                    (($document->status) == 1 ? "
+                                                            (($document->status) == 1 ? "
     <button name='status_id' value='3' type='button' class='button button-danger' onclick='declineDocument(" . json_encode($document) . ")'>Decline</button>
     <button name='status_id' value='5' type='submit' class='button button-success'>Approve</button>" : '') .
-                                                    (($document->status) != 1 ? "
+                                                            (($document->status) != 1 ? "
     <button name='status_id' value='1' type='submit' class='button button-warning'>Revert</button>" : '') : 'N/A' ?>
-                                                </td>
-                                            </tr>
-                                        </form>
-                                    <?php } ?>
+                                                    </td>
+                                                </tr>
+                                            </form>
+                                        <?php } ?>
                                     </tbody>
                                 </table>
                             </div>

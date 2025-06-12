@@ -1157,4 +1157,14 @@ h2 {
   .form-table td {
     width: 100% !important;
   }
+}
+@media screen and (max-width: 782px) {
+  .wp-admin .form-table select,
+  .wp-core-ui select {
+    width: 100%;
+  }
+  .wp-admin .form-table input:is([type=text], [type=number], [type=date], [type=email], [type=password]),
+  .wp-core-ui input:is([type=text], [type=number], [type=date], [type=email], [type=password]) {
+    width: 100%;
+  }
 }/*# sourceMappingURL=style.css.map */
