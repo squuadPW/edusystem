@@ -266,13 +266,13 @@
                                                     <label
                                                         style="font-weight:400;"><?= __('Fee', 'edusystem') . ' (%)'; ?><span
                                                             class="text-danger">*</span></label><br>
-                                                    <input type="text" id="fee" name="fee" value="<?= $institute->fee; ?>">
+                                                    <input type="text" id="fee" name="fee" value="<?= $institute->fee; ?>" style="width: 100%;">
                                                 <?php endif; ?>
                                             <?php else: ?>
                                                 <label
                                                     style="font-weight:400;"><?= __('Fee', 'edusystem') . ' (%)'; ?><span
                                                         class="text-danger">*</span></label><br>
-                                                <input type="text" id="fee" name="fee" value="10">
+                                                <input type="text" id="fee" name="fee" value="10" style="width: 100%;">
                                             <?php endif; ?>
                                         </th>
                                     </tr>
@@ -290,11 +290,11 @@
                                                     for="input_id"><b><?= __('Rector Name', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
                                                 <input type="text" name="rector_name"
                                                     value="<?= ucwords($institute->name_rector); ?>"
-                                                    <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required'; ?> style="width: 100%;">
                                             <?php else: ?>
                                                 <label for="input_id"><b><?= __('Rector Name', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
-                                                <input type="text" name="rector_name" value="" required>
+                                                <input type="text" name="rector_name" value="" style="width: 100%;" required>
                                             <?php endif; ?>
                                         </th>
                                         <td>
@@ -345,12 +345,12 @@
                                                     for="input_id"><b><?= __('Contact Name', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
                                                 <input type="text" name="contact_name"
                                                     value="<?= ucwords($institute->name_contact); ?>"
-                                                    <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required'; ?> style="width: 100%;">
                                             <?php else: ?>
                                                 <label
                                                     for="input_id"><b><?= __('Contact Name', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
-                                                <input type="text" name="contact_name" value="" required>
+                                                <input type="text" name="contact_name" value="" style="width: 100%;" required>
                                             <?php endif; ?>
                                         </th>
                                         <td>

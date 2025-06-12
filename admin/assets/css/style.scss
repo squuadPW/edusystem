@@ -1254,3 +1254,11 @@ h2 {
     max-width: 100%; /* Full width inputs on small screens */
   }
 }
+
+@media (max-width: 768px) {
+  .form-table {
+    td {
+      width: 100% !important;
+    }
+  }
+}
