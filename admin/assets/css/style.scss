@@ -1274,3 +1274,24 @@ h2 {
     width: 100%;
   }
 }
+
+/* Media query para pantallas pequeñas (ej. móviles) */
+@media (max-width: 768px) { /* Puedes ajustar este breakpoint */
+    .segment {
+        flex-wrap: wrap; /* Permite que los elementos se envuelvan */
+        justify-content: center; /* Centra los botones cuando se envuelven */
+        margin: 0px 10px 20px 10px; /* Ajusta los márgenes para pantallas pequeñas */
+    }
+
+    .segment-button {
+        flex: 1 1 45%; /* Permite que los botones ocupen un 45% del ancho y se envuelvan */
+        margin-bottom: 5px; /* Espacio entre botones cuando se apilan */
+        border-radius: 5px !important; /* Ajusta los bordes cuando se apilan */
+    }
+
+    /* Eliminar border-radius específico para el primer y último hijo cuando se apilan */
+    .segment-button:first-child,
+    .segment-button:last-child {
+        border-radius: 5px !important;
+    }
+}
