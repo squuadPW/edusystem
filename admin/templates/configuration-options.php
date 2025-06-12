@@ -221,10 +221,10 @@
         <div id="inscriptions" style="display: none">
           <div style="text-align: center;">
             <div>
-              <a style="margin: 5px"
+              <a style="margin: 5px; text-wrap: auto;"
                 href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=clear_electives') ?>"
                 class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Deactivate the elective selector and mark that they did not see electives during this period <br> that were not their turn (this will bring them forward in the projection)', 'edusystem'); ?>
+                <?= __('Deactivate the elective selector and mark that they have not seen electives during this period <br>that they were not due (this will advance them in the screening).', 'edusystem'); ?>
               </a>
             </div>
             <div>

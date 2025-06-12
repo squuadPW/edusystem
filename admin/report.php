@@ -533,7 +533,7 @@ function list_accounts_receivables()
                 if ($order->student) {
                     $html .= "<td class='column-primary text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . strtoupper($order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '')) . "</a><button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
                 } else {
-                    $html .= "<td class='text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>N/A</td>";
+                    $html .= "<td class='column-primary text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>N/A</td>";
                 }
                 if ($order->customer['data']) {
                     $html .= "<td class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . strtoupper(get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true)) . "</a></td>";
@@ -583,22 +583,22 @@ function list_report_students()
 
             $html .= "<tr>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</a></td>";
+                $html .= "<td class='column-primary text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . '<a href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</a><button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
             } else {
-                $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</td>";
+                $html .= "<td class='column-primary text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . strtoupper($student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '')) . "</td>";
             }
-            $html .= "<td class='column' data-colname='" . __('Student document', 'edusystem') . "'>" . $student->id_document . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Student email', 'edusystem') . "'>" . $student->email . "</td>";
+            $html .= "<td data-colname='" . __('Student document', 'edusystem') . "'>" . $student->id_document . "</td>";
+            $html .= "<td data-colname='" . __('Student email', 'edusystem') . "'>" . $student->email . "</td>";
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $html .= "<td class='column text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</a></td>";
+                $html .= "<td class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . '<a href="' . $url . $parent->ID . '" target="_blank">' . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</a></td>";
             } else {
-                $html .= "<td class='column text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</a></td>";
+                $html .= "<td class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</a></td>";
             }
-            $html .= "<td class='column' data-colname='" . __('Parent email', 'edusystem') . "'>" . $parent->user_email . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Country', 'edusystem') . "'>" . $student->country . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Grade', 'edusystem') . "'>" . get_name_grade($student->grade_id) . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Program', 'edusystem') . "'>" . get_name_program($student->program_id) . "</td>";
-            $html .= "<td class='column' data-colname='" . __('Institute', 'edusystem') . "'>" . $student->name_institute . "</td>";
+            $html .= "<td data-colname='" . __('Parent email', 'edusystem') . "'>" . $parent->user_email . "</td>";
+            $html .= "<td data-colname='" . __('Country', 'edusystem') . "'>" . $student->country . "</td>";
+            $html .= "<td data-colname='" . __('Grade', 'edusystem') . "'>" . get_name_grade($student->grade_id) . "</td>";
+            $html .= "<td data-colname='" . __('Program', 'edusystem') . "'>" . get_name_program($student->program_id) . "</td>";
+            $html .= "<td data-colname='" . __('Institute', 'edusystem') . "'>" . $student->name_institute . "</td>";
             $html .= "</tr>";
         }
 
