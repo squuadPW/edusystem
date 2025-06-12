@@ -106,8 +106,8 @@ class TT_All_Pensum_List_Table extends WP_List_Table
 
         parent::__construct(
             array(
-                'singular' => 'request',
-                'plural' => 'requests',
+                'singular' => 'pensum',
+                'plural' => 'pensums',
                 'ajax' => true
             )
         );
@@ -137,6 +137,11 @@ class TT_All_Pensum_List_Table extends WP_List_Table
         return ucwords($item['name']);
     }
 
+    public function get_primary_column_name()
+    {
+        return 'name';
+    }
+
     function column_cb($item)
     {
         return '';
@@ -146,9 +151,9 @@ class TT_All_Pensum_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'current' => __('Current', 'edusystem'),
             'name' => __('Name', 'edusystem'),
             'program' => __('Program', 'edusystem'),
+            'current' => __('Current', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
@@ -161,14 +166,20 @@ class TT_All_Pensum_List_Table extends WP_List_Table
         global $wpdb;
         $pensum_array = [];
 
-        // PAGINATION
-        $per_page = 20; // number of items per page
-        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        // La paginación la gestiona WP_List_Table, obtenemos los valores desde ahí.
+        $per_page = $this->get_items_per_page('pensums_per_page', 20); // 'pensums_per_page' es un ID único para "Screen Options"
+        $pagenum = $this->get_pagenum();
         $offset = (($pagenum - 1) * $per_page);
-        // PAGINATION
 
         $table_pensum = $wpdb->prefix . 'pensum';
-        $pensums = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_pensum} WHERE `type` = 'program' ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        // La consulta SQL sigue igual
+        $pensums = $wpdb->get_results($wpdb->prepare(
+            "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_pensum} WHERE `type` = 'program' ORDER BY id DESC LIMIT %d OFFSET %d",
+            $per_page,
+            $offset
+        ), "ARRAY_A");
+
+        // ... el resto de tu método sigue igual ...
 
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
@@ -211,37 +222,29 @@ class TT_All_Pensum_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
-        $data_requests = $this->get_pensum();
-
-        $per_page = 10;
-
-
+        // 1. Definir las columnas. Añadimos el nuevo método para la columna principal.
         $columns = $this->get_columns();
-        $hidden = array();
+        $hidden = array(); // Aquí puedes poner las columnas que quieras ocultar por defecto
         $sortable = $this->get_sortable_columns();
+        $primary = $this->get_primary_column_name(); // Obtenemos la columna principal
+        $this->_column_headers = array($columns, $hidden, $sortable, $primary);
 
-        $this->_column_headers = array($columns, $hidden, $sortable);
+        // 2. Procesar acciones en lote (si las hubiera)
         $this->process_bulk_action();
 
-        $data = $data_requests['data'];
-        $total_count = (int) $data_requests['total_count'];
+        // 3. Obtener los datos de la tabla
+        $data_pensums = $this->get_pensum();
+        $this->items = $data_pensums['data'];
 
-        function usort_reorder($a, $b)
-        {
-            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
-            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
-            $result = strcmp($a[$orderby], $b[$orderby]);
-            return ($order === 'asc') ? $result : -$result;
-        }
+        // 4. Configurar la paginación
+        $total_items = (int) $data_pensums['total_count'];
+        $per_page = 20; // Define el número de items por página aquí
 
-        $per_page = 20; // items per page
         $this->set_pagination_args(array(
-            'total_items' => $total_count,
+            'total_items' => $total_items,
             'per_page' => $per_page,
+            'total_pages' => ceil($total_items / $per_page)
         ));
-
-        $this->items = $data;
     }
 
 }
@@ -255,8 +258,8 @@ class TT_All_Pensum_Institute_List_Table extends WP_List_Table
 
         parent::__construct(
             array(
-                'singular' => 'request',
-                'plural' => 'requests',
+                'singular' => 'pensum',
+                'plural' => 'pensums',
                 'ajax' => true
             )
         );
@@ -295,9 +298,9 @@ class TT_All_Pensum_Institute_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'current' => __('Current', 'edusystem'),
             'name' => __('Name', 'edusystem'),
             'institute' => __('Institute', 'edusystem'),
+            'current' => __('Current', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
@@ -361,7 +364,7 @@ class TT_All_Pensum_Institute_List_Table extends WP_List_Table
     function prepare_items()
     {
 
-        $data_requests = $this->get_pensum();
+        $data_pensums = $this->get_pensum();
 
         $per_page = 10;
 
@@ -373,8 +376,8 @@ class TT_All_Pensum_Institute_List_Table extends WP_List_Table
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
 
-        $data = $data_requests['data'];
-        $total_count = (int) $data_requests['total_count'];
+        $data = $data_pensums['data'];
+        $total_count = (int) $data_pensums['total_count'];
 
         function usort_reorder($a, $b)
         {

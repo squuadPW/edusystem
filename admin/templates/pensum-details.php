@@ -27,7 +27,7 @@
         <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
 
-    <div id="dashboard-widgets" class="metabox-holder admin-add-offer" style="width: 70% !important">
+    <div id="dashboard-widgets" class="metabox-holder admin-add-offer" style="width: 70%">
         <div id="postbox-container-1" style="width:100% !important;">
             <div id="normal-sortables">
                 <div id="metabox" class="postbox" style="width:100%;min-width:0px;">

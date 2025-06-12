@@ -60,7 +60,7 @@ function aes_scripts_admin()
         wp_enqueue_script('student-payment', plugins_url('edusystem') . '/admin/assets/js/payment.js', array('jquery'), $version, true);
     }
 
-    if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_pensum_content') {
+    if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_pensum_content' && $_GET['section_tab'] == 'pensum_details') {
         wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
         wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', ['jquery']);
 

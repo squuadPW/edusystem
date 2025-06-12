@@ -103,7 +103,7 @@ div#application-passwords-section {
   width: 100%;
 }
 
-.dashicons:not(.no-vertical)::before {
+.dashicons:not(.no-vertical, .dashicons-support)::before {
   vertical-align: middle;
   @media screen and (max-width: 782px) {
     vertical-align: -webkit-baseline-middle !important;
