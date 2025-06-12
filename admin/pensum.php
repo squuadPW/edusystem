@@ -26,7 +26,7 @@ function add_admin_form_pensum_content()
         if ($_GET['action'] == 'save_pensum_details') {
             global $wpdb;
             $table_pensum = $wpdb->prefix . 'pensum';
-            
+
             // Sanitizar valores
             $pensum_id = isset($_POST['pensum_id']) ? sanitize_text_field($_POST['pensum_id']) : '';
             $program_institute = isset($_POST['program_institute']) ? sanitize_text_field($_POST['program_institute']) : '';
@@ -79,14 +79,14 @@ function add_admin_form_pensum_content()
                     'status' => $status
                 ]);
             }
-            
+
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             if ($program_institute) {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_pensum_content&section_tab=pensum_institute'));
             } else {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_pensum_content'));
             }
-            
+
             exit;
         } else {
             $institute = 0;
@@ -424,29 +424,29 @@ function only_pensum_regular($program_id)
 {
     global $wpdb;
     $table_pensum = $wpdb->prefix . 'pensum';
-    
+
     // Obtener el pensum
     $pensum = $wpdb->get_row("SELECT * FROM {$table_pensum} WHERE `type`='program' AND `status` = 1 AND program_id = '{$program_id}'");
-    
+
     // Decodificar la matriz como un array de objetos
     $matrix = json_decode($pensum->matrix);
-    
+
     // Array para almacenar las materias regulares
     $subjects = [];
-    
+
     // Recorrer la matriz
     foreach ($matrix as $key => $m) {
         // Verificar si el tipo es 'REGULAR'
         if (strtoupper($m->type) == 'REGULAR') {
             // Obtener los detalles de la materia
             $subject = get_subject_details($m->id);
-            
+
             // Crear un objeto stdClass para el payload
             $payload = new stdClass();
             $payload->subject = $subject->name;
             $payload->subject_id = $subject->id;
             $payload->type = $subject->type;
-            
+
             // Agregar el payload al array de subjects
             array_push($subjects, $payload);
         }
@@ -464,7 +464,8 @@ function pensum_institute($institute_id)
     return $matrix;
 }
 
-function update_equivalence_califications($student_id) {
+function update_equivalence_califications($student_id)
+{
     global $wpdb;
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $student = get_student_detail($student_id);
@@ -489,7 +490,7 @@ function update_equivalence_califications($student_id) {
             }
         }
     }
-    
+
     $wpdb->update($table_student_academic_projection, [
         'projection' => json_encode($projection_obj),
     ], ['id' => $projection->id]);
