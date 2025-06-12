@@ -75,7 +75,7 @@
                                         <?php endif; ?>
                                     </div> -->
                                 </div>
-                                <div style="display: flex; justify-content: space-evenly; margin: 18px;">
+                                <div style="display: flex; justify-content: space-evenly; margin: 18px; flex-wrap: wrap;">
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
@@ -135,7 +135,7 @@
                                         <?php endif; ?>
                                     </div> -->
                                 </div>
-                                <div style="display: flex; justify-content: space-evenly; margin: 18px;">
+                                <div style="display: flex; justify-content: space-evenly; margin: 18px; flex-wrap: wrap;">
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label

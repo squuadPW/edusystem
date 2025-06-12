@@ -45,10 +45,11 @@
                                     <input type="hidden" name="pensum_id" value="<?= $pensum->id ?>">
                                     <input type="hidden" name="program_institute" value="<?= $institute ?>">
                                     <div style="font-weight:400; text-align: center; margin-bottom: 10px;">
-                                            <div>
-                                                <input style="width: auto !important;" type="checkbox" name="status" id="status" <?= ($pensum->status == 1) ? 'checked' : ''; ?>>
-                                                <label for="status"><b><?= __('Active', 'edusystem'); ?></b></label>
-                                            </div>
+                                        <div>
+                                            <input style="width: auto !important;" type="checkbox" name="status"
+                                                id="status" <?= ($pensum->status == 1) ? 'checked' : ''; ?>>
+                                            <label for="status"><b><?= __('Active', 'edusystem'); ?></b></label>
+                                        </div>
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
@@ -63,7 +64,8 @@
                                             <select name="program_id" required>
                                                 <option value="" selected>Assigns a program</option>
                                                 <option value="aes" <?= ($pensum->program_id == 'aes') ? 'selected' : ''; ?>>
-                                                    <?= __('Dual diploma', 'edusystem'); ?></option>
+                                                    <?= __('Dual diploma', 'edusystem'); ?>
+                                                </option>
                                             </select>
                                         </div>
                                     <?php } ?>

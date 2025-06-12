@@ -106,7 +106,7 @@
                             <b><?= __('Preview', 'edusystem'); ?></b>
                         </h3>
 
-                        <div style="display: flex; justify-content: space-evenly; margin: 18px;">
+                        <div style="display: flex; justify-content: space-evenly; margin: 18px;flex-wrap: wrap;">
                                     <div style="font-weight:400; text-align: start">
                                         <div style="text-align: center">
                                             Desktop

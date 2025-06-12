@@ -1,4 +1,4 @@
-<div class="wrap staff-module">
+<div class="wrap">
     <h2 class="staff-title"><?= __('Staff Details', 'edusystem'); ?></h2>
 
     <?php if(isset($_COOKIE['message']) && !empty($_COOKIE['message'])){ ?>
