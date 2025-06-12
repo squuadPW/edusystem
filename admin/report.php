@@ -530,21 +530,21 @@ function list_accounts_receivables()
 
             foreach ($orders['cuotes'] as $order) {
                 $html .= "<tr>";
-                if ($order->customer['data']) {
-                    $html .= "<td class='column text-uppercase' data-colname='" . __('Customer', 'edusystem') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . strtoupper(get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true)) . "</a></td>";
-                } else {
-                    $html .= "<td class='column text-uppercase' data-colname='" . __('Customer', 'edusystem') . "'>N/A</td>";
-                }
                 if ($order->student) {
-                    $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . strtoupper($order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '')) . "</a></td>";
+                    $html .= "<td class='column-primary text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . strtoupper($order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '')) . "</a><button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
                 } else {
-                    $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>N/A</td>";
+                    $html .= "<td class='text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>N/A</td>";
                 }
-                $html .= "<td class='column' data-colname='" . __('Product', 'edusystem') . "'>" . $order->product . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Amount', 'edusystem') . "'>" . wc_price($order->amount) . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Number cuote', 'edusystem') . "'>" . $order->cuote . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Total cuotes', 'edusystem') . "'>" . $order->num_cuotes . "</td>";
-                $html .= "<td class='column' data-colname='" . __('Date', 'edusystem') . "'><b>" . $order->date_next_payment . "</b></td>";
+                if ($order->customer['data']) {
+                    $html .= "<td class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . strtoupper(get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true)) . "</a></td>";
+                } else {
+                    $html .= "<td class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>N/A</td>";
+                }
+                $html .= "<td data-colname='" . __('Product', 'edusystem') . "'>" . $order->product . "</td>";
+                $html .= "<td data-colname='" . __('Amount', 'edusystem') . "'>" . wc_price($order->amount) . "</td>";
+                $html .= "<td data-colname='" . __('Number cuote', 'edusystem') . "'>" . $order->cuote . "</td>";
+                $html .= "<td data-colname='" . __('Total cuotes', 'edusystem') . "'>" . $order->num_cuotes . "</td>";
+                $html .= "<td data-colname='" . __('Date', 'edusystem') . "'><b>" . $order->date_next_payment . "</b></td>";
                 $html .= "</tr>";
             }
 

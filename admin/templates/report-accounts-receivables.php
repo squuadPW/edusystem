@@ -39,46 +39,56 @@
                     class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
             <?php endif; ?>
     </div>
+
     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
         <thead>
             <tr>
-                <th scope="col" class=" manage-column column"><?= __('Parent', 'edusystem'); ?></th>
-                <th scope="col" class=" manage-column column-primary"><?= __('Student', 'edusystem'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Product', 'edusystem'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Amount', 'edusystem'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Number cuote', 'edusystem'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Total cuotes', 'edusystem'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Date', 'edusystem'); ?></th>
+                <th scope="col" class="manage-column column-primary column-student-header">
+                    <?= __('Student', 'edusystem'); ?>
+                </th>
+                <th scope="col" class="manage-column column-parent-header">
+                    <?= __('Parent', 'edusystem'); ?>
+                </th>
+                <th scope="col" class="manage-column column-product-header">
+                    <?= __('Product', 'edusystem'); ?>
+                </th>
+                <th scope="col" class="manage-column column-amount-header">
+                    <?= __('Amount', 'edusystem'); ?>
+                </th>
+                <th scope="col" class="manage-column column-number-cuote-header">
+                    <?= __('Number cuote', 'edusystem'); ?>
+                </th>
+                <th scope="col" class="manage-column column-total-cuotes-header">
+                    <?= __('Total cuotes', 'edusystem'); ?>
+                </th>
+                <th scope="col" class="manage-column column-date-header">
+                    <?= __('Date', 'edusystem'); ?>
+                </th>
             </tr>
         </thead>
         <tbody id="table-institutes-payment">
             <?php if (!empty($orders['cuotes'])) { ?>
                 <?php foreach ($orders['cuotes'] as $order) { ?>
                     <tr>
-                    <td class="column" data-colname="<?= __('Parent', 'edusystem'); ?>">
-                            <?= $order['customer']; ?>
-                        </td>
-                    <td class="column" data-colname="<?= __('Student', 'edusystem'); ?>">
+                        <td class="column-primary" data-colname="<?= __('Student', 'edusystem'); ?>">
                             <?= $order['student']; ?>
+                            <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                         </td>
-                        <td class="column" data-colname="<?= __('Product', 'edusystem'); ?>">
+                        <td data-colname="<?= __('Product', 'edusystem'); ?>">
                             <?= $order['product']; ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Amount', 'edusystem'); ?>">
+                        <td data-colname="<?= __('Amount', 'edusystem'); ?>">
                             <?= wc_price($order['amount']); ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Number cuote', 'edusystem'); ?>">
+                        <td data-colname="<?= __('Cuote', 'edusystem'); ?>">
                             <?= $order['cuote']; ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Total cuotes', 'edusystem'); ?>">
+                        <td data-colname="<?= __('Total cuotes', 'edusystem'); ?>">
                             <?= $order['num_cuotes']; ?>
                         </td>
-                        <td class="column" data-colname="<?= __('Date', 'edusystem'); ?>">
+                        <td data-colname="<?= __('Date', 'edusystem'); ?>">
                             <b><?= $order['date_next_payment']; ?></b>
                         </td>
-                        <!-- <td class="column" data-colname="<?= __('Action', 'edusystem'); ?>">
-                            
-                        </td> -->
                     </tr>
                 <?php } ?>
             <?php } else { ?>
