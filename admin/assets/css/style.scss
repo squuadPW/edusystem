@@ -1295,3 +1295,35 @@ h2 {
         border-radius: 5px !important;
     }
 }
+
+/* Responsive adjustments for tablets and smaller desktops */
+@media (max-width: 1024px) { /* Adjust this breakpoint if needed */
+    .grid-container-report-4 {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
+        margin: 15px; /* Slightly reduced margin */
+    }
+}
+
+/* Responsive adjustments for mobile phones */
+@media (max-width: 768px) { /* Adjust this breakpoint if needed */
+    .grid-container-report-4 {
+        grid-template-columns: 1fr; /* 1 column for mobile phones */
+        margin: 10px; /* Further reduced margin */
+    }
+}
+
+/* Responsive adjustments for tablets and smaller desktops */
+@media (max-width: 1024px) { /* Adjust this breakpoint if needed */
+    .grid-container-report-2 {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
+        margin: 15px; /* Slightly reduced margin */
+    }
+}
+
+/* Responsive adjustments for mobile phones */
+@media (max-width: 768px) { /* Adjust this breakpoint if needed */
+    .grid-container-report-2 {
+        grid-template-columns: 1fr; /* 1 column for mobile phones */
+        margin: 10px; /* Further reduced margin */
+    }
+}
