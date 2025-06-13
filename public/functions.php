@@ -2472,15 +2472,18 @@ function loadFeesSplit()
                 }
 
                 if ($is_total) {
-                    $item_fee_payment_method = new WC_Order_Item_Fee();
-                    $item_fee_payment_method->set_name("Bank Transfer Fee");
-                    $item_fee_payment_method->set_amount($fee);
-                    $item_fee_payment_method->set_tax_class('');
-                    $item_fee_payment_method->set_tax_status('none');
-                    $item_fee_payment_method->set_total($fee);
-                    $order->add_item($item_fee_payment_method);
-                    $order->calculate_totals();
-                    $order->save();
+                    $split_payment = $order->get_meta('split_payment');
+                    if($split_payment != 1) {
+                        $item_fee_payment_method = new WC_Order_Item_Fee();
+                        $item_fee_payment_method->set_name("Bank Transfer Fee");
+                        $item_fee_payment_method->set_amount($fee);
+                        $item_fee_payment_method->set_tax_class('');
+                        $item_fee_payment_method->set_tax_status('none');
+                        $item_fee_payment_method->set_total($fee);
+                        $order->add_item($item_fee_payment_method);
+                        $order->calculate_totals();
+                        $order->save();
+                    }
                 }
             }
         }
@@ -2509,15 +2512,18 @@ function loadFeesSplit()
                 $fee = $stripe_fee_amount;
 
                 if ($is_total) {
-                    $item_fee_payment_method = new WC_Order_Item_Fee();
-                    $item_fee_payment_method->set_name("Credit Card Fee");
-                    $item_fee_payment_method->set_amount($fee);
-                    $item_fee_payment_method->set_tax_class('');
-                    $item_fee_payment_method->set_tax_status('none');
-                    $item_fee_payment_method->set_total($fee);
-                    $order->add_item($item_fee_payment_method);
-                    $order->calculate_totals();
-                    $order->save();
+                    $split_payment = $order->get_meta('split_payment');
+                    if($split_payment != 1) {
+                        $item_fee_payment_method = new WC_Order_Item_Fee();
+                        $item_fee_payment_method->set_name("Credit Card Fee");
+                        $item_fee_payment_method->set_amount($fee);
+                        $item_fee_payment_method->set_tax_class('');
+                        $item_fee_payment_method->set_tax_status('none');
+                        $item_fee_payment_method->set_total($fee);
+                        $order->add_item($item_fee_payment_method);
+                        $order->calculate_totals();
+                        $order->save();
+                    }
                 }
             }
         }
