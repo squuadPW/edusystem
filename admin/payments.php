@@ -211,18 +211,18 @@ function add_admin_form_payments_content()
                         'order' => 'ASC'
                     ]);
 
+                    // Create new order with basic data
+                    $new_order = wc_create_order([
+                        'customer_id' => $customer_id,
+                        'status' => 'pending-payment'
+                    ]);
+
                     // Add product to order
                     $product = wc_get_product($product_id);
                     if (!$product) {
                         throw new Exception('Invalid product');
                     }
                     $new_order->add_product($product, 1);
-
-                    // Create new order with basic data
-                    $new_order = wc_create_order([
-                        'customer_id' => $customer_id,
-                        'status' => 'pending-payment'
-                    ]);
 
                     if (empty($orders_customer)) {
                         $user_customer = get_user_by('id', $customer_id);

@@ -235,8 +235,7 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 						foreach ($buttons as $button) {
 							if ($button['condition']) { ?>
 								<button type="submit" class="button <?= $button['class'] ?? 'button-secondary' ?>"
-									onclick="return confirm('Are you sure?');"
-									name="<?= $button['name'] ?>" value="1">
+									onclick="return confirm('Are you sure?');" name="<?= $button['name'] ?>" value="1">
 									<?= $button['label'] ?>
 								</button>
 							<?php }
@@ -289,9 +288,16 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 									<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
 								</td>
 								<td data-colname="<?= __('Expected payment date', 'edusystem'); ?>">
-									<?= $payment->status_id == 1
-										? date('m/d/Y', strtotime(in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment))
-										: '<input type="date" name="date_payment[]" class="date_payment" value="' . ($payment->product_id == FEE_INSCRIPTION || $payment->product_id == FEE_GRADUATION ? $payment->date_payment : $payment->date_next_payment) . '" />';
+									<?php
+									if ($payment->status_id == 1) {
+										// Muestra la fecha formateada y un input hidden con el mismo valor
+										$display_date = date('m/d/Y', strtotime(in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment));
+										echo $display_date;
+										echo '<input type="hidden" name="date_payment[]" value="' . date('Y-m-d', strtotime(in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment)) . '" />';
+									} else {
+										// Muestra el input de tipo fecha editable
+										echo '<input type="date" name="date_payment[]" class="date_payment" value="' . date('Y-m-d', strtotime($payment->product_id == FEE_INSCRIPTION || $payment->product_id == FEE_GRADUATION ? $payment->date_payment : $payment->date_next_payment)) . '" />';
+									}
 									?>
 								</td>
 								<td data-colname="<?= __('Date of payment made', 'edusystem'); ?>">

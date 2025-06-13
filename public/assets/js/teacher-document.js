@@ -100,9 +100,7 @@ document.getElementById("btnCrop").addEventListener("click", function () {
       dataTransfer.items.add(file);
 
       // Asignar los archivos al input
-      console.log(dataTransfer.files);
       document.getElementById("teacher_photo").files = dataTransfer.files;
-      console.log(document.getElementById("teacher_photo").files);
 
       const croppedImage = document.createElement("img");
       croppedImage.src = URL.createObjectURL(blob);
