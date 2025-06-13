@@ -188,6 +188,7 @@ function add_admin_form_payments_content()
             
             if ($delete_quote) {
                 $wpdb->delete($table_student_payments, ['id' => $delete_quote]);
+                set_max_date_student($student->id);
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&success_save_changes=true'));
                 exit;
@@ -419,6 +420,8 @@ function add_admin_form_payments_content()
                     'user_id' => $current_user->ID,
                     'description' => $_POST['description_payment_log']
                 ]);
+
+                set_max_date_student($student->id);
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&success_save_changes=true'));
                 exit;
             }
