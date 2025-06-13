@@ -1136,19 +1136,32 @@ function set_max_date_student($student_id)
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $table_student_payments = $wpdb->prefix . 'student_payments';
-    $next_payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE status_id = 0 AND student_id = {$student_id} AND date_payment IS NULL ORDER BY cuote ASC");
-    if ($next_payment) {
+
+    // Se busca el próximo pago pendiente (status_id = 0, date_payment IS NULL)
+    // Se selecciona solo date_next_payment y date_payment para optimizar la consulta.
+    // Se utiliza prepared statement para mayor seguridad.
+    $next_payment = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT date_next_payment, date_payment FROM {$table_student_payments} WHERE status_id = 0 AND student_id = %d AND date_payment IS NULL ORDER BY cuote ASC LIMIT 1",
+            $student_id
+        )
+    );
+
+    $max_access_date = NULL; // Se inicializa a NULL por defecto
+
+    if ($next_payment && !empty($next_payment->date_next_payment)) {
+        // Se valida que date_next_payment exista y no esté vacío
         $date = $next_payment->date_next_payment;
-        $days = (int) get_option('payment_due');
-        $max_date = date('Y-m-d', strtotime("$date + $days days"));
-        $wpdb->update($table_students, [
-            'max_access_date' => $max_date
-        ], ['id' => $student_id]);
-    } else {
-        $wpdb->update($table_students, [
-            'max_access_date' => NULL
-        ], ['id' => $student_id]);
+        $days = (int) get_option('payment_due'); // Obtiene los días de gracia desde las opciones de WordPress
+        $max_access_date = date('Y-m-d', strtotime("$date + $days days"));
     }
+
+    // Se actualiza la tabla de estudiantes una sola vez
+    $wpdb->update(
+        $table_students,
+        ['max_access_date' => $max_access_date],
+        ['id' => $student_id]
+    );
 }
 
 function helper_get_student_logged()
