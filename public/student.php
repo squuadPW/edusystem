@@ -1137,13 +1137,26 @@ function set_max_date_student($student_id)
     $table_students = $wpdb->prefix . 'students';
     $table_student_payments = $wpdb->prefix . 'student_payments';
 
+    // Define los IDs de productos a excluir
+    $fee_inscription_id = FEE_INSCRIPTION; // Asegúrate de que FEE_INSCRIPTION esté definido globalmente o como constante
+    $fee_graduation_id = FEE_GRADUATION;   // Asegúrate de que FEE_GRADUATION esté definido globalmente o como constante
+
     // Se busca el próximo pago pendiente (status_id = 0, date_payment IS NULL)
-    // Se selecciona solo date_next_payment y date_payment para optimizar la consulta.
-    // Se utiliza prepared statement para mayor seguridad.
+    // Excluyendo los product_id de inscripción y graduación
     $next_payment = $wpdb->get_row(
         $wpdb->prepare(
-            "SELECT date_next_payment, date_payment FROM {$table_student_payments} WHERE status_id = 0 AND student_id = %d AND date_payment IS NULL ORDER BY cuote ASC LIMIT 1",
-            $student_id
+            "SELECT date_next_payment, date_payment 
+             FROM {$table_student_payments} 
+             WHERE status_id = 0 
+               AND student_id = %d 
+               AND date_payment IS NULL 
+               AND product_id <> %d 
+               AND product_id <> %d 
+             ORDER BY cuote ASC 
+             LIMIT 1",
+            $student_id,
+            $fee_inscription_id,
+            $fee_graduation_id
         )
     );
 
