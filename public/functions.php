@@ -1199,6 +1199,7 @@ function woocommerce_update_cart()
     if (count($applied_coupons) > 0) {
         $has_coupon = true;
     }
+    $applied_coupons = array_map('strtolower', $applied_coupons);
 
     $value = $_POST['option'];
     foreach ($cart->get_cart() as $key => $product) {
@@ -1231,13 +1232,11 @@ function woocommerce_update_cart()
     }
 
     if ($variation != 'Complete') {
-        // Remover el cupón con la clave "fee_inscription" de la matriz $applied_coupons
         $applied_coupons = array_diff($applied_coupons, array(strtolower(get_option('offer_complete'))));
 
         $offer_quote = strtolower(get_option('offer_quote'));
 
         if (!empty($offer_quote)) {
-            // Verifica si el valor ya existe en el array
             if (in_array($offer_quote, $applied_coupons)) {
                 // Si existe, lo eliminamos
                 $applied_coupons = array_diff($applied_coupons, [$offer_quote]);
