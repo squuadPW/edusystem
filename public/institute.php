@@ -184,7 +184,7 @@ function set_institute_in_order($order, $id = NULL)
             foreach ($coupons as $coupon) {
                 $discount_amount = $coupon->get_discount();
                 $discount_code = $coupon->get_code();
-                array_push($discounts, ['code' => $discount_code, 'amount' => $discount_amount]);
+                array_push($discounts, ['code' => strtolower($discount_code), 'amount' => $discount_amount]);
             }
 
             // Buscar el descuento con el código "latam scholarship"
