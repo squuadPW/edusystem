@@ -278,186 +278,189 @@ function add_custom_admin_page()
     global $current_user;
     $roles = $current_user->roles;
 
-    if (in_array('institutes', $roles)) {
+    $subscription_status = get_option('site_status_subscription');
+    if ($subscription_status != 'expired') {
+        if (in_array('institutes', $roles)) {
+
+            add_menu_page(
+                __('Students', 'edusystem'),
+                __('Students', 'edusystem'),
+                'read',
+                'list_admin_institutes_student_registered_content',
+                'list_admin_institutes_student_registered_content',
+                'dashicons-groups',
+                10
+            );
+
+            add_menu_page(
+                __('Fees', 'edusystem'),
+                __('Fees', 'edusystem'),
+                'read',
+                'list_admin_institutes_payments_content',
+                'list_admin_institutes_payments_content',
+                'dashicons-money-alt',
+                11
+            );
+
+
+            add_menu_page(
+                __('Invoice', 'edusystem'),
+                __('Invoice', 'edusystem'),
+                'read',
+                'list_admin_institutes_invoice_content',
+                'list_admin_institutes_invoice_content',
+                'dashicons-admin-page',
+                11
+            );
+        }
+
+        if (in_array('alliance', $roles)) {
+
+            add_menu_page(
+                __('Institutes', 'edusystem'),
+                __('Institutes', 'edusystem'),
+                'read',
+                'list_admin_institutes_partner_registered_content',
+                'list_admin_institutes_partner_registered_content',
+                'dashicons-groups',
+                10
+            );
+
+            add_menu_page(
+                __('Fees', 'edusystem'),
+                __('Fees', 'edusystem'),
+                'read',
+                'list_admin_partner_payments_content',
+                'list_admin_partner_payments_content',
+                'dashicons-money-alt',
+                11
+            );
+
+            add_menu_page(
+                __('Students', 'edusystem'),
+                __('Students', 'edusystem'),
+                'read',
+                'list_admin_partner_students_content',
+                'list_admin_partner_students_content',
+                'dashicons-admin-users',
+                11
+            );
+
+            add_menu_page(
+                __('Invoice', 'edusystem'),
+                __('Invoice', 'edusystem'),
+                'read',
+                'list_admin_partner_invoice_content',
+                'list_admin_partner_invoice_content',
+                'dashicons-admin-page',
+                11
+            );
+        }
+
+        if (current_user_can('manager_admission_aes') || current_user_can('only_read_admission_aes')) {
+            add_menu_page(
+                __('Admission', 'edusystem'),
+                __('Admission', 'edusystem'),
+                'manage_options',
+                'add_admin_form_admission_content',
+                'add_admin_form_admission_content',
+                'dashicons-groups',
+                4
+            );
+            add_submenu_page('add_admin_form_admission_content', __('Required Documents', 'edusystem'), __('Required Documents', 'edusystem'), 'manager_documents_aes', 'admission-documents', 'show_admission_documents', 10);
+        }
 
         add_menu_page(
-            __('Students', 'edusystem'),
-            __('Students', 'edusystem'),
-            'read',
-            'list_admin_institutes_student_registered_content',
-            'list_admin_institutes_student_registered_content',
-            'dashicons-groups',
-            10
-        );
-
-        add_menu_page(
-            __('Fees', 'edusystem'),
-            __('Fees', 'edusystem'),
-            'read',
-            'list_admin_institutes_payments_content',
-            'list_admin_institutes_payments_content',
-            'dashicons-money-alt',
-            11
-        );
-
-
-        add_menu_page(
-            __('Invoice', 'edusystem'),
-            __('Invoice', 'edusystem'),
-            'read',
-            'list_admin_institutes_invoice_content',
-            'list_admin_institutes_invoice_content',
-            'dashicons-admin-page',
-            11
-        );
-    }
-
-    if (in_array('alliance', $roles)) {
-
-        add_menu_page(
-            __('Institutes', 'edusystem'),
-            __('Institutes', 'edusystem'),
-            'read',
-            'list_admin_institutes_partner_registered_content',
-            'list_admin_institutes_partner_registered_content',
-            'dashicons-groups',
-            10
-        );
-
-        add_menu_page(
-            __('Fees', 'edusystem'),
-            __('Fees', 'edusystem'),
-            'read',
-            'list_admin_partner_payments_content',
-            'list_admin_partner_payments_content',
-            'dashicons-money-alt',
-            11
-        );
-
-        add_menu_page(
-            __('Students', 'edusystem'),
-            __('Students', 'edusystem'),
-            'read',
-            'list_admin_partner_students_content',
-            'list_admin_partner_students_content',
-            'dashicons-admin-users',
-            11
-        );
-
-        add_menu_page(
-            __('Invoice', 'edusystem'),
-            __('Invoice', 'edusystem'),
-            'read',
-            'list_admin_partner_invoice_content',
-            'list_admin_partner_invoice_content',
-            'dashicons-admin-page',
-            11
-        );
-    }
-
-    if (current_user_can('manager_admission_aes') || current_user_can('only_read_admission_aes')) {
-        add_menu_page(
-            __('Admission', 'edusystem'),
-            __('Admission', 'edusystem'),
-            'manage_options',
-            'add_admin_form_admission_content',
-            'add_admin_form_admission_content',
-            'dashicons-groups',
+            __('Academic', 'edusystem'),
+            __('Academic', 'edusystem'),
+            'manager_academic_aes',
+            'add_admin_form_academic_content',
+            'add_admin_form_academic_content',
+            'dashicons-welcome-learn-more',
             4
         );
-        add_submenu_page('add_admin_form_admission_content', __('Required Documents', 'edusystem'), __('Required Documents', 'edusystem'), 'manager_documents_aes', 'admission-documents', 'show_admission_documents', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'edusystem'), __('Academic periods', 'edusystem'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'edusystem'), __('Academic offers', 'edusystem'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Academic projection', 'edusystem'), __('Academic projection', 'edusystem'), 'manager_academic_projection_aes', 'add_admin_form_academic_projection_content', 'add_admin_form_academic_projection_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Autoenrollment', 'edusystem'), __('Autoenrollment', 'edusystem'), 'manager_automatically_inscriptions', 'add_admin_form_auto_inscription_content', 'add_admin_form_auto_inscription_content', 10);
+        // add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'edusystem'), __('Enrollments', 'edusystem'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Student graduations', 'edusystem'), __('Student graduations', 'edusystem'), 'manager_graduations_aes', 'add_admin_form_student_graduated_content', 'add_admin_form_student_graduated_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Requests', 'edusystem'), __('Requests', 'edusystem'), 'manager_requests_aes', 'add_admin_form_requests_content', 'add_admin_form_requests_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Scholarship students', 'edusystem'), __('Scholarship students', 'edusystem'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Available scholarships', 'edusystem'), __('Available scholarships', 'edusystem'), 'manager_availables_scholarship_aes', 'add_admin_form_available_scholarships_content', 'add_admin_form_available_scholarships_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Pensum', 'edusystem'), __('Pensum', 'edusystem'), 'manager_pensums', 'add_admin_form_pensum_content', 'add_admin_form_pensum_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Program', 'edusystem'), __('Program', 'edusystem'), 'manager_programs', 'add_admin_form_program_content', 'add_admin_form_program_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('School subjects', 'edusystem'), __('School subjects', 'edusystem'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Student banners', 'edusystem'), __('Student banners', 'edusystem'), 'manager_feed', 'add_admin_form_feed_content', 'add_admin_form_feed_content', 10);
+        remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
+
+        add_menu_page(
+            __('Payments', 'edusystem'),
+            __('Payments', 'edusystem'),
+            'manager_payments_aes',
+            'add_admin_form_payments_content',
+            'add_admin_form_payments_content',
+            'dashicons-money-alt',
+            5
+        );
+
+        add_menu_page(
+            __('Staff', 'edusystem'),
+            __('Staff', 'edusystem'),
+            'manager_staff_menu_aes',
+            'add_admin_form_staff_menu_content',
+            'add_admin_form_staff_menu_content',
+            'dashicons-buddicons-buddypress-logo',
+            6
+        );
+        add_submenu_page('add_admin_form_staff_menu_content', __('Staff', 'edusystem'), __('Staff', 'edusystem'), 'manager_staff_aes', 'add_admin_form_staff_content', 'add_admin_form_staff_content', 10);
+        add_submenu_page('add_admin_form_staff_menu_content', __('Institutes', 'edusystem'), __('Institutes', 'edusystem'), 'manager_institutes_aes', 'add_admin_institutes_content', 'add_admin_institutes_content', 10);
+        add_submenu_page('add_admin_form_staff_menu_content', __('Alliances', 'edusystem'), __('Alliances', 'edusystem'), 'manager_alliances_aes', 'add_admin_partners_content', 'add_admin_partners_content', 10);
+        add_submenu_page('add_admin_form_staff_menu_content', __('Teachers', 'edusystem'), __('Teachers', 'edusystem'), 'manager_teachers_aes', 'add_admin_form_teachers_content', 'add_admin_form_teachers_content', 10);
+        remove_submenu_page('add_admin_form_staff_menu_content', 'add_admin_form_staff_menu_content');
+
+        add_menu_page(
+            __('Communications', 'edusystem'),
+            __('Communications', 'edusystem'),
+            'manager_communications_aes',
+            'add_admin_form_communications_content',
+            'add_admin_form_communications_content',
+            'dashicons-email-alt2',
+            7
+        );
+        add_submenu_page('add_admin_form_communications_content', __('Send email', 'edusystem'), __('Send email', 'edusystem'), 'manager_send_email_aes', 'add_admin_form_send_email_content', 'add_admin_form_send_email_content', 10);
+        add_submenu_page('add_admin_form_communications_content', __('Email to staff', 'edusystem'), __('Email to staff', 'edusystem'), 'manager_send_notification_aes', 'add_admin_form_send_notification_content', 'add_admin_form_send_notification_content', 10);
+        add_submenu_page('add_admin_form_communications_content', __('Template emails', 'edusystem'), __('Template emails', 'edusystem'), 'manager_templates_emails', 'add_admin_form_templates_emails_content', 'add_admin_form_templates_emails_content', 10);
+        remove_submenu_page('add_admin_form_communications_content', 'add_admin_form_communications_content');
+
+        add_menu_page(
+            __('Report', 'edusystem'),
+            __('Report', 'edusystem'),
+            'manager_report_aes',
+            'add_admin_form_report_content',
+            'add_admin_form_report_content',
+            'dashicons-list-view',
+            8
+        );
+        add_submenu_page('add_admin_form_report_content', __('Sales', 'edusystem'), __('Sales', 'edusystem'), 'manager_sales_aes', 'report-sales', 'show_report_sales', 10);
+        add_submenu_page('add_admin_form_report_content', __('Accounts receivable', 'edusystem'), __('Accounts receivable', 'edusystem'), 'manager_accounts_receivables_aes', 'report-accounts-receivables', 'show_report_accounts_receivables', 10);
+        add_submenu_page('add_admin_form_report_content', __('Students', 'edusystem'), __('Students', 'edusystem'), 'manager_report_students_aes', 'report-students', 'show_report_students', 10);
+        add_submenu_page('add_admin_form_report_content', __('Current students', 'edusystem'), __('Current students', 'edusystem'), 'manager_report_current_students_aes', 'report-current-students', 'show_report_current_students', 10);
+        add_submenu_page('add_admin_form_report_content', __('Sales by product', 'edusystem'), __('Sales by product', 'edusystem'), 'manager_report_sales_product', 'report-sales-product', 'show_report_sales_product', 10);
+
+        add_menu_page(
+            __('Settings', 'edusystem'),
+            __('Settings', 'edusystem'),
+            'manager_settings_aes',
+            'add_admin_form_settings_content',
+            'add_admin_form_settings_content',
+            'dashicons-admin-generic',
+            30
+        );
+        add_submenu_page('add_admin_form_settings_content', __('Settings', 'edusystem'), __('Settings', 'edusystem'), 'manager_configuration_options_aes', 'add_admin_form_configuration_options_content', 'add_admin_form_configuration_options_content', 10);
+        add_submenu_page('add_admin_form_settings_content', __('Departments', 'edusystem'), __('Departments', 'edusystem'), 'manager_departments_aes', 'add_admin_department_content', 'list_admin_form_department_content', 10);
+        remove_submenu_page('add_admin_form_settings_content', 'add_admin_form_settings_content');
     }
-
-    add_menu_page(
-        __('Academic', 'edusystem'),
-        __('Academic', 'edusystem'),
-        'manager_academic_aes',
-        'add_admin_form_academic_content',
-        'add_admin_form_academic_content',
-        'dashicons-welcome-learn-more',
-        4
-    );
-    add_submenu_page('add_admin_form_academic_content', __('Academic periods', 'edusystem'), __('Academic periods', 'edusystem'), 'manager_academic_periods_aes', 'add_admin_form_academic_periods_content', 'add_admin_form_academic_periods_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Academic offers', 'edusystem'), __('Academic offers', 'edusystem'), 'manager_academic_offers_aes', 'add_admin_form_academic_offers_content', 'add_admin_form_academic_offers_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Academic projection', 'edusystem'), __('Academic projection', 'edusystem'), 'manager_academic_projection_aes', 'add_admin_form_academic_projection_content', 'add_admin_form_academic_projection_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Autoenrollment', 'edusystem'), __('Autoenrollment', 'edusystem'), 'manager_automatically_inscriptions', 'add_admin_form_auto_inscription_content', 'add_admin_form_auto_inscription_content', 10);
-    // add_submenu_page('add_admin_form_academic_content', __('Enrollments', 'edusystem'), __('Enrollments', 'edusystem'), 'manager_enrollments_aes', 'add_admin_form_enrollments_content', 'add_admin_form_enrollments_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Student graduations', 'edusystem'), __('Student graduations', 'edusystem'), 'manager_graduations_aes', 'add_admin_form_student_graduated_content', 'add_admin_form_student_graduated_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Requests', 'edusystem'), __('Requests', 'edusystem'), 'manager_requests_aes', 'add_admin_form_requests_content', 'add_admin_form_requests_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Scholarship students', 'edusystem'), __('Scholarship students', 'edusystem'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Available scholarships', 'edusystem'), __('Available scholarships', 'edusystem'), 'manager_availables_scholarship_aes', 'add_admin_form_available_scholarships_content', 'add_admin_form_available_scholarships_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Pensum', 'edusystem'), __('Pensum', 'edusystem'), 'manager_pensums', 'add_admin_form_pensum_content', 'add_admin_form_pensum_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Program', 'edusystem'), __('Program', 'edusystem'), 'manager_programs', 'add_admin_form_program_content', 'add_admin_form_program_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('School subjects', 'edusystem'), __('School subjects', 'edusystem'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
-    add_submenu_page('add_admin_form_academic_content', __('Student banners', 'edusystem'), __('Student banners', 'edusystem'), 'manager_feed', 'add_admin_form_feed_content', 'add_admin_form_feed_content', 10);
-    remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
-
-    add_menu_page(
-        __('Payments', 'edusystem'),
-        __('Payments', 'edusystem'),
-        'manager_payments_aes',
-        'add_admin_form_payments_content',
-        'add_admin_form_payments_content',
-        'dashicons-money-alt',
-        5
-    );
-
-    add_menu_page(
-        __('Staff', 'edusystem'),
-        __('Staff', 'edusystem'),
-        'manager_staff_menu_aes',
-        'add_admin_form_staff_menu_content',
-        'add_admin_form_staff_menu_content',
-        'dashicons-buddicons-buddypress-logo',
-        6
-    );
-    add_submenu_page('add_admin_form_staff_menu_content', __('Staff', 'edusystem'), __('Staff', 'edusystem'), 'manager_staff_aes', 'add_admin_form_staff_content', 'add_admin_form_staff_content', 10);
-    add_submenu_page('add_admin_form_staff_menu_content', __('Institutes', 'edusystem'), __('Institutes', 'edusystem'), 'manager_institutes_aes', 'add_admin_institutes_content', 'add_admin_institutes_content', 10);
-    add_submenu_page('add_admin_form_staff_menu_content', __('Alliances', 'edusystem'), __('Alliances', 'edusystem'), 'manager_alliances_aes', 'add_admin_partners_content', 'add_admin_partners_content', 10);
-    add_submenu_page('add_admin_form_staff_menu_content', __('Teachers', 'edusystem'), __('Teachers', 'edusystem'), 'manager_teachers_aes', 'add_admin_form_teachers_content', 'add_admin_form_teachers_content', 10);
-    remove_submenu_page('add_admin_form_staff_menu_content', 'add_admin_form_staff_menu_content');
-
-    add_menu_page(
-        __('Communications', 'edusystem'),
-        __('Communications', 'edusystem'),
-        'manager_communications_aes',
-        'add_admin_form_communications_content',
-        'add_admin_form_communications_content',
-        'dashicons-email-alt2',
-        7
-    );
-    add_submenu_page('add_admin_form_communications_content', __('Send email', 'edusystem'), __('Send email', 'edusystem'), 'manager_send_email_aes', 'add_admin_form_send_email_content', 'add_admin_form_send_email_content', 10);
-    add_submenu_page('add_admin_form_communications_content', __('Email to staff', 'edusystem'), __('Email to staff', 'edusystem'), 'manager_send_notification_aes', 'add_admin_form_send_notification_content', 'add_admin_form_send_notification_content', 10);
-    add_submenu_page('add_admin_form_communications_content', __('Template emails', 'edusystem'), __('Template emails', 'edusystem'), 'manager_templates_emails', 'add_admin_form_templates_emails_content', 'add_admin_form_templates_emails_content', 10);
-    remove_submenu_page('add_admin_form_communications_content', 'add_admin_form_communications_content');
-
-    add_menu_page(
-        __('Report', 'edusystem'),
-        __('Report', 'edusystem'),
-        'manager_report_aes',
-        'add_admin_form_report_content',
-        'add_admin_form_report_content',
-        'dashicons-list-view',
-        8
-    );
-    add_submenu_page('add_admin_form_report_content', __('Sales', 'edusystem'), __('Sales', 'edusystem'), 'manager_sales_aes', 'report-sales', 'show_report_sales', 10);
-    add_submenu_page('add_admin_form_report_content', __('Accounts receivable', 'edusystem'), __('Accounts receivable', 'edusystem'), 'manager_accounts_receivables_aes', 'report-accounts-receivables', 'show_report_accounts_receivables', 10);
-    add_submenu_page('add_admin_form_report_content', __('Students', 'edusystem'), __('Students', 'edusystem'), 'manager_report_students_aes', 'report-students', 'show_report_students', 10);
-    add_submenu_page('add_admin_form_report_content', __('Current students', 'edusystem'), __('Current students', 'edusystem'), 'manager_report_current_students_aes', 'report-current-students', 'show_report_current_students', 10);
-    add_submenu_page('add_admin_form_report_content', __('Sales by product', 'edusystem'), __('Sales by product', 'edusystem'), 'manager_report_sales_product', 'report-sales-product', 'show_report_sales_product', 10);
-
-    add_menu_page(
-        __('Settings', 'edusystem'),
-        __('Settings', 'edusystem'),
-        'manager_settings_aes',
-        'add_admin_form_settings_content',
-        'add_admin_form_settings_content',
-        'dashicons-admin-generic',
-        30
-    );
-    add_submenu_page('add_admin_form_settings_content', __('Settings', 'edusystem'), __('Settings', 'edusystem'), 'manager_configuration_options_aes', 'add_admin_form_configuration_options_content', 'add_admin_form_configuration_options_content', 10);
-    add_submenu_page('add_admin_form_settings_content', __('Departments', 'edusystem'), __('Departments', 'edusystem'), 'manager_departments_aes', 'add_admin_department_content', 'list_admin_form_department_content', 10);
-    remove_submenu_page('add_admin_form_settings_content', 'add_admin_form_settings_content');
 }
 
 add_action('admin_menu', 'add_custom_admin_page');
@@ -599,7 +602,7 @@ function get_dates_search($filter, $custom)
             if(get_option('restaurant_system_schedule_'.$dayStart.'_checkbox') == 'true'){
 
                 $start_time = get_option('restaurant_system_schedule_'.$dayStart.'_start_time');
-                
+
                 if(get_option('restaurant_system_schedule_'.$dayStart.'_interday') == 'true'){
                     $start = get_gmt_from_date($startDatetime->format('Y-m-d').$start_time,'Y-m-d H:i');
                 }
@@ -618,7 +621,7 @@ function get_dates_search($filter, $custom)
                 $end_time = get_option('restaurant_system_schedule_'.$dayEnd.'_end_time');
 
                 if(get_option('restaurant_system_schedule_'.$dayEnd.'_interday') == 'true'){
-                    
+
                     $end = get_gmt_from_date($endDatetime->format('Y-m-d').$end_time,'Y-m-d H:i');
                 }
             }
@@ -1014,7 +1017,7 @@ function daily_cuote_pendings()
             $customer_id = 0;
             if (in_array('student', $roles)) {
                 $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user->user_email}'");
-    
+
                 $birth_date = get_user_meta($user->ID, 'birth_date', true);
                 $birth_date_timestamp = strtotime($birth_date);
                 $current_timestamp = time();
@@ -1028,12 +1031,12 @@ function daily_cuote_pendings()
                 $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$user->ID}'");
                 $customer_id = $user->ID;
             }
-    
+
             if ($student) {
                 $cuote_pending = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
                 if ($cuote_pending) {
                     update_user_meta($customer_id, 'cuote_pending', 1);
-    
+
                     $args['customer_id'] = $customer_id;
                     $args['status'] = array('wc-pending', 'wc-on-hold');
                     $order_pendings = wc_get_orders($args);
@@ -1048,12 +1051,12 @@ function daily_cuote_pendings()
                         $order_id = $order_old->get_id();
                         $old_order_items = $order_old->get_items();
                         $first_item = reset($old_order_items);
-    
+
                         $order_args = array(
                             'customer_id' => $customer_id,
                             'status' => 'pending-payment',
                         );
-    
+
                         $new_order = wc_create_order($order_args);
                         $new_order->add_meta_data('old_order_primary', $order_id);
                         $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
@@ -1080,7 +1083,7 @@ function daily_cuote_pendings()
                             $new_order->set_billing_phone($billing_address['phone']);
                         }
                         $new_order->save();
-    
+
                         // hacemos el envio del email al email del customer, es decir, al que paga.
                         $user_customer = get_user_by('id', $customer_id);
                         $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
@@ -1097,7 +1100,8 @@ function daily_cuote_pendings()
 }
 
 add_action('current_screen', 'detect_orders_endpoint_admin');
-function detect_orders_endpoint_admin() {
+function detect_orders_endpoint_admin()
+{
     // Obtener la pantalla actual
     $screen = get_current_screen();
     if ($screen) {
@@ -1126,7 +1130,8 @@ function detect_orders_endpoint_admin() {
     }
 }
 
-function get_replacements_variables($student, $code_period = null, $cut_period = null) {
+function get_replacements_variables($student, $code_period = null, $cut_period = null)
+{
     $load = load_current_cut();
     $academic_period = get_period_details_code($load['code']);
     $start_academic_period = date('F d, Y', strtotime($academic_period->start_date));
@@ -1189,25 +1194,25 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
             'wrap' => false,
         ],
         'table_notes' => [
-            'value' => function() use ($student) {
+            'value' => function () use ($student) {
                 return table_notes_html($student->id, get_projection_by_student($student->id));
             },
             'wrap' => false,
         ],
         'table_notes_summary' => [
-            'value' => function() use ($student) {
+            'value' => function () use ($student) {
                 return table_notes_summary_html(get_projection_by_student($student->id));
             },
             'wrap' => false,
         ],
         'table_inscriptions' => [
-            'value' => function() use ($student) {
+            'value' => function () use ($student) {
                 return table_inscriptions_html(get_inscriptions_by_student($student->id));
             },
             'wrap' => false,
         ],
         'table_notes_period' => [
-            'value' => function() use ($student, $code_period, $cut_period) {
+            'value' => function () use ($student, $code_period, $cut_period) {
                 return table_notes_period_html(get_inscriptions_by_student_period($student->id, $code_period, $cut_period));
             },
             'wrap' => false,
@@ -1253,12 +1258,13 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
     return $replacements;
 }
 
-function filter_media_library_modal($query) {
+function filter_media_library_modal($query)
+{
     if (current_user_can('manager_media_aes') && !current_user_can('administrator')) {
         // Get all users with manager_media_aes capability but exclude administrators
         $manager_users = get_users(array(
-            'fields'       => 'ID',
-            'capability'   => 'manager_media_aes',
+            'fields' => 'ID',
+            'capability' => 'manager_media_aes',
             'role__not_in' => array('administrator') // Exclude administrators
         ));
 
@@ -1269,9 +1275,10 @@ function filter_media_library_modal($query) {
     return $query;
 }
 add_filter('ajax_query_attachments_args', 'filter_media_library_modal');
-function wp_add_widgets_edusof() {
+function wp_add_widgets_edusof()
+{
     // Check if the current user has the 'manager_payments_aes' capability
-    if ( current_user_can( 'manager_payments_aes' ) ) {
+    if (current_user_can('manager_payments_aes')) {
         wp_add_dashboard_widget(
             'wp_widget_pending_payments', // Unique ID for your widget
             'Payments Status', // Title displayed in the widget
@@ -1280,7 +1287,7 @@ function wp_add_widgets_edusof() {
     }
 
     // Check if the current user has the 'manager_admission_aes' capability
-    if ( current_user_can( 'manager_admission_aes' ) ) {
+    if (current_user_can('manager_admission_aes')) {
         wp_add_dashboard_widget(
             'wp_widget_documents_review', // Unique ID for your widget
             'Admission Status', // Title displayed in the widget
@@ -1289,7 +1296,7 @@ function wp_add_widgets_edusof() {
     }
 
     // Check if the current user has the 'manager_admission_aes' capability
-    if ( current_user_can( 'manager_requests_aes' ) ) {
+    if (current_user_can('manager_requests_aes')) {
         wp_add_dashboard_widget(
             'wp_widget_requests_review', // Unique ID for your widget
             'Requests Status', // Title displayed in the widget
@@ -1297,29 +1304,30 @@ function wp_add_widgets_edusof() {
         );
     }
 }
-add_action( 'wp_dashboard_setup', 'wp_add_widgets_edusof' );
+add_action('wp_dashboard_setup', 'wp_add_widgets_edusof');
 
-function wp_widget_pending_payments_callback() {
+function wp_widget_pending_payments_callback()
+{
     // Initialize counts
     $pending_payments_count = 0;
     $payments_to_review_count = 0;
 
-    if ( class_exists( 'WC_Order_Query' ) ) {
+    if (class_exists('WC_Order_Query')) {
         // Query for 'pending payment' orders
-        $pending_orders = wc_get_orders( array(
-            'status'     => 'pending', // 'pending' status usually refers to 'pending payment'
-            'limit'      => -1, // Get all orders with this status
-            'return'     => 'ids', // Return only order IDs for counting
-        ) );
-        $pending_payments_count = count( $pending_orders );
+        $pending_orders = wc_get_orders(array(
+            'status' => 'pending', // 'pending' status usually refers to 'pending payment'
+            'limit' => -1, // Get all orders with this status
+            'return' => 'ids', // Return only order IDs for counting
+        ));
+        $pending_payments_count = count($pending_orders);
 
         // Query for 'on-hold' orders (often used for 'to review' or manual processing)
-        $on_hold_orders = wc_get_orders( array(
-            'status'     => 'on-hold',
-            'limit'      => -1,
-            'return'     => 'ids',
-        ) );
-        $payments_to_review_count = count( $on_hold_orders );
+        $on_hold_orders = wc_get_orders(array(
+            'status' => 'on-hold',
+            'limit' => -1,
+            'return' => 'ids',
+        ));
+        $payments_to_review_count = count($on_hold_orders);
     }
 
     $widget_data = array(
@@ -1331,7 +1339,8 @@ function wp_widget_pending_payments_callback() {
     include(plugin_dir_path(__FILE__) . 'templates/widget-pending-payments.php');
 }
 
-function wp_widget_documents_review_callback() {
+function wp_widget_documents_review_callback()
+{
     global $wpdb;
     $table_student_documents = $wpdb->prefix . 'student_documents';
     $pending_documents = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE `status`=1");
@@ -1342,7 +1351,8 @@ function wp_widget_documents_review_callback() {
     include(plugin_dir_path(__FILE__) . 'templates/widget-documents-review.php');
 }
 
-function wp_widget_requests_review_callback() {
+function wp_widget_requests_review_callback()
+{
     global $wpdb;
     $table_requests = $wpdb->prefix . 'requests';
     $pending_requests = $wpdb->get_results("SELECT * FROM {$table_requests} WHERE `status_id`=0");
