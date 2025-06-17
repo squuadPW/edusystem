@@ -1,5 +1,6 @@
 <h2 class="nav-tab-wrapper">
-	<a href="<?= admin_url('admin.php?page=report-current-students') ?>" class="nav-tab <?= (!isset($_GET['section_tab'])) ? 'nav-tab-active' : ''; ?>"><?= __('Current','edusystem'); ?> (<strong><?= $total_count_current ?></strong>)</a>
+	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=active') ?>" class="nav-tab <?= !isset($_GET['section_tab']) ? 'nav-tab-active' : ''; ?>"><?= __('Active students','edusystem'); ?> (<strong><?= $total_count_current ?></strong>)</a>
+	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=current') ?>" class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'current') ? 'nav-tab-active' : ''; ?>"><?= __('Current','edusystem'); ?> (<strong><?= $total_count_current ?></strong>)</a>
 	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=pending_electives'); ?>" class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending_electives') ? 'nav-tab-active' : ''; ?>"><?= __('Pending electives','edusystem'); ?> (<strong><?= $total_count_pending_electives ?></strong>)</a>
     <a href="<?= admin_url('admin.php?page=report-current-students&section_tab=non-enrolled'); ?>" class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'non-enrolled') ? 'nav-tab-active' : ''; ?>"><?= __('Non-enrolled students','edusystem'); ?> (<strong><?= $total_count_non_enrolled ?></strong>)</a>
 </h2>

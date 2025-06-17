@@ -95,6 +95,14 @@ function show_report_current_students()
             $list_students = new TT_Non_Enrolled_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'current') {
+            $list_students = new TT_Current_Student_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'active') {
+            $list_students = new TT_Current_Student_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         }
     } else {
         $list_students = new TT_Current_Student_List_Table;
