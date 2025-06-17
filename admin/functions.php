@@ -462,7 +462,7 @@ function add_custom_admin_page()
         remove_submenu_page('add_admin_form_settings_content', 'add_admin_form_settings_content');
     }
 
-    if ($subscription_status == 'expired') {
+    if ($subscription_status == 'expired' && !in_array('administrator', $roles)) {
         remove_menu_page('users.php');
         remove_menu_page('upload.php');
     }
