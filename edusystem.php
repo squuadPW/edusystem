@@ -117,6 +117,8 @@ function create_tables()
       "CREATE TABLE " . $table_type_requests . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         type TEXT NOT NULL,
+        price FLOAT NOT NULL,
+        certificate_template_id INT(11) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
@@ -798,7 +800,6 @@ function create_tables()
       }
     }
   }
-
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_documents_for_teachers}'") != $table_documents_for_teachers) {
     dbDelta(

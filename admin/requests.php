@@ -61,16 +61,22 @@ function add_admin_form_requests_content()
 
             $type_id = sanitize_text_field($_POST['type_id']);
             $type = sanitize_text_field($_POST['type']);
+            $price = sanitize_text_field($_POST['price']);
+            $certificates_templates_id = sanitize_text_field($_POST['certificates_templates_id']);
 
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
-            if (isset($type_id) && !empty($type_id)) {
+            if (isset($type_id) && !empty($type_id) && !empty($price) && !empty($certificates_templates_id) ) {
                 $wpdb->update($table_type_requests, [
                     'type' => $type,
+                    'price' => $price,
+                    'certificates_templates_id' => $certificates_templates_id,
                 ], ['id' => $type_id]);
                 wp_redirect(admin_url('admin.php?page=add_admin_form_requests_content&section_tab=type_details&type_id='.$type_id));
             } else {
                 $wpdb->insert($table_type_requests, [
                     'type' => $type,
+                    'price' => $price,
+                    'certificates_templates_id' => $certificates_templates_id,
                 ]);
                 wp_redirect(admin_url('admin.php?page=add_admin_form_requests_content&section_tab=types'));
             }

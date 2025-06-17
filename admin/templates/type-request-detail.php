@@ -41,11 +41,46 @@
 
                                     <div style="font-weight:400;" class="space-type">
                                         <label
-                                            for="type"><b><?= __('Name', 'edusystem'); ?></b><span
-                                                class="text-danger">*</span></label><br>
-                                        <input type="text" name="type"
-                                            value="<?= $type->type; ?>" required>
+                                            for="type"><b><?= __('Name', 'edusystem'); ?></b>
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <br>
+
+                                        <input type="text" name="type" value="<?= $type->type; ?>" required>
                                     </div>
+
+                                    <br>
+
+                                    <div style="font-weight:400;" class="space-type">
+                                        <label for="type">
+                                            <b><?= __('Price', 'edusystem'); ?></b>
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        
+                                        <br>
+
+                                        <input type="number" name="price" value="<?= $type->price; ?>" required>
+                                    </div>
+
+                                    <br>
+
+                                    <div style="font-weight:400;" class="space-type">
+
+                                        <label for="type">
+                                            <b><?= __('Certificates templates', 'edusystem'); ?></b>
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        
+                                        <br>
+
+                                        <select name="certificates_templates_id" value="<?= $type->certificates_templates_id; ?>" required>
+                                            <option value="" ><?= __('Select certificates templates', 'edusystem'); ?></option>
+                                            <option value="0" >opcion</option>
+                                        </select>
+
+                                    </div>
+
                                 </div>
                             </div>
 
