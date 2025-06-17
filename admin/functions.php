@@ -1277,31 +1277,34 @@ function filter_media_library_modal($query)
 add_filter('ajax_query_attachments_args', 'filter_media_library_modal');
 function wp_add_widgets_edusof()
 {
-    // Check if the current user has the 'manager_payments_aes' capability
-    if (current_user_can('manager_payments_aes')) {
-        wp_add_dashboard_widget(
-            'wp_widget_pending_payments', // Unique ID for your widget
-            'Payments Status', // Title displayed in the widget
-            'wp_widget_pending_payments_callback' // Callback function for content
-        );
-    }
+    $subscription_status = get_option('site_status_subscription');
+    if ($subscription_status != 'expired') {
+        // Check if the current user has the 'manager_payments_aes' capability
+        if (current_user_can('manager_payments_aes')) {
+            wp_add_dashboard_widget(
+                'wp_widget_pending_payments', // Unique ID for your widget
+                'Payments Status', // Title displayed in the widget
+                'wp_widget_pending_payments_callback' // Callback function for content
+            );
+        }
 
-    // Check if the current user has the 'manager_admission_aes' capability
-    if (current_user_can('manager_admission_aes')) {
-        wp_add_dashboard_widget(
-            'wp_widget_documents_review', // Unique ID for your widget
-            'Admission Status', // Title displayed in the widget
-            'wp_widget_documents_review_callback' // Callback function for content
-        );
-    }
+        // Check if the current user has the 'manager_admission_aes' capability
+        if (current_user_can('manager_admission_aes')) {
+            wp_add_dashboard_widget(
+                'wp_widget_documents_review', // Unique ID for your widget
+                'Admission Status', // Title displayed in the widget
+                'wp_widget_documents_review_callback' // Callback function for content
+            );
+        }
 
-    // Check if the current user has the 'manager_admission_aes' capability
-    if (current_user_can('manager_requests_aes')) {
-        wp_add_dashboard_widget(
-            'wp_widget_requests_review', // Unique ID for your widget
-            'Requests Status', // Title displayed in the widget
-            'wp_widget_requests_review_callback' // Callback function for content
-        );
+        // Check if the current user has the 'manager_admission_aes' capability
+        if (current_user_can('manager_requests_aes')) {
+            wp_add_dashboard_widget(
+                'wp_widget_requests_review', // Unique ID for your widget
+                'Requests Status', // Title displayed in the widget
+                'wp_widget_requests_review_callback' // Callback function for content
+            );
+        }
     }
 }
 add_action('wp_dashboard_setup', 'wp_add_widgets_edusof');
