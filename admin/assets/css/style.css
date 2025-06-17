@@ -1268,4 +1268,10 @@ h2 {
   font-style: italic;
   color: rgba(128, 128, 128, 0.5411764706);
   pointer-events: none;
+}
+
+.group-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }/*# sourceMappingURL=style.css.map */

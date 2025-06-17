@@ -36,7 +36,7 @@
                                     <b><?= __('Type Information', 'edusystem'); ?></b>
                                 </h3>
 
-                                <div style="margin: 18px;">
+                                <div style="margin: 18px;" class="group-inputs" >
                                     <input type="hidden" name="type_id" value="<?= $type->id ?>">
 
                                     <div style="font-weight:400;" class="space-type">
@@ -68,15 +68,26 @@
                                     <div style="font-weight:400;" class="space-type">
 
                                         <label for="type">
-                                            <b><?= __('Certificates templates', 'edusystem'); ?></b>
+                                            <b><?= __('Documents certificates', 'edusystem'); ?></b>
                                             <span class="text-danger">*</span>
                                         </label>
                                         
                                         <br>
 
-                                        <select name="certificates_templates_id" value="<?= $type->certificates_templates_id; ?>" required>
+                                        <?php
+                                            global $wpdb;
+                                            $documents_certificates = $wpdb->get_results("SELECT id, title FROM `{$wpdb->prefix}documents_certificates`");
+                                        ?>
+
+                                        <select name="document_certificate_id" required>
                                             <option value="" ><?= __('Select certificates templates', 'edusystem'); ?></option>
-                                            <option value="0" >opcion</option>
+
+                                            <?php if( $documents_certificates ): ?>
+                                                <?php foreach( $documents_certificates as $document_certificate ): ?>
+                                                    <option value="<?=$document_certificate->id ?>" <?= $type->document_certificate_id == $document_certificate->id ? 'selected' : ''; ?> ><?= $document_certificate->title ?></option>
+                                                <?php endforeach ?>
+                                            <?php endif; ?>
+                                            
                                         </select>
 
                                     </div>
