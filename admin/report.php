@@ -79,9 +79,10 @@ function show_report_students()
 
 function show_report_current_students()
 {
-    $total_count_current = (int)get_students_current_count();
-    $total_count_pending_electives = (int)get_students_pending_elective_count();
-    $total_count_non_enrolled = (int)get_students_non_enrolled_count();
+    $total_count_current = (int) get_students_current_count();
+    $total_count_active = (int) get_students_active_count();
+    $total_count_pending_electives = (int) get_students_pending_elective_count();
+    $total_count_non_enrolled = (int) get_students_non_enrolled_count();
     $load = load_current_cut();
     $academic_period = $load['code'];
     $cut = $load['cut'];
@@ -100,12 +101,12 @@ function show_report_current_students()
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'active') {
-            $list_students = new TT_Current_Student_List_Table;
+            $list_students = new TT_Active_Student_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         }
     } else {
-        $list_students = new TT_Current_Student_List_Table;
+        $list_students = new TT_Active_Student_List_Table;
         $list_students->prepare_items();
         include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
     }
@@ -186,14 +187,14 @@ function get_orders($start, $end)
         if ($student) {
             $customer = get_user_by('id', $student->partner_id);
             $user_student = get_user_by('email', $student->email);
-    
+
             $cuote->student = (array) $student;
             $cuote->customer = (array) $customer;
             $cuote->student_id = $user_student ? $user_student->ID : null;
-    
+
             $product = wc_get_product($cuote->variation_id ? $cuote->variation_id : $cuote->product_id);
             $cuote->product = $product->get_name();
-    
+
             // for fix
             if ($cuote->product_id != FEE_INSCRIPTION) {
                 $created_at = $cuote->created_at;
@@ -208,7 +209,7 @@ function get_orders($start, $end)
                     }
                 }
             }
-    
+
             $cuotes_array[] = $cuote;
             $receivable += $cuote->amount;
         }
@@ -691,7 +692,8 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
                 'singular' => 'pending_elective',
                 'plural' => 'pending_electives',
                 'ajax' => true
-            ));
+            )
+        );
 
     }
 
@@ -784,7 +786,7 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
 
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        
+
         $data = $data_student['data'];
         $total_count = (int) $data_student['total_count'];
 
@@ -819,7 +821,8 @@ class TT_Current_Student_List_Table extends WP_List_Table
                 'singular' => 'pending_elective',
                 'plural' => 'pending_electives',
                 'ajax' => true
-            ));
+            )
+        );
 
     }
 
@@ -970,7 +973,141 @@ class TT_Current_Student_List_Table extends WP_List_Table
 
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        
+
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Active_Student_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'active',
+                'plural' => 'actives',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        return $item[$column_name];
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'student' => __('Student', 'edusystem')
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_students_active_report()
+    {
+        global $wpdb;
+        $table_students = $wpdb->prefix . 'students';
+        $students_array = [];
+
+        // Seleccionar solo las columnas necesarias para el reporte
+        $students = $wpdb->get_results(
+            "SELECT SQL_CALC_FOUND_ROWS id, last_name, middle_last_name, name, middle_name 
+         FROM {$table_students} 
+         WHERE condition_student = 1 
+         ORDER BY id DESC",
+            "ARRAY_A"
+        );
+
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        $base_url = admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=');
+
+        foreach ($students as $student) {
+            $student_full_name = '<a href="' . $base_url . $student['id'] . '" target="_blank" class="text-uppercase">' .
+                $student['last_name'] . ' ' .
+                ($student['middle_last_name'] ?? '') . ' ' .
+                $student['name'] . ' ' .
+                ($student['middle_name'] ?? '') .
+                '</a>';
+
+            $students_array[] = ['student' => $student_full_name];
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
+    function prepare_items()
+    {
+
+        $data_student = $this->get_students_active_report();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
         $data = $data_student['data'];
         $total_count = (int) $data_student['total_count'];
 
@@ -1005,7 +1142,8 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
                 'singular' => 'pending_elective',
                 'plural' => 'pending_electives',
                 'ajax' => true
-            ));
+            )
+        );
 
     }
 
@@ -1036,7 +1174,7 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
     }
 
     function get_students_non_enrolled_report()
-    {    
+    {
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
@@ -1115,7 +1253,7 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
 
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        
+
         $data = $data_student['data'];
         $total_count = (int) $data_student['total_count'];
 
@@ -1190,8 +1328,21 @@ function get_students_current_count()
     return $total_count;
 }
 
+function get_students_active_count()
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+
+    // Contar directamente el número de filas que cumplen la condición
+    $total_count = $wpdb->get_var(
+        "SELECT COUNT(id) FROM {$table_students} WHERE condition_student = 1"
+    );
+    
+    return $total_count;
+}
+
 function get_students_non_enrolled_count()
-{    
+{
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
