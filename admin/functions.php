@@ -461,6 +461,11 @@ function add_custom_admin_page()
         add_submenu_page('add_admin_form_settings_content', __('Departments', 'edusystem'), __('Departments', 'edusystem'), 'manager_departments_aes', 'add_admin_department_content', 'list_admin_form_department_content', 10);
         remove_submenu_page('add_admin_form_settings_content', 'add_admin_form_settings_content');
     }
+
+    if ($subscription_status == 'expired') {
+        remove_menu_page('users.php');
+        remove_menu_page('upload.php');
+    }
 }
 
 add_action('admin_menu', 'add_custom_admin_page');
