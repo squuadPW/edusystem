@@ -38,6 +38,7 @@
 
                                 <div style="margin: 18px;" class="group-inputs" >
                                     <input type="hidden" name="type_id" value="<?= $type->id ?>">
+                                    <input type="hidden" name="type_product_id" value="<?= $type->product_id ?>">
 
                                     <div style="font-weight:400;" class="space-type">
                                         <label

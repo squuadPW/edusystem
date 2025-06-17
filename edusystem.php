@@ -119,6 +119,7 @@ function create_tables()
         type TEXT NOT NULL,
         price FLOAT NOT NULL,
         document_certificate_id INT(11) NOT NULL,
+        product_id INT(11) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
@@ -580,7 +581,6 @@ function create_tables()
     );
   }
 
-
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_institutes}'") != $table_institutes) {
 
     dbDelta(
@@ -620,7 +620,6 @@ function create_tables()
       )$charset_collate;"
     );
   }
-
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances}'") != $table_alliances) {
 

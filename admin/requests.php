@@ -60,24 +60,55 @@ function add_admin_form_requests_content()
             $table_type_requests = $wpdb->prefix . 'type_requests';
 
             $type_id = sanitize_text_field($_POST['type_id']);
+            $product_id = sanitize_text_field($_POST['type_product_id']);
             $type = sanitize_text_field($_POST['type']);
             $price = sanitize_text_field($_POST['price']);
             $document_certificate_id = sanitize_text_field($_POST['document_certificate_id']);
 
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
-            if (isset($type_id) && !empty($type_id) && !empty($price) && !empty($document_certificate_id) ) {
+            if (isset($type_id) && isset($product_id) && !empty($type_id) && !empty($price) && !empty($document_certificate_id) ) {
+                
+                wp_update_post( array(
+                    'ID'         => $product_id,
+                    'post_title' => $type ,
+                ), true );
+
+                update_post_meta( $product_id, '_regular_price', $price );
+                update_post_meta( $product_id, '_price', $price );
+
                 $wpdb->update($table_type_requests, [
                     'type' => $type,
                     'price' => $price,
                     'document_certificate_id' => $document_certificate_id,
                 ], ['id' => $type_id]);
+
                 wp_redirect(admin_url('admin.php?page=add_admin_form_requests_content&section_tab=type_details&type_id='.$type_id));
+            
             } else {
-                $wpdb->insert($table_type_requests, [
-                    'type' => $type,
-                    'price' => $price,
-                    'document_certificate_id' => $document_certificate_id,
+
+                // Función para crear un producto
+                $product_id = wp_insert_post([
+                    'post_title'   => $type,
+                    'post_status'  => 'publish',
+                    'post_type'    => 'product',
                 ]);
+
+                // Verificar si el producto se creó correctamente
+                if ( ! is_wp_error( $product_id ) ) {
+
+                    update_post_meta( $product_id, '_regular_price', $price );
+                    update_post_meta( $product_id, '_price', $price );
+                    update_post_meta( $product_id, '_stock_status', 'instock' ); // Estado del stock
+
+                    $wpdb->insert($table_type_requests, [
+                        'type' => $type,
+                        'price' => $price,
+                        'document_certificate_id' => $document_certificate_id,
+                        'product_id' => $product_id,
+                    ]);
+                   
+                }
+                
                 wp_redirect(admin_url('admin.php?page=add_admin_form_requests_content&section_tab=types'));
             }
 
@@ -86,6 +117,17 @@ function add_admin_form_requests_content()
             global $wpdb;
             $table_type_requests = $wpdb->prefix . 'type_requests';
             $type_id = sanitize_text_field($_GET['type_id']);
+
+            // Obtener el product_id asociado al registro que se va a eliminar
+            $product_id = $wpdb->get_var( $wpdb->prepare(
+                "SELECT product_id FROM $table_type_requests WHERE id = %d",
+                intval($type_id)
+            ) );
+
+            // Si se encontró el product_id, eliminar el producto de WooCommerce
+            if ( ! empty( $product_id ) && get_post_type( intval($product_id) ) === 'product' ) {
+                wp_delete_post( intval($product_id), true ); 
+            }
 
             $wpdb->delete($table_type_requests, ['id' => $type_id]);
             wp_redirect(admin_url('admin.php?page=add_admin_form_requests_content&section_tab=types'));
