@@ -654,7 +654,7 @@ $url = wp_get_attachment_url($student->profile_picture);
             <p><?= __('Status change successfully', 'edusystem'); ?></p>
         </div>
 
-        <table id="table-products" class="wp-list-table widefat fixed striped documents-table" style="margin-top:20px;">
+        <table class="wp-list-table widefat fixed striped documents-table" style="margin-top:20px;">
             <thead>
                 <tr>
                     <th scope="col" class="manage-column column-primary column-document" style="width: 30%">
@@ -665,11 +665,11 @@ $url = wp_get_attachment_url($student->profile_picture);
                     </th>
                 </tr>
             </thead>
-            <tbody id="table-documents">
+            <tbody>
                 <?php if (!empty($documents_certificates)): ?>
                     <?php foreach ($documents_certificates as $document): ?>
                         <?php if (!$document->graduated_required || ($document->graduated_required && $student->status_id == 5)): ?>
-                            <tr id="<?= 'tr_document_' . $document->id; ?>">
+                            <tr>
                                 <td class="column-primary" data-colname="<?= __('Document', 'edusystem'); ?>">
                                     <?= $document->title; ?>
                                     <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>

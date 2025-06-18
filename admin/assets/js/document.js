@@ -258,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
       button.addEventListener("click", (e) => {
         documentId = button.dataset.documentId;
         statusId = button.dataset.status;
-        const action = button.textContent;
+        const action = button.textContent.trim();
 
         const confirmMessage = `Are you sure you want to ${action.toLowerCase()} this document?`;
         if (confirm(confirmMessage)) {
@@ -300,6 +300,7 @@ document.addEventListener("DOMContentLoaded", function () {
           button = document.querySelector(
             `[data-document-id="${documentId}"][data-status="${statusId}"]`
           );
+          console.log(button)
           buttons_status(button, description);
 
           modal.style.display = "none";
@@ -403,6 +404,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // document.getElementById("notice-status").style.display = "block";
           document.getElementById("tr_document_" + document_id).innerHTML =
             result.html;
+        console.log(result.html)
 
           buttons_change_status.forEach((button) => {
             const newButton = button.cloneNode(true);

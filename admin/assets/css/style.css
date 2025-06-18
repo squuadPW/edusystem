@@ -1276,6 +1276,10 @@ h2 {
   gap: 10px;
 }
 
+.modal-body {
+  padding: 10px 20px !important;
+}
+
 .quotas_rules .title {
   margin-top: 20px;
   margin-bottom: 0px;

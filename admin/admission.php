@@ -1094,6 +1094,10 @@ function update_status_documents()
         global $wpdb, $current_user;
         $params = sanitize_input_params();
         extract($params);
+        $student_id = $params['student_id'];
+        $document_id = $params['document_id'];
+        $status_id = $params['status_id'];
+        $description = $params['description'];
 
         $student = get_student_detail($student_id);
         $users = get_related_users($student);
