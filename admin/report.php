@@ -83,6 +83,8 @@ function show_report_current_students()
     $total_count_active = (int) get_students_active_count();
     $total_count_pending_electives = (int) get_students_pending_elective_count();
     $total_count_non_enrolled = (int) get_students_non_enrolled_count();
+    $total_count_pending_graduation = (int) get_students_pending_graduation_count();
+    $total_count_graduated = (int) get_students_graduated_count();
     $load = load_current_cut();
     $academic_period = $load['code'];
     $cut = $load['cut'];
@@ -102,6 +104,14 @@ function show_report_current_students()
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'active') {
             $list_students = new TT_Active_Student_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'pending-graduation') {
+            $list_students = new TT_Pending_Graduation_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'graduated') {
+            $list_students = new TT_Graduated_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         }
@@ -1130,6 +1140,265 @@ class TT_Active_Student_List_Table extends WP_List_Table
 
 }
 
+class TT_Pending_Graduation_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'active',
+                'plural' => 'actives',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        return $item[$column_name];
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'student' => __('Student', 'edusystem')
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_students_pending_graduation_report()
+    {
+        global $wpdb;
+        $students_array = [];
+
+        $table_students = $wpdb->prefix . 'students';
+
+        $query = $wpdb->prepare(
+            "SELECT id, last_name, middle_last_name, name, middle_name
+            FROM %i
+            WHERE status_id != 5
+            ORDER BY id DESC",
+            $table_students
+        );
+
+        $students = $wpdb->get_results($query, ARRAY_A);
+
+        $total_count = 0;
+
+
+        if ($students) {
+            foreach ($students as $student) {
+                $academic_ready = get_academic_ready($student['id']); // Asegúrate de que esta función sea eficiente
+                if ($academic_ready) {
+                    $total_count++;
+                    $students_array[] = [
+                        'id' => $student['id'],
+                        'student' => trim($student['last_name'] . ' ' . $student['middle_last_name'] . ' ' . $student['name'] . ' ' . $student['middle_name'])
+                    ];
+                }
+            }
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
+    function prepare_items()
+    {
+
+        $data_student = $this->get_students_pending_graduation_report();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Graduated_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'active',
+                'plural' => 'actives',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        return $item[$column_name];
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'student' => __('Student', 'edusystem')
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_student_graduated()
+    {
+        global $wpdb;
+        $students_array = [];
+
+        $table_students = $wpdb->prefix . 'students';
+        $students = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE status_id = 5 ORDER BY id DESC", "ARRAY_A");
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        if ($students) {
+            foreach ($students as $student) {
+                array_push($students_array, [
+                    'id' => $student['id'],
+                    'student' => $student['last_name'] . ' ' . $student['middle_last_name'] . ' ' . $student['name'] . ' ' . $student['middle_name']
+                ]);
+            }
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
+    function prepare_items()
+    {
+
+        $data_student = $this->get_student_graduated();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
 class TT_Non_Enrolled_List_Table extends WP_List_Table
 {
 
@@ -1337,7 +1606,7 @@ function get_students_active_count()
     $total_count = $wpdb->get_var(
         "SELECT COUNT(id) FROM {$table_students} WHERE condition_student = 1"
     );
-    
+
     return $total_count;
 }
 
@@ -1375,4 +1644,55 @@ function get_students_non_enrolled_count()
     $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
     $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
     return $total_count;
+}
+
+function get_students_pending_graduation_count()
+{
+    global $wpdb;
+    $students_array = [];
+    $count = 0;
+    $table_students = $wpdb->prefix . 'students';
+
+    $query = $wpdb->prepare(
+        "SELECT id, last_name, middle_last_name, name, middle_name
+        FROM %i
+        WHERE status_id != 5
+        ORDER BY id DESC",
+        $table_students
+    );
+
+    $students = $wpdb->get_results($query, ARRAY_A);
+
+    if ($students) {
+        foreach ($students as $student) {
+            $academic_ready = get_academic_ready($student['id']); // Asegúrate de que esta función sea eficiente
+            if ($academic_ready) {
+                $count++;
+            }
+        }
+    }
+
+    return $count;
+}
+
+function get_students_graduated_count()
+{
+    global $wpdb;
+
+    $table_students = $wpdb->prefix . 'students';
+
+    // Contar directamente el número de estudiantes con status_id = 5
+    $total_count = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(id) FROM %i WHERE status_id = %d",
+            $table_students,
+            5
+        )
+    );
+
+    if ($total_count === null) {
+        return 0;
+    }
+
+    return (int) $total_count; // Asegurarse de que el retorno sea un entero
 }
