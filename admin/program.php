@@ -20,13 +20,14 @@ function add_admin_form_program_content()
             $identificator = strtoupper(sanitize_text_field($_POST['identificator']));
             $name = strtoupper(sanitize_text_field($_POST['name']));
             $description = strtoupper(sanitize_text_field($_POST['description']));
+            $total_price = floatval( sanitize_text_field($_POST['total_price']) );
             $is_active = $_POST['is_active'] == 'on' ? true : false;
 
             if (!empty($program_id)) {
                 $wpdb->update($table_programs, [
-                    'identificator' => $identificator,
                     'name' => $name,
                     'description' => $description,
+                    'total_price' => $total_price,
                     'is_active' => $is_active
                 ], ['id' => $program_id]);
             } else {
@@ -34,6 +35,7 @@ function add_admin_form_program_content()
                     'identificator' => $identificator,
                     'name' => $name,
                     'description' => $description,
+                    'total_price' => $total_price,
                     'is_active' => $is_active
                 ]);
             }
@@ -99,6 +101,7 @@ class TT_All_Program_List_Table extends WP_List_Table
             'identificator' => __('Identificator', 'edusystem'),
             'name' => __('Name', 'edusystem'),
             'status' => __('Status', 'edusystem'),
+            'price' => __('Price', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
@@ -129,6 +132,7 @@ class TT_All_Program_List_Table extends WP_List_Table
                     'identificator' => $pensum['identificator'],
                     'status' => $pensum['is_active'] ? 'Active' : 'Inactive',
                     'name' => $pensum['name'],
+                    'price' => $pensum['total_price'],
                     'description' => $pensum['description'],
                     'created_at' => $pensum['created_at'],
                 ]);
