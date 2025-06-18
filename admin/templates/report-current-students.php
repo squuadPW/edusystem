@@ -41,7 +41,7 @@
 					$heading_text = __('Students academically ready, awaiting graduation', 'edusystem');
 					break;
 				case 'graduated':
-					$heading_text = __('Graduate students', 'edusystem');
+					$heading_text = __('Graduated students', 'edusystem');
 					break;
 				default:
 					$heading_text = __('All students with active status', 'edusystem');
