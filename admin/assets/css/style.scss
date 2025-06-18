@@ -1404,7 +1404,10 @@ h2 {
     }
 
     .rule {
-        margin: 18px;
+        margin: 10px;
+        border: 1px solid #8080805c;
+        border: 5px;
+        padding: 10px;
 
         .group-input {
             display: flex;
@@ -1414,6 +1417,15 @@ h2 {
             .space-offer {
                 flex: 1;
                 font-weight:400;
+
+                &:has( input[type="checkbox"] ) {
+                    max-width: max-content;
+
+                    input[type="checkbox"] {
+                        width: 10px;
+                    }
+                }
+                
             }
         }
     }

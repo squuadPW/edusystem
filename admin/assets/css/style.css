@@ -1287,7 +1287,10 @@ h2 {
   border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
 }
 .quotas_rules .rule {
-  margin: 18px;
+  margin: 10px;
+  border: 1px solid rgba(128, 128, 128, 0.3607843137);
+  border: 5px;
+  padding: 10px;
 }
 .quotas_rules .rule .group-input {
   display: flex;
@@ -1297,4 +1300,11 @@ h2 {
 .quotas_rules .rule .group-input .space-offer {
   flex: 1;
   font-weight: 400;
+}
+.quotas_rules .rule .group-input .space-offer:has(input[type=checkbox]) {
+  max-width: -moz-max-content;
+  max-width: max-content;
+}
+.quotas_rules .rule .group-input .space-offer:has(input[type=checkbox]) input[type=checkbox] {
+  width: 10px;
 }/*# sourceMappingURL=style.css.map */

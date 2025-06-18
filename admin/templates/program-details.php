@@ -85,14 +85,17 @@
                                         
                                         <input type="hidden" name="" value="">
 
-                                        <div style="font-weight:400; text-align: center; margin-bottom: 10px;">
-                                            <input style="width: auto !important;" type="checkbox" name="" id="" <?= ($program->is_active == 1) ? 'checked' : ''; ?> >
-                                            <label for="">
-                                                <b><?= __('Active', 'edusystem'); ?></b>
-                                            </label>
-                                        </div>
-
                                         <div class="group-input" >
+
+                                            <div class="space-offer">
+                                                <label for="">
+                                                    <b><?= __('Active', 'edusystem'); ?></b>
+                                                </label>
+
+                                                <br>
+
+                                                <input type="checkbox" name="" value="" required>
+                                            </div>
 
                                             <div class="space-offer">
                                                 <label for="">
