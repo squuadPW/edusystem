@@ -1289,8 +1289,8 @@ h2 {
 .quotas_rules .rule {
   margin: 10px;
   border: 1px solid rgba(128, 128, 128, 0.3607843137);
-  border: 5px;
-  padding: 10px;
+  border-radius: 5px;
+  padding: 5px 15px;
 }
 .quotas_rules .rule .group-input {
   display: flex;
