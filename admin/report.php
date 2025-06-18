@@ -1074,7 +1074,6 @@ class TT_Active_Student_List_Table extends WP_List_Table
             'parent_email' => __('Parent email', 'edusystem'),
             'country' => __('Country', 'edusystem'),
             'grade' => __('Grade', 'edusystem'),
-            'program' => __('Program', 'edusystem'),
             'institute' => __('Institute', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
@@ -1129,7 +1128,7 @@ class TT_Active_Student_List_Table extends WP_List_Table
             $parent = get_user_by('id', $student['partner_id']);
             $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
             $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
-            $students_array[] = ['student' => $student_full_name, 'id' => $student['id'], 'id_document' => $student['id_document'], 'email' => $student['email'], 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student['country'], 'grade' => get_name_grade($student['grade_id']), 'program' => get_name_program($student['program_id']), 'institute' => $student['institute_id'] ? get_name_institute($student['institute_id']) : $student['name_institute']];
+            $students_array[] = ['student' => $student_full_name, 'id' => $student['id'], 'id_document' => $student['id_document'], 'email' => $student['email'], 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student['country'], 'grade' => get_name_grade($student['grade_id']), 'institute' => $student['institute_id'] ? get_name_institute($student['institute_id']) : $student['name_institute']];
         }
 
         error_log(print_r($students_array, true));
