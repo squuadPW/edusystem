@@ -1338,11 +1338,11 @@ function generate_documents_html($student_id, $document_id)
     foreach ($documents as $document) {
         if ($document->id == $document_id) {
             $html .= '<tr id="tr_document_' . $document->id . '">';
-            $html .= '<td class="column-primary" colspan="3">' . get_name_document($document->document_id) .
+            $html .= '<td class="column-primary">' . get_name_document($document->document_id) .
                 ($document->max_date_upload ? '<span class="deadline">- DEADLINE: ' . date('m/d/Y', strtotime($document->max_date_upload)) . '</span>' : '') .
                 "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
-            $html .= '<td colspan="1" id="td_document_' . $document->document_id . '" data-colname="' . __('Status', 'edusystem') . '"><b>' . get_status_document($document->status) . '</b></td>';
-            $html .= '<td colspan="8" data-colname="' . __('Actions', 'edusystem') . '">';
+            $html .= '<td id="td_document_' . $document->document_id . '" data-colname="' . __('Status', 'edusystem') . '"><b>' . get_status_document($document->status) . '</b></td>';
+            $html .= '<td data-colname="' . __('Actions', 'edusystem') . '">';
             $html .= "<a style='margin-right: 3px;' target='_blank' onclick='uploadDocument(" . htmlspecialchars(json_encode($document), ENT_QUOTES) . ")'><button type='button' class='button button-primary-outline other-buttons-document'  style='color: #149dcd; border-color: #149dcd;'><span class='dashicons dashicons-upload'></span>" . __('Upload', 'edusystem') . "</button></a>";
 
             if ($document->status > 0) {
