@@ -319,12 +319,11 @@ document.addEventListener("DOMContentLoaded", function () {
   if (export_excel_students) {
     export_excel_students.addEventListener("click", () => {
       // Selecciona la tabla por su ID
-      const table = document.querySelector("#table-institutes-payment");
+      const table = document.querySelector(".wp-list-table");
       const data = [];
 
       // Definir los encabezados fijos
       const headers = [
-        "Academic period",
         "Student",
         "Student document",
         "Student email",
@@ -332,23 +331,26 @@ document.addEventListener("DOMContentLoaded", function () {
         "Parent email",
         "Country",
         "Grade",
-        "Program",
         "Institute",
       ];
 
       data.push(headers); // Agrega los encabezados al array de datos
 
-      // Itera sobre las filas de la tabla (empezando desde la primera fila de datos)
-      for (let i = 0; i < table.rows.length; i++) {
+      // Itera sobre las filas de la tabla, STARTING FROM THE SECOND ROW (index 1)
+      // to skip the HTML table's own header row.
+      // Also, keep `table.rows.length - 1` if you still want to skip the very last row (e.g., a total row).
+      // If you want all data rows, change `table.rows.length - 1` back to `table.rows.length`.
+      for (let i = 1; i < table.rows.length - 1; i++) {
+        // <-- MODIFICACIÓN CLAVE AQUÍ: i = 1
         const rowData = [];
         const row = table.rows[i];
 
-        // Itera sobre las celdas de cada fila
-        for (let j = 0; j < row.cells.length; j++) {
-          rowData.push(row.cells[j].textContent.trim()); // Obtiene el contenido de cada celda
+        // Itera sobre las celdas de cada fila, excluyendo la última celda ("Actions")
+        for (let j = 0; j < row.cells.length - 1; j++) {
+          rowData.push(row.cells[j].textContent.trim());
         }
 
-        data.push(rowData); // Agrega los datos de la fila al array
+        data.push(rowData);
       }
 
       // Crea un nuevo libro de trabajo

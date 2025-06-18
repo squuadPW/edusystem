@@ -1030,3 +1030,11 @@ function get_all_students_institute($institute_id) {
     $students = $wpdb->get_results($query);
     return $students;
 }
+
+function get_name_institute($institute_id)
+{
+    global $wpdb;
+    $table_institutes = $wpdb->prefix . 'institutes';
+    $institute = $wpdb->get_row("SELECT * FROM {$table_institutes} WHERE id = " . $institute_id);
+    return $institute->name;
+}
