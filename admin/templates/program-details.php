@@ -73,6 +73,79 @@
                                         <textarea style="width: 100%" name="description" id="description" rows="4" required><?= $program->description; ?></textarea>
                                     </div>
                                 </div>
+
+                                <br>
+
+                                <div class="quotas_rules" >
+                                    <h3 class="title" >
+                                        <b><?= __('Rules for quotas', 'edusystem'); ?></b>
+                                    </h3>
+
+                                    <div class="rule" >
+                                        
+                                        <input type="hidden" name="" value="">
+
+                                        <div style="font-weight:400; text-align: center; margin-bottom: 10px;">
+                                            <input style="width: auto !important;" type="checkbox" name="" id="" <?= ($program->is_active == 1) ? 'checked' : ''; ?> >
+                                            <label for="">
+                                                <b><?= __('Active', 'edusystem'); ?></b>
+                                            </label>
+                                        </div>
+
+                                        <div class="group-input" >
+
+                                            <div class="space-offer">
+                                                <label for="">
+                                                    <b><?= __('Name', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+
+                                                <br>
+
+                                                <input type="text" name="" value="" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="group-input" >
+                                            <div class="space-offer">
+
+                                                <label for="">
+                                                    <b><?= __('Initial price', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+
+                                                <br>
+
+                                                <input type="number" name="" value="" required>
+                                            </div>
+
+                                            <div class="space-offer">
+                                                <label for="">
+                                                    <b><?= __('Quotas quantity ', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                
+                                                <br>
+
+                                                <input type="number" name="" value="1" required >
+                                            </div>
+
+                                            <div class="space-offer">
+
+                                                <label for="">
+                                                    <b><?= __('Price', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+
+                                                <br>
+
+                                                <input type="number" name="" value="" required>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
                             </div>
 
                             <?php if (isset($program) && !empty($program)): ?>
