@@ -437,7 +437,7 @@ function get_list_orders_sales()
                 $html .= "<td class='column' data-colname='" . __('Created', 'edusystem') . "'><b>" . $order['created_at'] . "</b></td>";
                 $html .= "<td class='column' data-colname='" . __('Action', 'edusystem') . "'>";
 
-                $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=report-sales&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View in admission', 'edusystem') . "</a>";
+                $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=report-sales&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View', 'edusystem') . "</a>";
 
 
                 $html .= "</td>";
@@ -712,7 +712,7 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View in admission', 'edusystem') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return $item[$column_name];
@@ -850,7 +850,7 @@ class TT_Current_Student_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View in admission', 'edusystem') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return $item[$column_name];
@@ -1046,7 +1046,7 @@ class TT_Active_Student_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View in admission', 'edusystem') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return $item[$column_name];
@@ -1194,7 +1194,7 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View in admission', 'edusystem') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return $item[$column_name];
@@ -1344,7 +1344,7 @@ class TT_Graduated_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View in admission', 'edusystem') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return $item[$column_name];
@@ -1479,7 +1479,7 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View in admission', 'edusystem') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return $item[$column_name];
