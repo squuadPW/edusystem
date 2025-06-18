@@ -117,7 +117,7 @@ function create_tables()
          * id del subprograma dentro del json. Ejemplo:
          * "identificadorPrograma-2"
          */
-  }
+    }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_templates_email}'") != $table_templates_email) {
     dbDelta(
