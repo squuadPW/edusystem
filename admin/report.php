@@ -1101,19 +1101,22 @@ class TT_Active_Student_List_Table extends WP_List_Table
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $students_array = [];
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
 
         // Seleccionar solo las columnas necesarias para el reporte
         $students = $wpdb->get_results(
-            "SELECT SQL_CALC_FOUND_ROWS id, last_name, middle_last_name, name, middle_name 
+            "SELECT SQL_CALC_FOUND_ROWS id, last_name, middle_last_name, `name`, middle_name 
          FROM {$table_students} 
          WHERE condition_student = 1 
-         ORDER BY id DESC",
+         ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}",
             "ARRAY_A"
         );
 
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
-
-        $base_url = admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=');
 
         foreach ($students as $student) {
             $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
@@ -1238,15 +1241,21 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
 
         $table_students = $wpdb->prefix . 'students';
 
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+
         $query = $wpdb->prepare(
-            "SELECT id, last_name, middle_last_name, name, middle_name
+            "SELECT id, last_name, middle_last_name, `name`, middle_name
             FROM %i
             WHERE status_id != 5
-            ORDER BY id DESC",
+            ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}",
             $table_students
         );
 
-        $students = $wpdb->get_results($query, ARRAY_A);
+        $students = $wpdb->get_results($query, "ARRAY_A");
 
         $total_count = 0;
 
@@ -1380,8 +1389,14 @@ class TT_Graduated_List_Table extends WP_List_Table
         global $wpdb;
         $students_array = [];
 
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+
         $table_students = $wpdb->prefix . 'students';
-        $students = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE status_id = 5 ORDER BY id DESC", "ARRAY_A");
+        $students = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE status_id = 5 ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
         if ($students) {
@@ -1696,14 +1711,14 @@ function get_students_pending_graduation_count()
     $table_students = $wpdb->prefix . 'students';
 
     $query = $wpdb->prepare(
-        "SELECT id, last_name, middle_last_name, name, middle_name
+        "SELECT id, last_name, middle_last_name, `name`, middle_name
         FROM %i
         WHERE status_id != 5
         ORDER BY id DESC",
         $table_students
     );
 
-    $students = $wpdb->get_results($query, ARRAY_A);
+    $students = $wpdb->get_results($query, "ARRAY_A");
 
     if ($students) {
         foreach ($students as $student) {
