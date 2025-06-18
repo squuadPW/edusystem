@@ -79,6 +79,9 @@ function show_report_students()
 
 function show_report_current_students()
 {
+    global $current_user, $wpdb;
+    $table_academic_periods = $wpdb->prefix . 'academic_periods';
+    $table_grades = $wpdb->prefix . 'grades';
     $total_count_current = (int) get_students_current_count();
     $total_count_active = (int) get_students_active_count();
     $total_count_pending_electives = (int) get_students_pending_elective_count();
@@ -88,6 +91,8 @@ function show_report_current_students()
     $load = load_current_cut();
     $academic_period = $load['code'];
     $cut = $load['cut'];
+    $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+    $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
 
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         if ($_GET['section_tab'] == 'pending_electives') {
@@ -342,6 +347,32 @@ function get_products_by_order($start, $end)
 }
 
 function get_students_report($academic_period = null, $cut = null)
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+
+    $conditions = array();
+    $params = array();
+
+    if (!empty($cut)) {
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+        $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND code_subject IS NOT NULL AND code_subject <> ''");
+        $conditions[] = "id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
+        $params = array_merge($params, $cut_student_ids);
+    }
+
+    $query = "SELECT * FROM {$table_students}";
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $students = $wpdb->get_results($wpdb->prepare($query, $params));
+
+    return $students;
+}
+
+function get_students_report_offset($academic_period = null, $cut = null)
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
@@ -1110,31 +1141,26 @@ class TT_Active_Student_List_Table extends WP_List_Table
 
     function get_students_active_report()
     {
-        global $wpdb;
-        $table_students = $wpdb->prefix . 'students';
         $students_array = [];
+
         // PAGINATION
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
 
-        // Seleccionar solo las columnas necesarias para el reporte
-        $students = $wpdb->get_results(
-            "SELECT SQL_CALC_FOUND_ROWS *
-         FROM {$table_students} 
-         WHERE condition_student = 1 
-         ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}",
-            "ARRAY_A"
-        );
+        $academic_period = $_POST['academic_period'] ?? '';
+        $academic_period_cut = $_POST['academic_period_cut'] ?? '';
 
-        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+        $students = get_students_report_offset($academic_period, $academic_period_cut);
+        $total_count = count($students);
+        $students_filtered = array_slice($students, $offset, $per_page);
 
-        foreach ($students as $student) {
-            $parent = get_user_by('id', $student['partner_id']);
-            $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
+        foreach ($students_filtered as $student) {
+            $parent = get_user_by('id', $student->partner_id);
+            $student_full_name = '<span class="text-uppercase">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . '</span>';
             $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
-            $students_array[] = ['student' => $student_full_name, 'id' => $student['id'], 'id_document' => $student['id_document'], 'email' => $student['email'], 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student['country'], 'grade' => get_name_grade($student['grade_id']), 'institute' => $student['institute_id'] ? get_name_institute($student['institute_id']) : $student['name_institute']];
+            $students_array[] = ['student' => $student_full_name, 'id' => $student->id, 'id_document' => $student->id_document, 'email' => $student->email, 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student->country, 'grade' => get_name_grade($student->grade_id), 'institute' => $student->institute_id ? get_name_institute($student->institute_id) : $student->name_institute];
         }
 
         return ['data' => $students_array, 'total_count' => $total_count];
@@ -1259,7 +1285,8 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
     {
         global $wpdb;
         $students_array = [];
-
+        $conditions = array();
+        $params = array();
         $table_students = $wpdb->prefix . 'students';
 
         // PAGINATION
@@ -1268,16 +1295,28 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
 
-        // 1. Obtener TODOS los estudiantes con status_id != 5
-        $query_all_students = $wpdb->prepare(
-            "SELECT *
-         FROM %i
-         WHERE status_id != 5
-         ORDER BY id DESC",
-            $table_students
-        );
+        $academic_period_student = $_POST['academic_period'] ?? '';
+        $academic_period_cut_student = $_POST['academic_period_cut'] ?? '';
 
-        $all_students = $wpdb->get_results($query_all_students, "ARRAY_A");
+        $conditions[] = "status_id != 5";
+
+        if ($academic_period_student) {
+            $conditions[] = "academic_period = '{$academic_period_student}'";
+        }
+
+        if ($academic_period_cut_student) {
+            $conditions[] = "initial_cut = '{$academic_period_cut_student}'";
+        }
+
+        $query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students}";
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $query .= " ORDER BY id DESC";
+
+        $all_students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
 
         $filtered_students = [];
         if ($all_students) {
@@ -1421,7 +1460,10 @@ class TT_Graduated_List_Table extends WP_List_Table
     function get_student_graduated()
     {
         global $wpdb;
+        $table_students = $wpdb->prefix . 'students';
         $students_array = [];
+        $conditions = array();
+        $params = array();
 
         // PAGINATION
         $per_page = 20; // number of items per page
@@ -1429,8 +1471,28 @@ class TT_Graduated_List_Table extends WP_List_Table
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
 
-        $table_students = $wpdb->prefix . 'students';
-        $students = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students} WHERE status_id = 5 ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        $academic_period_student = $_POST['academic_period'] ?? '';
+        $academic_period_cut_student = $_POST['academic_period_cut'] ?? '';
+
+        $conditions[] = "status_id = 5";
+
+        if ($academic_period_student) {
+            $conditions[] = "academic_period = '{$academic_period_student}'";
+        }
+
+        if ($academic_period_cut_student) {
+            $conditions[] = "initial_cut = '{$academic_period_cut_student}'";
+        }
+
+        $query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students}";
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $query .= " ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}";
+
+        $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
         if ($students) {
@@ -1561,6 +1623,17 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
+
+        $academic_period_student = $_POST['academic_period'] ?? '';
+        $academic_period_cut_student = $_POST['academic_period_cut'] ?? '';
+
+        if ($academic_period_student) {
+            $conditions[] = "academic_period = '{$academic_period_student}'";
+        }
+
+        if ($academic_period_cut_student) {
+            $conditions[] = "initial_cut = '{$academic_period_cut_student}'";
+        }
 
         $query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students}";
 

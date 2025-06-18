@@ -28,7 +28,7 @@
 			<?php
 			$heading_text = '';
 			$name_document = '';
-			
+
 			switch ($_GET['section_tab']) {
 				case 'current':
 					$heading_text = __('Students seeing classes in the current term.', 'edusystem');
@@ -59,15 +59,47 @@
 			<h1 class='wp-heading-line'><?= $heading_text ?></h1>
 			<input type="hidden" name="name_document" id="name-document" value="<?= $name_document ?>">
 		</div>
-		<div style="width:100%;text-align:right;padding-top:10px;">
-			<?php if (wp_is_mobile()): ?>
-				<button type="button" id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>" class="button button-success"
-					style="width:100%;"></span><?= __('Export excel', 'edusystem'); ?></button>
-			<?php else: ?>
-				<button type="button" id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>"
-					class="button button-success"></span><?= __('Export excel', 'edusystem'); ?></button>
-			<?php endif; ?>
-		</div>
+		<form method="post"
+			action="<?= admin_url('admin.php?page=report-current-students') . ($_GET['section_tab'] ? '&section_tab=' . $_GET['section_tab'] : ''); ?>">
+			<div style="width:100%;text-align:right;padding-top:10px;">
+				<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
+					<select name="academic_period" id="academic_period">
+						<option value="" selected="selected"><?= __('Select an academic period', 'edusystem'); ?></option>
+						<?php foreach ($periods as $key => $period) { ?>
+							<option value="<?php echo $period->code; ?>" <?= ($_POST['academic_period'] == $period->code) ? 'selected' : ''; ?>>
+								<?php echo $period->name; ?>
+							</option>
+						<?php } ?>
+					</select>
+					<select name="academic_period_cut" id="academic_period_cut">
+						<option value="">Select academic period cut</option>
+						<option value="A" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'A') ? 'selected' : '') : ''; ?>>A</option>
+						<option value="B" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'B') ? 'selected' : '') : ''; ?>>B</option>
+						<option value="C" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'C') ? 'selected' : '') : ''; ?>>C</option>
+						<option value="D" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'D') ? 'selected' : '') : ''; ?>>D</option>
+						<option value="E" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'E') ? 'selected' : '') : ''; ?>>E</option>
+					</select>
+				<?php } ?>
+				<?php if (wp_is_mobile()): ?>
+					<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
+						<button type="submit"
+							class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
+					<?php } ?>
+					<button type="button"
+						id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>"
+						class="button button-success"
+						style="width:100%;"></span><?= __('Export excel', 'edusystem'); ?></button>
+				<?php else: ?>
+					<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
+						<button type="submit"
+							class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
+					<?php } ?>
+					<button type="button"
+						id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>"
+						class="button button-success"></span><?= __('Export excel', 'edusystem'); ?></button>
+				<?php endif; ?>
+			</div>
+		</form>
 		<form action="" id="post-filter" method="get">
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
 			<?php $list_students->display() ?>
