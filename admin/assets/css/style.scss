@@ -1394,3 +1394,28 @@ h2 {
 .modal-body {
   padding: 10px 20px !important;
 }
+.quotas_rules {
+
+    .title {
+        margin-top:20px;
+        margin-bottom:0px;
+        text-align:center; 
+        border-bottom: 1px solid #8080805c;
+    }
+
+    .rule {
+        margin: 18px;
+
+        .group-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            .space-offer {
+                flex: 1;
+                font-weight:400;
+            }
+        }
+    }
+}
+
