@@ -783,7 +783,7 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
             foreach ($students as $student) {
                 array_push($students_array, [
                     'id' => $student['id'],
-                    'student' => '<a href="' . $url . $student['id'] . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
+                    'student' => '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>',
                 ]);
             }
         }
@@ -980,7 +980,7 @@ class TT_Current_Student_List_Table extends WP_List_Table
             }
             array_push($students_array, [
                 'id' => $student['id'],
-                'student' => '<a href="' . $url . $student['id'] . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
+                'student' => '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>',
                 'subjects' => '<span class="text-upper">' . $subjects_text . '</span>'
             ]);
         }
@@ -1116,13 +1116,7 @@ class TT_Active_Student_List_Table extends WP_List_Table
         $base_url = admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=');
 
         foreach ($students as $student) {
-            $student_full_name = '<a href="' . $base_url . $student['id'] . '" target="_blank" class="text-uppercase">' .
-                $student['last_name'] . ' ' .
-                ($student['middle_last_name'] ?? '') . ' ' .
-                $student['name'] . ' ' .
-                ($student['middle_name'] ?? '') .
-                '</a>';
-
+            $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
             $students_array[] = ['student' => $student_full_name, 'id' => $student['id']];
         }
 
@@ -1264,7 +1258,7 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
                     $total_count++;
                     $students_array[] = [
                         'id' => $student['id'],
-                        'student' => trim($student['last_name'] . ' ' . $student['middle_last_name'] . ' ' . $student['name'] . ' ' . $student['middle_name'])
+                        'student' => '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>'
                     ];
                 }
             }
@@ -1394,7 +1388,7 @@ class TT_Graduated_List_Table extends WP_List_Table
             foreach ($students as $student) {
                 array_push($students_array, [
                     'id' => $student['id'],
-                    'student' => $student['last_name'] . ' ' . $student['middle_last_name'] . ' ' . $student['name'] . ' ' . $student['middle_name']
+                    'student' => '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>'
                 ]);
             }
         }
@@ -1527,7 +1521,7 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
             foreach ($students as $student) {
                 array_push($students_array, [
                     'id' => $student['id'],
-                    'student' => '<a href="' . $url . $student['id'] . '" target="_blank">' . strtoupper($student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '')) . '</a>'
+                    'student' => '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>'
                 ]);
             }
         }
