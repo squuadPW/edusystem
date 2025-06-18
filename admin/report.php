@@ -735,6 +735,13 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
 
         $columns = array(
             'student' => __('Student', 'edusystem'),
+            'id_document' => __('Student document', 'edusystem'),
+            'email' => __('Student email', 'edusystem'),
+            'parent' => __('Parent', 'edusystem'),
+            'parent_email' => __('Parent email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'grade' => __('Grade', 'edusystem'),
+            'institute' => __('Institute', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
 
@@ -779,12 +786,11 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
         if ($students) {
-            $url = admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=');
             foreach ($students as $student) {
-                array_push($students_array, [
-                    'id' => $student['id'],
-                    'student' => '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>',
-                ]);
+                $parent = get_user_by('id', $student['partner_id']);
+                $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
+                $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
+                $students_array[] = ['student' => $student_full_name, 'id' => $student['id'], 'id_document' => $student['id_document'], 'email' => $student['email'], 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student['country'], 'grade' => get_name_grade($student['grade_id']), 'institute' => $student['institute_id'] ? get_name_institute($student['institute_id']) : $student['name_institute']];
             }
         }
 
@@ -1131,7 +1137,6 @@ class TT_Active_Student_List_Table extends WP_List_Table
             $students_array[] = ['student' => $student_full_name, 'id' => $student['id'], 'id_document' => $student['id_document'], 'email' => $student['email'], 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student['country'], 'grade' => get_name_grade($student['grade_id']), 'institute' => $student['institute_id'] ? get_name_institute($student['institute_id']) : $student['name_institute']];
         }
 
-        error_log(print_r($students_array, true));
         return ['data' => $students_array, 'total_count' => $total_count];
     }
 
@@ -1216,6 +1221,13 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
     {
         $columns = array(
             'student' => __('Student', 'edusystem'),
+            'id_document' => __('Student document', 'edusystem'),
+            'email' => __('Student email', 'edusystem'),
+            'parent' => __('Parent', 'edusystem'),
+            'parent_email' => __('Parent email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'grade' => __('Grade', 'edusystem'),
+            'institute' => __('Institute', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
 
@@ -1256,33 +1268,39 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
 
-        $query = $wpdb->prepare(
-            "SELECT id, last_name, middle_last_name, `name`, middle_name
-            FROM %i
-            WHERE status_id != 5
-            ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}",
+        // 1. Obtener TODOS los estudiantes con status_id != 5
+        $query_all_students = $wpdb->prepare(
+            "SELECT *
+         FROM %i
+         WHERE status_id != 5
+         ORDER BY id DESC",
             $table_students
         );
 
-        $students = $wpdb->get_results($query, "ARRAY_A");
+        $all_students = $wpdb->get_results($query_all_students, "ARRAY_A");
 
-        $total_count = 0;
-
-
-        if ($students) {
-            foreach ($students as $student) {
-                $academic_ready = get_academic_ready($student['id']); // Asegúrate de que esta función sea eficiente
+        $filtered_students = [];
+        if ($all_students) {
+            foreach ($all_students as $student) {
+                $academic_ready = get_academic_ready($student['id']);
                 if ($academic_ready) {
-                    $total_count++;
-                    $students_array[] = [
-                        'id' => $student['id'],
-                        'student' => '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>'
-                    ];
+                    $filtered_students[] = $student;
                 }
             }
         }
 
-        return ['data' => $students_array, 'total_count' => $total_count];
+        // 2. Aplicar paginación a los estudiantes filtrados
+        $total_academic_ready_students = count($filtered_students);
+        $paginated_students = array_slice($filtered_students, $offset, $per_page);
+
+        foreach ($paginated_students as $student) {
+            $parent = get_user_by('id', $student['partner_id']);
+            $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
+            $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
+            $students_array[] = ['student' => $student_full_name, 'id' => $student['id'], 'id_document' => $student['id_document'], 'email' => $student['email'], 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student['country'], 'grade' => get_name_grade($student['grade_id']), 'institute' => $student['institute_id'] ? get_name_institute($student['institute_id']) : $student['name_institute']];
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_academic_ready_students];
     }
 
     function prepare_items()
@@ -1366,6 +1384,13 @@ class TT_Graduated_List_Table extends WP_List_Table
     {
         $columns = array(
             'student' => __('Student', 'edusystem'),
+            'id_document' => __('Student document', 'edusystem'),
+            'email' => __('Student email', 'edusystem'),
+            'parent' => __('Parent', 'edusystem'),
+            'parent_email' => __('Parent email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'grade' => __('Grade', 'edusystem'),
+            'institute' => __('Institute', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
 
@@ -1410,10 +1435,10 @@ class TT_Graduated_List_Table extends WP_List_Table
 
         if ($students) {
             foreach ($students as $student) {
-                array_push($students_array, [
-                    'id' => $student['id'],
-                    'student' => '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>'
-                ]);
+                $parent = get_user_by('id', $student['partner_id']);
+                $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
+                $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
+                $students_array[] = ['student' => $student_full_name, 'id' => $student['id'], 'id_document' => $student['id_document'], 'email' => $student['email'], 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student['country'], 'grade' => get_name_grade($student['grade_id']), 'institute' => $student['institute_id'] ? get_name_institute($student['institute_id']) : $student['name_institute']];
             }
         }
 
@@ -1501,6 +1526,13 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
     {
         $columns = array(
             'student' => __('Student', 'edusystem'),
+            'id_document' => __('Student document', 'edusystem'),
+            'email' => __('Student email', 'edusystem'),
+            'parent' => __('Parent', 'edusystem'),
+            'parent_email' => __('Parent email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'grade' => __('Grade', 'edusystem'),
+            'institute' => __('Institute', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
 
@@ -1541,12 +1573,11 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
         $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
         if ($students) {
-            $url = admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=');
             foreach ($students as $student) {
-                array_push($students_array, [
-                    'id' => $student['id'],
-                    'student' => '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>'
-                ]);
+                $parent = get_user_by('id', $student['partner_id']);
+                $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
+                $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
+                $students_array[] = ['student' => $student_full_name, 'id' => $student['id'], 'id_document' => $student['id_document'], 'email' => $student['email'], 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student['country'], 'grade' => get_name_grade($student['grade_id']), 'institute' => $student['institute_id'] ? get_name_institute($student['institute_id']) : $student['name_institute']];
             }
         }
 

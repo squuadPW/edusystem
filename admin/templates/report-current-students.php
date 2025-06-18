@@ -26,37 +26,45 @@
 				<?= $academic_period ?> - <?= $cut ?>
 			</h4>
 			<?php
-			$heading_text = ''; // Initialize an empty variable for the heading content
+			$heading_text = '';
+			$name_document = '';
 			
 			switch ($_GET['section_tab']) {
 				case 'current':
 					$heading_text = __('Students seeing classes in the current term.', 'edusystem');
+					$name_document = __('Students studying.xlsx', 'edusystem');
 					break;
 				case 'pending_electives':
 					$heading_text = __('Pending students to select electives', 'edusystem');
+					$name_document = __('Pending electives.xlsx', 'edusystem');
 					break;
 				case 'non-enrolled':
 					$heading_text = __('Students who are not seeing classes in the current term', 'edusystem');
+					$name_document = __('Non-enrolled.xlsx', 'edusystem');
 					break;
 				case 'pending-graduation':
 					$heading_text = __('Students academically ready, awaiting graduation', 'edusystem');
+					$name_document = __('Pending graduation.xlsx', 'edusystem');
 					break;
 				case 'graduated':
 					$heading_text = __('Graduated students', 'edusystem');
+					$name_document = __('Graduated students.xlsx', 'edusystem');
 					break;
 				default:
 					$heading_text = __('All students with active status', 'edusystem');
+					$name_document = __('Active students.xlsx', 'edusystem');
 					break;
 			}
 			?>
 			<h1 class='wp-heading-line'><?= $heading_text ?></h1>
+			<input type="hidden" name="name_document" id="name-document" value="<?= $name_document ?>">
 		</div>
 		<div style="width:100%;text-align:right;padding-top:10px;">
 			<?php if (wp_is_mobile()): ?>
-				<button type="button" id="export_excel_students" class="button button-success"
+				<button type="button" id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>" class="button button-success"
 					style="width:100%;"></span><?= __('Export excel', 'edusystem'); ?></button>
 			<?php else: ?>
-				<button type="button" id="export_excel_students"
+				<button type="button" id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>"
 					class="button button-success"></span><?= __('Export excel', 'edusystem'); ?></button>
 			<?php endif; ?>
 		</div>

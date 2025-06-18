@@ -320,6 +320,7 @@ document.addEventListener("DOMContentLoaded", function () {
     export_excel_students.addEventListener("click", () => {
       // Selecciona la tabla por su ID
       const table = document.querySelector(".wp-list-table");
+      const name = document.querySelector("input[name=name_document]").value;
       const data = [];
 
       // Definir los encabezados fijos
@@ -361,7 +362,52 @@ document.addEventListener("DOMContentLoaded", function () {
       XLSX.utils.book_append_sheet(wb, ws, "Report students");
 
       // Exporta el archivo XLSX
-      XLSX.writeFile(wb, "report-students.xlsx");
+      XLSX.writeFile(wb, name);
+    });
+  }
+
+    export_excel_students_current = document.getElementById("export_excel_students_current");
+  if (export_excel_students_current) {
+    export_excel_students_current.addEventListener("click", () => {
+      // Selecciona la tabla por su ID
+      const table = document.querySelector(".wp-list-table");
+      const name = document.querySelector("input[name=name_document]").value;
+      const data = [];
+
+      // Definir los encabezados fijos
+      const headers = [
+        "Student",
+        "Subjects",
+      ];
+
+      data.push(headers); // Agrega los encabezados al array de datos
+
+      // Itera sobre las filas de la tabla, STARTING FROM THE SECOND ROW (index 1)
+      // to skip the HTML table's own header row.
+      // Also, keep `table.rows.length - 1` if you still want to skip the very last row (e.g., a total row).
+      // If you want all data rows, change `table.rows.length - 1` back to `table.rows.length`.
+      for (let i = 1; i < table.rows.length - 1; i++) {
+        // <-- MODIFICACIÓN CLAVE AQUÍ: i = 1
+        const rowData = [];
+        const row = table.rows[i];
+
+        // Itera sobre las celdas de cada fila, excluyendo la última celda ("Actions")
+        for (let j = 0; j < row.cells.length - 1; j++) {
+          rowData.push(row.cells[j].textContent.trim());
+        }
+
+        data.push(rowData);
+      }
+
+      // Crea un nuevo libro de trabajo
+      const wb = XLSX.utils.book_new();
+      // Convierte los datos a una hoja de cálculo
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      // Agrega la hoja al libro
+      XLSX.utils.book_append_sheet(wb, ws, "Report students");
+
+      // Exporta el archivo XLSX
+      XLSX.writeFile(wb, name);
     });
   }
 });
