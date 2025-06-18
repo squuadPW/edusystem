@@ -366,7 +366,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-    export_excel_students_current = document.getElementById("export_excel_students_current");
+  export_excel_students_current = document.getElementById(
+    "export_excel_students_current"
+  );
   if (export_excel_students_current) {
     export_excel_students_current.addEventListener("click", () => {
       // Selecciona la tabla por su ID
@@ -375,10 +377,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const data = [];
 
       // Definir los encabezados fijos
-      const headers = [
-        "Student",
-        "Subjects",
-      ];
+      const headers = ["Student", "Subjects"];
 
       data.push(headers); // Agrega los encabezados al array de datos
 
