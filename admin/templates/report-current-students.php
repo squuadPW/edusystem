@@ -23,7 +23,8 @@
 	<div class="wrap">
 		<div style="text-align:start;">
 			<h4 class="wp-heading-line"><?= __('The academic term in progress is', 'edusystem'); ?>
-				<?= $academic_period ?> - <?= $cut ?></h4>
+				<?= $academic_period ?> - <?= $cut ?>
+			</h4>
 			<?php
 			$heading_text = ''; // Initialize an empty variable for the heading content
 			
@@ -49,6 +50,15 @@
 			}
 			?>
 			<h1 class='wp-heading-line'><?= $heading_text ?></h1>
+		</div>
+		<div style="width:100%;text-align:right;padding-top:10px;">
+			<?php if (wp_is_mobile()): ?>
+				<button type="button" id="export_excel_students" class="button button-success"
+					style="width:100%;"></span><?= __('Export excel', 'edusystem'); ?></button>
+			<?php else: ?>
+				<button type="button" id="export_excel_students"
+					class="button button-success"></span><?= __('Export excel', 'edusystem'); ?></button>
+			<?php endif; ?>
 		</div>
 		<form action="" id="post-filter" method="get">
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
