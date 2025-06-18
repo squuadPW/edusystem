@@ -99,6 +99,12 @@
 						class="button button-success"></span><?= __('Export excel', 'edusystem'); ?></button>
 				<?php endif; ?>
 			</div>
+			<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
+				<div style="text-align: right; margin-top: 20px;">
+					<strong><?= !$_GET['section_tab'] ? __('Filter applies to student enrollments.', 'edusystem') : __('The filter applies to when the student enters the platform.', 'edusystem'); ?></strong>
+				</div>
+			<?php } ?>
+
 		</form>
 		<form action="" id="post-filter" method="get">
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
