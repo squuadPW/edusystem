@@ -709,7 +709,14 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
 
     function column_default($item, $column_name)
     {
-        return $item[$column_name];
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
     }
 
     function column_name($item)
@@ -728,6 +735,7 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
 
         $columns = array(
             'student' => __('Student', 'edusystem'),
+            'view_details' => __('View in admission', 'edusystem'),
         );
 
         return $columns;
@@ -774,6 +782,7 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
             $url = admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=');
             foreach ($students as $student) {
                 array_push($students_array, [
+                    'id' => $student['id'],
                     'student' => '<a href="' . $url . $student['id'] . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
                 ]);
             }
@@ -838,7 +847,14 @@ class TT_Current_Student_List_Table extends WP_List_Table
 
     function column_default($item, $column_name)
     {
-        return $item[$column_name];
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
     }
 
     function column_name($item)
@@ -858,6 +874,7 @@ class TT_Current_Student_List_Table extends WP_List_Table
         $columns = array(
             'student' => __('Student', 'edusystem'),
             'subjects' => __('Subjects', 'edusystem'),
+            'view_details' => __('View in admission', 'edusystem'),
         );
 
         return $columns;
@@ -962,6 +979,7 @@ class TT_Current_Student_List_Table extends WP_List_Table
                 $subjects_text .= $subject->name . $separator;
             }
             array_push($students_array, [
+                'id' => $student['id'],
                 'student' => '<a href="' . $url . $student['id'] . '" target="_blank" class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</a>',
                 'subjects' => '<span class="text-upper">' . $subjects_text . '</span>'
             ]);
@@ -1025,7 +1043,14 @@ class TT_Active_Student_List_Table extends WP_List_Table
 
     function column_default($item, $column_name)
     {
-        return $item[$column_name];
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
     }
 
     function column_name($item)
@@ -1043,7 +1068,8 @@ class TT_Active_Student_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'student' => __('Student', 'edusystem')
+            'student' => __('Student', 'edusystem'),
+            'view_details' => __('View in admission', 'edusystem'),
         );
 
         return $columns;
@@ -1097,7 +1123,7 @@ class TT_Active_Student_List_Table extends WP_List_Table
                 ($student['middle_name'] ?? '') .
                 '</a>';
 
-            $students_array[] = ['student' => $student_full_name];
+            $students_array[] = ['student' => $student_full_name, 'id' => $student['id']];
         }
 
         return ['data' => $students_array, 'total_count' => $total_count];
@@ -1159,7 +1185,14 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
 
     function column_default($item, $column_name)
     {
-        return $item[$column_name];
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
     }
 
     function column_name($item)
@@ -1175,9 +1208,9 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
 
     function get_columns()
     {
-
         $columns = array(
-            'student' => __('Student', 'edusystem')
+            'student' => __('Student', 'edusystem'),
+            'view_details' => __('View in admission', 'edusystem'),
         );
 
         return $columns;
@@ -1296,7 +1329,14 @@ class TT_Graduated_List_Table extends WP_List_Table
 
     function column_default($item, $column_name)
     {
-        return $item[$column_name];
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
     }
 
     function column_name($item)
@@ -1312,9 +1352,9 @@ class TT_Graduated_List_Table extends WP_List_Table
 
     function get_columns()
     {
-
         $columns = array(
-            'student' => __('Student', 'edusystem')
+            'student' => __('Student', 'edusystem'),
+            'view_details' => __('View in admission', 'edusystem'),
         );
 
         return $columns;
@@ -1418,7 +1458,14 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
 
     function column_default($item, $column_name)
     {
-        return $item[$column_name];
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
     }
 
     function column_name($item)
@@ -1434,9 +1481,9 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
 
     function get_columns()
     {
-
         $columns = array(
             'student' => __('Student', 'edusystem'),
+            'view_details' => __('View in admission', 'edusystem'),
         );
 
         return $columns;
@@ -1479,6 +1526,7 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
             $url = admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=');
             foreach ($students as $student) {
                 array_push($students_array, [
+                    'id' => $student['id'],
                     'student' => '<a href="' . $url . $student['id'] . '" target="_blank">' . strtoupper($student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '')) . '</a>'
                 ]);
             }
