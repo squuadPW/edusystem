@@ -47,13 +47,24 @@
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="name"><b><?= __('Identificator', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>
-                                        <input type="text" name="identificator" value="<?= $program->identificator; ?>" required>
+                                        <input type="text" name="identificator" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?> >
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="name"><b><?= __('Name', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>
                                         <input type="text" name="name" value="<?= $program->name; ?>" required>
+                                    </div>
+
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label for="total_price">
+                                            <b><?= __('Price', 'edusystem'); ?></b>
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <br>
+
+                                        <input type="number" name="total_price" value="<?= $program->total_price; ?>" required>
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
