@@ -345,7 +345,7 @@ function add_admin_form_admission_content()
 
             /*
             if($_GET['section_tab'] == 'document_review'){
-    
+
                 $list_students = new TT_document_review_List_Table;
                 $list_students->prepare_items();
                 include(plugin_dir_path(__FILE__).'templates/list-student-documents.php');
@@ -387,174 +387,6 @@ function add_admin_form_admission_content()
     } else {
         wp_die(__('You do not have sufficient permissions to access this page.'));
     }
-}
-
-class TT_new_student_List_Table extends WP_List_Table
-{
-
-    function __construct()
-    {
-        global $status, $page, $categories;
-
-        parent::__construct(array(
-            'singular' => 'student',
-            'plural' => 'students',
-            'ajax' => true
-        ));
-
-    }
-
-    function column_default($item, $column_name)
-    {
-
-        global $current_user;
-
-        switch ($column_name) {
-            case 'full_name':
-                return $item['name'] . ' ' . $item['last_name'];
-            case 'program':
-                $program = get_name_program($item['program_id']);
-                return $program;
-            case 'grade':
-                $grade = get_name_grade($item['grade_id']);
-                return $grade;
-            case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
-            default:
-                return print_r($item, true);
-        }
-    }
-
-    function column_name($item)
-    {
-
-        return sprintf(
-            '%1$s<a href="javascript:void(0)">%2$s</a>',
-            '<span data-id="' . $item['id'] . '" class="dashicons dashicons-menu handle" style="cursor:all-scroll;"></span>',
-            ucwords($item['name']),
-        );
-    }
-
-    function column_cb($item)
-    {
-        return '';
-    }
-
-    function get_columns()
-    {
-
-        $columns = array(
-            'full_name' => __('Full name', 'edusystem'),
-            'program' => __('Program', 'edusystem'),
-            'grade' => __('Grade', 'edusystem'),
-            'view_details' => __('Actions', 'edusystem'),
-        );
-
-        return $columns;
-    }
-
-    function get_new_students()
-    {
-
-        global $wpdb;
-        $table_students = $wpdb->prefix . 'students';
-        $table_student_documents = $wpdb->prefix . 'student_documents';
-
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
-            $search = $_POST['s'];
-            if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
-                $period = $_POST['academic_period'];
-                $data = $wpdb->get_results("SELECT a.* 
-                FROM {$table_students} as a 
-                JOIN {$table_student_documents} b on b.student_id = a.id 
-                WHERE status_id=1 AND a.academic_period = '$period' AND b.status != 0 AND 
-                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email OR id_document LIKE '{$search}%')
-                GROUP BY a.id
-                ", "ARRAY_A");
-            } else {
-                $data = $wpdb->get_results("SELECT a.* 
-                FROM {$table_students} as a 
-                JOIN {$table_student_documents} b on b.student_id = a.id 
-                WHERE status_id=1 AND b.status != 0 AND 
-                (a.name  LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR email or id_document LIKE '{$search}%')
-                GROUP BY a.id
-                ", "ARRAY_A");
-            }
-        } else {
-            if (isset($_POST['academic_period']) && !empty($_POST['academic_period'])) {
-                $period = $_POST['academic_period'];
-                $data = $wpdb->get_results("SELECT a.* 
-                FROM {$table_students} as a 
-                JOIN {$table_student_documents} b on b.student_id = a.id 
-                WHERE status_id=1 AND a.academic_period = '$period' AND b.status != 0
-                GROUP BY a.id
-                ", "ARRAY_A");
-            } else {
-                $data = $wpdb->get_results("SELECT a.* 
-                FROM {$table_students} as a 
-                JOIN {$table_student_documents} b on b.student_id = a.id 
-                WHERE status_id=1 AND b.status != 0
-                GROUP BY a.id
-                ", "ARRAY_A");
-            }
-        }
-
-        return $data;
-    }
-
-    function get_sortable_columns()
-    {
-        $sortable_columns = [];
-        return $sortable_columns;
-    }
-
-
-    function get_bulk_actions()
-    {
-        $actions = [];
-        return $actions;
-    }
-
-    function process_bulk_action()
-    {
-
-        //Detect when a bulk action is being triggered...
-        if ('delete' === $this->current_action()) {
-            wp_die('Items deleted (or they would be if we had items to delete)!');
-        }
-    }
-
-    function prepare_items()
-    {
-
-        $data_categories = $this->get_new_students();
-
-        $per_page = 20;
-
-
-        $columns = $this->get_columns();
-        $hidden = array();
-        $sortable = $this->get_sortable_columns();
-
-        $this->_column_headers = array($columns, $hidden, $sortable);
-        $this->process_bulk_action();
-        $data = $data_categories;
-
-        function usort_reorder($a, $b)
-        {
-            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
-            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
-            $result = strcmp($a[$orderby], $b[$orderby]);
-            return ($order === 'asc') ? $result : -$result;
-        }
-
-        $current_page = $this->get_pagenum();
-
-        $total_items = count($data);
-
-        $this->items = $data;
-    }
-
 }
 
 class TT_document_review_List_Table extends WP_List_Table
@@ -722,51 +554,125 @@ class TT_document_review_List_Table extends WP_List_Table
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $table_student_documents = $wpdb->prefix . 'student_documents';
+
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
-        $search = sanitize_text_field($_GET['s']);
-        $period = sanitize_text_field($_GET['academic_period']);
-        $date_selected = sanitize_text_field($_GET['date_selected']);
-        $cut = sanitize_text_field($_GET['academic_period_cut']);
+        // Sanitize and retrieve search/filter parameters
+        $search = sanitize_text_field($_GET['s'] ?? ''); // Use null coalescing for safety
+        $period = sanitize_text_field($_GET['academic_period'] ?? '');
+        $date_selected = sanitize_text_field($_GET['date_selected'] ?? '');
+        $cut = sanitize_text_field($_GET['academic_period_cut'] ?? '');
 
-        // Obtener los student_id que coinciden con el cut_period
-        $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE initial_cut = '$cut'");
+        $conditions = array();
+        $params = array();
 
-        $today = date('Y-m-d'); // get today's date
-        $filter_date = '';
-        switch ($date_selected) {
-            case '1':
-                $filter_date = date('Y-m-d', strtotime('-15 days', strtotime($today))); // 15 days ago
-                break;
-            case '2':
-                $filter_date = date('Y-m-d', strtotime('-35 days', strtotime($today))); // 35 days ago
-                break;
-            case '3':
-                $filter_date = date('Y-m-d', strtotime('-365 days', strtotime($today))); // more than 35 days ago
-                break;
+        // 1. Condition for 'cut' (initial_cut in students table)
+        if (!empty($cut)) {
+            // We'll add this condition directly to the main query to avoid a separate get_col query,
+            // which makes it more efficient.
+            $conditions[] = "a.initial_cut = %s";
+            $params[] = $cut;
         }
 
-        $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*,
+        // 2. Date filtering based on 'created_at'
+        $today = current_time('Y-m-d'); // Use WordPress's current_time for consistency
+        $filter_date = '';
+        if (!empty($date_selected)) {
+            switch ($date_selected) {
+                case '1': // 15 days ago
+                    $filter_date = date('Y-m-d', strtotime('-15 days', strtotime($today)));
+                    break;
+                case '2': // 35 days ago
+                    $filter_date = date('Y-m-d', strtotime('-35 days', strtotime($today)));
+                    break;
+                case '3': // more than 35 days ago (meaning, created_at is older than 35 days)
+                    $filter_date = date('Y-m-d', strtotime('-35 days', strtotime($today)));
+                    $conditions[] = "a.created_at < %s"; // Note: changed from >= to < for "more than 35 days ago"
+                    $params[] = $filter_date;
+                    break;
+            }
+            // For case 1 and 2, created_at should be >= filter_date
+            if ($date_selected == '1' || $date_selected == '2') {
+                $conditions[] = "a.created_at >= %s";
+                $params[] = $filter_date;
+            }
+        }
+
+
+        // 3. Academic Period filter
+        if (!empty($period)) {
+            $conditions[] = "a.academic_period = %s";
+            $params[] = $period;
+        }
+
+        // 4. Smart Search Condition
+        if (!empty($search)) {
+            $search_term_like = '%' . $wpdb->esc_like($search) . '%';
+
+            $search_sub_conditions = [];
+            $search_sub_params = [];
+
+            // Combined search for names and surnames (CONCAT_WS)
+            $combined_fields = [
+                'CONCAT_WS(" ", a.name, a.last_name)',
+                'CONCAT_WS(" ", a.name, a.middle_name, a.last_name)',
+                'CONCAT_WS(" ", a.name, a.middle_name, a.last_name, a.middle_last_name)',
+                'CONCAT_WS(" ", a.last_name, a.name)',
+                'CONCAT_WS(" ", a.last_name, a.middle_last_name)',
+                'CONCAT_WS(" ", a.name, a.middle_name)',
+                'CONCAT_WS(" ", a.last_name, a.middle_last_name)'
+            ];
+
+            foreach ($combined_fields as $field_combination) {
+                $search_sub_conditions[] = "{$field_combination} LIKE %s";
+                $search_sub_params[] = $search_term_like;
+            }
+
+            // Direct search in individual fields
+            $individual_fields = ['a.name', 'a.middle_name', 'a.last_name', 'a.middle_last_name', 'a.email', 'a.id_document'];
+            foreach ($individual_fields as $field) {
+                $search_sub_conditions[] = "{$field} LIKE %s";
+                $search_sub_params[] = $search_term_like;
+            }
+
+            // Add the main search condition to the general conditions array
+            if (!empty($search_sub_conditions)) {
+                $conditions[] = "(" . implode(" OR ", $search_sub_conditions) . ")";
+                $params = array_merge($params, $search_sub_params);
+            }
+        }
+
+        // 5. Build the main query
+        // Notice the JOIN and WHERE clauses are now built programmatically.
+        // We explicitly join with student_documents to ensure we only get students with documents.
+        $query = "
+        SELECT SQL_CALC_FOUND_ROWS a.*,
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
-            FROM {$table_students} as a 
-            JOIN {$table_student_documents} b on b.student_id = a.id 
-            AND (" . (isset($cut) && $cut != '' ? "a.id IN (" . implode(',', $cut_student_ids) . ")" : "1=1") . ")
-            AND (
-                (" . ($search ? "a.name  LIKE '{$search}%' OR a.middle_name LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR a.middle_last_name  LIKE '{$search}%' OR a.email LIKE '{$search}%' OR a.id_document LIKE '{$search}%'" : "1=1") . ")
-                AND (" . ($date_selected ? "a.created_at >= '$filter_date'" : "1=1") . ")
-                AND (" . ($period ? "a.academic_period = '$period'" : "1=1") . ")
-            )
-            GROUP BY a.id
-            ORDER BY review_pending_documents DESC, a.updated_at DESC
-            LIMIT {$per_page} OFFSET {$offset}
-            ", "ARRAY_A");
+        FROM {$table_students} as a
+        JOIN {$table_student_documents} b ON b.student_id = a.id
+    ";
 
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $query .= " GROUP BY a.id"; // Group by student ID to correctly count documents per student
+        $query .= " ORDER BY review_pending_documents DESC, a.updated_at DESC";
+
+        // Add LIMIT and OFFSET parameters
+        $query .= " LIMIT %d OFFSET %d";
+        $params[] = $per_page;
+        $params[] = $offset;
+
+        // Execute the query
+        $data = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
         return ['data' => $data, 'total_count' => $total_count];
     }
 
@@ -923,51 +829,122 @@ class TT_all_student_List_Table extends WP_List_Table
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $table_student_documents = $wpdb->prefix . 'student_documents';
+
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
-        $search = sanitize_text_field($_GET['s']);
-        $period = sanitize_text_field($_GET['academic_period']);
-        $date_selected = sanitize_text_field($_GET['date_selected']);
-        $cut = sanitize_text_field($_GET['academic_period_cut']);
+        // Sanitize and retrieve search/filter parameters
+        $search = sanitize_text_field($_GET['s'] ?? ''); // Use null coalescing for safety
+        $period = sanitize_text_field($_GET['academic_period'] ?? '');
+        $date_selected = sanitize_text_field($_GET['date_selected'] ?? '');
+        $cut = sanitize_text_field($_GET['academic_period_cut'] ?? '');
 
-        // Obtener los student_id que coinciden con el cut_period
-        $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE initial_cut = '$cut'");
+        $conditions = array();
+        $params = array();
 
-        $today = date('Y-m-d'); // get today's date
-        $filter_date = '';
-        switch ($date_selected) {
-            case '1':
-                $filter_date = date('Y-m-d', strtotime('-15 days', strtotime($today))); // 15 days ago
-                break;
-            case '2':
-                $filter_date = date('Y-m-d', strtotime('-35 days', strtotime($today))); // 35 days ago
-                break;
-            case '3':
-                $filter_date = date('Y-m-d', strtotime('-365 days', strtotime($today))); // more than 35 days ago
-                break;
+        // 1. Condition for 'cut' (initial_cut in students table)
+        if (!empty($cut)) {
+            // Integrate 'initial_cut' condition directly into the main query
+            $conditions[] = "a.initial_cut = %s";
+            $params[] = $cut;
         }
 
-        $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS a.*,
+        // 2. Date filtering based on 'created_at'
+        $today = current_time('Y-m-d'); // Use WordPress's current_time for consistency
+        $filter_date = '';
+        if (!empty($date_selected)) {
+            switch ($date_selected) {
+                case '1': // 15 days ago (created_at >= filter_date)
+                    $filter_date = date('Y-m-d', strtotime('-15 days', strtotime($today)));
+                    $conditions[] = "a.created_at >= %s";
+                    $params[] = $filter_date;
+                    break;
+                case '2': // 35 days ago (created_at >= filter_date)
+                    $filter_date = date('Y-m-d', strtotime('-35 days', strtotime($today)));
+                    $conditions[] = "a.created_at >= %s";
+                    $params[] = $filter_date;
+                    break;
+                case '3': // More than 35 days ago (created_at < filter_date)
+                    $filter_date = date('Y-m-d', strtotime('-35 days', strtotime($today))); // This value acts as the threshold
+                    $conditions[] = "a.created_at < %s";
+                    $params[] = $filter_date;
+                    break;
+            }
+        }
+
+        // 3. Academic Period filter
+        if (!empty($period)) {
+            $conditions[] = "a.academic_period = %s";
+            $params[] = $period;
+        }
+
+        // 4. Smart Search Condition
+        if (!empty($search)) {
+            $search_term_like = '%' . $wpdb->esc_like($search) . '%';
+
+            $search_sub_conditions = [];
+            $search_sub_params = [];
+
+            // Combined search for names and surnames (CONCAT_WS)
+            $combined_fields = [
+                'CONCAT_WS(" ", a.name, a.last_name)',
+                'CONCAT_WS(" ", a.name, a.middle_name, a.last_name)',
+                'CONCAT_WS(" ", a.name, a.middle_name, a.last_name, a.middle_last_name)',
+                'CONCAT_WS(" ", a.last_name, a.name)',
+                'CONCAT_WS(" ", a.last_name, a.middle_last_name)',
+                'CONCAT_WS(" ", a.name, a.middle_name)',
+                'CONCAT_WS(" ", a.last_name, a.middle_last_name)'
+            ];
+
+            foreach ($combined_fields as $field_combination) {
+                $search_sub_conditions[] = "{$field_combination} LIKE %s";
+                $search_sub_params[] = $search_term_like;
+            }
+
+            // Direct search in individual fields
+            $individual_fields = ['a.name', 'a.middle_name', 'a.last_name', 'a.middle_last_name', 'a.email', 'a.id_document'];
+            foreach ($individual_fields as $field) {
+                $search_sub_conditions[] = "{$field} LIKE %s";
+                $search_sub_params[] = $search_term_like;
+            }
+
+            // Add the main search condition to the general conditions array
+            if (!empty($search_sub_conditions)) {
+                $conditions[] = "(" . implode(" OR ", $search_sub_conditions) . ")";
+                $params = array_merge($params, $search_sub_params);
+            }
+        }
+
+        // 5. Build the main query
+        // This query includes subqueries for document counts and a JOIN to ensure
+        // we only retrieve students associated with student_documents.
+        $query = "
+        SELECT SQL_CALC_FOUND_ROWS a.*,
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 0) AS count_pending_documents,
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 5) AS approved_pending_documents,
             (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 1) AS review_pending_documents,
-            (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND status = 3 OR status = 4) AS rejected_documents
-            FROM {$table_students} as a 
-            JOIN {$table_student_documents} b on b.student_id = a.id 
-            AND (" . (isset($cut) && $cut != '' ? "a.id IN (" . implode(',', $cut_student_ids) . ")" : "1=1") . ")
-            AND (
-                (" . ($search ? "a.name  LIKE '{$search}%' OR a.middle_name LIKE '{$search}%' OR a.last_name LIKE '{$search}%' OR a.middle_last_name  LIKE '{$search}%' OR a.email LIKE '{$search}%' OR a.id_document LIKE '{$search}%'" : "1=1") . ")
-                AND (" . ($date_selected ? "a.created_at >= '$filter_date'" : "1=1") . ")
-                AND (" . ($period ? "a.academic_period = '$period'" : "1=1") . ")
-            )
-            GROUP BY a.id
-            ORDER BY a.updated_at DESC
-            LIMIT {$per_page} OFFSET {$offset}
-            ", "ARRAY_A");
+            (SELECT count(id) FROM {$table_student_documents} WHERE student_id = a.id AND (status = 3 OR status = 4)) AS rejected_documents
+        FROM {$table_students} as a
+        JOIN {$table_student_documents} b ON b.student_id = a.id
+    ";
 
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $query .= " GROUP BY a.id"; // Group by student ID to correctly count documents per student
+        $query .= " ORDER BY a.updated_at DESC"; // Your original order by clause
+
+        // Add LIMIT and OFFSET parameters
+        $query .= " LIMIT %d OFFSET %d";
+        $params[] = $per_page;
+        $params[] = $offset;
+
+        // Execute the query
+        $data = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
         return ['data' => $data, 'total_count' => $total_count];
     }
 

@@ -17,7 +17,7 @@ function add_admin_form_payments_content()
             $payment_confirm = $_POST['payment_confirm'] ?? null;
             $paid_more = $_POST['paid_more'] ?? null;
             $cuote_credit = $_POST['cuote_credit'] ?? null;
-            $amount_credit = (float)$_POST['amount_credit'] ?? null;
+            $amount_credit = (float) $_POST['amount_credit'] ?? null;
             $payment_selected = $_POST['payment_selected'] ?? null;
             $other_payments = $_POST['other_payments'] ?? null;
             $transaction_id = $_POST['transaction_id'] ?? null;
@@ -185,7 +185,7 @@ function add_admin_form_payments_content()
             $table_student_payments_log = $wpdb->prefix . 'student_payments_log';
             $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document='{$id_document}' OR email='{$id_document}'");
             $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY cuote ASC");
-            
+
             if ($delete_quote) {
                 $wpdb->delete($table_student_payments, ['id' => $delete_quote]);
                 set_max_date_student($student->id);
@@ -243,7 +243,7 @@ function add_admin_form_payments_content()
                         $new_order->set_billing_phone($user_customer->phone);
                     } else {
                         $order_old = $orders_customer[0];
-                    
+
                         // Copy metadata from old order
                         $meta_keys = [
                             'alliance_id',
@@ -251,11 +251,11 @@ function add_admin_form_payments_content()
                             'student_id',
                             'student_data'
                         ];
-    
+
                         foreach ($meta_keys as $key) {
                             $new_order->add_meta_data($key, $order_old->get_meta($key));
                         }
-    
+
                         // Add additional metadata
                         $new_order->add_meta_data('old_order_primary', $order_old->get_id());
                         $new_order->add_meta_data('cuote_payment', 1);
@@ -356,11 +356,11 @@ function add_admin_form_payments_content()
                             'student_id',
                             'student_data'
                         ];
-    
+
                         foreach ($meta_keys as $key) {
                             $new_order->add_meta_data($key, $order_old->get_meta($key));
                         }
-    
+
                         // Add additional metadata
                         $new_order->add_meta_data('old_order_primary', $order_old->get_id());
                         $new_order->add_meta_data('cuote_payment', 1);
@@ -701,11 +701,12 @@ function add_admin_form_payments_content()
     }
 }
 
-function update_order_pending_approved($order, $payment_selected, $transaction_id, $other_payments) {
+function update_order_pending_approved($order, $payment_selected, $transaction_id, $other_payments)
+{
     $payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
     $filteredArray = [];
     if ($payment_gateways) {
-        $filteredArray = array_filter($payment_gateways, function ($item) use($payment_selected) {
+        $filteredArray = array_filter($payment_gateways, function ($item) use ($payment_selected) {
             return $item->id == $payment_selected;
         });
         $filteredArray = array_values($filteredArray);
@@ -715,7 +716,7 @@ function update_order_pending_approved($order, $payment_selected, $transaction_i
     $order->update_meta_data('transaction_id', $transaction_id);
     $order->set_payment_method_title($filteredArray[0]->get_title());
 
-    if($payment_selected == 'other_payment') {
+    if ($payment_selected == 'other_payment') {
         $order->update_meta_data('payment_method', $other_payments);
     }
 
@@ -818,102 +819,134 @@ class TT_payment_pending_List_Table extends WP_List_Table
     function get_payment_pendings()
     {
         global $current_user, $wpdb;
-        $roles = $current_user->roles;
+        $roles = (array) $current_user->roles; // Cast to array for safety
         $orders_array = [];
-        $args = [];
+
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
-        // Verificar si el usuario actual tiene el rol 'webinar-alliance'
+        $search_term = sanitize_text_field($_POST['s'] ?? ''); // Get search term safely
+        $table_students = $wpdb->prefix . 'students';
+
+        // Initialize args for wc_get_orders
+        $args = [
+            'limit' => $per_page,
+            'offset' => $offset,
+            'status' => array('wc-pending', 'wc-processing', 'wc-on-hold'), // Orders with these statuses
+            'orderby' => 'date',
+            'order' => 'DESC',
+        ];
+
+        $meta_query = [];
+
+        // 1. Filter by 'from_webinar' meta key for specific roles
         if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
-            // Si el usuario tiene el rol, solo buscar órdenes con from_webinar = 1
-            $args['meta_query'] = [
-                [
-                    'key' => 'from_webinar',
-                    'value' => 1,
-                    'compare' => '='
-                ]
+            $meta_query[] = [
+                'key' => 'from_webinar',
+                'value' => 1,
+                'compare' => '=',
+                'type' => 'NUMERIC' // Ensure proper comparison for numeric value
             ];
         }
 
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
-            global $wpdb;
-            $search_term = sanitize_text_field($_POST['s']);
-            $table_students = $wpdb->prefix . 'students';
-            
-            // Preparar la consulta SQL de manera segura
-            $query = $wpdb->prepare(
-                "SELECT id FROM {$table_students} 
-                WHERE `name` LIKE %s 
-                OR last_name LIKE %s 
-                OR middle_last_name LIKE %s 
-                OR middle_name LIKE %s 
-                OR email LIKE %s 
-                OR id_document LIKE %s",
-                '%' . $wpdb->esc_like($search_term) . '%',
-                '%' . $wpdb->esc_like($search_term) . '%',
-                '%' . $wpdb->esc_like($search_term) . '%',
-                '%' . $wpdb->esc_like($search_term) . '%',
-                '%' . $wpdb->esc_like($search_term) . '%',
-                '%' . $wpdb->esc_like($search_term) . '%'
-            );
-        
-            $student_ids = $wpdb->get_col($query);
-        
+        // 2. Smart Search for Students and then filter orders by student_id
+        if (!empty($search_term)) {
+            $search_term_like = '%' . $wpdb->esc_like($search_term) . '%';
+
+            $search_conditions = [];
+            $search_params = [];
+
+            // Combined search for names and surnames using CONCAT_WS
+            $combined_fields = [
+                'CONCAT_WS(" ", name, last_name)',
+                'CONCAT_WS(" ", name, middle_name, last_name)',
+                'CONCAT_WS(" ", name, middle_name, last_name, middle_last_name)',
+                'CONCAT_WS(" ", last_name, name)',
+                'CONCAT_WS(" ", last_name, middle_last_name)',
+                'CONCAT_WS(" ", name, middle_name)',
+                'CONCAT_WS(" ", last_name, middle_last_name)'
+            ];
+
+            foreach ($combined_fields as $field_combination) {
+                $search_conditions[] = "{$field_combination} LIKE %s";
+                $search_params[] = $search_term_like;
+            }
+
+            // Direct search in individual fields
+            $individual_fields = ['name', 'middle_name', 'last_name', 'middle_last_name', 'email', 'id_document'];
+            foreach ($individual_fields as $field) {
+                $search_conditions[] = "{$field} LIKE %s";
+                $search_params[] = $search_term_like;
+            }
+
+            $student_query_sql = "SELECT id FROM {$table_students} WHERE " . implode(" OR ", $search_conditions);
+            $student_ids = $wpdb->get_col($wpdb->prepare($student_query_sql, $search_params));
+
             if (!empty($student_ids)) {
-                $args['meta_query'][] = [
+                $meta_query[] = [
                     'key' => 'student_id',
-                    'value' => $student_ids,
-                    'compare' => 'IN'
+                    'value' => array_map('intval', $student_ids), // Ensure IDs are integers
+                    'compare' => 'IN',
+                    'type' => 'NUMERIC' // Crucial for correct numeric comparison
                 ];
+            } else {
+                // If no students match the search, return no orders to prevent fetching all.
+                return ['data' => [], 'total_count' => 0];
             }
         }
 
-        $args['limit'] = $per_page; // limit to 10 orders per page
-        $args['offset'] = $offset; // offset to start from the first order
-        $args['status'] = array('wc-pending', 'wc-processing', 'wc-on-hold'); // 'wc-cancelled'
+        // Add meta_query to the main args if not empty
+        if (!empty($meta_query)) {
+            $args['meta_query'] = $meta_query;
+            // If there's more than one meta_query, ensure relation is set if needed (default is AND)
+            // $args['meta_query']['relation'] = 'AND';
+        }
+
+        // Get orders with pagination applied
         $orders = wc_get_orders($args);
 
         if ($orders) {
             foreach ($orders as $order) {
-
                 $student = get_student_detail($order->get_meta('student_id'));
 
-                $student_name = '';
+                $student_full_name = '';
                 if ($student) {
-                    $student_name = $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name;
+                    // Ensure properties exist before concatenating
+                    $student_full_name = ($student->last_name ?? '') . ' ' .
+                        ($student->middle_last_name ?? '') . ' ' .
+                        ($student->name ?? '') . ' ' .
+                        ($student->middle_name ?? '');
                 }
 
-                array_push($orders_array, [
+                // Get billing first and last name from the order directly
+                $billing_first_name = $order->get_billing_first_name();
+                $billing_last_name = $order->get_billing_last_name();
+                $partner_name = trim($billing_last_name . ' ' . $billing_first_name);
+
+                $orders_array[] = [
                     'payment_id' => $order->get_id(),
-                    'date' => $order->get_date_created()->format('F j, Y g:i a'),
-                    'partner_name' => $order->get_billing_last_name() . ' ' . $order->get_billing_first_name(),
-                    'student_name' => $student_name,
+                    'date' => $order->get_date_created() ? $order->get_date_created()->format('F j, Y g:i a') : '',
+                    'partner_name' => $partner_name,
+                    'student_name' => '<span class="text-uppercase">' . $student_full_name . '</span>', // Apply uppercase here
                     'total' => wc_price($order->get_total()),
-                    'status' => ($order->get_status() == 'pending') ? 'Payment pending' : $order->get_status(),
+                    'status' => ($order->get_status() === 'pending') ? __('Payment pending', 'your-text-domain') : wc_get_order_status_name($order->get_status()), // Use wc_get_order_status_name for localized status
                     'payment_method' => $order->get_payment_method_title()
-                ]);
+                ];
             }
         }
 
-        $args_filtered['limit'] = -1;
-        $args_filtered['status'] = array('wc-pending', 'wc-cancelled', 'wc-processing', 'wc-on-hold');
+        // Get the total count of orders that match all filters *without* pagination limit/offset
+        // wc_get_orders with 'return' => 'ids' and then count, or 'return' => 'objects' with limit -1
+        // The most reliable way for total count when using WP_Query based functions is a separate call with 'limit' => -1
+        $total_args = $args;
+        unset($total_args['limit']);
+        unset($total_args['offset']);
+        $total_count = wc_get_orders(array_merge($total_args, ['return' => 'ids'])); // Get all matching IDs
+        $total_orders_count = count($total_count); // Count the IDs
 
-        if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
-            $args_filtered['meta_query'] = [
-                [
-                    'key' => 'from_webinar',
-                    'value' => 1,
-                    'compare' => '='
-                ]
-            ];
-        }
-
-        $total_count = wc_get_orders(array_merge($args_filtered, array('return' => 'count')));
-        return ['data' => $orders_array, 'total_count' => sizeof($total_count)];
+        return ['data' => $orders_array, 'total_count' => $total_orders_count];
     }
-
     function get_sortable_columns()
     {
         $sortable_columns = [];
@@ -1038,101 +1071,133 @@ class TT_all_payments_List_Table extends WP_List_Table
 
     function get_payment()
     {
-        global $current_user;
-        $roles = $current_user->roles;
+        global $current_user, $wpdb;
+        $roles = (array) $current_user->roles; // Cast to array for safety
         $orders_array = [];
-        $args = [];
+
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
-        // Verificar si el usuario actual tiene el rol 'webinar-alliance'
+        $search_term = sanitize_text_field($_POST['s'] ?? ''); // Get search term safely
+        $table_students = $wpdb->prefix . 'students';
+
+        // Initialize args for wc_get_orders
+        $args = [
+            'limit' => $per_page,
+            'offset' => $offset,
+            'status' => array('wc-pending', 'wc-completed', 'wc-cancelled', 'wc-processing', 'wc-on-hold'), // All relevant statuses
+            'orderby' => 'date',
+            'order' => 'DESC',
+        ];
+
+        $meta_query = [];
+
+        // 1. Filter by 'from_webinar' meta key for specific roles
         if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
-            // Si el usuario tiene el rol, solo buscar órdenes con from_webinar = 1
-            $args['meta_query'] = [
-                [
-                    'key' => 'from_webinar',
-                    'value' => 1,
-                    'compare' => '='
-                ]
+            $meta_query[] = [
+                'key' => 'from_webinar',
+                'value' => 1,
+                'compare' => '=',
+                'type' => 'NUMERIC' // Ensure proper comparison for numeric value
             ];
         }
 
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
-            global $wpdb;
-            $search_term = sanitize_text_field($_POST['s']);
-            $table_students = $wpdb->prefix . 'students';
-            
-            // Preparar la consulta SQL de manera segura
-            $query = $wpdb->prepare(
-                "SELECT id FROM {$table_students} 
-                WHERE `name` LIKE %s 
-                OR last_name LIKE %s 
-                OR middle_last_name LIKE %s 
-                OR middle_name LIKE %s 
-                OR email LIKE %s 
-                OR id_document LIKE %s",
-                '%' . $wpdb->esc_like($search_term) . '%',
-                '%' . $wpdb->esc_like($search_term) . '%',
-                '%' . $wpdb->esc_like($search_term) . '%',
-                '%' . $wpdb->esc_like($search_term) . '%',
-                '%' . $wpdb->esc_like($search_term) . '%',
-                '%' . $wpdb->esc_like($search_term) . '%'
-            );
-        
-            $student_ids = $wpdb->get_col($query);
-        
+        // 2. Smart Search for Students and then filter orders by student_id
+        if (!empty($search_term)) {
+            $search_term_like = '%' . $wpdb->esc_like($search_term) . '%';
+
+            $search_conditions = [];
+            $search_params = [];
+
+            // Combined search for names and surnames using CONCAT_WS
+            $combined_fields = [
+                'CONCAT_WS(" ", name, last_name)',
+                'CONCAT_WS(" ", name, middle_name, last_name)',
+                'CONCAT_WS(" ", name, middle_name, last_name, middle_last_name)',
+                'CONCAT_WS(" ", last_name, name)',
+                'CONCAT_WS(" ", last_name, middle_last_name)',
+                'CONCAT_WS(" ", name, middle_name)',
+                'CONCAT_WS(" ", last_name, middle_last_name)'
+            ];
+
+            foreach ($combined_fields as $field_combination) {
+                $search_conditions[] = "{$field_combination} LIKE %s";
+                $search_params[] = $search_term_like;
+            }
+
+            // Direct search in individual fields
+            $individual_fields = ['name', 'middle_name', 'last_name', 'middle_last_name', 'email', 'id_document'];
+            foreach ($individual_fields as $field) {
+                $search_conditions[] = "{$field} LIKE %s";
+                $search_params[] = $search_term_like;
+            }
+
+            $student_query_sql = "SELECT id FROM {$table_students} WHERE " . implode(" OR ", $search_conditions);
+            $student_ids = $wpdb->get_col($wpdb->prepare($student_query_sql, $search_params));
+
             if (!empty($student_ids)) {
-                $args['meta_query'][] = [
+                $meta_query[] = [
                     'key' => 'student_id',
-                    'value' => $student_ids,
-                    'compare' => 'IN'
+                    'value' => array_map('intval', $student_ids), // Ensure IDs are integers
+                    'compare' => 'IN',
+                    'type' => 'NUMERIC' // Crucial for correct numeric comparison
                 ];
+            } else {
+                // If no students match the search, return no orders to prevent fetching all.
+                return ['data' => [], 'total_count' => 0];
             }
         }
 
-        $args['limit'] = $per_page; // limit to 10 orders per page
-        $args['offset'] = $offset; // offset to start from the first order
-        $args['status'] = array('wc-pending', 'wc-completed', 'wc-cancelled', 'wc-processing', 'wc-on-hold');
+        // Add meta_query to the main args if not empty
+        if (!empty($meta_query)) {
+            $args['meta_query'] = $meta_query;
+            // If there's more than one meta_query, ensure relation is set if needed (default is AND)
+            // $args['meta_query']['relation'] = 'AND';
+        }
+
+        // Get orders with pagination applied
         $orders = wc_get_orders($args);
 
         if ($orders) {
             foreach ($orders as $order) {
-
                 $student = get_student_detail($order->get_meta('student_id'));
 
-                $student_name = '';
+                $student_full_name = '';
                 if ($student) {
-                    $student_name = $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name;
+                    // Ensure properties exist before concatenating
+                    $student_full_name = ($student->last_name ?? '') . ' ' .
+                        ($student->middle_last_name ?? '') . ' ' .
+                        ($student->name ?? '') . ' ' .
+                        ($student->middle_name ?? '');
                 }
 
-                array_push($orders_array, [
+                // Get billing first and last name from the order directly
+                $billing_first_name = $order->get_billing_first_name();
+                $billing_last_name = $order->get_billing_last_name();
+                $partner_name = trim($billing_last_name . ' ' . $billing_first_name);
+
+                $orders_array[] = [
                     'payment_id' => $order->get_id(),
-                    'date' => $order->get_date_created()->format('F j, Y g:i a'),
-                    'partner_name' => $order->get_billing_last_name() . ' ' . $order->get_billing_first_name(),
-                    'student_name' => $student_name,
+                    'date' => $order->get_date_created() ? $order->get_date_created()->format('F j, Y g:i a') : '',
+                    'partner_name' => $partner_name,
+                    'student_name' => '<span class="text-uppercase">' . $student_full_name . '</span>', // Apply uppercase here
                     'total' => wc_price($order->get_total()),
-                    'status' => ($order->get_status() == 'pending') ? 'Payment pending' : $order->get_status(),
+                    'status' => wc_get_order_status_name($order->get_status()), // Use wc_get_order_status_name for localized status
                     'payment_method' => $order->get_payment_method_title()
-                ]);
+                ];
             }
         }
 
-        $args_filtered['limit'] = -1;
-        $args_filtered['status'] = array('wc-pending', 'wc-completed', 'wc-cancelled', 'wc-processing', 'wc-on-hold');
+        // Get the total count of orders that match all filters *without* pagination limit/offset
+        // The most reliable way for total count when using WP_Query based functions is a separate call with 'limit' => -1
+        $total_args = $args;
+        unset($total_args['limit']);
+        unset($total_args['offset']);
+        $total_count = wc_get_orders(array_merge($total_args, ['return' => 'ids'])); // Get all matching IDs
+        $total_orders_count = count($total_count); // Count the IDs
 
-        if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
-            $args_filtered['meta_query'] = [
-                [
-                    'key' => 'from_webinar',
-                    'value' => 1,
-                    'compare' => '='
-                ]
-            ];
-        }
-
-        $total_count = wc_get_orders(array_merge($args_filtered, array('return' => 'count')));
-        return ['data' => $orders_array, 'total_count' => sizeof($total_count)];
+        return ['data' => $orders_array, 'total_count' => $total_orders_count];
     }
 
     function get_sortable_columns()
@@ -1484,7 +1549,8 @@ class TT_Invoices_Institutes_List_Table extends WP_List_Table
 
 add_action('wp_ajax_nopriv_generate_quote_public', 'generate_quote_public_callback');
 add_action('wp_ajax_generate_quote_public', 'generate_quote_public_callback');
-function generate_quote_public_callback() {
+function generate_quote_public_callback()
+{
     global $wpdb;
     $amount = $_POST['amount'];
     $student_id = $_POST['student_id'];
@@ -1547,37 +1613,69 @@ function generate_quote_public_callback() {
     die();
 }
 
-function manage_payments_search_student_callback() {
+function manage_payments_search_student_callback()
+{
     global $wpdb;
-    $search_term = sanitize_text_field($_POST['q']);
+    $search_term = sanitize_text_field($_POST['q'] ?? ''); // Use null coalescing for safety
     $table_students = $wpdb->prefix . 'students';
-    
-    // Preparar la consulta SQL de manera segura
-    $query = $wpdb->prepare(
-        "SELECT * FROM {$table_students} 
-        WHERE `name` LIKE %s 
-        OR last_name LIKE %s 
-        OR middle_last_name LIKE %s 
-        OR middle_name LIKE %s 
-        OR email LIKE %s 
-        OR id_document LIKE %s",
-        '%' . $wpdb->esc_like($search_term) . '%',
-        '%' . $wpdb->esc_like($search_term) . '%',
-        '%' . $wpdb->esc_like($search_term) . '%',
-        '%' . $wpdb->esc_like($search_term) . '%',
-        '%' . $wpdb->esc_like($search_term) . '%',
-        '%' . $wpdb->esc_like($search_term) . '%'
-    );
-    $data = [];
-    $students = $wpdb->get_results($query);
-    foreach ($students as $student) {
-        $data[] = [
-            'id' => $student->id_document,
-            'description' => $student->id_document . ' - ' . $student->email,
-            'text' => $student->name . ' ' . $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->middle_name
-        ];
+
+    $conditions = [];
+    $params = [];
+
+    // Smart search conditions using CONCAT_WS for combined names
+    $search_term_like = '%' . $wpdb->esc_like($search_term) . '%';
+
+    // Combined search for names and surnames (CONCAT_WS)
+    $combined_fields = [
+        'CONCAT_WS(" ", name, last_name)',
+        'CONCAT_WS(" ", name, middle_name, last_name)',
+        'CONCAT_WS(" ", name, middle_name, last_name, middle_last_name)',
+        'CONCAT_WS(" ", last_name, name)',
+        'CONCAT_WS(" ", last_name, middle_last_name)',
+        'CONCAT_WS(" ", name, middle_name)',
+        'CONCAT_WS(" ", last_name, middle_last_name)'
+    ];
+
+    foreach ($combined_fields as $field_combination) {
+        $conditions[] = "{$field_combination} LIKE %s";
+        $params[] = $search_term_like;
     }
 
+    // Direct search in individual fields (as was originally)
+    $individual_fields = ['name', 'middle_name', 'last_name', 'middle_last_name', 'email', 'id_document'];
+    foreach ($individual_fields as $field) {
+        $conditions[] = "{$field} LIKE %s";
+        $params[] = $search_term_like;
+    }
+
+    // Build the WHERE clause
+    $where_clause = '';
+    if (!empty($conditions)) {
+        $where_clause = " WHERE " . implode(" OR ", $conditions);
+    }
+
+    // Prepare the full SQL query securely
+    $query = "SELECT * FROM {$table_students} {$where_clause}";
+
+    $students = $wpdb->get_results($wpdb->prepare($query, $params));
+
+    $data = [];
+    if ($students) {
+        foreach ($students as $student) {
+            $data[] = [
+                'id' => $student->id_document, // Using id_document as the ID for the select option
+                'description' => $student->id_document . ' - ' . ($student->email ?? ''), // Ensure email exists
+                'text' => trim(
+                    ($student->name ?? '') . ' ' .
+                    ($student->middle_name ?? '') . ' ' .
+                    ($student->last_name ?? '') . ' ' .
+                    ($student->middle_last_name ?? '')
+                )
+            ];
+        }
+    }
+
+    // Send JSON response
     wp_send_json(['items' => $data]);
 }
 
