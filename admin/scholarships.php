@@ -230,6 +230,48 @@ function add_admin_form_scholarships_content()
 
             wp_redirect(admin_url('admin.php?page=add_admin_form_scholarships_content&section_tab=pre_scholarships'));
             exit;
+        } else if ($_GET['action'] == 'assign_scholarship') {
+            global $wpdb;
+            $table_scholarship_assigned_student = $wpdb->prefix . 'scholarship_assigned_student';
+            
+            // Sanitizar y validar los datos de entrada
+            $student_id = intval($_POST['student_id']);
+            $scholarship_id = intval($_POST['scholarship_type']);
+            
+            // 1. Verificar si existen registros con el mismo student_id y scholarhsip_type
+            $existing_records = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) FROM $table_scholarship_assigned_student 
+                    WHERE student_id = %d AND scholarship_id = %d",
+                    $student_id,
+                    $scholarship_id
+                )
+            );
+
+            // 2. Eliminar registros existentes que coincidan en ambos campos
+            if ($existing_records > 0) {
+                $wpdb->delete(
+                    $table_scholarship_assigned_student,
+                    array(
+                        'student_id' => $student_id,
+                        'scholarship_id' => $scholarship_id // Campo añadido
+                    ),
+                    array('%d', '%d') // Formatos para ambos valores (string)
+                );
+            }
+            
+            // 3. Insertar el nuevo registro
+            $wpdb->insert(
+                $table_scholarship_assigned_student,
+                array(
+                    'student_id' => $student_id,
+                    'scholarship_id' => $scholarship_id
+                ),
+                array('%d', '%d') // Formatos de los datos (todos strings)
+            );
+
+            wp_redirect(admin_url('admin.php?page=add_admin_form_scholarships_content&section_tab=pre_scholarships'));
+            exit;
         }
     }
 

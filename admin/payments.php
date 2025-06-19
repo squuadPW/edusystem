@@ -1617,6 +1617,7 @@ function manage_payments_search_student_callback()
 {
     global $wpdb;
     $search_term = sanitize_text_field($_POST['q'] ?? ''); // Use null coalescing for safety
+    $return_id = $_POST['return_id'] ?? false; // Use null coalescing for safety
     $table_students = $wpdb->prefix . 'students';
 
     $conditions = [];
@@ -1663,7 +1664,7 @@ function manage_payments_search_student_callback()
     if ($students) {
         foreach ($students as $student) {
             $data[] = [
-                'id' => $student->id_document, // Using id_document as the ID for the select option
+                'id' => $return_id ? $student->id : $student->id_document, // Using id_document as the ID for the select option
                 'description' => $student->id_document . ' - ' . ($student->email ?? ''), // Ensure email exists
                 'text' => trim(
                     ($student->name ?? '') . ' ' .

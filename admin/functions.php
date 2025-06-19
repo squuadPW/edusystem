@@ -107,8 +107,23 @@ function aes_scripts_admin()
         );
     }
 
-    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_scholarships_content') {
-        wp_enqueue_script('student-payment', plugins_url('edusystem') . '/admin/assets/js/scholarship.js', array('jquery'), $version, true);
+    if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_scholarships_content') {
+        wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
+        wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', ['jquery']);
+
+        // Especifica jQuery como dependencia y usa la versión empaquetada con WordPress
+        wp_enqueue_script(
+            'scholarship',
+            plugins_url('edusystem') . '/admin/assets/js/scholarship.js',
+            ['jquery', 'select2'], // Asegura que jQuery y Select2 se carguen primero
+            $version,
+            true
+        );
+
+        wp_localize_script('scholarship', 'scholarship', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'manage_payments_search_student'
+        ]);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_email_content') {
