@@ -20,19 +20,34 @@
     </div>
     <div class="card-body-configuration">
 
+      <?php
+      $segment_options = array(
+        'admission' => __('Admis.', 'edusystem'),       // Original: Admission (or 'Enroll.')
+        'administration' => __('Admin.', 'edusystem'),      // Original: Administration
+        'moodle' => __('Moodle', 'edusystem'),       // Already short
+        'crm' => __('CRM', 'edusystem'),          // Already short
+        'offers' => __('Offers', 'edusystem'),       // Original: Offers (or 'Deals')
+        'inscriptions' => __('Enroll.', 'edusystem'),      // Original: Inscriptions (or 'Reg.')
+        'notifications' => __('Alerts', 'edusystem'),       // Original: Notifications (or 'Notif.')
+        'design' => __('Design', 'edusystem'),       // Original: Design
+      );
+
+      // You can define an initial active option if you like:
+      $active_option = 'admission';
+      ?>
+
       <section class="segment" style="display: flex; margin: 0px 20px 30px 20px;">
-        <div class="segment-button active" data-option="admission"><?= __('Admission', 'edusystem'); ?></div>
-        <div class="segment-button" data-option="administration"><?= __('Administration', 'edusystem'); ?></div>
-        <div class="segment-button" data-option="moodle"><?= __('Moodle', 'edusystem'); ?></div>
-        <div class="segment-button" data-option="crm"><?= __('CRM', 'edusystem'); ?></div>
-        <div class="segment-button" data-option="offers"><?= __('Offers', 'edusystem'); ?></div>
-        <div class="segment-button" data-option="inscriptions"><?= __('Inscriptions', 'edusystem'); ?></div>
-        <div class="segment-button" data-option="notifications"><?= __('Notifications', 'edusystem'); ?></div>
-        <div class="segment-button" data-option="design"><?= __('Design', 'edusystem'); ?></div>
+        <?php foreach ($segment_options as $data_option => $label): ?>
+          <div class="segment-button <?php echo ($data_option === $active_option) ? 'active' : ''; ?>"
+            data-option="<?php echo esc_attr($data_option); ?>">
+            <?php echo esc_html($label); ?>
+          </div>
+        <?php endforeach; ?>
       </section>
 
       <form method="post"
-        action="<?= admin_url('admin.php?page=add_admin_form_configuration_options_content&action=save_options'); ?>" enctype="multipart/form-data">
+        action="<?= admin_url('admin.php?page=add_admin_form_configuration_options_content&action=save_options'); ?>"
+        enctype="multipart/form-data">
         <input type="hidden" name="type">
         <div class="form-group" id="by_admission">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
