@@ -1084,7 +1084,7 @@ h2 {
   margin-bottom: 20px;
 }
 
-.form-field {
+.form-field-custom {
   text-align: center;
   font-weight: 400;
   display: flex;
@@ -1092,15 +1092,15 @@ h2 {
   align-items: center;
 }
 
-.form-field label {
+.form-field-custom label {
   font-weight: bold;
   margin-bottom: 5px;
   color: #444;
 }
 
-.form-field input[type=text],
-.form-field input[type=number],
-.form-field input[type=date] {
+.form-field-custom input[type=text],
+.form-field-custom input[type=number],
+.form-field-custom input[type=date] {
   width: 100%; /* Occupy full width of its grid cell */
   max-width: 250px; /* Limit max width for better aesthetics */
   padding: 8px 10px;
@@ -1109,7 +1109,7 @@ h2 {
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
-.form-field input[type=checkbox] {
+.form-field-custom input[type=checkbox] {
   margin-top: 5px;
 }
 
@@ -1147,9 +1147,9 @@ h2 {
   .form-grid {
     grid-template-columns: 1fr; /* Single column for mobile */
   }
-  .form-field input[type=text],
-  .form-field input[type=number],
-  .form-field input[type=date] {
+  .form-field-custom input[type=text],
+  .form-field-custom input[type=number],
+  .form-field-custom input[type=date] {
     max-width: 100%; /* Full width inputs on small screens */
   }
 }
