@@ -221,6 +221,7 @@ function wpdocs_remove_dashboard_widgets_optimized() {
     // Widgets comunes de WooCommerce
     remove_meta_box('wc_admin_dashboard_setup', 'dashboard', 'normal');  // Configuración de WooCommerce (puede ser 'normal' o 'side')
     remove_meta_box('woocommerce_dashboard_status', 'dashboard', 'normal'); // Estado de la tienda WooCommerce (puede ser 'normal' o 'side')
+    remove_meta_box('woocommerce_dashboard_recent_reviews', 'dashboard', 'normal'); // Estado de la tienda WooCommerce (puede ser 'normal' o 'side')
 
     // Widgets de salud del sitio y actividad (introducidos en WP 5.2+)
     remove_meta_box('dashboard_site_health', 'dashboard', 'normal');     // Salud del sitio
