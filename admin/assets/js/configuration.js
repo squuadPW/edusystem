@@ -32,7 +32,11 @@ const formConfig = {
     notifications: {
         formId: "by_notifications",
         requiredFields: []
-    }
+    },
+    design: {
+        formId: "by_design",
+        requiredFields: []
+    },
 };
 
 // Get all form IDs

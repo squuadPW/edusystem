@@ -667,57 +667,24 @@ function save_num_cuotes($variation_id, $i)
 
 // functions.php
 
-function add_logo_dashboard()
-{
-    $url = 'https://portal.americanelite.school/wp-content/uploads/2025/01/cropped-cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-COLOR-3.png';
-    $url_small = 'https://portal.americanelite.school/wp-content/uploads/2025/01/cropped-cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-COLOR-3.png';
-    echo '<style>
-    @media screen and (min-width:992px){
-        #toplevel_page_logo_based_menu {
-            background-image: url(' . $url . ');
-            background-size: 90%;
-            background-repeat: no-repeat;
-            margin: 10px !important;
-            background-color: #ffffff;
-            padding: 10px !important;
-            border-radius: 10px;
-            background-position: center;
-        }
+function add_logo_dashboard() {
+    $logo_id = get_option('logo_admin');
+
+    // Exit early if no logo ID is set or URL can't be retrieved
+    if ( ! $logo_id || ! ( $logo_url = wp_get_attachment_image_url( $logo_id, 'full' ) ) ) {
+        return;
     }
-    @media screen and (min-width:783px) and (max-width:991px){
-        #toplevel_page_logo_based_menu {
-            background-image: url(' . $url_small . ');
-            background-size: 80%;
-            background-repeat: no-repeat;
-            margin: 5px !important;
-            background-color: #ffffff;
-            padding: 0px !important;
-            border-radius: 6px;
-            background-position: center;
-            width: 70% !important;
-        }
-    }
-    @media screen and (max-width:782px){
-        #toplevel_page_logo_based_menu {
-            background-image: url(' . $url_small . ');
-            background-size: 20%;
-            background-repeat: no-repeat;
-            background-color: #ffffff !important;
-            margin: 10px !important;
-            width: 90% !important;
-            border-radius: 10px;
-            background-position: center;
-        }
-    }
-    a.wp-first-item.wp-not-current-submenu.menu-top.menu-icon-generic.toplevel_page_logo_based_menu.menu-top-last{
-        visibility:hidden;
-    }
-    a.toplevel_page_logo_based_menu{
-        visibility: hidden !important;
-    }
- </style>';
+
+    // Inject the logo URL as a CSS variable using your 'style-admin' handle
+    wp_add_inline_style( 'style-admin', ":root { --admin-logo-url: url('{$logo_url}'); }" );
 }
 add_action('admin_enqueue_scripts', 'add_logo_dashboard');
+
+function aes_logo()
+{
+    add_menu_page('logo', 'logo', 'read', 'logo_based_menu', '', '', 1);
+}
+add_action('admin_menu', 'aes_logo');
 
 function custom_login_store()
 {
@@ -751,12 +718,6 @@ function remove_text_admin_bar_profile($wp_admin_bar)
     ));
 }
 add_action('admin_bar_menu', 'remove_text_admin_bar_profile');
-
-function aes_logo()
-{
-    add_menu_page('logo', 'logo', 'read', 'logo_based_menu', '', '', 1);
-}
-add_action('admin_menu', 'aes_logo');
 
 function hide_notices()
 {
