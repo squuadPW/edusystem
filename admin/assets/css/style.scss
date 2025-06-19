@@ -1450,42 +1450,39 @@ h2 {
 }
 
 #toplevel_page_logo_based_menu {
-  background-image: var(
-    --admin-logo-url
-  ); /* This uses the dynamic URL from PHP */
-  background-repeat: no-repeat;
-  background-color: #ffffff;
-  background-position: center;
-  border-radius: 10px; /* Default for larger screens */
+    /* ESTILOS BASE PARA MÓVILES (O PANTALLAS PEQUEÑAS) */
+    background-image: var(--admin-logo-url);
+    background-repeat: no-repeat;
+    background-color: #ffffff;
+    background-position: center;
+    background-size: contain; 
+    border-radius: 10px; /* Radio por defecto para móviles */
+    margin: 10px !important; /* Margen para móviles */
+    width: 90% !important; /* Ancho para móviles */
+    padding: 0px !important; /* Podría ser un valor base para móviles */
+    min-height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
-@media screen and (min-width: 992px) {
-  #toplevel_page_logo_based_menu {
-    background-size: 90%;
-    margin: 10px !important;
-    padding: 10px !important;
-    border-radius: 10px;
-  }
+@media screen and (min-width: 783px) { /* Tablet y Escritorio */
+    #toplevel_page_logo_based_menu {
+        margin: 5px !important; /* Ajusta para tablet */
+        padding: 0px !important; /* Ajusta para tablet */
+        border-radius: 6px; /* Ajusta para tablet */
+        width: 70% !important; /* Ajusta para tablet */
+    }
 }
 
-@media screen and (min-width: 783px) and (max-width: 991px) {
-  #toplevel_page_logo_based_menu {
-    background-size: 80%;
-    margin: 5px !important;
-    padding: 0px !important;
-    border-radius: 6px;
-    width: 70% !important;
-  }
-}
-
-@media screen and (max-width: 782px) {
-  #toplevel_page_logo_based_menu {
-    background-size: 20%;
-    background-color: #ffffff !important;
-    margin: 10px !important;
-    width: 90% !important;
-    border-radius: 10px;
-  }
+@media screen and (min-width: 992px) { /* Escritorio grande */
+    #toplevel_page_logo_based_menu {
+        margin: 10px !important; /* Ajusta para escritorio */
+        padding: 10px !important; /* Ajusta para escritorio */
+        border-radius: 10px; /* Ajusta para escritorio */
+        width: auto !important; /* O un ancho fijo si lo necesitas en desktop */
+    }
 }
 
 /* Hide unnecessary menu items */
