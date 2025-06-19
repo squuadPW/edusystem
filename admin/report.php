@@ -88,6 +88,7 @@ function show_report_current_students()
     $total_count_non_enrolled = (int) get_students_non_enrolled_count();
     $total_count_pending_graduation = (int) get_students_pending_graduation_count();
     $total_count_graduated = (int) get_students_graduated_count();
+    $total_count_scholarships = (int) get_students_scholarships_count();
     $load = load_current_cut();
     $academic_period = $load['code'];
     $cut = $load['cut'];
@@ -117,6 +118,10 @@ function show_report_current_students()
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'graduated') {
             $list_students = new TT_Graduated_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'scholarships') {
+            $list_students = new TT_Scholarships_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         }
@@ -1866,6 +1871,256 @@ class TT_Graduated_List_Table extends WP_List_Table
 
 }
 
+class TT_Scholarships_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'active',
+                'plural' => 'actives',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+        $columns = array(
+            'scholarship' => __('Scholarship', 'edusystem'),
+            'student' => __('Student', 'edusystem'),
+            'id_document' => __('Student document', 'edusystem'),
+            'email' => __('Student email', 'edusystem'),
+            'parent' => __('Parent', 'edusystem'),
+            'parent_email' => __('Parent email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'grade' => __('Grade', 'edusystem'),
+            'institute' => __('Institute', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+
+    function get_student_scholarships()
+    {
+        global $wpdb;
+
+        // Table names
+        $table_students = $wpdb->prefix . 'students';
+        $table_scholarship_assigned_student = $wpdb->prefix . 'scholarship_assigned_student';
+        $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
+        $table_users = $wpdb->prefix . 'users'; // Assuming WordPress users table for parents
+        $table_usermeta = $wpdb->prefix . 'usermeta'; // Assuming WordPress usermeta table for parent names
+
+        // Initialize conditions and parameters for the main query
+        $conditions = array();
+        $params = array();
+
+        // Sanitize and retrieve POST data
+        $search = sanitize_text_field($_POST['s'] ?? '');
+        $academic_period_student = sanitize_text_field($_POST['academic_period'] ?? '');
+        $academic_period_cut_student = sanitize_text_field($_POST['academic_period_cut'] ?? '');
+
+        // 1. Student status condition
+        $conditions[] = "s.status_id != %d";
+        $params[] = 5; // Assuming 5 is the status_id for not pending graduation
+
+        // 2. Academic period filter (if present)
+        if (!empty($academic_period_student)) {
+            $conditions[] = "s.academic_period = %s";
+            $params[] = $academic_period_student;
+        }
+
+        // 3. Academic period cut filter (if present)
+        if (!empty($academic_period_cut_student)) {
+            $conditions[] = "s.initial_cut = %s";
+            $params[] = $academic_period_cut_student;
+        }
+
+        // 4. Smart search condition
+        if (!empty($search)) {
+            $search_term_like = '%' . $wpdb->esc_like($search) . '%';
+            $search_sub_conditions = [];
+
+            // Combined fields for search
+            $combined_fields = [
+                'CONCAT_WS(" ", s.name, s.last_name)',
+                'CONCAT_WS(" ", s.name, s.middle_name, s.last_name)',
+                'CONCAT_WS(" ", s.name, s.middle_name, s.last_name, s.middle_last_name)',
+                'CONCAT_WS(" ", s.last_name, s.name)',
+                'CONCAT_WS(" ", s.last_name, s.middle_last_name)',
+                'CONCAT_WS(" ", s.name, s.middle_name)',
+                'CONCAT_WS(" ", s.last_name, s.middle_last_name)'
+            ];
+
+            foreach ($combined_fields as $field_combination) {
+                $search_sub_conditions[] = "{$field_combination} LIKE %s";
+                $params[] = $search_term_like;
+            }
+
+            // Individual fields for search
+            $individual_fields = ['s.name', 's.middle_name', 's.last_name', 's.middle_last_name', 's.email', 's.id_document'];
+            foreach ($individual_fields as $field) {
+                $search_sub_conditions[] = "{$field} LIKE %s";
+                $params[] = $search_term_like;
+            }
+
+            if (!empty($search_sub_conditions)) {
+                $conditions[] = "(" . implode(" OR ", $search_sub_conditions) . ")";
+            }
+        }
+
+        // Pagination setup
+        $per_page = 20;
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+
+        // Build the main query with JOINs
+        // SQL_CALC_FOUND_ROWS is used to get the total count before LIMIT
+        $query = "
+        SELECT SQL_CALC_FOUND_ROWS
+            s.*,
+            sas.scholarship_id,
+            sa.name AS scholarship_name,
+            u.user_email AS parent_email,
+            pm_first_name.meta_value AS parent_first_name,
+            pm_last_name.meta_value AS parent_last_name
+        FROM {$table_students} AS s
+        INNER JOIN {$table_scholarship_assigned_student} AS sas ON s.id = sas.student_id
+        INNER JOIN {$table_scholarships_availables} AS sa ON sas.scholarship_id = sa.id
+        LEFT JOIN {$table_users} AS u ON s.partner_id = u.ID
+        LEFT JOIN {$table_usermeta} AS pm_first_name ON u.ID = pm_first_name.user_id AND pm_first_name.meta_key = 'first_name'
+        LEFT JOIN {$table_usermeta} AS pm_last_name ON u.ID = pm_last_name.user_id AND pm_last_name.meta_key = 'last_name'
+    ";
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $query .= " ORDER BY s.id DESC LIMIT %d OFFSET %d";
+        $params[] = $per_page;
+        $params[] = $offset;
+
+        $students_from_db = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
+
+        // Get the total count of students that match the criteria (before pagination)
+        $total_academic_ready_students = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        $students_array = [];
+        if (!empty($students_from_db)) {
+            foreach ($students_from_db as $student) {
+                $parent_full_name = '';
+                if ($student['parent_first_name'] || $student['parent_last_name']) {
+                    $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper($student['parent_last_name'] . ' ' . $student['parent_first_name']) . "</span>";
+                }
+
+                $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
+
+                $students_array[] = [
+                    'student' => $student_full_name,
+                    'scholarship' => $student['scholarship_name'],
+                    'id' => $student['id'],
+                    'id_document' => $student['id_document'],
+                    'email' => $student['email'],
+                    'parent' => $parent_full_name,
+                    'parent_email' => $student['parent_email'],
+                    'country' => $student['country'],
+                    'grade' => function_exists('get_name_grade') ? get_name_grade($student['grade_id']) : $student['grade_id'],
+                    'institute' => (function_exists('get_name_institute') && $student['institute_id']) ? get_name_institute($student['institute_id']) : ($student['name_institute'] ?? '')
+                ];
+            }
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_academic_ready_students];
+    }
+
+    function prepare_items()
+    {
+
+        $data_student = $this->get_student_scholarships();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
 class TT_Non_Enrolled_List_Table extends WP_List_Table
 {
 
@@ -2264,6 +2519,27 @@ function get_students_graduated_count()
             "SELECT COUNT(id) FROM %i WHERE status_id = %d",
             $table_students,
             5
+        )
+    );
+
+    if ($total_count === null) {
+        return 0;
+    }
+
+    return (int) $total_count; // Asegurarse de que el retorno sea un entero
+}
+
+function get_students_scholarships_count()
+{
+    global $wpdb;
+
+    $table_scholarship_assigned_student = $wpdb->prefix . 'scholarship_assigned_student';
+
+    // Contar directamente el número de estudiantes con status_id = 5
+    $total_count = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(id) FROM %i",
+            $table_scholarship_assigned_student
         )
     );
 

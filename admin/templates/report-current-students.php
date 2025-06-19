@@ -17,6 +17,9 @@
 	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=graduated'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'graduated') ? 'nav-tab-active' : ''; ?>"><?= __('Graduated', 'edusystem'); ?>
 		(<strong><?= $total_count_graduated ?></strong>)</a>
+	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=scholarships'); ?>"
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'scholarships') ? 'nav-tab-active' : ''; ?>"><?= __('Scholarships', 'edusystem'); ?>
+		(<strong><?= $total_count_scholarships ?></strong>)</a>
 </h2>
 
 <div class="tabs-content">
@@ -49,6 +52,10 @@
 				case 'graduated':
 					$heading_text = __('Graduated students', 'edusystem');
 					$name_document = __('Graduated students.xlsx', 'edusystem');
+					break;
+				case 'scholarships':
+					$heading_text = __('Scholarship students', 'edusystem');
+					$name_document = __('Scholarship students.xlsx', 'edusystem');
 					break;
 				default:
 					$heading_text = __('All students with active status', 'edusystem');
