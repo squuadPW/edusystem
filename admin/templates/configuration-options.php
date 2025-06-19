@@ -28,7 +28,7 @@
         'crm' => __('CRM', 'edusystem'),          // Already short
         'offers' => __('Offers', 'edusystem'),       // Original: Offers (or 'Deals')
         'inscriptions' => __('Enroll.', 'edusystem'),      // Original: Inscriptions (or 'Reg.')
-        'notifications' => __('Alerts', 'edusystem'),       // Original: Notifications (or 'Notif.')
+        'notifications' => __('Emails', 'edusystem'),       // Original: Notifications (or 'Notif.')
         'design' => __('Design', 'edusystem'),       // Original: Design
       );
 
