@@ -1163,13 +1163,22 @@ h2 {
   .wp-core-ui select {
     width: 100%;
   }
-  .wp-admin .form-table input:is([type=text], [type=number], [type=date], [type=email], [type=password]),
-  .wp-core-ui input:is([type=text], [type=number], [type=date], [type=email], [type=password]) {
+  .wp-admin .form-table input:is([type=text],
+  [type=number],
+  [type=date],
+  [type=email],
+  [type=password]),
+  .wp-core-ui input:is([type=text],
+  [type=number],
+  [type=date],
+  [type=email],
+  [type=password]) {
     width: 100%;
   }
 }
 /* Media query para pantallas pequeñas (ej. móviles) */
-@media (max-width: 768px) { /* Puedes ajustar este breakpoint */
+@media (max-width: 768px) {
+  /* Puedes ajustar este breakpoint */
   .segment {
     flex-wrap: wrap; /* Permite que los elementos se envuelvan */
     justify-content: center; /* Centra los botones cuando se envuelven */
@@ -1187,28 +1196,32 @@ h2 {
   }
 }
 /* Responsive adjustments for tablets and smaller desktops */
-@media (max-width: 1024px) { /* Adjust this breakpoint if needed */
+@media (max-width: 1024px) {
+  /* Adjust this breakpoint if needed */
   .grid-container-report-4 {
     grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
     margin: 15px; /* Slightly reduced margin */
   }
 }
 /* Responsive adjustments for mobile phones */
-@media (max-width: 768px) { /* Adjust this breakpoint if needed */
+@media (max-width: 768px) {
+  /* Adjust this breakpoint if needed */
   .grid-container-report-4 {
     grid-template-columns: 1fr; /* 1 column for mobile phones */
     margin: 10px; /* Further reduced margin */
   }
 }
 /* Responsive adjustments for tablets and smaller desktops */
-@media (max-width: 1024px) { /* Adjust this breakpoint if needed */
+@media (max-width: 1024px) {
+  /* Adjust this breakpoint if needed */
   .grid-container-report-2 {
     grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
     margin: 15px; /* Slightly reduced margin */
   }
 }
 /* Responsive adjustments for mobile phones */
-@media (max-width: 768px) { /* Adjust this breakpoint if needed */
+@media (max-width: 768px) {
+  /* Adjust this breakpoint if needed */
   .grid-container-report-2 {
     grid-template-columns: 1fr; /* 1 column for mobile phones */
     margin: 10px; /* Further reduced margin */
@@ -1351,4 +1364,57 @@ a.toplevel_page_logo_based_menu {
 
 #toplevel_page_logo_based_menu > a {
   padding: 10px !important;
+}
+
+/* Estilos generales para las secciones de carga de logos */
+.logo-upload-section {
+  border: 1px solid #e0e0e0; /* Un borde sutil para agrupar */
+  padding: 15px;
+  margin-bottom: 20px; /* Espacio entre secciones */
+  border-radius: 5px; /* Bordes redondeados */
+  background-color: #f9f9f9; /* Un color de fondo suave */
+  display: flex; /* Para alinear el formulario y la previsualización */
+  flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+  gap: 20px; /* Espacio entre los elementos flexibles */
+  align-items: center; /* Alinea verticalmente los elementos */
+}
+
+.logo-upload-section .form-group {
+  flex: 1; /* Permite que el grupo de formulario ocupe el espacio disponible */
+  min-width: 250px; /* Asegura un ancho mínimo para el formulario */
+}
+
+.logo-upload-section label {
+  display: block; /* Asegura que la etiqueta esté en su propia línea */
+  margin-bottom: 8px; /* Espacio debajo de la etiqueta */
+  font-weight: 600; /* Hace la etiqueta un poco más destacada */
+  color: #333; /* Color de texto más oscuro */
+}
+
+.logo-upload-section input[type=file] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%; /* El campo de archivo ocupa todo el ancho disponible */
+  box-sizing: border-box; /* Incluye padding y borde en el ancho total */
+}
+
+.logo-preview {
+  flex-shrink: 0; /* Evita que la previsualización se encoja */
+  text-align: center; /* Centra la imagen */
+  padding: 10px;
+  background-color: #fff;
+  border: 1px dashed #ddd; /* Borde punteado para el área de previsualización */
+  border-radius: 4px;
+  min-width: 150px; /* Ancho mínimo para la previsualización */
+  display: flex; /* Para centrar la imagen dentro */
+  justify-content: center;
+  align-items: center;
+  min-height: 100px; /* Altura mínima para la previsualización */
+}
+
+.logo-preview img {
+  max-width: 100%; /* Asegura que la imagen no se desborde */
+  height: auto; /* Mantiene la proporción de la imagen */
+  display: block; /* Elimina espacio extra debajo de la imagen */
 }/*# sourceMappingURL=style.css.map */
