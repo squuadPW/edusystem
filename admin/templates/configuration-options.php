@@ -16,7 +16,7 @@
 
   <div class="card" style="max-width: 100% !important;">
     <div class="card-header">
-      <h3><?= __('Settings for AES', 'edusystem'); ?></h3>
+      <h3><?= sprintf(__('Settings for %s', 'edusystem'), get_bloginfo('name')); ?></h3>
     </div>
     <div class="card-body-configuration">
 
