@@ -81,11 +81,13 @@ function create_tables()
         /* Ejemplo de la estructura del campo JSON 'subprogram':
             {
                 1: {
+                    is_active: 1,
                     name: "",
                     price: 0,
                     product_id: 0
                 }
                 2: {
+                    is_active: 0,
                     name: "",
                     price: 0,
                     product_id: 0
