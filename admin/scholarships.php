@@ -242,9 +242,8 @@ function add_admin_form_scholarships_content()
             $existing_records = $wpdb->get_var(
                 $wpdb->prepare(
                     "SELECT COUNT(*) FROM $table_scholarship_assigned_student 
-                    WHERE student_id = %d AND scholarship_id = %d",
-                    $student_id,
-                    $scholarship_id
+                    WHERE student_id = %d",
+                    $student_id
                 )
             );
 
@@ -253,10 +252,9 @@ function add_admin_form_scholarships_content()
                 $wpdb->delete(
                     $table_scholarship_assigned_student,
                     array(
-                        'student_id' => $student_id,
-                        'scholarship_id' => $scholarship_id // Campo añadido
+                        'student_id' => $student_id // Campo añadido
                     ),
-                    array('%d', '%d') // Formatos para ambos valores (string)
+                    array('%d') // Formatos para ambos valores (string)
                 );
             }
             
