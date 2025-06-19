@@ -14,7 +14,7 @@
     <?php setcookie('message-error', '', time(), '/'); ?>
   <?php endif; ?>
 
-  <div class="card" style="max-width: 90% !important;">
+  <div class="card" style="max-width: 100% !important;">
     <div class="card-header">
       <h3><?= __('Settings for AES', 'edusystem'); ?></h3>
     </div>
