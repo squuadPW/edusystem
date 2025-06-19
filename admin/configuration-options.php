@@ -116,6 +116,23 @@ function add_admin_form_configuration_options_content()
                 update_option('logo_admin', $logo_attach);
             }
 
+            if (isset($_FILES['logo_admin_login']) && !empty($_FILES['logo_admin_login'])) {
+                $file_temp_logo_login = $_FILES['logo_admin_login'];
+            } else {
+                $file_temp = [];
+            }
+
+            if (!empty($file_temp_logo_login['tmp_name'])) {
+                $upload_data = wp_handle_upload($file_temp_logo_login, array('test_form' => FALSE));
+                if ($upload_data && !is_wp_error($upload_data)) {
+                    $logo_attach_login = upload_file_attchment($upload_data, 'LOGO ADMIN');
+                }
+            }
+
+            if ($logo_attach_login) {
+                update_option('logo_admin_login', $logo_attach_login);
+            }
+
             // Redirect to the same page with a success message
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content&success=true'));
         }

@@ -262,6 +262,15 @@
               <?= wp_get_attachment_image(get_option('logo_admin'), 'medium'); ?>
             </div>
           </div>
+          <div class="form-group" style="padding: 0px 10px 10px 10px;">
+            <label for="logo_admin_login"><?= __('Logo admin login'); ?></label> <br>
+            <input type="file" name="logo_admin_login" id="logo-admin-login" accept="image/*">
+          </div>
+          <div style="display: flex; justify-content: space-evenly; margin: 18px;">
+            <div style="font-weight:400; text-align: start">
+              <?= wp_get_attachment_image(get_option('logo_admin_login'), 'medium'); ?>
+            </div>
+          </div>
         </div>
         <div class="form-group" id="save-configuration" style="text-align: center">
           <button type="submit" class="btn btn-primary"><?= __('Save settings', 'edusystem'); ?></button>

@@ -686,23 +686,27 @@ function aes_logo()
 }
 add_action('admin_menu', 'aes_logo');
 
-function custom_login_store()
-{
-    if (get_option('blog_img_logo')) {
-        $url = 'https://portal.americanelite.school/wp-content/uploads/2025/01/cropped-cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-COLOR-3.png';
-        echo '
+function custom_login_store(): void {
+    $logo_id = get_option('logo_admin');
+
+    // If no logo ID is set or the URL can't be retrieved, exit early
+    if ( ! $logo_id || ! ( $logo_url = wp_get_attachment_image_url( $logo_id, 'full' ) ) ) {
+        return;
+    }
+
+    ?>
     <style type="text/css">
         #login h1 a, .login h1 a {
-            background-image: url(' . $url . ');
-        background-size: cover;
-        background-repeat: no-repeat;
-        width:110px;
-        height:110px;
-        background-color:white;
-        border-radius:50%;
+            background-image: url('<?php echo esc_url($logo_url); ?>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            width: 110px;
+            height: 110px;
+            background-color: white;
+            border-radius: 50%;
         }
-    </style>';
-    }
+    </style>
+    <?php
 }
 add_action('login_enqueue_scripts', 'custom_login_store');
 
@@ -728,24 +732,31 @@ function hide_notices()
 }
 add_action('in_admin_header', 'hide_notices', 99);
 
-add_action('login_enqueue_scripts', 'aes_change_login_logo');
-function aes_change_login_logo()
-{ ?>
+function aes_change_login_logo(): void {
+    $logo_id = get_option('logo_admin_login');
+
+    // Exit early if no logo ID is set or URL can't be retrieved
+    if ( ! $logo_id || ! ( $logo_url = wp_get_attachment_image_url( $logo_id, 'full' ) ) ) {
+        return;
+    }
+
+    ?>
     <style type="text/css">
         #login h1 a {
-            background: url('https://portal.americanelite.school/wp-content/uploads/2025/01/cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-VERTICAL_COLOR.png') no-repeat center center;
-            background-size: 100px;
-            height: 100px;
+            background: url('<?php echo esc_url($logo_url); ?>') no-repeat center center;
+            background-size: 100px; /* Adjust as needed */
+            height: 100px; /* Adjust as needed */
             margin: 0 auto;
-            width: 100px;
+            width: 100px; /* Adjust as needed */
         }
     </style>
-<?php }
+    <?php
+}
+add_action('login_enqueue_scripts', 'aes_change_login_logo');
 
 add_filter('login_headerurl', 'aes_login_redirect_url');
-function aes_login_redirect_url()
-{
-    return 'https://portal.americanelite.school/'; // Replace with your desired URL
+function aes_login_redirect_url() {
+    return home_url();
 }
 
 // Add a custom action to the user list
