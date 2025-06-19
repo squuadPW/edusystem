@@ -700,10 +700,9 @@ function custom_login_store(): void {
             background-image: url('<?php echo esc_url($logo_url); ?>');
             background-size: cover;
             background-repeat: no-repeat;
-            width: 110px;
-            height: 110px;
-            background-color: white;
-            border-radius: 50%;
+            width: 110px !important;
+            height: 110px !important;
+            border-radius: 0% !important;
         }
     </style>
     <?php
