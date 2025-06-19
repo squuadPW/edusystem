@@ -60,15 +60,27 @@ function create_tables()
   $table_templates_email = $wpdb->prefix . 'templates_email';
   $table_programs = $wpdb->prefix . 'programs';
   $table_quota_rules = $wpdb->prefix . 'quota_rules';
+  $table_scholarship_assigned_student = $wpdb->prefix . 'scholarship_assigned_student';
 
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_programs}'") != $table_programs) {
-        dbDelta(
-            "CREATE TABLE $table_programs (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_scholarship_assigned_student}'") != $table_scholarship_assigned_student) {
+    dbDelta(
+      "CREATE TABLE " . $table_scholarship_assigned_student . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        student_id INT(11) NOT NULL,
+        scholarship_id INT(11) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_programs}'") != $table_programs) {
+    dbDelta(
+      "CREATE TABLE $table_programs (
                 id INT(11) NOT NULL AUTO_INCREMENT,
                 `is_active` tinyint(1) DEFAULT 1,
                 identificator TEXT NOT NULL,
-                name TEXT NOT NULL,
-                description TEXT NOT NULL,
+                `name` TEXT NOT NULL,
+                `description` TEXT NOT NULL,
                 total_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
                 product_id INT(11) NULL DEFAULT NULL,
                 subprogram JSON NULL,
@@ -76,32 +88,32 @@ function create_tables()
                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (id)
             )$charset_collate;"
-        );
+    );
 
-        /* Ejemplo de la estructura del campo JSON 'subprogram':
-            {
-                1: {
-                    is_active: 1,
-                    name: "",
-                    price: 0,
-                    product_id: 0
-                }
-                2: {
-                    is_active: 0,
-                    name: "",
-                    price: 0,
-                    product_id: 0
-                }
-            } 
-        */
-    }
+    /* Ejemplo de la estructura del campo JSON 'subprogram':
+        {
+            1: {
+                is_active: 1,
+                name: "",
+                price: 0,
+                product_id: 0
+            }
+            2: {
+                is_active: 0,
+                name: "",
+                price: 0,
+                product_id: 0
+            }
+        } 
+    */
+  }
 
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_quota_rules}'") != $table_quota_rules) {
-        dbDelta(
-            "CREATE TABLE $table_quota_rules (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_quota_rules}'") != $table_quota_rules) {
+    dbDelta(
+      "CREATE TABLE $table_quota_rules (
                 id INT(11) NOT NULL AUTO_INCREMENT,
                 is_active tinyint(1) DEFAULT 1,
-                name TEXT NOT NULL,
+                `name` TEXT NOT NULL,
                 initial_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
                 quotas_quantity INT(11) NOT NULL DEFAULT 1, 
                 quote_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
@@ -110,16 +122,16 @@ function create_tables()
                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (id)
             )$charset_collate;"
-        );
+    );
 
-        /* 
-         * El campo program_id es el identificador del programa
-         * En el caso de los subprogramas el identificador es 
-         * el identificador del programa principal mas "-" y el  
-         * id del subprograma dentro del json. Ejemplo:
-         * "identificadorPrograma-2"
-         */
-    }
+    /* 
+     * El campo program_id es el identificador del programa
+     * En el caso de los subprogramas el identificador es 
+     * el identificador del programa principal mas "-" y el  
+     * id del subprograma dentro del json. Ejemplo:
+     * "identificadorPrograma-2"
+     */
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_templates_email}'") != $table_templates_email) {
     dbDelta(
