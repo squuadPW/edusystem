@@ -80,20 +80,19 @@
 						<option value="E" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'E') ? 'selected' : '') : ''; ?>>E</option>
 					</select>
 				<?php } ?>
+				<input type="search" id="search-box-id-search-input" name="s"
+					placeholder="<?= __('Search for student', 'edusystem'); ?>"
+					value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
 				<?php if (wp_is_mobile()): ?>
-					<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
-						<button type="submit"
-							class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
-					<?php } ?>
+					<button type="submit"
+						class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
 					<button type="button"
 						id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>"
 						class="button button-success"
 						style="width:100%;"></span><?= __('Export excel', 'edusystem'); ?></button>
 				<?php else: ?>
-					<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
-						<button type="submit"
-							class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
-					<?php } ?>
+					<button type="submit"
+						class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
 					<button type="button"
 						id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>"
 						class="button button-success"></span><?= __('Export excel', 'edusystem'); ?></button>
