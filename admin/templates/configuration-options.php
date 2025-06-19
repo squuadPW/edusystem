@@ -28,10 +28,11 @@
         <div class="segment-button" data-option="offers"><?= __('Offers', 'edusystem'); ?></div>
         <div class="segment-button" data-option="inscriptions"><?= __('Inscriptions', 'edusystem'); ?></div>
         <div class="segment-button" data-option="notifications"><?= __('Notifications', 'edusystem'); ?></div>
+        <div class="segment-button" data-option="design"><?= __('Design', 'edusystem'); ?></div>
       </section>
 
       <form method="post"
-        action="<?= admin_url('admin.php?page=add_admin_form_configuration_options_content&action=save_options'); ?>">
+        action="<?= admin_url('admin.php?page=add_admin_form_configuration_options_content&action=save_options'); ?>" enctype="multipart/form-data">
         <input type="hidden" name="type">
         <div class="form-group" id="by_admission">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
@@ -128,7 +129,8 @@
             <label for="offer_complete"><?= __('Public information course', 'edusystem'); ?></label> <br>
             <select name="public_course_id" class="js-example-basic" style="width: 100%;">
               <option value="" <?= get_option('public_course_id') == '' ? 'selected' : ''; ?>>
-                <?= __('Without course', 'edusystem'); ?></option>
+                <?= __('Without course', 'edusystem'); ?>
+              </option>
               <?php foreach ($courses as $course): ?>
                 <option value="<?= $course['id']; ?>" <?= (get_option('public_course_id') == $course['id']) ? 'selected' : ''; ?>>
                   <?= $course['fullname']; ?> (<?= $course['shortname']; ?>)
@@ -171,24 +173,23 @@
             </select>
           </div>
           <div class="form-group" style="padding: 10px">
-              <label for="max-date-offer"><?= __('Max date'); ?></label>
-              <input type="date" id="max-date-offer" name="max_date_offer"
-                  value="<?php
-                      $saved_timestamp = get_option('max_date_offer');
-                      $date_value = '';
-                      if (!empty($saved_timestamp)) {
-                          // Crear un objeto DateTime a partir del timestamp (que es UTC)
-                          $datetime_obj = new DateTimeImmutable('@' . $saved_timestamp);
-                          
-                          // Establecer la zona horaria al objeto DateTime para que represente
-                          // la fecha y hora en la zona horaria de WordPress
-                          $datetime_obj = $datetime_obj->setTimezone(new DateTimeZone(wp_timezone_string()));
-                          
-                          // Formatear para el input type="date"
-                          $date_value = $datetime_obj->format('Y-m-d');
-                      }
-                      echo esc_attr($date_value);
-                  ?>">
+            <label for="max-date-offer"><?= __('Max date'); ?></label>
+            <input type="date" id="max-date-offer" name="max_date_offer" value="<?php
+            $saved_timestamp = get_option('max_date_offer');
+            $date_value = '';
+            if (!empty($saved_timestamp)) {
+              // Crear un objeto DateTime a partir del timestamp (que es UTC)
+              $datetime_obj = new DateTimeImmutable('@' . $saved_timestamp);
+
+              // Establecer la zona horaria al objeto DateTime para que represente
+              // la fecha y hora en la zona horaria de WordPress
+              $datetime_obj = $datetime_obj->setTimezone(new DateTimeZone(wp_timezone_string()));
+
+              // Formatear para el input type="date"
+              $date_value = $datetime_obj->format('Y-m-d');
+            }
+            echo esc_attr($date_value);
+            ?>">
           </div>
         </div>
         <div id="by_notifications" style="display: none">
@@ -233,6 +234,17 @@
                 class="button button-outline-primary" onclick="return confirm('Are you sure?');">
                 <?= __('Generate pending academic projections', 'edusystem'); ?>
               </a>
+            </div>
+          </div>
+        </div>
+        <div id="by_design" style="display: none">
+          <div class="form-group" style="padding: 0px 10px 10px 10px;">
+            <label for="logo_admin"><?= __('Logo admin'); ?></label> <br>
+            <input type="file" name="logo_admin" id="logo-admin" accept="image/*">
+          </div>
+          <div style="display: flex; justify-content: space-evenly; margin: 18px;">
+            <div style="font-weight:400; text-align: start">
+              <?= wp_get_attachment_image(get_option('logo_admin'), 'medium'); ?>
             </div>
           </div>
         </div>

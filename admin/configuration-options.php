@@ -98,6 +98,24 @@ function add_admin_form_configuration_options_content()
             update_option('email_manager', $email_manager);
             update_option('email_admission', $email_admission);
 
+            // design
+            if (isset($_FILES['logo_admin']) && !empty($_FILES['logo_admin'])) {
+                $file_temp_logo = $_FILES['logo_admin'];
+            } else {
+                $file_temp = [];
+            }
+
+            if (!empty($file_temp_logo['tmp_name'])) {
+                $upload_data = wp_handle_upload($file_temp_logo, array('test_form' => FALSE));
+                if ($upload_data && !is_wp_error($upload_data)) {
+                    $logo_attach = upload_file_attchment($upload_data, 'LOGO ADMIN');
+                }
+            }
+
+            if ($logo_attach) {
+                update_option('logo_admin', $logo_attach);
+            }
+
             // Redirect to the same page with a success message
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content&success=true'));
         }
