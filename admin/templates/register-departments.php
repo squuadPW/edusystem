@@ -256,6 +256,11 @@
                     <label for="manager_report_aes" <?= !in_array('manager_report_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?>><?= __('Report', 'edusystem'); ?></label>
                 </div>
                 <div class="capability-item indented">
+                    <input <?= !in_array('manager_report_sales_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_report_sales_aes" id="manager_report_sales_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_report_sales_aes'])) ? 'checked' : ''; ?>>
+                    <label for="manager_report_sales_aes" <?= !in_array('manager_report_sales_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Report sales', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
                     <input <?= !in_array('manager_sales_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_sales_aes" id="manager_sales_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_sales_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_sales_aes" <?= !in_array('manager_sales_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Sales', 'edusystem'); ?></label>

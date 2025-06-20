@@ -132,6 +132,52 @@ function show_report_current_students()
     }
 }
 
+function show_report_sales_summary()
+{
+    global $current_user, $wpdb;
+    $table_academic_periods = $wpdb->prefix . 'academic_periods';
+    $table_grades = $wpdb->prefix . 'grades';
+
+    $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+    $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
+
+    if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
+        if ($_GET['section_tab'] == 'pending_electives') {
+            $list_students = new TT_Pending_Elective_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-sales-summary.php');
+        } else if ($_GET['section_tab'] == 'non-enrolled') {
+            $list_students = new TT_Non_Enrolled_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-sales-summary.php');
+        } else if ($_GET['section_tab'] == 'current') {
+            $list_students = new TT_Current_Student_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-sales-summary.php');
+        } else if ($_GET['section_tab'] == 'active') {
+            $list_students = new TT_Active_Student_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-sales-summary.php');
+        } else if ($_GET['section_tab'] == 'pending-graduation') {
+            $list_students = new TT_Pending_Graduation_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-sales-summary.php');
+        } else if ($_GET['section_tab'] == 'graduated') {
+            $list_students = new TT_Graduated_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-sales-summary.php');
+        } else if ($_GET['section_tab'] == 'scholarships') {
+            $list_students = new TT_Scholarships_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-sales-summary.php');
+        }
+    } else {
+        $list_students = new TT_Active_Student_List_Table;
+        $list_students->prepare_items();
+        include(plugin_dir_path(__FILE__) . 'templates/report-sales-summary.php');
+    }
+}
+
 // GET ORDERS
 function get_orders($start, $end)
 {
