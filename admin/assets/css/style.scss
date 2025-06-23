@@ -1394,40 +1394,75 @@ h2 {
 .modal-body {
   padding: 10px 20px !important;
 }
-.quotas_rules {
 
-    .title {
-        margin-top:20px;
-        margin-bottom:0px;
-        text-align:center; 
-        border-bottom: 1px solid #8080805c;
+.container-programs {
+
+    .container-button {
+        display:flex;
+        flex-direction:row;
+        justify-content: flex-end;
+        gap:10px;
+        margin-bottom: 10px;
     }
 
-    .rule {
-        margin: 10px;
-        border: 1px solid #8080805c;
-        border-radius: 5px;
-        padding: 5px 15px;
+    #subprograms-container {
 
-        .group-input {
+        .title {
+            margin-top:20px;
+            margin-bottom:0px;
+            text-align:center; 
+            border-bottom: 1px solid #8080805c;
+        }
+
+        #subprograms {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            padding: 10px 0px;
 
-            .space-offer {
-                flex: 1;
-                font-weight:400;
+            .subprogram {
+                margin: 7px 0px;
+                border: 1px solid #8080805c;
+                border-radius: 5px;
+                padding: 5px 15px;
 
-                &:has( input[type="checkbox"] ) {
-                    max-width: max-content;
+                &#template-subprogram {
+                    display: none;
+                }
 
-                    input[type="checkbox"] {
-                        width: 10px;
+                .group-input {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+
+                    .space-offer {
+                        flex: 1;
+                        font-weight:400;
+
+                        &.name {
+                            flex: 3;
+                        }
+
+                        &:has( input[type="checkbox"] ) {
+                            max-width: max-content;
+
+                            input[type="checkbox"] {
+                                width: 10px;
+                            }
+                        }
+                        
                     }
                 }
+
                 
             }
+
         }
+
+        & > div {
+            margin: 0px 10px;
+        }
+        
     }
 }
 

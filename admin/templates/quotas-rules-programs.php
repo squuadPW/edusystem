@@ -2,7 +2,7 @@
     <?php if (isset($program) && !empty($program)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Program details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Create program', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Create rules for quotas', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
@@ -21,7 +21,7 @@
         <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
 
-    <div id="dashboard-widgets" class="metabox-holder admin-add-offer container-programs" style="width: 70%">
+    <div id="quota-rules-programs" class="metabox-holder admin-add-offer " style="width: 70%">
         <div id="postbox-container-1" style="width:100% !important;">
             <div id="normal-sortables">
                 <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
@@ -91,18 +91,17 @@
                                         <b><?= __('Subprograms', 'edusystem'); ?></b>
                                     </h3>
 
-                                    <?php  
-                                        $subprograms = json_decode( $program->subprogram, true ); 
-                                        $i = 1; 
-                                    ?>
-                                    <div id="subprograms" data-subprogram_count="0" >
+                                    <div class="quotas_rules"  >
+                                        <h3 class="title" >
+                                            <b><?= __('Rules for quotas', 'edusystem'); ?></b>
+                                        </h3>
 
-                                        <?php foreach ( $subprograms AS $subprogram_id => $subprogram ) :?>
-                                            
-                                            <div class="subprogram" >
+                                        <button id="add-rule-button" type="button" class="button button-primary" ><?=__('add quota rule', 'edusystem')?></button>
+                                        
+                                        <div id="rules" >
+                                            <div class="rule" >
                                                 
-                                                <input type="hidden" name="subprogram[<?= $i ?>][id]" value="<?= $subprogram_id ?>" >
-                                                <input type="hidden" name="subprogram[<?= $i ?>][product_id]" value="<?= $subprogram['product_id'] ?>" >
+                                                <input type="hidden" name="" value="">
 
                                                 <div class="group-input" >
 
@@ -111,16 +110,36 @@
                                                             <b><?= __('Active', 'edusystem'); ?></b>
                                                         </label>
                                                         <br/>
-                                                        <input type="checkbox" name="subprogram[<?= $i ?>][is_active]" value="<?= $subprogram['is_active'] ? 1 : ''; ?>" <?= ( $subprogram['is_active']) ? 'checked' : ''; ?> >
+                                                        <input type="checkbox" name="" value="" required>
                                                     </div>
 
-                                                    <div class="space-offer name">
+                                                    <div class="space-offer">
                                                         <label for="">
                                                             <b><?= __('Name', 'edusystem'); ?></b>
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="text" name="subprogram[<?= $i ?>][name]" value="<?= $subprogram['name']; ?>" required>
+                                                        <input type="text" name="" value="" required>
+                                                    </div>
+                                                </div>
+
+                                                <div class="group-input" >
+                                                    <div class="space-offer">
+
+                                                        <label for="">
+                                                            <b><?= __('Initial price', 'edusystem'); ?></b>
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+                                                        <input type="number" name="" value="" required>
+                                                    </div>
+
+                                                    <div class="space-offer">
+                                                        <label for="">
+                                                            <b><?= __('Quotas quantity ', 'edusystem'); ?></b>
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+
+                                                        <input type="number" name="" value="1" required >
                                                     </div>
 
                                                     <div class="space-offer">
@@ -130,60 +149,12 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="number" name="subprogram[<?= $i ?>][price]" value="<?= $subprogram['price']; ?>" required>
+                                                        <input type="number" name="" value="" required>
                                                     </div>
                                                 </div>
 
-                                                <div class="container-button" >
-                                                    <button type="button" class="button button-secodary" ><?=__('Delete', 'edusystem')?></button>
-
-                                                    <?php if( $program ): ?>
-                                                        <button type="button" class="button button-primary" ><?=__('Create quotas rules', 'edusystem')?></button>
-                                                    <?php endif; ?>
-                                                </div>
-
                                             </div>
-
-                                        <?php $i ++; endforeach; ?>
-
-                                        <div id="template-subprogram" class="subprogram"  >
-                                            
-                                            <div class="group-input" >
-
-                                                <div class="space-offer">
-                                                    <label for="subprogram[][is_active]">
-                                                        <b><?= __('Active', 'edusystem'); ?></b>
-                                                    </label>
-                                                    <br/>
-                                                    <input type="checkbox" name="subprogram[][is_active]" class="input-is_active" disabled checked >
-                                                </div>
-
-                                                <div class="space-offer name">
-                                                    <label for="subprogram[][name]">
-                                                        <b><?= __('Name', 'edusystem'); ?></b>
-                                                        <span class="text-danger">*</span>
-                                                    </label>
-
-                                                    <input type="text" name="subprogram[][name]" class="input-name" disabled required>
-                                                </div>
-
-                                                <div class="space-offer">
-
-                                                    <label for="subprogram[][price]">
-                                                        <b><?= __('Price', 'edusystem'); ?></b>
-                                                        <span class="text-danger">*</span>
-                                                    </label>
-
-                                                    <input type="number" name="subprogram[][price]" class="input-price" disabled required>
-                                                </div>
-                                            </div>
-
-                                            <div class="container-button" >
-                                                <button type="button" class="button button-secodary" ><?=__('Delete', 'edusystem')?></button>
-                                            </div>
-
                                         </div>
-
                                     </div>
                                     
                                     <div >
@@ -212,3 +183,42 @@
         </div>
     </div>
 </div>
+
+
+
+
+<script>
+    (function(){
+        let ruleCount = 1;
+        document.getElementById('add-rule-button').addEventListener('click', function() {
+            const ruleTemplate = document.querySelector('.rule');
+            const newRule = ruleTemplate.cloneNode(true);
+            newRule.querySelectorAll('input, label').forEach(el => {
+                if(el.name){
+                    el.name = el.name.replace(/\d+/, ruleCount);
+                }
+                if(el.id){
+                    el.id = el.id.replace(/\d+/, ruleCount);
+                }
+                if(el.tagName.toLowerCase() === 'input') {
+                    if(el.type === 'checkbox') {
+                        el.checked = true;
+                    } else if(el.type === 'number') {
+                    if(el.name.includes('initial_price') || el.name.includes('quotas_quantity') || el.name.includes('quote_price')) {
+                            el.value = '0';
+                        } else {
+                            el.value = '';
+                        }
+                    } else if(el.type === 'text'){
+                        el.value = '';
+                    }
+                }
+            });
+            const hiddenId = newRule.querySelector('input[type="hidden"]');
+            if(hiddenId) hiddenId.value = '';
+            document.getElementById('rules').appendChild(newRule);
+            ruleCount++;
+        });
+    })();
+</script>
+

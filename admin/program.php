@@ -8,6 +8,13 @@ function add_admin_form_program_content()
             $program_id = $_GET['program_id'];
             $program = get_program_details($program_id);
             include(plugin_dir_path(__FILE__) . 'templates/program-details.php');
+
+        } else if ($_GET['section_tab'] == 'quotas_rules_programs') {
+
+            global $wpdb;
+            $program_id = $_GET['program_id'];
+            $program = get_program_details($program_id);
+            include(plugin_dir_path(__FILE__) . 'templates/quotas-rules-programs.php');
         }
 
     } else {
@@ -17,32 +24,178 @@ function add_admin_form_program_content()
             
             // Sanitizar valores
             $program_id = isset($_POST['program_id']) ? sanitize_text_field($_POST['program_id']) : '';
+            $program_product_id = isset($_POST['product_id']) ? sanitize_text_field($_POST['product_id']) : '';
             $identificator = strtoupper(sanitize_text_field($_POST['identificator']));
             $name = strtoupper(sanitize_text_field($_POST['name']));
             $description = strtoupper(sanitize_text_field($_POST['description']));
             $total_price = floatval( sanitize_text_field($_POST['total_price']) );
             $is_active = $_POST['is_active'] == 'on' ? true : false;
+            $subprograms_post = $_POST['subprogram'] ?? '';
 
-            if (!empty($program_id)) {
+            $subprograms = [];// array para guardas los subprogramas
+
+            //crea o actualiza el producto
+
+            if ( !empty($program_id) ) {
+
+                wp_update_post( array(
+                    'ID'         => $program_product_id,
+                    'post_title' => $name,
+                    'post_content' => $description,
+                ), true );
+
+
+                update_post_meta( $program_product_id, '_regular_price', $total_price );
+                update_post_meta( $program_product_id, '_price', $total_price );
+
+                // guarda el stock en caso de que este activo o no
+                update_post_meta($product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
+
+            } else {
+
+                // Función para crear un producto
+                $program_product_id = wp_insert_post([
+                    'post_title'   => $name,
+                    'post_content' => $description, // Descripción del producto
+                    'post_status'  => 'publish',
+                    'post_type'    => 'product',
+                ]);
+
+                // Verificar si el producto se creó correctamente
+                if ( ! is_wp_error( $program_product_id ) ) {
+
+                    update_post_meta( $program_product_id, '_sku', $identificator);
+                    update_post_meta( $program_product_id, '_regular_price', $total_price );
+                    update_post_meta( $program_product_id, '_price', $total_price );
+
+                    // guarda el stock en caso de que este activo o no
+                    update_post_meta($product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
+                }
+            }
+
+            // obtiene los subprogramas y crea  los productos 
+            // vinculados a ellos si los 
+            $product = wc_get_product( $program_product_id );
+            if( $product && !empty( $subprograms_post ) ){
+
+                $attribute_name = 'subprograms';
+
+                if ( !$product->is_type('variable') ) {
+
+                    // Establecer como producto variable
+                    wp_set_object_terms($program_product_id, 'variable', 'product_type');
+                    
+                    // Crear atributo "subprograma" vacío
+                    $product_attributes = array(
+                        $attribute_name => array(
+                            'name' => __('Subprograms', 'edusystem'),
+                            'value' => '',
+                            'is_visible' => true,
+                            'is_variation' => true,
+                            'is_taxonomy' => false
+                        )
+                    );
+
+                    update_post_meta($program_product_id, '_product_attributes', $product_attributes);
+                }
+
+                foreach( $subprograms_post AS $subprogram ){
+
+                    $name_subprogram = $subprogram['name'];
+                    $price = $subprogram['price'];
+                    $is_active_subprogram = $subprogram['is_active'] ? true : false;
+                    
+                    // crea o actualiza el producto 
+                    if( $subprogram['product_id'] ){
+
+                        $product_id = $subprogram['product_id'];
+
+                        wp_update_post( array(
+                            'ID'         => $product_id,
+                            'post_title' => $name_subprogram,
+                        ), true );
+
+                        update_post_meta( $product_id, '_regular_price', $price );
+                        update_post_meta( $product_id, '_price', $price );
+
+                        // guarda el stock en caso de que este activo o no
+                        update_post_meta($product_id, '_stock_status', ( $is_active && $is_active_subprogram ) ? 'instock' : 'outofstock');
+
+                    } else {
+
+                        // Función para crear un producto
+                        $product_id = wp_insert_post([
+                            'post_title'   => $name_subprogram,
+                            'post_name'    => $name_subprogram,
+                            'post_status'  => 'publish',
+                            'post_type'    => 'product_variation',
+                            'post_parent'  => $program_product_id,
+                        ]);
+
+                        // Verificar si el producto se creó correctamente
+                        if ( ! is_wp_error( $product_id ) ) {
+                                
+                            update_post_meta( $product_id, '_regular_price', $price );
+                            update_post_meta( $product_id, '_price', $price );
+                            update_post_meta( $product_id, '_stock_status', 'instock' ); // Estado del stock
+                            update_post_meta( $product_id, 'attribute_'.$attribute_name , sanitize_title($name_subprogram));
+        
+                            // Añadir el término al atributo "subprograms"
+                            wp_set_object_terms($program_product_id, $name_subprogram, $attribute_name, true);
+                        }
+                        
+                    }
+                    
+                    // crea el array con los datos del subprograma
+                    $subprogram_data = [
+                        'is_active' => $is_active_subprogram ? 1 : 0,
+                        'name' => $name_subprogram,
+                        'price' => $price,
+                        'product_id'=> $product_id ?? null,
+                    ];
+
+                    // actualiza en caso de que ya exista o anade un subprograma nuevo
+                    if( $subprogram['id'] ) {
+                        $subprograms[ $subprogram['id'] ] = $subprogram_data;
+                    } else {
+                        $subprograms[] = $subprogram_data;
+                        update_post_meta( $product_id, '_sku', $identificator."-".( array_key_last( $subprograms ) + 1 ) );
+                    }
+                }
+            }
+
+            // crea o actualiza el sub programa
+            if ( !empty($program_id) ) {
+
                 $wpdb->update($table_programs, [
                     'name' => $name,
                     'description' => $description,
                     'total_price' => $total_price,
-                    'is_active' => $is_active
-                ], ['id' => $program_id]);
+                    'is_active' => $is_active,
+                    'subprogram' => json_encode($subprograms),
+                ], ['id' => $program_id] );
+
             } else {
+
+                //pone indices a los subprogramas que serviran como ids
+                $indices = range(1, count($subprograms));
+                $subprograms = array_combine($indices, $subprograms);
+
                 $wpdb->insert($table_programs, [
                     'identificator' => $identificator,
                     'name' => $name,
                     'description' => $description,
                     'total_price' => $total_price,
-                    'is_active' => $is_active
+                    'is_active' => $is_active,
+                    'product_id' => $program_product_id,
+                    'subprogram' => json_encode($subprograms),
                 ]);
             }
             
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_program_content'));
             exit;
+
         } else {
             $list_program = new TT_All_Program_List_Table;
             $list_program->prepare_items();
@@ -208,3 +361,5 @@ function get_program_details($id)
     $program = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE id={$id}");
     return $program;
 }
+
+

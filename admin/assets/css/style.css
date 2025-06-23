@@ -1280,33 +1280,55 @@ h2 {
   padding: 10px 20px !important;
 }
 
-.quotas_rules .title {
+.container-programs .container-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.container-programs #subprograms-container .title {
   margin-top: 20px;
   margin-bottom: 0px;
   text-align: center;
   border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
 }
-.quotas_rules .rule {
-  margin: 10px;
+.container-programs #subprograms-container #subprograms {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  padding: 10px 0px;
+}
+.container-programs #subprograms-container #subprograms .subprogram {
+  margin: 7px 0px;
   border: 1px solid rgba(128, 128, 128, 0.3607843137);
   border-radius: 5px;
   padding: 5px 15px;
 }
-.quotas_rules .rule .group-input {
+.container-programs #subprograms-container #subprograms .subprogram#template-subprogram {
+  display: none;
+}
+.container-programs #subprograms-container #subprograms .subprogram .group-input {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
-.quotas_rules .rule .group-input .space-offer {
+.container-programs #subprograms-container #subprograms .subprogram .group-input .space-offer {
   flex: 1;
   font-weight: 400;
 }
-.quotas_rules .rule .group-input .space-offer:has(input[type=checkbox]) {
+.container-programs #subprograms-container #subprograms .subprogram .group-input .space-offer.name {
+  flex: 3;
+}
+.container-programs #subprograms-container #subprograms .subprogram .group-input .space-offer:has(input[type=checkbox]) {
   max-width: -moz-max-content;
   max-width: max-content;
 }
-.quotas_rules .rule .group-input .space-offer:has(input[type=checkbox]) input[type=checkbox] {
+.container-programs #subprograms-container #subprograms .subprogram .group-input .space-offer:has(input[type=checkbox]) input[type=checkbox] {
   width: 10px;
+}
+.container-programs #subprograms-container > div {
+  margin: 0px 10px;
 }
 
 #toplevel_page_logo_based_menu {
