@@ -31,6 +31,9 @@ document.addEventListener("DOMContentLoaded", function () {
       "<td class='column-primary id column-id' colspan='6' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
     htmlLoading += "</tr>";
 
+    document.getElementById("loading").style = "display: block";
+    document.getElementById("loading").style = "text-align: center";
+    document.getElementById("myChart").innerHTML = '';
     document.getElementById("table-institutes-payment").innerHTML = htmlLoading;
 
     const XHR = new XMLHttpRequest();
@@ -92,6 +95,29 @@ document.addEventListener("DOMContentLoaded", function () {
                         `;
             cardTotalsSales.appendChild(newElement);
           });
+
+
+          // reload chart
+          const chartData = result.chart_data;
+          const ctx = document.getElementById("myChart").getContext("2d");
+          if (chart) {
+            chart.data.labels = chartData.labels;
+            chart.data.datasets = chartData.datasets;
+            chart.update(); // Update the chart
+          } else {
+            chart = new Chart(ctx, {
+              type: "bar",
+              data: chartData,
+              options: {
+                title: {
+                  display: true,
+                  text: "Gender Comparison Graph",
+                },
+              },
+            });
+          }
+          
+          document.getElementById("loading").style = "display: none";
         }
       }
     };

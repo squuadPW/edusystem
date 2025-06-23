@@ -83,6 +83,14 @@
                     class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
             <?php endif; ?>
     </div>
+
+    <div style="background-color: #ffffff; padding: 18px; border-radius: 10px; margin: 20px 0px;">
+        <div id="loading" style="text-align: center !important">
+            <span class='spinner is-active' style='float:none;'></span>
+        </div>
+        <canvas id="myChart"></canvas>
+    </div>
+
     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
         <thead>
             <tr>
