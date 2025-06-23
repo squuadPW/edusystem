@@ -523,7 +523,7 @@ function get_list_orders_sales()
                 $html .= "<td class='column' data-colname='" . __('Created', 'edusystem') . "'><b>" . $order['created_at'] . "</b></td>";
                 $html .= "<td class='column' data-colname='" . __('Action', 'edusystem') . "'>";
 
-                $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=report-sales&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View', 'edusystem') . "</a>";
+                $html .= "<a class='button button-primary' href='" . admin_url('admin.php?page=report-summary&section_tab=payment-detail&payment_id=' . $order['order_id']) . "'>" . __('View', 'edusystem') . "</a>";
 
 
                 $html .= "</td>";
