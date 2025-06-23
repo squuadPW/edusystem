@@ -253,7 +253,7 @@
                 <div class="capability-item indented">
                     <input <?= !in_array('manager_sales_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_sales_aes" id="manager_sales_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_sales_aes'])) ? 'checked' : ''; ?>>
-                    <label for="manager_sales_aes" <?= !in_array('manager_sales_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Sales', 'edusystem'); ?></label>
+                    <label for="manager_sales_aes" <?= !in_array('manager_sales_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Summary', 'edusystem'); ?></label>
                 </div>
                 <div class="capability-item indented">
                     <input <?= !in_array('manager_accounts_receivables_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox"
@@ -262,14 +262,14 @@
                     <label for="manager_accounts_receivables_aes" <?= !in_array('manager_accounts_receivables_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Accounts receivable', 'edusystem'); ?></label>
                 </div>
                 <div class="capability-item indented">
-                    <input <?= !in_array('manager_report_students_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
-                        value="manager_report_students_aes" id="manager_report_students_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_report_students_aes'])) ? 'checked' : ''; ?>>
-                    <label for="manager_report_students_aes" <?= !in_array('manager_report_students_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Report students', 'edusystem'); ?></label>
-                </div>
-                <div class="capability-item indented">
                     <input <?= !in_array('manager_report_sales_product', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_report_sales_product" id="manager_report_sales_product" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_report_sales_product'])) ? 'checked' : ''; ?>>
-                    <label for="manager_report_sales_product" <?= !in_array('manager_report_sales_product', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Report sales by product', 'edusystem'); ?></label>
+                    <label for="manager_report_sales_product" <?= !in_array('manager_report_sales_product', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Sales by product', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_report_students_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_report_students_aes" id="manager_report_students_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_report_students_aes'])) ? 'checked' : ''; ?>>
+                    <label for="manager_report_students_aes" <?= !in_array('manager_report_students_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Students', 'edusystem'); ?></label>
                 </div>
             </div>
 
