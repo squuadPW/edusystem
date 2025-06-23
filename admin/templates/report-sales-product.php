@@ -1,4 +1,15 @@
 <div class="wrap">
+    <div id="card-totals-sales" class="grid-container-report-2">
+        <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
+            <div>Total orders</div>
+            <div style="margin-top: 10px"><strong id="orders"></strong></div>
+        </div>
+        <div style="background-color: #c5f3c5;" class="card-report-sales tooltip"
+            title="All the total amount earned for the products">
+            <div>Total amount </div>
+            <div style="margin-top: 10px"><strong id="total_amount"></strong></div>
+        </div>
+    </div>
     <div style="width:100%;text-align:center;padding-top:10px;">
 
         <?php if (wp_is_mobile()) { ?>

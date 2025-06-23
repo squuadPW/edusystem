@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("loading").style = "display: block";
     document.getElementById("loading").style = "text-align: center";
-    document.getElementById("myChart").innerHTML = '';
+    document.getElementById("myChart").innerHTML = "";
     document.getElementById("table-institutes-payment").innerHTML = htmlLoading;
 
     const XHR = new XMLHttpRequest();
@@ -96,7 +96,6 @@ document.addEventListener("DOMContentLoaded", function () {
             cardTotalsSales.appendChild(newElement);
           });
 
-
           // reload chart
           const chartData = result.chart_data;
           const ctx = document.getElementById("myChart").getContext("2d");
@@ -116,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
               },
             });
           }
-          
+
           document.getElementById("loading").style = "display: none";
         }
       }
@@ -164,6 +163,10 @@ document.addEventListener("DOMContentLoaded", function () {
         if (result.status == "success") {
           document.getElementById("table-institutes-payment").innerHTML =
             result.html;
+          document.getElementById("orders").innerHTML =
+            result.data.orders_count;
+          document.getElementById("total_amount").innerHTML =
+            result.data.orders_total;
         }
       }
     };

@@ -291,6 +291,7 @@ function get_products_by_order($start, $end)
     $product_discounts = array();
     $product_totals = array();
     $product_taxs = array();
+    $orders_count = count($orders);
 
     foreach ($orders as $order) {
         $order_id = $order->get_id();
@@ -347,6 +348,8 @@ function get_products_by_order($start, $end)
         'product_taxs_variation' => $product_taxs_variation,
         'product_totals' => $product_totals,
         'product_totals_variation' => $product_totals_variation,
+        'orders_count' => $orders_count,
+        'orders_total' => 0
     ];
 
 }
@@ -591,6 +594,7 @@ function list_sales_product()
         $html = "";
         $dates = get_dates_search($filter, $custom);
         $orders = get_products_by_order($dates[0], $dates[1]);
+        $orders_total = 0;
 
         if (!empty($orders['product_quantities'])) {
 
@@ -601,6 +605,8 @@ function list_sales_product()
             foreach ($orders['product_quantities'] as $product_id => $quantity) {
                 $product = wc_get_product($product_id);
                 $product_name = $product->get_name();
+                $calculated_totals_initial = ($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]));
+                $orders_total += $calculated_totals_initial;
 
                 $html .= "<tr style='background-color: #f6f7f7; -webkit-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); -moz-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%);'>";
                 $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'edusystem') . "'>";
@@ -612,7 +618,7 @@ function list_sales_product()
                 $html .= "<td class='column' data-colname='" . __('Subtotal', 'edusystem') . "'><strong>" . wc_price($orders['product_subtotals'][$product_id]) . "</strong></td>";
                 $html .= "<td class='column' data-colname='" . __('Discount', 'edusystem') . "'><strong>" . wc_price($orders['product_discounts'][$product_id]) . "</strong></td>";
                 $html .= "<td class='column' data-colname='" . __('Tax', 'edusystem') . "'><strong>" . wc_price($orders['product_taxs'][$product_id]) . "</strong></td>";
-                $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'><strong>" . wc_price(($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]))) . "</strong></td>";
+                $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'><strong>" . wc_price($calculated_totals_initial) . "</strong></td>";
                 $html .= "</tr>";
 
                 uasort($orders['product_quantities_variation'][$product_id], function ($a, $b) {
@@ -623,6 +629,8 @@ function list_sales_product()
                         $product = wc_get_product($key);
                         $product_name = $product->get_name();
                         $ex_product_name = explode(' - ', $product_name);
+                        $calculated_total = ($orders['product_subtotals_variation'][$product_id][$key] - ($orders['product_discounts_variation'][$product_id][$key] - $orders['product_taxs_variation'][$product_id][$key]));
+                        $orders_total += $calculated_total;
 
                         $html .= "<tr style='background-color: #ffffff;'>";
                         $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'edusystem') . "'>";
@@ -634,7 +642,7 @@ function list_sales_product()
                         $html .= "<td class='column' data-colname='" . __('Subtotal', 'edusystem') . "'>" . wc_price($orders['product_subtotals_variation'][$product_id][$key]) . "</td>";
                         $html .= "<td class='column' data-colname='" . __('Discount', 'edusystem') . "'>" . wc_price($orders['product_discounts_variation'][$product_id][$key]) . "</td>";
                         $html .= "<td class='column' data-colname='" . __('Tax', 'edusystem') . "'>" . wc_price($orders['product_taxs_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'>" . wc_price(($orders['product_subtotals_variation'][$product_id][$key] - ($orders['product_discounts_variation'][$product_id][$key] - $orders['product_taxs_variation'][$product_id][$key]))) . "</td>";
+                        $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'>" . wc_price($calculated_total) . "</td>";
                         $html .= "</tr>";
                     }
                 }
@@ -646,6 +654,7 @@ function list_sales_product()
             $html .= "</tr>";
         }
 
+        $orders['orders_total'] = wc_price($orders_total);
         echo json_encode(['status' => 'success', 'html' => $html, 'data' => $orders]);
         exit;
     }
