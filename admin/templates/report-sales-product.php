@@ -42,8 +42,7 @@
     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
         <thead>
             <tr>
-                <th scope="col" class=" manage-column column-primary"><?= __('Product ID', 'edusystem'); ?></th>
-                <th scope="col" class=" manage-column column-primary"><?= __('Product', 'edusystem'); ?></th>
+                <th scope="col" class=" manage-column column-primary"><?= __('Program', 'edusystem'); ?></th>
                 <th scope="col" class=" manage-column column-primary"><?= __('Quantity', 'edusystem'); ?></th>
                 <th scope="col" class=" manage-column column-email"><?= __('Subtotal', 'edusystem'); ?></th>
                 <th scope="col" class=" manage-column column-email"><?= __('Discount', 'edusystem'); ?></th>

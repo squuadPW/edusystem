@@ -609,11 +609,9 @@ function list_sales_product()
                 $orders_total += $calculated_totals_initial;
 
                 $html .= "<tr style='background-color: #f6f7f7; -webkit-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); -moz-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%);'>";
-                $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'edusystem') . "'>";
-                $html .= '#' . $product_id;
+                $html .= "<td class='column column-primary' data-colname='" . __('Program', 'edusystem') . "'><strong>" . $product_name . "</strong>";
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
-                $html .= "<td class='column' data-colname='" . __('Product', 'edusystem') . "'><strong>" . $product_name . "</strong></td>";
                 $html .= "<td class='column' data-colname='" . __('Quantity', 'edusystem') . "'><strong>" . $quantity . "</strong></td>";
                 $html .= "<td class='column' data-colname='" . __('Subtotal', 'edusystem') . "'><strong>" . wc_price($orders['product_subtotals'][$product_id]) . "</strong></td>";
                 $html .= "<td class='column' data-colname='" . __('Discount', 'edusystem') . "'><strong>" . wc_price($orders['product_discounts'][$product_id]) . "</strong></td>";
@@ -633,11 +631,9 @@ function list_sales_product()
                         $orders_total += $calculated_total;
 
                         $html .= "<tr style='background-color: #ffffff;'>";
-                        $html .= "<td class='column column-primary' data-colname='" . __('Product ID', 'edusystem') . "'>";
-                        $html .= '#' . $key;
+                        $html .= "<td class='column column-primary' data-colname='" . __('Program', 'edusystem') . "'>" . $ex_product_name[1];
                         $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                         $html .= "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Product', 'edusystem') . "'>" . $ex_product_name[1] . "</td>";
                         $html .= "<td class='column' data-colname='" . __('Quantity', 'edusystem') . "'>" . $orders['product_quantities_variation'][$product_id][$key] . "</td>";
                         $html .= "<td class='column' data-colname='" . __('Subtotal', 'edusystem') . "'>" . wc_price($orders['product_subtotals_variation'][$product_id][$key]) . "</td>";
                         $html .= "<td class='column' data-colname='" . __('Discount', 'edusystem') . "'>" . wc_price($orders['product_discounts_variation'][$product_id][$key]) . "</td>";
@@ -690,7 +686,7 @@ function list_accounts_receivables()
                 } else {
                     $html .= "<td class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>N/A</td>";
                 }
-                $html .= "<td data-colname='" . __('Product', 'edusystem') . "'>" . $order->product . "</td>";
+                $html .= "<td data-colname='" . __('Program', 'edusystem') . "'>" . $order->product . "</td>";
                 $html .= "<td data-colname='" . __('Amount', 'edusystem') . "'>" . wc_price($order->amount) . "</td>";
                 $html .= "<td data-colname='" . __('Number cuote', 'edusystem') . "'>" . $order->cuote . "</td>";
                 $html .= "<td data-colname='" . __('Total cuotes', 'edusystem') . "'>" . $order->num_cuotes . "</td>";

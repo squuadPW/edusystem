@@ -49,8 +49,8 @@
                 <th scope="col" class="manage-column column-parent-header">
                     <?= __('Parent', 'edusystem'); ?>
                 </th>
-                <th scope="col" class="manage-column column-product-header">
-                    <?= __('Product', 'edusystem'); ?>
+                <th scope="col" class="manage-column column-program-header">
+                    <?= __('Program', 'edusystem'); ?>
                 </th>
                 <th scope="col" class="manage-column column-amount-header">
                     <?= __('Amount', 'edusystem'); ?>
@@ -74,7 +74,7 @@
                             <?= $order['student']; ?>
                             <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                         </td>
-                        <td data-colname="<?= __('Product', 'edusystem'); ?>">
+                        <td data-colname="<?= __('Program', 'edusystem'); ?>">
                             <?= $order['product']; ?>
                         </td>
                         <td data-colname="<?= __('Amount', 'edusystem'); ?>">
