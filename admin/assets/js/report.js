@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     htmlLoading += "<tr>";
     htmlLoading +=
-      "<td class='column-primary id column-id' colspan='7' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+      "<td class='column-primary id column-id' colspan='6' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
     htmlLoading += "</tr>";
 
     document.getElementById("table-institutes-payment").innerHTML = htmlLoading;
