@@ -1,23 +1,23 @@
 <h2 class="nav-tab-wrapper">
-	<a href="<?= admin_url('admin.php?page=report-current-students') ?>"
+	<a href="<?= admin_url('admin.php?page=report-students') ?>"
 		class="nav-tab <?= !isset($_GET['section_tab']) ? 'nav-tab-active' : ''; ?>"><?= __('Active students', 'edusystem'); ?>
 		(<strong><?= $total_count_active ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=current') ?>"
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=current') ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'current') ? 'nav-tab-active' : ''; ?>"><?= __('Students studying', 'edusystem'); ?>
 		(<strong><?= $total_count_current ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=pending_electives'); ?>"
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending_electives'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending_electives') ? 'nav-tab-active' : ''; ?>"><?= __('Pending electives', 'edusystem'); ?>
 		(<strong><?= $total_count_pending_electives ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=non-enrolled'); ?>"
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=non-enrolled'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'non-enrolled') ? 'nav-tab-active' : ''; ?>"><?= __('Non-enrolled students', 'edusystem'); ?>
 		(<strong><?= $total_count_non_enrolled ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=pending-graduation'); ?>"
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending-graduation'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending-graduation') ? 'nav-tab-active' : ''; ?>"><?= __('Pending graduation', 'edusystem'); ?>
 		(<strong><?= $total_count_pending_graduation ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=graduated'); ?>"
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=graduated'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'graduated') ? 'nav-tab-active' : ''; ?>"><?= __('Graduated', 'edusystem'); ?>
 		(<strong><?= $total_count_graduated ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-current-students&section_tab=scholarships'); ?>"
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=scholarships'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'scholarships') ? 'nav-tab-active' : ''; ?>"><?= __('Scholarships', 'edusystem'); ?>
 		(<strong><?= $total_count_scholarships ?></strong>)</a>
 </h2>
@@ -67,7 +67,7 @@
 			<input type="hidden" name="name_document" id="name-document" value="<?= $name_document ?>">
 		</div>
 		<form method="post"
-			action="<?= admin_url('admin.php?page=report-current-students') . ($_GET['section_tab'] ? '&section_tab=' . $_GET['section_tab'] : ''); ?>">
+			action="<?= admin_url('admin.php?page=report-students') . ($_GET['section_tab'] ? '&section_tab=' . $_GET['section_tab'] : ''); ?>">
 			<div style="width:100%;text-align:right;padding-top:10px;">
 				<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
 					<select name="academic_period" id="academic_period">
