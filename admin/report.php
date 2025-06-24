@@ -132,6 +132,21 @@ function show_report_current_students()
     }
 }
 
+function show_report_billing_ranking()
+{
+    if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
+        if ($_GET['section_tab'] == 'institutes') {
+            $list_data = new TT_Ranking_Institutes_List_Table;
+            $list_data->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-billing-ranking.php');
+        }
+    } else {
+        $list_data = new TT_Ranking_Alliances_List_Table;
+        $list_data->prepare_items();
+        include(plugin_dir_path(__FILE__) . 'templates/report-billing-ranking.php');
+    }
+}
+
 // GET ORDERS
 function get_orders($start, $end)
 {
@@ -275,6 +290,19 @@ function get_orders_by_date($date)
         'gross' => $gross,
         'net' => $net
     ];
+}
+
+function get_only_orders_by_date($start, $end)
+{
+    $strtotime_start = strtotime($start);
+    $strtotime_end = strtotime($end);
+
+    $args['limit'] = -1;
+    $args['status'] = 'wc-completed';
+    $args['date_created'] = $strtotime_start . '...' . $strtotime_end;
+    $orders = wc_get_orders($args);
+
+    return $orders;
 }
 
 function get_products_by_order($start, $end)
@@ -2415,6 +2443,370 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
             'total_items' => $total_count,
             'per_page' => $per_page,
         ));
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Ranking_Alliances_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'ranking_alliances',
+                'plural' => 'ranking_alliancess',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'generated':
+                $parsed = wc_price($item[$column_name]);
+                return $parsed;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'name' => __('Alliance', 'edusystem'),
+            'students_registered' => __('Students registered', 'edusystem'),
+            'generated' => __('Generated', 'edusystem')
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_ranking_report()
+    {
+        $alliance_totals = array();
+        $alliance_students = array();
+
+        $filter = $_POST['typeFilter'] ?? 'this-month';
+        $custom = $_POST['custom'] ?? false;
+
+        $dates = get_dates_search($filter, $custom);
+        if (!is_array($dates) || count($dates) < 2 || empty($dates[0]) || empty($dates[1])) {
+            return [];
+        }
+
+        $start_date = $dates[0];
+        $end_date = $dates[1];
+
+        $orders = get_only_orders_by_date($start_date, $end_date);
+        if (!is_array($orders) && !($orders instanceof Traversable)) {
+            return [];
+        }
+
+        foreach ($orders as $order) {
+            if (!is_object($order) || !method_exists($order, 'get_meta') || !method_exists($order, 'get_total')) {
+                continue;
+            }
+
+            $alliance_id = $order->get_meta('alliance_id');
+            $student_id = $order->get_meta('student_id');
+            $order_total = $order->get_total();
+
+            if (empty($alliance_id) || !is_scalar($alliance_id)) {
+                continue;
+            }
+
+            if (!empty($student_id) && is_scalar($student_id)) {
+                if (!isset($alliance_students[$alliance_id])) {
+                    $alliance_students[$alliance_id] = [];
+                }
+                if (!in_array($student_id, $alliance_students[$alliance_id])) {
+                    $alliance_students[$alliance_id][] = $student_id;
+                }
+            }
+
+            if (!is_numeric($order_total)) {
+                continue;
+            }
+
+            if (isset($alliance_totals[$alliance_id])) {
+                $alliance_totals[$alliance_id] += $order_total;
+            } else {
+                $alliance_totals[$alliance_id] = $order_total;
+            }
+        }
+
+        $alliances_with_data = array();
+        foreach ($alliance_totals as $alliance_id => $total_generated) {
+            if (empty($alliance_id) || !is_scalar($alliance_id)) {
+                continue;
+            }
+
+            $alliance = get_alliance_detail($alliance_id);
+
+            if (!$alliance || !is_object($alliance)) {
+                continue;
+            }
+
+            $alliance_data = (array) $alliance;
+            $alliance_data['generated'] = $total_generated;
+            $alliance_data['students_registered'] = isset($alliance_students[$alliance_id]) ? count($alliance_students[$alliance_id]) : 0;
+
+            $alliances_with_data[] = $alliance_data;
+        }
+
+        if (!empty($alliances_with_data)) {
+            usort($alliances_with_data, function ($a, $b) {
+                $a_generated = isset($a['generated']) && is_numeric($a['generated']) ? $a['generated'] : 0;
+                $b_generated = isset($b['generated']) && is_numeric($b['generated']) ? $b['generated'] : 0;
+                return $b_generated <=> $a_generated;
+            });
+        }
+
+        $top_10_alliances = array_slice($alliances_with_data, 0, 10);
+
+        return $top_10_alliances;
+    }
+
+    function prepare_items()
+    {
+
+        $data = $this->get_ranking_report();
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Ranking_Institutes_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'ranking_institute',
+                'plural' => 'ranking_institutes',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'generated':
+                $parsed = wc_price($item[$column_name]);
+                return $parsed;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'name' => __('Institute', 'edusystem'),
+            'students_registered' => __('Students registered', 'edusystem'),
+            'generated' => __('Generated', 'edusystem')
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_ranking_report()
+    {
+        $institute_totals = array();
+        $institute_students = array();
+
+        $filter = $_POST['typeFilter'] ?? 'this-month';
+        $custom = $_POST['custom'] ?? false;
+
+        $dates = get_dates_search($filter, $custom);
+        if (!is_array($dates) || count($dates) < 2 || empty($dates[0]) || empty($dates[1])) {
+            return [];
+        }
+
+        $start_date = $dates[0];
+        $end_date = $dates[1];
+
+        $orders = get_only_orders_by_date($start_date, $end_date);
+        if (!is_array($orders) && !($orders instanceof Traversable)) {
+            return [];
+        }
+
+        foreach ($orders as $order) {
+            if (!is_object($order) || !method_exists($order, 'get_meta') || !method_exists($order, 'get_total')) {
+                continue;
+            }
+
+            $institute_id = $order->get_meta('institute_id');
+            $student_id = $order->get_meta('student_id');
+            $order_total = $order->get_total();
+
+            if (empty($institute_id) || !is_scalar($institute_id)) {
+                continue;
+            }
+
+            if (!empty($student_id) && is_scalar($student_id)) {
+                if (!isset($institute_students[$institute_id])) {
+                    $institute_students[$institute_id] = [];
+                }
+                if (!in_array($student_id, $institute_students[$institute_id])) {
+                    $institute_students[$institute_id][] = $student_id;
+                }
+            }
+
+            if (!is_numeric($order_total)) {
+                continue;
+            }
+
+            if (isset($institute_totals[$institute_id])) {
+                $institute_totals[$institute_id] += $order_total;
+            } else {
+                $institute_totals[$institute_id] = $order_total;
+            }
+        }
+
+        $institutes_with_data = array();
+        foreach ($institute_totals as $institute_id => $total_generated) {
+            if (empty($institute_id) || !is_scalar($institute_id)) {
+                continue;
+            }
+
+            $alliance = get_institute_details($institute_id);
+
+            if (!$alliance || !is_object($alliance)) {
+                continue;
+            }
+
+            $alliance_data = (array) $alliance;
+            $alliance_data['generated'] = $total_generated;
+            $alliance_data['students_registered'] = isset($institute_students[$institute_id]) ? count($institute_students[$institute_id]) : 0;
+
+            $institutes_with_data[] = $alliance_data;
+        }
+
+        if (!empty($institutes_with_data)) {
+            usort($institutes_with_data, function ($a, $b) {
+                $a_generated = isset($a['generated']) && is_numeric($a['generated']) ? $a['generated'] : 0;
+                $b_generated = isset($b['generated']) && is_numeric($b['generated']) ? $b['generated'] : 0;
+                return $b_generated <=> $a_generated;
+            });
+        }
+
+        $top_10_institutes = array_slice($institutes_with_data, 0, 10);
+
+        return $top_10_institutes;
+    }
+
+    function prepare_items()
+    {
+
+        $data = $this->get_ranking_report();
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
 
         $this->items = $data;
     }
