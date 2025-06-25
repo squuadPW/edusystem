@@ -267,14 +267,14 @@
                     <label for="manager_report_sales_product" <?= !in_array('manager_report_sales_product', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Sales by product', 'edusystem'); ?></label>
                 </div>
                 <div class="capability-item indented">
-                    <input <?= !in_array('manager_report_students_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
-                        value="manager_report_students_aes" id="manager_report_students_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_report_students_aes'])) ? 'checked' : ''; ?>>
-                    <label for="manager_report_students_aes" <?= !in_array('manager_report_students_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Students', 'edusystem'); ?></label>
-                </div>
-                <div class="capability-item indented">
                     <input <?= !in_array('manager_report_billing_ranking_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_report_billing_ranking_aes" id="manager_report_billing_ranking_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_report_billing_ranking_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_report_billing_ranking_aes" <?= !in_array('manager_report_billing_ranking_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Billing ranking', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_report_students_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_report_students_aes" id="manager_report_students_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_report_students_aes'])) ? 'checked' : ''; ?>>
+                    <label for="manager_report_students_aes" <?= !in_array('manager_report_students_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Students', 'edusystem'); ?></label>
                 </div>
             </div>
 
