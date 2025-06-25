@@ -476,6 +476,11 @@ function get_students_report_offset($academic_period = null, $cut = null, $searc
         }
     }
 
+    $conditions[] = "condition_student = %d";
+    $params[] = 1;
+    $conditions[] = "status_id <> %d";
+    $params[] = 5;
+
     // 3. Construcción y ejecución de la consulta
     $query = "SELECT * FROM {$table_students}";
     if (!empty($conditions)) {
@@ -2295,6 +2300,8 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
         $params[] = 1; // Assuming 1 means active or regular student
         $conditions[] = "elective = %d";
         $params[] = 0; // Assuming 0 means not an elective student
+        $conditions[] = "status_id <> %d";
+        $params[] = 5; // Assuming 0 means not an elective student
 
         // 3. Condición de filtro por período académico (si está presente)
         $academic_period_student = $_POST['academic_period'] ?? '';
