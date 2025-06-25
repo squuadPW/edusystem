@@ -544,14 +544,14 @@ function get_list_orders_sales()
                 $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
                 $html .= "</td>";
                 if ($order['customer']) {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'edusystem') . "'>" . '<a href="' . $url . $order['customer']->data->ID . '" target="_blank">' . get_user_meta($order['customer']->data->ID, 'last_name', true) . ' ' . get_user_meta($order['customer']->data->ID, 'first_name', true) . "</a></td>";
+                    $html .= "<td class='column text-uppercase' data-colname='" . __('Customer', 'edusystem') . "'>" . get_user_meta($order['customer']->data->ID, 'last_name', true) . ' ' . get_user_meta($order['customer']->data->ID, 'first_name', true) . "</td>";
                 } else {
-                    $html .= "<td class='column' data-colname='" . __('Customer', 'edusystem') . "'>N/A</td>";
+                    $html .= "<td class='column text-uppercase' data-colname='" . __('Customer', 'edusystem') . "'>N/A</td>";
                 }
                 if ($order['student']) {
-                    $html .= "<td class='column' data-colname='" . __('Student', 'edusystem') . "'>" . '<a href="' . $url . $order['student_id'] . '" target="_blank">' . $order['student']['last_name'] . ' ' . $order['student']['middle_last_name'] . ' ' . $order['student']['name'] . ' ' . $order['student']['middle_name'] . "</a></td>";
+                    $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . $order['student']['last_name'] . ' ' . $order['student']['middle_last_name'] . ' ' . $order['student']['name'] . ' ' . $order['student']['middle_name'] . "</td>";
                 } else {
-                    $html .= "<td class='column' data-colname='" . __('Student', 'edusystem') . "'>N/A</td>";
+                    $html .= "<td class='column text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>N/A</td>";
                 }
                 $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'>" . wc_price($order['total']) . "</td>";
                 $html .= "<td class='column' data-colname='" . __('Created', 'edusystem') . "'><b>" . $order['created_at'] . "</b></td>";
@@ -711,12 +711,12 @@ function list_accounts_receivables()
             foreach ($orders['cuotes'] as $order) {
                 $html .= "<tr>";
                 if ($order->student) {
-                    $html .= "<td class='column-primary text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . '<a href="' . $url . $order->student_id . '" target="_blank">' . strtoupper($order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '')) . "</a><button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
+                    $html .= "<td class='column-primary text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . strtoupper($order->student['last_name'] . ' ' . ($order->student['middle_last_name'] ?? '') . ' ' . $order->student['name'] . ' ' . ($order->student['middle_name'] ?? '')) . "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
                 } else {
                     $html .= "<td class='column-primary text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>N/A</td>";
                 }
                 if ($order->customer['data']) {
-                    $html .= "<td class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . '<a href="' . $url . $order->customer['data']->ID . '" target="_blank">' . strtoupper(get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true)) . "</a></td>";
+                    $html .= "<td class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($order->customer['data']->ID, 'last_name', true) . ' ' . get_user_meta($order->customer['data']->ID, 'first_name', true)) . "</td>";
                 } else {
                     $html .= "<td class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>N/A</td>";
                 }
@@ -2479,7 +2479,7 @@ class TT_Ranking_Alliances_List_Table extends WP_List_Table
                 $parsed = wc_price($item[$column_name]);
                 return $parsed;
             default:
-                return $item[$column_name];
+                return '<span class="text-uppercase">' . $item[$column_name] . '</span>';
         }
     }
 
@@ -2661,7 +2661,7 @@ class TT_Ranking_Institutes_List_Table extends WP_List_Table
                 $parsed = wc_price($item[$column_name]);
                 return $parsed;
             default:
-                return $item[$column_name];
+                return '<span class="text-uppercase">' . $item[$column_name] . '</span>';
         }
     }
 
