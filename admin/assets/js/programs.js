@@ -38,6 +38,12 @@ document.addEventListener('DOMContentLoaded', function() {
             //quita el id del template
             new_subprogram.removeAttribute('id');
 
+            // Agregar funcionalidad al botón de eliminar
+            const remove_button = new_subprogram.querySelector('.remove-rule-button');
+            remove_button.addEventListener('click', function() {
+                new_subprogram.remove(); 
+            });
+
            // Actualizar el atributo data-subprogram_count en el contenedor
             subprograms.setAttribute('data-subprogram_count', subprogram_count);
 
@@ -86,6 +92,12 @@ document.addEventListener('DOMContentLoaded', function() {
             //quita el id del template
             new_rule.removeAttribute('id');
 
+            // Agregar funcionalidad al botón de eliminar
+            const remove_button = new_rule.querySelector('.remove-rule-button');
+            remove_button.addEventListener('click', function() {
+                new_rule.remove(); 
+            });
+
             // Actualizar el atributo data-subprogram_count en el contenedor
             rules.setAttribute('data-subprogram_count', rules_count);
 
@@ -93,10 +105,37 @@ document.addEventListener('DOMContentLoaded', function() {
             rules.appendChild(new_rule);
         });
     }
-
     
 });
 
+/**
+* Valida un input según una expresión regular
+* @param {HTMLinput} input - El elemento input a validar
+* @param {string} regex_pattern - Patrón regex para validación
+* @param {boolean} [convert_to_upper=true] - Convertir automáticamente a mayúsculas
+* @param {number} [maxLength=0] - Longitud máxima (0 para ilimitado)
+*/
+function validate_input(input, regex_pattern, convert_to_upper = true, max_length = 0) {
+
+    // Limitar longitud si max_length > 0
+    if (max_length > 0 && input.value.length > max_length) {
+        input.value = input.value.substring(0, max_length);
+        return;
+    }
+    
+    // Convertir a mayúsculas si está habilitado
+    if (convert_to_upper) {
+        input.value = input.value.toUpperCase();
+    }
+    
+    const regex = new RegExp(regex_pattern);
+    const last_char = input.value.slice(-1);
+            
+    // Si el último carácter no cumple con el regex, eliminarlo
+    if (input.value && !regex.test(last_char)) {
+        input.value = input.value.slice(0, -1);
+    }
+}
 
 
 

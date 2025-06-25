@@ -1331,6 +1331,57 @@ h2 {
   margin: 0px 10px;
 }
 
+#quota-rules-programs .container-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+#quota-rules-programs .quotas_rules .title {
+  margin-top: 20px;
+  margin-bottom: 0px;
+  text-align: center;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+}
+#quota-rules-programs .quotas_rules #rules {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  padding: 10px 0px;
+}
+#quota-rules-programs .quotas_rules #rules .rule {
+  margin: 7px 0px;
+  border: 1px solid rgba(128, 128, 128, 0.3607843137);
+  border-radius: 5px;
+  padding: 5px 15px;
+}
+#quota-rules-programs .quotas_rules #rules .rule#template-quota-rule {
+  display: none;
+}
+#quota-rules-programs .quotas_rules #rules .rule .group-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer {
+  flex: 1;
+  font-weight: 400;
+}
+#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer.name {
+  flex: 3;
+}
+#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer:has(input[type=checkbox]) {
+  max-width: -moz-max-content;
+  max-width: max-content;
+}
+#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer:has(input[type=checkbox]) input[type=checkbox] {
+  width: 10px;
+}
+#quota-rules-programs .quotas_rules > div {
+  margin: 0px 10px;
+}
+
 #toplevel_page_logo_based_menu {
   background-image: var(--admin-logo-url); /* This uses the dynamic URL from PHP */
   background-repeat: no-repeat;

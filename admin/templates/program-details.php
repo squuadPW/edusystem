@@ -18,7 +18,7 @@
         <?php setcookie('message-error', '', time(), '/'); ?>
     <?php } ?>
     <div style="display:flex;width:100%;">
-        <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
+        <a class="button button-outline-primary" href="<?= admin_url("/admin.php?page=add_admin_form_program_content" ) ?? $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder admin-add-offer container-programs" style="width: 70%">
@@ -50,7 +50,7 @@
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="identificator"><b><?= __('Identificator', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>
-                                        <input type="text" name="identificator" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?> >
+                                        <input type="text" name="identificator" oninput="validate_input(this, '^[A-Z0-9-]*$')" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?> >
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
@@ -78,7 +78,7 @@
 
                                     <?php if( $program ): ?>
                                         <div class="container-button" >
-                                            <a href="<?= admin_url("/admin.php?page=add_admin_form_program_content&section_tab=quotas_rules_programs&program_id=$program->id" ) ?>" class="button button-primary" >
+                                            <a href="<?= admin_url("/admin.php?page=add_admin_form_program_content&section_tab=quotas_rules_programs&program_id=$program->id&identificator=$program->identificator" ) ?>" class="button button-primary" >
                                                 <?=__('Quotas', 'edusystem')?>
                                             </a>
                                         </div>
@@ -140,7 +140,7 @@
                                                     <button type="button" class="button button-secodary" ><?=__('Delete', 'edusystem')?></button>
 
                                                     <?php if( $program ): ?>
-                                                        <a href="<?= admin_url("/admin.php?page=add_admin_form_program_content&section_tab=quotas_rules_programs&program_id=$program->id-$subprogram_id" ) ?>" class="button button-primary" >
+                                                        <a href="<?= admin_url("/admin.php?page=add_admin_form_program_content&section_tab=quotas_rules_programs&program_id=$program->id&identificator={$program->identificator}_{$subprogram_id}" ) ?>" class="button button-primary" >
                                                             <?=__('Quotas', 'edusystem')?>
                                                         </a>
                                                     <?php endif; ?>
@@ -183,7 +183,7 @@
                                             </div>
 
                                             <div class="container-button" >
-                                                <button type="button" class="button button-secodary" ><?=__('Delete', 'edusystem')?></button>
+                                                <button type="button" class="button button-secodary remove-rule-button" ><?=__('Delete', 'edusystem')?></button>
                                             </div>
 
                                         </div>

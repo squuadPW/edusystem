@@ -17,7 +17,7 @@
     <?php } ?>
 
     <div style="display:flex;width:100%;">
-        <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
+        <a class="button button-outline-primary" href="<?= admin_url("/admin.php?page=add_admin_form_program_content&section_tab=program_details&program_id=$program_id" ) ?? $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
 
     <div id="quota-rules-programs" class="metabox-holder admin-add-offer " style="width: 70%">
@@ -27,7 +27,7 @@
                     <div class="inside">
 
                         <form method="post"
-                            action="<?= admin_url('admin.php?page=add_admin_form_program_content&action=save_program_details'); ?>">
+                            action="<?= admin_url('admin.php?page=add_admin_form_program_content&action=save_quotas_rules'); ?>">
                             
                             <div class="quotas_rules"  >
                                         
@@ -38,6 +38,67 @@
                                 <div id="rules" data-rules_count="0" >
 
                                     <input type="hidden" name="program_id" value="<?= $program_id ?>" >
+                                    <input type="hidden" name="identificator" value="<?= $identificator ?>" >
+
+                                    <?php if (isset($rules) && !empty($rules)): ?>
+                                        <?php foreach ($rules AS $i => $rule): ?>
+                                            <div class="rule" >
+
+                                                <input type="hidden" name="rules[<?= $i ?>][id]" value="<?= $rule['id'] ?>" >
+
+                                                <div class="group-input" >
+
+                                                    <div class="space-offer">
+                                                        <label for="rules[<?= $i ?>][is_active]">
+                                                            <b><?= __('Active', 'edusystem'); ?></b>
+                                                        </label>
+                                                        <br/>
+                                                        <input type="checkbox" name="rules[<?= $i ?>][is_active]" <?= ( $rule['is_active'] ) ? 'checked' : ''; ?> >
+                                                    </div>
+
+                                                    <div class="space-offer">
+                                                        <label for="rules[<?= $i ?>][name]">
+                                                            <b><?= __('Name', 'edusystem'); ?></b>
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+
+                                                        <input type="text" name="rules[<?= $i ?>][name]" value="<?= $rule['name'] ?>" required>
+                                                    </div>
+                                                </div>
+
+                                                <div class="group-input" >
+                                                    <div class="space-offer">
+
+                                                        <label for="rules[<?= $i ?>][initial_price]">
+                                                            <b><?= __('Initial price', 'edusystem'); ?></b>
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+                                                        <input type="number" name="rules[<?= $i ?>][initial_price]" value="<?= $rule['initial_price'] ?? 0.00 ?>" oninput="validate_input(this, '^[0-9]*$')" required>
+                                                    </div>
+
+                                                    <div class="space-offer">
+                                                        <label for="rules[<?= $i ?>][quantity]">
+                                                            <b><?= __('Quotas quantity ', 'edusystem'); ?></b>
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+
+                                                        <input type="number" name="rules[<?= $i ?>][quantity]" value="<?= $rule['quotas_quantity'] ?? 1 ?>" oninput="validate_input(this, '^\\d*$')"  min="1" step="1"  required >
+                                                    </div>
+
+                                                    <div class="space-offer">
+
+                                                        <label for="rules[<?= $i ?>][price]">
+                                                            <b><?= __('Price', 'edusystem'); ?></b>
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+
+                                                        <input type="number" name="rules[<?= $i ?>][price]" value="<?= $rule['quote_price'] ?? 0.00 ?>" oninput="validate_input(this, '^[0-9]*$')" required>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        <?php endforeach ?>
+                                    <?php endif ?>
 
                                     <div id="template-quota-rule" class="rule" >
 
@@ -68,7 +129,7 @@
                                                     <b><?= __('Initial price', 'edusystem'); ?></b>
                                                     <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="number" name="rules[][initial_price]" value="0" disabled required>
+                                                <input type="number" name="rules[][initial_price]" value="0" oninput="validate_input(this, '^[0-9]*$')" disabled required>
                                             </div>
 
                                             <div class="space-offer">
@@ -77,7 +138,7 @@
                                                     <span class="text-danger">*</span>
                                                 </label>
 
-                                                <input type="number" name="rules[][quantity]" value="1"  min="1" step="1" disabled required >
+                                                <input type="number" name="rules[][quantity]" value="1" oninput="validate_input(this, '^[0-9]*$')"  min="1" step="1" disabled required >
                                             </div>
 
                                             <div class="space-offer">
@@ -87,8 +148,12 @@
                                                     <span class="text-danger">*</span>
                                                 </label>
 
-                                                <input type="number" name="rules[][price]" value="0" disabled required>
+                                                <input type="number" name="rules[][price]" value="0" oninput="validate_input(this, '^[0-9]*$')" disabled required>
                                             </div>
+                                        </div>
+
+                                        <div class="container-button" >
+                                            <button type="button" class="button button-secondary remove-rule-button"><?= __('Delete', 'edusystem'); ?></button>
                                         </div>
 
                                     </div>
@@ -103,7 +168,7 @@
 
                             </div>
 
-                            <?php if (isset($program) && !empty($program)): ?>
+                            <?php if (isset($rules) && !empty($rules)): ?>
                                 <div style="padding-top: 10px;margin-top: 10px;display:flex;flex-direction:row;justify-content:end;gap:5px;border-top: 1px solid #8080805c;">
                                     <button type="submit"
                                         class="button button-primary"><?= __('Saves changes', 'edusystem'); ?></button>
@@ -111,7 +176,7 @@
                             <?php else: ?>
                                 <div style="padding-top: 10px;margin-top: 10px;display:flex;flex-direction:row;justify-content:end;gap:5px;border-top: 1px solid #8080805c;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Add program', 'edusystem'); ?></button>
+                                        class="button button-primary"><?= __('Add rules', 'edusystem'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>

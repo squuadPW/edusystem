@@ -13,11 +13,13 @@ function add_admin_form_program_content()
 
             global $wpdb;
             $program_id = $_GET['program_id'];
-            $program = get_program_details($program_id);
+            $identificator = $_GET['identificator'];
+            $rules = get_quotas_rules_programs( $identificator );
             include(plugin_dir_path(__FILE__) . 'templates/quotas-rules-programs.php');
         }
 
     } else {
+
         if ($_GET['action'] == 'save_program_details') {
             global $wpdb;
             $table_programs = $wpdb->prefix . 'programs';
@@ -121,7 +123,7 @@ function add_admin_form_program_content()
                         // guarda el stock en caso de que este activo o no
                         update_post_meta($product_id, '_stock_status', ( $is_active && $is_active_subprogram ) ? 'instock' : 'outofstock');
 
-                    } else {
+                    } else  {
 
                         // Función para crear un producto
                         $product_id = wp_insert_post([
@@ -194,6 +196,60 @@ function add_admin_form_program_content()
             
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_program_content'));
+            exit;
+
+        } else if ($_GET['action'] == 'save_quotas_rules') {
+            global $wpdb;
+            $table_quota_rules = $wpdb->prefix . 'quota_rules';
+            
+            // Sanitizar 
+            $program_id = $_POST['program_id'] ?? '';
+            $identificator = isset($_POST['identificator']) ? sanitize_text_field($_POST['identificator']) : '';
+
+            if( !empty($identificator) ) {
+                $rules_post = $_POST['rules'] ?? '';
+
+                foreach( $rules_post AS $rule ){
+                    
+                    $rule_id = $rule['id'] ?? '';
+                    $is_active = $rule['is_active'] ? true : false;
+                    $name = $rule['name'];
+                    $initial_price = $rule['initial_price'];
+                    $quantity = $rule['quantity'];
+                    $price = $rule['price'];
+
+                    // crea o actualiza el sub programa
+                    if ( !empty( $rule_id ) ) {
+
+                        $wpdb->update( $table_quota_rules, [
+                            'is_active' => $is_active,
+                            'name' => $name,
+                            'initial_price' => $initial_price,
+                            'quotas_quantity' => $quantity,
+                            'quote_price' => $price,
+                        ], ['id' => $rule_id] );
+
+                    } else {
+
+                        $wpdb->insert( $table_quota_rules, [
+                            'is_active' => $is_active,
+                            'name' => $name,
+                            'initial_price' => $initial_price,
+                            'quotas_quantity' => $quantity,
+                            'quote_price' => $price,
+                            'program_id' => $identificator,
+                        ]);
+                    }
+                }
+
+                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
+                wp_redirect(admin_url("admin.php?page=add_admin_form_program_content&section_tab=program_details&program_id=$program_id"));
+
+            } else {
+                setcookie('message-error', __('Identifier not found', 'edusystem'), time() + 10, '/');
+                wp_redirect(admin_url("admin.php?page=add_admin_form_program_content&section_tab=program_details"));
+            }
+
             exit;
 
         } else {
@@ -360,6 +416,29 @@ function get_program_details($id)
 
     $program = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE id={$id}");
     return $program;
+}
+
+/**
+ * Obtiene las reglas de cuotas asociadas a un programa específico
+ * Realiza una consulta a la tabla de reglas de cuotas (quota_rules)
+ * filtrando por el identificador del programa especificado
+ * 
+ * @param string $program_id Identificador del programa a consultar
+ * 
+ * @return object|false Objeto con los resultados de la consulta
+ *                     o false si no hay resultados
+ */
+function get_quotas_rules_programs($program_id) {
+
+    global $wpdb;
+    $table_quota_rules = $wpdb->prefix . 'quota_rules';
+    
+    $rules = $wpdb->get_results(
+        "SELECT * FROM {$table_quota_rules} WHERE program_id = '$program_id'", 
+        ARRAY_A
+    );
+    
+    return $rules ?? false;
 }
 
 
