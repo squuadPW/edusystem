@@ -2878,7 +2878,7 @@ function get_students_active_count()
 
     // Contar directamente el número de filas que cumplen la condición
     $total_count = $wpdb->get_var(
-        "SELECT COUNT(id) FROM {$table_students} WHERE condition_student = 1"
+        "SELECT COUNT(id) FROM {$table_students} WHERE condition_student = 1 AND status_id <> 5"
     );
 
     return $total_count;
@@ -2898,6 +2898,7 @@ function get_students_non_enrolled_count()
     $cut_student_ids = $wpdb->get_col("SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = '$academic_period' AND cut_period = '$cut' AND status_id = 1 AND code_subject IS NOT NULL AND code_subject <> ''");
     $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")";
     $conditions[] = "condition_student = 1";
+    $conditions[] = "status_id <> 5";
     $conditions[] = "elective = 0";
     $params = array_merge($params, $cut_student_ids);
 
