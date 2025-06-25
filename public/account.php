@@ -45,7 +45,6 @@ function fee_inscription_payment() {
 
     // Verificar si WooCommerce está activo
     if ( ! class_exists( 'WooCommerce' ) || ! isset( $woocommerce->cart ) ) {
-        error_log( 'WooCommerce no está activo o el carrito no está disponible.' );
         // Considerar redirigir o mostrar un error al usuario.
         wp_redirect( home_url() );
         exit;

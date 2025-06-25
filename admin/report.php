@@ -134,6 +134,12 @@ function show_report_current_students()
 
 function show_report_billing_ranking()
 {
+    $date_array = array();
+    if ($_POST['custom']) {
+        $date = str_replace([' to ', ' a '], ',', $_POST['custom']);
+        $date_array = explode(',', $date);
+    }
+
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         if ($_GET['section_tab'] == 'institutes') {
             $list_data = new TT_Ranking_Institutes_List_Table;

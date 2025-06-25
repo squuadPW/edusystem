@@ -124,7 +124,6 @@ jQuery(document).ready(function ($) {
     .on("change", function (e) {
       // Obtener el valor seleccionado
       const selectedValue = $(this).val();
-      console.log(selectedValue)
       document.getElementById("student_id").value = selectedValue;
 
       // Aquí puedes hacer lo que necesites con el valor seleccionado

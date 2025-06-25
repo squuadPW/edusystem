@@ -44,18 +44,18 @@
 					</select>
 					<?php if (wp_is_mobile()) { ?>
 						<input type="text" value="<?= $start_date; ?>" id="inputStartDate"
-							style="display:none;width:100%;margin-bottom:5px;">
+							style="display: <?= $_POST['typeFilter'] == 'custom' ? 'unset' : 'none' ?>;width:100%;margin-bottom:5px;" name="custom">
 					<?php } else { ?>
 						<input type="text" value="<?= $start_date; ?>" id="inputStartDate"
-							style="display:none;width:200px;">
+							style="display: <?= $_POST['typeFilter'] == 'custom' ? 'unset' : 'none' ?>;width:200px;" name="custom">
 					<?php } ?>
 					<?php if (wp_is_mobile()): ?>
-						<button type="submit" id="update_data" class="button button-primary"
+						<button type="submit" class="button button-primary"
 							style="width:100%;"></span><?= __('Update data', 'edusystem'); ?></button>
 						<button type="button" id="export_excel_ranking" class="button button-success"
 							style="width:100%;"></span><?= __('Export excel', 'edusystem'); ?></button>
 					<?php else: ?>
-						<button type="submit" id="update_data"
+						<button type="submit"
 							class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
 						<button type="button" id="export_excel_ranking" class="button button-success""></span><?= __('Export excel', 'edusystem'); ?></button>
 					<?php endif; ?>
@@ -69,11 +69,10 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-
         flatpickr(document.getElementById('inputStartDate'), {
             mode: "range",
             dateFormat: "m/d/Y",
-            defaultDate: ['<?= $start_date ?>', '<?= $start_date ?>'],
+            defaultDate: ['<?= $date_array[0] ?>', '<?= $date_array[1] ?>'],
         });
 
     });
