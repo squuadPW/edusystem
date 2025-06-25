@@ -78,7 +78,9 @@
 
                                     <?php if( $program ): ?>
                                         <div class="container-button" >
-                                            <button type="button" class="button button-primary" ><?=__('Create quotas rules', 'edusystem')?></button>
+                                            <a href="<?= admin_url("/admin.php?page=add_admin_form_program_content&section_tab=quotas_rules_programs&program_id=$program->id" ) ?>" class="button button-primary" >
+                                                <?=__('Quotas', 'edusystem')?>
+                                            </a>
                                         </div>
                                     <?php endif; ?>
 
@@ -138,7 +140,9 @@
                                                     <button type="button" class="button button-secodary" ><?=__('Delete', 'edusystem')?></button>
 
                                                     <?php if( $program ): ?>
-                                                        <button type="button" class="button button-primary" ><?=__('Create quotas rules', 'edusystem')?></button>
+                                                        <a href="<?= admin_url("/admin.php?page=add_admin_form_program_content&section_tab=quotas_rules_programs&program_id=$program->id-$subprogram_id" ) ?>" class="button button-primary" >
+                                                            <?=__('Quotas', 'edusystem')?>
+                                                        </a>
                                                     <?php endif; ?>
                                                 </div>
 

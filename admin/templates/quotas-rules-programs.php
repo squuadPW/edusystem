@@ -1,9 +1,6 @@
 <div class="wrap">
-    <?php if (isset($program) && !empty($program)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Program details', 'edusystem'); ?></h2>
-    <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Create rules for quotas', 'edusystem'); ?></h2>
-    <?php endif; ?>
+    
+    <h2 style="margin-bottom:15px;"><?= __('Rules for quotas', 'edusystem'); ?></h2>
 
     <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
         <div class="notice notice-success is-dismissible">
@@ -11,12 +8,14 @@
         </div>
         <?php setcookie('message', '', time(), '/'); ?>
     <?php } ?>
+
     <?php if (isset($_COOKIE['message-error']) && !empty($_COOKIE['message-error'])) { ?>
         <div class="notice notice-error is-dismissible">
             <p><?= $_COOKIE['message-error']; ?></p>
         </div>
         <?php setcookie('message-error', '', time(), '/'); ?>
     <?php } ?>
+
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
@@ -29,138 +28,77 @@
 
                         <form method="post"
                             action="<?= admin_url('admin.php?page=add_admin_form_program_content&action=save_program_details'); ?>">
-                            <div>
-                                <h3
-                                    style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Program Information', 'edusystem'); ?></b>
+                            
+                            <div class="quotas_rules"  >
+                                        
+                                <h3 class="title" >
+                                    <b><?= __('Rules for quotas', 'edusystem'); ?></b>
                                 </h3>
 
-                                <div style="margin: 18px;">
+                                <div id="rules" data-rules_count="0" >
 
-                                    <input type="hidden" name="program_id" value="<?= $program->id ?>">
-                                    <input type="hidden" name="product_id" value="<?= $program->product_id ?>">
+                                    <input type="hidden" name="program_id" value="<?= $program_id ?>" >
 
-                                    <div style="font-weight:400; text-align: center; margin-bottom: 10px;">
-                                        <div>
-                                            <input style="width: auto !important;" type="checkbox" name="is_active" id="is_active" <?= ($program->is_active == 1) ? 'checked' : ''; ?>>
-                                            <label for="is_active"><b><?= __('Active', 'edusystem'); ?></b></label>
+                                    <div id="template-quota-rule" class="rule" >
+
+                                        <div class="group-input" >
+
+                                            <div class="space-offer">
+                                                <label for="rules[][is_active]">
+                                                    <b><?= __('Active', 'edusystem'); ?></b>
+                                                </label>
+                                                <br/>
+                                                <input type="checkbox" name="rules[][is_active]" disabled checked >
+                                            </div>
+
+                                            <div class="space-offer">
+                                                <label for="rules[][name]">
+                                                    <b><?= __('Name', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+
+                                                <input type="text" name="rules[][name]" disabled required>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div style="font-weight:400;" class="space-offer">
-                                        <label for="identificator"><b><?= __('Identificator', 'edusystem'); ?></b><span
-                                                class="text-danger">*</span></label><br>
-                                        <input type="text" name="identificator" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?> >
-                                    </div>
+                                        <div class="group-input" >
+                                            <div class="space-offer">
 
-                                    <div style="font-weight:400;" class="space-offer">
-                                        <label for="name"><b><?= __('Name', 'edusystem'); ?></b><span
-                                                class="text-danger">*</span></label><br>
-                                        <input type="text" name="name" value="<?= $program->name; ?>" required>
-                                    </div>
+                                                <label for="rules[][initial_price]">
+                                                    <b><?= __('Initial price', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="number" name="rules[][initial_price]" value="0" disabled required>
+                                            </div>
 
-                                    <div style="font-weight:400;" class="space-offer">
-                                        <label for="total_price">
-                                            <b><?= __('Price', 'edusystem'); ?></b>
-                                            <span class="text-danger">*</span>
-                                        </label>
+                                            <div class="space-offer">
+                                                <label for="rules[][quantity]">
+                                                    <b><?= __('Quotas quantity ', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
 
-                                        <br>
+                                                <input type="number" name="rules[][quantity]" value="1"  min="1" step="1" disabled required >
+                                            </div>
 
-                                        <input type="number" name="total_price" value="<?= $program->total_price; ?>" required>
-                                    </div>
+                                            <div class="space-offer">
 
-                                    <div style="font-weight:400;" class="space-offer">
-                                        <label for="description"><b><?= __('Description', 'edusystem'); ?></b><span
-                                                class="text-danger">*</span></label><br>
-                                        <textarea style="width: 100%" name="description" id="description" rows="4" required><?= $program->description; ?></textarea>
-                                    </div>
+                                                <label for="rules[][price]">
+                                                    <b><?= __('Price', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
 
-                                    <?php if( $program ): ?>
-                                        <div class="container-button" >
-                                            <button type="button" class="button button-primary" ><?=__('Create quotas rules', 'edusystem')?></button>
+                                                <input type="number" name="rules[][price]" value="0" disabled required>
+                                            </div>
                                         </div>
-                                    <?php endif; ?>
+
+                                    </div>
 
                                 </div>
 
-                                <br>
-
-                                <div id="subprograms-container" >
-                                    <h3 class="title" >
-                                        <b><?= __('Subprograms', 'edusystem'); ?></b>
-                                    </h3>
-
-                                    <div class="quotas_rules"  >
-                                        <h3 class="title" >
-                                            <b><?= __('Rules for quotas', 'edusystem'); ?></b>
-                                        </h3>
-
-                                        <button id="add-rule-button" type="button" class="button button-primary" ><?=__('add quota rule', 'edusystem')?></button>
-                                        
-                                        <div id="rules" >
-                                            <div class="rule" >
-                                                
-                                                <input type="hidden" name="" value="">
-
-                                                <div class="group-input" >
-
-                                                    <div class="space-offer">
-                                                        <label for="">
-                                                            <b><?= __('Active', 'edusystem'); ?></b>
-                                                        </label>
-                                                        <br/>
-                                                        <input type="checkbox" name="" value="" required>
-                                                    </div>
-
-                                                    <div class="space-offer">
-                                                        <label for="">
-                                                            <b><?= __('Name', 'edusystem'); ?></b>
-                                                            <span class="text-danger">*</span>
-                                                        </label>
-
-                                                        <input type="text" name="" value="" required>
-                                                    </div>
-                                                </div>
-
-                                                <div class="group-input" >
-                                                    <div class="space-offer">
-
-                                                        <label for="">
-                                                            <b><?= __('Initial price', 'edusystem'); ?></b>
-                                                            <span class="text-danger">*</span>
-                                                        </label>
-                                                        <input type="number" name="" value="" required>
-                                                    </div>
-
-                                                    <div class="space-offer">
-                                                        <label for="">
-                                                            <b><?= __('Quotas quantity ', 'edusystem'); ?></b>
-                                                            <span class="text-danger">*</span>
-                                                        </label>
-
-                                                        <input type="number" name="" value="1" required >
-                                                    </div>
-
-                                                    <div class="space-offer">
-
-                                                        <label for="">
-                                                            <b><?= __('Price', 'edusystem'); ?></b>
-                                                            <span class="text-danger">*</span>
-                                                        </label>
-
-                                                        <input type="number" name="" value="" required>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div >
-                                        <button id="add-subprograms" type="button" class="button button-secondary" ><?=__('Add subprograms', 'edusystem')?></button>
-                                    </div>
-
+                                <div class="container-button" >
+                                    <button id="add-rule-button" type="button" class="button button-secondary" >
+                                        <?=__('Add quota rule', 'edusystem')?>
+                                    </button>
                                 </div>
 
                             </div>
@@ -185,40 +123,4 @@
 </div>
 
 
-
-
-<script>
-    (function(){
-        let ruleCount = 1;
-        document.getElementById('add-rule-button').addEventListener('click', function() {
-            const ruleTemplate = document.querySelector('.rule');
-            const newRule = ruleTemplate.cloneNode(true);
-            newRule.querySelectorAll('input, label').forEach(el => {
-                if(el.name){
-                    el.name = el.name.replace(/\d+/, ruleCount);
-                }
-                if(el.id){
-                    el.id = el.id.replace(/\d+/, ruleCount);
-                }
-                if(el.tagName.toLowerCase() === 'input') {
-                    if(el.type === 'checkbox') {
-                        el.checked = true;
-                    } else if(el.type === 'number') {
-                    if(el.name.includes('initial_price') || el.name.includes('quotas_quantity') || el.name.includes('quote_price')) {
-                            el.value = '0';
-                        } else {
-                            el.value = '';
-                        }
-                    } else if(el.type === 'text'){
-                        el.value = '';
-                    }
-                }
-            });
-            const hiddenId = newRule.querySelector('input[type="hidden"]');
-            if(hiddenId) hiddenId.value = '';
-            document.getElementById('rules').appendChild(newRule);
-            ruleCount++;
-        });
-    })();
-</script>
 
