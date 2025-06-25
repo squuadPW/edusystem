@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
             rules.appendChild(new_rule);
         });
     }
+
     
 });
 

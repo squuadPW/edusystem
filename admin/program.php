@@ -252,6 +252,11 @@ function add_admin_form_program_content()
 
             exit;
 
+        } else if ($_GET['action'] == 'delete_quota_rule') {
+           
+
+            echo "paso";
+
         } else {
             $list_program = new TT_All_Program_List_Table;
             $list_program->prepare_items();

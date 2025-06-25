@@ -94,6 +94,11 @@
 
                                                         <input type="number" name="rules[<?= $i ?>][price]" value="<?= $rule['quote_price'] ?? 0.00 ?>" oninput="validate_input(this, '^[0-9]*$')" required>
                                                     </div>
+
+                                                    <div class="container-button" >
+                                                        <button type="button" class="button button-secondary remove-rule-button "><?= __('Delete', 'edusystem'); ?></button>
+                                                    </div>
+
                                                 </div>
 
                                             </div>
@@ -187,5 +192,6 @@
     </div>
 </div>
 
+<?php include(plugin_dir_path(__FILE__).'modal-delete-quota-rule.php'); ?>
 
 
