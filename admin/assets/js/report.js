@@ -344,6 +344,52 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 
+  export_excel_ranking = document.getElementById("export_excel_ranking");
+  if (export_excel_ranking) {
+    export_excel_ranking.addEventListener("click", () => {
+      // Selecciona la tabla por su ID
+      const table = document.querySelector(".wp-list-table");
+      const name = document.querySelector("input[name=name_document]").value;
+      const column = document.querySelector("input[name=column_name]").value;
+      const data = [];
+
+      // Definir los encabezados fijos
+      const headers = [column, "Students registered", "Generated"];
+      console.log(headers);
+      data.push(headers); // Agrega los encabezados al array de datos
+
+      // Itera sobre las filas de la tabla, STARTING FROM THE SECOND ROW (index 1)
+      // to skip the HTML table's own header row.
+      // Also, keep `table.rows.length - 1` if you still want to skip the very last row (e.g., a total row).
+      // If you want all data rows, change `table.rows.length - 1` back to `table.rows.length`.
+      for (let i = 1; i < table.rows.length - 1; i++) {
+        // <-- MODIFICACIÓN CLAVE AQUÍ: i = 1
+        const rowData = [];
+        const row = table.rows[i];
+
+        for (let j = 0; j < row.cells.length; j++) {
+          let cellText = row.cells[j].textContent.trim();
+          // Remove "Show more details" from the cell text
+          cellText = cellText.replace(/Show more details/g, "");
+          rowData.push(cellText);
+        }
+        console.log(rowData);
+
+        data.push(rowData);
+      }
+
+      // Crea un nuevo libro de trabajo
+      const wb = XLSX.utils.book_new();
+      // Convierte los datos a una hoja de cálculo
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      // Agrega la hoja al libro
+      XLSX.utils.book_append_sheet(wb, ws, "Ranking " + column);
+
+      // Exporta el archivo XLSX
+      XLSX.writeFile(wb, name);
+    });
+  }
+
   export_excel_students = document.getElementById("export_excel_students");
   if (export_excel_students) {
     export_excel_students.addEventListener("click", () => {

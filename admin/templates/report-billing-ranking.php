@@ -16,15 +16,18 @@
 				case 'institutes':
 					$heading_text = __('Ranking of the institutes according to the amount invoiced', 'edusystem');
 					$name_document = __('Ranking institutes.xlsx', 'edusystem');
+					$column_name = __('Alliance', 'edusystem');
 					break;
 				default:
 					$heading_text = __('Ranking of allies according to the amount invoiced', 'edusystem');
 					$name_document = __('Ranking alliances.xlsx', 'edusystem');
+					$column_name = __('Institute', 'edusystem');
 					break;
 			}
 			?>
 			<h1 class='wp-heading-line'><?= $heading_text ?></h1>
 			<input type="hidden" name="name_document" id="name-document" value="<?= $name_document ?>">
+			<input type="hidden" name="column_name" id="column-name" value="<?= $column_name ?>">
 		</div>
 		<form method="post"
 			action="<?= admin_url('admin.php?page=report-billing-ranking') . ($_GET['section_tab'] ? '&section_tab=' . $_GET['section_tab'] : ''); ?>">
@@ -34,20 +37,29 @@
 					<?php } else { ?>
 						<select id="typeFilter" name="typeFilter" autocomplete="off">
 						<?php } ?>
-						<option value="today" <?= $_POST['typeFilter'] == 'today' ? 'selected' : '' ?>><?= __('Today', 'edusystem'); ?></option>
-						<option value="yesterday" <?= $_POST['typeFilter'] == 'yesterday' ? 'selected' : '' ?>><?= __('Yesterday', 'edusystem'); ?></option>
-						<option value="this-week" <?= $_POST['typeFilter'] == 'this-week' ? 'selected' : '' ?>><?= __('This week', 'edusystem'); ?></option>
-						<option value="last-week" <?= $_POST['typeFilter'] == 'last-week' ? 'selected' : '' ?>><?= __('Last week', 'edusystem'); ?></option>
-						<option value="this-month" <?= $_POST['typeFilter'] == 'this-month' ? 'selected' : (empty($_POST['typeFilter']) ? 'selected' : '') ?>><?= __('This month', 'edusystem'); ?></option>
-						<option value="last-month" <?= $_POST['typeFilter'] == 'last-month' ? 'selected' : '' ?>><?= __('Last month', 'edusystem'); ?></option>
-						<option value="custom" <?= $_POST['typeFilter'] == 'custom' ? 'selected' : '' ?>><?= __('Custom', 'edusystem'); ?></option>
+						<option value="today" <?= $_POST['typeFilter'] == 'today' ? 'selected' : '' ?>>
+							<?= __('Today', 'edusystem'); ?></option>
+						<option value="yesterday" <?= $_POST['typeFilter'] == 'yesterday' ? 'selected' : '' ?>>
+							<?= __('Yesterday', 'edusystem'); ?></option>
+						<option value="this-week" <?= $_POST['typeFilter'] == 'this-week' ? 'selected' : '' ?>>
+							<?= __('This week', 'edusystem'); ?></option>
+						<option value="last-week" <?= $_POST['typeFilter'] == 'last-week' ? 'selected' : '' ?>>
+							<?= __('Last week', 'edusystem'); ?></option>
+						<option value="this-month" <?= $_POST['typeFilter'] == 'this-month' ? 'selected' : (empty($_POST['typeFilter']) ? 'selected' : '') ?>><?= __('This month', 'edusystem'); ?>
+						</option>
+						<option value="last-month" <?= $_POST['typeFilter'] == 'last-month' ? 'selected' : '' ?>>
+							<?= __('Last month', 'edusystem'); ?></option>
+						<option value="custom" <?= $_POST['typeFilter'] == 'custom' ? 'selected' : '' ?>>
+							<?= __('Custom', 'edusystem'); ?></option>
 					</select>
 					<?php if (wp_is_mobile()) { ?>
 						<input type="text" value="<?= $start_date; ?>" id="inputStartDate"
-							style="display: <?= $_POST['typeFilter'] == 'custom' ? 'unset' : 'none' ?>;width:100%;margin-bottom:5px;" name="custom">
+							style="display: <?= $_POST['typeFilter'] == 'custom' ? 'unset' : 'none' ?>;width:100%;margin-bottom:5px;"
+							name="custom">
 					<?php } else { ?>
 						<input type="text" value="<?= $start_date; ?>" id="inputStartDate"
-							style="display: <?= $_POST['typeFilter'] == 'custom' ? 'unset' : 'none' ?>;width:200px;" name="custom">
+							style="display: <?= $_POST['typeFilter'] == 'custom' ? 'unset' : 'none' ?>;width:200px;"
+							name="custom">
 					<?php } ?>
 					<?php if (wp_is_mobile()): ?>
 						<button type="submit" class="button button-primary"
@@ -68,12 +80,12 @@
 	</div>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        flatpickr(document.getElementById('inputStartDate'), {
-            mode: "range",
-            dateFormat: "m/d/Y",
-            defaultDate: ['<?= $date_array[0] ?>', '<?= $date_array[1] ?>'],
-        });
+	document.addEventListener('DOMContentLoaded', function () {
+		flatpickr(document.getElementById('inputStartDate'), {
+			mode: "range",
+			dateFormat: "m/d/Y",
+			defaultDate: ['<?= $date_array[0] ?>', '<?= $date_array[1] ?>'],
+		});
 
-    });
+	});
 </script>
