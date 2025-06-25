@@ -531,6 +531,7 @@ function create_tables()
         product_id INT(11) NOT NULL,
         variation_id INT(11) NULL,
         amount DOUBLE(10, 2) NOT NULL,
+        total_amount DOUBLE(10, 2) NULL,
         type_payment INT(11) NOT NULL,
         cuote INT(11) NULL,
         num_cuotes INT(11) NULL,
