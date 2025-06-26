@@ -885,7 +885,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                     'variation_id' => $variation_id,
                     'amount' => $price,
                     'total_amount' => ($price * $cuotes),
-                    'original_amount' => $original_amount,
+                    'original_amount' => ($original_amount * $cuotes),
                     'type_payment' => $cuotes > 1 ? 1 : 2,
                     'cuote' => ($i + 1),
                     'num_cuotes' => $cuotes,
