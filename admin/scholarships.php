@@ -633,8 +633,8 @@ class TT_scholarship_all_List_Table extends WP_List_Table
             'scholarship_id' => __('Scholarship ID', 'edusystem'),
             'student_name' => __('Student', 'edusystem'),
             'student_email' => __('Student email', 'edusystem'),
-            'partner_name' => __('Partner', 'edusystem'),
-            'partner_email' => __('Partner email', 'edusystem'),
+            'partner_name' => __('Parent', 'edusystem'),
+            'partner_email' => __('Parent email', 'edusystem'),
             'date' => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );

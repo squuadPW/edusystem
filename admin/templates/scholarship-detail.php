@@ -55,10 +55,10 @@
                                 if ($age < 18) {
                                     ?>
                                     <tr>
-                                        <th scope="row"><label for="input_id"><?= __('Partner','edusystem').':'; ?></label></th>
+                                        <th scope="row"><label for="input_id"><?= __('Parent','edusystem').':'; ?></label></th>
                                         <td><?= $partner->name . ' ' . $partner->middle_name . ' ' . $partner->last_name . ' ' . $partner->middle_last_name ?></td>
 
-                                        <th scope="row"><label for="input_id"><?= __('Partner contact','edusystem').':'; ?></label></th>
+                                        <th scope="row"><label for="input_id"><?= __('Parent contact','edusystem').':'; ?></label></th>
                                         <td><?= $partner->email . ' - ' . $partner->phone ?></td>
                                     </tr>
                                     <?php

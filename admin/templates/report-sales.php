@@ -157,7 +157,7 @@
             </tbody>
         </table>
 
-        <h2 style="margin-top: 18px"><?= __('List of orders', 'edusystem'); ?></h2>
+        <h2 style="margin-top: 18px"><?= __('List of payments', 'edusystem'); ?></h2>
         <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
             <thead>
                 <tr>

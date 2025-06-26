@@ -187,7 +187,7 @@ class TT_Pending_Requests_List_Table extends WP_List_Table
 
         $columns = array(
             'type' => __('Request', 'edusystem'),
-            'partner' => __('Partner', 'edusystem'),
+            'partner' => __('Parent', 'edusystem'),
             'student' => __('Student', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
@@ -334,7 +334,7 @@ class TT_All_Requests_List_Table extends WP_List_Table
 
         $columns = array(
             'type' => __('Request', 'edusystem'),
-            'partner' => __('Partner', 'edusystem'),
+            'partner' => __('Parent', 'edusystem'),
             'student' => __('Student', 'edusystem'),
             'status' => __('Status', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
