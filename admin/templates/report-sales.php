@@ -27,7 +27,7 @@
                     class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
             <?php endif; ?>
     </div>
-    <div id="summary_loading" style="padding: 10px">
+    <div id="summary_loading">
         <div id="loading" style="text-align: center !important">
             <span class='spinner is-active' style='float:none;'></span>
         </div>
