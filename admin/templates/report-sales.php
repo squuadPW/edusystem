@@ -27,87 +27,154 @@
                     class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
             <?php endif; ?>
     </div>
-    <div class="grid-container-report">
-        <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
-            <div>Total orders</div>
-            <div style="margin-top: 10px"><strong id="orders"></strong></div>
-        </div>
-    </div>
-    <div class="grid-container-report-4">
-        <div style="background-color: #d6ecfb; display: none" class="card-report-sales tooltip"
-            title="Gross sales of orders">
-            <div>Gross sales of orders</div>
-            <div style="margin-top: 10px"><strong id="gross"></strong></div>
-        </div>
-        <div style="background-color: #59e58291;" class="card-report-sales tooltip" title="Gross sales of orders">
-            <div>Discount</div>
-            <div style="margin-top: 10px"><strong id="discount"></strong></div>
-        </div>
-        <div style="background-color: #d10c0c42;" class="card-report-sales tooltip" title="Gross sales of orders">
-            <div>Adjusted gross</div>
-            <div style="margin-top: 10px"><strong id="adjusted_gross"></strong></div>
-        </div>
-        <div style="background-color: #ffe0e6;" class="card-report-sales tooltip"
-            title="The subtraction of the institution fee, alliance fee, payment fee, system fee and the order tax is applied">
-            <div>Net Sale</div>
-            <div style="margin-top: 10px"><strong id="net"></strong></div>
-        </div>
-        <div style="background-color: #fff7d4;" class="card-report-sales tooltip" title="Total fees for alliances">
-            <div>Alliances fee</div>
-            <div style="margin-top: 10px"><strong id="a_fee"></strong></div>
-        </div>
-        <div style="background-color: #fff7d4;" class="card-report-sales tooltip" title="Total fees for institutes">
-            <div>Institutes fee</div>
-            <div style="margin-top: 10px"><strong id="i_fee"></strong></div>
-        </div>
-        <div style="background-color: #fff7d4;" class="card-report-sales tooltip" title="Total fees for payments">
-            <div>Payments fee</div>
-            <div style="margin-top: 10px"><strong id="p_fees"></strong></div>
-        </div>
-        <div style="background-color: #fff7d4;" class="card-report-sales tooltip"
-            title="Total fees for system (Edusof)">
-            <div>Edusof fee</div>
-            <div style="margin-top: 10px"><strong id="e_fees"></strong></div>
-        </div>
-        <div style="background-color: #c791c7;" class="card-report-sales tooltip" title="Total taxes of all orders">
-            <div>Tax total </div>
-            <div style="margin-top: 10px"><strong id="tax"></strong></div>
-        </div>
-        <div style="background-color: #c5f3c5;" class="card-report-sales tooltip"
-            title="All upcoming accounts receivable (pending quotes)">
-            <div>Accounts receivable </div>
-            <div style="margin-top: 10px"><strong id="receivable"></strong></div>
-        </div>
-    </div>
-    <div style="text-align: center !important;">
-        <span
-            style="border-bottom: 1px solid gray; width: 100% !important; font-weight: 600; padding: 10px; margin: 10px; font-size: 18px;">Payment
-            methods used by users</span>
-        <div id="card-totals-sales" class="grid-container-report-4"></div>
-    </div>
-    <div style="background-color: #ffffff; padding: 18px; border-radius: 10px; margin: 20px 0px;">
+    <div id="summary_loading" style="padding: 10px">
         <div id="loading" style="text-align: center !important">
             <span class='spinner is-active' style='float:none;'></span>
         </div>
-        <canvas id="myChart"></canvas>
     </div>
+    <div id="summary_content" style="display: none">
+        <div class="grid-container-report">
+            <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
+                <div>Total orders</div>
+                <div style="margin-top: 10px"><strong id="orders"></strong></div>
+            </div>
+        </div>
+        <div class="grid-container-report-4">
+            <div style="background-color: #d6ecfb; display: none" class="card-report-sales tooltip"
+                title="Gross sales of orders">
+                <div>Gross sales of orders</div>
+                <div style="margin-top: 10px"><strong id="gross"></strong></div>
+            </div>
+            <!-- <div style="background-color: #59e58291;" class="card-report-sales tooltip" title="Gross sales of orders">
+            <div>Discount</div>
+            <div style="margin-top: 10px"><strong id="discount"></strong></div>
+        </div> -->
+            <!-- <div style="background-color: #d10c0c42;" class="card-report-sales tooltip" title="Gross sales of orders">
+            <div>Adjusted gross</div>
+            <div style="margin-top: 10px"><strong id="adjusted_gross"></strong></div>
+        </div> -->
+            <!-- <div style="background-color: #ffe0e6;" class="card-report-sales tooltip"
+            title="The subtraction of the institution fee, alliance fee, payment fee, system fee and the order tax is applied">
+            <div>Net Sale</div>
+            <div style="margin-top: 10px"><strong id="net"></strong></div>
+        </div> -->
+            <!-- <div style="background-color: #fff7d4;" class="card-report-sales tooltip" title="Total fees for alliances">
+            <div>Alliances fee</div>
+            <div style="margin-top: 10px"><strong id="a_fee"></strong></div>
+        </div> -->
+            <!-- <div style="background-color: #fff7d4;" class="card-report-sales tooltip" title="Total fees for institutes">
+            <div>Institutes fee</div>
+            <div style="margin-top: 10px"><strong id="i_fee"></strong></div>
+        </div> -->
+            <!-- <div style="background-color: #fff7d4;" class="card-report-sales tooltip" title="Total fees for payments">
+            <div>Payments fee</div>
+            <div style="margin-top: 10px"><strong id="p_fees"></strong></div>
+        </div> -->
+            <!-- <div style="background-color: #fff7d4;" class="card-report-sales tooltip"
+            title="Total fees for system (Edusof)">
+            <div>Edusof fee</div>
+            <div style="margin-top: 10px"><strong id="e_fees"></strong></div>
+        </div> -->
+            <!-- <div style="background-color: #c791c7;" class="card-report-sales tooltip" title="Total taxes of all orders">
+            <div>Tax total </div>
+            <div style="margin-top: 10px"><strong id="tax"></strong></div>
+        </div> -->
+            <!-- <div style="background-color: #c5f3c5;" class="card-report-sales tooltip"
+            title="All upcoming accounts receivable (pending quotes)">
+            <div>Accounts receivable </div>
+            <div style="margin-top: 10px"><strong id="receivable"></strong></div>
+        </div> -->
+        </div>
+        <div style="text-align: center !important; display: none">
+            <span
+                style="border-bottom: 1px solid gray; width: 100% !important; font-weight: 600; padding: 10px; margin: 10px; font-size: 18px;">Payment
+                methods used by users</span>
+            <div id="card-totals-sales" class="grid-container-report-4"></div>
+        </div>
+        <div style="background-color: #ffffff; padding: 18px; border-radius: 10px; margin: 20px 0px;">
+            <canvas id="myChart"></canvas>
+        </div>
 
-    <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
-        <thead>
-            <tr>
-                <th scope="col" class=" manage-column column-primary"><?= __('Payment ID', 'edusystem'); ?>
-                </th>
-                <th scope="col" class=" manage-column column-email"><?= __('Parent', 'edusystem'); ?></th>
-                <th scope="col" class=" manage-column column-email"><?= __('Student', 'edusystem'); ?></th>
-                <th scope="col" class=" manage-column column-email"><?= __('Total', 'edusystem'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Created', 'edusystem'); ?></th>
-                <th scope="col" class=" manage-column column"><?= __('Actions', 'edusystem'); ?></th>
-            </tr>
-        </thead>
-        <tbody id="table-institutes-payment">
+        <h2 style="margin-top: 18px"><?= __('Revenues', 'edusystem'); ?></h2>
+        <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+            <thead>
+                <tr>
+                    <th scope="col" class=" manage-column column-primary"><?= __('Motive', 'edusystem'); ?></th>
+                    <th scope="col" class=" manage-column column-amount"><?= __('Amount', 'edusystem'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="tooltip" title="Gross sales of orders">
+                    <td>Adjusted gross</td>
+                    <td id="adjusted_gross"></td>
+                </tr>
+                <tr class="tooltip"
+                    title="The subtraction of the institution fee, alliance fee, payment fee, system fee and the order tax is applied">
+                    <td>Net sale</td>
+                    <td id="net">
+                    </td>
+                </tr>
+                <tr class="tooltip" title="All upcoming accounts receivable (pending quotes)">
+                    <td>Accounts receivable</td>
+                    <td id="receivable"></td>
+                </tr>
+            </tbody>
+        </table>
 
-        </tbody>
-    </table>
+        <h2 style="margin-top: 18px"><?= __('Expenses', 'edusystem'); ?></h2>
+        <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+            <thead>
+                <tr>
+                    <th scope="col" class=" manage-column column-primary"><?= __('Motive', 'edusystem'); ?></th>
+                    <th scope="col" class=" manage-column column-amount"><?= __('Amount', 'edusystem'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="tooltip" title="Gross sales of orders">
+                    <td>Discount</td>
+                    <td id="discount"></td>
+                </tr>
+                <tr class="tooltip" title="Total fees for alliances">
+                    <td>Alliances fee</td>
+                    <td id="a_fee"></td>
+                </tr>
+                <tr class="tooltip" title="Total fees for institutes">
+                    <td>Institutes fee</td>
+                    <td id="i_fee"></td>
+                </tr>
+                <tr class="tooltip" title="Total fees for payments">
+                    <td>Payments fee</td>
+                    <td id="p_fees"></td>
+                </tr>
+                <tr class="tooltip" title="Total fees for system (Edusof)">
+                    <td>EduSof fees</td>
+                    <td id="e_fees"></td>
+                </tr>
+                <tr class="tooltip" title="Total taxes of all orders">
+                    <td>Tax total</td>
+                    <td id="tax"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 style="margin-top: 18px"><?= __('List of orders', 'edusystem'); ?></h2>
+        <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+            <thead>
+                <tr>
+                    <th scope="col" class=" manage-column column-primary"><?= __('Payment ID', 'edusystem'); ?>
+                    </th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Parent', 'edusystem'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Student', 'edusystem'); ?></th>
+                    <th scope="col" class=" manage-column column-email"><?= __('Total', 'edusystem'); ?></th>
+                    <th scope="col" class=" manage-column column"><?= __('Created', 'edusystem'); ?></th>
+                    <th scope="col" class=" manage-column column"><?= __('Actions', 'edusystem'); ?></th>
+                </tr>
+            </thead>
+            <tbody id="table-institutes-payment">
+
+            </tbody>
+        </table>
+    </div>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {

@@ -24,17 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let filter = document.getElementById("typeFilter").value;
     let custom = document.getElementById("inputStartDate").value;
 
-    let htmlLoading = "";
-
-    htmlLoading += "<tr>";
-    htmlLoading +=
-      "<td class='column-primary id column-id' colspan='6' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
-    htmlLoading += "</tr>";
-
-    document.getElementById("loading").style = "display: block";
-    document.getElementById("loading").style = "text-align: center";
-    document.getElementById("myChart").innerHTML = "";
-    document.getElementById("table-institutes-payment").innerHTML = htmlLoading;
+    document.getElementById("summary_loading").style = 'display: block';
+    document.getElementById("summary_content").style = 'display: none';
 
     const XHR = new XMLHttpRequest();
     XHR.open("POST", list_orders_sales.url, true);
@@ -116,7 +107,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
           }
 
-          document.getElementById("loading").style = "display: none";
+            document.getElementById("summary_loading").style = 'display: none';
+            document.getElementById("summary_content").style = 'display: block';
         }
       }
     };
