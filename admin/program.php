@@ -31,13 +31,12 @@ function add_admin_form_program_content()
             $name = strtoupper(sanitize_text_field($_POST['name']));
             $description = strtoupper(sanitize_text_field($_POST['description']));
             $total_price = floatval( sanitize_text_field($_POST['total_price']) );
-            $is_active = $_POST['is_active'] == 'on' ? true : false;
+            $is_active = $_POST['is_active'] ? true : false;
             $subprograms_post = $_POST['subprogram'] ?? '';
 
             $subprograms = [];// array para guardas los subprogramas
 
             //crea o actualiza el producto
-
             if ( !empty($program_id) ) {
 
                 wp_update_post( array(
@@ -51,7 +50,7 @@ function add_admin_form_program_content()
                 update_post_meta( $program_product_id, '_price', $total_price );
 
                 // guarda el stock en caso de que este activo o no
-                update_post_meta($product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
+                update_post_meta($program_product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
 
             } else {
 
@@ -71,7 +70,7 @@ function add_admin_form_program_content()
                     update_post_meta( $program_product_id, '_price', $total_price );
 
                     // guarda el stock en caso de que este activo o no
-                    update_post_meta($product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
+                    update_post_meta($program_product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
                 }
             }
 
@@ -195,7 +194,7 @@ function add_admin_form_program_content()
             }
             
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
-            wp_redirect(admin_url('admin.php?page=add_admin_form_program_content'));
+            wp_redirect( $_SERVER['HTTP_REFERER'] );
             exit;
 
         } else if ($_GET['action'] == 'save_quotas_rules') {
@@ -243,7 +242,7 @@ function add_admin_form_program_content()
                 }
 
                 setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
-                wp_redirect(admin_url("admin.php?page=add_admin_form_program_content&section_tab=program_details&program_id=$program_id"));
+                wp_redirect( $_SERVER['HTTP_REFERER'] );
 
             } else {
                 setcookie('message-error', __('Identifier not found', 'edusystem'), time() + 10, '/');
@@ -253,9 +252,63 @@ function add_admin_form_program_content()
             exit;
 
         } else if ($_GET['action'] == 'delete_quota_rule') {
-           
 
-            echo "paso";
+            global $wpdb;
+            $table_quota_rules = $wpdb->prefix . 'quota_rules';
+           
+            $rule_id = $_POST['quota_rule_id'];
+
+            $deleted = $wpdb->delete(
+                $table_quota_rules,
+                ['id' => $rule_id], 
+                ['%d'] 
+            );
+
+            if( $deleted ) {
+                setcookie('message', __('The quota rule has been deleted successfully.', 'edusystem'), time() + 10, '/');
+            } else {
+                setcookie('message-error', __('The quota rule has not been deleted correctly.', 'edusystem'), time() + 10, '/');
+            }
+
+            wp_redirect($_SERVER['HTTP_REFERER']);
+            exit;
+
+        } else if ($_GET['action'] == 'delete_subprogram') {
+
+            $subprogram_id = $_POST['subprogram_id'];
+
+            global $wpdb;
+            $table_quota_rules = $wpdb->prefix . 'quota_rules';
+            $table_students = $wpdb->prefix . 'students';
+
+            // Verificar si hay registros en table_y que coincidan con x_id
+            $exists = $wpdb->get_var( $wpdb->prepare(
+                "SELECT COUNT(*) FROM $table_students WHERE program_id LIKE %s",
+                $subprogram_id
+            ));
+
+            // Si no hay registros en table_y, proceder a eliminar
+            if ( $exists == 0 ) {
+
+                $separacion = strpos($subprogram_id, '_');
+                if ( $posicion !== false) {
+                    $program_id = substr($subprogram_id, 0, $separacion);
+                    $subprogram_indice = substr($subprogram_id, $separacion + 1);
+                }
+
+                echo $program_id . ' ' . $subprogram_indice;
+
+            }
+
+            /* if( $deleted ) {
+                setcookie('message', __('The applet has been successfully removed.', 'edusystem'), time() + 10, '/');
+            } else {
+                setcookie('message-error', __('The applet could not be removed successfully.', 'edusystem'), time() + 10, '/');
+            }
+
+            wp_redirect($_SERVER['HTTP_REFERER']);
+            exit;
+            */
 
         } else {
             $list_program = new TT_All_Program_List_Table;

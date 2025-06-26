@@ -106,8 +106,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    
+    document.querySelectorAll('.modal-close').forEach((close) => {
+        close.addEventListener('click',(e) => {
+
+            modal_delete_quota_rule = document.getElementById('modalDeleteQuotaRule');
+            if( modal_delete_quota_rule ){
+                modal_delete_quota_rule.style.display = "none";
+            }
+
+            modal_delete_subprogram = document.getElementById('modalDeleteSubprogram');
+            if( modal_delete_subprogram ){
+                modal_delete_subprogram.style.display = "none";
+            }
+
+        });
+    });
+
 });
+
+function modal_delete_quota_rule_js ( button ) {
+
+    let modal_delete_quota_rule = document.getElementById( 'modalDeleteQuotaRule' );
+    if( modal_delete_quota_rule ) {
+        id = button.getAttribute('data-rule_id');
+        modal_delete_quota_rule.querySelector('#delete_quota_rule_input').value = id;
+        modal_delete_quota_rule.style.display = "block";
+    }
+}
+
+function modal_delete_subprogram_js ( button ) {
+
+    let modal_delete_quota_rule = document.getElementById( 'modalDeleteSubprogram' );
+    if( modal_delete_quota_rule ) {
+        id = button.getAttribute('data-subprogram_id');
+        modal_delete_quota_rule.querySelector('#delete_subprogram_input').value = id;
+        modal_delete_quota_rule.style.display = "block";
+    }
+}
 
 /**
 * Valida un input según una expresión regular

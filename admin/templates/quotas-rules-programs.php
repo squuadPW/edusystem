@@ -95,10 +95,10 @@
                                                         <input type="number" name="rules[<?= $i ?>][price]" value="<?= $rule['quote_price'] ?? 0.00 ?>" oninput="validate_input(this, '^[0-9]*$')" required>
                                                     </div>
 
-                                                    <div class="container-button" >
-                                                        <button type="button" class="button button-secondary remove-rule-button "><?= __('Delete', 'edusystem'); ?></button>
-                                                    </div>
+                                                </div>
 
+                                                <div class="container-button" >
+                                                    <button type="button" data-rule_id="<?= $rule['id'] ?>" class="button button-secondary " onclick="modal_delete_quota_rule_js( this )" ><?= __('Delete', 'edusystem'); ?></button>
                                                 </div>
 
                                             </div>
@@ -165,7 +165,7 @@
 
                                 </div>
 
-                                <div class="container-button" >
+                                <div >
                                     <button id="add-rule-button" type="button" class="button button-secondary" >
                                         <?=__('Add quota rule', 'edusystem')?>
                                     </button>

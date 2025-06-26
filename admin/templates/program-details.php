@@ -137,7 +137,7 @@
                                                 </div>
 
                                                 <div class="container-button" >
-                                                    <button type="button" class="button button-secodary" ><?=__('Delete', 'edusystem')?></button>
+                                                    <button type="button" class="button button-secodary" data-subprogram_id="<?= "{$program->identificator}_{$subprogram_id}" ?>" onclick="modal_delete_subprogram_js(this)" ><?=__('Delete', 'edusystem')?></button>
 
                                                     <?php if( $program ): ?>
                                                         <a href="<?= admin_url("/admin.php?page=add_admin_form_program_content&section_tab=quotas_rules_programs&program_id=$program->id&identificator={$program->identificator}_{$subprogram_id}" ) ?>" class="button button-primary" >
@@ -216,3 +216,7 @@
         </div>
     </div>
 </div>
+
+<?php include(plugin_dir_path(__FILE__).'modal-delete-subprogram.php'); ?>
+
+
