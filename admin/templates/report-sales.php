@@ -1,4 +1,32 @@
 <div class="wrap">
+    <div style="width:100%;text-align:center;padding-top:10px;">
+        <?php if (wp_is_mobile()) { ?>
+            <select id="typeFilter" name="typeFilter" autocomplete="off" style="min-width:100%;margin-bottom:5px;">
+            <?php } else { ?>
+                <select id="typeFilter" name="typeFilter" autocomplete="off">
+                <?php } ?>
+                <option value="today"><?= __('Today', 'edusystem'); ?></option>
+                <option value="yesterday"><?= __('yesterday', 'edusystem'); ?></option>
+                <option value="this-week"><?= __('This week', 'edusystem'); ?></option>
+                <option value="last-week"><?= __('Last week', 'edusystem'); ?></option>
+                <option value="this-month" selected><?= __('This month', 'edusystem'); ?></option>
+                <option value="last-month"><?= __('Last month', 'edusystem'); ?></option>
+                <option value="custom"><?= __('Custom', 'edusystem'); ?></option>
+            </select>
+            <?php if (wp_is_mobile()) { ?>
+                <input type="text" value="<?= $start_date; ?>" id="inputStartDate"
+                    style="display:none;width:100%;margin-bottom:5px;">
+            <?php } else { ?>
+                <input type="text" value="<?= $start_date; ?>" id="inputStartDate" style="display:none;width:200px;">
+            <?php } ?>
+            <?php if (wp_is_mobile()): ?>
+                <button type="button" id="update_data" class="button button-primary"
+                    style="width:100%;"></span><?= __('Update data', 'edusystem'); ?></button>
+            <?php else: ?>
+                <button type="button" id="update_data"
+                    class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
+            <?php endif; ?>
+    </div>
     <div class="grid-container-report">
         <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
             <div>Total orders</div>
@@ -6,7 +34,8 @@
         </div>
     </div>
     <div class="grid-container-report-4">
-        <div style="background-color: #d6ecfb;" class="card-report-sales tooltip" title="Gross sales of orders">
+        <div style="background-color: #d6ecfb; display: none" class="card-report-sales tooltip"
+            title="Gross sales of orders">
             <div>Gross sales of orders</div>
             <div style="margin-top: 10px"><strong id="gross"></strong></div>
         </div>
@@ -51,39 +80,11 @@
         </div>
     </div>
     <div style="text-align: center !important;">
-        <span style="border-bottom: 1px solid gray; width: 100% !important; font-weight: 600; padding: 10px; margin: 10px; font-size: 18px;">Payment methods used by users</span>
+        <span
+            style="border-bottom: 1px solid gray; width: 100% !important; font-weight: 600; padding: 10px; margin: 10px; font-size: 18px;">Payment
+            methods used by users</span>
         <div id="card-totals-sales" class="grid-container-report-4"></div>
     </div>
-    <div style="width:100%;text-align:center;padding-top:10px;">
-
-        <?php if (wp_is_mobile()) { ?>
-            <select id="typeFilter" name="typeFilter" autocomplete="off" style="min-width:100%;margin-bottom:5px;">
-            <?php } else { ?>
-                <select id="typeFilter" name="typeFilter" autocomplete="off">
-                <?php } ?>
-                <option value="today"><?= __('Today', 'edusystem'); ?></option>
-                <option value="yesterday"><?= __('yesterday', 'edusystem'); ?></option>
-                <option value="this-week"><?= __('This week', 'edusystem'); ?></option>
-                <option value="last-week"><?= __('Last week', 'edusystem'); ?></option>
-                <option value="this-month" selected><?= __('This month', 'edusystem'); ?></option>
-                <option value="last-month"><?= __('Last month', 'edusystem'); ?></option>
-                <option value="custom"><?= __('Custom', 'edusystem'); ?></option>
-            </select>
-            <?php if (wp_is_mobile()) { ?>
-                <input type="text" value="<?= $start_date; ?>" id="inputStartDate"
-                    style="display:none;width:100%;margin-bottom:5px;">
-            <?php } else { ?>
-                <input type="text" value="<?= $start_date; ?>" id="inputStartDate" style="display:none;width:200px;">
-            <?php } ?>
-            <?php if (wp_is_mobile()): ?>
-                <button type="button" id="update_data" class="button button-primary"
-                    style="width:100%;"></span><?= __('Update data', 'edusystem'); ?></button>
-            <?php else: ?>
-                <button type="button" id="update_data"
-                    class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
-            <?php endif; ?>
-    </div>
-
     <div style="background-color: #ffffff; padding: 18px; border-radius: 10px; margin: 20px 0px;">
         <div id="loading" style="text-align: center !important">
             <span class='spinner is-active' style='float:none;'></span>
