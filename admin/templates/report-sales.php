@@ -104,19 +104,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="tooltip" title="Gross sales of orders">
+                <tr>
                     <td>Adjusted gross</td>
-                    <td id="adjusted_gross"></td>
+                    <td id="adjusted_gross" class="tooltip" title="Gross sales of orders"></td>
                 </tr>
-                <tr class="tooltip"
-                    title="The subtraction of the institution fee, alliance fee, payment fee, system fee and the order tax is applied">
+                <tr>
                     <td>Net sale</td>
-                    <td id="net">
+                    <td id="net" class="tooltip"
+                        title="The subtraction of the institution fee, alliance fee, payment fee, system fee and the order tax is applied">
                     </td>
                 </tr>
-                <tr class="tooltip" title="All upcoming accounts receivable (pending quotes)">
+                <tr>
                     <td>Accounts receivable</td>
-                    <td id="receivable"></td>
+                    <td id="receivable" class="tooltip" title="All upcoming accounts receivable (pending quotes)"></td>
                 </tr>
             </tbody>
         </table>
@@ -130,29 +130,29 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="tooltip" title="Gross sales of orders">
+                <tr>
                     <td>Discount</td>
-                    <td id="discount"></td>
+                    <td id="discount" class="tooltip" title="Gross sales of orders"></td>
                 </tr>
-                <tr class="tooltip" title="Total fees for alliances">
+                <tr>
                     <td>Alliances fee</td>
-                    <td id="a_fee"></td>
+                    <td id="a_fee" class="tooltip" title="Total fees for alliances"></td>
                 </tr>
-                <tr class="tooltip" title="Total fees for institutes">
+                <tr>
                     <td>Institutes fee</td>
-                    <td id="i_fee"></td>
+                    <td id="i_fee" class="tooltip" title="Total fees for institutes"></td>
                 </tr>
-                <tr class="tooltip" title="Total fees for payments">
+                <tr>
                     <td>Payments fee</td>
-                    <td id="p_fees"></td>
+                    <td id="p_fees" class="tooltip" title="Total fees for payments"></td>
                 </tr>
-                <tr class="tooltip" title="Total fees for system (Edusof)">
+                <tr>
                     <td>EduSof fees</td>
-                    <td id="e_fees"></td>
+                    <td id="e_fees" class="tooltip" title="Total fees for system (Edusof)"></td>
                 </tr>
-                <tr class="tooltip" title="Total taxes of all orders">
+                <tr>
                     <td>Tax total</td>
-                    <td id="tax"></td>
+                    <td id="tax" class="tooltip" title="Total taxes of all orders"></td>
                 </tr>
             </tbody>
         </table>
