@@ -839,6 +839,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
         $variation_id = $item->get_variation_id(); // Get the variation ID
         $is_variable = $item->get_product()->is_type('variation');
         $price = $item->get_product()->get_price($variation_id); // Get the price of the selected variation
+        $original_price = $price;
         $discount = wc_get_order_item_meta($item->get_id(), '_line_subtotal') - wc_get_order_item_meta($item->get_id(), '_line_total');
         $price -= $discount;
         $exist = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = {$product_id} and order_id = {$order_id}");
@@ -884,6 +885,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                     'variation_id' => $variation_id,
                     'amount' => $price,
                     'total_amount' => ($price * $cuotes),
+                    'original_price' => $original_price,
                     'type_payment' => $cuotes > 1 ? 1 : 2,
                     'cuote' => ($i + 1),
                     'num_cuotes' => $cuotes,
