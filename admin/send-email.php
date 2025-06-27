@@ -126,10 +126,9 @@ function get_students_by_period($academic_period, $cut, $filter, $graduating_stu
         $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
         // Obtiene los IDs de estudiantes según el período y corte en la otra tabla.
         $cut_student_ids = $wpdb->get_col($wpdb->prepare(
-            "SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s AND status_ud <> %d",
+            "SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s",
             $academic_period,
-            $cut,
-            5
+            $cut
         ));
         
         if (empty($cut_student_ids)) {
