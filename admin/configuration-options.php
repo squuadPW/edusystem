@@ -51,7 +51,7 @@ function add_admin_form_configuration_options_content()
             try {
                 // Recuperar y sanitizar los valores de los campos de texto
                 $offer_complete = sanitize_text_field($_POST['offer_complete'] ?? get_option('offer_complete'));
-                $offer_quote    = sanitize_text_field($_POST['offer_quote'] ?? get_option('offer_quote'));
+                $offer_quote = sanitize_text_field($_POST['offer_quote'] ?? get_option('offer_quote'));
                 update_option('offer_complete', $offer_complete);
                 update_option('offer_quote', $offer_quote);
 
@@ -73,7 +73,7 @@ function add_admin_form_configuration_options_content()
                     foreach ($coupons as $coupon_code) {
                         if (!empty($coupon_code)) {
                             $coupon = new WC_Coupon($coupon_code);
-                            if ($coupon->get_id()) { 
+                            if ($coupon->get_id()) {
                                 $coupon->set_date_expires($expiration_timestamp);
                                 $coupon->save();
                             }

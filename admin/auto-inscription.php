@@ -7,7 +7,7 @@ function add_admin_form_auto_inscription_content()
         $table_students = $wpdb->prefix . 'students';
         $academic_period = $_POST['academic_period'];
         $cut = $_POST['academic_period_cut'];
-        
+
         $students_enrolled = '';
         $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE academic_period = '{$academic_period}' AND initial_cut = '$cut'");
         $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', $cut_student_ids) . ")");
@@ -33,7 +33,7 @@ function load_auto_enroll_students_callback()
     $table_students = $wpdb->prefix . 'students';
     $academic_period = $_POST['academic_period'];
     $cut = $_POST['academic_period_cut'];
-    
+
     $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE academic_period = '{$academic_period}' AND initial_cut = '$cut'");
     $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', $cut_student_ids) . ")");
     foreach ($students as $key => $student) {

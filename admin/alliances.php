@@ -1,31 +1,32 @@
-<?php 
+<?php
 
-function add_admin_partners_content(){
+function add_admin_partners_content()
+{
 
-    if(isset($_GET['action']) && !empty($_GET['action'])){
+    if (isset($_GET['action']) && !empty($_GET['action'])) {
 
-        if($_GET['action'] == 'change_status_alliance'){
+        if ($_GET['action'] == 'change_status_alliance') {
 
             global $wpdb;
-            $table_alliances =  $wpdb->prefix.'alliances';
+            $table_alliances = $wpdb->prefix . 'alliances';
 
             $status_id = $_POST['status_id'];
             $alliance_id = $_POST['status_alliance_id'];
 
-            $wpdb->update($table_alliances,[
+            $wpdb->update($table_alliances, [
                 'status' => $status_id,
                 'updated_at' => date('Y-m-d H:i:s')
-            ],[
+            ], [
                 'id' => $alliance_id
             ]);
 
-            if($status_id == 1){
+            if ($status_id == 1) {
                 $email_approved_alliance = WC()->mailer()->get_emails()['WC_Approved_Partner_Email'];
                 $email_approved_alliance->trigger($alliance_id);
 
                 $alliance = $wpdb->get_row("SELECT * FROM {$table_alliances} WHERE id={$alliance_id}");
                 create_user_alliance($alliance);
-            }else if($status_id == 2){
+            } else if ($status_id == 2) {
                 $email_approved_alliance = WC()->mailer()->get_emails()['WC_Rejected_Partner_Email'];
                 $email_approved_alliance->trigger($alliance_id);
             }
@@ -33,10 +34,10 @@ function add_admin_partners_content(){
             wp_redirect(admin_url('admin.php?page=add_admin_partners_content'));
             exit;
 
-        }else if($_GET['action'] == 'save_setting_alliance'){
+        } else if ($_GET['action'] == 'save_setting_alliance') {
 
             global $wpdb;
-            $table_alliances =  $wpdb->prefix.'alliances';
+            $table_alliances = $wpdb->prefix . 'alliances';
             $alliance_id = $_POST['alliance_id'];
 
             $name = $_POST['name'];
@@ -51,11 +52,11 @@ function add_admin_partners_content(){
             $city = $_POST['city'];
             $address = $_POST['address'];
             $description = $_POST['description'];
-            $fee = str_replace('%','',$_POST['fee']);
+            $fee = str_replace('%', '', $_POST['fee']);
 
-            if(isset($_POST['alliance_id']) && !empty($_POST['alliance_id'])){
+            if (isset($_POST['alliance_id']) && !empty($_POST['alliance_id'])) {
 
-                $wpdb->update($table_alliances,[
+                $wpdb->update($table_alliances, [
                     'code' => $code,
                     'type' => $type,
                     'name' => $name,
@@ -70,21 +71,21 @@ function add_admin_partners_content(){
                     'description' => $description,
                     'fee' => $fee,
                     'updated_at' => date('Y-m-d H:i:s')
-                ],[
+                ], [
                     'id' => $alliance_id
                 ]);
 
-                setcookie('message',__('Changes saved successfully.','edusystem'),time() + 3600,'/');
-                wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id='.$alliance_id.'&message='.__('Changes saved successfully','edusystem')));
+                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 3600, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id=' . $alliance_id . '&message=' . __('Changes saved successfully', 'edusystem')));
                 exit;
 
-            }else{
+            } else {
 
-                $user = get_user_by('email',$email);
+                $user = get_user_by('email', $email);
 
-                if(!$user){
+                if (!$user) {
 
-                    $wpdb->insert($table_alliances,[
+                    $wpdb->insert($table_alliances, [
                         'code' => $code,
                         'type' => $type,
                         'name' => $name,
@@ -108,44 +109,44 @@ function add_admin_partners_content(){
 
                     $email_approved_alliance = WC()->mailer()->get_emails()['WC_Approved_Partner_Email'];
                     $email_approved_alliance->trigger($alliance_id);
-                    setcookie('message',$name.' '.$last_name,time() + 3600,'/');
+                    setcookie('message', $name . ' ' . $last_name, time() + 3600, '/');
                     wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=all_alliances'));
                     exit;
 
-                }else{
-                    setcookie('message-error',__( 'Existing email, please enter another email', 'edusystem' ),time() + 3600,'/');
-                    wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=add_alliance','edusystem'));
+                } else {
+                    setcookie('message-error', __('Existing email, please enter another email', 'edusystem'), time() + 3600, '/');
+                    wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=add_alliance', 'edusystem'));
                     exit;
                 }
             }
 
             exit;
 
-        }else if($_GET['action'] == 'delete_alliance'){
+        } else if ($_GET['action'] == 'delete_alliance') {
 
             global $wpdb;
-            $table_alliances =  $wpdb->prefix.'alliances';
+            $table_alliances = $wpdb->prefix . 'alliances';
             $delete_alliance = $_POST['delete_alliance_id'];
 
             $data_alliance = $wpdb->get_row("SELECT * FROM {$table_alliances} WHERE id={$delete_alliance}");
 
-            $wpdb->delete($table_alliances,['id' => $delete_alliance]);
-            setcookie('message-delete',$data_alliance->name.' '.$data_alliance->last_name,time() + 3600,'/');
+            $wpdb->delete($table_alliances, ['id' => $delete_alliance]);
+            setcookie('message-delete', $data_alliance->name . ' ' . $data_alliance->last_name, time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=all_alliances'));
             exit;
         }
     }
 
-    if(isset($_GET['section_tab']) && !empty($_GET['section_tab'])){
+    if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
 
-        if($_GET['section_tab'] == 'all_alliances'){
+        if ($_GET['section_tab'] == 'all_alliances') {
 
             $list_alliances = new TT_alliances_List_Table;
             $list_alliances->prepare_items();
-            include(plugin_dir_path(__FILE__).'templates/list-alliances.php');
+            include(plugin_dir_path(__FILE__) . 'templates/list-alliances.php');
 
-        }else if($_GET['section_tab'] == 'alliance_details'){
-          
+        } else if ($_GET['section_tab'] == 'alliance_details') {
+
             $alliance_id = $_GET['alliance_id'];
             $alliance = get_alliance_detail($alliance_id);
 
@@ -153,83 +154,88 @@ function add_admin_partners_content(){
             $list_alliances->prepare_items();
             $countries = get_countries();
             $institutes = get_institutes_from_alliance($alliance_id);
-            include(plugin_dir_path(__FILE__).'templates/alliance-details.php');
+            include(plugin_dir_path(__FILE__) . 'templates/alliance-details.php');
 
-        }else if($_GET['section_tab'] == 'add_alliance'){
+        } else if ($_GET['section_tab'] == 'add_alliance') {
 
             $countries = get_countries();
-            include(plugin_dir_path(__FILE__).'templates/alliance-details.php');
+            include(plugin_dir_path(__FILE__) . 'templates/alliance-details.php');
 
-        }else if($_GET['section_tab'] == 'fee_alliance'){
+        } else if ($_GET['section_tab'] == 'fee_alliance') {
 
             global $current_user;
             $roles = $current_user->roles;
 
             $alliance_id = $_GET['alliance_id'];
             $alliance = get_alliance_detail($alliance_id);
-            $date = get_dates_search('today','');
-            $start_date = date('m/d/Y',strtotime('today'));
-            $orders = get_order_alliance($date[0],$date[1]);
-            include(plugin_dir_path(__FILE__).'templates/list-payment-alliance.php');
+            $date = get_dates_search('today', '');
+            $start_date = date('m/d/Y', strtotime('today'));
+            $orders = get_order_alliance($date[0], $date[1]);
+            include(plugin_dir_path(__FILE__) . 'templates/list-payment-alliance.php');
 
-        }else if($_GET['section_tab'] == 'payment-detail'){
+        } else if ($_GET['section_tab'] == 'payment-detail') {
 
             global $current_user;
             $roles = $current_user->roles;
             $order_id = $_GET['payment_id'];
             $order = wc_get_order($order_id);
-            include(plugin_dir_path(__FILE__).'templates/payment-details.php');
+            include(plugin_dir_path(__FILE__) . 'templates/payment-details.php');
         }
 
-    }else{  
+    } else {
         $list_alliances = new TT_alliances_review_List_Table;
         $list_alliances->prepare_items();
-        include(plugin_dir_path(__FILE__).'templates/list-alliances.php');
+        include(plugin_dir_path(__FILE__) . 'templates/list-alliances.php');
     }
 }
 
-function get_alliance_detail($alliance_id){
+function get_alliance_detail($alliance_id)
+{
 
     global $wpdb;
-    $table_alliances =  $wpdb->prefix.'alliances';
+    $table_alliances = $wpdb->prefix . 'alliances';
 
     $data = $wpdb->get_row("SELECT * FROM {$table_alliances} WHERE id={$alliance_id}");
     return $data;
 }
 
-function get_alliance_detail_email($email){
+function get_alliance_detail_email($email)
+{
 
     global $wpdb;
-    $table_alliances =  $wpdb->prefix.'alliances';
+    $table_alliances = $wpdb->prefix . 'alliances';
 
     $data = $wpdb->get_row("SELECT * FROM {$table_alliances} WHERE email='{$email}'");
     return $data;
 }
 
-class TT_alliances_review_List_Table extends WP_List_Table{
+class TT_alliances_review_List_Table extends WP_List_Table
+{
 
-	function __construct(){
-        global $status, $page,$categories;
-         
-        parent::__construct( array(
-            'singular'  => 'institute_review',    
-            'plural'    => 'institute_reviews',
-            'ajax'      => true
-        ) );
-        
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(array(
+            'singular' => 'institute_review',
+            'plural' => 'institute_reviews',
+            'ajax' => true
+        ));
+
     }
 
-	function column_default($item, $column_name){
+    function column_default($item, $column_name)
+    {
 
         global $current_user;
 
-        switch($column_name){
+        switch ($column_name) {
             case 'full_name':
-                return ucwords($item['name']).' '.ucwords($item['last_name']);
+                return ucwords($item['name']) . ' ' . ucwords($item['last_name']);
             case 'phone':
             case 'email':
-            // case 'state':
-            // case 'city':
+                // case 'state':
+                // case 'city':
                 return $item[$column_name];
             case 'country':
                 $name = get_name_country($item[$column_name]);
@@ -238,129 +244,145 @@ class TT_alliances_review_List_Table extends WP_List_Table{
                 $name = $item['created_at'];
                 return $name;
             case 'name_rector':
-                return ucwords($item['name_rector']).' '.ucwords($item['lastname_rector']);
+                return ucwords($item['name_rector']) . ' ' . ucwords($item['lastname_rector']);
             case 'view_details':
-                return "<a href='".admin_url('/admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id='.$item['id'])."' class='button button-primary'><span class='dashicons dashicons-visibility'></span>".__('View','edusystem')."</a>";
-			default:
-				return print_r($item,true);
+                return "<a href='" . admin_url('/admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-visibility'></span>" . __('View', 'edusystem') . "</a>";
+            default:
+                return print_r($item, true);
         }
     }
 
-	function column_name($item){
+    function column_name($item)
+    {
 
-        return sprintf('%1$s',
+        return sprintf(
+            '%1$s',
             ucwords($item['name']),
         );
     }
 
-	function column_cb($item){
+    function column_cb($item)
+    {
         return '';
     }
 
-	function get_columns(){
+    function get_columns()
+    {
 
         $columns = array(
-            'full_name'     => __('Full name','edusystem'),
-            'phone'         => __('Phone','edusystem'),
-            'email'         => __('Email','edusystem'),
-            'country'       => __('Country','edusystem'),
+            'full_name' => __('Full name', 'edusystem'),
+            'phone' => __('Phone', 'edusystem'),
+            'email' => __('Email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
             // 'state'         => __('State','edusystem'),
             // 'city'          => __('City','edusystem'),
-            'created_at'       => __('Created at','edusystem'),
-            'view_details' => __('Actions','edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
     }
 
-    function get_list_alliances_review(){
+    function get_list_alliances_review()
+    {
         global $wpdb;
-        $table_alliances =  $wpdb->prefix.'alliances';
-        
+        $table_alliances = $wpdb->prefix . 'alliances';
 
-        if(isset($_POST['s']) && !empty($_POST['s'])){
+
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
 
             $search = $_POST['s'];
 
-            $alliances = $wpdb->get_results("SELECT * 
+            $alliances = $wpdb->get_results(
+                "SELECT * 
                     FROM {$table_alliances} WHERE 
                     status = 0 AND 
                     ( `name` LIKE '%{$search}%' || 
                      last_name LIKE '%{$search}%' || 
                      name_legal LIKE '%{$search}%' || 
                      email LIKE '%{$search}%')"
-                ,"ARRAY_A");
+                ,
+                "ARRAY_A"
+            );
 
-        }else{
-            $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 0","ARRAY_A");
+        } else {
+            $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 0", "ARRAY_A");
         }
-    
-        return $alliances;
-    }   
 
-	function get_sortable_columns() {
+        return $alliances;
+    }
+
+    function get_sortable_columns()
+    {
         $sortable_columns = [];
         return $sortable_columns;
     }
-	
-	function get_bulk_actions() {
+
+    function get_bulk_actions()
+    {
         $actions = [];
         return $actions;
     }
 
-	function process_bulk_action(){
-        
+    function process_bulk_action()
+    {
+
         //Detect when a bulk action is being triggered...
-        if( 'delete'===$this->current_action() ) {
+        if ('delete' === $this->current_action()) {
             wp_die('Items deleted (or they would be if we had items to delete)!');
-        }  
+        }
     }
 
-	function prepare_items(){
+    function prepare_items()
+    {
 
-		$data_institutes = $this->get_list_alliances_review();
-		$per_page = 10;
+        $data_institutes = $this->get_list_alliances_review();
+        $per_page = 10;
 
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
 
         $this->_column_headers = array($columns, $hidden, $sortable);
-		$this->process_bulk_action();
+        $this->process_bulk_action();
         $data = $data_institutes;
 
-		function usort_reorder($a,$b){
+        function usort_reorder($a, $b)
+        {
             $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
-            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc'; 
-            $result = strcmp($a[$orderby], $b[$orderby]); 
-            return ($order==='asc') ? $result : -$result;
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
         }
-       
-		$current_page = $this->get_pagenum();
+
+        $current_page = $this->get_pagenum();
         $total_items = count($data);
         $this->items = $data;
-	}
+    }
 }
 
-class TT_alliances_List_Table extends WP_List_Table{
+class TT_alliances_List_Table extends WP_List_Table
+{
 
-	function __construct(){
-        global $status, $page,$categories;
-         
-        parent::__construct( array(
-            'singular'  => 'institute_review',    
-            'plural'    => 'institute_reviews',
-            'ajax'      => true
-        ) ); 
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(array(
+            'singular' => 'institute_review',
+            'plural' => 'institute_reviews',
+            'ajax' => true
+        ));
     }
 
-	function column_default($item, $column_name){
+    function column_default($item, $column_name)
+    {
 
         global $current_user;
 
-        switch($column_name){
+        switch ($column_name) {
             case 'full_name':
-                return ucwords($item['name']).' '.ucwords($item['last_name']);
+                return ucwords($item['name']) . ' ' . ucwords($item['last_name']);
             case 'phone':
             case 'email':
                 return $item[$column_name];
@@ -371,148 +393,165 @@ class TT_alliances_List_Table extends WP_List_Table{
                 $name = get_name_country($item[$column_name]);
                 return $name;
             case 'name_rector':
-                return ucwords($item['name_rector']).' '.ucwords($item['lastname_rector']);
+                return ucwords($item['name_rector']) . ' ' . ucwords($item['lastname_rector']);
             case 'view_details':
                 return "
-                <a href='".admin_url('/admin.php?page=add_admin_partners_content&section_tab=fee_alliance&alliance_id='.$item['id'])."' class='button button-primary'><span class='dashicons dashicons-money-alt'></span>".__('Fees','edusystem')."</a>
-                <a href='".admin_url('/admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id='.$item['id'])."' class='button button-primary'></span><span class='dashicons dashicons-edit'></span>".__('Edit','edusystem')."</a>";
-			default:
-				return print_r($item,true);
+                <a href='" . admin_url('/admin.php?page=add_admin_partners_content&section_tab=fee_alliance&alliance_id=' . $item['id']) . "' class='button button-primary'><span class='dashicons dashicons-money-alt'></span>" . __('Fees', 'edusystem') . "</a>
+                <a href='" . admin_url('/admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id=' . $item['id']) . "' class='button button-primary'></span><span class='dashicons dashicons-edit'></span>" . __('Edit', 'edusystem') . "</a>";
+            default:
+                return print_r($item, true);
         }
     }
 
-	function column_name($item){
+    function column_name($item)
+    {
 
-        return sprintf('%1$s',
+        return sprintf(
+            '%1$s',
             ucwords($item['name']),
         );
     }
 
-	function column_cb($item){
+    function column_cb($item)
+    {
         return '';
     }
 
-	function get_columns(){
+    function get_columns()
+    {
 
         $columns = array(
-            'full_name'     => __('Full name','edusystem'),
-            'phone'         => __('Phone','edusystem'),
-            'email'         => __('Email','edusystem'),
-            'country'       => __('Country','edusystem'),
-            'state'         => __('State','edusystem'),
-            'city'          => __('City','edusystem'),
-            'view_details' => __('Actions','edusystem'),
+            'full_name' => __('Full name', 'edusystem'),
+            'phone' => __('Phone', 'edusystem'),
+            'email' => __('Email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'state' => __('State', 'edusystem'),
+            'city' => __('City', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
         );
 
         return $columns;
     }
 
-    function get_list_alliances(){
+    function get_list_alliances()
+    {
         global $wpdb;
-        $table_alliances =  $wpdb->prefix.'alliances';
-        
-        if(isset($_POST['s']) && !empty($_POST['s'])){
+        $table_alliances = $wpdb->prefix . 'alliances';
+
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
             $search = $_POST['s'];
 
-            $alliances = $wpdb->get_results("SELECT * 
+            $alliances = $wpdb->get_results(
+                "SELECT * 
                     FROM {$table_alliances} WHERE 
                     status = 1 AND 
                     ( `name` LIKE '%{$search}%' || 
                      last_name LIKE '%{$search}%' || 
                      name_legal LIKE '%{$search}%' || 
                      email LIKE '%{$search}%')"
-                ,"ARRAY_A");
+                ,
+                "ARRAY_A"
+            );
 
-        }else{
-            $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 1","ARRAY_A");
+        } else {
+            $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 1", "ARRAY_A");
         }
-        
-        return $alliances;
-    }   
 
-	function get_sortable_columns() {
+        return $alliances;
+    }
+
+    function get_sortable_columns()
+    {
         $sortable_columns = [];
         return $sortable_columns;
     }
-	
-	function get_bulk_actions() {
+
+    function get_bulk_actions()
+    {
         $actions = [];
         return $actions;
     }
 
-	function process_bulk_action(){
-        
+    function process_bulk_action()
+    {
+
         //Detect when a bulk action is being triggered...
-        if( 'delete'===$this->current_action() ) {
+        if ('delete' === $this->current_action()) {
             wp_die('Items deleted (or they would be if we had items to delete)!');
-        }  
+        }
     }
 
-	function prepare_items(){
+    function prepare_items()
+    {
 
-		$data_alliances = $this->get_list_alliances();
-		$per_page = 10;
+        $data_alliances = $this->get_list_alliances();
+        $per_page = 10;
 
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
 
         $this->_column_headers = array($columns, $hidden, $sortable);
-		$this->process_bulk_action();
+        $this->process_bulk_action();
         $data = $data_alliances;
 
-		function usort_reorder($a,$b){
+        function usort_reorder($a, $b)
+        {
             $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
-            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc'; 
-            $result = strcmp($a[$orderby], $b[$orderby]); 
-            return ($order==='asc') ? $result : -$result;
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
         }
-       
-		$current_page = $this->get_pagenum();
+
+        $current_page = $this->get_pagenum();
         $total_items = count($data);
         $this->items = $data;
-	}
+    }
 }
 
-function get_institutes_from_alliance($alliance_id){
+function get_institutes_from_alliance($alliance_id)
+{
 
     global $wpdb;
-    $table_institutes =  $wpdb->prefix.'institutes';
-    
+    $table_institutes = $wpdb->prefix . 'institutes';
+
     $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE alliance_id={$alliance_id}");
     return $institutes;
 }
 
-function get_name_status_alliance($status_id){
-    $status = match($status_id){
-        '0' => __('Pending','edusystem'),
-        '1' => __('Approved','edusystem'),
-        '2' => __('Declined','edusystem'),
+function get_name_status_alliance($status_id)
+{
+    $status = match ($status_id) {
+        '0' => __('Pending', 'edusystem'),
+        '1' => __('Approved', 'edusystem'),
+        '2' => __('Declined', 'edusystem'),
         default => '',
     };
 
     return $status;
 }
 
-function get_name_type($type_id){
+function get_name_type($type_id)
+{
 
-    $type = match($type_id){
-        '1' => __('Junior','edusystem'),
-        '2' => __('Senior','edusystem'),
+    $type = match ($type_id) {
+        '1' => __('Junior', 'edusystem'),
+        '2' => __('Senior', 'edusystem'),
         default => '',
     };
 
     return $type;
 }
 
-function create_user_alliance($alliance){
+function create_user_alliance($alliance)
+{
 
-    $user = get_user_by('email',$alliance->email);
+    $user = get_user_by('email', $alliance->email);
 
-    if(!$user){
+    if (!$user) {
 
         $password = generate_password_user();
-    
+
         $userdata = [
             'user_login' => $alliance->email,
             'user_pass' => $password,
@@ -525,10 +564,10 @@ function create_user_alliance($alliance){
         $user->remove_role('subscriber');
         $user->add_role('alliance');
 
-        update_user_meta($user_id,'alliance_id',$alliance->id);
+        update_user_meta($user_id, 'alliance_id', $alliance->id);
 
-        wp_new_user_notification($user_id, null, 'both' );
-    }else{
-        update_user_meta($user->id,'alliance_id',$alliance->id);
+        wp_new_user_notification($user_id, null, 'both');
+    } else {
+        update_user_meta($user->id, 'alliance_id', $alliance->id);
     }
 }
