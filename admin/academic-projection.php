@@ -1259,9 +1259,9 @@ function table_notes_period_html($inscriptions)
     // Encabezados de tabla
     $html .= '<thead>
                 <tr>
-                    <th scope="col" class="manage-column">' . __('Status', 'edusystem') . '</th>
                     <th scope="col" class="manage-column">' . __('Subject - Code', 'edusystem') . '</th>
                     <th scope="col" class="manage-column">' . __('Calification', 'edusystem') . '</th>
+                    <th scope="col" class="manage-column">' . __('Status', 'edusystem') . '</th>
                 </tr>
               </thead>
               <tbody>';
@@ -1297,9 +1297,9 @@ function table_notes_period_html($inscriptions)
 
         // Construir fila
         $html .= '<tr>
-                    <td>' . $status_html . '</td>
                     <td>' . esc_html($name_subject) . '</td>
                     <td>' . esc_html($calification) . '</td>
+                    <td>' . $status_html . '</td>
                   </tr>';
     }
 
