@@ -682,16 +682,17 @@ function save_num_cuotes($variation_id, $i)
 
 // functions.php
 
-function add_logo_dashboard() {
+function add_logo_dashboard()
+{
     $logo_id = get_option('logo_admin');
 
     // Exit early if no logo ID is set or URL can't be retrieved
-    if ( ! $logo_id || ! ( $logo_url = wp_get_attachment_image_url( $logo_id, 'full' ) ) ) {
+    if (!$logo_id || !($logo_url = wp_get_attachment_image_url($logo_id, 'full'))) {
         return;
     }
 
     // Inject the logo URL as a CSS variable using your 'style-admin' handle
-    wp_add_inline_style( 'style-admin', ":root { --admin-logo-url: url('{$logo_url}'); }" );
+    wp_add_inline_style('style-admin', ":root { --admin-logo-url: url('{$logo_url}'); }");
 }
 add_action('admin_enqueue_scripts', 'add_logo_dashboard');
 
@@ -701,17 +702,19 @@ function aes_logo()
 }
 add_action('admin_menu', 'aes_logo');
 
-function custom_login_store(): void {
+function custom_login_store(): void
+{
     $logo_id = get_option('logo_admin');
 
     // If no logo ID is set or the URL can't be retrieved, exit early
-    if ( ! $logo_id || ! ( $logo_url = wp_get_attachment_image_url( $logo_id, 'full' ) ) ) {
+    if (!$logo_id || !($logo_url = wp_get_attachment_image_url($logo_id, 'full'))) {
         return;
     }
 
     ?>
     <style type="text/css">
-        #login h1 a, .login h1 a {
+        #login h1 a,
+        .login h1 a {
             background-image: url('<?php echo esc_url($logo_url); ?>');
             background-size: cover;
             background-repeat: no-repeat;
@@ -746,11 +749,12 @@ function hide_notices()
 }
 add_action('in_admin_header', 'hide_notices', 99);
 
-function aes_change_login_logo(): void {
+function aes_change_login_logo(): void
+{
     $logo_id = get_option('logo_admin_login');
 
     // Exit early if no logo ID is set or URL can't be retrieved
-    if ( ! $logo_id || ! ( $logo_url = wp_get_attachment_image_url( $logo_id, 'full' ) ) ) {
+    if (!$logo_id || !($logo_url = wp_get_attachment_image_url($logo_id, 'full'))) {
         return;
     }
 
@@ -758,10 +762,10 @@ function aes_change_login_logo(): void {
     <style type="text/css">
         #login h1 a {
             background: url('<?php echo esc_url($logo_url); ?>') no-repeat center center;
-            background-size: 100px; /* Adjust as needed */
-            height: 100px; /* Adjust as needed */
+            background-size: 100px;
+            height: 100px;
             margin: 0 auto;
-            width: 100px; /* Adjust as needed */
+            width: 100px;
         }
     </style>
     <?php
@@ -769,7 +773,8 @@ function aes_change_login_logo(): void {
 add_action('login_enqueue_scripts', 'aes_change_login_logo');
 
 add_filter('login_headerurl', 'aes_login_redirect_url');
-function aes_login_redirect_url() {
+function aes_login_redirect_url()
+{
     return home_url();
 }
 

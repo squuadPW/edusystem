@@ -82,7 +82,7 @@ class TT_All_Student_Pending_Graduated_List_Table extends WP_List_Table
         if ($students) {
             foreach ($students as $student) {
                 $academic_ready = get_academic_ready($student['id']);
-                if($academic_ready) {
+                if ($academic_ready) {
                     array_push($pending_array, [
                         'id' => $student['id'],
                         'student' => $student['last_name'] . ' ' . $student['middle_last_name'] . ' ' . $student['name'] . ' ' . $student['middle_name']

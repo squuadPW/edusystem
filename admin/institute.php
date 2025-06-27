@@ -433,7 +433,9 @@ class TT_institutes_review_List_Table extends WP_List_Table
                 name_rector LIKE '%{$search}%' || 
                 lastname_rector LIKE '%{$search}%' || 
                 name_contact LIKE '%{$search}%' || 
-                lastname_contact LIKE '%{$search}%') LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+                lastname_contact LIKE '%{$search}%') LIMIT {$per_page} OFFSET {$offset}",
+                "ARRAY_A"
+            );
 
         } else {
             $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status` = 0 LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
@@ -1009,7 +1011,8 @@ function create_user_institute($institute)
     }
 }
 
-function get_students_institute($institute_id) {
+function get_students_institute($institute_id)
+{
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $query = $wpdb->prepare(
@@ -1020,7 +1023,8 @@ function get_students_institute($institute_id) {
     return $students;
 }
 
-function get_all_students_institute($institute_id) {
+function get_all_students_institute($institute_id)
+{
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $query = $wpdb->prepare(

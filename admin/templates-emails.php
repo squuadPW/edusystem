@@ -2,7 +2,7 @@
 
 function add_admin_form_templates_emails_content()
 {
-    if($_GET['action'] == 'delete') {
+    if ($_GET['action'] == 'delete') {
         global $wpdb;
         $table_templates_email = $wpdb->prefix . 'templates_email';
         $template_id = $_GET['template_id'];
@@ -16,7 +16,7 @@ function add_admin_form_templates_emails_content()
 
     $list_templates_emails = new TT_Templates_Emails_List_Table;
     $list_templates_emails->prepare_items();
-    include (plugin_dir_path(__FILE__) . 'templates/list-templates-emails.php');
+    include(plugin_dir_path(__FILE__) . 'templates/list-templates-emails.php');
 }
 
 class TT_Templates_Emails_List_Table extends WP_List_Table
@@ -31,7 +31,8 @@ class TT_Templates_Emails_List_Table extends WP_List_Table
                 'singular' => 'school_subject_',
                 'plural' => 'school_subject_s',
                 'ajax' => true
-            ));
+            )
+        );
 
     }
 
@@ -134,7 +135,7 @@ class TT_Templates_Emails_List_Table extends WP_List_Table
 
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        
+
         $data = $data_academic_offers['data'];
         $total_count = (int) $data_academic_offers['total_count'];
 

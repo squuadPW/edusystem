@@ -187,13 +187,13 @@ function add_admin_form_scholarships_content()
         } else if ($_GET['action'] == 'pre_scholarship') {
             global $wpdb;
             $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
-            
+
             // Sanitizar y validar los datos de entrada
             $document_id = sanitize_text_field($_POST['document_id']);
             $document_type = sanitize_text_field($_POST['document_type']);
             $name = sanitize_text_field($_POST['name']);
             $scholarship_type = sanitize_text_field($_POST['scholarship_type']);
-            
+
             // 1. Verificar si existen registros con el mismo document_id y document_type
             $existing_records = $wpdb->get_var(
                 $wpdb->prepare(
@@ -215,7 +215,7 @@ function add_admin_form_scholarships_content()
                     array('%s', '%s') // Formatos para ambos valores (string)
                 );
             }
-            
+
             // 3. Insertar el nuevo registro
             $wpdb->insert(
                 $table_pre_scholarship,
@@ -233,11 +233,11 @@ function add_admin_form_scholarships_content()
         } else if ($_GET['action'] == 'assign_scholarship') {
             global $wpdb;
             $table_scholarship_assigned_student = $wpdb->prefix . 'scholarship_assigned_student';
-            
+
             // Sanitizar y validar los datos de entrada
             $student_id = intval($_POST['student_id']);
             $scholarship_id = intval($_POST['scholarship_type']);
-            
+
             // 1. Verificar si existen registros con el mismo student_id y scholarhsip_type
             $existing_records = $wpdb->get_var(
                 $wpdb->prepare(
@@ -257,7 +257,7 @@ function add_admin_form_scholarships_content()
                     array('%d') // Formatos para ambos valores (string)
                 );
             }
-            
+
             // 3. Insertar el nuevo registro
             $wpdb->insert(
                 $table_scholarship_assigned_student,
@@ -338,11 +338,11 @@ function add_admin_form_available_scholarships_content()
             $coupons = [];
 
             if ($fee_registration) {
-                $available_coupons = obtener_cupones_porcentuales_producto( [FEE_INSCRIPTION], $percent_registration);
+                $available_coupons = obtener_cupones_porcentuales_producto([FEE_INSCRIPTION], $percent_registration);
                 foreach ($available_coupons as $key => $coupon) {
                     array_push($coupons, $coupon);
                 }
-                
+
                 if (count($available_coupons) == 0) {
                     $coupon_code = 'Discount registration fee ' . $percent_registration . '%';
                     $coupon = new WC_Coupon();
@@ -388,7 +388,7 @@ function add_admin_form_available_scholarships_content()
                     'percent_graduation' => $percent_graduation,
                     'is_active' => $is_active,
                 ], ['id' => $scholarship_id]);
-                
+
             } else {
                 $wpdb->insert($table_scholarships_availables, [
                     'name' => $name,
@@ -406,7 +406,7 @@ function add_admin_form_available_scholarships_content()
 
             if (isset($scholarship_id) && !empty($scholarship_id)) {
                 setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
-                wp_redirect(admin_url('admin.php?page=add_admin_form_available_scholarships_content&section_tab=available_scholarship_detail&scholarship_id='.$scholarship_id));
+                wp_redirect(admin_url('admin.php?page=add_admin_form_available_scholarships_content&section_tab=available_scholarship_detail&scholarship_id=' . $scholarship_id));
             } else {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_available_scholarships_content'));
             }
@@ -744,7 +744,7 @@ class TT_pre_scholarship_all_List_Table extends WP_List_Table
 
         switch ($column_name) {
             case 'view_details':
-                return "<a target='_blank' href='" . esc_url(home_url('/student-scholarship-application/?id=' . $item['document_id'] .'&type=' . $item['document_type'])) . "' class='button button-primary'>" . __('Share link', 'edusystem') . "</a>";
+                return "<a target='_blank' href='" . esc_url(home_url('/student-scholarship-application/?id=' . $item['document_id'] . '&type=' . $item['document_type'])) . "' class='button button-primary'>" . __('Share link', 'edusystem') . "</a>";
             default:
                 return ucwords($item[$column_name]);
         }
@@ -981,13 +981,14 @@ function get_scholarship_details($scholarship_id)
     return $scholarship;
 }
 
-function obtener_cupones_porcentuales_producto($product_ids, $percentage) {
+function obtener_cupones_porcentuales_producto($product_ids, $percentage)
+{
     $cupones = array();
-    
+
     // Convertir a array y sanitizar IDs
-    $product_ids = array_map('intval', (array)$product_ids);
+    $product_ids = array_map('intval', (array) $product_ids);
     $product_ids = array_filter(array_unique($product_ids));
-    
+
     if (empty($product_ids)) {
         return array();
     }
@@ -1003,50 +1004,51 @@ function obtener_cupones_porcentuales_producto($product_ids, $percentage) {
     $product_ids_regex = implode('|', $regex_parts);
 
     $args = array(
-        'post_type'  => 'shop_coupon',
+        'post_type' => 'shop_coupon',
         'posts_per_page' => -1,
         'meta_query' => array(
             'relation' => 'AND',
             array(
-                'key'   => 'discount_type',
+                'key' => 'discount_type',
                 'value' => 'percent',
             ),
             array(
-                'key'     => 'product_ids',
-                'value'   => $product_ids_regex,
+                'key' => 'product_ids',
+                'value' => $product_ids_regex,
                 'compare' => 'REGEXP',
             ),
             array(
-                'key'     => 'coupon_amount',
-                'value'   => (float)$percentage,
-                'type'    => 'DECIMAL(10,2)', // Para comparación exacta
+                'key' => 'coupon_amount',
+                'value' => (float) $percentage,
+                'type' => 'DECIMAL(10,2)', // Para comparación exacta
                 'compare' => '=',
             ),
         ),
     );
 
     $query = new WP_Query($args);
-    
+
     if ($query->have_posts()) {
         foreach ($query->posts as $post) {
             array_push($cupones, $post->post_title);
         }
     }
-    
+
     wp_reset_postdata();
-    
+
     return $cupones;
 }
 
-function get_all_woocommerce_product_ids($include_variations = false, $post_statuses = ['publish']) {
+function get_all_woocommerce_product_ids($include_variations = false, $post_statuses = ['publish'])
+{
     $args = [
-        'post_type'      => $include_variations ? ['product', 'product_variation'] : 'product',
-        'post_status'    => $post_statuses,
+        'post_type' => $include_variations ? ['product', 'product_variation'] : 'product',
+        'post_status' => $post_statuses,
         'posts_per_page' => -1,
-        'fields'         => 'ids', // Optimizado para solo obtener IDs
+        'fields' => 'ids', // Optimizado para solo obtener IDs
     ];
 
     $query = new WP_Query($args);
-    
+
     return $query->posts ?: [];
 }
