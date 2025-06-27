@@ -2505,7 +2505,7 @@ class TT_Ranking_Alliances_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'name' => __('Alliance', 'edusystem'),
+            'name_legal' => __('Alliance', 'edusystem'),
             'students_registered' => __('Students registered', 'edusystem'),
             'generated' => __('Generated', 'edusystem')
         );
