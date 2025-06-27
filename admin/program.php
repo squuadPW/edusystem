@@ -201,6 +201,7 @@ function add_admin_form_program_content()
             exit;
 
         } else if ($_GET['action'] == 'save_quotas_rules') {
+            
             global $wpdb;
             $table_quota_rules = $wpdb->prefix . 'quota_rules';
             

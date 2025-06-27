@@ -1,5 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    /**
+     * Clona la plantilla de formulario para los subprogramas y habilita los inputs,
+     * asignando el número de posición correspondiente en el atributo 'name'.
+     * Esta función se activa al hacer clic en el botón para agregar subprogramas.
+     * 
+     * @return {void} No retorna ningún valor.
+     */
     subprograms = document.getElementById('subprograms');
     if ( subprograms ) {
 
@@ -52,7 +59,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-
+    /**
+     * Clona la plantilla de formulario para las reglas de cuotas y habilita los inputs,
+     * asignando el número de posición correspondiente en el atributo 'name'.
+     * Esta función se activa al hacer clic en el botón para agregar reglas de cuotas.
+     * 
+     * @return {void} No retorna ningún valor.
+     */
     rules = document.getElementById('rules');
     if ( rules ) {
 
@@ -98,14 +111,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 new_rule.remove(); 
             });
 
-            // Actualizar el atributo data-subprogram_count en el contenedor
-            rules.setAttribute('data-subprogram_count', rules_count);
+            // Actualizar el atributo data-rules_count en el contenedor
+            rules.setAttribute('data-rules_count', rules_count);
 
             // Agregar el nueva regla al contenedor
             rules.appendChild(new_rule);
         });
     }
 
+    /**
+     * Agrega funcionalidad a los botones de cierre de los modales.
+     * Esta función busca todos los elementos con la clase 'modal-close'
+     * y les asigna un evento de clic que oculta los modales correspondientes
+     * al ser activados.
+     * 
+     * @return {void} No retorna ningún valor.
+     */
     document.querySelectorAll('.modal-close').forEach((close) => {
         close.addEventListener('click',(e) => {
 
@@ -129,6 +150,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+/**
+ * Abre el modal para eliminar una regla de cuota.
+ * Esta función se ejecuta al hacer clic en un botón de eliminación y configura
+ * el modal con el ID de la regla de cuota que se va a eliminar.
+ * 
+ * @param {HTMLElement} button Elemento HTML del botón que debe contener
+ *                             el atributo 'data-rule_id' con el ID de la regla.
+ * 
+ * @return {void} No retorna ningún valor.
+ */
 function modal_delete_quota_rule_js ( button ) {
 
     let modal_delete_quota_rule = document.getElementById( 'modalDeleteQuotaRule' );
@@ -139,6 +170,16 @@ function modal_delete_quota_rule_js ( button ) {
     }
 }
 
+/**
+ * Abre el modal para eliminar un subprograma.
+ * Esta función se activa al hacer clic en un botón de eliminación
+ * y establece el identificador del subprograma en el campo de entrada del modal.
+ * 
+ * @param HTMLElement button Botón que activó el modal, que debe contener
+ *                           el atributo 'data-subprogram_id' con el ID del subprograma.
+ * 
+ * @return void No retorna ningún valor.
+ */
 function modal_delete_subprogram_js ( button ) {
 
     let modal_delete_subprogram = document.getElementById( 'modalDeleteSubprogram' );
@@ -149,6 +190,16 @@ function modal_delete_subprogram_js ( button ) {
     }
 }
 
+/**
+ * Abre el modal para eliminar un programa.
+ * Esta función se activa al hacer clic en un botón de eliminación
+ * y establece el ID del programa en el campo de entrada del modal.
+ * 
+ * @param HTMLElement button Botón que activó el modal, que debe contener
+ *                           el atributo 'data-program_id' con el ID del programa.
+ * 
+ * @return void No retorna ningún valor.
+ */
 function modal_delete_program_js ( button ) {
 
     let modal_delete_program = document.getElementById( 'modalDeleteProgram' );
