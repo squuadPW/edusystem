@@ -1583,3 +1583,14 @@ a.toplevel_page_logo_based_menu {
 #toplevel_page_logo_based_menu > a {
     padding: 10px !important;
 }
+
+
+// acomoda los botones de accion de los programas
+.view_details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+
+

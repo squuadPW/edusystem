@@ -1424,4 +1424,10 @@ a.toplevel_page_logo_based_menu {
 
 #toplevel_page_logo_based_menu > a {
   padding: 10px !important;
+}
+
+.view_details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
 }/*# sourceMappingURL=style.css.map */

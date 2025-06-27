@@ -119,6 +119,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal_delete_subprogram.style.display = "none";
             }
 
+            modal_delete_program = document.getElementById('modalDeleteProgram');
+            if( modal_delete_program ){
+                modal_delete_program.style.display = "none";
+            }
+
         });
     });
 
@@ -136,11 +141,21 @@ function modal_delete_quota_rule_js ( button ) {
 
 function modal_delete_subprogram_js ( button ) {
 
-    let modal_delete_quota_rule = document.getElementById( 'modalDeleteSubprogram' );
-    if( modal_delete_quota_rule ) {
+    let modal_delete_subprogram = document.getElementById( 'modalDeleteSubprogram' );
+    if( modal_delete_subprogram ) {
         id = button.getAttribute('data-subprogram_id');
-        modal_delete_quota_rule.querySelector('#delete_subprogram_input').value = id;
-        modal_delete_quota_rule.style.display = "block";
+        modal_delete_subprogram.querySelector('#delete_subprogram_input').value = id;
+        modal_delete_subprogram.style.display = "block";
+    }
+}
+
+function modal_delete_program_js ( button ) {
+
+    let modal_delete_program = document.getElementById( 'modalDeleteProgram' );
+    if( modal_delete_program ) {
+        id = button.getAttribute('data-program_id');
+        modal_delete_program.querySelector('#delete_program_input').value = id;
+        modal_delete_program.style.display = "block";
     }
 }
 
