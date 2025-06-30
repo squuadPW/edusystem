@@ -91,12 +91,12 @@
                 methods used by users</span>
             <div id="card-totals-sales" class="grid-container-report-4"></div>
         </div>
-        <div style="background-color: #ffffff; padding: 18px; border-radius: 10px; margin: 20px 0px;">
+        <div style="background-color: #ffffff; padding: 18px; border-radius: 10px; margin: 20px 0px 40px 0px;">
             <canvas id="myChart"></canvas>
         </div>
 
         <h2 style="margin-top: 18px"><?= __('Revenues', 'edusystem'); ?></h2>
-        <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+        <table class="wp-list-table widefat fixed striped posts" style="margin: 20px 0px 40px 0px;">
             <thead>
                 <tr>
                     <th scope="col" class=" manage-column column-primary"><?= __('Motive', 'edusystem'); ?></th>
@@ -124,7 +124,7 @@
         </table>
 
         <h2 style="margin-top: 18px"><?= __('Expenses', 'edusystem'); ?></h2>
-        <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+        <table class="wp-list-table widefat fixed striped posts" style="margin: 20px 0px 40px 0px;">
             <thead>
                 <tr>
                     <th scope="col" class=" manage-column column-primary"><?= __('Motive', 'edusystem'); ?></th>
@@ -158,13 +158,14 @@
                 </tr>
                 <tr>
                     <td>Expenses and payroll</td>
-                    <td id="expenses" class="tooltip" title="Amount of expenditures and payrolls found in the selected range of dates"></td>
+                    <td id="expenses" class="tooltip"
+                        title="Amount of expenditures and payrolls found in the selected range of dates"></td>
                 </tr>
             </tbody>
         </table>
 
         <h2 style="margin-top: 18px"><?= __('Receivables', 'edusystem'); ?></h2>
-        <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+        <table class="wp-list-table widefat fixed striped posts" style="margin: 20px 0px 40px 0px;">
             <thead>
                 <tr>
                     <th scope="col" class=" manage-column column-primary"><?= __('Motive', 'edusystem'); ?></th>
@@ -180,7 +181,7 @@
         </table>
 
         <h2 style="margin-top: 18px"><?= __('List of payments', 'edusystem'); ?></h2>
-        <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+        <table class="wp-list-table widefat fixed striped posts" style="margin: 20px 0px 40px 0px;">
             <thead>
                 <tr>
                     <th scope="col" class=" manage-column column-primary"><?= __('Payment ID', 'edusystem'); ?>
