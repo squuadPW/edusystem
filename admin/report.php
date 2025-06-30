@@ -731,7 +731,6 @@ function get_list_orders_sales()
         $orders_data = get_orders($dates[0], $dates[1]);
 
         foreach ($orders_data['orders'] as $order) {
-            error_log(print_r($order, true));
             $html .= "<tr>";
             $html .= "<td class='column column-primary' data-colname='" . __('Payment ID', 'edusystem') . "'>";
             $html .= '#' . $order['order_id'];

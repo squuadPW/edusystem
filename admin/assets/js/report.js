@@ -348,7 +348,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Definir los encabezados fijos
       const headers = [column, "Students registered", "Generated"];
-      console.log(headers);
       data.push(headers); // Agrega los encabezados al array de datos
 
       // Itera sobre las filas de la tabla, STARTING FROM THE SECOND ROW (index 1)
@@ -366,7 +365,6 @@ document.addEventListener("DOMContentLoaded", function () {
           cellText = cellText.replace(/Show more details/g, "");
           rowData.push(cellText);
         }
-        console.log(rowData);
 
         data.push(rowData);
       }
