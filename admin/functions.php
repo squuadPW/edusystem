@@ -539,115 +539,52 @@ add_action('admin_menu', 'add_custom_admin_page');
 
 function get_dates_search($filter, $custom)
 {
+    $start = '';
+    $end = '';
+
+    // Define el formato de fecha deseado (solo año, mes, día)
+    $date_format = 'Y-m-d';
 
     if ($filter == 'today') {
-        $start = get_gmt_from_date(wp_date('Y-m-d') . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d') . '23:59', 'Y-m-d H:i');
-
+        $start = wp_date($date_format);
+        $end = wp_date($date_format);
     } else if ($filter == 'yesterday') {
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('-1 days')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', ) . '00:00', 'Y-m-d H:i');
-
+        $start = wp_date($date_format, strtotime('-1 days'));
+        $end = wp_date($date_format, strtotime('-1 days')); // Cambiado a ayer también para el final del día
     } else if ($filter == 'tomorrow') {
-        $start = get_gmt_from_date(wp_date('Y-m-d') . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('+1 days')) . '00:00', 'Y-m-d H:i');
-
+        $start = wp_date($date_format, strtotime('+1 days'));
+        $end = wp_date($date_format, strtotime('+1 days'));
     } else if ($filter == 'this-week') {
-
-        $date = Datetime::createFromFormat('Y-m-d', wp_date('Y-m-d'));
-
-        if ($date->format('w') == 1) {
-            $start = get_gmt_from_date(wp_date('Y-m-d') . '00:00', 'Y-m-d H:i');
-        } else {
-            $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('last tuesday')) . '00:00', 'Y-m-d H:i');
-        }
-
-        if ($date->format('w') == 1) {
-            $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('next saturday', strtotime('+1 days'))) . '23:59', 'Y-m-d H:i');
-        } else {
-            $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('next sunday')) . '23:59', 'Y-m-d H:i');
-        }
-
+        // Asumiendo que 'wp_date' se adapta a la configuración de inicio de semana de WordPress
+        $start = wp_date($date_format, strtotime('this week monday')); // O 'sunday' si la semana empieza en domingo
+        $end = wp_date($date_format, strtotime('this week sunday')); // O 'saturday'
     } else if ($filter == 'last-week') {
-
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('last week')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('this week -1 days')) . '23:59', 'Y-m-d H:i');
-
-
+        $start = wp_date($date_format, strtotime('last week monday'));
+        $end = wp_date($date_format, strtotime('last week sunday'));
     } else if ($filter == 'next-week') {
-
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('this week')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('next week -1 days')) . '23:59', 'Y-m-d H:i');
-
-
+        $start = wp_date($date_format, strtotime('next week monday'));
+        $end = wp_date($date_format, strtotime('next week sunday'));
     } else if ($filter == 'this-month') {
-
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('first day of this month')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('last day of this month')) . '23:59', 'Y-m-d H:i');
-
+        $start = wp_date($date_format, strtotime('first day of this month'));
+        $end = wp_date($date_format, strtotime('last day of this month'));
     } else if ($filter == 'last-month') {
-
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('first day of last month')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('last day of last month')) . '23:59', 'Y-m-d H:i');
-
-
+        $start = wp_date($date_format, strtotime('first day of last month'));
+        $end = wp_date($date_format, strtotime('last day of last month'));
     } else if ($filter == 'next-month') {
-
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('first day of next month')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('last day of next month')) . '23:59', 'Y-m-d H:i');
-
-
+        $start = wp_date($date_format, strtotime('first day of next month'));
+        $end = wp_date($date_format, strtotime('last day of next month'));
     } else if ($filter == 'custom') {
-
         $date = str_replace([' to ', ' a '], ',', $custom);
         $date_array = explode(',', $date);
 
-        $start = str_replace('/', '-', $date_array[0]);
+        // Asegúrate de que las fechas personalizadas se formateen correctamente
+        $start = date($date_format, strtotime(str_replace('/', '-', $date_array[0])));
 
         if (isset($date_array[1]) && !empty($date_array[1])) {
-            $end = str_replace('/', '-', $date_array[1]);
+            $end = date($date_format, strtotime(str_replace('/', '-', $date_array[1])));
         } else {
-            $end = str_replace('/', '-', $date_array[0]);
+            $end = $start; // Si no hay fecha de fin, es la misma que la de inicio
         }
-
-        $startDatetime = Datetime::createFromFormat('m-d-Y', $start);
-        $endDatetime = Datetime::createFromFormat('m-d-Y', $end);
-
-        $start = get_gmt_from_date($startDatetime->format('Y-m-d') . '07:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date($endDatetime->modify('+1 day')->format('Y-m-d') . '06:59', 'Y-m-d H:i');
-        /*
-        if($sales){
-
-            $dayStart = $startDatetime->format('w');
-
-            if(get_option('restaurant_system_schedule_'.$dayStart.'_checkbox') == 'true'){
-
-                $start_time = get_option('restaurant_system_schedule_'.$dayStart.'_start_time');
-
-                if(get_option('restaurant_system_schedule_'.$dayStart.'_interday') == 'true'){
-                    $start = get_gmt_from_date($startDatetime->format('Y-m-d').$start_time,'Y-m-d H:i');
-                }
-            }
-
-        }
-
-        $end = get_gmt_from_date($endDatetime->format('Y-m-d').'23:59','Y-m-d H:i');
-
-        if($sales){
-
-            $dayEnd = $endDatetime->format('w');
-
-            if(get_option('restaurant_system_schedule_'.$dayEnd.'_checkbox') == 'true'){
-
-                $end_time = get_option('restaurant_system_schedule_'.$dayEnd.'_end_time');
-
-                if(get_option('restaurant_system_schedule_'.$dayEnd.'_interday') == 'true'){
-
-                    $end = get_gmt_from_date($endDatetime->format('Y-m-d').$end_time,'Y-m-d H:i');
-                }
-            }
-        }
-        */
     }
 
     return [$start, $end];

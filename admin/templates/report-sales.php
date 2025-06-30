@@ -154,6 +154,10 @@
                     <td>Tax total</td>
                     <td id="tax" class="tooltip" title="Total taxes of all orders"></td>
                 </tr>
+                <tr>
+                    <td>Expenses and payroll</td>
+                    <td id="expenses" class="tooltip" title="Amount of expenditures and payrolls found in the selected range of dates"></td>
+                </tr>
             </tbody>
         </table>
 

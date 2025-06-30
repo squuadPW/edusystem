@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("p_fees").innerHTML = result.data.fee_payment;
           document.getElementById("e_fees").innerHTML = result.data.fee_system;
           document.getElementById("tax").innerHTML = result.data.tax;
+          document.getElementById("expenses").innerHTML = result.data.expense;
           document.getElementById("receivable").innerHTML =
             result.data.receivable;
           document.getElementById("discount").innerHTML = result.data.discount;
