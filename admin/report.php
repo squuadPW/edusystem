@@ -280,11 +280,13 @@ function get_orders($start, $end)
         }
 
         $payment_method = $order->get_payment_method_title();
-        if ($payment_method !== 'Credit Card') {
-            $fee_system += ($order->get_total() * 0.014);
-        } else {
-            $fee_system += (float) $order->get_meta('fee_squuad');
-        }
+        // if ($payment_method !== 'Credit Card') {
+        //     $fee_system += ($order->get_total() * 0.014);
+        // } else {
+        //     $fee_system += (float) $order->get_meta('fee_squuad');
+        // }
+
+        $fee_system += (float) $order->get_meta('fee_squuad');
 
         if (!isset($payment_methods[$payment_method])) {
             $payment_methods[$payment_method] = 0;
