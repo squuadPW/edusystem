@@ -272,7 +272,7 @@ function aes_scripts_admin()
         wp_enqueue_script('programs', plugins_url('edusystem') . '/admin/assets/js/programs.js', array('jquery'), $version, true);
 
         wp_localize_script('programs', 'ajax_object', [
-            'url' => admin_url('admin-ajax.php')
+            'url_ajax' => admin_url('admin-ajax.php')
         ]);
     }
 

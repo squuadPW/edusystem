@@ -1378,6 +1378,10 @@ h2 {
 #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer:has(input[type=checkbox]) input[type=checkbox] {
   width: 10px;
 }
+#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer .input-frequency {
+  display: flex;
+  gap: 10px;
+}
 #quota-rules-programs .quotas_rules > div {
   margin: 0px 10px;
 }
@@ -1430,4 +1434,9 @@ a.toplevel_page_logo_based_menu {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+}
+
+.input-error {
+  color: red;
+  margin: 5px;
 }/*# sourceMappingURL=style.css.map */

@@ -1521,10 +1521,13 @@ h2 {
                                 width: 10px;
                             }
                         }
-                        
+
+                        .input-frequency {
+                            display: flex;
+                            gap: 10px;
+                        }
                     }
                 }
-
                 
             }
 
@@ -1590,6 +1593,12 @@ a.toplevel_page_logo_based_menu {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
+}
+
+// mensaje de error de los inputs
+.input-error {
+    color: red;
+    margin: 5px;
 }
 
 

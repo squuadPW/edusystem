@@ -220,6 +220,8 @@ function add_admin_form_program_content()
                     $initial_price = $rule['initial_price'];
                     $quantity = $rule['quantity'];
                     $price = $rule['price'];
+                    $frequency_value = $rule['frequency_value'];
+                    $type_frequency = $rule['type_frequency'];
 
                     // crea o actualiza el sub programa
                     if ( !empty( $rule_id ) ) {
@@ -230,6 +232,8 @@ function add_admin_form_program_content()
                             'initial_price' => $initial_price,
                             'quotas_quantity' => $quantity,
                             'quote_price' => $price,
+                            'frequency_value' => $frequency_value,
+                            'type_frequency' => $type_frequency,
                         ], ['id' => $rule_id] );
 
                     } else {
@@ -241,6 +245,8 @@ function add_admin_form_program_content()
                             'quotas_quantity' => $quantity,
                             'quote_price' => $price,
                             'program_id' => $identificator,
+                            'frequency_value' => $frequency_value,
+                            'type_frequency' => $type_frequency,
                         ]);
                     }
                 }
@@ -598,5 +604,38 @@ function get_subprogram_by_identificador_program( $identificador ) {
 
     return json_decode( $subprogram, true ) ?? [];
 }
+
+
+add_action('wp_ajax_check_program_identificator_exists', 'check_program_identificator_exists');
+add_action('wp_ajax_nopriv_check_program_identificator_exists', 'check_program_identificator_exists');
+function check_program_identificator_exists() {
+   
+    if ( !isset($_POST['identificator']) || empty($_POST['identificator']) ) {
+        wp_send_json_error('Identificador no proporcionado');
+    }
+    
+    $identificator = sanitize_text_field($_POST['identificator']);
+    
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'programs';
+    $exists = $wpdb->get_var( $wpdb->prepare(
+        "SELECT id FROM $table_name WHERE identificator LIKE %s",
+        $identificator
+    ));
+
+    if( $exists ){
+        wp_send_json_success([
+            'exists' => true,
+            'message' => __('Identifier in use, please choose another.','edusystem'),
+        ]);
+    } else {
+        wp_send_json_success([
+            'exists' => false,
+            'message' => __('Identifier is not in use.','edusystem'),
+        ]);
+    } 
+}
+
+
 
 

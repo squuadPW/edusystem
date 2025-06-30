@@ -106,6 +106,8 @@ function create_tables()
                 quotas_quantity INT(11) NOT NULL DEFAULT 1, 
                 quote_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
                 program_id TEXT NOT NULL, 
+                frequency_value INT NOT NULL,
+                type_frequency TEXT NOT NULL,
                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (id)
@@ -115,9 +117,9 @@ function create_tables()
         /* 
          * El campo program_id es el identificador del programa
          * En el caso de los subprogramas el identificador es 
-         * el identificador del programa principal mas "-" y el  
+         * el identificador del programa principal mas "_" y el  
          * id del subprograma dentro del json. Ejemplo:
-         * "identificadorPrograma-2"
+         * "identificadorPrograma_2"
          */
     }
 

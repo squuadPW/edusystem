@@ -35,7 +35,7 @@
                                     <b><?= __('Rules for quotas', 'edusystem'); ?></b>
                                 </h3>
 
-                                <div id="rules" data-rules_count="0" >
+                                <div id="rules" data-rules_count="<?= count($rules) ?? 0 ?>" >
 
                                     <input type="hidden" name="program_id" value="<?= $program_id ?>" >
                                     <input type="hidden" name="identificator" value="<?= $identificator ?>" >
@@ -93,6 +93,30 @@
                                                         </label>
 
                                                         <input type="number" name="rules[<?= $i ?>][price]" value="<?= $rule['quote_price'] ?? 0.00 ?>" oninput="validate_input(this, '^[0-9]*$')" required>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="group-input" >
+                                                    <div class="space-offer">
+
+                                                        <label for="rules[<?= $i ?>][frequency_value]">
+                                                            <b><?= __('Frequency', 'edusystem'); ?></b>
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+
+                                                        <div class="input-frequency" >
+                                                            <input type="number" name="rules[<?= $i ?>][frequency_value]" value="<?= $rule['frequency_value'] ?? 0 ?>" oninput="validate_input(this, '^[0-9]*$')" required>
+
+                                                            <select name="rules[<?= $i ?>][type_frequency]" required >
+                                                                <option value="" <?= ($rule['type_frequency'] == '') ? 'selected' : '' ?> ><?= __('Select a frequency type','edusystem') ?></option>
+                                                                <option value="day" <?= ($rule['type_frequency'] == 'day') ? 'selected' : '' ?> ><?= __('Day','edusystem') ?></option>
+                                                                <option value="month" <?= ($rule['type_frequency'] == 'month') ? 'selected' : '' ?> ><?= __('Month','edusystem') ?></option>
+                                                                <option value="year" <?= ($rule['type_frequency'] == 'year') ? 'selected' : '' ?> ><?= __('Year','edusystem') ?></option>
+                                                            </select>
+
+                                                        </div>
+                                                        
                                                     </div>
 
                                                 </div>
@@ -155,6 +179,30 @@
 
                                                 <input type="number" name="rules[][price]" value="0" oninput="validate_input(this, '^[0-9]*$')" disabled required>
                                             </div>
+                                        </div>
+
+                                        <div class="group-input" >
+                                            <div class="space-offer">
+
+                                                <label for="rules[][initial_price]">
+                                                    <b><?= __('Frequency', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+
+                                                <div class="input-frequency" >
+                                                    <input type="number" name="rules[][frequency_value]" value="0" oninput="validate_input(this, '^[0-9]*$')" disabled required>
+
+                                                    <select name="rules[][type_frequency]" disabled required >
+                                                        <option value="" ><?= __('Select a frequency type','edusystem') ?></option>
+                                                        <option value="day"><?= __('Day','edusystem') ?></option>
+                                                        <option value="month"><?= __('Month','edusystem') ?></option>
+                                                        <option value="year"><?= __('Year','edusystem') ?></option>
+                                                    </select>
+
+                                                </div>
+                                                
+                                            </div>
+
                                         </div>
 
                                         <div class="container-button" >

@@ -48,9 +48,18 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="identificator"><b><?= __('Identificator', 'edusystem'); ?></b><span
-                                                class="text-danger">*</span></label><br>
-                                        <input type="text" name="identificator" oninput="validate_input(this, '^[A-Z0-9-]*$')" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?> >
+                                        <label for="identificator">
+                                            <b><?= __('Identificator', 'edusystem'); ?></b>
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        
+                                        <br>
+
+                                        <div>
+                                            <input type="text" name="identificator" oninput="validate_input(this, '^[A-Z0-9-]*$'),check_program_identificator_exists_js(this)" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?> >
+                                            <span id="error-identificator" class="input-error" ></span>
+                                        </div>
+                                        
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
@@ -201,12 +210,14 @@
                             <?php if (isset($program) && !empty($program)): ?>
                                 <div style="padding-top: 10px;margin-top: 10px;display:flex;flex-direction:row;justify-content:end;gap:5px;border-top: 1px solid #8080805c;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Saves changes', 'edusystem'); ?></button>
+                                        class="button button-primary"><?= __('Saves changes', 'edusystem'); ?>
+                                    </button>
                                 </div>
                             <?php else: ?>
                                 <div style="padding-top: 10px;margin-top: 10px;display:flex;flex-direction:row;justify-content:end;gap:5px;border-top: 1px solid #8080805c;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Add program', 'edusystem'); ?></button>
+                                        class="button button-primary"><?= __('Add program', 'edusystem'); ?>
+                                    </button>
                                 </div>
                             <?php endif; ?>
                         </form>

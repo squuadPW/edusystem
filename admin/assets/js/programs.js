@@ -1,3 +1,5 @@
+url_ajax = ajax_object.url_ajax;
+
 document.addEventListener('DOMContentLoaded', function() {
 
     /**
@@ -81,10 +83,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const new_rule = rule_template.cloneNode(true);
 
             // Quitar el atributo 'disabled' y modificar 'name' y 'for'
-            new_rule.querySelectorAll('input, label').forEach( elem => {
+            new_rule.querySelectorAll('input, label, select').forEach( elem => {
 
                 // Modificar los atributos 'name' y 'for' solo si son inputs o labels
-                if ( elem.tagName.toLowerCase() === 'input') {
+                if ( elem.tagName.toLowerCase() === 'input' || elem.tagName.toLowerCase() === 'select' ) {
 
                     // Obtener el nombre actual y reemplazar los corchetes
                     const current_name = elem.getAttribute('name');
@@ -239,5 +241,58 @@ function validate_input(input, regex_pattern, convert_to_upper = true, max_lengt
     }
 }
 
+let timeout_id = null;
+let controller_validate_identificator
+function check_program_identificator_exists_js( input ){
 
+    let error_identificator = document.getElementById('error-identificator');
+    error_identificator.innerHTML = "";
 
+    identificator = input.value.trim();
+
+    if ( timeout_id ) clearTimeout( timeout_id );
+
+    // Si ya hay un controlador en ejecución, lo abortamos
+    if ( controller_validate_identificator ) controller_validate_identificator.abort();
+
+    if ( identificator.length >= 3 ) {
+
+        // Creamos un nuevo AbortController
+        controller_validate_identificator = new AbortController();
+        const signal = controller_validate_identificator.signal;
+
+        timeout_id = setTimeout(function() {
+
+            const formData = new FormData();
+            formData.append('action', 'check_program_identificator_exists');
+            formData.append('identificator', identificator );
+
+            fetch( 
+                url_ajax, {
+                method: 'POST',
+                body: formData,
+                signal
+            })
+            .then( res => res.json() )
+            .then( res => {
+   
+                error_identificator.innerHTML = "";
+                if ( res.success ){
+                    if ( res.data.exists ) {
+                        error_identificator.innerHTML = res.data.message;
+                        error_identificator.style.display = 'block'
+                        // document.getElementById('send-application').disabled = true;
+
+                    } else if ( res.message === "" ) {
+                        error_identificator.style.display = 'none'
+                        // document.getElementById('send-application').disabled = false;
+                    }
+                }
+                    
+            })
+            .catch( err => console.log( err ) ); 
+        
+        }, 0);    
+    }
+
+}
