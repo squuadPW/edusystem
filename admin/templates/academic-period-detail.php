@@ -5,18 +5,9 @@
         <h2><?= __('Add Period', 'edusystem'); ?></h2>
     <?php endif; ?>
 
-    <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
-        <div class="notice notice-success is-dismissible">
-            <p><?= $_COOKIE['message']; ?></p>
-        </div>
-        <?php setcookie('message', '', time(), '/'); ?>
-    <?php } ?>
-    <?php if (isset($_COOKIE['message-error']) && !empty($_COOKIE['message-error'])) { ?>
-        <div class="notice notice-error is-dismissible">
-            <p><?= $_COOKIE['message-error']; ?></p>
-        </div>
-        <?php setcookie('message-error', '', time(), '/'); ?>
-    <?php } ?>
+    <?php
+    include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+    ?>
 
     <div class="back-button-container">
         <a class="button button-outline-primary"
@@ -123,7 +114,8 @@
                                 <h3 class="form-section-title">
                                     <b><?= __('Start and end dates for period cuts', 'edusystem'); ?></b>
                                 </h3>
-                                <div class="form-grid" style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
+                                <div class="form-grid"
+                                    style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
                                     <div class="form-field-custom">
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
@@ -162,7 +154,8 @@
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <div class="form-grid" style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
+                                <div class="form-grid"
+                                    style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
                                     <div class="form-field-custom">
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
@@ -201,7 +194,8 @@
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <div class="form-grid" style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
+                                <div class="form-grid"
+                                    style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
                                     <div class="form-field-custom">
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
@@ -240,7 +234,8 @@
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <div class="form-grid" style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
+                                <div class="form-grid"
+                                    style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
                                     <div class="form-field-custom">
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label
@@ -279,7 +274,8 @@
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <div class="form-grid" style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
+                                <div class="form-grid"
+                                    style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
                                     <div class="form-field-custom">
                                         <?php if (isset($period) && !empty($period)): ?>
                                             <label

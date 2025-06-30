@@ -36,6 +36,7 @@ require plugin_dir_path(__FILE__) . 'student-graduation.php';
 require plugin_dir_path(__FILE__) . 'feed.php';
 require plugin_dir_path(__FILE__) . 'auto-inscription.php';
 require plugin_dir_path(__FILE__) . 'templates-emails.php';
+require plugin_dir_path(__FILE__) . 'expenses-payroll.php';
 
 function admin_form_plugin_scripts()
 {

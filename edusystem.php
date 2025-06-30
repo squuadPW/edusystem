@@ -61,6 +61,19 @@ function create_tables()
   $table_programs = $wpdb->prefix . 'programs';
   $table_quota_rules = $wpdb->prefix . 'quota_rules';
   $table_scholarship_assigned_student = $wpdb->prefix . 'scholarship_assigned_student';
+  $table_expenses = $wpdb->prefix . 'expenses';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_expenses}'") != $table_expenses) {
+    dbDelta(
+      "CREATE TABLE " . $table_expenses . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        motive TEXT NOT NULL,
+        apply_to DATE NOT NULL,
+        amount DOUBLE(10, 2) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_scholarship_assigned_student}'") != $table_scholarship_assigned_student) {
     dbDelta(

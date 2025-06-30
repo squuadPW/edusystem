@@ -11,18 +11,10 @@ $roles = $current_user->roles;
         <h2 style="margin-bottom:15px;"><?= __('Not found', 'edusystem'); ?></h2>
     <?php endif; ?>
 
-    <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
-        <div class="notice notice-success is-dismissible">
-            <p><?= $_COOKIE['message']; ?></p>
-        </div>
-        <?php setcookie('message', '', time(), '/'); ?>
-    <?php } ?>
-    <?php if (isset($_COOKIE['message-error']) && !empty($_COOKIE['message-error'])) { ?>
-        <div class="notice notice-error is-dismissible">
-            <p><?= $_COOKIE['message-error']; ?></p>
-        </div>
-        <?php setcookie('message-error', '', time(), '/'); ?>
-    <?php } ?>
+    <?php 
+        include(plugin_dir_path(__FILE__).'cookie-message.php');
+    ?>
+    
     <div>
         <div style="display:flex; justify-content: start;">
             <a class="button button-outline-primary"

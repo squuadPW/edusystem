@@ -625,6 +625,42 @@ function add_admin_form_payments_content()
             // }
             // $new_order->save();
 
+        } else if ($_GET['action'] == 'save_expense_details') {
+            global $wpdb;
+            $table_expenses = $wpdb->prefix . 'expenses';
+
+            $expense_id = sanitize_text_field($_POST['expense_id']);
+            $motive = sanitize_text_field($_POST['motive']);
+            $apply_to = sanitize_text_field($_POST['apply_to']);
+            $amount = sanitize_text_field($_POST['amount']);
+
+            if (isset($expense_id) && !empty($expense_id)) {
+                $wpdb->update($table_expenses, [
+                    'motive' => $motive,
+                    'apply_to' => $apply_to,
+                    'amount' => $amount,
+                ], ['id' => $expense_id]);
+            } else {
+                $wpdb->insert($table_expenses, [
+                    'motive' => $motive,
+                    'apply_to' => $apply_to,
+                    'amount' => $amount,
+                ]);
+            }
+
+            setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=expenses_payroll'));
+            exit;
+        } else if ($_GET['action'] == 'delete_expense') {
+            global $wpdb;
+            $table_expenses = $wpdb->prefix . 'expenses';
+
+            $id_expense = intval($_GET['id_expense']);
+            $wpdb->delete($table_expenses, ['id' => $id_expense]);
+
+            setcookie('message', __('Expense deleted successfully.', 'edusystem'), time() + 10, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=expenses_payroll'));
+            exit;
         }
     }
 
@@ -691,8 +727,16 @@ function add_admin_form_payments_content()
                 $url = wp_get_attachment_url($student->profile_picture);
             }
             include(plugin_dir_path(__FILE__) . 'templates/generate-advance-payment.php');
-        }
+        } else if ($_GET['section_tab'] == 'expenses_payroll') {
 
+            $list_payments = new TT_Expenses_Payroll_List_Table;
+            $list_payments->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/list-expenses-payroll.php');
+        } else if ($_GET['section_tab'] == 'add_expenses_payroll') {
+            $id_expense = intval($_GET['id_expense']);
+            $expense = get_expense_detail($id_expense);
+            include(plugin_dir_path(__FILE__) . 'templates/expenses-payroll-detail.php');
+        }
 
     } else {
         $list_payments = new TT_payment_pending_List_Table;
@@ -1372,6 +1416,133 @@ class TT_Invoices_Alliances_List_Table extends WP_List_Table
     {
 
         $data_invoices = $this->get_invoices_alliances();
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+        $data = $data_invoices['data'];
+        $total_count = (int) $data_invoices['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Expenses_Payroll_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(array(
+            'singular' => 'expense',
+            'plural' => 'expenses',
+            'ajax' => true
+        ));
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        global $current_user;
+        switch ($column_name) {
+            case 'amount':
+                return wc_price($item['amount']);
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a style='margin: 1px' href='" . admin_url('/admin.php?page=add_admin_form_payments_content&section_tab=add_expenses_payroll&id_expense=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin: 1px' href='" . admin_url('/admin.php?page=add_admin_form_payments_content&action=delete_expense&id_expense=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return sprintf(
+            '%1$s<a href="javascript:void(0)">%2$s</a>',
+            '<span data-id="' . $item['id'] . '" class="dashicons dashicons-menu handle" style="cursor:all-scroll;"></span>',
+            ucwords($item['name']),
+        );
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'motive' => __('Motive', 'edusystem'),
+            'apply_to' => __('Apply to', 'edusystem'),
+            'amount' => __('Amount', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_expenses_payroll()
+    {
+        global $wpdb;
+        $per_page = 20;
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+
+        $table_expenses = $wpdb->prefix . 'expenses';
+        $transactions = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_expenses} LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        return ['data' => $transactions, 'total_count' => $total_count];
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function prepare_items()
+    {
+
+        $data_invoices = $this->get_expenses_payroll();
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();

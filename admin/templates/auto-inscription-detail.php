@@ -1,18 +1,9 @@
 <div class="wrap">
     <h2 style="margin-bottom:15px;"><?= __('EduSystem Autoenrollment', 'edusystem'); ?></h2>
 
-    <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
-        <div class="notice notice-success is-dismissible">
-            <p><?= nl2br($_COOKIE['message']); ?></p>
-        </div>
-        <?php setcookie('message', '', time(), '/'); ?>
-    <?php } ?>
-    <?php if (isset($_COOKIE['message-error']) && !empty($_COOKIE['message-error'])) { ?>
-        <div class="notice notice-error is-dismissible">
-            <p><?= $_COOKIE['message-error']; ?></p>
-        </div>
-        <?php setcookie('message-error', '', time(), '/'); ?>
-    <?php } ?>
+    <?php
+    include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+    ?>
 
     <div id="dashboard-widgets" class="metabox-holder admin-add-offer">
         <div id="postbox-container-1" style="width:100% !important;">
@@ -55,9 +46,10 @@
                                 </div>
                             </div>
 
-                            <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:center;gap:5px; display: none" id="enroll-button">
-                                <button type="submit"
-                                    class="button button-primary" onclick="return confirm('<?= __('Are you sure you want to enroll students?', 'edusystem'); ?>')"><?= __('Enroll', 'edusystem'); ?></button>
+                            <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:center;gap:5px; display: none"
+                                id="enroll-button">
+                                <button type="submit" class="button button-primary"
+                                    onclick="return confirm('<?= __('Are you sure you want to enroll students?', 'edusystem'); ?>')"><?= __('Enroll', 'edusystem'); ?></button>
                             </div>
                         </form>
                     </div>
