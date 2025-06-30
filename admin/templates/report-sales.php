@@ -56,7 +56,7 @@
             <!-- <div style="background-color: #ffe0e6;" class="card-report-sales tooltip"
             title="The subtraction of the institution fee, alliance fee, payment fee, system fee and the order tax is applied">
             <div>Net Sale</div>
-            <div style="margin-top: 10px"><strong id="net"></strong></div>
+            <div style="margin-top: 10px"><strong class="net-display"></strong></div>
         </div> -->
             <!-- <div style="background-color: #fff7d4;" class="card-report-sales tooltip" title="Total fees for alliances">
             <div>Alliances fee</div>
@@ -110,15 +110,19 @@
                 </tr>
                 <tr>
                     <td>Net sale</td>
-                    <td id="net" class="tooltip"
+                    <td class="net-display" class="tooltip"
                         title="The subtraction of the institution fee, alliance fee, payment fee, system fee and the order tax is applied">
                     </td>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <td>Profit margin</td>
-                    <td id="profit_margin" class="tooltip"
+                    <td class="profit-margin-display" class="tooltip"
                         title="The amount of expenses is subtracted from the net amount to define the profit margin.">
                     </td>
+                </tr> -->
+                <tr>
+                    <td>Accounts receivable</td>
+                    <td id="receivable" class="tooltip" title="All upcoming accounts receivable (pending quotes)"></td>
                 </tr>
             </tbody>
         </table>
@@ -158,13 +162,13 @@
                 </tr>
                 <tr>
                     <td>Expenses and payroll</td>
-                    <td id="expenses" class="tooltip"
+                    <td class="expenses-display" class="tooltip"
                         title="Amount of expenditures and payrolls found in the selected range of dates"></td>
                 </tr>
             </tbody>
         </table>
 
-        <h2 style="margin-top: 18px"><?= __('Receivables', 'edusystem'); ?></h2>
+        <h2 style="margin-top: 18px"><?= __('Profit margin', 'edusystem'); ?></h2>
         <table class="wp-list-table widefat fixed striped posts" style="margin: 20px 0px 40px 0px;">
             <thead>
                 <tr>
@@ -174,9 +178,34 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>Accounts receivable</td>
-                    <td id="receivable" class="tooltip" title="All upcoming accounts receivable (pending quotes)"></td>
+                    <td>Net sale</td>
+                    <td class="net-display" class="tooltip"
+                        title="The subtraction of the institution fee, alliance fee, payment fee, system fee and the order tax is applied">
+                    </td>
                 </tr>
+                <tr>
+                    <td>Expenses and payroll</td>
+                    <td class="expenses-display" class="tooltip"
+                        title="Amount of expenditures and payrolls found in the selected range of dates"></td>
+                </tr>
+                <tr>
+                    <td>Profit margin</td>
+                    <td class="profit-margin-display" class="tooltip"
+                        title="The amount of expenses is subtracted from the net amount to define the profit margin.">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 style="margin-top: 18px"><?= __('Payment methods used', 'edusystem'); ?></h2>
+        <table class="wp-list-table widefat fixed striped posts" style="margin: 20px 0px 40px 0px;">
+            <thead>
+                <tr>
+                    <th scope="col" class=" manage-column column-primary"><?= __('Payment method', 'edusystem'); ?></th>
+                    <th scope="col" class=" manage-column column-amount"><?= __('Amount', 'edusystem'); ?></th>
+                </tr>
+            </thead>
+            <tbody id="tbody-payment-methods">
             </tbody>
         </table>
 

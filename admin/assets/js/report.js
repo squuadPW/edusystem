@@ -24,8 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let filter = document.getElementById("typeFilter").value;
     let custom = document.getElementById("inputStartDate").value;
 
-    document.getElementById("summary_loading").style = 'display: block';
-    document.getElementById("summary_content").style = 'display: none';
+    document.getElementById("summary_loading").style = "display: block";
+    document.getElementById("summary_content").style = "display: none";
 
     const XHR = new XMLHttpRequest();
     XHR.open("POST", list_orders_sales.url, true);
@@ -49,15 +49,32 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("gross").innerHTML = result.data.gross;
           document.getElementById("orders").innerHTML =
             result.data.orders.length;
-          document.getElementById("net").innerHTML = result.data.net;
           document.getElementById("a_fee").innerHTML = result.data.alliance_fee;
           document.getElementById("i_fee").innerHTML =
             result.data.institute_fee;
           document.getElementById("p_fees").innerHTML = result.data.fee_payment;
           document.getElementById("e_fees").innerHTML = result.data.fee_system;
           document.getElementById("tax").innerHTML = result.data.tax;
-          document.getElementById("profit_margin").innerHTML = result.data.profit_margin;
-          document.getElementById("expenses").innerHTML = result.data.expense;
+          // Para el margen de beneficio
+          const profitMarginElements = document.getElementsByClassName(
+            "profit-margin-display"
+          );
+          for (let i = 0; i < profitMarginElements.length; i++) {
+            profitMarginElements[i].innerHTML = result.data.profit_margin;
+          }
+
+          // Para los gastos
+          const expensesElements =
+            document.getElementsByClassName("expenses-display");
+          for (let i = 0; i < expensesElements.length; i++) {
+            expensesElements[i].innerHTML = result.data.expense;
+          }
+
+          // Para el neto
+          const netElements = document.getElementsByClassName("net-display");
+          for (let i = 0; i < netElements.length; i++) {
+            netElements[i].innerHTML = result.data.net;
+          }
           document.getElementById("receivable").innerHTML =
             result.data.receivable;
           document.getElementById("discount").innerHTML = result.data.discount;
@@ -70,24 +87,32 @@ document.addEventListener("DOMContentLoaded", function () {
             paymentOptions[i].remove();
           }
 
-          // Crear nuevos elementos dentro de card-totals-sales
-          var cardTotalsSales = document.getElementById("card-totals-sales");
-          Object.entries(result.data.payment_methods).forEach((element) => {
-            var newElement = document.createElement("div");
-            newElement.className = "card-report-sales tooltip";
-            newElement.style = "background-color: #d4c6e7;";
-            newElement.id = "payment-options";
-            newElement.title = `Payments made with ${element[0]}`;
-            newElement.innerHTML = `
-                          <div>${
-                            element[0] ? element[0] : "Payments made with split"
-                          }</div>
-                          <div style="margin-top: 10px;"><strong id="${
-                            element[0]
-                          }">${element[1]}</strong></div>
-                        `;
-            cardTotalsSales.appendChild(newElement);
-          });
+          const tbodyPaymentMethods = document.getElementById(
+            "tbody-payment-methods"
+          );
+
+          // Limpia el contenido existente en caso de que ya haya algo.
+          tbodyPaymentMethods.innerHTML = "";
+
+          Object.entries(result.data.payment_methods).forEach(
+            ([methodName, amount]) => {
+              const newRow = document.createElement("tr");
+
+              // Celda para el método de pago (sigue siendo textContent, ya que no debería tener HTML)
+              const methodCell = document.createElement("td");
+              methodCell.className = "manage-column column-primary";
+              methodCell.textContent = methodName || "Pagos divididos"; // Usa el nombre del método o un texto por defecto
+              newRow.appendChild(methodCell);
+
+              // Celda para el monto (ahora usa innerHTML)
+              const amountCell = document.createElement("td");
+              amountCell.className = "manage-column column-amount";
+              amountCell.innerHTML = amount; // ¡Cambiado a innerHTML!
+              newRow.appendChild(amountCell);
+
+              tbodyPaymentMethods.appendChild(newRow);
+            }
+          );
 
           // reload chart
           const chartData = result.chart_data;
@@ -109,8 +134,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
           }
 
-            document.getElementById("summary_loading").style = 'display: none';
-            document.getElementById("summary_content").style = 'display: block';
+          document.getElementById("summary_loading").style = "display: none";
+          document.getElementById("summary_content").style = "display: block";
         }
       }
     };

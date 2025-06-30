@@ -440,7 +440,13 @@ function get_orders($start, $end)
     }
 
     // --- Cálculos Finales y Formato ---
-    // Formatear los totales de los métodos de pago (al final de todos los cálculos)
+
+    // Primero, elimina los métodos de pago con valor 0
+    $payment_methods = array_filter($payment_methods, function ($total) {
+        return $total > 0; // Mantén solo los totales que sean mayores a 0
+    });
+
+    // Luego, formatea los totales de los métodos de pago restantes
     $payment_methods = array_map(function ($total) {
         return wc_price($total);
     }, $payment_methods);
