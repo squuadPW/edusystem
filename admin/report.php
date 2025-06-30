@@ -444,7 +444,8 @@ function get_orders($start, $end)
     }, $payment_methods);
 
     $total_fees = $institute_fee + $alliance_fee + $tax + $fee_payment + $fee_system;
-    $net = ($gross - $discount) - $total_fees - $expense_amount;
+    $net = ($gross - $discount) - $total_fees;
+    $profit_margin = ($gross - $discount) - $total_fees - $expense_amount;
 
     return [
         'institute_fee' => wc_price($institute_fee),
@@ -455,6 +456,7 @@ function get_orders($start, $end)
         'fees' => wc_price($total_fees),
         'gross' => wc_price($gross),
         'net' => wc_price($net),
+        'profit_margin' => wc_price($profit_margin),
         'adjusted_gross' => wc_price($gross - $discount),
         'discount' => wc_price($discount),
         'receivable' => wc_price($receivable),

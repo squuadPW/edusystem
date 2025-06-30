@@ -115,6 +115,12 @@
                     </td>
                 </tr>
                 <tr>
+                    <td>Profit margin</td>
+                    <td id="profit_margin" class="tooltip"
+                        title="The amount of expenses is subtracted from the net amount to define the profit margin.">
+                    </td>
+                </tr>
+                <tr>
                     <td>Accounts receivable</td>
                     <td id="receivable" class="tooltip" title="All upcoming accounts receivable (pending quotes)"></td>
                 </tr>
