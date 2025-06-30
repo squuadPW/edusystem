@@ -883,7 +883,7 @@ function list_sales_product()
 
         } else {
             $html .= "<tr>";
-            $html .= "<td colspan='7' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
+            $html .= "<td colspan='6' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
             $html .= "</tr>";
         }
 
