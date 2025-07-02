@@ -815,56 +815,78 @@ function update_elective_student($student_id, $status_id)
     ], ['id' => $student_id]);
 }
 
-function insert_register_documents($student_id, $grade_id)
-{
+/**
+ * Inserta los registros de documentos requeridos para un estudiante, evitando duplicados.
+ *
+ * Esta versión está optimizada para usar solo dos consultas a la base de datos,
+ * independientemente de la cantidad de documentos.
+ *
+ * @param int $student_id ID del estudiante.
+ * @param int $grade_id ID del grado del estudiante.
+ */
+function insert_register_documents($student_id, $grade_id) {
     global $wpdb;
 
+    // 1. OBTENCIÓN DE DATOS INICIALES
     $student = get_student_detail($student_id);
+    if (!$student) {
+        return; // Salir si no se encuentra el estudiante
+    }
+    
     $birthDate = new DateTime($student->birth_date);
-    $today = new DateTime();
-    $legal_age = ($today->diff($birthDate)->y >= 18);
+    $is_legal_age = ($birthDate->diff(new DateTime())->y >= 18);
 
     $table_student_documents = $wpdb->prefix . 'student_documents';
     $table_documents = $wpdb->prefix . 'documents';
 
-    // Query segura con prepared statement
-    $documents = $wpdb->get_results(
+    // 2. PRIMERA CONSULTA: Obtiene todos los documentos para el grado.
+    $documents_for_grade = $wpdb->get_results(
         $wpdb->prepare("SELECT * FROM {$table_documents} WHERE grade_id = %d", $grade_id)
     );
 
-    if (!$documents)
+    if (empty($documents_for_grade)) {
         return;
+    }
+    
+    // 3. SEGUNDA CONSULTA: Obtiene los documentos que YA existen para el estudiante.
+    // Esto reemplaza la consulta dentro del bucle.
+    $document_names = wp_list_pluck($documents_for_grade, 'name'); // Extrae solo los nombres
+    $placeholders = implode(', ', array_fill(0, count($document_names), '%s'));
+    
+    $query_params = array_merge([$student_id], $document_names);
+    $existing_docs = $wpdb->get_col(
+        $wpdb->prepare(
+            "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND document_id IN ({$placeholders})",
+            ...$query_params
+        )
+    );
 
-    foreach ($documents as $document) {
-        // Verificar existencia usando el ID del documento
-        $exist = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT 1 FROM {$table_student_documents} 
-                WHERE student_id = %d AND document_id = %s",
-                $student_id,
-                $document->name // Asumiendo que hay un campo id único
-            )
-        );
-
-        if ($exist)
+    // 4. LÓGICA EN PHP: Itera e inserta solo los documentos que faltan.
+    foreach ($documents_for_grade as $document) {
+        // Si el documento ya existe en la lista que obtuvimos, lo saltamos.
+        if (in_array($document->name, $existing_docs, true)) {
             continue;
-
-        // Lógica de is_required mejorada
-        $isRequired = 0;
-        $isVisible = $document->is_visible;
-        if ($document->is_required) {
-            $isRequired = ($document->name === 'ID OR CI OF THE PARENTS' && $legal_age) ? 0 : 1;
-            $isVisible = ($document->name === 'ID OR CI OF THE PARENTS' && $legal_age) ? 0 : 1;
         }
 
-        // Inserción segura
+        // ✅ LÓGICA MEJORADA Y MÁS CLARA PARA is_required e is_visible
+        // Por defecto, usamos los valores del documento maestro.
+        $is_required = $document->is_required;
+        $is_visible = $document->is_visible;
+
+        // Aplicamos la condición especial SOLO si es el documento de los padres y el estudiante es mayor de edad.
+        if ($is_legal_age && $document->name === 'ID OR CI OF THE PARENTS') {
+            $is_required = 0; // No es requerido
+            $is_visible = 0;  // No es visible
+        }
+
+        // Inserción segura en la base de datos
         $wpdb->insert($table_student_documents, [
-            'student_id' => $student_id,
+            'student_id'  => $student_id,
             'document_id' => $document->name,
-            'is_required' => $isRequired,
-            'is_visible' => $isVisible,
-            'status' => 0,
-            'created_at' => current_time('mysql')
+            'is_required' => $is_required,
+            'is_visible'  => $is_visible,
+            'status'      => 0,
+            'created_at'  => current_time('mysql'),
         ]);
     }
 }
