@@ -739,10 +739,9 @@ function add_loginout_link($items, $args)
     return $items;
 }
 
-function status_changed_payment($order_id)
+function status_changed_payment($order_id, $status_transition_from, $current_status, $that)
 {
     $order = wc_get_order($order_id);
-    $current_status = $order->get_status();
     $customer_id = $order->get_customer_id();
     $status_register = get_user_meta($customer_id, 'status_register', true);
 
@@ -763,343 +762,415 @@ function status_changed_payment($order_id)
     }
 }
 
-add_action('woocommerce_order_status_changed', 'status_changed_payment', 10, 3);
+add_action('woocommerce_order_status_changed', 'status_changed_payment', 10, 4);
 
-function status_order_completed($order, $order_id, $customer_id, $status_register)
+/**
+ * Orquesta las acciones cuando una orden se marca como "completada".
+ * Optimizado para mayor claridad y eficiencia.
+ *
+ * @param WC_Order $order Objeto de la orden de WooCommerce.
+ * @param int      $order_id ID de la orden.
+ * @param int      $customer_id ID del cliente.
+ */
+function status_order_completed($order, $order_id, $customer_id)
 {
-    global $wpdb, $current_user;
-    $table_student_payment = $wpdb->prefix . 'student_payments';
-
-    if (isset($status_register)) {
-        update_user_meta($customer_id, 'status_register', 1);
-    }
-
+    // 1. Actualiza los metadatos del usuario de forma directa.
+    update_user_meta($customer_id, 'status_register', 1);
     update_user_meta($customer_id, 'cuote_pending', 0);
 
-    if ($order->get_meta('student_id')) {
-        $customer = get_user_by('id', $customer_id);
-        $student_id = $order->get_meta('student_id');
-        create_user_student($student_id);
-        $items = $order->get_items();
-        foreach ($items as $item) {
-            $query = $wpdb->prepare("
-                UPDATE {$table_student_payment} AS main
-                INNER JOIN (
-                    SELECT product_id, MIN(id) AS min_id
-                    FROM {$table_student_payment}
-                    WHERE student_id = %d
-                    AND product_id = %d
-                    AND status_id = 0
-                    GROUP BY product_id
-                ) AS sub ON main.product_id = sub.product_id AND main.id = sub.min_id
-                SET main.status_id = 1, main.order_id = %d, main.date_payment = CURDATE()
-            ", $student_id, $item->get_product_id(), $order_id);
-            $wpdb->query($query);
-        }
+    $student_id = $order->get_meta('student_id');
 
-        if ($order->get_meta('crm_id')) {
-            crm_request('contacts', $order->get_meta('crm_id'), 'PUT', array('status' => 'client'));
-            $data = array('contactId' => $order->get_meta('crm_id'), 'duration' => 15, 'startAt' => date('Y-m-d\TH:i:s'), 'title' => 'Payment completed', 'type' => 'SALE', 'status' => 'completed');
-            crm_request('activities', '', 'POST', $data);
-        }
+    // 2. Salir temprano si no hay un ID de estudiante asociado.
+    if (empty($student_id)) {
+        return;
+    }
 
-        $student = get_student_detail($student_id);
-        if ($student->status_id < 2) {
-            update_status_student($student_id, 1);
-            $email_request_documents = WC()->mailer()->get_emails()['WC_Request_Documents_Email'];
-            $email_request_documents->trigger($student_id);
-        }
+    // Asegura que el usuario de WordPress para el estudiante exista.
+    create_user_student($student_id);
 
-        set_max_date_student($student_id);
+    // 3. Itera sobre los artículos para actualizar o crear registros de pago.
+    foreach ($order->get_items() as $item) {
+        update_or_create_payment_record($item, $student_id, $order_id);
+    }
+    
+    // 4. Agrupa las llamadas a sistemas externos para mayor claridad.
+    handle_crm_updates($order);
+    update_student_status_and_notify($student_id);
+    set_max_date_student($student_id);
+}
 
-        return null;
+
+/**
+ * Actualiza el pago pendiente más antiguo o crea un nuevo registro si no existe.
+ *
+ * @param WC_Order_Item_Product $item El artículo de la orden.
+ * @param int                   $student_id ID del estudiante.
+ * @param int                   $order_id ID de la orden actual.
+ */
+function update_or_create_payment_record($item, $student_id, $order_id)
+{
+    global $wpdb;
+    $table_student_payment = $wpdb->prefix . 'student_payments';
+    $product_id = $item->get_product_id();
+
+    // 5. Intenta actualizar el pago pendiente más antiguo (cuota más baja).
+    $query = $wpdb->prepare("
+        UPDATE {$table_student_payment}
+        SET status_id = 1, order_id = %d, date_payment = CURDATE()
+        WHERE student_id = %d
+          AND product_id = %d
+          AND status_id = 0
+        ORDER BY cuote ASC
+        LIMIT 1
+    ", $order_id, $student_id, $product_id);
+    
+    $rows_updated = $wpdb->query($query);
+
+    // 6. LÓGICA CLAVE: Si no se actualizó ninguna fila, es porque no había pagos pendientes. Se crea uno nuevo.
+    if ($rows_updated === 0) {
+        $product = $item->get_product();
+        $total = $item->get_total(); // Precio final pagado por este artículo en esta orden.
+
+        $data = [
+            'status_id'         => 1, // Nace como pago completado.
+            'order_id'          => $order_id,
+            'student_id'        => $student_id,
+            'product_id'        => $product_id,
+            'variation_id'      => $item->get_variation_id(),
+            'amount'            => $total,
+            'total_amount'      => $total,
+            'original_amount'   => floatval($product->get_regular_price()),
+            'discount_amount'   => floatval($product->get_regular_price()) - $total,
+            'type_payment'      => 2, // Pago único.
+            'cuote'             => 1,
+            'num_cuotes'        => 1,
+            'date_payment'      => current_time('mysql'),
+            'date_next_payment' => null,
+        ];
+
+        $wpdb->insert($table_student_payment, $data);
     }
 }
 
+
+/**
+ * Maneja las actualizaciones en el CRM externo.
+ *
+ * @param WC_Order $order Objeto de la orden.
+ */
+function handle_crm_updates($order)
+{
+    $crm_id = $order->get_meta('crm_id');
+    if ($crm_id) {
+        crm_request('contacts', $crm_id, 'PUT', ['status' => 'client']);
+        
+        $activity_data = [
+            'contactId' => $crm_id,
+            'duration'  => 15,
+            'startAt'   => current_time('Y-m-d\TH:i:s'),
+            'title'     => 'Payment completed',
+            'type'      => 'SALE',
+            'status'    => 'completed'
+        ];
+        crm_request('activities', '', 'POST', $activity_data);
+    }
+}
+
+
+/**
+ * Actualiza el estado del estudiante y le notifica si es necesario.
+ *
+ * @param int $student_id ID del estudiante.
+ */
+function update_student_status_and_notify($student_id)
+{
+    $student = get_student_detail($student_id);
+    
+    // 7. Comprobación más segura del estado del estudiante.
+    if ($student && $student->status_id < 2) {
+        update_status_student($student_id, 1);
+        
+        // Dispara el correo de solicitud de documentos.
+        $mailer = WC()->mailer();
+        $email = $mailer->get_emails()['WC_Request_Documents_Email'];
+        if ($email) {
+            $email->trigger($student_id);
+        }
+    }
+}
+
+/**
+ * Procesa la orden para crear registros de pago del estudiante y manejar la inscripción.
+ *
+ * @param WC_Order $order Objeto de la orden de WooCommerce.
+ * @param int      $order_id ID de la orden.
+ * @param int      $customer_id ID del cliente.
+ * @param mixed    $status_register Estado de registro del usuario.
+ */
 function status_order_not_completed($order, $order_id, $customer_id, $status_register)
 {
-    global $wpdb, $current_user;
-    $table_student_payment = $wpdb->prefix . 'student_payments';
-
-    if ($status_register != 1 && $status_register != '1') {
+    error_log('entro en el no completed');
+    // 1. Usa comparaciones estrictas y evita la globalización innecesaria.
+    if ($status_register != 1) {
         update_user_meta($customer_id, 'status_register', 0);
     }
 
+    // 2. Procesa los pagos del programa (AES PROGRAM).
+    process_program_payments($order, $order_id);
 
-    // FOR PROGRAM PAYMENT (AES PROGRAM)
-    $items = $order->get_items();
-    $date = new DateTime();
-    $date = $date->format('Y-m-d');
+    // 3. Procesa la cuota de inscripción y las acciones asociadas.
+    process_inscription_fee($order, $order_id);
+}
+
+/**
+ * Crea registros de pago para cada artículo en la orden.
+ *
+ * @param WC_Order $order Objeto de la orden.
+ * @param int      $order_id ID de la orden.
+ */
+function process_program_payments($order, $order_id)
+{
+    global $wpdb;
+    $table_student_payment = $wpdb->prefix . 'student_payments';
     $student_id = $order->get_meta('student_id');
 
-    foreach ($items as $item) {
-        $cuotes = 1;
-        $date_calc = '';
-        $product_id = $item->get_product_id(); // Get the product ID
-        $variation_id = $item->get_variation_id(); // Get the variation ID
-        $is_variable = $item->get_product()->is_type('variation');
-        $price = $item->get_product()->get_price($variation_id); // Get the price of the selected variation
-        $original_amount = $price;
-        $discount = wc_get_order_item_meta($item->get_id(), '_line_subtotal') - wc_get_order_item_meta($item->get_id(), '_line_total');
-        $price -= $discount;
-        $exist = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = {$product_id} and order_id = {$order_id}");
-        if (!$exist) {
+    if (empty($student_id)) {
+        return; // Salir si no hay ID de estudiante.
+    }
 
-            if ($is_variable) {
-                $product = $item->get_product();
-                $variation_attributes = $product->get_variation_attributes();
-                foreach ($variation_attributes as $attribute_taxonomy => $term_slug) {
-                    $taxonomy = str_replace('attribute_', '', $attribute_taxonomy);
-                    $attribute_name = wc_attribute_label($taxonomy, $product);
-                    if (taxonomy_exists($taxonomy)) {
-                        $attribute_value = get_term_by('slug', $term_slug, $taxonomy)->name;
-                    } else {
-                        $attribute_value = $term_slug;
-                    }
-                }
+    error_log(print_r($order->get_items(), true));
+    foreach ($order->get_items() as $item_id => $item) {
+        $product = $item->get_product();
+        if (!$product) {
+            continue;
+        }
 
-                switch ($attribute_value) {
-                    case 'Annual':
-                        $date_calc = '+1 year';
-                        break;
-                    case 'Semiannual':
-                        $date_calc = '+6 months';
-                        break;
-                }
+        $product_id = $product->get_id();
+        $variation_id = $item->get_variation_id();
+        
+        // 4. Prepara la consulta para evitar inyecciones SQL.
+        $query = $wpdb->prepare(
+            "SELECT COUNT(*) FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d AND order_id = %d",
+            $student_id,
+            $product_id,
+            $order_id
+        );
 
-                $cuotes = $product->get_meta('num_cuotes_text') ? $product->get_meta('num_cuotes_text') : 1;
+        // 5. Evita la redundancia procesando solo si no existe un registro previo para esta orden.
+        if ($wpdb->get_var($query) > 0) {
+            continue;
+        }
+
+        $installments = 1;
+        $interval = '';
+
+        if ($product->is_type('variation')) {
+            // 6. Acceso más directo a los atributos y metadatos.
+            $payment_plan = $item->get_attribute('pa_payment-plan'); // Asegúrate de que 'pa_payment-plan' sea el slug de tu atributo.
+            switch ($payment_plan) {
+                case 'Annual':
+                    $interval = '+1 year';
+                    break;
+                case 'Semiannual':
+                    $interval = '+6 months';
+                    break;
             }
+            $installments = $product->get_meta('num_cuotes_text') ?: 1;
+        }
 
-            $need_next_payment = true;
-            if (in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION])) {
-                $need_next_payment = false;
-            }
+        // 7. Cálculo simplificado de precios y descuentos.
+        $original_price = floatval($product->get_price());
+        $line_total = floatval($item->get_total());
+        $line_subtotal = floatval($item->get_subtotal());
+        $discount_per_installment = ($line_subtotal - $line_total) / $installments;
+        $price_per_installment = $original_price - $discount_per_installment;
 
-            for ($i = 0; $i < $cuotes; $i++) {
-                $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
-                $data = array(
-                    'status_id' => 0,
-                    'order_id' => $order_id,
-                    'student_id' => $student_id,
-                    'product_id' => $product_id,
-                    'variation_id' => $variation_id,
-                    'amount' => $price,
-                    'total_amount' => ($price * $cuotes),
-                    'original_amount' => ($original_amount * $cuotes),
-                    'discount_amount' => ($discount * $cuotes),
-                    'type_payment' => $cuotes > 1 ? 1 : 2,
-                    'cuote' => ($i + 1),
-                    'num_cuotes' => $cuotes,
-                    'date_payment' => $i == 0 ? date('Y-m-d') : null,
-                    'date_next_payment' => $need_next_payment ? $date : null,
-                );
+        // 8. Define si se necesita una próxima fecha de pago.
+        $needs_next_payment = !in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]);
+        $current_date = new DateTime();
 
-                // Busca si ya existe una fila con los mismos valores
-                $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND product_id = %d AND variation_id = %d AND cuote = %d", $student_id, $product_id, $variation_id, ($i + 1)));
-                if (!$existing_row) {
-                    // Si no se encuentra ninguna fila, inserta la nueva fila
-                    $wpdb->insert($wpdb->prefix . 'student_payments', $data);
+        for ($i = 0; $i < $installments; $i++) {
+            $next_payment_date = null;
+            if ($needs_next_payment) {
+                $payment_date_obj = clone $current_date;
+                if ($i > 0 && !empty($interval)) {
+                    $payment_date_obj->modify("+$i " . str_replace(['+1 ', 's'], '', $interval) . "s");
                 }
+                $next_payment_date = $payment_date_obj->format('Y-m-d');
             }
+            
+            $data = [
+                'status_id'         => 0,
+                'order_id'          => $order_id,
+                'student_id'        => $student_id,
+                'product_id'        => $product_id,
+                'variation_id'      => $variation_id,
+                'amount'            => $price_per_installment,
+                'total_amount'      => $price_per_installment * $installments,
+                'original_amount'   => $original_price * $installments,
+                'discount_amount'   => $discount_per_installment * $installments,
+                'type_payment'      => $installments > 1 ? 1 : 2,
+                'cuote'             => ($i + 1),
+                'num_cuotes'        => $installments,
+                'date_payment'      => $i == 0 ? $current_date->format('Y-m-d') : null,
+                'date_next_payment' => $next_payment_date,
+            ];
+
+            // 9. Inserta los datos de forma segura.
+            $wpdb->insert($table_student_payment, $data);
         }
     }
-    // FOR PROGRAM PAYMENT (AES PROGRAM)
+}
 
-    // FEE DE INSCRIPCION
-    $product = null;
-    foreach ($items as $item) {
-        $product = $item->get_product()->get_id() == FEE_INSCRIPTION ? $item->get_product() : $product;
-    }
-    if (isset($product)) {
-        $roles = $current_user->roles;
-        $table_student_documents = $wpdb->prefix . 'student_documents';
-        $table_student_payment = $wpdb->prefix . 'student_payments';
-        $access_virtual = true;
-        $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
-
-        if ($documents_student) {
-            foreach ($documents_student as $document) {
-                if ($document->status != 5) {
-                    $access_virtual = false;
-                }
-            }
-
-            // VERIFICAR FEE DE INSCRIPCION
-            $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = " . FEE_INSCRIPTION);
-            // VERIFICAR FEE DE INSCRIPCION
-
-            //virtual classroom
-            if ($access_virtual && isset($paid)) {
-                $table_name = $wpdb->prefix . 'students'; // assuming the table name is "wp_students"
-                $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
-                $type_document = array(
-                    'identification_document' => 1,
-                    'passport' => 2,
-                    'ssn' => 4,
-                )[$student->type_document];
-
-                $files_to_send = array();
-
-                $type_document = '';
-                switch ($student->type_document) {
-                    case 'identification_document':
-                        $type_document = 1;
-                        break;
-                    case 'passport':
-                        $type_document = 2;
-                        break;
-                    case 'ssn':
-                        $type_document = 4;
-                        break;
-                }
-
-                $type_document_re = '';
-                if (get_user_meta($student->partner_id, 'type_document', true)) {
-                    switch (get_user_meta($student->partner_id, 'type_document', true)) {
-                        case 'identification_document':
-                            $type_document_re = 1;
-                            break;
-                        case 'passport':
-                            $type_document_re = 2;
-                            break;
-                        case 'ssn':
-                            $type_document_re = 4;
-                            break;
-                    }
-                } else {
-                    $type_document_re = 1;
-                }
-
-
-                $gender = '';
-                switch ($student->gender) {
-                    case 'male':
-                        $gender = 'M';
-                        break;
-                    case 'female':
-                        $gender = 'F';
-                        break;
-                }
-
-
-                $gender_re = '';
-                if (get_user_meta($student->partner_id, 'gender', true)) {
-                    switch (get_user_meta($student->partner_id, 'gender', true)) {
-                        case 'male':
-                            $gender_re = 'M';
-                            break;
-                        case 'female':
-                            $gender_re = 'F';
-                            break;
-                    }
-                } else {
-                    $gender_re = 'M';
-                }
-
-                $grade = '';
-                switch ($student->grade_id) {
-                    case 1:
-                        $grade = 9;
-                        break;
-                    case 2:
-                        $grade = 10;
-                        break;
-                    case 3:
-                        $grade = 11;
-                        break;
-                    case 4:
-                        $grade = 12;
-                        break;
-                }
-                $user_partner = get_user_by('id', $student->partner_id);
-                $fields_to_send = array(
-                    // DATOS DEL ESTUDIANTE
-                    'id_document' => $student->id_document,
-                    'type_document' => $type_document,
-                    'firstname' => $student->name . ' ' . $student->middle_name,
-                    'lastname' => $student->last_name . ' ' . $student->middle_last_name,
-                    'birth_date' => $student->birth_date,
-                    'phone' => $student->phone,
-                    'email' => $student->email,
-                    'etnia' => $student->ethnicity,
-                    'grade' => $grade,
-                    'gender' => $gender,
-                    'cod_period' => $student->academic_period,
-
-                    // PADRE
-                    'id_document_re' => get_user_meta($student->partner_id, 'id_document', true) ? get_user_meta($student->partner_id, 'id_document', true) : '000000',
-                    'type_document_re' => $type_document_re,
-                    'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
-                    'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
-                    'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
-                    'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
-                    'email_re' => $user_partner->user_email,
-                    'gender_re' => $gender_re,
-
-                    'cod_program' => PROGRAM_ID,
-                    'cod_tip' => TYPE_PROGRAM,
-                    'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
-                    'country' => get_user_meta($student->partner_id, 'billing_country', true),
-                    'city' => get_user_meta($student->partner_id, 'billing_city', true),
-                    'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true) ? get_user_meta($student->partner_id, 'billing_postcode', true) : '-',
-                );
-
-                $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
-                $documents_to_send = [];
-                foreach ($all_documents_student as $document) {
-                    if ($document->attachment_id) {
-                        array_push($documents_to_send, $document);
-                    }
-                }
-
-                foreach ($documents_to_send as $key => $doc) {
-                    $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
-                    $attachment_id = $doc->attachment_id;
-                    $attachment_path = get_attached_file($attachment_id);
-                    if ($attachment_path) {
-                        $file_name = basename($attachment_path);
-                        $file_type = mime_content_type($attachment_path);
-
-                        $files_to_send[] = array(
-                            'file' => curl_file_create($attachment_path, $file_type, $file_name),
-                            'id_requisito' => $id_requisito
-                        );
-                    }
-                }
-
-                create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
-
-                if ($order->get_meta('id_bitrix')) {
-                    sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());
-                }
-
-                update_status_student($student_id, 2);
-
-                if (in_array('parent', $roles) && !in_array('student', $roles)) {
-                    create_user_student($student_id);
-                }
-
-                $exist = is_search_student_by_email($student_id);
-
-                if (!$exist) {
-                    create_user_moodle($student_id);
-                } else {
-                    $table_students = $wpdb->prefix . 'students';
-                    $wpdb->update($table_students, ['moodle_student_id' => $exist[0]['id']], ['id' => $student_id]);
-
-                    $is_exist_password = is_password_user_moodle($student_id);
-
-                    if (!$is_exist_password) {
-
-                        $password = generate_password_user();
-                        $wpdb->update($table_students, ['moodle_password' => $password], ['id' => $student_id]);
-                        change_password_user_moodle($student_id);
-                    }
-                }
-            }
+/**
+ * Procesa la cuota de inscripción, crea usuarios y envía datos a sistemas externos.
+ *
+ * @param WC_Order $order Objeto de la orden.
+ * @param int      $order_id ID de la orden.
+ */
+function process_inscription_fee($order, $order_id)
+{
+    // 10. Búsqueda eficiente del producto de inscripción.
+    $inscription_item = null;
+    foreach ($order->get_items() as $item) {
+        if ($item->get_product_id() == FEE_INSCRIPTION) {
+            $inscription_item = $item;
+            break;
         }
     }
-    // FEE DE INSCRIPCION
+
+    if (!$inscription_item) {
+        return;
+    }
+
+    global $wpdb;
+    $student_id = $order->get_meta('student_id');
+
+    if (empty($student_id) || !are_required_documents_approved($student_id)) {
+        return;
+    }
+    
+    // 11. Crea los usuarios de WordPress y Moodle solo cuando sea necesario.
+    $current_user = wp_get_current_user();
+    if (in_array('parent', $current_user->roles) && !in_array('student', $current_user->roles)) {
+        create_user_student($student_id);
+    }
+
+    // Esta única función ahora busca, actualiza el ID si lo encuentra, o crea el usuario si no existe.
+    sync_student_with_moodle($student_id);
+
+    // 12. Centraliza la obtención de datos para la API.
+    $api_data = prepare_data_for_laravel_api($student_id);
+    create_user_laravel($api_data);
+
+    if ($order->get_meta('id_bitrix')) {
+        sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());
+    }
+
+    update_status_student($student_id, 2);
+}
+
+/**
+ * Verifica si todos los documentos requeridos del estudiante están aprobados.
+ *
+ * @param int $student_id ID del estudiante.
+ * @return bool
+ */
+function are_required_documents_approved($student_id)
+{
+    global $wpdb;
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+    
+    // 13. Consulta SQL más eficiente.
+    $query = $wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table_student_documents} WHERE student_id = %d AND is_required = 1 AND status != 5",
+        $student_id
+    );
+
+    $unapproved_docs_count = $wpdb->get_var($query);
+    return $unapproved_docs_count == 0;
+}
+
+/**
+ * Prepara el array de datos para enviar a la API de Laravel.
+ *
+ * @param int $student_id ID del estudiante.
+ * @return array
+ */
+function prepare_data_for_laravel_api($student_id)
+{
+    global $wpdb;
+    $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}students WHERE id = %d", $student_id));
+    $partner_id = $student->partner_id;
+    $partner_meta = get_user_meta($partner_id);
+    $partner_user = get_user_by('id', $partner_id);
+
+    // 14. Mapeo para conversiones limpias.
+    $doc_type_map = ['identification_document' => 1, 'passport' => 2, 'ssn' => 4];
+    $gender_map = ['male' => 'M', 'female' => 'F'];
+    $grade_map = [1 => 9, 2 => 10, 3 => 11, 4 => 12];
+    
+    // 15. Operador de coalescencia nula para valores por defecto.
+    $fields = [
+        // Datos del Estudiante
+        'id_document'    => $student->id_document,
+        'type_document'  => $doc_type_map[$student->type_document] ?? null,
+        'firstname'      => $student->name . ' ' . $student->middle_name,
+        'lastname'       => $student->last_name . ' ' . $student->middle_last_name,
+        'birth_date'     => $student->birth_date,
+        'phone'          => $student->phone,
+        'email'          => $student->email,
+        'etnia'          => $student->ethnicity,
+        'grade'          => $grade_map[$student->grade_id] ?? null,
+        'gender'         => $gender_map[$student->gender] ?? null,
+        'cod_period'     => $student->academic_period,
+
+        // Datos del Representante (Padre/Madre)
+        'id_document_re'   => $partner_meta['id_document'][0] ?? '000000',
+        'type_document_re' => $doc_type_map[$partner_meta['type_document'][0] ?? ''] ?? 1,
+        'firstname_re'     => $partner_meta['first_name'][0] ?? '',
+        'lastname_re'      => $partner_meta['last_name'][0] ?? '',
+        'birth_date_re'    => $partner_meta['birth_date'][0] ?? '',
+        'phone_re'         => $partner_meta['billing_phone'][0] ?? '',
+        'email_re'         => $partner_user->user_email ?? '',
+        'gender_re'        => $gender_map[$partner_meta['gender'][0] ?? ''] ?? 'M',
+
+        // Datos del Programa y Dirección
+        'cod_program'    => PROGRAM_ID,
+        'cod_tip'        => TYPE_PROGRAM,
+        'address'        => $partner_meta['billing_address_1'][0] ?? '',
+        'country'        => $partner_meta['billing_country'][0] ?? '',
+        'city'           => $partner_meta['billing_city'][0] ?? '',
+        'postal_code'    => $partner_meta['billing_postcode'][0] ?? '-',
+    ];
+
+    $fields['files'] = get_student_files_for_api($student_id);
+
+    return $fields;
+}
+
+/**
+ * Obtiene los archivos del estudiante formateados para la API.
+ *
+ * @param int $student_id ID del estudiante.
+ * @return array
+ */
+function get_student_files_for_api($student_id)
+{
+    global $wpdb;
+    $documents = $wpdb->get_results($wpdb->prepare("SELECT doc.document_id, doc.attachment_id, d.id_requisito FROM {$wpdb->prefix}student_documents doc JOIN {$wpdb->prefix}documents d ON doc.document_id = d.name WHERE doc.student_id = %d AND doc.attachment_id IS NOT NULL", $student_id));
+    
+    $files_to_send = [];
+    foreach ($documents as $doc) {
+        $attachment_path = get_attached_file($doc->attachment_id);
+        if ($attachment_path && file_exists($attachment_path)) {
+            $files_to_send[] = [
+                'file'         => curl_file_create($attachment_path, mime_content_type($attachment_path), basename($attachment_path)),
+                'id_requisito' => $doc->id_requisito,
+            ];
+        }
+    }
+    return $files_to_send;
 }
 
 function insert_data_student($order)

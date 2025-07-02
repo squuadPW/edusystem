@@ -377,3 +377,67 @@ function unenroll_student($enrollments = [])
         return [];
     }
 }
+
+/**
+ * Sincroniza un estudiante con Moodle.
+ * Busca al usuario por email. Si existe, actualiza el ID local. Si no, lo crea en Moodle.
+ *
+ * @param int $student_id El ID del estudiante en WordPress.
+ * @return array|bool Devuelve los datos del usuario de Moodle (existente o recién creado) o false si ocurre un error.
+ */
+function sync_student_with_moodle($student_id)
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+
+    // 1. Obtiene los datos del estudiante de forma segura
+    $student_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_students} WHERE id = %d", $student_id));
+    if (!$student_data) {
+        // No se pudo encontrar al estudiante en la base de datos local
+        return false;
+    }
+
+    // 2. Obtiene las credenciales de Moodle una sola vez
+    $moodle_url = get_option('moodle_url');
+    $moodle_token = get_option('moodle_token');
+    if (empty($moodle_url) || empty($moodle_token)) {
+        // Faltan las credenciales de la API de Moodle
+        return false;
+    }
+
+    try {
+        $MoodleRest = new MoodleRest($moodle_url . 'webservice/rest/server.php', $moodle_token);
+
+        // 3. Busca al usuario en Moodle por su email
+        $search_params = [
+            'field' => 'email',
+            'values' => [$student_data->email]
+        ];
+        $existing_user_search = $MoodleRest->request('core_user_get_users_by_field', $search_params);
+        
+        // 4. LÓGICA CLAVE: Decide si actualizar o crear
+        if (!empty($existing_user_search) && isset($existing_user_search[0]['id'])) {
+            // -- EL USUARIO YA EXISTE --
+            $moodle_user = $existing_user_search[0];
+            
+            // Actualiza la tabla local solo con el ID de Moodle encontrado
+            $wpdb->update(
+                $table_students,
+                ['moodle_student_id' => $moodle_user['id']], // El dato a actualizar
+                ['id' => $student_id]                       // Dónde actualizarlo
+            );
+            
+            return $moodle_user; // Devuelve los datos del usuario encontrado
+
+        } else {
+            // -- EL USUARIO NO EXISTE --
+            // Llama a la función auxiliar para crear el usuario
+            return create_user_moodle($student_id);
+        }
+
+    } catch (\Throwable $th) {
+        // Manejo de errores de la API
+        error_log('Moodle API Error: ' . $th->getMessage());
+        return false;
+    }
+}

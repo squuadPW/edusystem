@@ -33,7 +33,7 @@ function add_admin_form_payments_content()
                         $order->update_meta_data('split_method', json_encode($split_method));
                     }
 
-                    $order->add_order_note('Payment verified by  ' . $name . '. Description: ' . ($description != '' ? $description : 'N/A'), 2); // 2 = admin note
+                    $order->add_order_note('Payment verified by ' . $name . '. Description: ' . ($description != '' ? $description : 'N/A'), 2); // 2 = admin note
 
                     $split_method_updated = $order->get_meta('split_method');
                     $split_method_updated = json_decode($split_method_updated);
@@ -52,22 +52,20 @@ function add_admin_form_payments_content()
                         $total_gross += $split->gross_total;
                     }
 
-                    $total_paid_meta = $order->get_meta('total_paid');
-                    if ($total_paid_meta) {
+                    // Actualizar metadatos de pago total
+                    if ($order->get_meta('total_paid')) {
                         $order->update_meta_data('total_paid', $total);
                     } else {
                         $order->add_meta_data('total_paid', $total);
                     }
 
-                    $total_paid_meta = $order->get_meta('total_paid_gross');
-                    if ($total_paid_meta) {
+                    if ($order->get_meta('total_paid_gross')) {
                         $order->update_meta_data('total_paid_gross', $total_gross);
                     } else {
                         $order->add_meta_data('total_paid_gross', $total_gross);
                     }
 
-                    $pending_payment_meta = $order->get_meta('pending_payment');
-                    if ($pending_payment_meta) {
+                    if ($order->get_meta('pending_payment')) {
                         $order->update_meta_data('pending_payment', ($order->get_total() - $total));
                     } else {
                         $order->add_meta_data('pending_payment', ($order->get_total() - $total));
@@ -75,14 +73,14 @@ function add_admin_form_payments_content()
 
                     if (!$on_hold_found) {
                         if ((float) $order->get_meta('pending_payment') <= 0) {
-
                             if ($order->get_status() == 'pending') {
                                 update_order_pending_approved($order, $payment_selected, $transaction_id, $other_payments);
                             }
-
-                            $order->update_status('completed');
+                            // Cambiar a set_status() para disparar el hook
+                            $order->set_status('completed');
                         } else {
-                            $order->update_status('pending-payment');
+                            // Cambiar a set_status() para disparar el hook
+                            $order->set_status('pending-payment');
                         }
                     }
 
@@ -103,15 +101,15 @@ function add_admin_form_payments_content()
                         }
 
                         $order->update_meta_data('split_method', json_encode($split_method_updated));
-                        $order->update_status('completed');
+                        // Cambiar a set_status() para disparar el hook
+                        $order->set_status('completed');
                     }
                 } else {
-
                     if ($order->get_status() == 'pending') {
                         update_order_pending_approved($order, $payment_selected, $transaction_id, $other_payments);
                     }
-
-                    $order->update_status('completed');
+                    // Cambiar a set_status() para disparar el hook
+                    $order->set_status('completed');
                     $order->add_order_note('Payment verified by ' . $name . '. Description: ' . ($description != '' ? $description : 'N/A'), 2); // 2 = admin note
                     $order->update_meta_data('payment_approved_by', $current_user->ID);
 
@@ -155,8 +153,8 @@ function add_admin_form_payments_content()
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
             } else {
-
-                $order->update_status('cancelled');
+                // Cambiar a set_status() para disparar el hook
+                $order->set_status('cancelled');
                 $order->add_order_note('Payment declined by ' . $name . '. Description: ' . ($description != '' ? $description : 'N/A'), 2); // 2 = admin note
                 $order->update_meta_data('payment_declined_by', $current_user->ID);
                 $order->save();
