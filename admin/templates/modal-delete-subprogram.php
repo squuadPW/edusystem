@@ -1,7 +1,7 @@
 <div id='modalDeleteSubprogram' class='modal' style='display:none'>
 	<div class='modal-content'>
 		<div class="modal-header">
-			<h3 style="font-size:20px;"><?= __('Delete subprogram') ?></h3>
+			<h3 style="font-size:20px;"><?= __('Delete subprogram','edusystem') ?></h3>
 			<span class="modal-close disabled"><span class="dashicons dashicons-no-alt"></span></span>
 		</div>
 		<form method="post"
