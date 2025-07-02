@@ -948,10 +948,9 @@ function process_program_payments($order, $order_id)
 
         // Evita la redundancia procesando solo si no existe un registro previo para esta orden.
         $existing_record_count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d AND order_id = %d",
+            "SELECT COUNT(*) FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d",
             $student_id,
-            $product_id,
-            $order_id
+            $product_id
         ));
 
         if ($existing_record_count > 0) {
