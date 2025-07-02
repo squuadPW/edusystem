@@ -2917,21 +2917,23 @@ function customer_pending_orders($user_id = null)
         $user_id = get_current_user_id();
     }
 
-    // Si no hay usuario, retornar falso
+    // Si no hay usuario, retornar falso.
     if ($user_id === 0) {
         return false;
     }
 
-    // Argumentos para buscar órdenes
+    // Argumentos para buscar órdenes del cliente.
     $args = array(
         'customer_id' => $user_id,
-        'status' => 'pending',
-        'limit' => 1, // Solo necesitamos al menos 1 orden
-        'return' => 'ids',
+        'status'      => array('pending', 'on-hold'),
+        'limit'       => 1, // Solo necesitamos saber si existe al menos 1 orden.
+        'return'      => 'ids', // Es más eficiente obtener solo los IDs.
     );
 
-    // Obtener órdenes
+    // Obtener las órdenes que coincidan.
     $orders = wc_get_orders($args);
+
+    // Retorna true si se encontró al menos una orden, de lo contrario false.
     return !empty($orders);
 }
 
