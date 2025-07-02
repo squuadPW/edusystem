@@ -437,7 +437,6 @@ function sync_student_with_moodle($student_id)
 
     } catch (\Throwable $th) {
         // Manejo de errores de la API
-        error_log('Moodle API Error: ' . $th->getMessage());
         return false;
     }
 }

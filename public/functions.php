@@ -909,7 +909,6 @@ function update_student_status_and_notify($student_id)
  */
 function status_order_not_completed($order, $order_id, $customer_id, $status_register)
 {
-    error_log('entro en el no completed');
     // 1. Usa comparaciones estrictas y evita la globalización innecesaria.
     if ($status_register != 1) {
         update_user_meta($customer_id, 'status_register', 0);
@@ -938,7 +937,6 @@ function process_program_payments($order, $order_id)
         return; // Salir si no hay ID de estudiante.
     }
 
-    error_log(print_r($order->get_items(), true));
     foreach ($order->get_items() as $item_id => $item) {
         $product = $item->get_product();
         if (!$product) {
