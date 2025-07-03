@@ -544,46 +544,63 @@ function get_dates_search($filter, $custom)
     $start = '';
     $end = '';
 
-    // Define el formato de fecha deseado (solo año, mes, día)
-    $date_format = 'Y-m-d';
+    // Define el formato de fecha deseado para la SALIDA (solo año, mes, día)
+    $output_date_format = 'Y-m-d';
 
     if ($filter == 'today') {
-        $start = wp_date($date_format);
-        $end = wp_date($date_format);
+        $start = wp_date($output_date_format);
+        $end = wp_date($output_date_format);
     } else if ($filter == 'yesterday') {
-        $start = wp_date($date_format, strtotime('-1 days'));
-        $end = wp_date($date_format, strtotime('-1 days')); // Cambiado a ayer también para el final del día
+        $start = wp_date($output_date_format, strtotime('-1 days'));
+        $end = wp_date($output_date_format, strtotime('-1 days'));
     } else if ($filter == 'tomorrow') {
-        $start = wp_date($date_format, strtotime('+1 days'));
-        $end = wp_date($date_format, strtotime('+1 days'));
+        $start = wp_date($output_date_format, strtotime('+1 days'));
+        $end = wp_date($output_date_format, strtotime('+1 days'));
     } else if ($filter == 'this-week') {
-        // Asumiendo que 'wp_date' se adapta a la configuración de inicio de semana de WordPress
-        $start = wp_date($date_format, strtotime('this week monday')); // O 'sunday' si la semana empieza en domingo
-        $end = wp_date($date_format, strtotime('this week sunday')); // O 'saturday'
+        // Ajusta según el inicio de semana de WordPress o tu preferencia (lunes o domingo)
+        // Por defecto, strtotime('this week monday') y 'this week sunday' funcionan bien.
+        $start = wp_date($output_date_format, strtotime('this week monday'));
+        $end = wp_date($output_date_format, strtotime('this week sunday'));
     } else if ($filter == 'last-week') {
-        $start = wp_date($date_format, strtotime('last week monday'));
-        $end = wp_date($date_format, strtotime('last week sunday'));
+        $start = wp_date($output_date_format, strtotime('last week monday'));
+        $end = wp_date($output_date_format, strtotime('last week sunday'));
     } else if ($filter == 'next-week') {
-        $start = wp_date($date_format, strtotime('next week monday'));
-        $end = wp_date($date_format, strtotime('next week sunday'));
+        $start = wp_date($output_date_format, strtotime('next week monday'));
+        $end = wp_date($output_date_format, strtotime('next week sunday'));
     } else if ($filter == 'this-month') {
-        $start = wp_date($date_format, strtotime('first day of this month'));
-        $end = wp_date($date_format, strtotime('last day of this month'));
+        $start = wp_date($output_date_format, strtotime('first day of this month'));
+        $end = wp_date($output_date_format, strtotime('last day of this month'));
     } else if ($filter == 'last-month') {
-        $start = wp_date($date_format, strtotime('first day of last month'));
-        $end = wp_date($date_format, strtotime('last day of last month'));
+        $start = wp_date($output_date_format, strtotime('first day of last month'));
+        $end = wp_date($output_date_format, strtotime('last day of last month'));
     } else if ($filter == 'next-month') {
-        $start = wp_date($date_format, strtotime('first day of next month'));
-        $end = wp_date($date_format, strtotime('last day of next month'));
+        $start = wp_date($output_date_format, strtotime('first day of next month'));
+        $end = wp_date($output_date_format, strtotime('last day of next month'));
     } else if ($filter == 'custom') {
+        // El formato de entrada esperado de $custom es "MM/DD/YYYY to MM/DD/YYYY"
+        $custom_input_format = 'm/d/Y'; // Formato de entrada de las fechas
+
         $date = str_replace([' to ', ' a '], ',', $custom);
         $date_array = explode(',', $date);
 
-        // Asegúrate de que las fechas personalizadas se formateen correctamente
-        $start = date($date_format, strtotime(str_replace('/', '-', $date_array[0])));
+        // Parsear la fecha de inicio
+        $dt_start = DateTime::createFromFormat($custom_input_format, trim($date_array[0]));
+        if ($dt_start) {
+            $start = $dt_start->format($output_date_format);
+        } else {
+            // Manejar error si la fecha de inicio es inválida
+            return [false, false]; // O manejar el error como prefieras
+        }
 
+        // Parsear la fecha de fin
         if (isset($date_array[1]) && !empty($date_array[1])) {
-            $end = date($date_format, strtotime(str_replace('/', '-', $date_array[1])));
+            $dt_end = DateTime::createFromFormat($custom_input_format, trim($date_array[1]));
+            if ($dt_end) {
+                $end = $dt_end->format($output_date_format);
+            } else {
+                // Manejar error si la fecha de fin es inválida
+                return [false, false]; // O manejar el error como prefieras
+            }
         } else {
             $end = $start; // Si no hay fecha de fin, es la misma que la de inicio
         }
@@ -591,7 +608,6 @@ function get_dates_search($filter, $custom)
 
     return [$start, $end];
 }
-
 
 
 // AGREGAR NUEVO CAMPO DE VARIACION DE PRODUCTO PARA JUGAR CON LOS VALORES DE LAS CUOTAS EN LOS PROGRAMAS

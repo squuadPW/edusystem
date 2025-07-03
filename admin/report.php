@@ -1966,7 +1966,6 @@ class TT_Summary_Comissions_Alliance_List_Table extends WP_List_Table
 
         $filter = $_POST['typeFilter'] ?? 'this-month';
         $custom = $_POST['custom'] ?? false;
-
         $dates = get_dates_search($filter, $custom);
         if (!is_array($dates) || count($dates) < 2 || empty($dates[0]) || empty($dates[1])) {
             return [];
