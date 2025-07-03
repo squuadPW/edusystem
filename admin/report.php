@@ -1847,6 +1847,10 @@ class TT_Summary_Comissions_Institute_List_Table extends WP_List_Table
                 continue;
             }
 
+            if ($total_generated == 0) {
+                continue;
+            }
+
             $institute = get_institute_details($institute_id); // Cambiado a $institute y get_institute_details
 
             if (!$institute || !is_object($institute)) { // Cambiado a $institute
@@ -2008,6 +2012,10 @@ class TT_Summary_Comissions_Alliance_List_Table extends WP_List_Table
         $alliances_with_data = array();
         foreach ($alliance_generated_fees as $alliance_id => $total_generated) {
             if (empty($alliance_id) || !is_scalar($alliance_id)) {
+                continue;
+            }
+
+            if ($total_generated == 0) {
                 continue;
             }
 
