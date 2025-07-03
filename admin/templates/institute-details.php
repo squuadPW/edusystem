@@ -441,23 +441,26 @@
                                         <th scope="row" style="font-weight:400;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
                                                 <label
-                                                    for="input_id"><b><?= __('Alliance', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <select name="alliance" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%">
+                                                    for="input_id"><b><?= __('Alliances', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <select name="alliances[]" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%" multiple="multiple">
                                                     <?php foreach ($alliances as $alliance): ?>
-                                                        <option value="<?= $alliance->id ?>"
-                                                            <?= ($institute->alliance_id == $alliance->id) ? 'selected' : ''; ?>>
-                                                            <?= $alliance->name ?>         <?= $alliance->last_name ?> -
-                                                            <?= $alliance->code ?>
+                                                        <option value="<?= esc_attr($alliance->id) ?>"
+                                                            <?= in_array($alliance->id, $selected_alliance_ids) ? 'selected' : ''; ?>>
+                                                            <?= esc_html($alliance->name) ?>
+                                                            <?= esc_html($alliance->last_name) ?> -
+                                                            <?= esc_html($alliance->code) ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Alliance', 'edusystem'); ?></b><span
+                                                <label for="input_id"><b><?= __('Alliances', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
-                                                <select name="alliance" required style="width: 100%">
+                                                <select name="alliances[]" required style="width: 100%" multiple="multiple">
                                                     <?php foreach ($alliances as $alliance): ?>
-                                                        <option value="<?= $alliance->id ?>"><?= $alliance->name ?>
-                                                            <?= $alliance->last_name ?> - <?= $alliance->code ?>
+                                                        <option value="<?= esc_attr($alliance->id) ?>">
+                                                            <?= esc_html($alliance->name) ?>
+                                                            <?= esc_html($alliance->last_name) ?> -
+                                                            <?= esc_html($alliance->code) ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>

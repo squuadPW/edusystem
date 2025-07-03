@@ -37,78 +37,44 @@ function add_admin_institutes_content()
 
             global $wpdb;
             $table_institutes = $wpdb->prefix . 'institutes';
-            $institute_id = $_POST['institute_id'];
+            $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes'; // Nueva tabla de alianzas por instituto
+            $institute_id = isset($_POST['institute_id']) ? intval($_POST['institute_id']) : 0; // Asegurarse de que sea un entero
 
-            $name = $_POST['name'];
-            $phone = $_POST['phone_hidden'];
-            $email = $_POST['email'];
-            $country = $_POST['country'];
-            $state = $_POST['state'];
-            $city = $_POST['city'];
-            $level = $_POST['level'];
-            $fee = str_replace('%', '', $_POST['fee']);
-            $rector_name = $_POST['rector_name'];
-            $rector_last_name = $_POST['rector_last_name'];
-            $rector_phone = $_POST['rector_phone_hidden'];
-            $contact_name = $_POST['contact_name'];
-            $contact_last_name = $_POST['contact_last_name'];
-            $contact_phone = $_POST['contact_phone_hidden'];
-            $address = $_POST['address'];
-            $description = $_POST['description'];
-            $reference = $_POST['reference'];
-            $business_name = $_POST['business_name'];
-            $alliance_id = $_POST['alliance'];
-            $type_calendar = $_POST['type_calendar'];
-            $lower_text = $_POST['lower_text'];
-            $middle_text = $_POST['middle_text'];
-            $upper_text = $_POST['upper_text'];
-            $graduated_text = $_POST['graduated_text'];
-            $manager_user_id = $_POST['manager_user_id'];
+            // Recopilar datos del formulario
+            $name = sanitize_text_field($_POST['name']);
+            $phone = sanitize_text_field($_POST['phone_hidden']);
+            $email = sanitize_email($_POST['email']);
+            $country = sanitize_text_field($_POST['country']);
+            $state = sanitize_text_field($_POST['state']);
+            $city = sanitize_text_field($_POST['city']);
+            $level = intval($_POST['level']);
+            $fee = str_replace('%', '', sanitize_text_field($_POST['fee']));
+            $rector_name = sanitize_text_field($_POST['rector_name']);
+            $rector_last_name = sanitize_text_field($_POST['rector_last_name']);
+            $rector_phone = sanitize_text_field($_POST['rector_phone_hidden']);
+            $contact_name = sanitize_text_field($_POST['contact_name']);
+            $contact_last_name = sanitize_text_field($_POST['contact_last_name']);
+            $contact_phone = sanitize_text_field($_POST['contact_phone_hidden']);
+            $address = sanitize_textarea_field($_POST['address']);
+            $description = sanitize_textarea_field($_POST['description']);
+            $reference = sanitize_text_field($_POST['reference']);
+            $business_name = sanitize_text_field($_POST['business_name']);
+            $type_calendar = sanitize_text_field($_POST['type_calendar']);
+            $lower_text = sanitize_textarea_field($_POST['lower_text']);
+            $middle_text = sanitize_textarea_field($_POST['middle_text']);
+            $upper_text = sanitize_textarea_field($_POST['upper_text']);
+            $graduated_text = sanitize_textarea_field($_POST['graduated_text']);
+            $manager_user_id = intval($_POST['manager_user_id']);
 
-            //update
-            if (isset($institute_id) && !empty($institute_id)) {
+            // Obtener las alianzas seleccionadas (será un array)
+            $selected_alliances = isset($_POST['alliances']) ? array_map('intval', (array) $_POST['alliances']) : [];
 
-                $wpdb->update($table_institutes, [
-                    'name' => $name,
-                    'phone' => $phone,
-                    'email' => $email,
-                    'country' => $country,
-                    'state' => $state,
-                    'city' => $city,
-                    'level_id' => $level,
-                    'type_calendar' => $type_calendar,
-                    'fee' => $fee,
-                    'name_rector' => $rector_name,
-                    'lastname_rector' => $rector_last_name,
-                    'phone_rector' => $rector_phone,
-                    'name_contact' => $contact_name,
-                    'lastname_contact' => $contact_last_name,
-                    'phone_contact' => $contact_phone,
-                    'address' => $address,
-                    'description' => $description,
-                    'business_name' => $business_name,
-                    'lower_text' => $lower_text,
-                    'middle_text' => $middle_text,
-                    'upper_text' => $upper_text,
-                    'graduated_text' => $graduated_text,
-                    'alliance_id' => $alliance_id,
-                    'manager_user_id' => $manager_user_id,
-                    'updated_at' => date('Y-m-d H:i:s')
-                ], ['id' => $institute_id]);
+            // --- Actualizar Instituto ---
+            if ($institute_id > 0) { // Usar 0 para indicar que no hay ID o que es una inserción
 
-                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
-                wp_redirect(admin_url('admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id=' . $institute_id));
-                exit;
-
-
-                //insert
-            } else {
-
-                $user = get_user_by('email', $email);
-
-                if (!$user) {
-
-                    $wpdb->insert($table_institutes, [
+                $wpdb->update(
+                    $table_institutes,
+                    [
                         'name' => $name,
                         'phone' => $phone,
                         'email' => $email,
@@ -124,7 +90,6 @@ function add_admin_institutes_content()
                         'name_contact' => $contact_name,
                         'lastname_contact' => $contact_last_name,
                         'phone_contact' => $contact_phone,
-                        'reference' => $reference,
                         'address' => $address,
                         'description' => $description,
                         'business_name' => $business_name,
@@ -132,19 +97,91 @@ function add_admin_institutes_content()
                         'middle_text' => $middle_text,
                         'upper_text' => $upper_text,
                         'graduated_text' => $graduated_text,
-                        'alliance_id' => $alliance_id,
+                        // 'alliance_id' ya no se usa aquí
                         'manager_user_id' => $manager_user_id,
-                        'status' => 1,
-                        'created_at' => date('Y-m-d H:i:s')
-                    ]);
+                        'updated_at' => current_time('mysql')
+                    ],
+                    ['id' => $institute_id]
+                );
 
-                    $institute_id = $wpdb->insert_id;
-                    $data_institute = $wpdb->get_row("SELECT * FROM {$table_institutes} WHERE id={$institute_id}");
-                    create_user_institute($data_institute);
+                // --- Gestionar alianzas en la tabla independiente ---
+                // 1. Eliminar las alianzas existentes para este instituto
+                $wpdb->delete($table_alliances_by_institute, ['institute_id' => $institute_id]);
+
+                // 2. Insertar las nuevas alianzas seleccionadas
+                foreach ($selected_alliances as $alliance_id) {
+                    $wpdb->insert(
+                        $table_alliances_by_institute,
+                        [
+                            'institute_id' => $institute_id,
+                            'alliance_id' => $alliance_id,
+                            'created_at' => current_time('mysql')
+                        ]
+                    );
+                }
+
+                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_institutes_content&section_tab=institute_details&institute_id=' . $institute_id));
+                exit;
+
+            } else { // --- Insertar Nuevo Instituto ---
+
+                $user = get_user_by('email', $email);
+
+                if (!$user) {
+                    $wpdb->insert(
+                        $table_institutes,
+                        [
+                            'name' => $name,
+                            'phone' => $phone,
+                            'email' => $email,
+                            'country' => $country,
+                            'state' => $state,
+                            'city' => $city,
+                            'level_id' => $level,
+                            'type_calendar' => $type_calendar,
+                            'fee' => $fee,
+                            'name_rector' => $rector_name,
+                            'lastname_rector' => $rector_last_name,
+                            'phone_rector' => $rector_phone,
+                            'name_contact' => $contact_name,
+                            'lastname_contact' => $contact_last_name,
+                            'phone_contact' => $contact_phone,
+                            'reference' => $reference,
+                            'address' => $address,
+                            'description' => $description,
+                            'business_name' => $business_name,
+                            'lower_text' => $lower_text,
+                            'middle_text' => $middle_text,
+                            'upper_text' => $upper_text,
+                            'graduated_text' => $graduated_text,
+                            // 'alliance_id' ya no se usa aquí
+                            'manager_user_id' => $manager_user_id,
+                            'status' => 1,
+                            'created_at' => current_time('mysql')
+                        ]
+                    );
+
+                    $institute_id = $wpdb->insert_id; // Obtener el ID del instituto recién insertado
+
+                    // --- Gestionar alianzas en la tabla independiente para el nuevo instituto ---
+                    foreach ($selected_alliances as $alliance_id) {
+                        $wpdb->insert(
+                            $table_alliances_by_institute,
+                            [
+                                'institute_id' => $institute_id,
+                                'alliance_id' => $alliance_id,
+                                'created_at' => current_time('mysql')
+                            ]
+                        );
+                    }
+
+                    $data_institute = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_institutes} WHERE id=%d", $institute_id));
+                    create_user_institute($data_institute); // Asegúrate de que esta función maneje el nuevo esquema si es necesario
 
                     $email_approved_institute = WC()->mailer()->get_emails()['WC_Approved_Institution_Email'];
                     $email_approved_institute->trigger($institute_id);
-                    setcookie('message', $name, time() + 3600, '/');
+                    setcookie('message', __('Institute added successfully.', 'edusystem'), time() + 3600, '/'); // Mensaje más apropiado
                     wp_redirect(admin_url('admin.php?page=add_admin_institutes_content&section_tab=all_institutes'));
                     exit;
 
@@ -153,7 +190,6 @@ function add_admin_institutes_content()
                     wp_redirect(admin_url('admin.php?page=add_admin_institutes_content&section_tab=add_institute'));
                     exit;
                 }
-
             }
         }
 
@@ -206,6 +242,23 @@ function add_admin_institutes_content()
             $states = get_states_by_country_code($institute->country);
             $alliances = get_alliances();
             $managers = get_managers();
+            $selected_alliance_ids = [];
+            if (isset($institute_id) && !empty($institute_id)) {
+                global $wpdb;
+                $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes';
+
+                // Obtener las alianzas ya asociadas a este instituto
+                $existing_alliances_for_institute = $wpdb->get_results($wpdb->prepare(
+                    "SELECT alliance_id FROM {$table_alliances_by_institute} WHERE institute_id = %d",
+                    $institute_id
+                ));
+
+                // Mapear los resultados a un array simple de IDs para facilitar la verificación en el HTML
+                $selected_alliance_ids = array_map(function ($item) {
+                    return (int) $item->alliance_id;
+                }, $existing_alliances_for_institute);
+            }
+
             include(plugin_dir_path(__FILE__) . 'templates/institute-details.php');
         }
 

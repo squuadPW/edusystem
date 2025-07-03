@@ -62,6 +62,18 @@ function create_tables()
   $table_quota_rules = $wpdb->prefix . 'quota_rules';
   $table_scholarship_assigned_student = $wpdb->prefix . 'scholarship_assigned_student';
   $table_expenses = $wpdb->prefix . 'expenses';
+  $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances_by_institute}'") != $table_alliances_by_institute) {
+    dbDelta(
+      "CREATE TABLE " . $table_alliances_by_institute . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        alliance_id INT(11) NOT NULL,
+        institute_id INT(11) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_expenses}'") != $table_expenses) {
     dbDelta(
