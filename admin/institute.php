@@ -37,11 +37,12 @@ function add_admin_institutes_content()
 
             global $wpdb;
             $table_institutes = $wpdb->prefix . 'institutes';
-            $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes'; // Nueva tabla de alianzas por instituto
-            $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
+            $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes'; // Tabla de alianzas por instituto
+            $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes'; // Asumo que esta tabla también existe y se gestiona
+
             $institute_id = isset($_POST['institute_id']) ? intval($_POST['institute_id']) : 0; // Asegurarse de que sea un entero
 
-            // Recopilar datos del formulario
+            // Recopilar y sanitizar datos del formulario principal del instituto
             $name = sanitize_text_field($_POST['name']);
             $phone = sanitize_text_field($_POST['phone_hidden']);
             $email = sanitize_email($_POST['email']);
@@ -49,7 +50,7 @@ function add_admin_institutes_content()
             $state = sanitize_text_field($_POST['state']);
             $city = sanitize_text_field($_POST['city']);
             $level = intval($_POST['level']);
-            $fee = str_replace('%', '', sanitize_text_field($_POST['fee']));
+            $fee = str_replace('%', '', sanitize_text_field($_POST['fee'])); // Asegúrate que 'fee' es del instituto, no de la alianza
             $rector_name = sanitize_text_field($_POST['rector_name']);
             $rector_last_name = sanitize_text_field($_POST['rector_last_name']);
             $rector_phone = sanitize_text_field($_POST['rector_phone_hidden']);
@@ -66,12 +67,16 @@ function add_admin_institutes_content()
             $upper_text = sanitize_textarea_field($_POST['upper_text']);
             $graduated_text = sanitize_textarea_field($_POST['graduated_text']);
 
-            // Obtener las alianzas seleccionadas (será un array)
+            // Obtener las alianzas seleccionadas (IDs del select múltiple)
             $selected_alliances = isset($_POST['alliances']) ? array_map('intval', (array) $_POST['alliances']) : [];
+            // Obtener los datos de montos de las alianzas (array asociativo de arrays)
+            $alliances_fees_data = isset($_POST['alliances_fees']) ? (array) $_POST['alliances_fees'] : [];
+
+            // Obtener los managers seleccionados (si aplica)
             $selected_managers = isset($_POST['managers']) ? array_map('intval', (array) $_POST['managers']) : [];
 
             // --- Actualizar Instituto ---
-            if ($institute_id > 0) { // Usar 0 para indicar que no hay ID o que es una inserción
+            if ($institute_id > 0) {
 
                 $wpdb->update(
                     $table_institutes,
@@ -103,20 +108,36 @@ function add_admin_institutes_content()
                     ['id' => $institute_id]
                 );
 
+                // --- Gestionar alianzas en la tabla independiente (alliances_by_institutes) ---
+                // 1. Eliminar las alianzas existentes para este instituto
                 $wpdb->delete($table_alliances_by_institute, ['institute_id' => $institute_id]);
-                $wpdb->delete($table_managers_by_institute, ['institute_id' => $institute_id]);
 
+                // 2. Insertar las nuevas alianzas seleccionadas con sus montos
                 foreach ($selected_alliances as $alliance_id) {
+                    $alliance_fee = 0.0;
+                    // $institute_fee = 0.0;
+
+                    // Verificar si existen los montos para esta alianza en los datos enviados
+                    if (isset($alliances_fees_data[$alliance_id])) {
+                        $alliance_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['alliance_fee']));
+                        // $institute_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['institute_fee']));
+                    }
+
                     $wpdb->insert(
                         $table_alliances_by_institute,
                         [
                             'institute_id' => $institute_id,
                             'alliance_id' => $alliance_id,
+                            'alliance_fee' => $alliance_fee,
+                            'institute_fee' => $fee,
                             'created_at' => current_time('mysql')
-                        ]
+                        ],
+                        ['%d', '%d', '%f', '%f', '%s'] // Formatos para los valores
                     );
                 }
 
+                // --- Gestionar managers (si aplica) ---
+                $wpdb->delete($table_managers_by_institute, ['institute_id' => $institute_id]);
                 foreach ($selected_managers as $user_id) {
                     $wpdb->insert(
                         $table_managers_by_institute,
@@ -124,7 +145,8 @@ function add_admin_institutes_content()
                             'institute_id' => $institute_id,
                             'user_id' => $user_id,
                             'created_at' => current_time('mysql')
-                        ]
+                        ],
+                        ['%d', '%d', '%s']
                     );
                 }
 
@@ -170,6 +192,7 @@ function add_admin_institutes_content()
 
                     $institute_id = $wpdb->insert_id; // Obtener el ID del instituto recién insertado
 
+                    // --- Gestionar managers (si aplica) ---
                     foreach ($selected_managers as $user_id) {
                         $wpdb->insert(
                             $table_managers_by_institute,
@@ -177,18 +200,32 @@ function add_admin_institutes_content()
                                 'institute_id' => $institute_id,
                                 'user_id' => $user_id,
                                 'created_at' => current_time('mysql')
-                            ]
+                            ],
+                            ['%d', '%d', '%s']
                         );
                     }
 
+                    // --- Gestionar alianzas en la tabla independiente (alliances_by_institutes) ---
                     foreach ($selected_alliances as $alliance_id) {
+                        $alliance_fee = 0.0;
+                        // $institute_fee = 0.0;
+
+                        // Verificar si existen los montos para esta alianza en los datos enviados
+                        if (isset($alliances_fees_data[$alliance_id])) {
+                            $alliance_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['alliance_fee']));
+                            // $institute_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['institute_fee']));
+                        }
+
                         $wpdb->insert(
                             $table_alliances_by_institute,
                             [
                                 'institute_id' => $institute_id,
                                 'alliance_id' => $alliance_id,
+                                'alliance_fee' => $alliance_fee,
+                                'institute_fee' => $fee,
                                 'created_at' => current_time('mysql')
-                            ]
+                            ],
+                            ['%d', '%d', '%f', '%f', '%s'] // Formatos para los valores
                         );
                     }
 
@@ -197,7 +234,7 @@ function add_admin_institutes_content()
 
                     $email_approved_institute = WC()->mailer()->get_emails()['WC_Approved_Institution_Email'];
                     $email_approved_institute->trigger($institute_id);
-                    setcookie('message', __('Institute added successfully.', 'edusystem'), time() + 3600, '/'); // Mensaje más apropiado
+                    setcookie('message', __('Institute added successfully.', 'edusystem'), time() + 3600, '/');
                     wp_redirect(admin_url('admin.php?page=add_admin_institutes_content&section_tab=all_institutes'));
                     exit;
 
@@ -276,21 +313,24 @@ function add_admin_institutes_content()
                 }, $existing_managers_for_institute);
             }
 
-            $selected_alliance_ids = [];
+            $selected_alliance_fees_data = [];
             if (isset($institute_id) && !empty($institute_id)) {
                 global $wpdb;
                 $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes';
 
-                // Obtener las alianzas ya asociadas a este instituto
+                // Obtener las alianzas ya asociadas a este instituto, incluyendo los campos de monto
                 $existing_alliances_for_institute = $wpdb->get_results($wpdb->prepare(
-                    "SELECT alliance_id FROM {$table_alliances_by_institute} WHERE institute_id = %d",
+                    "SELECT alliance_id, alliance_fee, institute_fee FROM {$table_alliances_by_institute} WHERE institute_id = %d",
                     $institute_id
                 ));
 
-                // Mapear los resultados a un array simple de IDs para facilitar la verificación en el HTML
-                $selected_alliance_ids = array_map(function ($item) {
-                    return (int) $item->alliance_id;
-                }, $existing_alliances_for_institute);
+                // Mapear los resultados a un array asociativo para facilitar la verificación y el acceso en JavaScript
+                foreach ($existing_alliances_for_institute as $item) {
+                    $selected_alliance_fees_data[(int) $item->alliance_id] = [
+                        'alliance_fee' => (double) $item->alliance_fee,
+                        'institute_fee' => (double) $item->institute_fee,
+                    ];
+                }
             }
 
             include(plugin_dir_path(__FILE__) . 'templates/institute-details.php');

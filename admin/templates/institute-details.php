@@ -441,11 +441,13 @@
                                         <th scope="row" style="font-weight:400;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
                                                 <label
-                                                    for="input_id"><b><?= __('Alliances', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <select name="alliances[]" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%" multiple="multiple">
+                                                    for="alliances-select"><b><?= __('Alliances', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <select id="alliances-select" name="alliances[]" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%" multiple="multiple">
                                                     <?php foreach ($alliances as $alliance): ?>
                                                         <option value="<?= esc_attr($alliance->id) ?>"
-                                                            <?= in_array($alliance->id, $selected_alliance_ids) ? 'selected' : ''; ?>>
+                                                            data-id="<?= esc_attr($alliance->id) ?>"
+                                                            data-name="<?= esc_attr($alliance->name . ' ' . $alliance->last_name . ' - ' . $alliance->code) ?>"
+                                                            <?= isset($selected_alliance_fees_data[$alliance->id]) ? 'selected' : ''; ?>>
                                                             <?= esc_html($alliance->name) ?>
                                                             <?= esc_html($alliance->last_name) ?> -
                                                             <?= esc_html($alliance->code) ?>
@@ -453,11 +455,15 @@
                                                     <?php endforeach; ?>
                                                 </select>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Alliances', 'edusystem'); ?></b><span
+                                                <label
+                                                    for="alliances-select"><b><?= __('Alliances', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
-                                                <select name="alliances[]" required style="width: 100%" multiple="multiple">
+                                                <select id="alliances-select" name="alliances[]" required
+                                                    style="width: 100%" multiple="multiple">
                                                     <?php foreach ($alliances as $alliance): ?>
-                                                        <option value="<?= esc_attr($alliance->id) ?>">
+                                                        <option value="<?= esc_attr($alliance->id) ?>"
+                                                            data-id="<?= esc_attr($alliance->id) ?>"
+                                                            data-name="<?= esc_attr($alliance->name . ' ' . $alliance->last_name . ' - ' . $alliance->code) ?>">
                                                             <?= esc_html($alliance->name) ?>
                                                             <?= esc_html($alliance->last_name) ?> -
                                                             <?= esc_html($alliance->code) ?>
@@ -465,6 +471,14 @@
                                                     <?php endforeach; ?>
                                                 </select>
                                             <?php endif; ?>
+
+                                            <div id="alliance-fees-container"
+                                                style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                                                <!-- Dynamic fee inputs will be rendered here by JavaScript -->
+                                                <p><?= esc_html__('Select one or more alliances to set their fees.', 'edusystem'); ?>
+                                                </p>
+                                            </div>
+
                                         </th>
                                     </tr>
                                 </tbody>
@@ -481,12 +495,12 @@
                                                     for="input_id"><b><?= __('Manager\'s', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
                                                 <select name="managers[]" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%" multiple="multiple">
                                                     <?php foreach ($managers as $manager): ?>
-                                                        <option value="<?= esc_attr($manager->ID) ?>"
-                                                            <?= in_array($manager->ID, $selected_manager_user_ids) ? 'selected' : ''; ?>>
-                                                            <?= esc_html($manager->first_name) ?>
-                                                            <?= esc_html($manager->last_name) ?>
-                                                        </option>
-                                                    <?php endforeach; ?>
+                                                        <option value="<?= esc_attr($manager->ID) ?>" 
+                                                    <?= in_array($manager->ID, $selected_manager_user_ids) ? 'selected' : ''; ?>>
+                                                    <?= esc_html($manager->first_name) ?>
+                                                    <?= esc_html($manager->last_name) ?>
+                                                </option>
+                                                        <?php endforeach; ?>
                                                 </select>
                                             <?php else: ?>
                                                 <label for="input_id"><b><?= __('Manager\'s', 'edusystem'); ?></b><span
@@ -595,6 +609,13 @@ include(plugin_dir_path(__FILE__) . 'modal-delete-institute.php');
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+
+    });
+</script>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+
         const form = document.querySelector('form');
         form.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
@@ -602,5 +623,54 @@ include(plugin_dir_path(__FILE__) . 'modal-delete-institute.php');
                 return false;
             }
         });
+
+        const alliancesSelect = document.getElementById('alliances-select');
+        const feesContainer = document.getElementById('alliance-fees-container');
+
+        // PHP variable para pasar los datos de montos existentes a JavaScript
+        // Asegúrate de que esta variable esté definida y contenga los datos correctos
+        const existingAllianceFees = <?= json_encode($selected_alliance_fees_data); ?>;
+
+        function renderAllianceFeeInputs() {
+            feesContainer.innerHTML = ''; // Limpiar inputs anteriores
+
+            const selectedOptions = Array.from(alliancesSelect.selectedOptions);
+
+            if (selectedOptions.length === 0) {
+                feesContainer.innerHTML = '<p><?= esc_html__('Select one or more alliances to set their fees.', 'edusystem'); ?></p>';
+                return;
+            }
+
+            selectedOptions.forEach(option => {
+                const allianceId = option.value;
+                const allianceName = option.dataset.name;
+                // Obtener montos existentes o valores por defecto
+                const existingFees = existingAllianceFees[allianceId] || { alliance_fee: '' };
+
+                const feeGroup = document.createElement('div');
+                feeGroup.style.marginBottom = '15px';
+                feeGroup.style.padding = '10px';
+                feeGroup.style.border = '1px solid #ddd';
+                feeGroup.style.borderRadius = '5px';
+                feeGroup.innerHTML = `
+                                    <h4 style="margin-top: 0; margin-bottom: 8px; color: #333;">${allianceName}</h4>
+
+                                    <div style="margin-bottom: 10px;">
+                                        <label for="alliance_fee_${allianceId}" style="display: block; margin-bottom: 5px; font-weight: bold;"><?= esc_html__('Alliance Fee (%)', 'edusystem'); ?></label>
+                                        <input type="number" step="0.01" min="0" id="alliance_fee_${allianceId}"
+                                               name="alliances_fees[${allianceId}][alliance_fee]"
+                                               value="${existingFees.alliance_fee}"
+                                               class="regular-text" style="width: 100%; max-width: 250px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" />
+                                    </div>
+                                `;
+                feesContainer.appendChild(feeGroup);
+            });
+        }
+
+        // Adjuntar el event listener
+        alliancesSelect.addEventListener('change', renderAllianceFeeInputs);
+
+        // Renderizado inicial al cargar la página
+        renderAllianceFeeInputs();
     });
 </script>
