@@ -38,6 +38,7 @@ function add_admin_partners_content()
 
             global $wpdb;
             $table_alliances = $wpdb->prefix . 'alliances';
+            $table_managers_by_alliance = $wpdb->prefix . 'managers_by_alliances';
             $alliance_id = $_POST['alliance_id'];
 
             $name = $_POST['name'];
@@ -53,6 +54,8 @@ function add_admin_partners_content()
             $address = $_POST['address'];
             $description = $_POST['description'];
             $fee = str_replace('%', '', $_POST['fee']);
+            $selected_managers = isset($_POST['managers']) ? array_map('intval', (array) $_POST['managers']) : [];
+
 
             if (isset($_POST['alliance_id']) && !empty($_POST['alliance_id'])) {
 
@@ -74,6 +77,19 @@ function add_admin_partners_content()
                 ], [
                     'id' => $alliance_id
                 ]);
+
+                $wpdb->delete($table_managers_by_alliance, ['alliance_id' => $alliance_id]);
+
+                foreach ($selected_managers as $user_id) {
+                    $wpdb->insert(
+                        $table_managers_by_alliance,
+                        [
+                            'alliance_id' => $alliance_id,
+                            'user_id' => $user_id,
+                            'created_at' => current_time('mysql')
+                        ]
+                    );
+                }
 
                 setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 3600, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id=' . $alliance_id . '&message=' . __('Changes saved successfully', 'edusystem')));
@@ -104,6 +120,18 @@ function add_admin_partners_content()
                     ]);
 
                     $alliance_id = $wpdb->insert_id;
+
+                    foreach ($selected_managers as $user_id) {
+                        $wpdb->insert(
+                            $table_managers_by_alliance,
+                            [
+                                'alliance_id' => $alliance_id,
+                                'user_id' => $user_id,
+                                'created_at' => current_time('mysql')
+                            ]
+                        );
+                    }
+
                     $alliance = $wpdb->get_row("SELECT * FROM {$table_alliances} WHERE id={$alliance_id}");
                     create_user_alliance($alliance);
 
@@ -154,6 +182,25 @@ function add_admin_partners_content()
             $list_alliances->prepare_items();
             $countries = get_countries();
             $institutes = get_institutes_from_alliance($alliance_id);
+            $managers = get_managers();
+
+            $selected_manager_user_ids = [];
+            if (isset($alliance_id) && !empty($alliance_id)) {
+                global $wpdb;
+                $table_managers_by_alliance = $wpdb->prefix . 'managers_by_alliances';
+
+                // Obtener las alianzas ya asociadas a este instituto
+                $existing_managers_for_institute = $wpdb->get_results($wpdb->prepare(
+                    "SELECT user_id FROM {$table_managers_by_alliance} WHERE alliance_id = %d",
+                    $alliance_id
+                ));
+
+                // Mapear los resultados a un array simple de IDs para facilitar la verificación en el HTML
+                $selected_manager_user_ids = array_map(function ($item) {
+                    return (int) $item->user_id;
+                }, $existing_managers_for_institute);
+            }
+
             include(plugin_dir_path(__FILE__) . 'templates/alliance-details.php');
 
         } else if ($_GET['section_tab'] == 'add_alliance') {
@@ -513,9 +560,15 @@ function get_institutes_from_alliance($alliance_id)
 {
 
     global $wpdb;
+    $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes';
     $table_institutes = $wpdb->prefix . 'institutes';
+    $institutes = [];
+    $rows = $wpdb->get_results("SELECT * FROM {$table_alliances_by_institute} WHERE alliance_id={$alliance_id}");
+    foreach ($rows as $key => $row) {
+        $institute = $wpdb->get_row("SELECT * FROM {$table_institutes} WHERE id={$row->institute_id}");
+        $institutes[] = $institute;
+    }
 
-    $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE alliance_id={$alliance_id}");
     return $institutes;
 }
 

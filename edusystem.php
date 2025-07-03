@@ -64,11 +64,11 @@ function create_tables()
   $table_expenses = $wpdb->prefix . 'expenses';
   $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes';
   $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
-  $table_managers_by_allliance = $wpdb->prefix . 'managers_by_allliances';
+  $table_managers_by_alliance = $wpdb->prefix . 'managers_by_alliances';
 
-  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_managers_by_allliance}'") != $table_managers_by_allliance) {
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_managers_by_alliance}'") != $table_managers_by_alliance) {
     dbDelta(
-      "CREATE TABLE " . $table_managers_by_allliance . " (
+      "CREATE TABLE " . $table_managers_by_alliance . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         user_id INT(11) NOT NULL,
         alliance_id INT(11) NOT NULL,

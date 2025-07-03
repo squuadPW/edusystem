@@ -70,7 +70,6 @@ function add_admin_institutes_content()
             $selected_alliances = isset($_POST['alliances']) ? array_map('intval', (array) $_POST['alliances']) : [];
             $selected_managers = isset($_POST['managers']) ? array_map('intval', (array) $_POST['managers']) : [];
 
-            error_log(print_r($selected_managers));
             // --- Actualizar Instituto ---
             if ($institute_id > 0) { // Usar 0 para indicar que no hay ID o que es una inserción
 
@@ -338,6 +337,7 @@ function get_name_status_institute($status_id)
         '0' => __('Pending', 'edusystem'),
         '1' => __('Approved', 'edusystem'),
         '2' => __('Declined', 'edusystem'),
+        '3' => __('Suspended', 'edusystem'),
         default => '',
     };
 
