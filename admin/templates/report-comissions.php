@@ -98,3 +98,13 @@
 		</form>
 	</div>
 </div>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		flatpickr(document.getElementById('inputStartDate'), {
+			mode: "range",
+			dateFormat: "m/d/Y",
+			defaultDate: ['<?= $date_array[0] ?>', '<?= $date_array[1] ?>'],
+		});
+
+	});
+</script>

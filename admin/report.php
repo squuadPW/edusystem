@@ -134,6 +134,12 @@ function show_report_current_students()
 
 function show_report_comissions()
 {
+    $date_array = array();
+    if ($_POST['custom']) {
+        $date = str_replace([' to ', ' a '], ',', $_POST['custom']);
+        $date_array = explode(',', $date);
+    }
+
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         if ($_GET['section_tab'] == 'college_allies_comissions') {
             $list_comissions = new TT_Pending_Elective_List_Table;
