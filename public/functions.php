@@ -1015,7 +1015,7 @@ function process_program_payments($order, $order_id)
 
             $data = [
                 'status_id' => 0,
-                'order_id' => $order_id,
+                'order_id' => ($i + 1) == 1 ? $order_id : null,
                 'student_id' => $student_id,
                 'product_id' => $product_id,
                 'variation_id' => $variation_id,
