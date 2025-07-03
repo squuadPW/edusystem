@@ -38,6 +38,7 @@ function add_admin_institutes_content()
             global $wpdb;
             $table_institutes = $wpdb->prefix . 'institutes';
             $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes'; // Nueva tabla de alianzas por instituto
+            $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
             $institute_id = isset($_POST['institute_id']) ? intval($_POST['institute_id']) : 0; // Asegurarse de que sea un entero
 
             // Recopilar datos del formulario
@@ -64,11 +65,12 @@ function add_admin_institutes_content()
             $middle_text = sanitize_textarea_field($_POST['middle_text']);
             $upper_text = sanitize_textarea_field($_POST['upper_text']);
             $graduated_text = sanitize_textarea_field($_POST['graduated_text']);
-            $manager_user_id = intval($_POST['manager_user_id']);
 
             // Obtener las alianzas seleccionadas (será un array)
             $selected_alliances = isset($_POST['alliances']) ? array_map('intval', (array) $_POST['alliances']) : [];
+            $selected_managers = isset($_POST['managers']) ? array_map('intval', (array) $_POST['managers']) : [];
 
+            error_log(print_r($selected_managers));
             // --- Actualizar Instituto ---
             if ($institute_id > 0) { // Usar 0 para indicar que no hay ID o que es una inserción
 
@@ -97,24 +99,31 @@ function add_admin_institutes_content()
                         'middle_text' => $middle_text,
                         'upper_text' => $upper_text,
                         'graduated_text' => $graduated_text,
-                        // 'alliance_id' ya no se usa aquí
-                        'manager_user_id' => $manager_user_id,
                         'updated_at' => current_time('mysql')
                     ],
                     ['id' => $institute_id]
                 );
 
-                // --- Gestionar alianzas en la tabla independiente ---
-                // 1. Eliminar las alianzas existentes para este instituto
                 $wpdb->delete($table_alliances_by_institute, ['institute_id' => $institute_id]);
+                $wpdb->delete($table_managers_by_institute, ['institute_id' => $institute_id]);
 
-                // 2. Insertar las nuevas alianzas seleccionadas
                 foreach ($selected_alliances as $alliance_id) {
                     $wpdb->insert(
                         $table_alliances_by_institute,
                         [
                             'institute_id' => $institute_id,
                             'alliance_id' => $alliance_id,
+                            'created_at' => current_time('mysql')
+                        ]
+                    );
+                }
+
+                foreach ($selected_managers as $user_id) {
+                    $wpdb->insert(
+                        $table_managers_by_institute,
+                        [
+                            'institute_id' => $institute_id,
+                            'user_id' => $user_id,
                             'created_at' => current_time('mysql')
                         ]
                     );
@@ -155,8 +164,6 @@ function add_admin_institutes_content()
                             'middle_text' => $middle_text,
                             'upper_text' => $upper_text,
                             'graduated_text' => $graduated_text,
-                            // 'alliance_id' ya no se usa aquí
-                            'manager_user_id' => $manager_user_id,
                             'status' => 1,
                             'created_at' => current_time('mysql')
                         ]
@@ -164,7 +171,17 @@ function add_admin_institutes_content()
 
                     $institute_id = $wpdb->insert_id; // Obtener el ID del instituto recién insertado
 
-                    // --- Gestionar alianzas en la tabla independiente para el nuevo instituto ---
+                    foreach ($selected_managers as $user_id) {
+                        $wpdb->insert(
+                            $table_managers_by_institute,
+                            [
+                                'institute_id' => $institute_id,
+                                'user_id' => $user_id,
+                                'created_at' => current_time('mysql')
+                            ]
+                        );
+                    }
+
                     foreach ($selected_alliances as $alliance_id) {
                         $wpdb->insert(
                             $table_alliances_by_institute,
@@ -242,6 +259,24 @@ function add_admin_institutes_content()
             $states = get_states_by_country_code($institute->country);
             $alliances = get_alliances();
             $managers = get_managers();
+
+            $selected_manager_user_ids = [];
+            if (isset($institute_id) && !empty($institute_id)) {
+                global $wpdb;
+                $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
+
+                // Obtener las alianzas ya asociadas a este instituto
+                $existing_managers_for_institute = $wpdb->get_results($wpdb->prepare(
+                    "SELECT user_id FROM {$table_managers_by_institute} WHERE institute_id = %d",
+                    $institute_id
+                ));
+
+                // Mapear los resultados a un array simple de IDs para facilitar la verificación en el HTML
+                $selected_manager_user_ids = array_map(function ($item) {
+                    return (int) $item->user_id;
+                }, $existing_managers_for_institute);
+            }
+
             $selected_alliance_ids = [];
             if (isset($institute_id) && !empty($institute_id)) {
                 global $wpdb;

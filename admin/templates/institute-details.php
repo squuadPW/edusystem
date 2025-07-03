@@ -478,24 +478,24 @@
                                         <th scope="row" style="font-weight:400;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
                                                 <label
-                                                    for="input_id"><b><?= __('Manager', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <select name="manager_user_id" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%">
-                                                    <option value="" selected><?= __('Select an user', 'edusystem') ?>
-                                                    </option>
+                                                    for="input_id"><b><?= __('Manager\'s', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <select name="managers[]" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%" multiple="multiple">
                                                     <?php foreach ($managers as $manager): ?>
-                                                        <option value="<?= $manager->ID ?>"
-                                                            <?= ($institute->manager_user_id == $manager->ID) ? 'selected' : ''; ?>><?= $manager->first_name ?>         <?= $manager->last_name ?></option>
+                                                        <option value="<?= esc_attr($manager->ID) ?>"
+                                                            <?= in_array($manager->ID, $selected_manager_user_ids) ? 'selected' : ''; ?>>
+                                                            <?= esc_html($manager->first_name) ?>
+                                                            <?= esc_html($manager->last_name) ?>
+                                                        </option>
                                                     <?php endforeach; ?>
                                                 </select>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Manager', 'edusystem'); ?></b><span
+                                                <label for="input_id"><b><?= __('Manager\'s', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
-                                                <select name="manager_user_id" required style="width: 100%">
-                                                    <option value="" selected><?= __('Select an user', 'edusystem') ?>
-                                                    </option>
+                                                <select name="managers[]" required style="width: 100%" multiple="multiple">
                                                     <?php foreach ($managers as $manager): ?>
-                                                        <option value="<?= $manager->ID ?>">
-                                                            <?= $manager->first_name ?>         <?= $manager->last_name ?>
+                                                        <option value="<?= esc_attr($manager->ID) ?>">
+                                                            <?= esc_html($manager->first_name) ?>
+                                                            <?= esc_html($manager->last_name) ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>

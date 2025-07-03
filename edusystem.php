@@ -63,6 +63,30 @@ function create_tables()
   $table_scholarship_assigned_student = $wpdb->prefix . 'scholarship_assigned_student';
   $table_expenses = $wpdb->prefix . 'expenses';
   $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes';
+  $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
+  $table_managers_by_allliance = $wpdb->prefix . 'managers_by_allliances';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_managers_by_allliance}'") != $table_managers_by_allliance) {
+    dbDelta(
+      "CREATE TABLE " . $table_managers_by_allliance . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        user_id INT(11) NOT NULL,
+        alliance_id INT(11) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_managers_by_institute}'") != $table_managers_by_institute) {
+    dbDelta(
+      "CREATE TABLE " . $table_managers_by_institute . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        user_id INT(11) NOT NULL,
+        institute_id INT(11) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances_by_institute}'") != $table_alliances_by_institute) {
     dbDelta(
