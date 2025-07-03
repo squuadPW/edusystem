@@ -40,24 +40,36 @@
 					<?php } else { ?>
 						<select id="typeFilter" name="typeFilter" autocomplete="off">
 						<?php } ?>
-						<option value="today"><?= __('Today', 'edusystem'); ?></option>
-						<option value="yesterday"><?= __('yesterday', 'edusystem'); ?></option>
-						<option value="this-week"><?= __('This week', 'edusystem'); ?></option>
-						<option value="last-week"><?= __('Last week', 'edusystem'); ?></option>
-						<option value="this-month" selected><?= __('This month', 'edusystem'); ?></option>
-						<option value="last-month"><?= __('Last month', 'edusystem'); ?></option>
-						<option value="custom"><?= __('Custom', 'edusystem'); ?></option>
+						<option value="today" <?= $_POST['typeFilter'] == 'today' ? 'selected' : '' ?>>
+							<?= __('Today', 'edusystem'); ?>
+						</option>
+						<option value="yesterday" <?= $_POST['typeFilter'] == 'yesterday' ? 'selected' : '' ?>>
+							<?= __('Yesterday', 'edusystem'); ?>
+						</option>
+						<option value="this-week" <?= $_POST['typeFilter'] == 'this-week' ? 'selected' : '' ?>>
+							<?= __('This week', 'edusystem'); ?>
+						</option>
+						<option value="last-week" <?= $_POST['typeFilter'] == 'last-week' ? 'selected' : '' ?>>
+							<?= __('Last week', 'edusystem'); ?>
+						</option>
+						<option value="this-month" <?= $_POST['typeFilter'] == 'this-month' ? 'selected' : (empty($_POST['typeFilter']) ? 'selected' : '') ?>><?= __('This month', 'edusystem'); ?>
+						</option>
+						<option value="last-month" <?= $_POST['typeFilter'] == 'last-month' ? 'selected' : '' ?>>
+							<?= __('Last month', 'edusystem'); ?>
+						</option>
+						<option value="custom" <?= $_POST['typeFilter'] == 'custom' ? 'selected' : '' ?>>
+							<?= __('Custom', 'edusystem'); ?>
+						</option>
 					</select>
 					<?php if (wp_is_mobile()) { ?>
 						<input type="text" value="<?= $start_date; ?>" id="inputStartDate"
-							style="display:none;width:100%;margin-bottom:5px;">
+							style="display: <?= $_POST['typeFilter'] == 'custom' ? 'unset' : 'none' ?>;width:100%;margin-bottom:5px;"
+							name="custom">
 					<?php } else { ?>
 						<input type="text" value="<?= $start_date; ?>" id="inputStartDate"
-							style="display:none;width:200px;">
+							style="display: <?= $_POST['typeFilter'] == 'custom' ? 'unset' : 'none' ?>;width:200px;"
+							name="custom">
 					<?php } ?>
-					<!-- <input type="search" id="search-box-id-search-input" name="s"
-						placeholder="<?= __('Search by school or ally', 'edusystem'); ?>"
-						value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>"> -->
 					<?php if (wp_is_mobile()): ?>
 						<button type="submit"
 							class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
@@ -72,7 +84,8 @@
 			</div>
 		</form>
 
-		<h3 class='wp-heading-line' style="margin-bottom: -20px;"><?= __('Commissions payable to schools', 'edusystem') ?></h3>
+		<h3 class='wp-heading-line' style="margin-bottom: -20px;">
+			<?= __('Commissions payable to schools', 'edusystem') ?></h3>
 		<form action="" id="post-filter" method="get">
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
 			<?php $list_comissions_institute->display() ?>
