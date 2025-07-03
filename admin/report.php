@@ -132,6 +132,28 @@ function show_report_current_students()
     }
 }
 
+function show_report_comissions()
+{
+    if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
+        if ($_GET['section_tab'] == 'college_allies_comissions') {
+            $list_comissions = new TT_Pending_Elective_List_Table;
+            $list_comissions->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-comissions.php');
+        } else if ($_GET['section_tab'] == 'new_registrations') {
+            $list_comissions = new TT_Non_Enrolled_List_Table;
+            $list_comissions->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-comissions.php');
+        }
+    } else {
+        $list_comissions_institute = new TT_Summary_Comissions_Institute_List_Table;
+        $list_comissions_institute->prepare_items();
+
+        $list_comissions_alliances = new TT_Summary_Comissions_Alliance_List_Table;
+        $list_comissions_alliances->prepare_items();
+        include(plugin_dir_path(__FILE__) . 'templates/report-comissions.php');
+    }
+}
+
 function show_report_billing_ranking()
 {
     $date_array = array();
@@ -1687,6 +1709,334 @@ class TT_Active_Student_List_Table extends WP_List_Table
             'total_items' => $total_count,
             'per_page' => $per_page,
         ));
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Summary_Comissions_Institute_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'summary_comission_institute',
+                'plural' => 'summary_comission_institutes',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        // switch ($column_name) {
+        //     case 'view_details':
+        //         $buttons = '';
+        //         $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
+        //         return $buttons;
+        //     default:
+        //         return $item[$column_name];
+        // }
+
+        return $item[$column_name];
+    }
+
+    function column_name($item)
+    {
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'name' => __('Institute', 'edusystem'),
+            'amount' => __('Amount USD', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_summary_comissions()
+    {
+        $institute_generated_fees = array(); // Almacenará la suma de 'institute_fee' por instituto
+        $total_sum_all_institutes = 0; // Variable para almacenar la suma total de todos los institutos
+
+        $filter = $_POST['typeFilter'] ?? 'this-month';
+        $custom = $_POST['custom'] ?? false;
+
+        $dates = get_dates_search($filter, $custom);
+        if (!is_array($dates) || count($dates) < 2 || empty($dates[0]) || empty($dates[1])) {
+            return [];
+        }
+
+        $start_date = $dates[0];
+        $end_date = $dates[1];
+
+        $orders = get_only_orders_by_date($start_date, $end_date);
+        if (!is_array($orders) && !($orders instanceof Traversable)) {
+            return [];
+        }
+
+        foreach ($orders as $order) {
+            // Asegúrate de que el objeto order tenga los métodos necesarios
+            if (!is_object($order) || !method_exists($order, 'get_meta')) {
+                continue;
+            }
+
+            $institute_id = $order->get_meta('institute_id');
+            $institute_fee = $order->get_meta('institute_fee'); // Accedemos directamente al meta de la orden
+
+            // Validaciones básicas para institute_id
+            if (empty($institute_id) || !is_scalar($institute_id)) {
+                continue;
+            }
+
+            // Sumar el 'institute_fee' de la orden
+            if (is_numeric($institute_fee)) {
+                $current_fee = (float) $institute_fee;
+                if (isset($institute_generated_fees[$institute_id])) {
+                    $institute_generated_fees[$institute_id] += $current_fee;
+                } else {
+                    $institute_generated_fees[$institute_id] = $current_fee;
+                }
+                $total_sum_all_institutes += $current_fee; // Sumar al total general
+            }
+        }
+
+        $institutes_with_data = array();
+        foreach ($institute_generated_fees as $institute_id => $total_generated) {
+            if (empty($institute_id) || !is_scalar($institute_id)) {
+                continue;
+            }
+
+            $institute = get_institute_details($institute_id); // Cambiado a $institute y get_institute_details
+
+            if (!$institute || !is_object($institute)) { // Cambiado a $institute
+                continue;
+            }
+
+            $institute_data = (array) $institute; // Cambiado a $institute_data y $institute
+            $institute_data['amount'] = wc_price($total_generated);
+            // Se elimina el campo 'students_registered'
+
+            $institutes_with_data[] = $institute_data;
+        }
+
+        $total_record = [
+            'name' => 'TOTAL',
+            'amount' => wc_price($total_sum_all_institutes),
+        ];
+
+        $institutes_with_data[] = $total_record;
+
+        return $institutes_with_data;
+    }
+
+    function prepare_items()
+    {
+
+        $data = $this->get_summary_comissions();
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Summary_Comissions_Alliance_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'summary_comission_alliance',
+                'plural' => 'summary_comission_alliances',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        // switch ($column_name) {
+        //     case 'view_details':
+        //         $buttons = '';
+        //         $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
+        //         return $buttons;
+        //     default:
+        //         return $item[$column_name];
+        // }
+
+        return $item[$column_name];
+    }
+
+    function column_name($item)
+    {
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'name_legal' => __('Alliance', 'edusystem'),
+            'amount' => __('Amount USD', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_summary_comissions()
+    {
+        $alliance_generated_fees = array(); // Almacenará la suma de 'institute_fee' por instituto
+        $total_sum_all_alliances = 0; // Variable para almacenar la suma total de todas las alianzas
+
+        $filter = $_POST['typeFilter'] ?? 'this-month';
+        $custom = $_POST['custom'] ?? false;
+
+        $dates = get_dates_search($filter, $custom);
+        if (!is_array($dates) || count($dates) < 2 || empty($dates[0]) || empty($dates[1])) {
+            return [];
+        }
+
+        $start_date = $dates[0];
+        $end_date = $dates[1];
+
+        $orders = get_only_orders_by_date($start_date, $end_date);
+        if (!is_array($orders) && !($orders instanceof Traversable)) {
+            return [];
+        }
+
+        foreach ($orders as $order) {
+            // Asegúrate de que el objeto order tenga los métodos necesarios
+            if (!is_object($order) || !method_exists($order, 'get_meta')) {
+                continue;
+            }
+
+            $alliance_id = $order->get_meta('alliance_id');
+            $aliance_fee = $order->get_meta('alliance_fee'); // Accedemos directamente al meta de la orden
+
+            // Validaciones básicas para alliance_id
+            if (empty($alliance_id) || !is_scalar($alliance_id)) {
+                continue;
+            }
+
+            // Sumar el 'aliance_fee' de la orden
+            if (is_numeric($aliance_fee)) {
+                $current_fee = (float) $aliance_fee;
+                if (isset($alliance_generated_fees[$alliance_id])) {
+                    $alliance_generated_fees[$alliance_id] += $current_fee;
+                } else {
+                    $alliance_generated_fees[$alliance_id] = $current_fee;
+                }
+                $total_sum_all_alliances += $current_fee; // Sumar al total general
+            }
+        }
+
+        $alliances_with_data = array();
+        foreach ($alliance_generated_fees as $alliance_id => $total_generated) {
+            if (empty($alliance_id) || !is_scalar($alliance_id)) {
+                continue;
+            }
+
+            $alliance = get_alliance_detail($alliance_id);
+
+            if (!$alliance || !is_object($alliance)) {
+                continue;
+            }
+
+            $alliance_data = (array) $alliance;
+            $alliance_data['amount'] = wc_price($total_generated);
+
+            $alliances_with_data[] = $alliance_data;
+        }
+
+        $total_record = [
+            'name_legal' => 'TOTAL',
+            'amount' => wc_price($total_sum_all_alliances),
+        ];
+
+        $alliances_with_data[] = $total_record;
+
+        return $alliances_with_data;
+    }
+    function prepare_items()
+    {
+
+        $data = $this->get_summary_comissions();
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
 
         $this->items = $data;
     }

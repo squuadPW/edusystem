@@ -501,4 +501,54 @@ document.addEventListener("DOMContentLoaded", function () {
       XLSX.writeFile(wb, name);
     });
   }
+
+  export_excel_summary_comissions = document.getElementById(
+    "export_excel_summary_comissions"
+  );
+  if (export_excel_summary_comissions) {
+    export_excel_summary_comissions.addEventListener("click", () => {
+      // Selecciona la tabla por su ID
+      const tables = document.querySelectorAll(".wp-list-table");
+      const name = document.querySelector("input[name=name_document]").value;
+      const data_summary = [];
+
+      data_summary.push(["Commissions payable to schools"]);
+      data_summary.push(["Institute", "Amount USD"]);
+
+      tables.forEach((table, index) => {
+        for (let i = 1; i < table.rows.length - 1; i++) {
+          // <-- MODIFICACIÓN CLAVE AQUÍ: i = 1
+          const rowData = [];
+          const row = table.rows[i];
+
+          for (let j = 0; j < row.cells.length; j++) {
+            let cellText = row.cells[j].textContent.trim();
+            cellText = cellText.replace(/Show more details/g, "");
+            rowData.push(cellText);
+          }
+
+          data_summary.push(rowData);
+        }
+
+        if (index + 1 < tables.length) {
+          data_summary.push([]);
+          data_summary.push(["Allied comissions"]);
+          data_summary.push(["Alliance", "Amount USD"]);
+        }
+      });
+
+      const wb = XLSX.utils.book_new();
+
+      const ws_summary = XLSX.utils.aoa_to_sheet(data_summary);
+      XLSX.utils.book_append_sheet(wb, ws_summary, "Summary of commissions");
+
+      const ws_comissions = XLSX.utils.aoa_to_sheet([]);
+      XLSX.utils.book_append_sheet(wb, ws_comissions, "College commissions & allies");
+
+      const ws_registration = XLSX.utils.aoa_to_sheet([]);
+      XLSX.utils.book_append_sheet(wb, ws_registration, "New registrations");
+
+      XLSX.writeFile(wb, name);
+    });
+  }
 });

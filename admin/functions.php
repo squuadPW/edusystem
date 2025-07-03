@@ -162,7 +162,7 @@ function aes_scripts_admin()
         wp_enqueue_script('teacher', plugins_url('edusystem') . '/admin/assets/js/teacher.js', array('jquery'), $version, true);
     }
 
-    if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-summary' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables' || $_GET['page'] == 'report-students' || $_GET['page'] == 'report-sales-product' || $_GET['page'] == 'report-billing-ranking') {
+    if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-summary' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables' || $_GET['page'] == 'report-students' || $_GET['page'] == 'report-sales-product' || $_GET['page'] == 'report-billing-ranking' || $_GET['page'] == 'report-comissions') {
         wp_enqueue_script('report', plugins_url('edusystem') . '/admin/assets/js/report.js', array('jquery'), $version, true);
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js');
         wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js');
@@ -462,6 +462,7 @@ function add_custom_admin_page()
         add_submenu_page('add_admin_form_report_content', __('Accounts receivable', 'edusystem'), __('Accounts receivable', 'edusystem'), 'manager_accounts_receivables_aes', 'report-accounts-receivables', 'show_report_accounts_receivables', 10);
         add_submenu_page('add_admin_form_report_content', __('Sales by product', 'edusystem'), __('Sales by product', 'edusystem'), 'manager_report_sales_product', 'report-sales-product', 'show_report_sales_product', 10);
         add_submenu_page('add_admin_form_report_content', __('Billing Ranking', 'edusystem'), __('Billing Ranking', 'edusystem'), 'manager_report_billing_ranking_aes', 'report-billing-ranking', 'show_report_billing_ranking', 10);
+        add_submenu_page('add_admin_form_report_content', __('Comissions', 'edusystem'), __('Comissions', 'edusystem'), 'manager_comissions_aes', 'report-comissions', 'show_report_comissions', 10);
         add_submenu_page('add_admin_form_report_content', __('Students', 'edusystem'), __('Students', 'edusystem'), 'manager_report_students_aes', 'report-students', 'show_report_current_students', 10);
         remove_submenu_page('add_admin_form_report_content', 'add_admin_form_report_content');
 
@@ -517,6 +518,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_admission_aes');
     $role->add_cap('manager_report_billing_ranking_aes');
     $role->add_cap('manager_report_students_aes');
+    $role->add_cap('manager_comissions_aes');
     $role->add_cap('manager_report_sales_product');
     $role->add_cap('manager_sales_aes');
     $role->add_cap('manager_accounts_receivables_aes');
