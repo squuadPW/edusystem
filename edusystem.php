@@ -681,6 +681,7 @@ function create_tables()
         reference TINYINT(1) NOT NULL,
         status TINYINT(1) NOT NULL DEFAULT 1,
         alliance_id INT(11) NULL,
+        manager_user_id INT(11) NULL,
         fee DECIMAL(5,2) NOT NULL DEFAULT 10.00,
         business_name VARCHAR(255) NOT NULL,
         lower_text VARCHAR(255) NOT NULL DEFAULT 'Lower',

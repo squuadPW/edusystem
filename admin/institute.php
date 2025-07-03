@@ -63,6 +63,7 @@ function add_admin_institutes_content()
             $middle_text = $_POST['middle_text'];
             $upper_text = $_POST['upper_text'];
             $graduated_text = $_POST['graduated_text'];
+            $manager_user_id = $_POST['manager_user_id'];
 
             //update
             if (isset($institute_id) && !empty($institute_id)) {
@@ -91,6 +92,7 @@ function add_admin_institutes_content()
                     'upper_text' => $upper_text,
                     'graduated_text' => $graduated_text,
                     'alliance_id' => $alliance_id,
+                    'manager_user_id' => $manager_user_id,
                     'updated_at' => date('Y-m-d H:i:s')
                 ], ['id' => $institute_id]);
 
@@ -131,6 +133,7 @@ function add_admin_institutes_content()
                         'upper_text' => $upper_text,
                         'graduated_text' => $graduated_text,
                         'alliance_id' => $alliance_id,
+                        'manager_user_id' => $manager_user_id,
                         'status' => 1,
                         'created_at' => date('Y-m-d H:i:s')
                     ]);
@@ -202,6 +205,7 @@ function add_admin_institutes_content()
             $countries = get_countries();
             $states = get_states_by_country_code($institute->country);
             $alliances = get_alliances();
+            $managers = get_managers();
             include(plugin_dir_path(__FILE__) . 'templates/institute-details.php');
         }
 
@@ -229,6 +233,7 @@ function add_admin_institutes_content()
         if ($_GET['section_tab'] == 'add_institute') {
             $countries = get_countries();
             $alliances = get_alliances();
+            $managers = get_managers();
             include(plugin_dir_path(__FILE__) . 'templates/institute-details.php');
         }
 
@@ -312,6 +317,20 @@ function get_alliances()
 
     $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 1");
     return $alliances;
+}
+
+function get_managers()
+{
+    $args = array(
+        'role' => 'manager', // Especifica el rol 'manager'
+        'orderby' => 'display_name', // Opcional: ordena por nombre de visualización
+        'order' => 'ASC' // Opcional: orden ascendente
+    );
+
+    $managers = get_users($args);
+
+    // Puedes devolver los managers o hacer algo con ellos
+    return $managers;
 }
 
 function get_name_level($level_id)
