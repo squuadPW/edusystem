@@ -93,7 +93,9 @@ function create_tables()
       "CREATE TABLE " . $table_alliances_by_institute . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
         alliance_id INT(11) NOT NULL,
+        alliance_fee  DOUBLE(10, 2) NULL,
         institute_id INT(11) NOT NULL,
+        institute_fee  DOUBLE(10, 2) NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
