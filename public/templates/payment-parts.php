@@ -10,7 +10,7 @@
 
         foreach ($filtered_products as $key => $product) {
 
-            if( isset( $product['variation_id'] ) ) { 
+            if( $product['variation_id'] ) { 
                 $product_id =$product['variation_id'];
             } else {
                 $product_id = $product['product_id'];
@@ -18,7 +18,6 @@
             $product = wc_get_product($product_id);
         }
 
-        // Check if the product is a variable product
     ?>
     
     <?php if ( isset($product) && !isset($_COOKIE['is_scholarship']) ) : ?>
