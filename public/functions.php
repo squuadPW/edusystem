@@ -1717,27 +1717,27 @@ function reload_button_schoolship()
     $applied_coupons = $woocommerce->cart->get_applied_coupons();
 
     foreach ($applied_coupons as $coupon) {
-        if ($coupon == 'latam scholarship') {
+        if (strtolower($coupon) == 'latam scholarship') {
             $has_scholarship = true;
             break;
         }
     }
 
     // Check if the 'name_institute' cookie is NOT set or is empty
-    if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) {
-        ?>
-                                                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
-                                                    <?php if ($has_scholarship): ?>
-                                                                            <button id="apply-scholarship-btn" type="button" disabled>
-                                                                                <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
-                                                                            </button>
-                                                    <?php else: ?>
-                                                                            <button id="apply-scholarship-btn" type="button">
-                                                                                <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
-                                                                            </button>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <?php
+if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) {
+?>
+<div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
+<?php if ($has_scholarship): ?>
+<button id="apply-scholarship-btn" type="button" disabled>
+<?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
+</button>
+<?php else: ?>
+<button id="apply-scholarship-btn" type="button">
+<?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
+</button>
+<?php endif; ?>
+</div>
+<?php
     }
 
     $html = ob_get_clean();
