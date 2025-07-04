@@ -922,12 +922,13 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
 }
 
 /**
- * Crea registros de pago para cada artículo en la orden.
+ * Crea registros de pago para cada artículo en la orden, incluyendo tarifas de alianzas.
  *
- * @param WC_Order $order Objeto de la orden.
+ * @param WC_Order $order    Objeto de la orden.
  * @param int      $order_id ID de la orden.
+ * @return void
  */
-function process_program_payments($order, $order_id)
+function process_program_payments(WC_Order $order, int $order_id): void
 {
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
@@ -936,6 +937,13 @@ function process_program_payments($order, $order_id)
     if (empty($student_id)) {
         return; // Salir si no hay ID de estudiante.
     }
+
+    $institute_id = $order->get_meta('institute_id');
+    $institute_fee = (float) $order->get_meta('institute_fee'); // Aseguramos que sea flotante.
+    $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca.
+
+    // Obtener las alianzas del instituto.
+    $alliances = get_alliances_from_institute($institute_id);
 
     foreach ($order->get_items() as $item_id => $item) {
         $product = $item->get_product();
@@ -946,11 +954,15 @@ function process_program_payments($order, $order_id)
         $product_id = $item->get_product_id();
         $variation_id = $item->get_variation_id();
 
-        // Evita la redundancia procesando solo si no existe un registro previo para esta orden.
+        // Determinar si este producto es un FEE de inscripción o graduación.
+        $is_fee_product = in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]);
+
+        // Evita la redundancia procesando solo si no existe un registro previo para este producto en esta orden.
         $existing_record_count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d",
+            "SELECT COUNT(*) FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d AND order_id = %d",
             $student_id,
-            $product_id
+            $product_id,
+            $order_id
         ));
 
         if ($existing_record_count > 0) {
@@ -959,13 +971,17 @@ function process_program_payments($order, $order_id)
 
         $installments = 1;
         $interval = '';
+        $attribute_value = '';
 
         if ($product->is_type('variation')) {
             $variation_attributes = $product->get_variation_attributes();
             foreach ($variation_attributes as $attribute_taxonomy => $term_slug) {
                 $taxonomy = str_replace('attribute_', '', $attribute_taxonomy);
                 if (taxonomy_exists($taxonomy)) {
-                    $attribute_value = get_term_by('slug', $term_slug, $taxonomy)->name;
+                    $term = get_term_by('slug', $term_slug, $taxonomy);
+                    if ($term) {
+                        $attribute_value = $term->name;
+                    }
                 } else {
                     $attribute_value = $term_slug;
                 }
@@ -979,38 +995,73 @@ function process_program_payments($order, $order_id)
                     $interval = '+6 months';
                     break;
             }
-            $installments = $product->get_meta('num_cuotes_text') ? $product->get_meta('num_cuotes_text') : 1;
+            $installments = (int) ($product->get_meta('num_cuotes_text') ?: 1);
         }
 
-        // --- Cálculos de precios (sin cambios) ---
-        $original_price = floatval($item->get_subtotal() / $item->get_quantity());
-        $price_per_installment = floatval($item->get_total() / $item->get_quantity());
+        // --- Cálculos de precios ---
+        $original_price = (float) ($item->get_subtotal() / $item->get_quantity());
+        $price_per_installment = (float) ($item->get_total() / $item->get_quantity());
         $total_amount_to_pay = $price_per_installment * $installments;
         $total_original_amount = $original_price * $installments;
         $total_discount_amount = $total_original_amount - $total_amount_to_pay;
 
+        // --- Recalcular tarifas de alianzas para este producto específico ---
+        $current_item_alliances_fees = [];
+        if (!empty($alliances) && is_array($alliances)) {
+            foreach ($alliances as $alliance) {
+                $alliance_id = $alliance->id ?? null;
+                $alliance_data = get_alliance_detail($alliance_id);
+                $alliance_fee_percentage = (float) ($alliance->fee ?? $alliance_data->fee);
+
+                $total_alliance_fee = 0.0;
+                // Si NO es un producto de tipo FEE y NO es una beca, calcula la tarifa.
+                if (!$is_fee_product && !$is_scholarship) {
+                    // La base para el cálculo de la fee es el subtotal del ITEM
+                    // descontando el descuento de latam scholarship (si aplica a este item)
+                    // Para simplificar, aquí se usa el mismo total_for_percentage_fee calculado globalmente,
+                    // asumiendo que los FEES no afectan ese total base, lo cual es coherente
+                    // con la lógica del `set_institute_in_order`.
+                    $total_alliance_fee = ($alliance_fee_percentage * (float) $item->get_subtotal()) / 100;
+                }
+
+                if ($alliance_id) {
+                    $current_item_alliances_fees[] = [
+                        'id' => $alliance_id,
+                        'fee_percentage' => $alliance_fee_percentage,
+                        'calculated_fee_amount' => $total_alliance_fee,
+                    ];
+                }
+            }
+        }
+
+        // Codificar el array de tarifas de alianzas para el item actual a JSON.
+        $current_item_alliances_json = json_encode($current_item_alliances_fees);
+        if ($current_item_alliances_json === false) {
+            $current_item_alliances_json = json_encode([]);
+        }
+
+
         // --- Lógica de fechas ---
-        $needs_next_payment = !in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]);
-        $start_date = new DateTime(); // La fecha base para todos los cálculos.
+        $needs_next_payment = !$is_fee_product; // Reutilizamos la variable is_fee_product
+        $start_date = new DateTime();
 
         for ($i = 0; $i < $installments; $i++) {
             $next_payment_date = null;
             if ($needs_next_payment) {
-                // 🔧 CORRECCIÓN: Lógica de cálculo de fecha acumulativa.
-                $payment_date_obj = clone $start_date; // Siempre partimos de la fecha inicial.
+                $payment_date_obj = clone $start_date;
 
-                // La primera cuota (i=0) tiene la fecha de hoy. Las siguientes se calculan.
                 if ($i > 0 && !empty($interval)) {
-                    // Extraemos el número y la unidad del intervalo (ej: 6 y 'months')
                     sscanf($interval, '+%d %s', $value, $unit);
-
-                    // Calculamos el multiplicador total para la cuota actual
                     $total_offset = $i * $value;
-
-                    // Aplicamos la modificación correcta
                     $payment_date_obj->modify("+$total_offset $unit");
                 }
                 $next_payment_date = $payment_date_obj->format('Y-m-d');
+            }
+
+            // Calcular el institute_fee para este item específico
+            $current_item_institute_fee = 0.0;
+            if (!$is_fee_product && !$is_scholarship) {
+                $current_item_institute_fee = ($institute_fee * (float) $item->get_subtotal()) / 100;
             }
 
             $data = [
@@ -1019,6 +1070,9 @@ function process_program_payments($order, $order_id)
                 'student_id' => $student_id,
                 'product_id' => $product_id,
                 'variation_id' => $variation_id,
+                'institute_id' => $institute_id,
+                'institute_fee' => $current_item_institute_fee, // Usamos la fee calculada para este item
+                'alliances' => ($i + 1) == 1 ? $current_item_alliances_json : null, // Usamos el JSON de alianzas para este item
                 'amount' => $price_per_installment,
                 'original_amount_product' => $original_price,
                 'total_amount' => $total_amount_to_pay,
