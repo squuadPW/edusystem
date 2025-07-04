@@ -3,8 +3,8 @@
 function add_admin_form_send_notification_content()
 {
     global $wpdb;
-    $table_academic_periods = $wpdb->prefix.'academic_periods';
-    $table_students = $wpdb->prefix.'students';
+    $table_academic_periods = $wpdb->prefix . 'academic_periods';
+    $table_students = $wpdb->prefix . 'students';
 
     if (isset($_GET['action']) && !empty($_GET['action'])) {
         if ($_GET['action'] == 'send_notification') {
@@ -17,11 +17,12 @@ function add_admin_form_send_notification_content()
     }
 
     $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
-    include (plugin_dir_path(__FILE__) . 'templates/send-notification.php');
+    include(plugin_dir_path(__FILE__) . 'templates/send-notification.php');
 }
 
-function send_notification_staff($subject, $message) {
-    for ($i=0; $i < 5; $i++) { 
+function send_notification_staff($subject, $message)
+{
+    for ($i = 0; $i < 5; $i++) {
         $email = '';
         switch ($i) {
             case 0:
@@ -47,7 +48,8 @@ function send_notification_staff($subject, $message) {
     }
 }
 
-function send_notification_staff_particular($subject, $message, $i) {
+function send_notification_staff_particular($subject, $message, $i)
+{
     $email = '';
     switch ($i) {
         case 0:

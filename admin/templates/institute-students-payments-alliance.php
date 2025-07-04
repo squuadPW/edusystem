@@ -4,18 +4,9 @@
 			<h1 class="wp-heading-line"><?= __('Payments of student', 'edusystem'); ?></h1>
 		</div>
 
-		<?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
-			<div class="notice notice-success is-dismissible">
-				<p><?= $_COOKIE['message']; ?></p>
-			</div>
-			<?php setcookie('message', '', time(), '/'); ?>
-		<?php } ?>
-		<?php if (isset($_COOKIE['message-error']) && !empty($_COOKIE['message-error'])) { ?>
-			<div class="notice notice-error is-dismissible">
-				<p><?= $_COOKIE['message-error']; ?></p>
-			</div>
-			<?php setcookie('message-error', '', time(), '/'); ?>
-		<?php } ?>
+		<?php
+		include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+		?>
 		<div style="display:flex;width:100%;">
 			<a class="button button-outline-primary"
 				href="<?= admin_url('admin.php?page=list_admin_institutes_partner_registered_content&action=institute-students&institute_id=' . $institute->id); ?>"><?= __('Back', 'edusystem'); ?></a>

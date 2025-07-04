@@ -139,7 +139,7 @@ class TT_all_Payment_Institutes_List_Table extends WP_List_Table
 
         if (isset($_GET['institute_id']) && !empty($_GET['institute_id'])) {
             $dates = get_dates_search('this-month', null);
-            $data_payment = get_order_institutes($dates[0], $dates[1],$_GET['institute_id']);
+            $data_payment = get_order_institutes($dates[0], $dates[1], $_GET['institute_id']);
         } else {
             $data_payment = get_order_institutes();
         }
@@ -242,7 +242,7 @@ function get_order_institutes($start, $end, $id = "")
                 'created_at' => $order->get_date_created()->format('F j, Y g:i a')
             ]);
 
-            $total += (float)$order->get_meta('institute_fee');
+            $total += (float) $order->get_meta('institute_fee');
         }
     }
 
@@ -292,7 +292,7 @@ function get_invoices_institutes($start, $end, $id = "")
                 'created_at' => $order->get_date_created()->format('F j, Y g:i a')
             ]);
 
-            $total += (float)$order->get_meta('institute_fee');
+            $total += (float) $order->get_meta('institute_fee');
         }
     }
 
@@ -343,13 +343,14 @@ function get_transactions_institutes($start, $end, $id = "", $status = 0)
     return ['total' => $total, 'orders' => $data_fees];
 }
 
-function get_status_payment_institute($id) {
+function get_status_payment_institute($id)
+{
     $status = '';
     switch ($id) {
         case 0:
             $status = 'Pending';
             break;
-        
+
         default:
             $status = 'Paid';
             break;

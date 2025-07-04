@@ -51,7 +51,7 @@ function add_admin_form_configuration_options_content()
             try {
                 // Recuperar y sanitizar los valores de los campos de texto
                 $offer_complete = sanitize_text_field($_POST['offer_complete'] ?? get_option('offer_complete'));
-                $offer_quote    = sanitize_text_field($_POST['offer_quote'] ?? get_option('offer_quote'));
+                $offer_quote = sanitize_text_field($_POST['offer_quote'] ?? get_option('offer_quote'));
                 update_option('offer_complete', $offer_complete);
                 update_option('offer_quote', $offer_quote);
 
@@ -73,7 +73,7 @@ function add_admin_form_configuration_options_content()
                     foreach ($coupons as $coupon_code) {
                         if (!empty($coupon_code)) {
                             $coupon = new WC_Coupon($coupon_code);
-                            if ($coupon->get_id()) { 
+                            if ($coupon->get_id()) {
                                 $coupon->set_date_expires($expiration_timestamp);
                                 $coupon->save();
                             }
@@ -114,6 +114,23 @@ function add_admin_form_configuration_options_content()
 
             if ($logo_attach) {
                 update_option('logo_admin', $logo_attach);
+            }
+
+            if (isset($_FILES['logo_admin_login']) && !empty($_FILES['logo_admin_login'])) {
+                $file_temp_logo_login = $_FILES['logo_admin_login'];
+            } else {
+                $file_temp = [];
+            }
+
+            if (!empty($file_temp_logo_login['tmp_name'])) {
+                $upload_data = wp_handle_upload($file_temp_logo_login, array('test_form' => FALSE));
+                if ($upload_data && !is_wp_error($upload_data)) {
+                    $logo_attach_login = upload_file_attchment($upload_data, 'LOGO ADMIN');
+                }
+            }
+
+            if ($logo_attach_login) {
+                update_option('logo_admin_login', $logo_attach_login);
             }
 
             // Redirect to the same page with a success message

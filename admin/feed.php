@@ -7,11 +7,11 @@ function add_admin_form_feed_content()
         if ($_GET['section_tab'] == 'feed_details') {
             $feed_id = $_GET['feed_id'];
             $feed = get_feed_detail($feed_id);
-            include (plugin_dir_path(__FILE__) . 'templates/feed-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/feed-detail.php');
         }
 
         if ($_GET['section_tab'] == 'add_feed') {
-            include (plugin_dir_path(__FILE__) . 'templates/feed-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/feed-detail.php');
         }
 
     } else {
@@ -19,7 +19,7 @@ function add_admin_form_feed_content()
         if ($_GET['action'] == 'save_feed_details') {
             global $wpdb;
 
-            $table = $wpdb->prefix . 'feed';   
+            $table = $wpdb->prefix . 'feed';
             $feed_id = $_POST['feed_id'];
             $feed = get_feed_detail($feed_id);
             $title = strtoupper($_POST['title']);
@@ -65,7 +65,7 @@ function add_admin_form_feed_content()
                     'link' => $link,
                     'max_date' => $max_date,
                 ], ['id' => $feed_id]);
-                wp_redirect(admin_url('admin.php?page=add_admin_form_feed_content&section_tab=feed_details&feed_id=').$feed_id);
+                wp_redirect(admin_url('admin.php?page=add_admin_form_feed_content&section_tab=feed_details&feed_id=') . $feed_id);
             } else {
                 $wpdb->insert($table, [
                     'title' => $title,
@@ -78,7 +78,7 @@ function add_admin_form_feed_content()
             }
 
             exit;
-        } else if($_GET['action'] == 'delete_feed') {
+        } else if ($_GET['action'] == 'delete_feed') {
             global $wpdb;
             $table = $wpdb->prefix . 'feed';
             $feed_id = $_GET['feed_id'];
@@ -90,7 +90,7 @@ function add_admin_form_feed_content()
         } else {
             $list_feed = new TT_Feed_all_List_Table;
             $list_feed->prepare_items();
-            include (plugin_dir_path(__FILE__) . 'templates/list-feed.php');
+            include(plugin_dir_path(__FILE__) . 'templates/list-feed.php');
         }
     }
 }
@@ -107,7 +107,8 @@ class TT_Feed_all_List_Table extends WP_List_Table
                 'singular' => 'school_subject_',
                 'plural' => 'school_subject_s',
                 'ajax' => true
-            ));
+            )
+        );
 
     }
 
@@ -117,9 +118,9 @@ class TT_Feed_all_List_Table extends WP_List_Table
         global $current_user;
         switch ($column_name) {
             case 'img_desktop':
-                return $item['img_desktop'] ? '<img src="'. $item['img_desktop'] .'" width="100px" height="50px" />' : 'N/A';
+                return $item['img_desktop'] ? '<img src="' . $item['img_desktop'] . '" width="100px" height="50px" />' : 'N/A';
             case 'img_mobile':
-                return $item['img_mobile'] ? '<img src="'. $item['img_mobile'] .'" width="100px" height="50px" />' : 'N/A';
+                return $item['img_mobile'] ? '<img src="' . $item['img_mobile'] . '" width="100px" height="50px" />' : 'N/A';
             case 'view_details':
                 $buttons = "<a href='" . admin_url('/admin.php?page=add_admin_form_feed_content&section_tab=feed_details&feed_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
                 $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_feed_content&action=delete_feed&feed_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'edusystem') . "</a>";
@@ -169,7 +170,7 @@ class TT_Feed_all_List_Table extends WP_List_Table
         $query_search = "";
         if (isset($_GET['s']) && !empty($_GET['s'])) {
             $search = $_GET['s'];
-            $query_search  = "WHERE (`title` LIKE '%{$search}%')";
+            $query_search = "WHERE (`title` LIKE '%{$search}%')";
         }
 
         $feed = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM wp_feed {$query_search} ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
@@ -227,7 +228,7 @@ class TT_Feed_all_List_Table extends WP_List_Table
 
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        
+
         $data = $data_feed['data'];
         $total_count = (int) $data_feed['total_count'];
 
@@ -253,7 +254,7 @@ class TT_Feed_all_List_Table extends WP_List_Table
 function get_feed_detail($feed_id)
 {
     global $wpdb;
-    $table = $wpdb->prefix.'feed';
+    $table = $wpdb->prefix . 'feed';
 
     $data = $wpdb->get_row("SELECT * FROM {$table} WHERE id={$feed_id}");
     return $data;

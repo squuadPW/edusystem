@@ -143,7 +143,7 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Students successfully enrolled in moodle.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
-        }  else if (isset($_GET['action']) && $_GET['action'] == 'enroll_public_course') {
+        } else if (isset($_GET['action']) && $_GET['action'] == 'enroll_public_course') {
             generate_enroll_public_course();
             setcookie('message', __('Students successfully enrolled in public course.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
@@ -504,30 +504,87 @@ class TT_academic_projection_all_List_Table extends WP_List_Table
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
 
-        $query_search = "";
-        if (isset($_GET['s']) && !empty($_GET['s'])) {
-            $search = $_GET['s'];
-            $query_search = "WHERE (`name` LIKE '{$search}%' OR middle_name LIKE '{$search}%' OR last_name LIKE '{$search}%' OR middle_last_name LIKE '{$search}%' OR id_document LIKE '{$search}%' )";
+        // Sanitize and retrieve the search term
+        $search = sanitize_text_field($_GET['s'] ?? '');
+
+        $conditions = array();
+        $params = array();
+
+        // 1. Smart Search Condition (applied to the students table)
+        if (!empty($search)) {
+            $search_term_like = '%' . $wpdb->esc_like($search) . '%';
+
+            $search_sub_conditions = [];
+            $search_sub_params = [];
+
+            // Combined search for names and surnames (CONCAT_WS)
+            // Using alias 's' for table_students
+            $combined_fields = [
+                'CONCAT_WS(" ", s.name, s.last_name)',
+                'CONCAT_WS(" ", s.name, s.middle_name, s.last_name)',
+                'CONCAT_WS(" ", s.name, s.middle_name, s.last_name, s.middle_last_name)',
+                'CONCAT_WS(" ", s.last_name, s.name)',
+                'CONCAT_WS(" ", s.last_name, s.middle_last_name)',
+                'CONCAT_WS(" ", s.name, s.middle_name)',
+                'CONCAT_WS(" ", s.last_name, s.middle_last_name)'
+            ];
+
+            foreach ($combined_fields as $field_combination) {
+                $search_sub_conditions[] = "{$field_combination} LIKE %s";
+                $search_sub_params[] = $search_term_like;
+            }
+
+            // Direct search in individual fields
+            $individual_fields = ['s.name', 's.middle_name', 's.last_name', 's.middle_last_name', 's.id_document', 's.email']; // Added s.email
+            foreach ($individual_fields as $field) {
+                $search_sub_conditions[] = "{$field} LIKE %s";
+                $search_sub_params[] = $search_term_like;
+            }
+
+            // Add the main search condition to the general conditions array
+            if (!empty($search_sub_conditions)) {
+                $conditions[] = "(" . implode(" OR ", $search_sub_conditions) . ")";
+                $params = array_merge($params, $search_sub_params);
+            }
         }
 
-        $students_id = $wpdb->get_col("SELECT id FROM {$table_students} {$query_search}");
-        if (!empty($students_id)) {
-            $students_id_list = implode(',', array_map('intval', $students_id)); // Asegúrate de que los IDs sean enteros
+        // 2. Build the main query using a JOIN
+        // This allows filtering students and fetching projections in a single database call.
+        $query = "
+        SELECT SQL_CALC_FOUND_ROWS sap.*,
+               s.name, s.middle_name, s.last_name, s.middle_last_name, s.academic_period, s.initial_cut, s.grade_id
+        FROM {$table_student_academic_projection} AS sap
+        JOIN {$table_students} AS s ON sap.student_id = s.id
+    ";
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
         }
 
-        $academic_projections = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_student_academic_projection} WHERE student_id IN ($students_id_list) ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        $query .= " ORDER BY sap.id DESC"; // Order by academic projection ID
+
+        // Add LIMIT and OFFSET parameters
+        $query .= " LIMIT %d OFFSET %d";
+        $params[] = $per_page;
+        $params[] = $offset;
+
+        // Execute the query
+        $academic_projections = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
+        // 3. Process the results
         if ($academic_projections) {
             foreach ($academic_projections as $projection) {
-                $student = get_student_detail($projection['student_id']);
-                array_push($academic_projections_array, [
-                    'student' => $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name,
+                // Student details are now directly available in the $projection array from the JOIN
+                $student_full_name = '<span class="text-uppercase">' . $projection['last_name'] . ' ' . ($projection['middle_last_name'] ?? '') . ' ' . $projection['name'] . ' ' . ($projection['middle_name'] ?? '') . '</span>';
+
+                $academic_projections_array[] = [
+                    'student' => $student_full_name,
                     'student_id' => $projection['student_id'],
-                    'initial_cut' => $student->academic_period . ' - ' . $student->initial_cut,
+                    'initial_cut' => $projection['academic_period'] . ' - ' . $projection['initial_cut'],
                     'academic_projection_id' => $projection['id'],
-                    'grade_id' => get_name_grade($student->grade_id)
-                ]);
+                    'grade_id' => function_exists('get_name_grade') ? get_name_grade($projection['grade_id']) : $projection['grade_id']
+                ];
             }
         }
 
@@ -626,7 +683,8 @@ function get_inscriptions_by_student_period($student_id, $code_period, $cut_peri
     return $inscriptions;
 }
 
-function get_inscriptions_by_subject_period($subject_id, $code_subject, $code_period, $cut_period, $status) {
+function get_inscriptions_by_subject_period($subject_id, $code_subject, $code_period, $cut_period, $status)
+{
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
@@ -664,28 +722,29 @@ function get_inscriptions_by_subject_period($subject_id, $code_subject, $code_pe
     return $inscriptions;
 }
 
-function generate_enroll_student() {
+function generate_enroll_student()
+{
     try {
         global $wpdb;
         $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
         $table_students = $wpdb->prefix . 'students';
-        
+
         // Get current enrollment period
         $load = load_current_cut();
         if (empty($load['code']) || empty($load['cut'])) {
             throw new Exception('Invalid enrollment period');
         }
-        
+
         $code = $load['code'];
         $cut = $load['cut'];
-        
+
         // Get all projections with student data in a single query
         $query = $wpdb->prepare(
             "SELECT p.*, s.last_name, s.middle_last_name, s.name, s.middle_name 
             FROM {$table_student_academic_projection} p
             INNER JOIN {$table_students} s ON p.student_id = s.id"
         );
-        
+
         $projections = $wpdb->get_results($query);
         if (empty($projections)) {
             return;
@@ -703,10 +762,10 @@ function generate_enroll_student() {
 
             // Filter subjects for current period
             $filteredArray = array_filter($projection_obj, function ($item) use ($code, $cut) {
-                return isset($item->this_cut) && 
-                       $item->this_cut === true && 
-                       $item->code_period == $code && 
-                       $item->cut == $cut;
+                return isset($item->this_cut) &&
+                    $item->this_cut === true &&
+                    $item->code_period == $code &&
+                    $item->cut == $cut;
             });
 
             if (empty($filteredArray)) {
@@ -721,7 +780,7 @@ function generate_enroll_student() {
                 $offer = get_offer_filtered($projection_filtered->subject_id, $code, $cut);
                 if ($offer && isset($offer->moodle_course_id)) {
                     $enrollments = array_merge(
-                        $enrollments, 
+                        $enrollments,
                         courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id])
                     );
                 } else {
@@ -732,7 +791,7 @@ function generate_enroll_student() {
                         $projection->name,
                         $projection->middle_name
                     );
-                    
+
                     $errors[] = sprintf(
                         'The student %s could not be enrolled because no offers were found for the current period (%s)',
                         $student_name,
@@ -859,9 +918,9 @@ function get_moodle_notes()
 
                 foreach ($grade['grades'] as $grade_item) {
                     $grade_items = $grade_item['gradeitems'];
-                    
+
                     // Filter grade items without cmid
-                    $filtered_grade_items = array_filter($grade_items, function($item) {
+                    $filtered_grade_items = array_filter($grade_items, function ($item) {
                         return !isset($item['cmid']);
                     });
                     $filtered_grade_items = array_values($filtered_grade_items);
@@ -869,7 +928,7 @@ function get_moodle_notes()
                     if (empty($filtered_grade_items)) {
                         continue;
                     }
-                    
+
                     $grade_value = (float) $filtered_grade_items[0]['gradeformatted'];
                     $total_grade = $grade_value > 100 ? 100 : $grade_value;
 
@@ -1039,20 +1098,20 @@ function get_count_email_pending()
         $projections = $wpdb->get_results("SELECT * FROM {$table_student_academic_projection}");
         $count = 0;
         $students = [];
-    
+
         foreach ($projections as $key => $projection) {
             $projection_obj = json_decode($projection->projection);
             $filteredArray = array_filter($projection_obj, function ($item) {
                 return $item->this_cut === true && !$item->welcome_email;
             });
             $filteredArray = array_values($filteredArray);
-    
+
             if (count($filteredArray) > 0) {
                 $count++;
                 array_push($students, get_student_detail($projection->student_id));
             }
         }
-    
+
         return ['count' => $count, 'students' => $students];
     } catch (\Throwable $th) {
         return ['count' => 0, 'students' => []];
@@ -1136,16 +1195,17 @@ function table_notes_html($student_id, $projection)
     return $html;
 }
 
-function table_inscriptions_html($inscriptions) {
+function table_inscriptions_html($inscriptions)
+{
     $html = '<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;">';
-    
+
     // Encabezados de tabla
     $html .= '<thead>
                 <tr>
-                    <th scope="col" class="manage-column" style="width: 90px;">'.__('Status', 'edusystem').'</th>
-                    <th scope="col" class="manage-column">'.__('Subject - Code', 'edusystem').'</th>
-                    <th scope="col" class="manage-column" style="width: 80px;">'.__('Period - cut', 'edusystem').'</th>
-                    <th scope="col" class="manage-column" style="width: 80px;">'.__('Calification', 'edusystem').'</th>
+                    <th scope="col" class="manage-column" style="width: 90px;">' . __('Status', 'edusystem') . '</th>
+                    <th scope="col" class="manage-column">' . __('Subject - Code', 'edusystem') . '</th>
+                    <th scope="col" class="manage-column" style="width: 80px;">' . __('Period - cut', 'edusystem') . '</th>
+                    <th scope="col" class="manage-column" style="width: 80px;">' . __('Calification', 'edusystem') . '</th>
                 </tr>
               </thead>
               <tbody>';
@@ -1158,33 +1218,33 @@ function table_inscriptions_html($inscriptions) {
         $status_html = '';
         switch ($inscription->status_id) {
             case 0:
-                $status_html = '<div style="color: gray; font-weight: 600">'.strtoupper(__('To begin', 'edusystem')).'</div>';
+                $status_html = '<div style="color: gray; font-weight: 600">' . strtoupper(__('To begin', 'edusystem')) . '</div>';
                 break;
             case 1:
-                $status_html = '<div style="color: blue; font-weight: 600">'.strtoupper(__('Active', 'edusystem')).'</div>';
+                $status_html = '<div style="color: blue; font-weight: 600">' . strtoupper(__('Active', 'edusystem')) . '</div>';
                 break;
             case 2:
-                $status_html = '<div style="color: red; font-weight: 600">'.strtoupper(__('Unsubscribed', 'edusystem')).'</div>';
+                $status_html = '<div style="color: red; font-weight: 600">' . strtoupper(__('Unsubscribed', 'edusystem')) . '</div>';
                 break;
             case 3:
-                $status_html = '<div style="color: green; font-weight: 600">'.strtoupper(__('Approved', 'edusystem')).'</div>';
+                $status_html = '<div style="color: green; font-weight: 600">' . strtoupper(__('Approved', 'edusystem')) . '</div>';
                 break;
             case 4:
-                $status_html = '<div style="color: red; font-weight: 600">'.strtoupper(__('Reproved', 'edusystem')).'</div>';
+                $status_html = '<div style="color: red; font-weight: 600">' . strtoupper(__('Reproved', 'edusystem')) . '</div>';
                 break;
         }
 
         // Manejo de calificación
-        $calification = isset($inscription->calification) 
-                      ? number_format((float)$inscription->calification, 2)
-                      : __('N/A', 'edusystem');
+        $calification = isset($inscription->calification)
+            ? number_format((float) $inscription->calification, 2)
+            : __('N/A', 'edusystem');
 
         // Construir fila
         $html .= '<tr>
-                    <td>'.$status_html.'</td>
-                    <td>'.esc_html($name_subject).'</td>
-                    <td>'.esc_html($inscription->code_period.' - '.$inscription->cut_period).'</td>
-                    <td>'.esc_html($calification).'</td>
+                    <td>' . $status_html . '</td>
+                    <td>' . esc_html($name_subject) . '</td>
+                    <td>' . esc_html($inscription->code_period . ' - ' . $inscription->cut_period) . '</td>
+                    <td>' . esc_html($calification) . '</td>
                   </tr>';
     }
 
@@ -1192,15 +1252,16 @@ function table_inscriptions_html($inscriptions) {
     return $html;
 }
 
-function table_notes_period_html($inscriptions) {
+function table_notes_period_html($inscriptions)
+{
     $html = '<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;">';
-    
+
     // Encabezados de tabla
     $html .= '<thead>
                 <tr>
-                    <th scope="col" class="manage-column">'.__('Status', 'edusystem').'</th>
-                    <th scope="col" class="manage-column">'.__('Subject - Code', 'edusystem').'</th>
-                    <th scope="col" class="manage-column">'.__('Calification', 'edusystem').'</th>
+                    <th scope="col" class="manage-column">' . __('Subject - Code', 'edusystem') . '</th>
+                    <th scope="col" class="manage-column">' . __('Calification', 'edusystem') . '</th>
+                    <th scope="col" class="manage-column">' . __('Status', 'edusystem') . '</th>
                 </tr>
               </thead>
               <tbody>';
@@ -1213,32 +1274,32 @@ function table_notes_period_html($inscriptions) {
         $status_html = '';
         switch ($inscription->status_id) {
             case 0:
-                $status_html = '<div style="color: gray; font-weight: 600">'.strtoupper(__('To begin', 'edusystem')).'</div>';
+                $status_html = '<div style="color: gray; font-weight: 600">' . strtoupper(__('To begin', 'edusystem')) . '</div>';
                 break;
             case 1:
-                $status_html = '<div style="color: blue; font-weight: 600">'.strtoupper(__('Active', 'edusystem')).'</div>';
+                $status_html = '<div style="color: blue; font-weight: 600">' . strtoupper(__('Active', 'edusystem')) . '</div>';
                 break;
             case 2:
-                $status_html = '<div style="color: red; font-weight: 600">'.strtoupper(__('Unsubscribed', 'edusystem')).'</div>';
+                $status_html = '<div style="color: red; font-weight: 600">' . strtoupper(__('Unsubscribed', 'edusystem')) . '</div>';
                 break;
             case 3:
-                $status_html = '<div style="color: green; font-weight: 600">'.strtoupper(__('Approved', 'edusystem')).'</div>';
+                $status_html = '<div style="color: green; font-weight: 600">' . strtoupper(__('Approved', 'edusystem')) . '</div>';
                 break;
             case 4:
-                $status_html = '<div style="color: red; font-weight: 600">'.strtoupper(__('Reproved', 'edusystem')).'</div>';
+                $status_html = '<div style="color: red; font-weight: 600">' . strtoupper(__('Reproved', 'edusystem')) . '</div>';
                 break;
         }
 
         // Manejo de calificación
-        $calification = isset($inscription->calification) 
-                      ? number_format((float)$inscription->calification, 2)
-                      : __('N/A', 'edusystem');
+        $calification = isset($inscription->calification)
+            ? number_format((float) $inscription->calification, 2)
+            : __('N/A', 'edusystem');
 
         // Construir fila
         $html .= '<tr>
-                    <td>'.$status_html.'</td>
-                    <td>'.esc_html($name_subject).'</td>
-                    <td>'.esc_html($calification).'</td>
+                    <td>' . esc_html($name_subject) . '</td>
+                    <td>' . esc_html($calification) . '</td>
+                    <td>' . $status_html . '</td>
                   </tr>';
     }
 
@@ -1296,7 +1357,7 @@ function update_max_upload_at($student_id)
         $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
         $table_student_documents = $wpdb->prefix . 'student_documents';
         $inscription = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id={$student_id} ORDER BY id ASC LIMIT 1");
-    
+
         if (!$inscription || !$inscription->created_at) {
             return;
         }
@@ -1305,11 +1366,11 @@ function update_max_upload_at($student_id)
         $date = date('Y-m-d', strtotime($inscription->created_at));
         $days = (int) get_option('proof_due');
         $max_date_proof = date('Y-m-d', strtotime("$date + $days days"));
-    
+
         $wpdb->update($table_student_documents, [
             'max_date_upload' => $max_date_proof
         ], [
-            'document_id' => 'PROOF OF STUDY', 
+            'document_id' => 'PROOF OF STUDY',
             'student_id' => $student_id,
             'status' => ['<', 5]
         ]);
@@ -1317,7 +1378,7 @@ function update_max_upload_at($student_id)
         $wpdb->update($table_student_documents, [
             'max_date_upload' => NULL
         ], [
-            'document_id' => 'PROOF OF STUDY', 
+            'document_id' => 'PROOF OF STUDY',
             'student_id' => $student_id,
             'status' => ['<', 5]
         ]);

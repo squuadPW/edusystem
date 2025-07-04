@@ -5,18 +5,10 @@
         <h2 style="margin-bottom:15px;"><?= __('Add Subject', 'edusystem'); ?></h2>
     <?php endif; ?>
 
-    <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
-        <div class="notice notice-success is-dismissible">
-            <p><?= $_COOKIE['message']; ?></p>
-        </div>
-        <?php setcookie('message', '', time(), '/'); ?>
-    <?php } ?>
-    <?php if (isset($_COOKIE['message-error']) && !empty($_COOKIE['message-error'])) { ?>
-        <div class="notice notice-error is-dismissible">
-            <p><?= $_COOKIE['message-error']; ?></p>
-        </div>
-        <?php setcookie('message-error', '', time(), '/'); ?>
-    <?php } ?>
+    <?php
+    include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+    ?>
+
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
@@ -39,18 +31,19 @@
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <div>
                                                 <input type="checkbox" name="is_active" id="is_active"
-                                                <?= ($subject->is_active == 1) ? 'checked' : ''; ?>>
+                                                    <?= ($subject->is_active == 1) ? 'checked' : ''; ?>>
                                                 <label for="is_active"><b><?= __('Active', 'edusystem'); ?></b></label>
                                             </div>
                                         <?php else: ?>
                                             <div>
-                                            <input type="checkbox" name="is_active" id="is_active">
+                                                <input type="checkbox" name="is_active" id="is_active">
                                                 <label for="is_active"><b><?= __('Active', 'edusystem'); ?></b></label>
                                             </div>
                                         <?php endif; ?>
                                     </div>
                                     <div style="font-weight:400; text-align: center">
-                                        <input type="hidden" name="subject_id" id="subject_id" value="<?= $subject->id; ?>">
+                                        <input type="hidden" name="subject_id" id="subject_id"
+                                            value="<?= $subject->id; ?>">
                                         <label for="hc"><b><?= __('Type', 'edusystem'); ?></b></label><br>
                                         <select name="type">
                                             <option value="" selected>Select a type</option>
@@ -59,7 +52,8 @@
                                             <option value="equivalence" <?= ($subject->type == 'equivalence') ? 'selected' : ''; ?>>Equivalence</option>
                                         </select>
                                     </div>
-                                    <input type="hidden" name="is_open" id="is_open" value="<?= isset($subject) ? $subject->is_open : '' ?>">
+                                    <input type="hidden" name="is_open" id="is_open"
+                                        value="<?= isset($subject) ? $subject->is_open : '' ?>">
                                     <!-- <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <div>
@@ -75,11 +69,12 @@
                                         <?php endif; ?>
                                     </div> -->
                                 </div>
-                                <div style="display: flex; justify-content: space-evenly; margin: 18px; flex-wrap: wrap;">
+                                <div
+                                    style="display: flex; justify-content: space-evenly; margin: 18px; flex-wrap: wrap;">
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="name"><b><?= __('Subject', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                            <label for="name"><b><?= __('Subject', 'edusystem'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
                                             <input type="text" name="name" value="<?= ucwords($subject->name); ?>">
                                         <?php else: ?>
                                             <label for="name"><b><?= __('Subject', 'edusystem'); ?></b><span
@@ -89,25 +84,29 @@
                                     </div>
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="code_subject"><b><?= __('Subject codes', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="text" name="code_subject" value="<?= ucwords($subject->code_subject); ?>">
+                                            <label for="code_subject"><b><?= __('Subject codes', 'edusystem'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="text" name="code_subject"
+                                                value="<?= ucwords($subject->code_subject); ?>">
                                         <?php else: ?>
                                             <label for="code_subject"><b><?= __('Subject codes', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <input type="text" name="code_subject" value="" required>
                                         <?php endif; ?>
                                     </div>
-                                    
+
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
-                                                for="min_pass"><b><?= __('Minimum passing grade', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
-                                            <input type="number" step="0.01" name="min_pass" value="<?= ucwords($subject->min_pass); ?>" required>
-                                        <?php else: ?>
-                                            <label for="min_pass"><b><?= __('Minimum passing grade', 'edusystem'); ?></b><span
+                                                for="min_pass"><b><?= __('Minimum passing grade', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
-                                            <input type="number" step="0.01"  name="min_pass" value="" required>
+                                            <input type="number" step="0.01" name="min_pass"
+                                                value="<?= ucwords($subject->min_pass); ?>" required>
+                                        <?php else: ?>
+                                            <label
+                                                for="min_pass"><b><?= __('Minimum passing grade', 'edusystem'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
+                                            <input type="number" step="0.01" name="min_pass" value="" required>
                                         <?php endif; ?>
                                     </div>
                                     <!-- <div style="font-weight:400; text-align: center">
@@ -121,8 +120,10 @@
                                             <input type="number" step="0"  name="matrix_position" value="" required>
                                         <?php endif; ?>
                                     </div> -->
-                                    <input type="hidden" name="matrix_position" value="<?= isset($subject) ? $subject->matrix_position : ''; ?>">
-                                    <input type="hidden" name="max_students" value="<?= isset($subject) ? $subject->max_students : ''; ?>">
+                                    <input type="hidden" name="matrix_position"
+                                        value="<?= isset($subject) ? $subject->matrix_position : ''; ?>">
+                                    <input type="hidden" name="max_students"
+                                        value="<?= isset($subject) ? $subject->max_students : ''; ?>">
                                     <!-- <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
@@ -135,7 +136,8 @@
                                         <?php endif; ?>
                                     </div> -->
                                 </div>
-                                <div style="display: flex; justify-content: space-evenly; margin: 18px; flex-wrap: wrap;">
+                                <div
+                                    style="display: flex; justify-content: space-evenly; margin: 18px; flex-wrap: wrap;">
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
@@ -149,8 +151,8 @@
                                     </div>
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
-                                            <label
-                                                for="hc"><b><?= __('HC', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                            <label for="hc"><b><?= __('HC', 'edusystem'); ?></b><span
+                                                    class="text-danger">*</span></label><br>
                                             <input type="text" name="hc" value="<?= ucwords($subject->hc); ?>">
                                         <?php else: ?>
                                             <label for="hc"><b><?= __('HC', 'edusystem'); ?></b><span
@@ -158,8 +160,9 @@
                                             <input type="text" name="hc" value="" required>
                                         <?php endif; ?>
                                     </div>
-                                    
-                                    <input type="hidden" name="moodle_course_id" value="<?= isset($subject) ? $subject->moodle_course_id : ''; ?>">
+
+                                    <input type="hidden" name="moodle_course_id"
+                                        value="<?= isset($subject) ? $subject->moodle_course_id : ''; ?>">
                                     <!-- <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
@@ -172,7 +175,8 @@
                                         <?php endif; ?>
                                     </div> -->
 
-                                    <input type="hidden" name="teacher_id" value="<?= isset($subject) ? $subject->teacher_id : ''; ?>">
+                                    <input type="hidden" name="teacher_id"
+                                        value="<?= isset($subject) ? $subject->teacher_id : ''; ?>">
                                     <!-- <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label

@@ -11,18 +11,10 @@
         <?php endif; ?>
     <?php endif; ?>
 
-    <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
-        <div class="notice notice-success is-dismissible">
-            <p><?= $_COOKIE['message']; ?></p>
-        </div>
-        <?php setcookie('message', '', time(), '/'); ?>
-    <?php } ?>
-    <?php if (isset($_COOKIE['message-error']) && !empty($_COOKIE['message-error'])) { ?>
-        <div class="notice notice-error is-dismissible">
-            <p><?= $_COOKIE['message-error']; ?></p>
-        </div>
-        <?php setcookie('message-error', '', time(), '/'); ?>
-    <?php } ?>
+    <?php
+    include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+    ?>
+
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>

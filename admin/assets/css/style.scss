@@ -1180,7 +1180,7 @@ h2 {
   margin-bottom: 20px;
 }
 
-.form-field {
+.form-field-custom {
   text-align: center;
   font-weight: 400;
   display: flex;
@@ -1188,15 +1188,15 @@ h2 {
   align-items: center;
 }
 
-.form-field label {
+.form-field-custom label {
   font-weight: bold;
   margin-bottom: 5px;
   color: #444;
 }
 
-.form-field input[type="text"],
-.form-field input[type="number"],
-.form-field input[type="date"] {
+.form-field-custom input[type="text"],
+.form-field-custom input[type="number"],
+.form-field-custom input[type="date"] {
   width: 100%; /* Occupy full width of its grid cell */
   max-width: 250px; /* Limit max width for better aesthetics */
   padding: 8px 10px;
@@ -1205,7 +1205,7 @@ h2 {
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
-.form-field input[type="checkbox"] {
+.form-field-custom input[type="checkbox"] {
   margin-top: 5px;
 }
 
@@ -1248,9 +1248,9 @@ h2 {
     grid-template-columns: 1fr; /* Single column for mobile */
   }
 
-  .form-field input[type="text"],
-  .form-field input[type="number"],
-  .form-field input[type="date"] {
+  .form-field-custom input[type="text"],
+  .form-field-custom input[type="number"],
+  .form-field-custom input[type="date"] {
     max-width: 100%; /* Full width inputs on small screens */
   }
 }
@@ -1269,126 +1269,146 @@ h2 {
     width: 100%;
   }
 
-  .wp-admin .form-table input:is([type="text"], [type="number"], [type="date"], [type="email"], [type="password"]),
-  .wp-core-ui input:is([type="text"], [type="number"], [type="date"], [type="email"], [type="password"]) {
+  .wp-admin
+    .form-table
+    input:is(
+      [type="text"],
+      [type="number"],
+      [type="date"],
+      [type="email"],
+      [type="password"]
+    ),
+  .wp-core-ui
+    input:is(
+      [type="text"],
+      [type="number"],
+      [type="date"],
+      [type="email"],
+      [type="password"]
+    ) {
     width: 100%;
   }
 }
 
 /* Media query para pantallas pequeñas (ej. móviles) */
-@media (max-width: 768px) { /* Puedes ajustar este breakpoint */
-    .segment {
-        flex-wrap: wrap; /* Permite que los elementos se envuelvan */
-        justify-content: center; /* Centra los botones cuando se envuelven */
-        margin: 0px 10px 20px 10px; /* Ajusta los márgenes para pantallas pequeñas */
-    }
+@media (max-width: 768px) {
+  /* Puedes ajustar este breakpoint */
+  .segment {
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan */
+    justify-content: center; /* Centra los botones cuando se envuelven */
+    margin: 0px 10px 20px 10px; /* Ajusta los márgenes para pantallas pequeñas */
+  }
 
-    .segment-button {
-        flex: 1 1 45%; /* Permite que los botones ocupen un 45% del ancho y se envuelvan */
-        margin-bottom: 5px; /* Espacio entre botones cuando se apilan */
-        border-radius: 5px !important; /* Ajusta los bordes cuando se apilan */
-    }
+  .segment-button {
+    flex: 1 1 45%; /* Permite que los botones ocupen un 45% del ancho y se envuelvan */
+    margin-bottom: 5px; /* Espacio entre botones cuando se apilan */
+    border-radius: 5px !important; /* Ajusta los bordes cuando se apilan */
+  }
 
-    /* Eliminar border-radius específico para el primer y último hijo cuando se apilan */
-    .segment-button:first-child,
-    .segment-button:last-child {
-        border-radius: 5px !important;
-    }
+  /* Eliminar border-radius específico para el primer y último hijo cuando se apilan */
+  .segment-button:first-child,
+  .segment-button:last-child {
+    border-radius: 5px !important;
+  }
 }
 
 /* Responsive adjustments for tablets and smaller desktops */
-@media (max-width: 1024px) { /* Adjust this breakpoint if needed */
-    .grid-container-report-4 {
-        grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
-        margin: 15px; /* Slightly reduced margin */
-    }
+@media (max-width: 1024px) {
+  /* Adjust this breakpoint if needed */
+  .grid-container-report-4 {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
+    margin: 15px; /* Slightly reduced margin */
+  }
 }
 
 /* Responsive adjustments for mobile phones */
-@media (max-width: 768px) { /* Adjust this breakpoint if needed */
-    .grid-container-report-4 {
-        grid-template-columns: 1fr; /* 1 column for mobile phones */
-        margin: 10px; /* Further reduced margin */
-    }
+@media (max-width: 768px) {
+  /* Adjust this breakpoint if needed */
+  .grid-container-report-4 {
+    grid-template-columns: 1fr; /* 1 column for mobile phones */
+    margin: 10px; /* Further reduced margin */
+  }
 }
 
 /* Responsive adjustments for tablets and smaller desktops */
-@media (max-width: 1024px) { /* Adjust this breakpoint if needed */
-    .grid-container-report-2 {
-        grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
-        margin: 15px; /* Slightly reduced margin */
-    }
+@media (max-width: 1024px) {
+  /* Adjust this breakpoint if needed */
+  .grid-container-report-2 {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
+    margin: 15px; /* Slightly reduced margin */
+  }
 }
 
 /* Responsive adjustments for mobile phones */
-@media (max-width: 768px) { /* Adjust this breakpoint if needed */
-    .grid-container-report-2 {
-        grid-template-columns: 1fr; /* 1 column for mobile phones */
-        margin: 10px; /* Further reduced margin */
-    }
+@media (max-width: 768px) {
+  /* Adjust this breakpoint if needed */
+  .grid-container-report-2 {
+    grid-template-columns: 1fr; /* 1 column for mobile phones */
+    margin: 10px; /* Further reduced margin */
+  }
 }
 
 /* In your CSS file (e.g., style.css) */
 
 .form-section {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
 }
 
 .capability-group {
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 5px;
-    background-color: #fff;
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  background-color: #fff;
 }
 
 .capability-group h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #333;
-    font-size: 1.2em;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1.2em;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
 }
 
 .capability-item {
-    display: flex; /* Aligns checkbox and label nicely */
-    align-items: center;
-    margin-bottom: 10px;
-    padding: 3px 0;
+  display: flex; /* Aligns checkbox and label nicely */
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 3px 0;
 }
 
 .capability-item input[type="checkbox"] {
-    margin-right: 8px; /* Space between checkbox and label */
-    flex-shrink: 0; /* Prevent checkbox from shrinking */
+  margin-right: 8px; /* Space between checkbox and label */
+  flex-shrink: 0; /* Prevent checkbox from shrinking */
 }
 
 .capability-item label {
-    cursor: pointer;
-    line-height: 1.5;
+  cursor: pointer;
+  line-height: 1.5;
 }
 
 .capability-item.indented {
-    margin-left: 20px; /* Applies indentation for sub-items */
+  margin-left: 20px; /* Applies indentation for sub-items */
 }
 
 /* Styles for disabled items (matching your inline styles) */
 .capability-item input[type="checkbox"][style*="pointer-events: none"],
 .capability-item label[style*="pointer-events: none"] {
-    font-style: italic;
-    color: #8080808a;
-    pointer-events: none;
+  font-style: italic;
+  color: #8080808a;
+  pointer-events: none;
 }
 
 .group-inputs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .modal-body {
@@ -1501,90 +1521,72 @@ h2 {
                     display: none;
                 }
 
-                .group-input {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 10px;
+        .group-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
 
-                    .space-offer {
-                        flex: 1;
-                        font-weight:400;
+            .space-offer {
+                flex: 1;
+                font-weight:400;
 
-                        &.name {
-                            flex: 3;
-                        }
+                &:has( input[type="checkbox"] ) {
+                    max-width: max-content;
 
-                        &:has( input[type="checkbox"] ) {
-                            max-width: max-content;
-
-                            input[type="checkbox"] {
-                                width: 10px;
-                            }
-                        }
-
-                        .input-frequency {
-                            display: flex;
-                            gap: 10px;
-                        }
+                    input[type="checkbox"] {
+                        width: 10px;
                     }
                 }
                 
             }
-
         }
-
-        & > div {
-            margin: 0px 10px;
-        }
-        
     }
 }
 
 #toplevel_page_logo_based_menu {
-    background-image: var(--admin-logo-url); /* This uses the dynamic URL from PHP */
+    /* ESTILOS BASE PARA MÓVILES (O PANTALLAS PEQUEÑAS) */
+    background-image: var(--admin-logo-url);
     background-repeat: no-repeat;
     background-color: #ffffff;
     background-position: center;
-    border-radius: 10px; /* Default for larger screens */
+    background-size: contain; 
+    border-radius: 10px; /* Radio por defecto para móviles */
+    margin: 10px !important; /* Margen para móviles */
+    width: 90% !important; /* Ancho para móviles */
+    padding: 0px !important; /* Podría ser un valor base para móviles */
+    min-height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
-@media screen and (min-width: 992px) {
+@media screen and (min-width: 783px) { /* Tablet y Escritorio */
     #toplevel_page_logo_based_menu {
-        background-size: 90%;
-        margin: 10px !important;
-        padding: 10px !important;
-        border-radius: 10px;
+        margin: 5px !important; /* Ajusta para tablet */
+        padding: 0px !important; /* Ajusta para tablet */
+        border-radius: 6px; /* Ajusta para tablet */
+        width: 70% !important; /* Ajusta para tablet */
     }
 }
 
-@media screen and (min-width: 783px) and (max-width: 991px) {
+@media screen and (min-width: 992px) { /* Escritorio grande */
     #toplevel_page_logo_based_menu {
-        background-size: 80%;
-        margin: 5px !important;
-        padding: 0px !important;
-        border-radius: 6px;
-        width: 70% !important;
-    }
-}
-
-@media screen and (max-width: 782px) {
-    #toplevel_page_logo_based_menu {
-        background-size: 20%;
-        background-color: #ffffff !important;
-        margin: 10px !important;
-        width: 90% !important;
-        border-radius: 10px;
+        margin: 10px !important; /* Ajusta para escritorio */
+        padding: 10px !important; /* Ajusta para escritorio */
+        border-radius: 10px; /* Ajusta para escritorio */
+        width: auto !important; /* O un ancho fijo si lo necesitas en desktop */
     }
 }
 
 /* Hide unnecessary menu items */
 a.wp-first-item.wp-not-current-submenu.menu-top.menu-icon-generic.toplevel_page_logo_based_menu.menu-top-last,
 a.toplevel_page_logo_based_menu {
-    visibility: hidden !important;
+  visibility: hidden !important;
 }
 
 #toplevel_page_logo_based_menu > a {
-    padding: 10px !important;
+  padding: 10px !important;
 }
 
 

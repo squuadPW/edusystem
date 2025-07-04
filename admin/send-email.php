@@ -55,11 +55,11 @@ function send_pending_prepayments_email()
     global $wpdb;
     $table_student_payments = $wpdb->prefix . 'student_payments';
     $table_students = $wpdb->prefix . 'students';
-    
+
     // Obtener la fecha actual y la fecha con 3 semanas más
     $current_date = current_time('mysql');
     $three_weeks_from_now = date('Y-m-d', strtotime($current_date . ' +3 weeks'));
-    
+
     // Consultar pagos pendientes que vencen en las próximas 3 semanas
     $student_payments = $wpdb->get_results($wpdb->prepare(
         "SELECT sp.*, s.id, s.email, s.name, s.last_name, s.partner_id
@@ -108,7 +108,8 @@ function set_variables_message($message, $student, $code_period = null, $cut_per
     return $message;
 }
 
-function get_students_by_period($academic_period, $cut, $filter, $graduating_students) {
+function get_students_by_period($academic_period, $cut, $filter, $graduating_students)
+{
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $students = [];
@@ -126,12 +127,11 @@ function get_students_by_period($academic_period, $cut, $filter, $graduating_stu
         $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
         // Obtiene los IDs de estudiantes según el período y corte en la otra tabla.
         $cut_student_ids = $wpdb->get_col($wpdb->prepare(
-            "SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s AND status_ud <> %d",
+            "SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s",
             $academic_period,
-            $cut,
-            5
+            $cut
         ));
-        
+
         if (empty($cut_student_ids)) {
             return [];
         }
@@ -145,7 +145,7 @@ function get_students_by_period($academic_period, $cut, $filter, $graduating_stu
     // Si se requiere filtrar estudiantes que estén "academic ready", se utiliza array_filter.
     if ($graduating_students == 2) {
         // Filtramos los estudiantes que no están "academic ready".
-        $students = array_filter($students, function($student) {
+        $students = array_filter($students, function ($student) {
             return !get_academic_ready($student->id);
         });
 
@@ -157,7 +157,8 @@ function get_students_by_period($academic_period, $cut, $filter, $graduating_stu
 }
 
 
-function get_student_by_email($email) {
+function get_student_by_email($email)
+{
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     return $wpdb->get_row($wpdb->prepare(
@@ -166,7 +167,8 @@ function get_student_by_email($email) {
     ));
 }
 
-function custom_get_user_by_email($email) {
+function custom_get_user_by_email($email)
+{
     $user = get_user_by('email', $email);
     if ($user) {
         $user_obj = new stdClass();
@@ -181,7 +183,8 @@ function custom_get_user_by_email($email) {
     return null;
 }
 
-function get_alliance_by_email($email) {
+function get_alliance_by_email($email)
+{
     global $wpdb;
     $table_alliances = $wpdb->prefix . 'alliances';
     return $wpdb->get_row($wpdb->prepare(
@@ -190,7 +193,8 @@ function get_alliance_by_email($email) {
     ));
 }
 
-function get_institute_by_email($email) {
+function get_institute_by_email($email)
+{
     global $wpdb;
     $table_institutes = $wpdb->prefix . 'institutes';
     return $wpdb->get_row($wpdb->prepare(
@@ -199,26 +203,29 @@ function get_institute_by_email($email) {
     ));
 }
 
-function get_active_alliances() {
+function get_active_alliances()
+{
     global $wpdb;
     $table_alliances = $wpdb->prefix . 'alliances';
     return $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 1");
 }
 
-function get_active_institutes() {
+function get_active_institutes()
+{
     global $wpdb;
     $table_institutes = $wpdb->prefix . 'institutes';
     return $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status = 1");
 }
 
-function get_summary_email() {
+function get_summary_email()
+{
     if (!isset($_POST['type'])) {
         wp_send_json(['success' => false, 'message' => 'Missing required parameters']);
         return;
     }
 
     $type = $_POST['type'];
-    $graduating_students = (int)$_POST['graduating_students'];
+    $graduating_students = (int) $_POST['graduating_students'];
     $data = [];
 
     switch ($type) {
@@ -240,26 +247,26 @@ function get_summary_email() {
                 wp_send_json(['success' => false, 'message' => 'Missing email parameter']);
                 return;
             }
-            
+
             // Recibimos la cadena de emails separados por comas
             $emails_string = $_POST['email_student'];
-            
+
             // Separamos la cadena en un array y eliminamos espacios en blanco de cada email
             $emails_array = array_map('trim', explode(',', $emails_string));
-            
+
             $data = [];
             foreach ($emails_array as $email) {
                 // Verifica que el email no esté vacío y que tenga un formato válido
                 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     continue; // O podrías acumular errores si lo prefieres
                 }
-                
+
                 $user = custom_get_user_by_email($email);
                 if ($user) {
                     $data[] = $user;
                 }
             }
-            
+
             if (empty($data)) {
                 wp_send_json(['success' => false, 'message' => 'No records found with these emails']);
                 return;
@@ -285,7 +292,8 @@ function get_summary_email() {
 add_action('wp_ajax_nopriv_summary_email', 'get_summary_email');
 add_action('wp_ajax_summary_email', 'get_summary_email');
 
-function send_email_to_students($students, $subject, $message, $academic_period = null, $cut = null, $send_to_parent = false) {
+function send_email_to_students($students, $subject, $message, $academic_period = null, $cut = null, $send_to_parent = false)
+{
     $email_student = WC()->mailer()->get_emails()['WC_Email_Sender_Student_Email'];
     $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
 
@@ -302,7 +310,8 @@ function send_email_to_students($students, $subject, $message, $academic_period 
     }
 }
 
-function save_email_template($subject, $message) {
+function save_email_template($subject, $message)
+{
     global $wpdb;
     $table_templates_email = $wpdb->prefix . 'templates_email';
     return $wpdb->insert($table_templates_email, [
@@ -311,7 +320,8 @@ function save_email_template($subject, $message) {
     ]);
 }
 
-function handle_email_sending($type, $post_data) {
+function handle_email_sending($type, $post_data)
+{
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
@@ -322,7 +332,7 @@ function handle_email_sending($type, $post_data) {
     $message = isset($post_data['message']) ? wp_unslash($post_data['message']) : '';
     $send_to_parent = isset($post_data['email_parent']) && $post_data['email_parent'] == 'on';
     $save_template = isset($post_data['save_template']) && $post_data['save_template'] == 'on';
-    $graduating_students = (int)$_POST['graduating_students'];
+    $graduating_students = (int) $_POST['graduating_students'];
 
     switch ($type) {
         case '1':
@@ -346,7 +356,7 @@ function handle_email_sending($type, $post_data) {
 
             // Se recibe y separa la cadena de emails, removiendo espacios en blanco
             $emails_string = $_POST['email_student'];
-            $emails_array  = array_map('trim', explode(',', $emails_string));
+            $emails_array = array_map('trim', explode(',', $emails_string));
 
             $data = [];
 
@@ -358,7 +368,7 @@ function handle_email_sending($type, $post_data) {
                 }
 
                 $student = get_student_by_email($email);
-                $user    = custom_get_user_by_email($email);
+                $user = custom_get_user_by_email($email);
 
                 // Caso en que se encuentra alumno y además el correo de usuario coincide
                 if ($student && isset($user->user_email) && $user->user_email === $student->email) {

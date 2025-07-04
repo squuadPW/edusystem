@@ -21,10 +21,10 @@ function add_admin_form_academic_periods_content()
             $period = $_GET['period_id'];
             $period = get_period_details($period);
             $cuts = get_period_details_cuts($period->code);
-            include (plugin_dir_path(__FILE__) . 'templates/academic-period-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/academic-period-detail.php');
         }
         if ($_GET['section_tab'] == 'add_period') {
-            include (plugin_dir_path(__FILE__) . 'templates/academic-period-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/academic-period-detail.php');
         }
 
     } else {
@@ -32,7 +32,7 @@ function add_admin_form_academic_periods_content()
         if ($_GET['action'] == 'save_period_details') {
             global $wpdb;
             $table_periods = $wpdb->prefix . 'academic_periods';
-            $table_academic_periods_cut = $wpdb->prefix.'academic_periods_cut';
+            $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
 
             $period_id = $_POST['period_id'];
             $name = $_POST['name'];
@@ -144,7 +144,7 @@ function add_admin_form_academic_periods_content()
         } else {
             $list_academic_periods = new TT_academic_period_all_List_Table;
             $list_academic_periods->prepare_items();
-            include (plugin_dir_path(__FILE__) . 'templates/list-academic-periods.php');
+            include(plugin_dir_path(__FILE__) . 'templates/list-academic-periods.php');
         }
     }
 }
@@ -161,7 +161,8 @@ class TT_academic_period_all_List_Table extends WP_List_Table
                 'singular' => 'academic_period_',
                 'plural' => 'academic_period_s',
                 'ajax' => true
-            ));
+            )
+        );
 
     }
 

@@ -1,15 +1,4 @@
 <div class="wrap">
-    <div id="card-totals-sales" class="grid-container-report-2">
-        <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
-            <div>Total orders</div>
-            <div style="margin-top: 10px"><strong id="orders"></strong></div>
-        </div>
-        <div style="background-color: #c5f3c5;" class="card-report-sales tooltip"
-            title="All upcoming accounts receivable (pending quotes)">
-            <div>Accounts receivable </div>
-            <div style="margin-top: 10px"><strong id="receivable"></strong></div>
-        </div>
-    </div>
     <div style="width:100%;text-align:center;padding-top:10px;">
 
         <?php if (wp_is_mobile()) { ?>
@@ -40,6 +29,18 @@
             <?php endif; ?>
     </div>
 
+    <div id="card-totals-sales" class="grid-container-report-2">
+        <div class="card-report-sales tooltip" title="All orders" style="background-color: #97d5ff;">
+            <div>Total orders</div>
+            <div style="margin-top: 10px"><strong id="orders"></strong></div>
+        </div>
+        <div style="background-color: #c5f3c5;" class="card-report-sales tooltip"
+            title="All upcoming accounts receivable (pending quotes)">
+            <div>Accounts receivable </div>
+            <div style="margin-top: 10px"><strong id="receivable"></strong></div>
+        </div>
+    </div>
+
     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
         <thead>
             <tr>
@@ -49,8 +50,8 @@
                 <th scope="col" class="manage-column column-parent-header">
                     <?= __('Parent', 'edusystem'); ?>
                 </th>
-                <th scope="col" class="manage-column column-product-header">
-                    <?= __('Product', 'edusystem'); ?>
+                <th scope="col" class="manage-column column-program-header">
+                    <?= __('Program', 'edusystem'); ?>
                 </th>
                 <th scope="col" class="manage-column column-amount-header">
                     <?= __('Amount', 'edusystem'); ?>
@@ -74,7 +75,7 @@
                             <?= $order['student']; ?>
                             <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                         </td>
-                        <td data-colname="<?= __('Product', 'edusystem'); ?>">
+                        <td data-colname="<?= __('Program', 'edusystem'); ?>">
                             <?= $order['product']; ?>
                         </td>
                         <td data-colname="<?= __('Amount', 'edusystem'); ?>">

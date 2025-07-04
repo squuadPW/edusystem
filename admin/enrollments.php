@@ -6,8 +6,8 @@ function add_admin_form_enrollments_content()
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         global $wpdb;
         $table_academic_periods = $wpdb->prefix . 'academic_periods';
-        $table_school_subjects = $wpdb->prefix.'school_subjects';
-        $table_students = $wpdb->prefix.'students';
+        $table_school_subjects = $wpdb->prefix . 'school_subjects';
+        $table_students = $wpdb->prefix . 'students';
         $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
         $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects}");
         $students = $wpdb->get_results("SELECT * FROM {$table_students}");
@@ -16,18 +16,18 @@ function add_admin_form_enrollments_content()
             $enrollment_id = $_GET['enrollment_id'];
             $enrollment = get_enrollment_details($enrollment_id);
             $student = get_student_detail($enrollment->student_id);
-            include (plugin_dir_path(__FILE__) . 'templates/enrollment-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/enrollment-detail.php');
         }
 
         if ($_GET['section_tab'] == 'add_enrollment') {
-            include (plugin_dir_path(__FILE__) . 'templates/enrollment-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/enrollment-detail.php');
         }
 
     } else {
 
         if ($_GET['action'] == 'save_enrollment_details') {
             global $wpdb;
-            $table_student_period_inscriptions = $wpdb->prefix.'student_period_inscriptions';
+            $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
             $enrollment_id = $_POST['enrollment_id'];
             $status_id = $_POST['status_id'];
@@ -38,7 +38,7 @@ function add_admin_form_enrollments_content()
             $calification = $_POST['calification'];
 
             $subject = get_subject_details_code($code_subject);
-            update_max_upload_at($projection->student_id);
+            update_max_upload_at($student_id);
 
             //update
             if (isset($enrollment_id) && !empty($enrollment_id)) {
@@ -78,13 +78,13 @@ function add_admin_form_enrollments_content()
 
             global $wpdb;
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
-            $table_school_subjects = $wpdb->prefix.'school_subjects';
+            $table_school_subjects = $wpdb->prefix . 'school_subjects';
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects}");
 
             $list_enrollments = new TT_enrollments_all_List_Table;
             $list_enrollments->prepare_items();
-            include (plugin_dir_path(__FILE__) . 'templates/list-enrollments.php');
+            include(plugin_dir_path(__FILE__) . 'templates/list-enrollments.php');
         }
     }
 }
@@ -101,7 +101,8 @@ class TT_enrollments_all_List_Table extends WP_List_Table
                 'singular' => 'enrollment_',
                 'plural' => 'enrollment_s',
                 'ajax' => true
-            ));
+            )
+        );
 
     }
 
@@ -121,19 +122,19 @@ class TT_enrollments_all_List_Table extends WP_List_Table
             case 'status':
                 switch ($item[$column_name]) {
                     case 1:
-                        return '<div style="color: blue; font-weight: 600">'. strtoupper('Active') . '</div>';
+                        return '<div style="color: blue; font-weight: 600">' . strtoupper('Active') . '</div>';
                         break;
                     case 0:
-                        return '<div style="color: gray; font-weight: 600">'. strtoupper('To begin') . '</div>';
+                        return '<div style="color: gray; font-weight: 600">' . strtoupper('To begin') . '</div>';
                         break;
                     case 2:
-                        return '<div style="color: red; font-weight: 600">'. strtoupper('Unsubscribed') . '</div>';
+                        return '<div style="color: red; font-weight: 600">' . strtoupper('Unsubscribed') . '</div>';
                         break;
                     case 3:
-                        return '<div style="color: green; font-weight: 600">'. strtoupper('Approved') . '</div>';
+                        return '<div style="color: green; font-weight: 600">' . strtoupper('Approved') . '</div>';
                         break;
                     case 4:
-                        return '<div style="color: red; font-weight: 600">'. strtoupper('Reproved') . '</div>';
+                        return '<div style="color: red; font-weight: 600">' . strtoupper('Reproved') . '</div>';
                         break;
                 }
             case 'view_details':
@@ -172,8 +173,8 @@ class TT_enrollments_all_List_Table extends WP_List_Table
     function get_enrollments()
     {
         global $wpdb;
-        $table_student_period_inscriptions = $wpdb->prefix.'student_period_inscriptions';
-        $table_students = $wpdb->prefix.'students';
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+        $table_students = $wpdb->prefix . 'students';
         $enrollments_array = [];
         $search = $_GET['s'];
         $academic_period_cut = $_GET['academic_period_cut'];
@@ -207,10 +208,10 @@ class TT_enrollments_all_List_Table extends WP_List_Table
             $query_code_subject = "AND code_subject = '" . $code_subject . "'";
         }
 
-        
+
         $query_status_id = '';
         if ($status_id != '') {
-            $query_status_id = "AND status_id = " . (int)$status_id . "";
+            $query_status_id = "AND status_id = " . (int) $status_id . "";
         }
 
         $enrollments = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_student_period_inscriptions} WHERE student_id IN ($students_id_list) {$query_academic_period} {$query_academic_period_cut} {$query_code_subject} {$query_status_id} ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
@@ -291,13 +292,14 @@ class TT_enrollments_all_List_Table extends WP_List_Table
 function get_enrollment_details($enrollment_id)
 {
     global $wpdb;
-    $table_student_period_inscriptions = $wpdb->prefix.'student_period_inscriptions';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
     $enrollment = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE id={$enrollment_id}");
     return $enrollment;
 }
 
-function get_type_document_student($type) {
+function get_type_document_student($type)
+{
     $value_type = '';
     switch ($type) {
         case 'passport':
@@ -315,15 +317,16 @@ function get_type_document_student($type) {
     return $value_type;
 }
 
-function get_search_student_id_document(){
-        global $wpdb;
-        $table_students = $wpdb->prefix.'students';
-        $id_document = $_POST['id_document'];
+function get_search_student_id_document()
+{
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $id_document = $_POST['id_document'];
 
-        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document={$id_document}");
-        wp_send_json(array('student' => $student));
-        die();
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id_document={$id_document}");
+    wp_send_json(array('student' => $student));
+    die();
 }
 
-add_action( 'wp_ajax_nopriv_search_student_id_document', 'get_search_student_id_document');
-add_action( 'wp_ajax_search_student_id_document', 'get_search_student_id_document');
+add_action('wp_ajax_nopriv_search_student_id_document', 'get_search_student_id_document');
+add_action('wp_ajax_search_student_id_document', 'get_search_student_id_document');

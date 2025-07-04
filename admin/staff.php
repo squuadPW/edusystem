@@ -20,10 +20,10 @@ function add_admin_form_staff_content()
         if ($_GET['section_tab'] == 'staff_details') {
             $staff_id = $_GET['staff_id'];
             $staff = get_staff_details($staff_id);
-            include (plugin_dir_path(__FILE__) . 'templates/staff-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/staff-detail.php');
         }
         if ($_GET['section_tab'] == 'add_staff') {
-            include (plugin_dir_path(__FILE__) . 'templates/staff-detail.php');
+            include(plugin_dir_path(__FILE__) . 'templates/staff-detail.php');
         }
 
     } else {
@@ -76,7 +76,7 @@ function add_admin_form_staff_content()
         } else {
             $list_staff = new TT_staff_all_List_Table;
             $list_staff->prepare_items();
-            include (plugin_dir_path(__FILE__) . 'templates/list-staff.php');
+            include(plugin_dir_path(__FILE__) . 'templates/list-staff.php');
         }
     }
 }
@@ -160,7 +160,7 @@ class TT_staff_all_List_Table extends WP_List_Table
             foreach ($staffs as $staff) {
                 $user_data = get_userdata($staff->ID);
                 $roles = $user_data->roles;
-                $roles = array_map(function($value) {
+                $roles = array_map(function ($value) {
                     return str_replace("administrador", "manager", $value);
                 }, $roles);
 
@@ -174,7 +174,7 @@ class TT_staff_all_List_Table extends WP_List_Table
                 ]);
             }
 
-            usort($staff_array, function($a, $b) {
+            usort($staff_array, function ($a, $b) {
                 return strnatcasecmp($a['roles'], $b['roles']);
             });
         }

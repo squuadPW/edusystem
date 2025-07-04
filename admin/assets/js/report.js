@@ -24,14 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let filter = document.getElementById("typeFilter").value;
     let custom = document.getElementById("inputStartDate").value;
 
-    let htmlLoading = "";
-
-    htmlLoading += "<tr>";
-    htmlLoading +=
-      "<td class='column-primary id column-id' colspan='6' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
-    htmlLoading += "</tr>";
-
-    document.getElementById("table-institutes-payment").innerHTML = htmlLoading;
+    document.getElementById("summary_loading").style = "display: block";
+    document.getElementById("summary_content").style = "display: none";
 
     const XHR = new XMLHttpRequest();
     XHR.open("POST", list_orders_sales.url, true);
@@ -55,13 +49,32 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("gross").innerHTML = result.data.gross;
           document.getElementById("orders").innerHTML =
             result.data.orders.length;
-          document.getElementById("net").innerHTML = result.data.net;
           document.getElementById("a_fee").innerHTML = result.data.alliance_fee;
           document.getElementById("i_fee").innerHTML =
             result.data.institute_fee;
           document.getElementById("p_fees").innerHTML = result.data.fee_payment;
           document.getElementById("e_fees").innerHTML = result.data.fee_system;
           document.getElementById("tax").innerHTML = result.data.tax;
+          // Para el margen de beneficio
+          const profitMarginElements = document.getElementsByClassName(
+            "profit-margin-display"
+          );
+          for (let i = 0; i < profitMarginElements.length; i++) {
+            profitMarginElements[i].innerHTML = result.data.profit_margin;
+          }
+
+          // Para los gastos
+          const expensesElements =
+            document.getElementsByClassName("expenses-display");
+          for (let i = 0; i < expensesElements.length; i++) {
+            expensesElements[i].innerHTML = result.data.expense;
+          }
+
+          // Para el neto
+          const netElements = document.getElementsByClassName("net-display");
+          for (let i = 0; i < netElements.length; i++) {
+            netElements[i].innerHTML = result.data.net;
+          }
           document.getElementById("receivable").innerHTML =
             result.data.receivable;
           document.getElementById("discount").innerHTML = result.data.discount;
@@ -74,24 +87,55 @@ document.addEventListener("DOMContentLoaded", function () {
             paymentOptions[i].remove();
           }
 
-          // Crear nuevos elementos dentro de card-totals-sales
-          var cardTotalsSales = document.getElementById("card-totals-sales");
-          Object.entries(result.data.payment_methods).forEach((element) => {
-            var newElement = document.createElement("div");
-            newElement.className = "card-report-sales tooltip";
-            newElement.style = "background-color: #d4c6e7;";
-            newElement.id = "payment-options";
-            newElement.title = `Payments made with ${element[0]}`;
-            newElement.innerHTML = `
-                          <div>${
-                            element[0] ? element[0] : "Payments made with split"
-                          }</div>
-                          <div style="margin-top: 10px;"><strong id="${
-                            element[0]
-                          }">${element[1]}</strong></div>
-                        `;
-            cardTotalsSales.appendChild(newElement);
-          });
+          const tbodyPaymentMethods = document.getElementById(
+            "tbody-payment-methods"
+          );
+
+          // Limpia el contenido existente en caso de que ya haya algo.
+          tbodyPaymentMethods.innerHTML = "";
+
+          Object.entries(result.data.payment_methods).forEach(
+            ([methodName, amount]) => {
+              const newRow = document.createElement("tr");
+
+              // Celda para el método de pago (sigue siendo textContent, ya que no debería tener HTML)
+              const methodCell = document.createElement("td");
+              methodCell.className = "manage-column column-primary";
+              methodCell.textContent = methodName || "Pagos divididos"; // Usa el nombre del método o un texto por defecto
+              newRow.appendChild(methodCell);
+
+              // Celda para el monto (ahora usa innerHTML)
+              const amountCell = document.createElement("td");
+              amountCell.className = "manage-column column-amount";
+              amountCell.innerHTML = amount; // ¡Cambiado a innerHTML!
+              newRow.appendChild(amountCell);
+
+              tbodyPaymentMethods.appendChild(newRow);
+            }
+          );
+
+          // reload chart
+          const chartData = result.chart_data;
+          const ctx = document.getElementById("myChart").getContext("2d");
+          if (chart) {
+            chart.data.labels = chartData.labels;
+            chart.data.datasets = chartData.datasets;
+            chart.update(); // Update the chart
+          } else {
+            chart = new Chart(ctx, {
+              type: "bar",
+              data: chartData,
+              options: {
+                title: {
+                  display: true,
+                  text: "Gender Comparison Graph",
+                },
+              },
+            });
+          }
+
+          document.getElementById("summary_loading").style = "display: none";
+          document.getElementById("summary_content").style = "display: block";
         }
       }
     };
@@ -114,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     htmlLoading += "<tr>";
     htmlLoading +=
-      "<td class='column-primary id column-id' colspan='7' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
+      "<td class='column-primary id column-id' colspan='6' style='text-align:center;float:none;'><span class='spinner is-active' style='float:none;'></span></td>";
     htmlLoading += "</tr>";
 
     document.getElementById("table-institutes-payment").innerHTML = htmlLoading;
@@ -138,6 +182,10 @@ document.addEventListener("DOMContentLoaded", function () {
         if (result.status == "success") {
           document.getElementById("table-institutes-payment").innerHTML =
             result.html;
+          document.getElementById("orders").innerHTML =
+            result.data.orders_count;
+          document.getElementById("total_amount").innerHTML =
+            result.data.orders_total;
         }
       }
     };
@@ -315,6 +363,50 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 
+  export_excel_ranking = document.getElementById("export_excel_ranking");
+  if (export_excel_ranking) {
+    export_excel_ranking.addEventListener("click", () => {
+      // Selecciona la tabla por su ID
+      const table = document.querySelector(".wp-list-table");
+      const name = document.querySelector("input[name=name_document]").value;
+      const column = document.querySelector("input[name=column_name]").value;
+      const data = [];
+
+      // Definir los encabezados fijos
+      const headers = [column, "Students registered", "Generated"];
+      data.push(headers); // Agrega los encabezados al array de datos
+
+      // Itera sobre las filas de la tabla, STARTING FROM THE SECOND ROW (index 1)
+      // to skip the HTML table's own header row.
+      // Also, keep `table.rows.length - 1` if you still want to skip the very last row (e.g., a total row).
+      // If you want all data rows, change `table.rows.length - 1` back to `table.rows.length`.
+      for (let i = 1; i < table.rows.length - 1; i++) {
+        // <-- MODIFICACIÓN CLAVE AQUÍ: i = 1
+        const rowData = [];
+        const row = table.rows[i];
+
+        for (let j = 0; j < row.cells.length; j++) {
+          let cellText = row.cells[j].textContent.trim();
+          // Remove "Show more details" from the cell text
+          cellText = cellText.replace(/Show more details/g, "");
+          rowData.push(cellText);
+        }
+
+        data.push(rowData);
+      }
+
+      // Crea un nuevo libro de trabajo
+      const wb = XLSX.utils.book_new();
+      // Convierte los datos a una hoja de cálculo
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      // Agrega la hoja al libro
+      XLSX.utils.book_append_sheet(wb, ws, "Ranking " + column);
+
+      // Exporta el archivo XLSX
+      XLSX.writeFile(wb, name);
+    });
+  }
+
   export_excel_students = document.getElementById("export_excel_students");
   if (export_excel_students) {
     export_excel_students.addEventListener("click", () => {
@@ -406,6 +498,56 @@ document.addEventListener("DOMContentLoaded", function () {
       XLSX.utils.book_append_sheet(wb, ws, "Report students");
 
       // Exporta el archivo XLSX
+      XLSX.writeFile(wb, name);
+    });
+  }
+
+  export_excel_summary_comissions = document.getElementById(
+    "export_excel_summary_comissions"
+  );
+  if (export_excel_summary_comissions) {
+    export_excel_summary_comissions.addEventListener("click", () => {
+      // Selecciona la tabla por su ID
+      const tables = document.querySelectorAll(".wp-list-table");
+      const name = document.querySelector("input[name=name_document]").value;
+      const data_summary = [];
+
+      data_summary.push(["Commissions payable to schools"]);
+      data_summary.push(["Institute", "Amount USD"]);
+
+      tables.forEach((table, index) => {
+        for (let i = 1; i < table.rows.length - 1; i++) {
+          // <-- MODIFICACIÓN CLAVE AQUÍ: i = 1
+          const rowData = [];
+          const row = table.rows[i];
+
+          for (let j = 0; j < row.cells.length; j++) {
+            let cellText = row.cells[j].textContent.trim();
+            cellText = cellText.replace(/Show more details/g, "");
+            rowData.push(cellText);
+          }
+
+          data_summary.push(rowData);
+        }
+
+        if (index + 1 < tables.length) {
+          data_summary.push([]);
+          data_summary.push(["Allied comissions"]);
+          data_summary.push(["Alliance", "Amount USD"]);
+        }
+      });
+
+      const wb = XLSX.utils.book_new();
+
+      const ws_summary = XLSX.utils.aoa_to_sheet(data_summary);
+      XLSX.utils.book_append_sheet(wb, ws_summary, "Summary of commissions");
+
+      const ws_comissions = XLSX.utils.aoa_to_sheet([]);
+      XLSX.utils.book_append_sheet(wb, ws_comissions, "College commissions & allies");
+
+      const ws_registration = XLSX.utils.aoa_to_sheet([]);
+      XLSX.utils.book_append_sheet(wb, ws_registration, "New registrations");
+
       XLSX.writeFile(wb, name);
     });
   }

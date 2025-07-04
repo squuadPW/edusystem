@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 3.3.36
+Version: 3.4.22
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
@@ -60,15 +60,78 @@ function create_tables()
   $table_templates_email = $wpdb->prefix . 'templates_email';
   $table_programs = $wpdb->prefix . 'programs';
   $table_quota_rules = $wpdb->prefix . 'quota_rules';
+  $table_scholarship_assigned_student = $wpdb->prefix . 'scholarship_assigned_student';
+  $table_expenses = $wpdb->prefix . 'expenses';
+  $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes';
+  $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
+  $table_managers_by_alliance = $wpdb->prefix . 'managers_by_alliances';
 
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_programs}'") != $table_programs) {
-        dbDelta(
-            "CREATE TABLE $table_programs (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_managers_by_alliance}'") != $table_managers_by_alliance) {
+    dbDelta(
+      "CREATE TABLE " . $table_managers_by_alliance . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        user_id INT(11) NOT NULL,
+        alliance_id INT(11) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_managers_by_institute}'") != $table_managers_by_institute) {
+    dbDelta(
+      "CREATE TABLE " . $table_managers_by_institute . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        user_id INT(11) NOT NULL,
+        institute_id INT(11) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_alliances_by_institute}'") != $table_alliances_by_institute) {
+    dbDelta(
+      "CREATE TABLE " . $table_alliances_by_institute . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        alliance_id INT(11) NOT NULL,
+        alliance_fee  DOUBLE(10, 2) NULL,
+        institute_id INT(11) NOT NULL,
+        institute_fee  DOUBLE(10, 2) NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_expenses}'") != $table_expenses) {
+    dbDelta(
+      "CREATE TABLE " . $table_expenses . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        motive TEXT NOT NULL,
+        apply_to DATE NOT NULL,
+        amount DOUBLE(10, 2) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_scholarship_assigned_student}'") != $table_scholarship_assigned_student) {
+    dbDelta(
+      "CREATE TABLE " . $table_scholarship_assigned_student . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        student_id INT(11) NOT NULL,
+        scholarship_id INT(11) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_programs}'") != $table_programs) {
+    dbDelta(
+      "CREATE TABLE $table_programs (
                 id INT(11) NOT NULL AUTO_INCREMENT,
                 `is_active` tinyint(1) DEFAULT 1,
                 identificator TEXT NOT NULL,
-                name TEXT NOT NULL,
-                description TEXT NOT NULL,
+                `name` TEXT NOT NULL,
+                `description` TEXT NOT NULL,
                 total_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
                 product_id INT(11) NULL DEFAULT NULL,
                 subprogram JSON NULL,
@@ -76,32 +139,32 @@ function create_tables()
                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (id)
             )$charset_collate;"
-        );
+    );
 
-        /* Ejemplo de la estructura del campo JSON 'subprogram':
-            {
-                1: {
-                    is_active: 1,
-                    name: "",
-                    price: 0,
-                    product_id: 0
-                }
-                2: {
-                    is_active: 0,
-                    name: "",
-                    price: 0,
-                    product_id: 0
-                }
-            } 
-        */
-    }
+    /* Ejemplo de la estructura del campo JSON 'subprogram':
+        {
+            1: {
+                is_active: 1,
+                name: "",
+                price: 0,
+                product_id: 0
+            }
+            2: {
+                is_active: 0,
+                name: "",
+                price: 0,
+                product_id: 0
+            }
+        } 
+    */
+  }
 
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_quota_rules}'") != $table_quota_rules) {
-        dbDelta(
-            "CREATE TABLE $table_quota_rules (
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_quota_rules}'") != $table_quota_rules) {
+    dbDelta(
+      "CREATE TABLE $table_quota_rules (
                 id INT(11) NOT NULL AUTO_INCREMENT,
                 is_active tinyint(1) DEFAULT 1,
-                name TEXT NOT NULL,
+                `name` TEXT NOT NULL,
                 initial_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
                 quotas_quantity INT(11) NOT NULL DEFAULT 1, 
                 quote_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
@@ -112,7 +175,7 @@ function create_tables()
                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (id)
             )$charset_collate;"
-        );
+    );
 
         /* 
          * El campo program_id es el identificador del programa
@@ -520,7 +583,11 @@ function create_tables()
         order_id INT(11) NULL,
         product_id INT(11) NOT NULL,
         variation_id INT(11) NULL,
-        amount DOUBLE(10, 2) NOT NULL,
+        amount DOUBLE(10, 2) NOT NULL DEFAULT 0,
+        original_amount_product DOUBLE(10, 2) NULL DEFAULT 0,
+        total_amount DOUBLE(10, 2) NULL DEFAULT 0,
+        original_amount DOUBLE(10, 2) NULL DEFAULT 0,
+        discount_amount DOUBLE(10, 2) NULL DEFAULT 0,
         type_payment INT(11) NOT NULL,
         cuote INT(11) NULL,
         num_cuotes INT(11) NULL,
@@ -654,6 +721,7 @@ function create_tables()
         reference TINYINT(1) NOT NULL,
         status TINYINT(1) NOT NULL DEFAULT 1,
         alliance_id INT(11) NULL,
+        manager_user_id INT(11) NULL,
         fee DECIMAL(5,2) NOT NULL DEFAULT 10.00,
         business_name VARCHAR(255) NOT NULL,
         lower_text VARCHAR(255) NOT NULL DEFAULT 'Lower',

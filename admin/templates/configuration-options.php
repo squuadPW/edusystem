@@ -14,9 +14,9 @@
     <?php setcookie('message-error', '', time(), '/'); ?>
   <?php endif; ?>
 
-  <div class="card" style="max-width: 90% !important;">
+  <div class="card" style="max-width: 100% !important;">
     <div class="card-header">
-      <h3><?= __('Settings for AES', 'edusystem'); ?></h3>
+      <h3><?= sprintf(__('Settings for %s', 'edusystem'), get_bloginfo('name')); ?></h3>
     </div>
     <div class="card-body-configuration">
 
@@ -253,13 +253,23 @@
           </div>
         </div>
         <div id="by_design" style="display: none">
-          <div class="form-group" style="padding: 0px 10px 10px 10px;">
-            <label for="logo_admin"><?= __('Logo admin'); ?></label> <br>
-            <input type="file" name="logo_admin" id="logo-admin" accept="image/*">
-          </div>
-          <div style="display: flex; justify-content: space-evenly; margin: 18px;">
-            <div style="font-weight:400; text-align: start">
+          <div class="logo-upload-section">
+            <div class="form-group">
+              <label for="logo_admin"><?= __('Administrator Logo', 'edusystem'); ?></label>
+              <input type="file" name="logo_admin" id="logo-admin" accept="image/*">
+            </div>
+            <div class="logo-preview">
               <?= wp_get_attachment_image(get_option('logo_admin'), 'medium'); ?>
+            </div>
+          </div>
+
+          <div class="logo-upload-section">
+            <div class="form-group">
+              <label for="logo_admin_login"><?= __('Administrator Login Logo'); ?></label>
+              <input type="file" name="logo_admin_login" id="logo-admin-login" accept="image/*">
+            </div>
+            <div class="logo-preview">
+              <?= wp_get_attachment_image(get_option('logo_admin_login'), 'medium'); ?>
             </div>
           </div>
         </div>

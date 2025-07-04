@@ -17,7 +17,7 @@
 		<form action="" id="post-filter" method="get">
 			<p class="search-box">
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','edusystem').':'; ?></label>
-				<input type="search" placeholder="Search by names and identification document" id="search-box-id-search-input" name="s" value="<?= (!empty($_GET['s'])) ? $_GET['s'] : ''; ?>">
+				<input type="search" placeholder="Search for student" id="search-box-id-search-input" name="s" value="<?= (!empty($_GET['s'])) ? $_GET['s'] : ''; ?>">
 				<input type="submit" id="search-submit" class="button" value="Search">
 			</p>
 			<p class="search-box" style="margin-right: 10px">

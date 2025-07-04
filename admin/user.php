@@ -1,15 +1,16 @@
 <?php
 
-function delete_data_student($user_id) {
+function delete_data_student($user_id)
+{
     global $wpdb;
 
     // Definir nombres de tablas
     $tables = [
-        'documents' => $wpdb->prefix.'student_documents',
-        'students' => $wpdb->prefix.'students',
-        'payments' => $wpdb->prefix.'student_payments',
-        'academic_projection' => $wpdb->prefix.'student_academic_projection',
-        'period_inscriptions' => $wpdb->prefix.'student_period_inscriptions'
+        'documents' => $wpdb->prefix . 'student_documents',
+        'students' => $wpdb->prefix . 'students',
+        'payments' => $wpdb->prefix . 'student_payments',
+        'academic_projection' => $wpdb->prefix . 'student_academic_projection',
+        'period_inscriptions' => $wpdb->prefix . 'student_period_inscriptions'
     ];
 
     // 1. Obtener todos los correos electrónicos de los estudiantes asociados a este partner_id

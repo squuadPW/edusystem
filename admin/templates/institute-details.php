@@ -5,18 +5,10 @@
         <h2 style="margin-bottom:15px;"><?= __('Add Institute', 'edusystem'); ?></h2>
     <?php endif; ?>
 
-    <?php if (isset($_COOKIE['message']) && !empty($_COOKIE['message'])) { ?>
-        <div class="notice notice-success is-dismissible">
-            <p><?= $_COOKIE['message']; ?></p>
-        </div>
-        <?php setcookie('message', '', time(), '/'); ?>
-    <?php } ?>
-    <?php if (isset($_COOKIE['message-error']) && !empty($_COOKIE['message-error'])) { ?>
-        <div class="notice notice-error is-dismissible">
-            <p><?= $_COOKIE['message-error']; ?></p>
-        </div>
-        <?php setcookie('message-error', '', time(), '/'); ?>
-    <?php } ?>
+    <?php
+    include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+    ?>
+
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary"
             href="<?= wp_get_referer() ? wp_get_referer() : admin_url('admin.php?page=add_admin_institutes_content&section_tab=all_institutes'); ?>"><?= __('Back', 'edusystem'); ?></a>
@@ -45,37 +37,52 @@
                                     <tr>
                                         <td style="font-weight:400; width: 33%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('Name', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <input type="text" name="name" value="<?= ucwords($institute->name); ?>" <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
-                                                <input type="hidden" name="institute_id" id="institute_id" value="<?= $institute->id; ?>">
+                                                <label
+                                                    for="input_id"><b><?= __('Name', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="text" name="name" value="<?= ucwords($institute->name); ?>"
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
+                                                <input type="hidden" name="institute_id" id="institute_id"
+                                                    value="<?= $institute->id; ?>">
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Name', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('Name', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <input type="text" name="name" value="" required>
                                                 <input type="hidden" name="institute_id" id="institute_id" value="">
                                             <?php endif; ?>
                                         </td>
                                         <td style="font-weight:400; width: 33%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('Business name', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <input type="text" name="business_name" value="<?= ucwords($institute->business_name); ?>" <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
+                                                <label
+                                                    for="input_id"><b><?= __('Business name', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="text" name="business_name"
+                                                    value="<?= ucwords($institute->business_name); ?>"
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Business name', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('Business name', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <input type="text" name="business_name" value="" required>
                                             <?php endif; ?>
                                         </td>
                                         <td style="font-weight:400; width: 33%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('Level', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <label
+                                                    for="input_id"><b><?= __('Level', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
                                                 <?php if ($institute->status == 0): ?>
-                                                    <input type="text" name="text" value="<?= get_name_level($institute->level_id); ?>" readonly>
+                                                    <input type="text" name="text"
+                                                        value="<?= get_name_level($institute->level_id); ?>" readonly>
                                                 <?php elseif ($institute->status == 1): ?>
                                                     <select name="level" required>
-                                                        <option value="1" <?= ($institute->level_id == 1) ? 'selected' : ''; ?>><?= __('Primary', 'edusystem'); ?></option>
-                                                        <option value="2" <?= ($institute->level_id == 2) ? 'selected' : ''; ?>><?= __('High School', 'edusystem'); ?></option>
+                                                        <option value="1" <?= ($institute->level_id == 1) ? 'selected' : ''; ?>>
+                                                            <?= __('Primary', 'edusystem'); ?>
+                                                        </option>
+                                                        <option value="2" <?= ($institute->level_id == 2) ? 'selected' : ''; ?>>
+                                                            <?= __('High School', 'edusystem'); ?>
+                                                        </option>
                                                     </select>
                                                 <?php endif; ?>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Level', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('Level', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <select name="level" required>
                                                     <option value="1"><?= __('Primary', 'edusystem'); ?></option>
                                                     <option value="2"><?= __('High School', 'edusystem'); ?></option>
@@ -86,29 +93,39 @@
                                     <tr>
                                         <td style="font-weight:400; width: 33%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('Phone', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <input type="text" id="phone" name="phone" value="<?= $institute->phone; ?>" <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
-                                                <input type="hidden" name="phone_hidden" id="phone_hidden" value="<?= $institute->phone; ?>">
+                                                <label
+                                                    for="input_id"><b><?= __('Phone', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="text" id="phone" name="phone" value="<?= $institute->phone; ?>"
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
+                                                <input type="hidden" name="phone_hidden" id="phone_hidden"
+                                                    value="<?= $institute->phone; ?>">
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Phone', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('Phone', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <input type="text" id="phone" name="phone" value="" required>
                                                 <input type="hidden" name="phone_hidden" id="phone_hidden" value="">
                                             <?php endif; ?>
                                         </td>
                                         <td style="font-weight:400; width: 33%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('Email', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <input type="email" name="email" value="<?= $institute->email; ?>" <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
+                                                <label
+                                                    for="input_id"><b><?= __('Email', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="email" name="email" value="<?= $institute->email; ?>"
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Email', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('Email', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <input type="email" name="email" value="" required>
                                             <?php endif; ?>
                                         </td>
                                         <td style="font-weight:400; width: 33%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('Type calendar', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <label
+                                                    for="input_id"><b><?= __('Type calendar', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
                                                 <?php if ($institute->status == 0): ?>
-                                                    <input type="text" name="text" value="<?= get_type_calendar((int)$institute->type_calendar); ?>" readonly>
+                                                    <input type="text" name="text"
+                                                        value="<?= get_type_calendar((int) $institute->type_calendar); ?>"
+                                                        readonly>
                                                 <?php elseif ($institute->status == 1): ?>
                                                     <select name="type_calendar" required>
                                                         <option value="1" <?= ($institute->type_calendar == 1) ? 'selected' : ''; ?>><?= get_type_calendar(1); ?></option>
@@ -116,7 +133,8 @@
                                                     </select>
                                                 <?php endif; ?>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Type calendar', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('Type calendar', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <select name="type_calendar" required>
                                                     <option value="1"><?= get_type_calendar(1); ?></option>
                                                     <option value="2"><?= get_type_calendar(2); ?></option>
@@ -127,9 +145,11 @@
                                     <tr>
                                         <td style="font-weight:400; width: 33%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('Country', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <label
+                                                    for="input_id"><b><?= __('Country', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
                                                 <?php if ($institute->status == 0): ?>
-                                                    <input type="text" name="country" value="<?= get_name_country($institute->country); ?>" readonly>
+                                                    <input type="text" name="country"
+                                                        value="<?= get_name_country($institute->country); ?>" readonly>
                                                 <?php elseif ($institute->status == 1): ?>
                                                     <select name="country" required id="country-selector">
                                                         <?php foreach ($countries as $key => $country) { ?>
@@ -138,7 +158,8 @@
                                                     </select>
                                                 <?php endif; ?>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Country', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('Country', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <select name="country" required id="country-selector">
                                                     <?php foreach ($countries as $key => $country) { ?>
                                                         <option value="<?= $key; ?>"><?= $country ?></option>
@@ -149,9 +170,12 @@
                                         <td style="font-weight:400; width: 33%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
                                                 <div id="state-td">
-                                                    <label for="input_id"><b><?= __('State', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                    <label
+                                                        for="input_id"><b><?= __('State', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
                                                     <?php if ($institute->status == 0): ?>
-                                                        <input type="text" name="country" value="<?= get_name_state($institute->country, $institute->state); ?>" readonly>
+                                                        <input type="text" name="country"
+                                                            value="<?= get_name_state($institute->country, $institute->state); ?>"
+                                                            readonly>
                                                     <?php elseif ($institute->status == 1): ?>
                                                         <select id="state-selector" name="state">
                                                             <?php foreach ($states as $key => $state) { ?>
@@ -162,7 +186,8 @@
                                                 </div>
                                             <?php else: ?>
                                                 <div id="state-td" style="display: none">
-                                                    <label for="input_id"><b><?= __('State', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                    <label for="input_id"><b><?= __('State', 'edusystem'); ?></b><span
+                                                            class="text-danger">*</span></label><br>
                                                     <select id="state-selector" name="state">
                                                         <!-- states will be populated dynamically using JavaScript -->
                                                     </select>
@@ -171,10 +196,13 @@
                                         </td>
                                         <td style="font-weight:400; width: 33%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('City', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <input type="text" name="city" value="<?= ucwords($institute->city); ?>" <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
+                                                <label
+                                                    for="input_id"><b><?= __('City', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="text" name="city" value="<?= ucwords($institute->city); ?>"
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('City', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('City', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <input type="text" name="city" value="" required>
                                             <?php endif; ?>
                                         </td>
@@ -182,37 +210,53 @@
                                     <tr>
                                         <td style="font-weight:400; width: 25%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('Lower text', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <input type="text" name="lower_text" value="<?= ucwords($institute->lower_text); ?>" <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
+                                                <label
+                                                    for="input_id"><b><?= __('Lower text', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="text" name="lower_text"
+                                                    value="<?= ucwords($institute->lower_text); ?>"
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Lower text', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('Lower text', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <input type="text" name="lower_text" value="" required>
                                             <?php endif; ?>
                                         </td>
                                         <td style="font-weight:400; width: 25%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('Middle text', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <input type="text" name="middle_text" value="<?= ucwords($institute->middle_text); ?>" <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
+                                                <label
+                                                    for="input_id"><b><?= __('Middle text', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="text" name="middle_text"
+                                                    value="<?= ucwords($institute->middle_text); ?>"
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Middle text', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('Middle text', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <input type="text" name="middle_text" value="" required>
                                             <?php endif; ?>
                                         </td>
                                         <td style="font-weight:400; width: 25%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('Upper text', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <input type="text" name="upper_text" value="<?= ucwords($institute->upper_text); ?>" <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
+                                                <label
+                                                    for="input_id"><b><?= __('Upper text', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="text" name="upper_text"
+                                                    value="<?= ucwords($institute->upper_text); ?>"
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Upper text', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('Upper text', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <input type="text" name="upper_text" value="" required>
                                             <?php endif; ?>
                                         </td>
                                         <td style="font-weight:400; width: 25%;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label for="input_id"><b><?= __('Graduated text', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <input type="text" name="graduated_text" value="<?= ucwords($institute->graduated_text); ?>" <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
+                                                <label
+                                                    for="input_id"><b><?= __('Graduated text', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <input type="text" name="graduated_text"
+                                                    value="<?= ucwords($institute->graduated_text); ?>"
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required' ?>>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Graduated text', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                                <label for="input_id"><b><?= __('Graduated text', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
                                                 <input type="text" name="graduated_text" value="" required>
                                             <?php endif; ?>
                                         </td>
@@ -263,14 +307,13 @@
                                         <th scope="row" style="font-weight:400;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
                                                 <?php if ($institute->status == 1): ?>
-                                                    <label
-                                                        style="font-weight:400;"><?= __('Fee', 'edusystem') . ' (%)'; ?><span
+                                                    <label style="font-weight:400;"><?= __('Fee', 'edusystem') . ' (%)'; ?><span
                                                             class="text-danger">*</span></label><br>
-                                                    <input type="text" id="fee" name="fee" value="<?= $institute->fee; ?>" style="width: 100%;">
+                                                    <input type="text" id="fee" name="fee" value="<?= $institute->fee; ?>"
+                                                        style="width: 100%;">
                                                 <?php endif; ?>
                                             <?php else: ?>
-                                                <label
-                                                    style="font-weight:400;"><?= __('Fee', 'edusystem') . ' (%)'; ?><span
+                                                <label style="font-weight:400;"><?= __('Fee', 'edusystem') . ' (%)'; ?><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" id="fee" name="fee" value="10" style="width: 100%;">
                                             <?php endif; ?>
@@ -290,11 +333,13 @@
                                                     for="input_id"><b><?= __('Rector Name', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
                                                 <input type="text" name="rector_name"
                                                     value="<?= ucwords($institute->name_rector); ?>"
-                                                    <?= ($institute->status == 0) ? 'readonly' : 'required'; ?> style="width: 100%;">
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>
+                                                    style="width: 100%;">
                                             <?php else: ?>
                                                 <label for="input_id"><b><?= __('Rector Name', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
-                                                <input type="text" name="rector_name" value="" style="width: 100%;" required>
+                                                <input type="text" name="rector_name" value="" style="width: 100%;"
+                                                    required>
                                             <?php endif; ?>
                                         </th>
                                         <td>
@@ -305,8 +350,7 @@
                                                     value="<?= ucwords($institute->lastname_rector); ?>"
                                                     <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
                                             <?php else: ?>
-                                                <label
-                                                    for="input_id"><b><?= __('Rector Lastname', 'edusystem'); ?></b><span
+                                                <label for="input_id"><b><?= __('Rector Lastname', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="rector_last_name" value="" required>
                                             <?php endif; ?>
@@ -323,8 +367,7 @@
                                             <?php else: ?>
                                                 <label for="input_id"><b><?= __('Phone', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
-                                                <input type="text" id="rector_phone" name="rector_phone" value=""
-                                                    required>
+                                                <input type="text" id="rector_phone" name="rector_phone" value="" required>
                                                 <input type="hidden" id="rector_phone_hidden" name="rector_phone_hidden"
                                                     value="">
                                             <?php endif; ?>
@@ -345,12 +388,13 @@
                                                     for="input_id"><b><?= __('Contact Name', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
                                                 <input type="text" name="contact_name"
                                                     value="<?= ucwords($institute->name_contact); ?>"
-                                                    <?= ($institute->status == 0) ? 'readonly' : 'required'; ?> style="width: 100%;">
+                                                    <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>
+                                                    style="width: 100%;">
                                             <?php else: ?>
-                                                <label
-                                                    for="input_id"><b><?= __('Contact Name', 'edusystem'); ?></b><span
+                                                <label for="input_id"><b><?= __('Contact Name', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
-                                                <input type="text" name="contact_name" value="" style="width: 100%;" required>
+                                                <input type="text" name="contact_name" value="" style="width: 100%;"
+                                                    required>
                                             <?php endif; ?>
                                         </th>
                                         <td>
@@ -374,16 +418,15 @@
                                                 <input type="text" id="contact_phone" name="contact_phone"
                                                     value="<?= ucwords($institute->phone_contact); ?>"
                                                     <?= ($institute->status == 0) ? 'readonly' : 'required'; ?>>
-                                                <input type="hidden" id="contact_phone_hidden"
-                                                    name="contact_phone_hidden"
+                                                <input type="hidden" id="contact_phone_hidden" name="contact_phone_hidden"
                                                     value="<?= ucwords($institute->phone_contact); ?>">
                                             <?php else: ?>
                                                 <label for="input_id"><b><?= __('Phone', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" id="contact_phone" name="contact_phone" value=""
                                                     required>
-                                                <input type="hidden" id="contact_phone_hidden"
-                                                    name="contact_phone_hidden" value="">
+                                                <input type="hidden" id="contact_phone_hidden" name="contact_phone_hidden"
+                                                    value="">
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -398,22 +441,75 @@
                                         <th scope="row" style="font-weight:400;">
                                             <?php if (isset($institute) && !empty($institute)): ?>
                                                 <label
-                                                    for="input_id"><b><?= __('Alliance', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
-                                                <select name="alliance" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%">
+                                                    for="alliances-select"><b><?= __('Alliances', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <select id="alliances-select" name="alliances[]" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%" multiple="multiple">
                                                     <?php foreach ($alliances as $alliance): ?>
-                                                        <option value="<?= $alliance->id ?>"
-                                                            <?= ($institute->alliance_id == $alliance->id) ? 'selected' : ''; ?>><?= $alliance->name ?>         <?= $alliance->last_name ?> -
-                                                            <?= $alliance->code ?>
+                                                        <option value="<?= esc_attr($alliance->id) ?>"
+                                                            data-id="<?= esc_attr($alliance->id) ?>"
+                                                            data-name="<?= esc_attr($alliance->name . ' ' . $alliance->last_name . ' - ' . $alliance->code) ?>"
+                                                            <?= isset($selected_alliance_fees_data[$alliance->id]) ? 'selected' : ''; ?>>
+                                                            <?= esc_html($alliance->name) ?>
+                                                            <?= esc_html($alliance->last_name) ?> -
+                                                            <?= esc_html($alliance->code) ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Alliance', 'edusystem'); ?></b><span
+                                                <label
+                                                    for="alliances-select"><b><?= __('Alliances', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
-                                                <select name="alliance" required style="width: 100%">
+                                                <select id="alliances-select" name="alliances[]" required
+                                                    style="width: 100%" multiple="multiple">
                                                     <?php foreach ($alliances as $alliance): ?>
-                                                        <option value="<?= $alliance->id ?>"><?= $alliance->name ?>
-                                                            <?= $alliance->last_name ?> - <?= $alliance->code ?>
+                                                        <option value="<?= esc_attr($alliance->id) ?>"
+                                                            data-id="<?= esc_attr($alliance->id) ?>"
+                                                            data-name="<?= esc_attr($alliance->name . ' ' . $alliance->last_name . ' - ' . $alliance->code) ?>">
+                                                            <?= esc_html($alliance->name) ?>
+                                                            <?= esc_html($alliance->last_name) ?> -
+                                                            <?= esc_html($alliance->code) ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            <?php endif; ?>
+
+                                            <div id="alliance-fees-container"
+                                                style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                                                <!-- Dynamic fee inputs will be rendered here by JavaScript -->
+                                                <p><?= esc_html__('Select one or more alliances to set their fees.', 'edusystem'); ?>
+                                                </p>
+                                            </div>
+
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;">
+                                <b><?= __('Manager\'s information', 'edusystem'); ?></b>
+                            </h3>
+                            <table class="form-table table-customize" style="margin-top:0px;">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <?php if (isset($institute) && !empty($institute)): ?>
+                                                <label
+                                                    for="input_id"><b><?= __('Manager\'s', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?></label><br>
+                                                <select name="managers[]" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%" multiple="multiple">
+                                                    <?php foreach ($managers as $manager): ?>
+                                                        <option value="<?= esc_attr($manager->ID) ?>" 
+                                                    <?= in_array($manager->ID, $selected_manager_user_ids) ? 'selected' : ''; ?>>
+                                                    <?= esc_html($manager->first_name) ?>
+                                                    <?= esc_html($manager->last_name) ?>
+                                                </option>
+                                                        <?php endforeach; ?>
+                                                </select>
+                                            <?php else: ?>
+                                                <label for="input_id"><b><?= __('Manager\'s', 'edusystem'); ?></b><span
+                                                        class="text-danger">*</span></label><br>
+                                                <select name="managers[]" required style="width: 100%" multiple="multiple">
+                                                    <?php foreach ($managers as $manager): ?>
+                                                        <option value="<?= esc_attr($manager->ID) ?>">
+                                                            <?= esc_html($manager->first_name) ?>
+                                                            <?= esc_html($manager->last_name) ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>
@@ -466,8 +562,7 @@
 
                             <?php if (isset($institute) && !empty($institute)): ?>
                                 <?php if ($institute->status == 0): ?>
-                                    <div
-                                        style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
+                                    <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                         <button type="button" data-id="1"
                                             data-title="<?= __('Approve Institution', 'edusystem'); ?>"
                                             data-message="<?= __('Do you want to approve this institution?', 'edusystem'); ?>"
@@ -478,8 +573,7 @@
                                             class="button button-danger change-status-institute"><?= __('Declined', 'edusystem'); ?></button>
                                     </div>
                                 <?php elseif ($institute->status == 1): ?>
-                                    <div
-                                        style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
+                                    <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                         <button type="button" data-id="3"
                                             data-title="<?= __('Suspend the institution', 'edusystem'); ?>"
                                             data-message="<?= __('Do you want to suspend this institution?', 'edusystem'); ?>"
@@ -488,8 +582,7 @@
                                             class="button button-primary"><?= __('Saves changes', 'edusystem'); ?></button>
                                     </div>
                                 <?php elseif ($institute->status == 2 || $institute->status == 3): ?>
-                                    <div
-                                        style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
+                                    <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                         <button type="button" data-id="1"
                                             data-title="<?= __('Approve Institution', 'edusystem'); ?>"
                                             data-message="<?= __('Do you want to approve this institution?', 'edusystem'); ?>"
@@ -497,8 +590,7 @@
                                     </div>
                                 <?php endif; ?>
                             <?php else: ?>
-                                <div
-                                    style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
+                                <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
                                         class="button button-primary"><?= __('Add Institute', 'edusystem'); ?></button>
                                 </div>
@@ -516,13 +608,69 @@ include(plugin_dir_path(__FILE__) . 'modal-delete-institute.php');
 ?>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    form.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            return false;
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+
     });
-});
+</script>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const form = document.querySelector('form');
+        form.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        const alliancesSelect = document.getElementById('alliances-select');
+        const feesContainer = document.getElementById('alliance-fees-container');
+
+        // PHP variable para pasar los datos de montos existentes a JavaScript
+        // Asegúrate de que esta variable esté definida y contenga los datos correctos
+        const existingAllianceFees = <?= json_encode($selected_alliance_fees_data); ?>;
+
+        function renderAllianceFeeInputs() {
+            feesContainer.innerHTML = ''; // Limpiar inputs anteriores
+
+            const selectedOptions = Array.from(alliancesSelect.selectedOptions);
+
+            if (selectedOptions.length === 0) {
+                feesContainer.innerHTML = '<p><?= esc_html__('Select one or more alliances to set their fees.', 'edusystem'); ?></p>';
+                return;
+            }
+
+            selectedOptions.forEach(option => {
+                const allianceId = option.value;
+                const allianceName = option.dataset.name;
+                // Obtener montos existentes o valores por defecto
+                const existingFees = existingAllianceFees[allianceId] || { alliance_fee: '' };
+
+                const feeGroup = document.createElement('div');
+                feeGroup.style.marginBottom = '15px';
+                feeGroup.style.padding = '10px';
+                feeGroup.style.border = '1px solid #ddd';
+                feeGroup.style.borderRadius = '5px';
+                feeGroup.innerHTML = `
+                                    <h4 style="margin-top: 0; margin-bottom: 8px; color: #333;">${allianceName}</h4>
+
+                                    <div style="margin-bottom: 10px;">
+                                        <label for="alliance_fee_${allianceId}" style="display: block; margin-bottom: 5px; font-weight: bold;"><?= esc_html__('Alliance Fee (%)', 'edusystem'); ?></label>
+                                        <input type="number" step="0.01" min="0" id="alliance_fee_${allianceId}"
+                                               name="alliances_fees[${allianceId}][alliance_fee]"
+                                               value="${existingFees.alliance_fee}"
+                                               class="regular-text" style="width: 100%; max-width: 250px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" />
+                                    </div>
+                                `;
+                feesContainer.appendChild(feeGroup);
+            });
+        }
+
+        // Adjuntar el event listener
+        alliancesSelect.addEventListener('change', renderAllianceFeeInputs);
+
+        // Renderizado inicial al cargar la página
+        renderAllianceFeeInputs();
+    });
 </script>

@@ -36,6 +36,7 @@ require plugin_dir_path(__FILE__) . 'student-graduation.php';
 require plugin_dir_path(__FILE__) . 'feed.php';
 require plugin_dir_path(__FILE__) . 'auto-inscription.php';
 require plugin_dir_path(__FILE__) . 'templates-emails.php';
+require plugin_dir_path(__FILE__) . 'expenses-payroll.php';
 
 function admin_form_plugin_scripts()
 {
@@ -107,8 +108,23 @@ function aes_scripts_admin()
         );
     }
 
-    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_scholarships_content') {
-        wp_enqueue_script('student-payment', plugins_url('edusystem') . '/admin/assets/js/scholarship.js', array('jquery'), $version, true);
+    if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_scholarships_content') {
+        wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
+        wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', ['jquery']);
+
+        // Especifica jQuery como dependencia y usa la versión empaquetada con WordPress
+        wp_enqueue_script(
+            'scholarship',
+            plugins_url('edusystem') . '/admin/assets/js/scholarship.js',
+            ['jquery', 'select2'], // Asegura que jQuery y Select2 se carguen primero
+            $version,
+            true
+        );
+
+        wp_localize_script('scholarship', 'scholarship', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'manage_payments_search_student'
+        ]);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_email_content') {
@@ -146,7 +162,7 @@ function aes_scripts_admin()
         wp_enqueue_script('teacher', plugins_url('edusystem') . '/admin/assets/js/teacher.js', array('jquery'), $version, true);
     }
 
-    if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-sales' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables' || $_GET['page'] == 'report-students' || $_GET['page'] == 'report-current-students' || $_GET['page'] == 'report-sales-product') {
+    if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'report-summary' || $_GET['page'] == 'add_admin_form_report_content') || $_GET['page'] == 'report-accounts-receivables' || $_GET['page'] == 'report-students' || $_GET['page'] == 'report-sales-product' || $_GET['page'] == 'report-billing-ranking' || $_GET['page'] == 'report-comissions') {
         wp_enqueue_script('report', plugins_url('edusystem') . '/admin/assets/js/report.js', array('jquery'), $version, true);
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js');
         wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js');
@@ -444,17 +460,19 @@ function add_custom_admin_page()
         add_menu_page(
             __('Report', 'edusystem'),
             __('Report', 'edusystem'),
-            'manager_report_aes',
+            'manager_sales_aes',
             'add_admin_form_report_content',
             'add_admin_form_report_content',
             'dashicons-list-view',
             8
         );
-        add_submenu_page('add_admin_form_report_content', __('Sales', 'edusystem'), __('Sales', 'edusystem'), 'manager_sales_aes', 'report-sales', 'show_report_sales', 10);
+        add_submenu_page('add_admin_form_report_content', __('Summary', 'edusystem'), __('Summary', 'edusystem'), 'manager_sales_aes', 'report-summary', 'show_report_sales', 10);
         add_submenu_page('add_admin_form_report_content', __('Accounts receivable', 'edusystem'), __('Accounts receivable', 'edusystem'), 'manager_accounts_receivables_aes', 'report-accounts-receivables', 'show_report_accounts_receivables', 10);
-        // add_submenu_page('add_admin_form_report_content', __('Students', 'edusystem'), __('Students', 'edusystem'), 'manager_report_students_aes', 'report-students', 'show_report_students', 10);
-        add_submenu_page('add_admin_form_report_content', __('Students', 'edusystem'), __('Students', 'edusystem'), 'manager_report_students_aes', 'report-current-students', 'show_report_current_students', 10);
         add_submenu_page('add_admin_form_report_content', __('Sales by product', 'edusystem'), __('Sales by product', 'edusystem'), 'manager_report_sales_product', 'report-sales-product', 'show_report_sales_product', 10);
+        add_submenu_page('add_admin_form_report_content', __('Billing Ranking', 'edusystem'), __('Billing Ranking', 'edusystem'), 'manager_report_billing_ranking_aes', 'report-billing-ranking', 'show_report_billing_ranking', 10);
+        add_submenu_page('add_admin_form_report_content', __('Comissions', 'edusystem'), __('Comissions', 'edusystem'), 'manager_comissions_aes', 'report-comissions', 'show_report_comissions', 10);
+        add_submenu_page('add_admin_form_report_content', __('Students', 'edusystem'), __('Students', 'edusystem'), 'manager_report_students_aes', 'report-students', 'show_report_current_students', 10);
+        remove_submenu_page('add_admin_form_report_content', 'add_admin_form_report_content');
 
         add_menu_page(
             __('Settings', 'edusystem'),
@@ -506,9 +524,9 @@ function add_cap_to_administrator()
     $role->add_cap('manager_notifications_aes');
     $role->add_cap('manager_staff_aes');
     $role->add_cap('manager_admission_aes');
-    $role->add_cap('manager_report_aes');
+    $role->add_cap('manager_report_billing_ranking_aes');
     $role->add_cap('manager_report_students_aes');
-    $role->add_cap('manager_report_current_students_aes');
+    $role->add_cap('manager_comissions_aes');
     $role->add_cap('manager_report_sales_product');
     $role->add_cap('manager_sales_aes');
     $role->add_cap('manager_accounts_receivables_aes');
@@ -531,120 +549,73 @@ add_action('admin_menu', 'add_custom_admin_page');
 
 function get_dates_search($filter, $custom)
 {
+    $start = '';
+    $end = '';
+
+    // Define el formato de fecha deseado para la SALIDA (solo año, mes, día)
+    $output_date_format = 'Y-m-d';
 
     if ($filter == 'today') {
-        $start = get_gmt_from_date(wp_date('Y-m-d') . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d') . '23:59', 'Y-m-d H:i');
-
+        $start = wp_date($output_date_format);
+        $end = wp_date($output_date_format);
     } else if ($filter == 'yesterday') {
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('-1 days')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', ) . '00:00', 'Y-m-d H:i');
-
+        $start = wp_date($output_date_format, strtotime('-1 days'));
+        $end = wp_date($output_date_format, strtotime('-1 days'));
     } else if ($filter == 'tomorrow') {
-        $start = get_gmt_from_date(wp_date('Y-m-d') . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('+1 days')) . '00:00', 'Y-m-d H:i');
-
+        $start = wp_date($output_date_format, strtotime('+1 days'));
+        $end = wp_date($output_date_format, strtotime('+1 days'));
     } else if ($filter == 'this-week') {
-
-        $date = Datetime::createFromFormat('Y-m-d', wp_date('Y-m-d'));
-
-        if ($date->format('w') == 1) {
-            $start = get_gmt_from_date(wp_date('Y-m-d') . '00:00', 'Y-m-d H:i');
-        } else {
-            $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('last tuesday')) . '00:00', 'Y-m-d H:i');
-        }
-
-        if ($date->format('w') == 1) {
-            $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('next saturday', strtotime('+1 days'))) . '23:59', 'Y-m-d H:i');
-        } else {
-            $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('next sunday')) . '23:59', 'Y-m-d H:i');
-        }
-
+        // Ajusta según el inicio de semana de WordPress o tu preferencia (lunes o domingo)
+        // Por defecto, strtotime('this week monday') y 'this week sunday' funcionan bien.
+        $start = wp_date($output_date_format, strtotime('this week monday'));
+        $end = wp_date($output_date_format, strtotime('this week sunday'));
     } else if ($filter == 'last-week') {
-
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('last week')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('this week -1 days')) . '23:59', 'Y-m-d H:i');
-
-
+        $start = wp_date($output_date_format, strtotime('last week monday'));
+        $end = wp_date($output_date_format, strtotime('last week sunday'));
     } else if ($filter == 'next-week') {
-
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('this week')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('next week -1 days')) . '23:59', 'Y-m-d H:i');
-
-
+        $start = wp_date($output_date_format, strtotime('next week monday'));
+        $end = wp_date($output_date_format, strtotime('next week sunday'));
     } else if ($filter == 'this-month') {
-
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('first day of this month')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('last day of this month')) . '23:59', 'Y-m-d H:i');
-
+        $start = wp_date($output_date_format, strtotime('first day of this month'));
+        $end = wp_date($output_date_format, strtotime('last day of this month'));
     } else if ($filter == 'last-month') {
-
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('first day of last month')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('last day of last month')) . '23:59', 'Y-m-d H:i');
-
-
+        $start = wp_date($output_date_format, strtotime('first day of last month'));
+        $end = wp_date($output_date_format, strtotime('last day of last month'));
     } else if ($filter == 'next-month') {
-
-        $start = get_gmt_from_date(wp_date('Y-m-d', strtotime('first day of next month')) . '00:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date(wp_date('Y-m-d', strtotime('last day of next month')) . '23:59', 'Y-m-d H:i');
-
-
+        $start = wp_date($output_date_format, strtotime('first day of next month'));
+        $end = wp_date($output_date_format, strtotime('last day of next month'));
     } else if ($filter == 'custom') {
+        // El formato de entrada esperado de $custom es "MM/DD/YYYY to MM/DD/YYYY"
+        $custom_input_format = 'm/d/Y'; // Formato de entrada de las fechas
 
         $date = str_replace([' to ', ' a '], ',', $custom);
         $date_array = explode(',', $date);
 
-        $start = str_replace('/', '-', $date_array[0]);
-
-        if (isset($date_array[1]) && !empty($date_array[1])) {
-            $end = str_replace('/', '-', $date_array[1]);
+        // Parsear la fecha de inicio
+        $dt_start = DateTime::createFromFormat($custom_input_format, trim($date_array[0]));
+        if ($dt_start) {
+            $start = $dt_start->format($output_date_format);
         } else {
-            $end = str_replace('/', '-', $date_array[0]);
+            // Manejar error si la fecha de inicio es inválida
+            return [false, false]; // O manejar el error como prefieras
         }
 
-        $startDatetime = Datetime::createFromFormat('m-d-Y', $start);
-        $endDatetime = Datetime::createFromFormat('m-d-Y', $end);
-
-        $start = get_gmt_from_date($startDatetime->format('Y-m-d') . '07:00', 'Y-m-d H:i');
-        $end = get_gmt_from_date($endDatetime->modify('+1 day')->format('Y-m-d') . '06:59', 'Y-m-d H:i');
-        /*
-        if($sales){
-
-            $dayStart = $startDatetime->format('w');
-
-            if(get_option('restaurant_system_schedule_'.$dayStart.'_checkbox') == 'true'){
-
-                $start_time = get_option('restaurant_system_schedule_'.$dayStart.'_start_time');
-
-                if(get_option('restaurant_system_schedule_'.$dayStart.'_interday') == 'true'){
-                    $start = get_gmt_from_date($startDatetime->format('Y-m-d').$start_time,'Y-m-d H:i');
-                }
+        // Parsear la fecha de fin
+        if (isset($date_array[1]) && !empty($date_array[1])) {
+            $dt_end = DateTime::createFromFormat($custom_input_format, trim($date_array[1]));
+            if ($dt_end) {
+                $end = $dt_end->format($output_date_format);
+            } else {
+                // Manejar error si la fecha de fin es inválida
+                return [false, false]; // O manejar el error como prefieras
             }
-
+        } else {
+            $end = $start; // Si no hay fecha de fin, es la misma que la de inicio
         }
-
-        $end = get_gmt_from_date($endDatetime->format('Y-m-d').'23:59','Y-m-d H:i');
-
-        if($sales){
-
-            $dayEnd = $endDatetime->format('w');
-
-            if(get_option('restaurant_system_schedule_'.$dayEnd.'_checkbox') == 'true'){
-
-                $end_time = get_option('restaurant_system_schedule_'.$dayEnd.'_end_time');
-
-                if(get_option('restaurant_system_schedule_'.$dayEnd.'_interday') == 'true'){
-
-                    $end = get_gmt_from_date($endDatetime->format('Y-m-d').$end_time,'Y-m-d H:i');
-                }
-            }
-        }
-        */
     }
 
     return [$start, $end];
 }
-
 
 
 // AGREGAR NUEVO CAMPO DE VARIACION DE PRODUCTO PARA JUGAR CON LOS VALORES DE LAS CUOTAS EN LOS PROGRAMAS
@@ -675,16 +646,17 @@ function save_num_cuotes($variation_id, $i)
 
 // functions.php
 
-function add_logo_dashboard() {
+function add_logo_dashboard()
+{
     $logo_id = get_option('logo_admin');
 
     // Exit early if no logo ID is set or URL can't be retrieved
-    if ( ! $logo_id || ! ( $logo_url = wp_get_attachment_image_url( $logo_id, 'full' ) ) ) {
+    if (!$logo_id || !($logo_url = wp_get_attachment_image_url($logo_id, 'full'))) {
         return;
     }
 
     // Inject the logo URL as a CSS variable using your 'style-admin' handle
-    wp_add_inline_style( 'style-admin', ":root { --admin-logo-url: url('{$logo_url}'); }" );
+    wp_add_inline_style('style-admin', ":root { --admin-logo-url: url('{$logo_url}'); }");
 }
 add_action('admin_enqueue_scripts', 'add_logo_dashboard');
 
@@ -694,23 +666,28 @@ function aes_logo()
 }
 add_action('admin_menu', 'aes_logo');
 
-function custom_login_store()
+function custom_login_store(): void
 {
-    if (get_option('blog_img_logo')) {
-        $url = 'https://portal.americanelite.school/wp-content/uploads/2025/01/cropped-cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-COLOR-3.png';
-        echo '
-    <style type="text/css">
-        #login h1 a, .login h1 a {
-            background-image: url(' . $url . ');
-        background-size: cover;
-        background-repeat: no-repeat;
-        width:110px;
-        height:110px;
-        background-color:white;
-        border-radius:50%;
-        }
-    </style>';
+    $logo_id = get_option('logo_admin');
+
+    // If no logo ID is set or the URL can't be retrieved, exit early
+    if (!$logo_id || !($logo_url = wp_get_attachment_image_url($logo_id, 'full'))) {
+        return;
     }
+
+    ?>
+    <style type="text/css">
+        #login h1 a,
+        .login h1 a {
+            background-image: url('<?php echo esc_url($logo_url); ?>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            width: 110px !important;
+            height: 110px !important;
+            border-radius: 0% !important;
+        }
+    </style>
+    <?php
 }
 add_action('login_enqueue_scripts', 'custom_login_store');
 
@@ -736,24 +713,33 @@ function hide_notices()
 }
 add_action('in_admin_header', 'hide_notices', 99);
 
-add_action('login_enqueue_scripts', 'aes_change_login_logo');
-function aes_change_login_logo()
-{ ?>
+function aes_change_login_logo(): void
+{
+    $logo_id = get_option('logo_admin_login');
+
+    // Exit early if no logo ID is set or URL can't be retrieved
+    if (!$logo_id || !($logo_url = wp_get_attachment_image_url($logo_id, 'full'))) {
+        return;
+    }
+
+    ?>
     <style type="text/css">
         #login h1 a {
-            background: url('https://portal.americanelite.school/wp-content/uploads/2025/01/cropped-cropped-AMERICAN-ELITE-SCHOOL_LOGOTIPO-VERTICAL_COLOR.png') no-repeat center center;
+            background: url('<?php echo esc_url($logo_url); ?>') no-repeat center center;
             background-size: 100px;
             height: 100px;
             margin: 0 auto;
             width: 100px;
         }
     </style>
-<?php }
+    <?php
+}
+add_action('login_enqueue_scripts', 'aes_change_login_logo');
 
 add_filter('login_headerurl', 'aes_login_redirect_url');
 function aes_login_redirect_url()
 {
-    return 'https://portal.americanelite.school/'; // Replace with your desired URL
+    return home_url();
 }
 
 // Add a custom action to the user list

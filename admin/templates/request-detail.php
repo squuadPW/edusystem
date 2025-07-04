@@ -24,7 +24,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row" ><label for="input_id"><?= __('Partner','edusystem').':'; ?></label></th>
+                                    <th scope="row" ><label for="input_id"><?= __('Parent','edusystem').':'; ?></label></th>
                                     <td class="text-uppercase">
                                         <?= strtoupper($partner->first_name) . ' ' . strtoupper($partner->last_name); ?>
                                     </td>
