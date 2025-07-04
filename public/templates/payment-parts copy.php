@@ -1,0 +1,91 @@
+<?php
+    global $woocommerce;
+    $cart = $woocommerce->cart->get_cart();
+    $id = FEE_INSCRIPTION;
+
+    $filtered_products = array_filter($cart, function($product) use($id) {
+        return $product['product_id'] != $id;
+    });
+
+    foreach ($filtered_products as $key => $product) {
+        $product_id = $product['product_id'];
+        $product = wc_get_product($product_id);
+    }
+
+    // Check if the product is a variable product
+?>
+    
+    <?php if (isset($product) && $product->is_type('variable') && !isset($_COOKIE['is_scholarship'])) : ?>
+
+
+        <!-- <div>
+        <div class="back-select-payment">
+            <a href="<?= the_permalink() . '?action=change_payment_method&time='.date('H:i:s'); ?>"><span class='dashicons dashicons-arrow-left-alt dashiconaes'></span><?= __('Change payment method', 'edusystem'); ?></a>
+        </div>
+        </div> -->
+
+        <?php if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) : ?>
+            
+            <div >
+                <div style="margin-bottom: 10px !important; text-align: center">
+                    <?php
+                        $product_fee = wc_get_product(FEE_INSCRIPTION);
+                        $product_price = $product_fee->get_price();
+                    ?>
+                    <label class="fee-container"><strong>Registration fee</strong> <br><span>(You can pay it before starting classes in your account)</span>
+                        <input name="fee" type="checkbox" checked="checked">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+        <?php endif ?>
+
+        <div class="text-center" style="padding: 18px 0px;">
+            <label>Apply to get the discount</label>
+            <div id="button-schoolship"></div>
+        </div>
+
+        <div class="radio-group text-center">
+            <label class="m-5">Program Payments</label>
+            <div class="radio-group">
+
+                <?php
+                    global $woocommerce;
+                    $cart = $woocommerce->cart->get_cart();
+
+                    $filtered_products = array_filter($cart, function($product) use($id) {
+                        return $product['product_id'] != $id;
+                    });
+                ?>
+
+                <?php foreach ($filtered_products as $key => $product) : ?>
+
+                    <?php 
+                        $product_id = $product['product_id'];
+                        $product = wc_get_product($product_id);
+                        $variations = $product->get_available_variations();
+                    ?>
+
+                    <?php foreach ($variations as $key => $variation) : ?>
+                        <?php $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true ); ?>
+
+                        <div class="radio-input">
+                            <input <?php echo $key === 0 ? 'checked' : '' ?> class="form-check-input" type="radio" id="<?php echo $variation['variation_id']; ?>" name="option" value="<?php echo $variation['attributes']['attribute_payments']; ?>">
+                            <label class="form-check-label" for="<?php echo $variation['variation_id']; ?>">
+                                <?php echo $cuotes . ($key === 0 ? ' Payment<br>(Unique)' : ' Payments <br> (' . $variation['attributes']['attribute_payments'] . ')'); ?> 
+                            </label>
+                        </div>
+                    <?php endforeach; ?>
+
+                <?php endforeach; ?>
+
+            </div>
+        </div>
+
+    <?php endif; ?>
+
+    <?php if(isset($product) && $product->is_type('variable') && !isset($_COOKIE['is_scholarship'])) : ?>
+        <div id="table-payment"> </div>
+    
+        <input type="hidden" name="submit" value="Apply Scholarship">
+    <?php endif; ?>

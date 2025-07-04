@@ -77,7 +77,7 @@ function add_admin_form_program_content()
 
             // obtiene los subprogramas y crea  los productos 
             // vinculados a ellos si los 
-            $product = wc_get_product( $program_product_id );
+            $product = wc_get_product( (int) $program_product_id );
             if( $product && !empty( $subprograms_post ) ){
 
                 $attribute_name = 'subprograms';

@@ -22,7 +22,7 @@ function form_plugin_scripts()
     wp_enqueue_style('admin-flatpickr', plugins_url('edusystem') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('edusystem') . '/public/assets/css/intlTelInput.css');
     wp_enqueue_style('style-public', plugins_url('edusystem') . '/public/assets/css/style.css', array(), $version, 'all');
-    wp_enqueue_script('tailwind', 'https://cdn.tailwindcss.com');
+    // wp_enqueue_script('tailwind', 'https://cdn.tailwindcss.com');
     wp_enqueue_script('admin-flatpickr', plugins_url('edusystem') . '/public/assets/js/flatpickr.js');
     wp_enqueue_script('masker-js', plugins_url('edusystem') . '/public/assets/js/vanilla-masker.min.js');
     wp_enqueue_script('intel-js', plugins_url('edusystem') . '/public/assets/js/intlTelInput.min.js');
@@ -1154,8 +1154,6 @@ function insert_data_student($order)
     $order->save();
 }
 
-add_action('woocommerce_after_checkout_billing_form', 'payments_parts');
-
 function split_payment()
 {
     $cart = WC()->cart;
@@ -1184,6 +1182,8 @@ function payments_parts()
 {
     include(plugin_dir_path(__FILE__) . 'templates/payment-parts.php');
 }
+
+add_action('woocommerce_after_checkout_billing_form', 'payments_parts');
 
 add_action('wp_ajax_nopriv_woocommerce_update_cart', 'woocommerce_update_cart');
 add_action('wp_ajax_woocommerce_update_cart', 'woocommerce_update_cart');
@@ -1379,6 +1379,78 @@ function load_signatures_data()
     wp_send_json(array('grade_selected' => $grade_selected, 'parent_signature' => $parent_signature ? json_decode($parent_signature->signature) : [], 'student_signature' => $student_signature ? json_decode($student_signature->signature) : []));
 }
 
+/**
+ * Actualiza el precio de un producto en el carrito según la regla de cuota seleccionada.
+ * 
+ * Esta función recibe el ID de un producto y el ID de una regla de cuota a través de una
+ * solicitud AJAX. Consulta la base de datos para obtener el precio correspondiente y actualiza
+ * el precio del producto en el carrito de WooCommerce.
+ * 
+ * @return void
+ * 
+ * @uses WPDB
+ * @uses WC_Cart
+ */
+add_action('wp_ajax_update_price_product_cart_quota_rule', 'update_price_product_cart_quota_rule');
+add_action('wp_ajax_nopriv_update_price_product_cart_quota_rule', 'update_price_product_cart_quota_rule');
+function update_price_product_cart_quota_rule() {
+    
+    $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+    $rule_id = isset($_POST['rule_id']) ? intval($_POST['rule_id']) : 0;
+
+    if ($product_id <= 0 || $rule_id <= 0) {
+        wp_send_json_error(__('Invalid data','edusystem'));
+        exit;
+    }
+
+    global $wpdb;
+    $price = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT 
+                CASE 
+                    WHEN initial_price > 0 THEN initial_price 
+                    ELSE quote_price 
+                END AS price 
+            FROM {$wpdb->prefix}quota_rules
+            WHERE id = %d",
+            $rule_id
+        )
+    );
+
+    if (!$price) {
+        wp_send_json_error( __('Rule not found in database','edusystem') );
+        exit;
+    }
+
+    $cart = WC()->cart;
+    foreach ( $cart->get_cart() as $cart_item_key => $cart_item ) {
+
+        // Verificar si el ID del producto o el ID de la variación coinciden
+        if  ( $cart_item['product_id'] === $product_id || ( isset($cart_item['variation_id']) && $cart_item['variation_id'] === $product_id ) ) {
+
+            $cart_item['data']->set_price($price);
+            $cart_item['data']->set_sale_price($price);
+
+            // Almacenar el nuevo precio en el array del artículo del carrito
+            $cart_item['custom_price'] = $price; // Aquí se almacena el nuevo precio
+
+            // Actualizar el artículo del carrito
+            $cart->cart_contents[$cart_item_key] = $cart_item;
+
+            // Actualizar el carrito
+            WC()->cart->set_session();
+
+            wp_send_json_success(__('Precio actualizado','edusystem') );
+            exit;
+        }
+    }
+
+    // en caso de no encontrar el producto
+    wp_send_json_error( __( 'Product not found in cart','edusystem') );
+    exit;
+}
+
+
 add_action('wp_ajax_nopriv_reload_payment_table', 'reload_payment_table');
 add_action('wp_ajax_reload_payment_table', 'reload_payment_table');
 
@@ -1460,8 +1532,8 @@ function reload_payment_table()
 
 add_action('wp_ajax_nopriv_reload_button_schoolship', 'reload_button_schoolship');
 add_action('wp_ajax_reload_button_schoolship', 'reload_button_schoolship');
-
 function reload_button_schoolship() {
+
     ob_start();
     global $woocommerce;
     $has_scholarship = false;
@@ -1475,7 +1547,7 @@ function reload_button_schoolship() {
     }
 
     // Check if the 'name_institute' cookie is NOT set or is empty
-    if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) {
+    // if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) {
         ?>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
             <?php if ($has_scholarship): ?>
@@ -1489,7 +1561,7 @@ function reload_button_schoolship() {
             <?php endif; ?>
         </div>
         <?php
-    }
+    // }
 
     $html = ob_get_clean();
     echo $html;
