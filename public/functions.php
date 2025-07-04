@@ -801,35 +801,120 @@ function status_order_completed($order, $order_id, $customer_id)
 
 
 /**
- * Actualiza el pago pendiente más antiguo o crea un nuevo registro si no existe.
+ * Actualiza o crea un registro de pago para un artículo dado en una orden.
  *
- * @param WC_Order_Item_Product $item El artículo de la orden.
- * @param int                   $student_id ID del estudiante.
- * @param int                   $order_id ID de la orden actual.
+ * Esta función intenta primero actualizar el pago pendiente más antiguo para un estudiante
+ * y producto específico. Si no se encuentra un pago pendiente, crea un nuevo registro
+ * con la información del pago completado, incluyendo los detalles de instituto y alianzas.
+ *
+ * @param WC_Order_Item_Product $item       Objeto del ítem de la orden.
+ * @param int                   $student_id ID del estudiante asociado al pago.
+ * @param int                   $order_id   ID de la orden de WooCommerce.
+ * @return void
  */
-function update_or_create_payment_record($item, $student_id, $order_id)
+function update_or_create_payment_record(WC_Order_Item_Product $item, int $student_id, int $order_id): void
 {
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
     $product_id = $item->get_product_id();
 
-    // 5. Intenta actualizar el pago pendiente más antiguo (cuota más baja).
-    $query = $wpdb->prepare("
-        UPDATE {$table_student_payment}
-        SET status_id = 1, order_id = %d, date_payment = CURDATE()
-        WHERE student_id = %d
-          AND product_id = %d
-          AND status_id = 0
-        ORDER BY cuote ASC
-        LIMIT 1
-    ", $order_id, $student_id, $product_id);
+    // --- Obtención de datos de instituto y alianzas (replicado de process_program_payments) ---
+    $institute_id = null;
+    $institute = null;
+    $alliances = [];
+    $current_item_alliances_json = json_encode([]); // Por defecto, JSON vacío
 
-    $rows_updated = $wpdb->query($query);
+    $student_data = get_student_detail($student_id);
+
+    if ($student_data && isset($student_data->institute_id) && !empty($student_data->institute_id)) {
+        $institute_id = $student_data->institute_id;
+        $institute = get_institute_details($institute_id);
+
+        if ($institute) { // Solo si el instituto existe, intenta obtener las alianzas.
+            $alliances = get_alliances_from_institute($institute_id);
+            // Asegurarse de que $alliances sea un array si la función de origen retorna algo diferente
+            if (!is_array($alliances)) {
+                $alliances = [];
+            }
+        }
+    }
+
+    // Calcular las tarifas de alianzas para este ítem específico
+    $current_item_alliances_fees = [];
+    $product = $item->get_product(); // Necesitamos el producto para determinar si es un FEE
+    // Asegúrate de que FEE_INSCRIPTION y FEE_GRADUATION estén definidas como constantes globales
+    $is_fee_product = in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]);
+    // Asumiendo que get_post_meta para 'is_scholarship' ya fue validado en la función principal o que siempre retorna un valor booleano o false.
+    $is_scholarship = (bool) get_post_meta($order_id, 'is_scholarship', true);
+
+    if (!empty($alliances) && is_array($alliances)) {
+        foreach ($alliances as $alliance) {
+            $alliance_id = $alliance->id ?? null;
+            $alliance_data = ($alliance_id) ? get_alliance_detail($alliance_id) : null;
+            $alliance_fee_percentage = (float) ($alliance->fee ?? ($alliance_data->fee ?? 0));
+
+            $total_alliance_fee = 0.0;
+            // Las tarifas de alianzas se aplican si NO es un producto tipo FEE y NO es una beca.
+            if (!$is_fee_product && !$is_scholarship) {
+                $total_alliance_fee = ($alliance_fee_percentage * (float) $item->get_total()) / 100;
+            }
+
+            if ($alliance_id) {
+                $current_item_alliances_fees[] = [
+                    'id' => $alliance_id,
+                    'fee_percentage' => $alliance_fee_percentage,
+                    'calculated_fee_amount' => $total_alliance_fee,
+                ];
+            }
+        }
+    }
+    $current_item_alliances_json = json_encode($current_item_alliances_fees);
+    if ($current_item_alliances_json === false) {
+        $current_item_alliances_json = json_encode([]); // Asegurarse de que sea un JSON válido en caso de error
+    }
+
+    // Calcular el institute_fee para este ítem específico
+    $current_item_institute_fee = 0.0;
+    // El fee del instituto se aplica si el instituto existe, NO es un producto tipo FEE y NO es una beca.
+    if ($institute && !$is_fee_product && !$is_scholarship) {
+        $institute_fee_percentage = (float) ($institute->fee ?? 0);
+        $current_item_institute_fee = ($institute_fee_percentage * (float) $item->get_total()) / 100;
+    }
+    // --- Fin de obtención de datos ---
+
+
+    // 5. Intenta actualizar el pago pendiente más antiguo (cuota más baja).
+    // Incluye las nuevas columnas en la sentencia UPDATE
+    $update_data = [
+        'status_id' => 1,
+        'order_id' => $order_id,
+        'date_payment' => current_time('mysql', true), // Usar current_time para la fecha de pago
+        'institute_id' => $institute_id,         // ¡Nueva columna en UPDATE!
+        'institute_fee' => $current_item_institute_fee, // ¡Nueva columna en UPDATE!
+        'alliances' => $current_item_alliances_json,   // ¡Nueva columna en UPDATE!
+    ];
+
+    // No se puede usar LIMIT y ORDER BY directamente con $wpdb->update().
+    // Para actualizar solo la 'cuota' más baja, necesitamos seleccionarla primero.
+    $oldest_pending_payment = $wpdb->get_row($wpdb->prepare(
+        "SELECT id FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d AND status_id = 0 ORDER BY cuote ASC LIMIT 1",
+        $student_id,
+        $product_id
+    ));
+
+    $rows_updated = 0;
+    if ($oldest_pending_payment) {
+        $rows_updated = $wpdb->update(
+            $table_student_payment,
+            $update_data, // Datos a actualizar
+            ['id' => $oldest_pending_payment->id] // Cláusula WHERE específica para el ID encontrado
+        );
+    }
 
     // 6. LÓGICA CLAVE: Si no se actualizó ninguna fila, es porque no había pagos pendientes. Se crea uno nuevo.
     if ($rows_updated === 0) {
-        $product = $item->get_product();
         $total = $item->get_total(); // Precio final pagado por este artículo en esta orden.
+        $original_price = (float) ($item->get_subtotal() / $item->get_quantity());
 
         $data = [
             'status_id' => 1, // Nace como pago completado.
@@ -837,14 +922,18 @@ function update_or_create_payment_record($item, $student_id, $order_id)
             'student_id' => $student_id,
             'product_id' => $product_id,
             'variation_id' => $item->get_variation_id(),
+            'institute_id' => $institute_id,
+            'institute_fee' => $current_item_institute_fee,
+            'alliances' => $current_item_alliances_json,
             'amount' => $total,
+            'original_amount_product' => $original_price,
             'total_amount' => $total,
-            'original_amount' => floatval($product->get_regular_price()),
-            'discount_amount' => floatval($product->get_regular_price()) - $total,
+            'original_amount' => $original_price,
+            'discount_amount' => $original_price - $total,
             'type_payment' => 2, // Pago único.
             'cuote' => 1,
             'num_cuotes' => 1,
-            'date_payment' => current_time('mysql'),
+            'date_payment' => current_time('mysql', true),
             'date_next_payment' => null,
         ];
 
@@ -935,15 +1024,34 @@ function process_program_payments(WC_Order $order, int $order_id): void
     $student_id = $order->get_meta('student_id');
 
     if (empty($student_id)) {
-        return; // Salir si no hay ID de estudiante.
+        return; // Salir si no hay ID de estudiante, ya que es un dato crítico.
     }
 
-    $institute_id = $order->get_meta('institute_id');
-    $institute_fee = (float) $order->get_meta('institute_fee'); // Aseguramos que sea flotante.
-    $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca.
+    $student_data = get_student_detail($student_id);
 
-    // Obtener las alianzas del instituto.
-    $alliances = get_alliances_from_institute($institute_id);
+    // Validar si $student_data existe y tiene un institute_id
+    if (!$student_data || !isset($student_data->institute_id) || empty($student_data->institute_id)) {
+        $institute_id = null; // No hay un institute_id válido
+        $institute = null;
+        $alliances = []; // Array de alianzas vacío
+    } else {
+        $institute_id = $student_data->institute_id;
+        $institute = get_institute_details($institute_id);
+
+        // Si el instituto no existe, el fee será 0 y las alianzas vacías, pero no salimos.
+        if (!$institute) {
+            $alliances = [];
+        } else {
+            // Obtener las alianzas del instituto si el instituto existe.
+            $alliances = get_alliances_from_institute($institute_id);
+            // Si get_alliances_from_institute devuelve null o no es un array, se inicializa como vacío.
+            if (!is_array($alliances)) {
+                $alliances = [];
+            }
+        }
+    }
+
+    $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca.
 
     foreach ($order->get_items() as $item_id => $item) {
         $product = $item->get_product();
@@ -955,14 +1063,14 @@ function process_program_payments(WC_Order $order, int $order_id): void
         $variation_id = $item->get_variation_id();
 
         // Determinar si este producto es un FEE de inscripción o graduación.
+        // Asegúrate de que FEE_INSCRIPTION y FEE_GRADUATION estén definidos como constantes.
         $is_fee_product = in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]);
 
         // Evita la redundancia procesando solo si no existe un registro previo para este producto en esta orden.
         $existing_record_count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d AND order_id = %d",
+            "SELECT COUNT(*) FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d",
             $student_id,
-            $product_id,
-            $order_id
+            $product_id
         ));
 
         if ($existing_record_count > 0) {
@@ -1010,18 +1118,12 @@ function process_program_payments(WC_Order $order, int $order_id): void
         if (!empty($alliances) && is_array($alliances)) {
             foreach ($alliances as $alliance) {
                 $alliance_id = $alliance->id ?? null;
-                $alliance_data = get_alliance_detail($alliance_id);
-                $alliance_fee_percentage = (float) ($alliance->fee ?? $alliance_data->fee);
+                $alliance_data = ($alliance_id) ? get_alliance_detail($alliance_id) : null;
+                $alliance_fee_percentage = (float) ($alliance->fee ?? ($alliance_data->fee ?? 0));
 
                 $total_alliance_fee = 0.0;
-                // Si NO es un producto de tipo FEE y NO es una beca, calcula la tarifa.
                 if (!$is_fee_product && !$is_scholarship) {
-                    // La base para el cálculo de la fee es el subtotal del ITEM
-                    // descontando el descuento de latam scholarship (si aplica a este item)
-                    // Para simplificar, aquí se usa el mismo total_for_percentage_fee calculado globalmente,
-                    // asumiendo que los FEES no afectan ese total base, lo cual es coherente
-                    // con la lógica del `set_institute_in_order`.
-                    $total_alliance_fee = ($alliance_fee_percentage * (float) $item->get_subtotal()) / 100;
+                    $total_alliance_fee = ($alliance_fee_percentage * (float) $item->get_total()) / 100;
                 }
 
                 if ($alliance_id) {
@@ -1034,15 +1136,13 @@ function process_program_payments(WC_Order $order, int $order_id): void
             }
         }
 
-        // Codificar el array de tarifas de alianzas para el item actual a JSON.
         $current_item_alliances_json = json_encode($current_item_alliances_fees);
         if ($current_item_alliances_json === false) {
             $current_item_alliances_json = json_encode([]);
         }
 
-
         // --- Lógica de fechas ---
-        $needs_next_payment = !$is_fee_product; // Reutilizamos la variable is_fee_product
+        $needs_next_payment = !$is_fee_product;
         $start_date = new DateTime();
 
         for ($i = 0; $i < $installments; $i++) {
@@ -1051,17 +1151,22 @@ function process_program_payments(WC_Order $order, int $order_id): void
                 $payment_date_obj = clone $start_date;
 
                 if ($i > 0 && !empty($interval)) {
-                    sscanf($interval, '+%d %s', $value, $unit);
-                    $total_offset = $i * $value;
-                    $payment_date_obj->modify("+$total_offset $unit");
+                    if (preg_match('/^\+(\d+)\s*(year|month)s?$/i', $interval, $matches)) {
+                        $value = (int) $matches[1];
+                        $unit = $matches[2];
+                        $total_offset = $i * $value;
+                        $payment_date_obj->modify("+$total_offset $unit");
+                    }
                 }
                 $next_payment_date = $payment_date_obj->format('Y-m-d');
             }
 
             // Calcular el institute_fee para este item específico
             $current_item_institute_fee = 0.0;
-            if (!$is_fee_product && !$is_scholarship) {
-                $current_item_institute_fee = ($institute_fee * (float) $item->get_subtotal()) / 100;
+            // Solo se calcula la tarifa del instituto si el instituto existe y no es un producto FEE o beca.
+            if ($institute && !$is_fee_product && !$is_scholarship) {
+                $institute_fee_percentage = (float) ($institute->fee ?? 0);
+                $current_item_institute_fee = ($institute_fee_percentage * (float) $item->get_total()) / 100;
             }
 
             $data = [
@@ -1070,9 +1175,9 @@ function process_program_payments(WC_Order $order, int $order_id): void
                 'student_id' => $student_id,
                 'product_id' => $product_id,
                 'variation_id' => $variation_id,
-                'institute_id' => $institute_id,
-                'institute_fee' => $current_item_institute_fee, // Usamos la fee calculada para este item
-                'alliances' => ($i + 1) == 1 ? $current_item_alliances_json : null, // Usamos el JSON de alianzas para este item
+                'institute_id' => ($i + 1) == 1 ? $institute_id : null,
+                'institute_fee' => ($i + 1) == 1 ? $current_item_institute_fee : 0,
+                'alliances' => ($i + 1) == 1 ? $current_item_alliances_json : null,
                 'amount' => $price_per_installment,
                 'original_amount_product' => $original_price,
                 'total_amount' => $total_amount_to_pay,
@@ -1529,76 +1634,76 @@ function reload_payment_table()
 {
     ob_start();
     ?>
-                <?php
-                $value = $_POST['option'];
-                global $woocommerce;
-                $cart = $woocommerce->cart->get_cart();
-                $id = FEE_INSCRIPTION;
-                $filtered_products = array_filter($cart, function ($product) use ($id) {
-                    return $product['product_id'] != $id;
-                });
+    <?php
+    $value = $_POST['option'];
+    global $woocommerce;
+    $cart = $woocommerce->cart->get_cart();
+    $id = FEE_INSCRIPTION;
+    $filtered_products = array_filter($cart, function ($product) use ($id) {
+        return $product['product_id'] != $id;
+    });
 
-                $cart_total = 0;
-                $product_id = null;
-                foreach ($filtered_products as $key => $product) {
-                    $product_id = $product['product_id'];
-                    $cart_total = $product['line_total'];
-                    // $price = $product['line_total']; 
-                }
-                if (isset($product_id)) {
-                    $product = wc_get_product($product_id);
-                    if ($product->is_type('variable')) {
-                        $variations = $product->get_available_variations();
-                        $date = new DateTime();
-                        $date = $date->format('Y-m-d');
-                        foreach ($variations as $key => $variation) {
-                            if ($variation['attributes']['attribute_payments'] === $value) {
-                                ?>
-                                                                                <table class="payment-parts-table mt-5">
-                                                                                    <tr>
-                                                                                        <th class="payment-parts-table-header">Payment</th>
-                                                                                        <th class="payment-parts-table-header">Next date payment</th>
-                                                                                        <th class="payment-parts-table-header">Amount</th>
-                                                                                    </tr>
-                                                                                    <?php
-                                                                                    $date_calc = '';
-                                                                                    switch ($value) {
-                                                                                        case 'Annual':
-                                                                                            $date_calc = '+1 year';
-                                                                                            break;
-                                                                                        case 'Semiannual':
-                                                                                            $date_calc = '+6 months';
-                                                                                            break;
-                                                                                    }
-                                                                                    $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true);
-                                                                                    for ($i = 0; $i < $cuotes; $i++) {
-                                                                                        $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
-                                                                                        ?>
-                                                                                                                        <tr class="payment-parts-table-row">
-                                                                                                                            <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
-                                                                                                                            <td class="payment-parts-table-data">
-                                                                                                                                <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?>
-                                                                                                                            </td>
-                                                                                                                            <td class="payment-parts-table-data"><?php echo wc_price($cart_total) ?></td>
+    $cart_total = 0;
+    $product_id = null;
+    foreach ($filtered_products as $key => $product) {
+        $product_id = $product['product_id'];
+        $cart_total = $product['line_total'];
+        // $price = $product['line_total']; 
+    }
+    if (isset($product_id)) {
+        $product = wc_get_product($product_id);
+        if ($product->is_type('variable')) {
+            $variations = $product->get_available_variations();
+            $date = new DateTime();
+            $date = $date->format('Y-m-d');
+            foreach ($variations as $key => $variation) {
+                if ($variation['attributes']['attribute_payments'] === $value) {
+                    ?>
+                                                                                                                    <table class="payment-parts-table mt-5">
+                                                                                                                        <tr>
+                                                                                                                            <th class="payment-parts-table-header">Payment</th>
+                                                                                                                            <th class="payment-parts-table-header">Next date payment</th>
+                                                                                                                            <th class="payment-parts-table-header">Amount</th>
                                                                                                                         </tr>
                                                                                                                         <?php
-                                                                                    }
-                                                                                    ?>
-                                                                                    <tr>
-                                                                                        <th class="payment-parts-table-header text-end" colspan="3">Total</th>
-                                                                                    </tr>
-                                                                                    <tr class="payment-parts-table-row">
-                                                                                        <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes)) ?></td>
-                                                                                    </tr>
-                                                                                </table>
-                                                                                <?php
-                            }
-                        }
-                    }
+                                                                                                                        $date_calc = '';
+                                                                                                                        switch ($value) {
+                                                                                                                            case 'Annual':
+                                                                                                                                $date_calc = '+1 year';
+                                                                                                                                break;
+                                                                                                                            case 'Semiannual':
+                                                                                                                                $date_calc = '+6 months';
+                                                                                                                                break;
+                                                                                                                        }
+                                                                                                                        $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true);
+                                                                                                                        for ($i = 0; $i < $cuotes; $i++) {
+                                                                                                                            $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
+                                                                                                                            ?>
+                                                                                                                                                                        <tr class="payment-parts-table-row">
+                                                                                                                                                                            <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
+                                                                                                                                                                            <td class="payment-parts-table-data">
+                                                                                                                                                                                <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?>
+                                                                                                                                                                            </td>
+                                                                                                                                                                            <td class="payment-parts-table-data"><?php echo wc_price($cart_total) ?></td>
+                                                                                                                                                                        </tr>
+                                                                                                                                                                        <?php
+                                                                                                                        }
+                                                                                                                        ?>
+                                                                                                                        <tr>
+                                                                                                                            <th class="payment-parts-table-header text-end" colspan="3">Total</th>
+                                                                                                                        </tr>
+                                                                                                                        <tr class="payment-parts-table-row">
+                                                                                                                            <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes)) ?></td>
+                                                                                                                        </tr>
+                                                                                                                    </table>
+                                                                                                                    <?php
                 }
-                $html = ob_get_clean();
-                echo $html;
-                wp_die();
+            }
+        }
+    }
+    $html = ob_get_clean();
+    echo $html;
+    wp_die();
 }
 
 add_action('wp_ajax_nopriv_reload_button_schoolship', 'reload_button_schoolship');
@@ -1621,18 +1726,18 @@ function reload_button_schoolship()
     // Check if the 'name_institute' cookie is NOT set or is empty
     if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) {
         ?>
-                        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
-                            <?php if ($has_scholarship): ?>
-                                        <button id="apply-scholarship-btn" type="button" disabled>
-                                            <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
-                                        </button>
-                            <?php else: ?>
-                                        <button id="apply-scholarship-btn" type="button">
-                                            <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
-                                        </button>
-                            <?php endif; ?>
-                        </div>
-                        <?php
+                                                <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
+                                                    <?php if ($has_scholarship): ?>
+                                                                            <button id="apply-scholarship-btn" type="button" disabled>
+                                                                                <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
+                                                                            </button>
+                                                    <?php else: ?>
+                                                                            <button id="apply-scholarship-btn" type="button">
+                                                                                <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
+                                                                            </button>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <?php
     }
 
     $html = ob_get_clean();
@@ -2979,9 +3084,9 @@ function customer_pending_orders($user_id = null)
     // Argumentos para buscar órdenes del cliente.
     $args = array(
         'customer_id' => $user_id,
-        'status'      => array('pending', 'on-hold'),
-        'limit'       => 1, // Solo necesitamos saber si existe al menos 1 orden.
-        'return'      => 'ids', // Es más eficiente obtener solo los IDs.
+        'status' => array('pending', 'on-hold'),
+        'limit' => 1, // Solo necesitamos saber si existe al menos 1 orden.
+        'return' => 'ids', // Es más eficiente obtener solo los IDs.
     );
 
     // Obtener las órdenes que coincidan.
