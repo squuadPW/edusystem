@@ -1533,7 +1533,6 @@ function reload_payment_table()
 add_action('wp_ajax_nopriv_reload_button_schoolship', 'reload_button_schoolship');
 add_action('wp_ajax_reload_button_schoolship', 'reload_button_schoolship');
 function reload_button_schoolship() {
-
     ob_start();
     global $woocommerce;
     $has_scholarship = false;
@@ -1547,7 +1546,7 @@ function reload_button_schoolship() {
     }
 
     // Check if the 'name_institute' cookie is NOT set or is empty
-    // if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) {
+    if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) {
         ?>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
             <?php if ($has_scholarship): ?>
@@ -1561,7 +1560,7 @@ function reload_button_schoolship() {
             <?php endif; ?>
         </div>
         <?php
-    // }
+    }
 
     $html = ob_get_clean();
     echo $html;
