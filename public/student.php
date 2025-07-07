@@ -87,6 +87,7 @@ function save_student()
         setcookie('birth_date', $birth_date, time() + 864000, '/');
         setcookie('gender', $gender, time() + 864000, '/');
         setcookie('password', $password, time() + 864000, '/');
+        setcookie('squuad_stripe_selected_client_id', 'acct_1LlEzzGhgOvtg1Az', time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);
