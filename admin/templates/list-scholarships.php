@@ -96,7 +96,7 @@
 			</div>
 			<div class="modal-body" style="padding:10px;">
 				<input type="hidden" name="student_id" id="student_id">
-				<div class="form-group">
+				<div class="form-group search-student-select2">
 					<label for="hc"><b><?= __('Search student', 'edusystem'); ?></b></label><br>
 					<select class="js-example-basic" name="student_id"></select>
 				</div>
