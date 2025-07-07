@@ -8,6 +8,42 @@
             return $product['product_id'] != $id;
         });
 
+        $cupones = $woocommerce->cart->get_coupons();
+        var_dump($cupones);
+        /* if (!empty($cupones)) {
+            foreach ( $cupones as $codigo => $cupon ) {
+                // Obtener todas las propiedades del cupón
+                $cupon_data = array(
+                    'codigo' => $cupon->get_code(),
+                    'monto' => $cupon->get_amount(),
+                    'tipo_descuento' => $cupon->get_discount_type(),
+                    'descripcion' => $cupon->get_description(),
+                    'fecha_expiracion' => $cupon->get_date_expires() ? $cupon->get_date_expires()->date('Y-m-d H:i:s') : 'No expira',
+                    'fecha_creacion' => $cupon->get_date_created()->date('Y-m-d H:i:s'),
+                    'uso_individual' => $cupon->get_individual_use(),
+                    'limite_uso' => $cupon->get_usage_limit(),
+                    'usos_actuales' => $cupon->get_usage_count(),
+                    'limite_por_usuario' => $cupon->get_usage_limit_per_user(),
+                    'productos_aplicables' => $cupon->get_product_ids(),
+                    'productos_excluidos' => $cupon->get_excluded_product_ids(),
+                    'categorias_aplicables' => $cupon->get_product_categories(),
+                    'categorias_excluidas' => $cupon->get_excluded_product_categories(),
+                    'importe_minimo' => $cupon->get_minimum_amount(),
+                    'importe_maximo' => $cupon->get_maximum_amount(),
+                    'correos_restrictivos' => $cupon->get_email_restrictions(),
+                    'excluir_ofertas' => $cupon->get_exclude_sale_items(),
+                    'descuento_excluyendo_impuestos' => $cupon->get_discount_tax(),
+                    'restricciones' => array(
+                        'aplica_a_productos' => $cupon->is_valid_for_product($producto_a_validar, $valores),
+                        'aplica_a_carrito' => $cupon->is_valid_for_cart(),
+                    ),
+                    'metodos_disponibles' => get_class_methods($cupon)
+                );
+                
+                $cupones_info[$codigo] = $cupon_data;
+            }
+        } */
+
         foreach ($filtered_products as $key => $product) {
 
             if( $product['variation_id'] ) { 
