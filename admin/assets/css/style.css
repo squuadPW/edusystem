@@ -1340,8 +1340,7 @@ h2 {
   overflow: hidden;
 }
 
-@media screen and (min-width: 783px) {
-  /* Tablet y Escritorio */
+@media screen and (min-width: 783px) { /* Tablet y Escritorio */
   #toplevel_page_logo_based_menu {
     margin: 5px !important; /* Ajusta para tablet */
     padding: 0px !important; /* Ajusta para tablet */
@@ -1349,8 +1348,7 @@ h2 {
     width: 70% !important; /* Ajusta para tablet */
   }
 }
-@media screen and (min-width: 992px) {
-  /* Escritorio grande */
+@media screen and (min-width: 992px) { /* Escritorio grande */
   #toplevel_page_logo_based_menu {
     margin: 10px !important; /* Ajusta para escritorio */
     padding: 10px !important; /* Ajusta para escritorio */
@@ -1421,6 +1419,6 @@ a.toplevel_page_logo_based_menu {
   display: block; /* Elimina espacio extra debajo de la imagen */
 }
 
-.search-student-select2 .select2-container {
-  z-index: 100000 !important;
+.select2-container {
+  z-index: 99999 !important;
 }/*# sourceMappingURL=style.css.map */

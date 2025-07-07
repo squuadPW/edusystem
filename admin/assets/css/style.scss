@@ -1450,41 +1450,39 @@ h2 {
 }
 
 #toplevel_page_logo_based_menu {
-  /* ESTILOS BASE PARA MÓVILES (O PANTALLAS PEQUEÑAS) */
-  background-image: var(--admin-logo-url);
-  background-repeat: no-repeat;
-  background-color: #ffffff;
-  background-position: center;
-  background-size: contain;
-  border-radius: 10px; /* Radio por defecto para móviles */
-  margin: 10px !important; /* Margen para móviles */
-  width: 90% !important; /* Ancho para móviles */
-  padding: 0px !important; /* Podría ser un valor base para móviles */
-  min-height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+    /* ESTILOS BASE PARA MÓVILES (O PANTALLAS PEQUEÑAS) */
+    background-image: var(--admin-logo-url);
+    background-repeat: no-repeat;
+    background-color: #ffffff;
+    background-position: center;
+    background-size: contain; 
+    border-radius: 10px; /* Radio por defecto para móviles */
+    margin: 10px !important; /* Margen para móviles */
+    width: 90% !important; /* Ancho para móviles */
+    padding: 0px !important; /* Podría ser un valor base para móviles */
+    min-height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
-@media screen and (min-width: 783px) {
-  /* Tablet y Escritorio */
-  #toplevel_page_logo_based_menu {
-    margin: 5px !important; /* Ajusta para tablet */
-    padding: 0px !important; /* Ajusta para tablet */
-    border-radius: 6px; /* Ajusta para tablet */
-    width: 70% !important; /* Ajusta para tablet */
-  }
+@media screen and (min-width: 783px) { /* Tablet y Escritorio */
+    #toplevel_page_logo_based_menu {
+        margin: 5px !important; /* Ajusta para tablet */
+        padding: 0px !important; /* Ajusta para tablet */
+        border-radius: 6px; /* Ajusta para tablet */
+        width: 70% !important; /* Ajusta para tablet */
+    }
 }
 
-@media screen and (min-width: 992px) {
-  /* Escritorio grande */
-  #toplevel_page_logo_based_menu {
-    margin: 10px !important; /* Ajusta para escritorio */
-    padding: 10px !important; /* Ajusta para escritorio */
-    border-radius: 10px; /* Ajusta para escritorio */
-    width: auto !important; /* O un ancho fijo si lo necesitas en desktop */
-  }
+@media screen and (min-width: 992px) { /* Escritorio grande */
+    #toplevel_page_logo_based_menu {
+        margin: 10px !important; /* Ajusta para escritorio */
+        padding: 10px !important; /* Ajusta para escritorio */
+        border-radius: 10px; /* Ajusta para escritorio */
+        width: auto !important; /* O un ancho fijo si lo necesitas en desktop */
+    }
 }
 
 /* Hide unnecessary menu items */
@@ -1550,8 +1548,6 @@ a.toplevel_page_logo_based_menu {
   display: block; /* Elimina espacio extra debajo de la imagen */
 }
 
-.search-student-select2 {
-  .select2-container {
-    z-index: 100000 !important;
-  }
+.select2-container {
+  z-index: 99999 !important;
 }
