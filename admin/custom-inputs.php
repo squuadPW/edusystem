@@ -40,6 +40,7 @@ function add_admin_custom_input_content()
             $input_id = sanitize_text_field($_POST['input_id']);
             $input_type = sanitize_text_field($_POST['input_type']);
             $input_required = sanitize_text_field($_POST['input_required']);
+            $input_is_metadata = sanitize_text_field($_POST['input_is_metadata']);
             $input_options = sanitize_text_field($_POST['input_options']);
 
             if (isset($custom_input_id) && !empty($custom_input_id)) {
@@ -51,6 +52,7 @@ function add_admin_custom_input_content()
                     'input_id' => $input_id,
                     'input_type' => $input_type,
                     'input_required' => $input_required,
+                    'input_is_metadata' => $input_is_metadata,
                     'input_options' => $input_options,
                 ], ['id' => $custom_input_id]);
             } else {
@@ -62,6 +64,7 @@ function add_admin_custom_input_content()
                     'input_id' => $input_id,
                     'input_type' => $input_type,
                     'input_required' => $input_required,
+                    'input_is_metadata' => $input_is_metadata,
                     'input_options' => $input_options,
                 ]);
             }

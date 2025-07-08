@@ -78,6 +78,7 @@ function create_tables()
         `input_id` TEXT NOT NULL,
         `input_type` TEXT NOT NULL,
         `input_required` BOOLEAN NOT NULL DEFAULT TRUE,
+        `input_is_metadata` BOOLEAN NOT NULL DEFAULT FALSE,
         `input_options` TEXT NOT NULL,
         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"

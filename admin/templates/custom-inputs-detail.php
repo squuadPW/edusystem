@@ -87,6 +87,14 @@
                                         </select>
                                     </div>
 
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label for="input_is_metadata"><b><?= __('Is metadata?', 'edusystem'); ?></b></label><br>
+                                        <select name="input_is_metadata">
+                                            <option value="0" <?= (isset($custom_input->input_is_metadata) && $custom_input->input_is_metadata == '0') ? 'selected' : ''; ?>>No</option>
+                                            <option value="1" <?= (isset($custom_input->input_is_metadata) && $custom_input->input_is_metadata == '1') ? 'selected' : ''; ?>>Yes</option>
+                                        </select>
+                                    </div>
+
                                     <div style="font-weight:400;" class="space-offer" id="input_options_field">
                                         <label for="input_options"><b><?= __('Input Options (for Select and Radio)', 'edusystem'); ?></b><br><small>Comma-separated values (e.g., Option1,Option2,Option3)</small></label><br>
                                         <textarea name="input_options" id="input_options_textarea" rows="4" cols="50"><?= isset($custom_input->input_options) ? esc_textarea($custom_input->input_options) : '' ?></textarea>

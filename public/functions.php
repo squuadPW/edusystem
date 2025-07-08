@@ -3135,11 +3135,16 @@ function custom_inputs_edusystem($atts) {
     // 'page_slug' es el nombre del atributo que esperarás en el shortcode.
     // 'default_page' es el valor que tendrá si el usuario no especifica 'page_slug'.
     $a = shortcode_atts(array(
-        'page_slug' => 'default_page', // Puedes cambiar 'default_page' por el slug de página que desees por defecto
+        'page_slug' => 'default_page',
+        'use_form' => 0,
+        'action' => ''
     ), $atts);
 
     // Ahora puedes acceder al valor del atributo así: $a['page_slug']
     $page_to_get = $a['page_slug'];
+    $use_form = $a['use_form'] ?? 0;
+    $action_loaded = $a['action'];
+    $action = home_url('?action='.$action_loaded);
 
     // Llama a tu función para obtener los custom inputs filtrados por el atributo
     $custom_inputs_list = get_custom_inputs_page($page_to_get);
