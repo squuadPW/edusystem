@@ -25,7 +25,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show if input_mode is 'select' OR if input_mode is 'input' and input_type is 'radio' or 'checkbox'
     if (
       selectedMode === "select" ||
-      (selectedMode === "input" && selectedType === "radio")
+      (selectedMode === "input" &&
+        (selectedType === "radio" || selectedType === "checkbox"))
     ) {
       inputOptionsField.style.display = "block";
     } else {

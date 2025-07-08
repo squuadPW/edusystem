@@ -3129,3 +3129,38 @@ function upload_file_attchment_edusystem($upload_data, $document_name)
     wp_update_attachment_metadata($attach_id, $attach_data);
     return $attach_id;
 }
+
+function custom_inputs_edusystem($atts) {
+    // Define los atributos por defecto.
+    // 'page_slug' es el nombre del atributo que esperarás en el shortcode.
+    // 'default_page' es el valor que tendrá si el usuario no especifica 'page_slug'.
+    $a = shortcode_atts(array(
+        'page_slug' => 'default_page', // Puedes cambiar 'default_page' por el slug de página que desees por defecto
+    ), $atts);
+
+    // Ahora puedes acceder al valor del atributo así: $a['page_slug']
+    $page_to_get = $a['page_slug'];
+
+    // Llama a tu función para obtener los custom inputs filtrados por el atributo
+    $custom_inputs_list = get_custom_inputs_page($page_to_get);
+
+    ob_start(); // Inicia el almacenamiento en búfer de salida para capturar el HTML
+
+    // Incluye tu plantilla. El contenido de la plantilla ahora tendrá acceso a $custom_inputs_list
+    // Asumo que 'templates/custom-inputs.php' es donde generas el HTML de los inputs.
+    // Necesitas ajustar el path si no es correcto.
+    // Ojo: Si 'templates/custom-inputs.php' es el archivo que refactorizamos con la lógica de los inputs dinámicos,
+    // entonces su nombre correcto debería ser 'custom-inputs-form-elements.php' o similar para evitar confusiones
+    // con el archivo custom-inputs.php que es el controlador.
+    // Usaré un placeholder para la ruta, asegúrate de que sea la correcta.
+    $template_path = plugin_dir_path(__FILE__) . 'templates/custom-inputs-form-elements.php'; // RUTA AJUSTADA
+    if (file_exists($template_path)) {
+        include($template_path);
+    } else {
+        echo '<p style="color:red;">Error: Custom inputs template not found at ' . esc_html($template_path) . '</p>';
+    }
+
+    return ob_get_clean(); // Devuelve el HTML capturado
+}
+
+add_shortcode('custom_inputs_edusystem', 'custom_inputs_edusystem');

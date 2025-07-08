@@ -272,3 +272,12 @@ function get_custom_inputs_details($custom_input_id)
     $custom_input = $wpdb->get_row("SELECT * FROM {$table_custom_inputs} WHERE id={$custom_input_id}");
     return $custom_input;
 }
+
+function get_custom_inputs_page($page)
+{
+    global $wpdb;
+    $table_custom_inputs = $wpdb->prefix . 'custom_inputs';
+
+    $custom_inputs = $wpdb->get_results("SELECT * FROM {$table_custom_inputs} WHERE page='{$page}'");
+    return $custom_inputs;
+}
