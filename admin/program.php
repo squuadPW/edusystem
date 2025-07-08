@@ -244,7 +244,7 @@ function add_admin_form_program_content()
                     $price = $rule['price'];
                     $frequency_value = $rule['frequency_value'];
                     $type_frequency = $rule['type_frequency'];
-                    $position = $rule['position'];
+                    $position = $rule['position'] ?? 0;
 
                     // crea o actualiza el sub programa
                     if ( !empty( $rule_id ) ) {

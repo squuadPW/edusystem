@@ -1004,7 +1004,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
     }
 
     // 2. Procesa los pagos del programa (AES PROGRAM).
-    process_program_payments($order, $order_id);
+    // process_program_payments($order, $order_id);
 
     // 3. Procesa la cuota de inscripción y las acciones asociadas.
     process_inscription_fee($order, $order_id);
@@ -1794,20 +1794,20 @@ function reload_button_schoolship() {
     }
 
     // Check if the 'name_institute' cookie is NOT set or is empty
-/* if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) { */
-?>
-<div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
-<?php if ($has_scholarship): ?>
-<button id="apply-scholarship-btn" type="button" disabled>
-<?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
-</button>
-<?php else: ?>
-<button id="apply-scholarship-btn" type="button">
-<?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
-</button>
-<?php endif; ?>
-</div>
-<?php
+    /* if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) { */
+    ?>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
+        <?php if ($has_scholarship): ?>
+        <button id="apply-scholarship-btn" type="button" disabled>
+        <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
+        </button>
+        <?php else: ?>
+        <button id="apply-scholarship-btn" type="button">
+        <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
+        </button>
+        <?php endif; ?>
+        </div>
+    <?php
     /* } */
 
     $html = ob_get_clean();
