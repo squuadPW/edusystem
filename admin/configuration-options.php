@@ -108,7 +108,7 @@ function add_admin_form_configuration_options_content()
             if (!empty($file_temp_logo['tmp_name'])) {
                 $upload_data = wp_handle_upload($file_temp_logo, array('test_form' => FALSE));
                 if ($upload_data && !is_wp_error($upload_data)) {
-                    $logo_attach = upload_file_attchment($upload_data, 'LOGO ADMIN');
+                    $logo_attach = upload_file_attchment_edusystem($upload_data, 'LOGO ADMIN');
                 }
             }
 
@@ -125,7 +125,7 @@ function add_admin_form_configuration_options_content()
             if (!empty($file_temp_logo_login['tmp_name'])) {
                 $upload_data = wp_handle_upload($file_temp_logo_login, array('test_form' => FALSE));
                 if ($upload_data && !is_wp_error($upload_data)) {
-                    $logo_attach_login = upload_file_attchment($upload_data, 'LOGO ADMIN');
+                    $logo_attach_login = upload_file_attchment_edusystem($upload_data, 'LOGO ADMIN');
                 }
             }
 
