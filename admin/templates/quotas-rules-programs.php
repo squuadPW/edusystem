@@ -119,6 +119,16 @@
                                                         
                                                     </div>
 
+                                                    <div class="space-offer">
+
+                                                        <label for="rules[<?= $i ?>][position]">
+                                                            <b><?= __('Position', 'edusystem'); ?></b>
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+
+                                                        <input type="number" name="rules[<?= $i ?>][position]" value="<?= $rule['position'] ?? 0 ?>" oninput="validate_input(this, '^[0-9]*$')" required>
+                                                    </div>
+
                                                 </div>
 
                                                 <div class="container-button" >

@@ -1,9 +1,33 @@
 document.addEventListener( 'DOMContentLoaded', ()=>{
 
     options_quotas = document.querySelectorAll('.options-quotas .option-quota');
+
+    /**
+     * Maneja la interacción del usuario con las opciones de cuotas en la interfaz.
+     * 
+     * Este bloque de código itera sobre cada opción de cuota y agrega un evento de clic
+     * que permite al usuario seleccionar una opción de cuota específica. Al hacer clic en
+     * una opción, se obtienen los datos de la regla correspondiente y se genera la tabla
+     * de pagos utilizando la función `payment_table`. Además, se actualiza el precio del
+     * producto en el carrito de WooCommerce según la regla seleccionada, llamando a la
+     * función `update_price_product_cart_quota_rule_js`.
+     * 
+     * @param {NodeList} options_quotas - Lista de opciones de cuotas en la interfaz.
+     * 
+     * @return {void} No retorna ningún valor.
+     */
     options_quotas.forEach( option_quota => {
 
         option_quota.addEventListener('click', function() {
+
+            // Eliminar la clase 'checked' de todas las opciones
+            options_quotas.forEach(opt => {
+                opt.querySelector('.option-rule').removeAttribute('checked'); 
+            });
+
+            // Añadir la clase 'checked' a la opción seleccionada
+            option_quota.querySelector('.option-rule').setAttribute('checked',true);
+            
             rule_id = option_quota.getAttribute("data-id");
             rule = document.getElementById(`data-rule-${rule_id}`)?.value;
             if( rule ) {
@@ -24,6 +48,23 @@ document.addEventListener( 'DOMContentLoaded', ()=>{
 
 });
 
+/**
+ * Crea y muestra una tabla de pagos basada en los datos de una regla específica.
+ * La tabla incluye información sobre las cuotas, fechas de pago y montos.
+ * 
+ * @param {Object} rule_data - Objeto que contiene los datos de la regla.
+ * @param {number} rule_data.id - Identificador único de la regla.
+ * @param {number} rule_data.quotas_quantity - Cantidad de cuotas a mostrar.
+ * @param {string} rule_data.type_frequency - Tipo de frecuencia de los pagos (día, mes, año).
+ * @param {number} rule_data.frequency_value - Valor de la frecuencia de los pagos.
+ * @param {number} rule_data.quote_price - Precio de cada cuota.
+ * @param {number} rule_data.initial_price - Precio inicial de la regla.
+ * 
+ * @return {void} No retorna ningún valor.
+ * 
+ * La función genera una tabla de pagos que muestra las cuotas de una regla específica,
+ * calculando las fechas y montos de cada cuota, y utilizando el precio inicial como el primer pago si está disponible.
+ */
 function payment_table( rule_data ) {
 
     table_payment = document.getElementById('table-payment');
@@ -49,7 +90,7 @@ function payment_table( rule_data ) {
         
         // fecha para formato
         const opcions_date = { year: 'numeric', month: 'long', day: 'numeric' };
-        const discount_value = document.getElementById('discount_value').value ?? 0;
+        const discount_value = parseFloat( document.getElementById('discount_value').value ?? 0 );
 
         // Crear filas de datos
         total = 0;
@@ -61,8 +102,8 @@ function payment_table( rule_data ) {
             initial_price = parseFloat( rule_data.initial_price );
 
             if( discount_value > 0 ){
-                quote_price = quote_price - ( ( quote_price * discount_value) /100 );
-                initial_price = initial_price - ( ( initial_price * discount_value) /100 );
+                quote_price = quote_price - ( ( quote_price * discount_value ) / 100 );
+                initial_price = initial_price - ( ( initial_price * discount_value ) / 100 );
             }
 
             const row = document.createElement('tr');
@@ -94,7 +135,7 @@ function payment_table( rule_data ) {
 
                 const amount_cell = document.createElement('td');
                 amount_cell.className = 'payment-parts-table-data';
-                amount_cell.textContent = `$${parseInt(quote_price).toFixed(2)}`;
+                amount_cell.textContent = `$${parseFloat(quote_price).toFixed(2)}`;
                 row.appendChild(amount_cell);
 
             // Añadir fila a la tabla
@@ -117,7 +158,7 @@ function payment_table( rule_data ) {
             const total_payment_cell = document.createElement('td');
             total_payment_cell.className = 'payment-parts-table-data text-end';
             total_payment_cell.colSpan = 3;
-            total_payment_cell.textContent = `$${(total).toFixed(2)}`;
+            total_payment_cell.textContent = `$${parseFloat(total).toFixed(2)}`;
             total_payment_row.appendChild(total_payment_cell);
         table.appendChild(total_payment_row);
 
@@ -125,6 +166,19 @@ function payment_table( rule_data ) {
     table_payment.appendChild(table);
 } 
 
+/**
+ * Actualiza el precio de un producto en el carrito de WooCommerce
+ * de acuerdo con las reglas de cotización actuales.
+ * 
+ * @param {number} product_id - Identificador del producto cuyo precio se actualizará.
+ * @param {number} rule_id - Identificador de la regla de cotización que se aplicará.
+ * 
+ * @return {void} No retorna ningún valor.
+ * 
+ * La función envía una solicitud AJAX para actualizar el precio del producto
+ * en el carrito y, si la actualización es exitosa, refresca el carrito
+ * para reflejar el nuevo precio.
+ */
 function update_price_product_cart_quota_rule_js ( product_id, rule_id ) {
 
     const formData = new FormData();
@@ -142,18 +196,27 @@ function update_price_product_cart_quota_rule_js ( product_id, rule_id ) {
             console.log('Error:', data.data);
         }
 
-        refreshCart();
+        refresh_wc_cart();
     })
     .catch(error => {
         console.log('Error en la petición:', error);
     });
 }
 
-function refreshCart() {
-    // Método 1: Disparar evento nativo de WooCommerce
+/**
+ * Recarga el carrito de WooCommerce actualizando los fragmentos y los totales.
+ * 
+ * @return {void} No retorna ningún valor.
+ * 
+ * La función dispara un evento para refrescar el carrito, realiza una solicitud AJAX
+ * para obtener los fragmentos actualizados y reemplaza los elementos del DOM correspondientes.
+ * También puede forzar la recarga de los totales en la página de pago.
+ */
+function refresh_wc_cart() {
+    // Disparar evento nativo de WooCommerce
     jQuery(document.body).trigger('wc_fragment_refresh updated_wc_div');
     
-    // Método 2: Actualizar fragmentos del carrito (alternativa)
+    // Actualizar fragmentos del carrito 
     jQuery.get(wc_cart_fragments_params.wc_ajax_url.toString()
         .replace('%%endpoint%%', 'get_refreshed_fragments'), function(data) {
         if (data && data.fragments) {
@@ -163,7 +226,7 @@ function refreshCart() {
         }
     });
     
-    // Método 3: Forzar recarga de los totales (opcional)
+    // Forzar recarga de los totales (opcional)
     jQuery('body').trigger('update_checkout');
 }
 

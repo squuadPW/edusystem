@@ -34,7 +34,7 @@
 
                                     <div style="font-weight:400; text-align: center; margin-bottom: 10px;">
                                         <div>
-                                            <input style="width: auto !important;" type="checkbox" name="is_active" id="is_active" <?= ($program->is_active == 1) ? 'checked' : ''; ?>>
+                                            <input style="width: auto !important;" type="checkbox" name="is_active" id="is_active" <?= ( !isset( $program->is_active ) || $program->is_active == 1 ) ? 'checked' : ''; ?>>
                                             <label for="is_active"><b><?= __('Active', 'edusystem'); ?></b></label>
                                         </div>
                                     </div>

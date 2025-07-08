@@ -88,29 +88,29 @@
 
                 <div class="radio-group options-quotas">
 
-                    <?php foreach ( $quotas_rules AS $rule ):?>
+                    <?php
+                        $discount_value = 0;
+                        // valida el precio del progrma con los cupones
+                        if ( !empty($cupones) ) {
 
-                        <?php
-                            $discount_value = 0;
-                            // valida el precio del progrma con los cupones
-                            if ( !empty($cupones) ) {
-
-                                foreach ( $cupones as $codigo => $cupon ) {
-                                    if( $cupon->is_valid_for_product($product) && $cupon->get_discount_type() == 'percent' ) {
-                                        $discount_value = $cupon->get_amount();
-                                    }
+                            foreach ( $cupones as $codigo => $cupon ) {
+                                if( $cupon->is_valid_for_product($product) && $cupon->get_discount_type() == 'percent' ) {
+                                    $discount_value = $cupon->get_amount();
                                 }
                             }
+                        }
 
-                        ?>
+                    ?>
 
-                        <input type="hidden" id="discount_value" value="<?= $discount_value ?? 0 ?>" />
+                    <input type="hidden" id="discount_value" value="<?= $discount_value ?? 0 ?>" />
+
+                    <?php foreach ( $quotas_rules AS $rule ):?>
 
                         <div id="option-rule-<?=$rule->id?>" class="radio-input option-quota" data-id="<?= $rule->id ?>" >
                             
-                            <input id="data-rule-<?= $rule->id ?>" checked class="form-check-input data-rule" type="radio" name="data_rule" value="<?= htmlspecialchars(json_encode($rule)) ?>">
+                            <input id="data-rule-<?= $rule->id ?>" class="form-check-input data-rule" type="radio" name="data_rule" value="<?= htmlspecialchars(json_encode($rule)) ?>">
 
-                            <input class="form-check-input" type="radio"  name="option" value="<?= $rule->id ?>">
+                            <input class="form-check-input option-rule" type="radio" name="quota_rule" value="<?= $rule->id ?>">
                             
                             <label class="form-check-label" for="<?= $rule->name ?>" >
                                 <?= $rule->name ?> 

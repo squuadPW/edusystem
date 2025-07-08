@@ -36,7 +36,6 @@ function add_admin_form_program_content()
             $subprograms_post = $_POST['subprogram'] ?? '';
 
             $subprograms = [];// array para guardas los subprogramas
-
             
             // verifica y crea en caso de necesitar una categoria llamada programa;"
             $category_id = 0;
@@ -191,14 +190,20 @@ function add_admin_form_program_content()
                     'description' => $description,
                     'total_price' => $total_price,
                     'is_active' => $is_active,
-                    'subprogram' => json_encode($subprograms),
+                    'subprogram' => json_encode($subprograms ?? '{}' ) ?? null,
                 ], ['id' => $program_id] );
 
             } else {
 
-                //pone indices a los subprogramas que serviran como ids
-                $indices = range(1, count($subprograms));
-                $subprograms = array_combine($indices, $subprograms);
+                if (!empty($subprograms)) {
+                    //pone indices a los subprogramas que serviran como ids
+                    $index = range(1, count($subprograms));
+                    $subprograms = array_combine($index, $subprograms);
+
+                    $subprogram = json_encode($subprograms ?? '{}') ?? null;
+                } else {
+                    $subprogram = null;
+                }
 
                 $wpdb->insert($table_programs, [
                     'identificator' => $identificator,
@@ -207,7 +212,7 @@ function add_admin_form_program_content()
                     'total_price' => $total_price,
                     'is_active' => $is_active,
                     'product_id' => $program_product_id,
-                    'subprogram' => json_encode($subprograms),
+                    'subprogram' => $subprogram,
                 ]);
 
                 $program_id = $wpdb->insert_id;
@@ -239,6 +244,7 @@ function add_admin_form_program_content()
                     $price = $rule['price'];
                     $frequency_value = $rule['frequency_value'];
                     $type_frequency = $rule['type_frequency'];
+                    $position = $rule['position'];
 
                     // crea o actualiza el sub programa
                     if ( !empty( $rule_id ) ) {
@@ -251,6 +257,7 @@ function add_admin_form_program_content()
                             'quote_price' => $price,
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
+                            'position' => $position,
                         ], ['id' => $rule_id] );
 
                     } else {
@@ -264,6 +271,7 @@ function add_admin_form_program_content()
                             'program_id' => $identificator,
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
+                            'position' => $position,
                         ]);
                     }
                 }
@@ -622,7 +630,19 @@ function get_subprogram_by_identificador_program( $identificador ) {
     return json_decode( $subprogram, true ) ?? [];
 }
 
-
+/**
+ * Verifica si un identificador de programa ya existe en la base de datos.
+ * Esta función se utiliza para comprobar la disponibilidad de un identificador
+ * antes de que se realice una acción que dependa de su unicidad.
+ * 
+ * @return void
+ * 
+ * @throws WP_Error Si el identificador no es proporcionado o está vacío.
+ * 
+ * La función envía una respuesta JSON indicando si el identificador ya está en uso
+ * o si está disponible. La respuesta incluye un mensaje que puede ser utilizado
+ * para informar al usuario sobre el estado del identificador.
+ */
 add_action('wp_ajax_check_program_identificator_exists', 'check_program_identificator_exists');
 add_action('wp_ajax_nopriv_check_program_identificator_exists', 'check_program_identificator_exists');
 function check_program_identificator_exists() {
