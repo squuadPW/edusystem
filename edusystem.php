@@ -65,6 +65,24 @@ function create_tables()
   $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes';
   $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
   $table_managers_by_alliance = $wpdb->prefix . 'managers_by_alliances';
+  $table_custom_inputs = $wpdb->prefix . 'custom_inputs';
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '{$table_custom_inputs}'") != $table_custom_inputs) {
+    dbDelta(
+      "CREATE TABLE " . $table_custom_inputs . " (
+        `id` INT(11) NOT NULL AUTO_INCREMENT,
+        `label` TEXT NOT NULL,
+        `page` TEXT NOT NULL,
+        `input_mode` TEXT NOT NULL,
+        `input_name` TEXT NOT NULL,
+        `input_id` TEXT NOT NULL,
+        `input_type` TEXT NOT NULL,
+        `input_required` BOOLEAN NOT NULL DEFAULT TRUE,
+        `input_options` TEXT NOT NULL,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
+  }
 
   if ($wpdb->get_var("SHOW TABLES LIKE '{$table_managers_by_alliance}'") != $table_managers_by_alliance) {
     dbDelta(

@@ -37,6 +37,7 @@ require plugin_dir_path(__FILE__) . 'feed.php';
 require plugin_dir_path(__FILE__) . 'auto-inscription.php';
 require plugin_dir_path(__FILE__) . 'templates-emails.php';
 require plugin_dir_path(__FILE__) . 'expenses-payroll.php';
+require plugin_dir_path(__FILE__) . 'custom-inputs.php';
 
 function admin_form_plugin_scripts()
 {
@@ -138,6 +139,10 @@ function aes_scripts_admin()
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_send_notification_content') {
         wp_enqueue_script('send-notification', plugins_url('edusystem') . '/admin/assets/js/send-notification.js', array('jquery'), $version, true);
+    }
+
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_custom_input_content') {
+        wp_enqueue_script('custom-inputs', plugins_url('edusystem') . '/admin/assets/js/custom-inputs.js', array('jquery'), $version, true);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_feed_content') {
@@ -477,6 +482,7 @@ function add_custom_admin_page()
         );
         add_submenu_page('add_admin_form_settings_content', __('Settings', 'edusystem'), __('Settings', 'edusystem'), 'manager_configuration_options_aes', 'add_admin_form_configuration_options_content', 'add_admin_form_configuration_options_content', 10);
         add_submenu_page('add_admin_form_settings_content', __('Departments', 'edusystem'), __('Departments', 'edusystem'), 'manager_departments_aes', 'add_admin_department_content', 'list_admin_form_department_content', 10);
+        add_submenu_page('add_admin_form_settings_content', __('Custom inputs', 'edusystem'), __('Custom inputs', 'edusystem'), 'manager_custom_inputs_aes', 'add_admin_custom_input_content', 'add_admin_custom_input_content', 10);
         remove_submenu_page('add_admin_form_settings_content', 'add_admin_form_settings_content');
     }
 
@@ -494,6 +500,7 @@ function add_cap_to_administrator()
     $role = get_role('administrator');
     $role->add_cap('manage_administrator_aes');
     $role->add_cap('manager_departments_aes');
+    $role->add_cap('manager_custom_inputs_aes');
     $role->add_cap('manager_scholarship_aes');
     $role->add_cap('manager_availables_scholarship_aes');
     $role->add_cap('manager_academic_periods_aes');
