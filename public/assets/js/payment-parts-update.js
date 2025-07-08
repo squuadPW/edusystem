@@ -9,10 +9,18 @@ document.addEventListener( 'DOMContentLoaded', ()=>{
             if( rule ) {
                 rule_data = JSON.parse( rule );
                 payment_table( rule_data ); 
-                update_price_product_cart_quota_rule_js ( 551,rule_id );
+
+                table_payment = document.getElementById('table-payment');
+                product_id = table_payment.getAttribute("data-product_id");
+                update_price_product_cart_quota_rule_js ( product_id, rule_id );
             }
         });
     });
+
+    // Marcar automáticamente la primera opción de cuotas
+    if (options_quotas.length > 0) {
+        options_quotas[0].click(); // Simula un clic en la primera opción
+    }
 
 });
 
@@ -25,6 +33,7 @@ function payment_table( rule_data ) {
 
     // Crear tabla
     const table = document.createElement('table');
+    table.setAttribute('data-rule_id', rule_data.id);
     table.className = 'payment-parts-table mt-5';
             
         // Crear fila de encabezado
@@ -40,6 +49,7 @@ function payment_table( rule_data ) {
         
         // fecha para formato
         const opcions_date = { year: 'numeric', month: 'long', day: 'numeric' };
+        const discount_value = document.getElementById('discount_value').value ?? 0;
 
         // Crear filas de datos
         total = 0;
@@ -48,7 +58,12 @@ function payment_table( rule_data ) {
             type_frequency = rule_data.type_frequency;
             frequency_value = parseInt(rule_data.frequency_value);
             quote_price = parseFloat(rule_data.quote_price);
-            initial_price = parseFloat( rule_data.initial_price )
+            initial_price = parseFloat( rule_data.initial_price );
+
+            if( discount_value > 0 ){
+                quote_price = quote_price - ( ( quote_price * discount_value) /100 );
+                initial_price = initial_price - ( ( initial_price * discount_value) /100 );
+            }
 
             const row = document.createElement('tr');
 
@@ -57,7 +72,6 @@ function payment_table( rule_data ) {
                 payment_cell.className = 'payment-parts-table-data';
                 payment_cell.textContent = (i + 1).toString();
                 row.appendChild(payment_cell);
-
 
                 // Calcular la fecha del próximo pago
                 const date = new Date();
@@ -269,19 +283,40 @@ function refreshCart() {
 
         // Add the applyScholarship function
         function applyScholarship() {
-        // Apply the scholarship discount
+
+            table_payment = document.getElementById('table-payment');
+            product_id = table_payment.getAttribute("data-product_id");
+
+            // Obtener el valor del atributo 'data-producto_id' de '#table-payment'
+            // var product_id = $('#table-payment').data('producto_id');
+
+            // Apply the scholarship discount
             $.ajax({
                 type: 'POST',
                 url: ajax_object.ajax_url + '?action=apply_scholarship',
                 data: {
-                'action': 'apply_scholarship'
+                    'action': 'apply_scholarship',
+                    'product_id':product_id 
                 },
                 success: function(response) {
-                // Update the cart price
-                $('#cart_totals').html(response);
-                $(document.body).trigger('update_checkout');
+                    // Update the cart price
+                    $('#cart_totals').html(response);
+                    $(document.body).trigger('update_checkout');
+
                     //reloadTable();
                     reloadButton();
+
+                    discount_value = response.data.discount_value;
+                    if ( discount_value ) {
+
+                        $('#discount_value').val(discount_value);
+
+                        const element = $('#table-payment [data-rule_id]').first();
+                        if ( element.length ) {
+                            const rule_id = element.data('rule_id');
+                            $(`#option-rule-${rule_id}`).trigger('click');
+                        }
+                    }
                 }
             });
         }
@@ -304,7 +339,6 @@ function refreshCart() {
         }
 
         function reloadButton() {
-            console.log('hola');
             // Apply the scholarship discount
             $.ajax({
                 type: 'GET',

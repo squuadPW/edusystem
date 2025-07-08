@@ -171,6 +171,7 @@ function create_tables()
                 program_id TEXT NOT NULL, 
                 frequency_value INT NOT NULL,
                 type_frequency TEXT NOT NULL,
+                position INT NOT NULL DEFAULT 0,
                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (id)

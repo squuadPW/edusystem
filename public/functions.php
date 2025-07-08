@@ -1794,7 +1794,7 @@ function reload_button_schoolship() {
     }
 
     // Check if the 'name_institute' cookie is NOT set or is empty
-if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) {
+/* if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) { */
 ?>
 <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
 <?php if ($has_scholarship): ?>
@@ -1808,7 +1808,7 @@ if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) {
 <?php endif; ?>
 </div>
 <?php
-    }
+    /* } */
 
     $html = ob_get_clean();
     echo $html;
@@ -1817,17 +1817,40 @@ if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) {
 
 add_action('wp_ajax_nopriv_apply_scholarship', 'apply_scholarship');
 add_action('wp_ajax_apply_scholarship', 'apply_scholarship');
+function apply_scholarship() {
+    
+    $product_id = $_POST['product_id'] ?? 0;
 
-function apply_scholarship()
-{
     global $woocommerce;
     $cart = $woocommerce->cart;
 
     $coupon_code = 'Latam Scholarship';
     $cart->apply_coupon($coupon_code);
 
-    // Calculate totals
-    $woocommerce->cart->calculate_totals();
+    // Calcular totales
+    $cart->calculate_totals();
+
+    // Obtener los cupones aplicados
+    $coupons = $cart->get_coupons();
+
+    // Definir el producto a validar 
+    $discount_value = 0;    
+    $product = wc_get_product($product_id);
+    if( $product && !empty($coupons) ){
+
+        // Verificar si hay cupones aplicados
+        foreach ( $coupons as $code => $coupon ) {
+            // Validar si el cupón es aplicable al producto y si es un descuento porcentual
+            if ( $coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent' ) {
+                $discount_value += $coupon->get_amount();
+            }
+        }
+    }
+
+    // Devolver el valor neto del descuento
+    wp_send_json_success(['discount_value' => $discount_value]);
+    exit;
+
 }
 
 function woocommerce_custom_price_to_cart_item($cart_object)

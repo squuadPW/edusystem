@@ -37,6 +37,21 @@ function add_admin_form_program_content()
 
             $subprograms = [];// array para guardas los subprogramas
 
+            
+            // verifica y crea en caso de necesitar una categoria llamada programa;"
+            $category_id = 0;
+            $category = term_exists('programs', 'product_cat');
+            if ( $category ) {
+                $category_id = $category['term_id'];
+
+            } else {
+                // La categoría no existe, crearla
+                $new_category = wp_insert_term('programs', 'product_cat');
+                if ( !is_wp_error($new_category) ) {
+                    $category_id = $new_category['term_id'];// Devolver el ID de la nueva categoría creada
+                } 
+            }
+
             //crea o actualiza el producto
             if ( !empty($program_id) ) {
 
@@ -45,8 +60,7 @@ function add_admin_form_program_content()
                     'post_title' => $name,
                     'post_content' => $description,
                 ), true );
-
-
+                    
                 update_post_meta( $program_product_id, '_regular_price', $total_price );
                 update_post_meta( $program_product_id, '_price', $total_price );
 
@@ -72,6 +86,9 @@ function add_admin_form_program_content()
 
                     // guarda el stock en caso de que este activo o no
                     update_post_meta($program_product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
+
+                    // Asignar la categoría al producto
+                    wp_set_object_terms($program_product_id, $category_id, 'product_cat');
                 }
             }
 
