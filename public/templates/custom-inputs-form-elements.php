@@ -12,7 +12,10 @@ function generate_input_field($input) {
 
     $html = '';
 
-    if ($input_type === 'radio' || $input_type === 'checkbox') {
+    if ($input_type === 'hidden') {
+        // For hidden inputs, just generate the input tag without a label or surrounding div
+        $html .= '<input type="hidden" id="' . $input_id . '" name="' . $input_name . '" value="" class="formdata">';
+    } elseif ($input_type === 'radio' || $input_type === 'checkbox') {
         if (!empty($options_array) && $options_array[0] !== '') {
             foreach ($options_array as $option) {
                 $option_value = esc_attr($option);
@@ -77,9 +80,13 @@ if (!empty($custom_inputs_list)) {
         $input_mode = esc_attr($input->input_mode);
         $input_id = esc_attr($input->input_id);
         $input_required_attr = (int) $input->input_required === 1 ? 'required' : '';
+        $input_type = isset($input->input_type) ? esc_attr($input->input_type) : ''; // Get input type here as well
 
-        echo '<div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="margin-bottom: 1rem;">';
-        echo '<label for="' . $input_id . '">' . $label . (!empty($input_required_attr) ? '<span class="required">*</span>' : '') . '</label><br>';
+        // Conditionally render the surrounding div and label for non-hidden inputs
+        if ($input_type !== 'hidden') {
+            echo '<div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="margin-bottom: 1rem;">';
+            echo '<label for="' . $input_id . '">' . $label . (!empty($input_required_attr) ? '<span class="required">*</span>' : '') . '</label><br>';
+        }
 
         switch ($input_mode) {
             case 'input':
@@ -95,7 +102,11 @@ if (!empty($custom_inputs_list)) {
                 echo '<p style="color:red;">' . __('Unsupported input mode:', 'edusystem') . ' ' . esc_html($input_mode) . '</p>';
                 break;
         }
-        echo '</div>'; // Close col div
+        
+        // Close the div only for non-hidden inputs
+        if ($input_type !== 'hidden') {
+            echo '</div>'; // Close col div
+        }
     }
 }
 
