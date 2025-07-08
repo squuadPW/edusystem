@@ -171,6 +171,17 @@ function form_asp_psp()
 
 add_shortcode('form_asp_psp', 'form_asp_psp');
 
+function student_registration_form()
+{
+    $countries = get_countries();
+    $institutes = get_list_institutes_active();
+    $grades = get_grades();
+    add_action('wp_footer', 'modal_continue_checkout');
+    include(plugin_dir_path(__FILE__) . 'templates/student-registration-form-structure.php');
+}
+
+add_shortcode('student_registration_form', 'student_registration_form');
+
 function modal_continue_checkout()
 {
     include(plugin_dir_path(__FILE__) . 'templates/modal-continue-checkout.php');
