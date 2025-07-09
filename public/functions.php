@@ -589,23 +589,25 @@ function remove_my_account_links($menu_links)
     // Lógica para roles "parent" y "student"
     if (in_array('parent', $roles) || in_array('student', $roles)) {
 
-        // Agregar "Student Information"
-        $menu_links['student'] = __('Student Information', 'edusystem');
+        if (MODE != 'UNI') {
+            // Agregar "Student Information"
+            $menu_links['student'] = __('Student Information', 'edusystem');
 
-        // Agregar "Califications"
-        $menu_links['califications'] = __('Califications', 'edusystem');
+            // Agregar "Califications"
+            $menu_links['califications'] = __('Califications', 'edusystem');
 
-        if (in_array('parent', $roles)) {
-            if (get_user_meta($user_id, 'status_register', true) == 1) {
-                $menu_links['student-documents'] = __('Documents', 'edusystem');
+            if (in_array('parent', $roles)) {
+                if (get_user_meta($user_id, 'status_register', true) == 1) {
+                    $menu_links['student-documents'] = __('Documents', 'edusystem');
+                }
             }
-        }
 
-        if (in_array('student', $roles)) {
-            $student_id = get_user_meta($user_id, 'student_id', true);
-            $student = get_student_detail($student_id);
-            if (get_user_meta($student->partner_id, 'status_register', true) == 1) {
-                $menu_links['student-documents'] = __('Documents', 'edusystem');
+            if (in_array('student', $roles)) {
+                $student_id = get_user_meta($user_id, 'student_id', true);
+                $student = get_student_detail($student_id);
+                if (get_user_meta($student->partner_id, 'status_register', true) == 1) {
+                    $menu_links['student-documents'] = __('Documents', 'edusystem');
+                }
             }
         }
     }
@@ -614,7 +616,11 @@ function remove_my_account_links($menu_links)
 
     if (in_array('parent', $roles) || in_array('student', $roles)) {
         $menu_links['my-tickets'] = __('Support Tickets', 'edusystem');
-        $menu_links['my-requests'] = __('Requests', 'edusystem');
+        
+        if (MODE != 'UNI') {
+            $menu_links['my-requests'] = __('Requests', 'edusystem');
+        }
+
     }
 
     return $menu_links;
@@ -736,12 +742,19 @@ function add_loginout_link($items, $args)
             if ($age >= 18) {
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/orders">' . __('Payments', 'edusystem') . '</a></li>';
             }
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'edusystem') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';
+
+            if (MODE != 'UNI') {
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'edusystem') . '</a></li>';
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';
+            }
+
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account', 'edusystem') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('Suppor tickets', 'edusystem') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-requests">' . __('Requests', 'edusystem') . '</a></li>';
+
+            if (MODE != 'UNI') {
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('Suppor tickets', 'edusystem') . '</a></li>';
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-requests">' . __('Requests', 'edusystem') . '</a></li>';
+            }
         }
 
         $logout_link = wp_logout_url(get_home_url());
@@ -2301,34 +2314,36 @@ function _mi_cuenta_determine_modal_action($student, $roles, $current_user_id)
     }
 
     // 5. CONSULTAS SEGURAS Y EFICIENTES
-    $table_user_signatures = $wpdb->prefix . 'users_signatures';
-    $student_user = in_array('student', $roles, true) ? get_user_by('id', $current_user_id) : get_user_by('email', $student->email);
-    $parent_user_id = $student->partner_id;
+    if (MODE != 'UNI') {
+        $table_user_signatures = $wpdb->prefix . 'users_signatures';
+        $student_user = in_array('student', $roles, true) ? get_user_by('id', $current_user_id) : get_user_by('email', $student->email);
+        $parent_user_id = $student->partner_id;
 
-    // Verificar firmas
-    $parent_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $parent_user_id));
-    $student_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $student_user->ID));
+        // Verificar firmas
+        $parent_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $parent_user_id));
+        $student_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $student_user->ID));
 
-    // Verificar si el documento de inscripción fue creado
-    $document_was_created = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_documents WHERE student_id = %d AND document_id = 'ENROLLMENT'", $student->id));
+        // Verificar si el documento de inscripción fue creado
+        $document_was_created = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_documents WHERE student_id = %d AND document_id = 'ENROLLMENT'", $student->id));
 
-    // Verificar pagos pendientes
-    $has_pending_payments = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW()", $student->id));
+        // Verificar pagos pendientes
+        $has_pending_payments = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW()", $student->id));
 
-    // 6. CONDICIONALES LEGIBLES
-    $all_signatures_missing = !$parent_enrollment_sig || !$student_enrollment_sig;
+        // 6. CONDICIONALES LEGIBLES
+        $all_signatures_missing = !$parent_enrollment_sig || !$student_enrollment_sig;
 
-    if ($document_was_created && $all_signatures_missing && !$has_pending_payments) {
-        add_action('wp_footer', 'modal_enrollment_student');
-        return;
-    }
+        if ($document_was_created && $all_signatures_missing && !$has_pending_payments) {
+            add_action('wp_footer', 'modal_enrollment_student');
+            return;
+        }
 
-    $parent_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $parent_user_id));
-    $student_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $student_user->ID));
-    $all_missing_sigs_done = !$parent_missing_sig || !$student_missing_sig;
+        $parent_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $parent_user_id));
+        $student_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $student_user->ID));
+        $all_missing_sigs_done = !$parent_missing_sig || !$student_missing_sig;
 
-    if ($document_was_created && !$all_signatures_missing && $all_missing_sigs_done && !$has_pending_payments) {
-        add_action('wp_footer', 'modal_missing_student');
+        if ($document_was_created && !$all_signatures_missing && $all_missing_sigs_done && !$has_pending_payments) {
+            add_action('wp_footer', 'modal_missing_student');
+        }
     }
 }
 function modal_take_elective()
