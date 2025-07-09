@@ -49,6 +49,7 @@ function save_student()
         $one_time_payment = isset($_POST['one_time_payment']) ? true : false;
         $is_scholarship = isset($_POST['is_scholarship']) ? true : false;
         $crm_id = isset($_POST['crm_id']) ? $_POST['crm_id'] : false;
+        $squuad_stripe_selected_client_id = isset($_POST['squuad_stripe_selected_client_id']) ? $_POST['squuad_stripe_selected_client_id'] : false;
 
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
@@ -87,7 +88,7 @@ function save_student()
         setcookie('birth_date', $birth_date, time() + 864000, '/');
         setcookie('gender', $gender, time() + 864000, '/');
         setcookie('password', $password, time() + 864000, '/');
-        // setcookie('squuad_stripe_selected_client_id', 'acct_1LlEzzGhgOvtg1Az', time() + 864000, '/');
+        setcookie('squuad_stripe_selected_client_id', $squuad_stripe_selected_client_id, time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);

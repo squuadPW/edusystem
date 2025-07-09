@@ -160,8 +160,20 @@ function removed_hooks()
 
 add_action('init', 'removed_hooks');
 
-function form_asp_psp()
+function form_asp_psp($atts)
 {
+    // Define los atributos por defecto
+    $atts = shortcode_atts(
+        array(
+            'connected_account' => '', // Valor por defecto para connected_account
+        ),
+        $atts,
+        'form_asp_psp'
+    );
+
+    // Ahora puedes acceder al atributo con $atts['connected_account']
+    $connected_account = $atts['connected_account'];
+
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
