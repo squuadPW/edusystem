@@ -80,10 +80,6 @@
             </div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="password"><?= __('Password of access', 'edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata" type="password" name="password" autocomplete="off" required>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="gender"><?= __('Gender', 'edusystem'); ?><span class="required">*</span></label>
             <select class="form-control" id="gender" required name="gender">
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
@@ -105,7 +101,7 @@
         </div>
 
         <!-- DATOS DEL PADRE -->
-        <!-- <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title"
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title"
             style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
             <div class="subtitle text-align-center"><?= __('Parent details', 'edusystem'); ?></div>
         </div>
@@ -154,7 +150,7 @@
                 <option value="male"><?= __('Male', 'edusystem'); ?></option>
                 <option value="female"><?= __('Female', 'edusystem'); ?></option>
             </select>
-        </div> -->
+        </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="country"><?= __('Country', 'edusystem'); ?><span class="required">*</span></label>
             <select name="country" autocomplete="off" id="country-select">
@@ -170,7 +166,7 @@
         </div>
 
         <!-- DATOS DE ACCESO -->
-        <!-- <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
             style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
             <div class="subtitle text-align-center" id="access_data"><?= __('Platform access data of parent', 'edusystem'); ?>
             </div>
@@ -188,7 +184,7 @@
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="password"><?= __('Password of access', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata" type="password" name="password" autocomplete="off" required>
-        </div> -->
+        </div>
 
         <!-- DATOS DEL GRADO -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
