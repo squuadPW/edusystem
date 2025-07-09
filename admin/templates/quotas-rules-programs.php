@@ -213,6 +213,16 @@
                                                 
                                             </div>
 
+                                            <div class="space-offer">
+
+                                                <label for="rules[][position]">
+                                                    <b><?= __('Position', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+
+                                                <input type="number" name="rules[][position]" value="0" oninput="validate_input(this, '^[0-9]*$')" disabled required>
+                                            </div>
+
                                         </div>
 
                                         <div class="container-button" >

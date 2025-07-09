@@ -82,47 +82,49 @@
 
         ?>
         
-        <div>
-            <div class="radio-group text-center">
-                <label class="m-5"><?=__('Program Payments','edusystem')?></label>
+        <?php if( $quotas_rules ): ?>
+            <div>
+                <div class="radio-group text-center">
+                    <label class="m-5"><?=__('Program Payments','edusystem')?></label>
 
-                <div class="radio-group options-quotas">
+                    <div class="radio-group options-quotas">
 
-                    <?php
-                        $discount_value = 0;
-                        // valida el precio del progrma con los cupones
-                        if ( !empty($cupones) ) {
+                        <?php
+                            $discount_value = 0;
+                            // valida el precio del progrma con los cupones
+                            if ( !empty($cupones) ) {
 
-                            foreach ( $cupones as $codigo => $cupon ) {
-                                if( $cupon->is_valid_for_product($product) && $cupon->get_discount_type() == 'percent' ) {
-                                    $discount_value = $cupon->get_amount();
+                                foreach ( $cupones as $codigo => $cupon ) {
+                                    if( $cupon->is_valid_for_product($product) && $cupon->get_discount_type() == 'percent' ) {
+                                        $discount_value = $cupon->get_amount();
+                                    }
                                 }
                             }
-                        }
 
-                    ?>
+                        ?>
 
-                    <input type="hidden" id="discount_value" value="<?= $discount_value ?? 0 ?>" />
+                        <input type="hidden" id="discount_value" value="<?= $discount_value ?? 0 ?>" />
 
-                    <?php foreach ( $quotas_rules AS $rule ):?>
+                        <?php foreach ( $quotas_rules AS $rule ):?>
 
-                        <div id="option-rule-<?=$rule->id?>" class="radio-input option-quota" data-id="<?= $rule->id ?>" >
-                            
-                            <input id="data-rule-<?= $rule->id ?>" class="form-check-input data-rule" type="radio" name="data_rule" value="<?= htmlspecialchars(json_encode($rule)) ?>">
+                            <div id="option-rule-<?=$rule->id?>" class="radio-input option-quota" data-id="<?= $rule->id ?>" >
+                                
+                                <input id="data-rule-<?= $rule->id ?>" class="form-check-input data-rule" type="radio" name="data_rule" value="<?= htmlspecialchars(json_encode($rule)) ?>">
 
-                            <input class="form-check-input option-rule" type="radio" name="quota_rule" value="<?= $rule->id ?>">
-                            
-                            <label class="form-check-label" for="<?= $rule->name ?>" >
-                                <?= $rule->name ?> 
-                            </label>
-                        </div>
-                    <?php endforeach ?>
+                                <input class="form-check-input option-rule" type="radio" name="quota_rule" value="<?= $rule->id ?>">
+                                
+                                <label class="form-check-label" for="<?= $rule->name ?>" >
+                                    <?= $rule->name ?> 
+                                </label>
+                            </div>
+                        <?php endforeach ?>
 
+                    </div>
                 </div>
+                    
+                <div id="table-payment" data-product_id="<?= $product_id ?>" data-text_table_headers="<?= htmlspecialchars(json_encode([__('Payment','edusystem'), __('Next date payment','edusystem'), __('Amount','edusystem')])) ?>" data-text_total="<?=__('Total','edusystem')?>"  > </div>
             </div>
-                
-            <div id="table-payment" data-product_id="<?= $product_id ?>" data-text_table_headers="<?= htmlspecialchars(json_encode([__('Payment','edusystem'), __('Next date payment','edusystem'), __('Amount','edusystem')])) ?>" data-text_total="<?=__('Total','edusystem')?>"  > </div>
-        </div>
+        <?php endif ?>
         
         <input type="hidden" name="submit" value="Apply Scholarship">
     <?php endif; ?>

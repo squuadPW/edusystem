@@ -160,6 +160,13 @@ function add_admin_form_program_content()
         
                             // Añadir el término al atributo "subprograms"
                             wp_set_object_terms($program_product_id, $name_subprogram, $attribute_name, true);
+                            
+                            // Actualizar el valor del atributo "subprogramas"
+                            $current_values = get_post_meta($program_product_id, '_product_attributes', true);
+                            if (isset($current_values[$attribute_name])) {
+                                $current_values[$attribute_name]['value'] .= (empty($current_values[$attribute_name]['value']) ? '' : '| ') . $name_subprogram;
+                            } 
+                            update_post_meta($program_product_id, '_product_attributes', $current_values);
                         }
                         
                     }
@@ -169,14 +176,14 @@ function add_admin_form_program_content()
                         'is_active' => $is_active_subprogram ? 1 : 0,
                         'name' => $name_subprogram,
                         'price' => $price,
-                        'product_id'=> $product_id ?? null,
+                        'product_id'=> (string) $product_id ?? null,
                     ];
 
                     // actualiza en caso de que ya exista o anade un subprograma nuevo
                     if( $subprogram['id'] ) {
                         $subprograms[ $subprogram['id'] ] = $subprogram_data;
                     } else {
-                        $subprograms[] = $subprogram_data;
+                        $subprograms[ ( array_key_last( $subprograms ) ?? 0 ) + 1] = $subprogram_data;
                         update_post_meta( $product_id, '_sku', $identificator."-".( array_key_last( $subprograms ) + 1 ) );
                     }
                 }
@@ -190,17 +197,17 @@ function add_admin_form_program_content()
                     'description' => $description,
                     'total_price' => $total_price,
                     'is_active' => $is_active,
-                    'subprogram' => json_encode($subprograms ?? '{}' ) ?? null,
+                    'subprogram' => json_encode( $subprograms ) ?? null,
                 ], ['id' => $program_id] );
 
             } else {
 
-                if (!empty($subprograms)) {
+                if ( !empty($subprograms) ) {
                     //pone indices a los subprogramas que serviran como ids
                     $index = range(1, count($subprograms));
                     $subprograms = array_combine($index, $subprograms);
 
-                    $subprogram = json_encode($subprograms ?? '{}') ?? null;
+                    $subprogram = json_encode($subprograms);
                 } else {
                     $subprogram = null;
                 }

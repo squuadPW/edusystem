@@ -96,10 +96,10 @@
                                     </h3>
 
                                     <?php  
-                                        $subprograms = json_decode( $program->subprogram, true ); 
+                                        $subprograms = json_decode( $program->subprogram ?? '{}', true ); 
                                         $i = 1; 
                                     ?>
-                                    <div id="subprograms" data-subprogram_count="0" >
+                                    <div id="subprograms" data-subprogram_count="<?= count( $subprograms ) ?? 0  ?>" >
 
                                         <?php foreach ( $subprograms AS $subprogram_id => $subprogram ) :?>
                                             
