@@ -22,7 +22,7 @@ function form_plugin_scripts()
     wp_enqueue_style('admin-flatpickr', plugins_url('edusystem') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('edusystem') . '/public/assets/css/intlTelInput.css');
     wp_enqueue_style('style-public', plugins_url('edusystem') . '/public/assets/css/style.css', array(), $version, 'all');
-    // wp_enqueue_script('tailwind', 'https://cdn.tailwindcss.com');
+    wp_enqueue_script('tailwind', 'https://cdn.tailwindcss.com');
     wp_enqueue_script('admin-flatpickr', plugins_url('edusystem') . '/public/assets/js/flatpickr.js');
     wp_enqueue_script('masker-js', plugins_url('edusystem') . '/public/assets/js/vanilla-masker.min.js');
     wp_enqueue_script('intel-js', plugins_url('edusystem') . '/public/assets/js/intlTelInput.min.js');
@@ -177,6 +177,7 @@ function form_asp_psp($atts)
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
+    $programs = get_programs();
     add_action('wp_footer', 'modal_continue_checkout');
     include(plugin_dir_path(__FILE__) . 'templates/asp-psp-registration.php');
 }
@@ -3303,3 +3304,15 @@ function custom_inputs_edusystem($atts) {
 }
 
 add_shortcode('custom_inputs_edusystem', 'custom_inputs_edusystem');
+
+add_action('wp_ajax_load_subprograms_by_program', 'load_subprograms_by_program_callback');
+add_action('wp_ajax_nopriv_load_subprograms_by_program', 'load_subprograms_by_program_callback');
+
+function load_subprograms_by_program_callback()
+{
+    $program_identificator = $_POST['program_identificator'];
+    $subprograms = get_subprogram_by_identificador_program($program_identificator);
+
+    wp_send_json_success(array('subprograms' => $subprograms));
+    exit;
+}

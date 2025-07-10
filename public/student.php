@@ -50,6 +50,7 @@ function save_student()
         $is_scholarship = isset($_POST['is_scholarship']) ? true : false;
         $crm_id = isset($_POST['crm_id']) ? $_POST['crm_id'] : false;
         $squuad_stripe_selected_client_id = isset($_POST['squuad_stripe_selected_client_id']) ? $_POST['squuad_stripe_selected_client_id'] : false;
+        $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : false;
 
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
@@ -122,7 +123,7 @@ function save_student()
                     setcookie('gender_parent', $gender, time() + 864000, '/');
                 }
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship ? $id_document : false);
+                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship ? $id_document : false, false, $product_id);
                 // wp_redirect(home_url('/select-payment'));
                 break;
 
@@ -188,7 +189,7 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship, false, $product_id);
                 // wp_redirect(home_url('/select-payment'));
                 break;
 
@@ -204,7 +205,7 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship);
+                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship, false, $product_id);
                 // wp_redirect(home_url('/select-payment'));
                 break;
         }
@@ -244,7 +245,7 @@ function save_student()
         setcookie('billing_postcode', ucwords($billing_postcode), time() + 864000, '/');
 
         // Redirigir al checkout
-        redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false);
+        redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false, false, $product_id);
     }
 
     if (isset($_GET['action']) && $_GET['action'] === 'pay_graduation_fee') {
@@ -271,36 +272,39 @@ function save_student()
     }
 }
 
-function redirect_to_checkout($program, $grade, $from_webinar = false, $is_scholarship = false, $return_url = false)
+function redirect_to_checkout($program, $grade, $from_webinar = false, $is_scholarship = false, $return_url = false, $product_id = false)
 {
     global $woocommerce;
     $woocommerce->cart->empty_cart();
 
-    if ($program == 'aes') {
-        switch ($grade) {
-            case '1':
-                $variation = wc_get_product(DUAL_9NO_VARIABLE);
-                $metadata = $variation->get_meta_data();
-                $woocommerce->cart->add_to_cart(DUAL_9NO, 1, DUAL_9NO_VARIABLE, $metadata);
-                $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
-                break;
+    // if ($program == 'aes') {
+    //     switch ($grade) {
+    //         case '1':
+    //             $variation = wc_get_product(DUAL_9NO_VARIABLE);
+    //             $metadata = $variation->get_meta_data();
+    //             $woocommerce->cart->add_to_cart(DUAL_9NO, 1, DUAL_9NO_VARIABLE, $metadata);
+    //             $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
+    //             break;
 
-            case '2':
-                $variation = wc_get_product(DUAL_10MO_VARIABLE);
-                $metadata = $variation->get_meta_data();
-                $woocommerce->cart->add_to_cart(DUAL_10MO, 1, DUAL_10MO_VARIABLE, $metadata);
-                $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
-                break;
+    //         case '2':
+    //             $variation = wc_get_product(DUAL_10MO_VARIABLE);
+    //             $metadata = $variation->get_meta_data();
+    //             $woocommerce->cart->add_to_cart(DUAL_10MO, 1, DUAL_10MO_VARIABLE, $metadata);
+    //             $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
+    //             break;
 
-            default:
-                $variation = wc_get_product(DUAL_DEFAULT_VARIABLE);
-                $metadata = $variation->get_meta_data();
-                $woocommerce->cart->add_to_cart(DUAL_DEFAULT, 1, DUAL_DEFAULT_VARIABLE, $metadata);
-                $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
-                break;
-        }
+    //         default:
+    //             $variation = wc_get_product(DUAL_DEFAULT_VARIABLE);
+    //             $metadata = $variation->get_meta_data();
+    //             $woocommerce->cart->add_to_cart(DUAL_DEFAULT, 1, DUAL_DEFAULT_VARIABLE, $metadata);
+    //             $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
+    //             break;
+    //     }
 
-    }
+    // }
+
+    $woocommerce->cart->add_to_cart($product_id, 1);
+    $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
 
     if (!$from_webinar && !$is_scholarship) {
 

@@ -1,6 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
+  subprograms_arr = [];
+  grade = document.getElementById("grade");
+  program = document.getElementById("program");
   not_institute = document.getElementById("institute_id");
   not_institute_others = document.getElementById("institute_id_others");
+  productIdInput = document.getElementById("product_id_input");
 
   if (document.getElementById("birth_date")) {
     flatpickr(document.getElementById("birth_date"), {
@@ -12,6 +16,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (not_institute) {
     not_institute.addEventListener("change", (e) => {
+      const gradeSelect = document.querySelector('select[name="grade"]');
+      gradeSelect.value = "";
+
+      if (e.target.value == "other") {
+        document.getElementById("name-institute-field").style.display = "block";
+        document.getElementById("name_institute").required = true;
+        document.getElementById("institute_id").required = false;
+        document.getElementById("institute_id_required").textContent = "";
+        document.getElementById("grade_select").style.display = "block";
+      } else {
+        document.getElementById("name-institute-field").style.display = "none";
+        document.getElementById("name_institute").required = false;
+        document.getElementById("institute_id").required = true;
+        document.getElementById("institute_id_required").textContent = "*";
+        document.getElementById("grade_select").style.display = "none";
+      }
 
       const XHR = new XMLHttpRequest();
       XHR.open(
@@ -21,46 +41,139 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       XHR.responseType = "json";
-  
+
       const params = new URLSearchParams({
         action: "load_grades_institute",
         institute_id: e.target.value,
       });
-  
+
       XHR.onload = () => {
         if (XHR.status === 200 && XHR.response && XHR.response) {
           let grades = XHR.response.data.grades;
 
           // Get the grades select element
-          const gradeSelect = document.querySelector('select[name="grade"]');
-          
+
           // Clear existing options except the first one
           while (gradeSelect.options.length > 1) {
             gradeSelect.remove(1);
           }
-          
+
+          document.getElementById("grade_select").style.display = "block";
+
           // Add new options from the grades array
-          grades.forEach(grade => {
-            const option = document.createElement('option');
+          grades.forEach((grade) => {
+            const option = document.createElement("option");
             option.value = grade.id;
-            option.textContent = grade.description ? `${grade.name} ${grade.description}` : grade.name;
+            option.textContent = grade.description
+              ? `${grade.name} ${grade.description}`
+              : grade.name;
             gradeSelect.appendChild(option);
           });
         }
       };
-  
-      XHR.send(params.toString());
 
-      if (e.target.value == "other") {
-        document.getElementById("name-institute-field").style.display = "block";
-        document.getElementById("name_institute").required = true;
-        document.getElementById("institute_id").required = false;
-        document.getElementById("institute_id_required").textContent = "";
+      XHR.send(params.toString());
+    });
+  }
+
+  if (program) {
+    program.addEventListener("change", (e) => {
+      document.getElementById("grade_select").style.display = "none";
+      document.getElementById("institute-id-select").style.display = "none";
+      const gradeSelect = document.querySelector('select[name="grade"]');
+      gradeSelect.value = "";
+
+      const institute_id_select = document.querySelector(
+        'select[name="institute_id"]'
+      );
+      institute_id_select.value = "";
+
+      document.getElementById("name-institute-field").style.display = "none";
+
+      const XHR = new XMLHttpRequest();
+      XHR.open(
+        "POST",
+        `${ajax_object.ajax_url}?action=load_subprograms_by_program`,
+        true
+      );
+      XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      XHR.responseType = "json";
+
+      const params = new URLSearchParams({
+        action: "load_subprograms_by_program",
+        program_identificator: e.target.value,
+      });
+
+      XHR.onload = () => {
+        if (XHR.status === 200 && XHR.response && XHR.response) {
+          let subprograms = [];
+          let data = XHR.response.data.subprograms;
+          if (Array.isArray(data)) {
+            subprograms = data;
+          } else {
+            subprograms = Object.values(data);
+          }
+
+          // Clear existing options except the first one
+          while (gradeSelect.options.length > 1) {
+            gradeSelect.remove(1);
+          }
+
+          document.getElementById("institute-id-select").style.display =
+            "block";
+
+          // Add new options from the grades array
+          subprograms.forEach((program, index) => {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = program.name;
+            gradeSelect.appendChild(option);
+          });
+          subprograms_arr = subprograms;
+        }
+      };
+
+      XHR.send(params.toString());
+    });
+  }
+
+  if (grade) {
+    grade.addEventListener("change", (e) => {
+      const selectedIndex = parseInt(e.target.value, 10); // Convert string to integer
+
+      // Make sure the hidden input element exists
+      if (productIdInput) {
+        // Check if the index is valid for the subprograms_arr
+        if (selectedIndex >= 0 && selectedIndex < subprograms_arr.length) {
+          const selectedProgram = subprograms_arr[selectedIndex - 1];
+
+          // Now you have the selectedProgram object/item
+          console.log("Selected Program Object:", selectedProgram);
+
+          // --- Set the value of the hidden input here ---
+          // Ensure 'product_id' is the correct property name in your 'selectedProgram' object
+          if (selectedProgram && selectedProgram.product_id !== undefined) {
+            productIdInput.value = selectedProgram.product_id;
+            console.log(
+              "product_id set to hidden input:",
+              productIdInput.value
+            );
+          } else {
+            console.warn(
+              "The 'product_id' property was not found or is undefined in the selected object."
+            );
+            productIdInput.value = ""; // Clear the input if the property doesn't exist
+          }
+        } else {
+          console.warn(
+            "Invalid index selected or subprograms_arr is not populated."
+          );
+          productIdInput.value = ""; // Clear the input if the index is invalid (e.g., "Select an option")
+        }
       } else {
-        document.getElementById("name-institute-field").style.display = "none";
-        document.getElementById("name_institute").required = false;
-        document.getElementById("institute_id").required = true;
-        document.getElementById("institute_id_required").textContent = "*";
+        console.warn(
+          "The hidden input with ID 'product_id_input' was not found in the DOM."
+        );
       }
     });
   }
@@ -83,16 +196,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  const crm_id = getUrlParameter('crm_id');
+  const crm_id = getUrlParameter("crm_id");
   if (crm_id) {
     // 1. Configurar solicitud
     let token = document.getElementById("x-api-key").value;
     let url = document.getElementById("x-api-url").value;
     let api = document.getElementById("x-api").value;
-    
+
     const XHR = new XMLHttpRequest();
     const endpoint = `${url}${api}/${crm_id}`;
-    
+
     XHR.open("GET", endpoint, true);
     XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     XHR.setRequestHeader("x-api-key", token);
@@ -102,13 +215,13 @@ document.addEventListener("DOMContentLoaded", function () {
     XHR.onload = () => {
       // 5. Manejar errores HTTP
       if (XHR.status !== 200) {
-        console.error('Error en la solicitud:', XHR.status, XHR.statusText);
+        console.error("Error en la solicitud:", XHR.status, XHR.statusText);
         return;
       }
 
       let custom = XHR.response.entity.custom;
       let parent = XHR.response.entity.personal;
-      
+
       //setamos valores
       document.getElementById("agent_name").value = parent.firstName;
       document.getElementById("agent_last_name").value = parent.lastName;
@@ -116,8 +229,10 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("email_partner").value = parent.email;
       document.getElementById("email_partner").readonly = true;
 
-      document.getElementById("name_student").value = custom.cf_contact_nombre_del_alumno_znku_text;
-      document.getElementById("lastname_student").value = custom.cf_contact_apellido_alumno_zgxz_text;
+      document.getElementById("name_student").value =
+        custom.cf_contact_nombre_del_alumno_znku_text;
+      document.getElementById("lastname_student").value =
+        custom.cf_contact_apellido_alumno_zgxz_text;
     };
 
     // 11. Enviar solicitud
@@ -298,43 +413,68 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  let modalContinueCheckout = document.getElementById("modal-continue-checkout");
+  let modalContinueCheckout = document.getElementById(
+    "modal-continue-checkout"
+  );
   if (modalContinueCheckout) {
-    let formParam = getUrlParameter('form');
+    let formParam = getUrlParameter("form");
     if (
       (getCookie("name_student") &&
-      getCookie("last_name_student") &&
-      getCookie("birth_date") &&
-      getCookie("initial_grade") &&
-      getCookie("program_id") &&
-      getCookie("email_partner") &&
-      getCookie("number_partner")) || 
-      formParam === '1'
+        getCookie("last_name_student") &&
+        getCookie("birth_date") &&
+        getCookie("initial_grade") &&
+        getCookie("program_id") &&
+        getCookie("email_partner") &&
+        getCookie("number_partner")) ||
+      formParam === "1"
     ) {
       if (formParam == 1) {
-        document.querySelector("input[name=birth_date_student]").value = getCookie("birth_date");
-        document.querySelector("select[name=document_type]").value = getCookie("document_type");
-        document.querySelector("input[name=id_document]").value = getCookie("id_document");
-        document.querySelector("input[name=name_student]").value = getCookie("name_student");
-        document.querySelector("input[name=middle_name_student]").value = getCookie("middle_name_student");
-        document.querySelector("input[name=lastname_student]").value = getCookie("last_name_student");
-        document.querySelector("input[name=middle_last_name_student]").value = getCookie("middle_last_name_student");
-        document.querySelector("input[name=number_phone]").value = getCookie("phone_student");
-        document.querySelector("input[name=email_student]").value = getCookie("email_student");
-        document.querySelector("select[name=gender]").value = getCookie("gender");
-        document.querySelector("select[name=etnia]").value = getCookie("ethnicity");
-        document.querySelector("input[name=birth_date_parent]").value = getCookie("birth_date_parent");
-        document.querySelector("select[name=parent_document_type]").value = getCookie("parent_document_type");
-        document.querySelector("input[name=id_document_parent]").value = getCookie("id_document_parent");
-        document.querySelector("input[name=agent_name]").value = getCookie("agent_name");
-        document.querySelector("input[name=agent_last_name]").value = getCookie("agent_last_name");
-        document.querySelector("input[name=number_partner]").value = getCookie("number_partner");
-        document.querySelector("select[name=gender_parent]").value = getCookie("gender_parent");
-        document.querySelector("input[name=email_partner]").value = getCookie("email_partner");
-        document.querySelector("input[name=password]").value = getCookie("password");
-        document.querySelector("select[name=grade]").value = getCookie("initial_grade");
-        document.querySelector("select[name=program]").value = getCookie("program_id");
-        document.querySelector("select[name=institute_id]").value = getCookie("institute_id");
+        document.querySelector("input[name=birth_date_student]").value =
+          getCookie("birth_date");
+        document.querySelector("select[name=document_type]").value =
+          getCookie("document_type");
+        document.querySelector("input[name=id_document]").value =
+          getCookie("id_document");
+        document.querySelector("input[name=name_student]").value =
+          getCookie("name_student");
+        document.querySelector("input[name=middle_name_student]").value =
+          getCookie("middle_name_student");
+        document.querySelector("input[name=lastname_student]").value =
+          getCookie("last_name_student");
+        document.querySelector("input[name=middle_last_name_student]").value =
+          getCookie("middle_last_name_student");
+        document.querySelector("input[name=number_phone]").value =
+          getCookie("phone_student");
+        document.querySelector("input[name=email_student]").value =
+          getCookie("email_student");
+        document.querySelector("select[name=gender]").value =
+          getCookie("gender");
+        document.querySelector("select[name=etnia]").value =
+          getCookie("ethnicity");
+        document.querySelector("input[name=birth_date_parent]").value =
+          getCookie("birth_date_parent");
+        document.querySelector("select[name=parent_document_type]").value =
+          getCookie("parent_document_type");
+        document.querySelector("input[name=id_document_parent]").value =
+          getCookie("id_document_parent");
+        document.querySelector("input[name=agent_name]").value =
+          getCookie("agent_name");
+        document.querySelector("input[name=agent_last_name]").value =
+          getCookie("agent_last_name");
+        document.querySelector("input[name=number_partner]").value =
+          getCookie("number_partner");
+        document.querySelector("select[name=gender_parent]").value =
+          getCookie("gender_parent");
+        document.querySelector("input[name=email_partner]").value =
+          getCookie("email_partner");
+        document.querySelector("input[name=password]").value =
+          getCookie("password");
+        document.querySelector("select[name=grade]").value =
+          getCookie("initial_grade");
+        document.querySelector("select[name=program]").value =
+          getCookie("program_id");
+        document.querySelector("select[name=institute_id]").value =
+          getCookie("institute_id");
       } else {
         modalContinueCheckout.style.display = "block";
       }
@@ -469,14 +609,14 @@ const type = urlParams.get("type");
 if (id && type) {
   const typeSelect = document.querySelector("select[name=document_type]");
   const idInput = document.querySelector("input[name=id_document]");
-  
+
   // Asignar valores
   typeSelect.value = type;
   idInput.value = id;
-  
+
   // Disparar eventos input manualmente
   // typeSelect.dispatchEvent(new Event('input'));
-  idInput.dispatchEvent(new Event('input'));
+  idInput.dispatchEvent(new Event("input"));
 }
 
 function sendAjaxIdDocument(scholarship = 0) {
@@ -1107,53 +1247,42 @@ function getCookie(name) {
   return null;
 }
 
-  // Función para obtener parámetros de la URL
-  function getUrlParameter(name) {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    let regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    let results = regex.exec(location.search);
-    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-  }
+// Función para obtener parámetros de la URL
+function getUrlParameter(name) {
+  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+  let regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+  let results = regex.exec(location.search);
+  return results === null
+    ? ""
+    : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
 
-  function changeFieldsDisabled(value = false) {
-    document.querySelector(
-      "input[name=birth_date_student]"
-    ).disabled = value;
-    document.querySelector("input[name=name_student]").disabled = value;
-    document.querySelector(
-      "input[name=middle_name_student]"
-    ).disabled = value;
-    document.querySelector(
-      "input[name=lastname_student]"
-    ).disabled = value;
-    document.querySelector(
-      "input[name=middle_last_name_student]"
-    ).disabled = value;
-    document.querySelector("input[name=number_phone]").disabled = value;
-    document.querySelector("input[name=email_student]").disabled = value;
-    document.querySelector("select[name=gender]").disabled = value;
-    document.querySelector("select[name=etnia]").disabled = value;
-    document.querySelector(
-      "input[name=birth_date_parent]"
-    ).disabled = value;
-    document.querySelector(
-      "select[name=parent_document_type]"
-    ).disabled = value;
-    document.querySelector(
-      "input[name=id_document_parent]"
-    ).disabled = value;
-    document.querySelector("input[name=agent_name]").disabled = value;
-    document.querySelector("input[name=agent_last_name]").disabled = value;
-    document.querySelector("input[name=number_partner]").disabled = value;
-    document.querySelector("select[name=gender_parent]").disabled = value;
-    document.querySelector("select[name=country]").disabled = value;
-    document.querySelector("input[name=city]").disabled = value;
-    document.querySelector("input[name=email_partner]").disabled = value;
-    document.querySelector("input[name=password]").disabled = value;
-    document.querySelector("select[name=grade]").disabled = value;
-    document.querySelector("select[name=program]").disabled = value;
-    document.querySelector("select[name=institute_id]").disabled = value;
-    document.querySelector("input[name=name_institute]").disabled = value;
-    document.querySelector("input[name=terms]").disabled = value;
-    document.getElementById("buttonsave").disabled = value;
-  } 
+function changeFieldsDisabled(value = false) {
+  document.querySelector("input[name=birth_date_student]").disabled = value;
+  document.querySelector("input[name=name_student]").disabled = value;
+  document.querySelector("input[name=middle_name_student]").disabled = value;
+  document.querySelector("input[name=lastname_student]").disabled = value;
+  document.querySelector("input[name=middle_last_name_student]").disabled =
+    value;
+  document.querySelector("input[name=number_phone]").disabled = value;
+  document.querySelector("input[name=email_student]").disabled = value;
+  document.querySelector("select[name=gender]").disabled = value;
+  document.querySelector("select[name=etnia]").disabled = value;
+  document.querySelector("input[name=birth_date_parent]").disabled = value;
+  document.querySelector("select[name=parent_document_type]").disabled = value;
+  document.querySelector("input[name=id_document_parent]").disabled = value;
+  document.querySelector("input[name=agent_name]").disabled = value;
+  document.querySelector("input[name=agent_last_name]").disabled = value;
+  document.querySelector("input[name=number_partner]").disabled = value;
+  document.querySelector("select[name=gender_parent]").disabled = value;
+  document.querySelector("select[name=country]").disabled = value;
+  document.querySelector("input[name=city]").disabled = value;
+  document.querySelector("input[name=email_partner]").disabled = value;
+  document.querySelector("input[name=password]").disabled = value;
+  document.querySelector("select[name=grade]").disabled = value;
+  document.querySelector("select[name=program]").disabled = value;
+  document.querySelector("select[name=institute_id]").disabled = value;
+  document.querySelector("input[name=name_institute]").disabled = value;
+  document.querySelector("input[name=terms]").disabled = value;
+  document.getElementById("buttonsave").disabled = value;
+}
