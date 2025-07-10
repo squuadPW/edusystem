@@ -143,7 +143,7 @@
 
                                                     <?php if( $program ): ?>
                                                         <a href="<?= admin_url("/admin.php?page=add_admin_form_program_content&section_tab=quotas_rules_programs&program_id=$program->id&identificator={$program->identificator}_{$subprogram_id}" ) ?>" class="button button-primary" >
-                                                            <?=__('Quotas', 'edusystem')?>
+                                                            <?=__('Quotes', 'edusystem')?>
                                                         </a>
                                                     <?php endif; ?>
                                                 </div>

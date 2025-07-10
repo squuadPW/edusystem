@@ -73,7 +73,7 @@
                                                             <b><?= __('Initial price', 'edusystem'); ?></b>
                                                             <span class="text-danger">*</span>
                                                         </label>
-                                                        <input type="number" name="rules[<?= $i ?>][initial_price]" value="<?= $rule['initial_price'] ?? 0.00 ?>" oninput="validate_input(this, '^[0-9]*$')" required>
+                                                        <input type="number" name="rules[<?= $i ?>][initial_price]" value="<?= $rule['initial_price'] ?? 0.00 ?>" oninput="validate_input(this, '/^[0-9]*\.?[0-9]*$/')"  required>
                                                     </div>
 
                                                     <div class="space-offer">
@@ -82,7 +82,7 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="number" name="rules[<?= $i ?>][quantity]" value="<?= $rule['quotas_quantity'] ?? 1 ?>" oninput="validate_input(this, '^\\d*$')"  min="1" step="1"  required >
+                                                        <input type="number" name="rules[<?= $i ?>][quantity]" value="<?= $rule['quotas_quantity'] ?? 0 ?>" oninput="validate_input(this, '^\\d*$')"  min="1" step="1"  required >
                                                     </div>
 
                                                     <div class="space-offer">
@@ -106,7 +106,7 @@
                                                         </label>
 
                                                         <div class="input-frequency" >
-                                                            <input type="number" name="rules[<?= $i ?>][frequency_value]" value="<?= $rule['frequency_value'] ?? 0 ?>" oninput="validate_input(this, '^[0-9]*$')" required>
+                                                            <input type="number" name="rules[<?= $i ?>][frequency_value]" value="<?= $rule['frequency_value'] ?? 0 ?>" oninput="validate_input(this, '^[0-9]*$')" >
 
                                                             <select name="rules[<?= $i ?>][type_frequency]" required >
                                                                 <option value="" <?= ($rule['type_frequency'] == '') ? 'selected' : '' ?> ><?= __('Select a frequency type','edusystem') ?></option>
@@ -168,7 +168,7 @@
                                                     <b><?= __('Initial price', 'edusystem'); ?></b>
                                                     <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="number" name="rules[][initial_price]" value="0" oninput="validate_input(this, '^[0-9]*$')" disabled required>
+                                                <input type="number" name="rules[][initial_price]" value="0" oninput="validate_input(this, '/^[0-9]*\.?[0-9]*$/')" disabled required>
                                             </div>
 
                                             <div class="space-offer">
@@ -177,7 +177,7 @@
                                                     <span class="text-danger">*</span>
                                                 </label>
 
-                                                <input type="number" name="rules[][quantity]" value="1" oninput="validate_input(this, '^[0-9]*$')"  min="1" step="1" disabled required >
+                                                <input type="number" name="rules[][quantity]" value="0" oninput="validate_input(this, '^[0-9]*$')"  min="1" step="1" disabled required >
                                             </div>
 
                                             <div class="space-offer">
@@ -200,7 +200,7 @@
                                                 </label>
 
                                                 <div class="input-frequency" >
-                                                    <input type="number" name="rules[][frequency_value]" value="0" oninput="validate_input(this, '^[0-9]*$')" disabled required>
+                                                    <input type="number" name="rules[][frequency_value]" value="0" oninput="validate_input(this, '^[0-9]*$')" disabled >
 
                                                     <select name="rules[][type_frequency]" disabled required >
                                                         <option value="" ><?= __('Select a frequency type','edusystem') ?></option>

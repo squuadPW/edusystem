@@ -293,7 +293,7 @@ function add_admin_form_program_content()
 
             exit;
 
-        } else if ($_GET['action'] == 'delete_quota_rule') {
+        } else if ( $_GET['action'] == 'delete_quota_rule' ) {
 
             global $wpdb;
             $table_quota_rules = $wpdb->prefix . 'quota_rules';
@@ -315,7 +315,7 @@ function add_admin_form_program_content()
             wp_redirect($_SERVER['HTTP_REFERER']);
             exit;
 
-        } else if ($_GET['action'] == 'delete_subprogram') {
+        } else if ( $_GET['action'] == 'delete_subprogram' ) {
 
             $subprogram_id = $_POST['subprogram_id'];
 
@@ -330,9 +330,9 @@ function add_admin_form_program_content()
             if ( $students == 0 ) {
 
                 $separacion = strpos( $subprogram_id, '_' );
-                if ( $posicion !== false) {
-                    $program_id = substr($subprogram_id, 0, $separacion);
-                    $subprogram_indice = substr($subprogram_id, $separacion + 1);
+                if ( $separacion !== false ) {
+                    $program_id = substr( $subprogram_id, 0, $separacion );
+                    $subprogram_indice = substr( $subprogram_id, $separacion + 1 );
                 }
 
                 $subprogram_data = get_subprogram_by_identificador_program( $program_id );
