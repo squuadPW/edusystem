@@ -1004,7 +1004,7 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
     }
 
     // 2. Procesa los pagos del programa (AES PROGRAM).
-    // process_program_payments($order, $order_id);
+    process_program_payments($order, $order_id);
 
     // 3. Procesa la cuota de inscripción y las acciones asociadas.
     process_inscription_fee($order, $order_id);
@@ -1681,6 +1681,9 @@ function update_price_product_cart_quota_rule() {
 
             // Almacenar el nuevo precio en el array del artículo del carrito
             $cart_item['custom_price'] = $price; // Aquí se almacena el nuevo precio
+
+            // Guarda el id de la regla de la cuota
+            $cart_item['quota_rule_id'] = $rule_id; 
 
             // Actualizar el artículo del carrito
             $cart->cart_contents[$cart_item_key] = $cart_item;

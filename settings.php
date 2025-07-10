@@ -14,11 +14,11 @@
 	define('FEE_INSCRIPTION', '26'); // Product registration fee
 	define('FEE_GRADUATION', '30'); // Product graduation fee
 	define('LATAM_SCHOLARSHIP', '62'); // Beca
-	define('DUAL_9NO', '15'); // Product Initial 9 Grade (lower)
+	define('DUAL_9NO', '15'); // Product Initial 9 Grade (lower)15
 	define('DUAL_9NO_VARIABLE', '18'); // Product variable (lower)
 	define('DUAL_10MO', '16');// Product Initial 10mo Grade (middle)
 	define('DUAL_10MO_VARIABLE', '21'); // Product variable  (middle)
-	define('DUAL_DEFAULT', '17');    // Product initial 11 and bacheloder (upper)
+	define('DUAL_DEFAULT', '669');    // Product initial 11 and bacheloder (upper)17
 	define('DUAL_DEFAULT_VARIABLE','24'); // Product variable (upper)
 
 	// GLOBAL

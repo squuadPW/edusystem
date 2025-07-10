@@ -36,7 +36,7 @@
         </div>
         </div> -->
 
-        <?php if(!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) : ?>
+        <?php if( !isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar']) ) : ?>
             
             <div >
                 <div style="margin-bottom: 10px !important; text-align: center">
@@ -129,45 +129,7 @@
         <input type="hidden" name="submit" value="Apply Scholarship">
     <?php endif; ?>
 
-<?php 
-    // Registrar el shortcode
-    add_shortcode('payment_table_product_by_quotas', 'payment_table_product_by_quotas');
-    function payment_table_product_by_quotas($atts) {
 
-        $atts = shortcode_atts(['product_id' => 0], $atts);
-        $product_id = (int)$atts['product_id'];
-
-        echo "hola";
-                
-    }
-
-    /* // Obtener todas las propiedades del cupón
-                                    $cupon_data = array(
-                                        'monto' => $cupon->get_amount(),
-                                        'tipo_descuento' => $cupon->get_discount_type(),
-                                        'fecha_expiracion' => $cupon->get_date_expires() ? $cupon->get_date_expires()->date('Y-m-d H:i:s') : 'No expira',
-                                        'uso_individual' => $cupon->get_individual_use(),
-                                        'limite_uso' => $cupon->get_usage_limit(),
-                                        'usos_actuales' => $cupon->get_usage_count(),
-                                        'limite_por_usuario' => $cupon->get_usage_limit_per_user(),
-                                        'productos_aplicables' => $cupon->get_product_ids(),
-                                        'productos_excluidos' => $cupon->get_excluded_product_ids(),
-                                        'categorias_aplicables' => $cupon->get_product_categories(),
-                                        'categorias_excluidas' => $cupon->get_excluded_product_categories(),
-                                        'importe_minimo' => $cupon->get_minimum_amount(),
-                                        'importe_maximo' => $cupon->get_maximum_amount(),
-                                        'correos_restrictivos' => $cupon->get_email_restrictions(),
-                                        'excluir_ofertas' => $cupon->get_exclude_sale_items(),
-                                        'restricciones' => array(
-                                            'aplica_a_productos' => $cupon->is_valid_for_product($producto_a_validar, $valores),
-                                            'aplica_a_carrito' => $cupon->is_valid_for_cart(),
-                                        )
-                                    ); */
-                                    
-                                   /*  echo "<pre>";
-                                    var_dump($cupon_data);
-                                    echo "</pre>"; */
-?>
 </div>   
 
 
