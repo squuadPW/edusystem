@@ -1521,23 +1521,25 @@ h2 {
                     display: none;
                 }
 
-        .group-input {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+                .group-input {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
 
-            .space-offer {
-                flex: 1;
-                font-weight:400;
+                    .space-offer {
+                        flex: 1;
+                        font-weight:400;
 
-                &:has( input[type="checkbox"] ) {
-                    max-width: max-content;
+                        &:has( input[type="checkbox"] ) {
+                            max-width: max-content;
 
-                    input[type="checkbox"] {
-                        width: 10px;
+                            input[type="checkbox"] {
+                                width: 10px;
+                            }
+                        }
+                        
                     }
                 }
-                
             }
         }
     }
@@ -1657,5 +1659,5 @@ a.toplevel_page_logo_based_menu {
 }
 
 .select2-container {
-  z-index: 99999 !important;
+    z-index: 99999 !important;
 }

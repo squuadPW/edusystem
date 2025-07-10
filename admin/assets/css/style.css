@@ -1381,22 +1381,12 @@ h2 {
   flex: 1;
   font-weight: 400;
 }
-#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer.name {
-  flex: 3;
-}
 #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer:has(input[type=checkbox]) {
   max-width: -moz-max-content;
   max-width: max-content;
 }
 #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer:has(input[type=checkbox]) input[type=checkbox] {
   width: 10px;
-}
-#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer .input-frequency {
-  display: flex;
-  gap: 10px;
-}
-#quota-rules-programs .quotas_rules > div {
-  margin: 0px 10px;
 }
 
 #toplevel_page_logo_based_menu {
@@ -1454,10 +1444,22 @@ a.toplevel_page_logo_based_menu {
   margin: 5px;
 }
 
-.view_details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
+/* Estilos generales para las secciones de carga de logos */
+.logo-upload-section {
+  border: 1px solid #e0e0e0; /* Un borde sutil para agrupar */
+  padding: 15px;
+  margin-bottom: 20px; /* Espacio entre secciones */
+  border-radius: 5px; /* Bordes redondeados */
+  background-color: #f9f9f9; /* Un color de fondo suave */
+  display: flex; /* Para alinear el formulario y la previsualización */
+  flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+  gap: 20px; /* Espacio entre los elementos flexibles */
+  align-items: center; /* Alinea verticalmente los elementos */
+}
+
+.logo-upload-section .form-group {
+  flex: 1; /* Permite que el grupo de formulario ocupe el espacio disponible */
+  min-width: 250px; /* Asegura un ancho mínimo para el formulario */
 }
 
 .logo-upload-section label {
@@ -1497,7 +1499,4 @@ a.toplevel_page_logo_based_menu {
 
 .select2-container {
   z-index: 99999 !important;
-.input-error {
-  color: red;
-  margin: 5px;
 }/*# sourceMappingURL=style.css.map */
