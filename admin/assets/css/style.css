@@ -1452,4 +1452,52 @@ a.toplevel_page_logo_based_menu {
 .input-error {
   color: red;
   margin: 5px;
+}
+
+.view_details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.logo-upload-section label {
+  display: block; /* Asegura que la etiqueta esté en su propia línea */
+  margin-bottom: 8px; /* Espacio debajo de la etiqueta */
+  font-weight: 600; /* Hace la etiqueta un poco más destacada */
+  color: #333; /* Color de texto más oscuro */
+}
+
+.logo-upload-section input[type=file] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%; /* El campo de archivo ocupa todo el ancho disponible */
+  box-sizing: border-box; /* Incluye padding y borde en el ancho total */
+}
+
+.logo-preview {
+  flex-shrink: 0; /* Evita que la previsualización se encoja */
+  text-align: center; /* Centra la imagen */
+  padding: 10px;
+  background-color: #fff;
+  border: 1px dashed #ddd; /* Borde punteado para el área de previsualización */
+  border-radius: 4px;
+  min-width: 150px; /* Ancho mínimo para la previsualización */
+  display: flex; /* Para centrar la imagen dentro */
+  justify-content: center;
+  align-items: center;
+  min-height: 100px; /* Altura mínima para la previsualización */
+}
+
+.logo-preview img {
+  max-width: 100%; /* Asegura que la imagen no se desborde */
+  height: auto; /* Mantiene la proporción de la imagen */
+  display: block; /* Elimina espacio extra debajo de la imagen */
+}
+
+.select2-container {
+  z-index: 99999 !important;
+.input-error {
+  color: red;
+  margin: 5px;
 }/*# sourceMappingURL=style.css.map */

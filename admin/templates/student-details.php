@@ -385,6 +385,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                                     </tr>
                                 </tbody>
                             </table>
+                            <?php if($user_student->ID != $partner->ID) { ?>
                             <h3 style="margin-bottom:0px;text-align:center;">
                                 <b><?php _e('Parent Information', 'edusystem'); ?></b>
                             </h3>
@@ -532,6 +533,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                                     </tr>
                                 </tbody>
                             </table>
+                            <?php } ?>
                             <?php if (!in_array('institutes', $roles) && !current_user_can('only_read_admission_aes')): ?>
                                 <p style="text-align: end">
                                     <input type="submit" value="<?php _e('Save Changes', 'edusystem'); ?>"

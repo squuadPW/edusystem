@@ -12,7 +12,6 @@
     <input type="hidden" name="crm_url" id="x-api-url" value="<?= get_option('crm_url') ?? ''; ?>">
     <input type="hidden" name="crm_id" id="x-api-id" value="<?= $_GET['crm_id'] ?? ''; ?>">
     <input type="hidden" name="crm_api" id="x-api" value="contacts">
-    <input type="hidden" name="squuad_stripe_selected_client_id" id="squuad_stripe_selected_client_id" value="<?= $connected_account ?>">
 
     <!-- DATOS DEL ESTUDIANTE -->
     <div class="grid grid-cols-12 gap-4">

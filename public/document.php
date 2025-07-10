@@ -627,68 +627,70 @@ function save_documents()
 
 function view_pending_documents(){
     
-    global $current_user;
-    $roles = $current_user->roles;
+    if (MODE != 'UNI') {
+        global $current_user;
+        $roles = $current_user->roles;
 
-    $student_status = get_user_meta($current_user->ID,'status_register',true);
+        $student_status = get_user_meta($current_user->ID,'status_register',true);
 
-    if(!in_array('parent',$roles) && in_array('student',$roles)){
-        $student_id = get_user_meta(get_current_user_id(),'student_id',true);
-        if($student_id){
-            $students = get_student_from_id($student_id);
-        }else{
+        if(!in_array('parent',$roles) && in_array('student',$roles)){
+            $student_id = get_user_meta(get_current_user_id(),'student_id',true);
+            if($student_id){
+                $students = get_student_from_id($student_id);
+            }else{
+                $students = get_student(get_current_user_id());
+            }
+        }
+
+        if (in_array('parent',$roles) && in_array('student',$roles) || in_array('parent',$roles) && !in_array('student',$roles)) {
             $students = get_student(get_current_user_id());
         }
-    }
 
-    if (in_array('parent',$roles) && in_array('student',$roles) || in_array('parent',$roles) && !in_array('student',$roles)) {
-        $students = get_student(get_current_user_id());
-    }
+        $solvency_administrative = true;
 
-    $solvency_administrative = true;
+        if(in_array('parent',$roles) && in_array('student',$roles)){
 
-    if(in_array('parent',$roles) && in_array('student',$roles)){
+            if($student_status == 1 || $student_status == '1'){
 
-        if($student_status == 1 || $student_status == '1'){
+                foreach($students as $student){
+                    $documents = get_documents($student->id);
 
-            foreach($students as $student){
-                $documents = get_documents($student->id);
+                    foreach($documents as $document){
 
-                foreach($documents as $document){
-
-                    if($document->status != 5){
-                        $solvency_administrative = false;
+                        if($document->status != 5){
+                            $solvency_administrative = false;
+                        }
                     }
                 }
-            }
-        
-            if(!$solvency_administrative){
-                include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
-            }
-        }
-
-    }else if(in_array('parent',$roles) && !in_array('student',$roles)){
-
-        if($student_status == 1 || $student_status == '1'){
-
-            foreach($students as $student){
-                $documents = get_documents($student->id);
-
-                foreach($documents as $document){
-
-                    if($document->status != 5){
-                        $solvency_administrative = false;
-                    }
+            
+                if(!$solvency_administrative){
+                    include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
                 }
             }
-        
-            if(!$solvency_administrative){
-                include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
-            }
-        }
 
-    }else if(!in_array('parent',$roles) && in_array('student',$roles)){
-        include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+        }else if(in_array('parent',$roles) && !in_array('student',$roles)){
+
+            if($student_status == 1 || $student_status == '1'){
+
+                foreach($students as $student){
+                    $documents = get_documents($student->id);
+
+                    foreach($documents as $document){
+
+                        if($document->status != 5){
+                            $solvency_administrative = false;
+                        }
+                    }
+                }
+            
+                if(!$solvency_administrative){
+                    include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+                }
+            }
+
+        }else if(!in_array('parent',$roles) && in_array('student',$roles)){
+            include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+        }
     }
 
 }

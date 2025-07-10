@@ -160,8 +160,20 @@ function removed_hooks()
 
 add_action('init', 'removed_hooks');
 
-function form_asp_psp()
+function form_asp_psp($atts)
 {
+    // Define los atributos por defecto
+    $atts = shortcode_atts(
+        array(
+            'connected_account' => '', // Valor por defecto para connected_account
+        ),
+        $atts,
+        'form_asp_psp'
+    );
+
+    // Ahora puedes acceder al atributo con $atts['connected_account']
+    $connected_account = $atts['connected_account'];
+
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
@@ -170,6 +182,17 @@ function form_asp_psp()
 }
 
 add_shortcode('form_asp_psp', 'form_asp_psp');
+
+function student_registration_form()
+{
+    $countries = get_countries();
+    $institutes = get_list_institutes_active();
+    $grades = get_grades();
+    add_action('wp_footer', 'modal_continue_checkout');
+    include(plugin_dir_path(__FILE__) . 'templates/student-registration-form-structure.php');
+}
+
+add_shortcode('student_registration_form', 'student_registration_form');
 
 function modal_continue_checkout()
 {
@@ -566,23 +589,25 @@ function remove_my_account_links($menu_links)
     // Lógica para roles "parent" y "student"
     if (in_array('parent', $roles) || in_array('student', $roles)) {
 
-        // Agregar "Student Information"
-        $menu_links['student'] = __('Student Information', 'edusystem');
+        if (MODE != 'UNI') {
+            // Agregar "Student Information"
+            $menu_links['student'] = __('Student Information', 'edusystem');
 
-        // Agregar "Califications"
-        $menu_links['califications'] = __('Califications', 'edusystem');
+            // Agregar "Califications"
+            $menu_links['califications'] = __('Califications', 'edusystem');
 
-        if (in_array('parent', $roles)) {
-            if (get_user_meta($user_id, 'status_register', true) == 1) {
-                $menu_links['student-documents'] = __('Documents', 'edusystem');
+            if (in_array('parent', $roles)) {
+                if (get_user_meta($user_id, 'status_register', true) == 1) {
+                    $menu_links['student-documents'] = __('Documents', 'edusystem');
+                }
             }
-        }
 
-        if (in_array('student', $roles)) {
-            $student_id = get_user_meta($user_id, 'student_id', true);
-            $student = get_student_detail($student_id);
-            if (get_user_meta($student->partner_id, 'status_register', true) == 1) {
-                $menu_links['student-documents'] = __('Documents', 'edusystem');
+            if (in_array('student', $roles)) {
+                $student_id = get_user_meta($user_id, 'student_id', true);
+                $student = get_student_detail($student_id);
+                if (get_user_meta($student->partner_id, 'status_register', true) == 1) {
+                    $menu_links['student-documents'] = __('Documents', 'edusystem');
+                }
             }
         }
     }
@@ -591,7 +616,11 @@ function remove_my_account_links($menu_links)
 
     if (in_array('parent', $roles) || in_array('student', $roles)) {
         $menu_links['my-tickets'] = __('Support Tickets', 'edusystem');
-        $menu_links['my-requests'] = __('Requests', 'edusystem');
+        
+        if (MODE != 'UNI') {
+            $menu_links['my-requests'] = __('Requests', 'edusystem');
+        }
+
     }
 
     return $menu_links;
@@ -713,12 +742,19 @@ function add_loginout_link($items, $args)
             if ($age >= 18) {
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/orders">' . __('Payments', 'edusystem') . '</a></li>';
             }
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'edusystem') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';
+
+            if (MODE != 'UNI') {
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'edusystem') . '</a></li>';
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';
+            }
+
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account', 'edusystem') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('Suppor tickets', 'edusystem') . '</a></li>';
-            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-requests">' . __('Requests', 'edusystem') . '</a></li>';
+
+            if (MODE != 'UNI') {
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('Suppor tickets', 'edusystem') . '</a></li>';
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-requests">' . __('Requests', 'edusystem') . '</a></li>';
+            }
         }
 
         $logout_link = wp_logout_url(get_home_url());
@@ -2374,34 +2410,36 @@ function _mi_cuenta_determine_modal_action($student, $roles, $current_user_id)
     }
 
     // 5. CONSULTAS SEGURAS Y EFICIENTES
-    $table_user_signatures = $wpdb->prefix . 'users_signatures';
-    $student_user = in_array('student', $roles, true) ? get_user_by('id', $current_user_id) : get_user_by('email', $student->email);
-    $parent_user_id = $student->partner_id;
+    if (MODE != 'UNI') {
+        $table_user_signatures = $wpdb->prefix . 'users_signatures';
+        $student_user = in_array('student', $roles, true) ? get_user_by('id', $current_user_id) : get_user_by('email', $student->email);
+        $parent_user_id = $student->partner_id;
 
-    // Verificar firmas
-    $parent_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $parent_user_id));
-    $student_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $student_user->ID));
+        // Verificar firmas
+        $parent_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $parent_user_id));
+        $student_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $student_user->ID));
 
-    // Verificar si el documento de inscripción fue creado
-    $document_was_created = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_documents WHERE student_id = %d AND document_id = 'ENROLLMENT'", $student->id));
+        // Verificar si el documento de inscripción fue creado
+        $document_was_created = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_documents WHERE student_id = %d AND document_id = 'ENROLLMENT'", $student->id));
 
-    // Verificar pagos pendientes
-    $has_pending_payments = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW()", $student->id));
+        // Verificar pagos pendientes
+        $has_pending_payments = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW()", $student->id));
 
-    // 6. CONDICIONALES LEGIBLES
-    $all_signatures_missing = !$parent_enrollment_sig || !$student_enrollment_sig;
+        // 6. CONDICIONALES LEGIBLES
+        $all_signatures_missing = !$parent_enrollment_sig || !$student_enrollment_sig;
 
-    if ($document_was_created && $all_signatures_missing && !$has_pending_payments) {
-        add_action('wp_footer', 'modal_enrollment_student');
-        return;
-    }
+        if ($document_was_created && $all_signatures_missing && !$has_pending_payments) {
+            add_action('wp_footer', 'modal_enrollment_student');
+            return;
+        }
 
-    $parent_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $parent_user_id));
-    $student_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $student_user->ID));
-    $all_missing_sigs_done = !$parent_missing_sig || !$student_missing_sig;
+        $parent_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $parent_user_id));
+        $student_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $student_user->ID));
+        $all_missing_sigs_done = !$parent_missing_sig || !$student_missing_sig;
 
-    if ($document_was_created && !$all_signatures_missing && $all_missing_sigs_done && !$has_pending_payments) {
-        add_action('wp_footer', 'modal_missing_student');
+        if ($document_was_created && !$all_signatures_missing && $all_missing_sigs_done && !$has_pending_payments) {
+            add_action('wp_footer', 'modal_missing_student');
+        }
     }
 }
 function modal_take_elective()
@@ -3225,3 +3263,43 @@ function upload_file_attchment_edusystem($upload_data, $document_name)
     wp_update_attachment_metadata($attach_id, $attach_data);
     return $attach_id;
 }
+
+function custom_inputs_edusystem($atts) {
+    // Define los atributos por defecto.
+    // 'page_slug' es el nombre del atributo que esperarás en el shortcode.
+    // 'default_page' es el valor que tendrá si el usuario no especifica 'page_slug'.
+    $a = shortcode_atts(array(
+        'page_slug' => 'default_page',
+        'use_form' => 0,
+        'action' => ''
+    ), $atts);
+
+    // Ahora puedes acceder al valor del atributo así: $a['page_slug']
+    $page_to_get = $a['page_slug'];
+    $use_form = $a['use_form'] ?? 0;
+    $action_loaded = $a['action'];
+    $action = home_url('?action='.$action_loaded);
+
+    // Llama a tu función para obtener los custom inputs filtrados por el atributo
+    $custom_inputs_list = get_custom_inputs_page($page_to_get);
+
+    ob_start(); // Inicia el almacenamiento en búfer de salida para capturar el HTML
+
+    // Incluye tu plantilla. El contenido de la plantilla ahora tendrá acceso a $custom_inputs_list
+    // Asumo que 'templates/custom-inputs.php' es donde generas el HTML de los inputs.
+    // Necesitas ajustar el path si no es correcto.
+    // Ojo: Si 'templates/custom-inputs.php' es el archivo que refactorizamos con la lógica de los inputs dinámicos,
+    // entonces su nombre correcto debería ser 'custom-inputs-form-elements.php' o similar para evitar confusiones
+    // con el archivo custom-inputs.php que es el controlador.
+    // Usaré un placeholder para la ruta, asegúrate de que sea la correcta.
+    $template_path = plugin_dir_path(__FILE__) . 'templates/custom-inputs-form-elements.php'; // RUTA AJUSTADA
+    if (file_exists($template_path)) {
+        include($template_path);
+    } else {
+        echo '<p style="color:red;">Error: Custom inputs template not found at ' . esc_html($template_path) . '</p>';
+    }
+
+    return ob_get_clean(); // Devuelve el HTML capturado
+}
+
+add_shortcode('custom_inputs_edusystem', 'custom_inputs_edusystem');

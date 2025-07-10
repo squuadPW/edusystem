@@ -301,6 +301,11 @@
                         id="manager_configuration_options_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_configuration_options_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_configuration_options_aes" <?= !in_array('manager_configuration_options_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Configurations of the site', 'edusystem'); ?></label>
                 </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_custom_inputs', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_custom_inputs" id="manager_custom_inputs" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_custom_inputs'])) ? 'checked' : ''; ?>>
+                    <label for="manager_custom_inputs" <?= !in_array('manager_custom_inputs', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Custom inputs', 'edusystem'); ?></label>
+                </div>
             </div>
 
             <div class="capability-group">
