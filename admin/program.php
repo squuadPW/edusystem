@@ -229,7 +229,7 @@ function add_admin_form_program_content()
             wp_redirect( admin_url( 'admin.php?page=add_admin_form_program_content&section_tab=program_details&program_id='.$program_id ) );
             exit;
 
-        } else if ($_GET['action'] == 'save_quotas_rules') {
+        } else if ( $_GET['action'] == 'save_quotas_rules') {
             
             global $wpdb;
             $table_quota_rules = $wpdb->prefix . 'quota_rules';
@@ -365,7 +365,7 @@ function add_admin_form_program_content()
             wp_redirect($_SERVER['HTTP_REFERER']);
             exit;
 
-        } else if ($_GET['action'] == 'delete_program') {
+        } else if ( $_GET['action'] == 'delete_program') {
 
             $program_id = $_POST['program_id'];
 
