@@ -30,8 +30,8 @@
 	define('DUAL_9NO_VARIABLE', '18'); // Product variable (lower)
 	define('DUAL_10MO', '16');// Product Initial 10mo Grade (middle)
 	define('DUAL_10MO_VARIABLE', '21'); // Product variable  (middle)
-	define('DUAL_DEFAULT', '669');    // Product initial 11 and bacheloder (upper)17
-	define('DUAL_DEFAULT_VARIABLE','24'); // Product variable (upper)
+	define('DUAL_DEFAULT', '550');    // Product initial 11 and bacheloder (upper)17
+	define('DUAL_DEFAULT_VARIABLE','551'); // Product variable (upper)
 
 	// GLOBAL
 	define('ROLES_OF_STAFF', array('owner', 'administrador', 'admision', 'admission', 'alliance', 'administration', 'allied', 'webinar-aliance'));

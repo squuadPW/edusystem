@@ -131,17 +131,17 @@
 
 <?php 
 
-   /*  $order_id = 671;
+    $order_id = 676;
     $order = wc_get_order( $order_id );
-    global $wpdb;
+    /* global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
     $student_id = $order->get_meta('student_id');
 
     if (empty($student_id)) {
         return; // Salir si no hay ID de estudiante, ya que es un dato crítico.
-    }
+    } */
 
-    $student_data = get_student_detail($student_id);
+    /* $student_data = get_student_detail($student_id);
 
     // Validar si $student_data existe y tiene un institute_id
     if (!$student_data || !isset($student_data->institute_id) || empty($student_data->institute_id)) {
@@ -165,11 +165,12 @@
         }
     }
 
-    $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca.
+    $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca. */
 
     foreach ($order->get_items() as $item_id => $item) {
         $product = $item->get_product();
-
+        var_dump($item->get_meta('quota_rule_id'));
+/* 
         if ( !$product ) continue;
 
         // obtiene el id del producto tanto si es un poroducto variable o un producto
@@ -307,11 +308,11 @@
 
             echo "<pre>";
             var_dump( $data );
-            echo "</pre>";
-
+            echo "</pre>"; 
             // $wpdb->insert($table_student_payment, $data);
-        }
-    } */
+        }*/
+
+    }
 
     // Registrar el shortcode
     add_shortcode('payment_table_product_by_quotas', 'payment_table_product_by_quotas');

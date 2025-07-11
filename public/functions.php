@@ -835,7 +835,6 @@ function status_order_completed($order, $order_id, $customer_id)
     set_max_date_student($student_id);
 }
 
-
 /**
  * Actualiza o crea un registro de pago para un artículo dado en una orden.
  *
