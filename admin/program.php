@@ -581,6 +581,15 @@ class TT_All_Program_List_Table extends WP_List_Table
 
 }
 
+function get_programs()
+{
+    global $wpdb;
+    $table_programs = $wpdb->prefix . 'programs';
+
+    $program = $wpdb->get_results("SELECT * FROM {$table_programs} WHERE is_active=1");
+    return $program;
+}
+
 function get_program_details($id)
 {
     global $wpdb;
