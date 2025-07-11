@@ -1387,12 +1387,14 @@ function handle_virtual_classroom_access($student_id)
     $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}students WHERE id = %d", $student_id));
     send_notification_staff('Approved student', 'We inform you that the documents of the student ' . $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name . ', with the identification ' . $student->id_document . ' have been approved and he already has access to the virtual classroom and the admin. We are waiting for him to be assigned to his corresponding course.');
 
-    $fields_to_send = prepare_fields_to_send($student);
-    $files_to_send = prepare_files_to_send($student_id);
-
     update_status_student($student_id, 2);
     create_user_student($student_id);
-    create_user_laravel(array_merge($fields_to_send, ['files' => $files_to_send]));
+
+    if (MODE != 'UNI') {
+        $fields_to_send = prepare_fields_to_send($student);
+        $files_to_send = prepare_files_to_send($student_id);
+        create_user_laravel(array_merge($fields_to_send, ['files' => $files_to_send]));
+    }
 
     $exist = is_search_student_by_email($student_id);
     if (!$exist) {
