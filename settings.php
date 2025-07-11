@@ -4,6 +4,10 @@
 	// define('FEE_INSCRIPTION', '114'); // Product registration fee
 	// define('FEE_GRADUATION', '118'); // Product graduation fee
 
+	// UTBP
+	define('FEE_INSCRIPTION', '86'); // Product registration fee
+	define('FEE_GRADUATION', '90'); // Product graduation fee
+
 	//AWS
 	// define('FEE_INSCRIPTION', '63'); // Product registration fee
 	// define('FEE_GRADUATION', '1591'); // Product graduation fee
