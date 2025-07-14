@@ -1199,7 +1199,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
                 if( $data_quota_rule ) {
 
-                    $original_price = ( $i == 0 ) ? $initial_price :  $quote_price;
+                    $original_price = ( $i == 0 && $initial_price > 0 ) ? $initial_price :  $quote_price;
                     $amount = $original_price - ( ($original_price * $discount_value  ) /100);
                     $total_amount_to_pay = $total - ( ($total * $discount_value  ) / 100 );
                     $total_original_amount = $total;
