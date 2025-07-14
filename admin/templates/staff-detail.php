@@ -131,6 +131,33 @@
 
                                             <?php endif; ?>
                                         </td>
+                                        <td style="font-weight:400;">
+                                            <?php if (isset($staff) && !empty($staff)): ?>
+                                                <?php
+                                                    $manager_user_id = get_user_meta( $staff->ID, 'manager_user_id', true );
+                                                ?>
+                                                <label for="input_id"><b><?= __('Manager', 'edusystem'); ?></b></label><br>
+                                                    <select name="manager_user_id" style="width: 100%">
+                                                        <option value="">Select an option</option>
+                                                        <?php foreach ($managers as $manager): ?>
+                                                            <option value="<?= esc_attr($manager->ID) ?>" 
+                                                                <?= $manager->ID == $manager_user_id ? 'selected' : ''; ?>>
+                                                                <?= esc_html($manager->first_name) ?> <?= esc_html($manager->last_name) ?>
+                                                            </option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                            <?php else: ?>
+                                                <label for="input_id"><b><?= __('Managers', 'edusystem'); ?></b></label><br>
+                                                    <select name="manager_user_id" style="width: 100%">
+                                                        <option value="">Select an option</option>
+                                                        <?php foreach ($managers as $manager): ?>
+                                                            <option value="<?= esc_attr($manager->ID) ?>" >
+                                                                <?= esc_html($manager->first_name) ?> <?= esc_html($manager->last_name) ?>
+                                                            </option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                            <?php endif; ?>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
