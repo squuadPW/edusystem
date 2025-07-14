@@ -2,6 +2,8 @@
 
 function add_admin_partners_content()
 {
+    global $current_user;
+    $roles = $current_user->roles;
 
     if (isset($_GET['action']) && !empty($_GET['action'])) {
 
@@ -54,7 +56,13 @@ function add_admin_partners_content()
             $address = sanitize_textarea_field($_POST['address']);
             $description = sanitize_textarea_field($_POST['description']);
             $fee = str_replace('%', '', sanitize_text_field($_POST['fee'])); // Asegúrate de que fee sea sanitizado correctamente si es un float
-            $selected_manager_id = isset($_POST['manager_id']) ? intval($_POST['manager_id']) : 0; // Capturamos el único ID del manager
+
+            // Obtener el manager seleccionado (ahora es un solo valor, no un array)
+            if (in_array('owner', $roles) || in_array('administrator', $roles)) {
+               $selected_manager_id = isset($_POST['manager_id']) ? intval($_POST['manager_id']) : 0;
+            } else {
+                $selected_manager_id = $current_user->ID;
+            }
 
             if ($alliance_id > 0) { // Si existe alliance_id, estamos actualizando
 

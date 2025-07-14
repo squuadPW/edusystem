@@ -2,6 +2,8 @@
 
 function add_admin_institutes_content()
 {
+    global $current_user;
+    $roles = $current_user->roles;
 
     if (isset($_GET['action']) && !empty($_GET['action'])) {
 
@@ -72,7 +74,11 @@ function add_admin_institutes_content()
             $alliances_fees_data = isset($_POST['alliances_fees']) ? (array) $_POST['alliances_fees'] : [];
 
             // Obtener el manager seleccionado (ahora es un solo valor, no un array)
-            $selected_manager = isset($_POST['manager']) ? intval($_POST['manager']) : 0;
+            if (in_array('owner', $roles) || in_array('administrator', $roles)) {
+               $selected_manager = isset($_POST['manager']) ? intval($_POST['manager']) : 0;
+            } else {
+                $selected_manager = $current_user->ID;
+            }
 
             // --- Actualizar Instituto ---
             if ($institute_id > 0) {
