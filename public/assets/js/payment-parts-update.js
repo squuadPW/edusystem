@@ -92,14 +92,18 @@ function payment_table( rule_data ) {
         const opcions_date = { year: 'numeric', month: 'long', day: 'numeric' };
         const discount_value = parseFloat( document.getElementById('discount_value').value ?? 0 );
 
+        quotas_quantity = rule_data.quotas_quantity;
+        initial_price = parseFloat( rule_data.initial_price );
+
+        if( initial_price > 0 ) quotas_quantity ++;
+
         // Crear filas de datos
         total = 0;
-        for (let i = 0; i < rule_data.quotas_quantity; i++) {
+        for (let i = 0; i < quotas_quantity; i++) {
 
             type_frequency = rule_data.type_frequency;
             frequency_value = parseInt(rule_data.frequency_value);
             quote_price = parseFloat(rule_data.quote_price);
-            initial_price = parseFloat( rule_data.initial_price );
 
             if( discount_value > 0 ){
                 quote_price = quote_price - ( ( quote_price * discount_value ) / 100 );
