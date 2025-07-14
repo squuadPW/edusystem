@@ -219,7 +219,7 @@ function modal_delete_program_js ( button ) {
 * @param {boolean} [convert_to_upper=true] - Convertir automáticamente a mayúsculas
 * @param {number} [maxLength=0] - Longitud máxima (0 para ilimitado)
 */
-function validate_input(input, regex_pattern, convert_to_upper = true, max_length = 0) {
+function validate_input(input, regex_pattern, convert_to_upper = false, max_length = 0) {
 
     // Limitar longitud si max_length > 0
     if (max_length > 0 && input.value.length > max_length) {
@@ -233,13 +233,44 @@ function validate_input(input, regex_pattern, convert_to_upper = true, max_lengt
     }
     
     const regex = new RegExp(regex_pattern);
-    const last_char = input.value.slice(-1);
-            
-    // Si el último carácter no cumple con el regex, eliminarlo
-    if (input.value && !regex.test(last_char)) {
+    
+    // Validar toda la cadena de entrada
+    if ( input.value && !regex.test(input.value) ) {
+        // Si no cumple con el regex, eliminar el último carácter
         input.value = input.value.slice(0, -1);
     }
 }
+
+        function restrictInput(inputElement, blockedChars = [], message = '') {
+            // Prevenir entrada de caracteres no deseados
+            inputElement.addEventListener('keydown', function(e) {
+                if (blockedChars.includes(e.key)) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Validar también en el evento 'input' por si pegan texto
+            inputElement.addEventListener('input', function(e) {
+                const regex = new RegExp(`[${blockedChars.join('')}]`, 'gi');
+                if (regex.test(this.value)) {
+                    this.value = this.value.replace(regex, '');
+                }
+            });
+
+            // Validar al perder el foco
+            inputElement.addEventListener('blur', function(e) {
+                const regex = new RegExp(`[${blockedChars.join('')}]`, 'gi');
+                if (regex.test(this.value)) {
+                    this.value = this.value.replace(regex, '');
+                    if (message) alert(message);
+                }
+            });
+        }
+
+        const numberInput = document.getElementById('numberInput');
+        restrictInput(numberInput, ['-', 'e', 'E'], 'Por favor ingresa solo números positivos sin notación científica.');
+ 
 
 let timeout_id = null;
 let controller_validate_identificator
