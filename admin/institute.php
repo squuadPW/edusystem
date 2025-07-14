@@ -282,22 +282,24 @@ function add_admin_institutes_content()
             $alliances = get_alliances();
             $managers = get_managers();
 
-            $selected_manager_user_ids = [];
-            if (isset($institute_id) && !empty($institute_id)) {
-                global $wpdb;
-                $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
+            // $selected_manager_user_ids = [];
+            // if (isset($institute_id) && !empty($institute_id)) {
+            //     global $wpdb;
+            //     $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
 
-                // Obtener las alianzas ya asociadas a este instituto
-                $existing_managers_for_institute = $wpdb->get_results($wpdb->prepare(
-                    "SELECT user_id FROM {$table_managers_by_institute} WHERE institute_id = %d",
-                    $institute_id
-                ));
+            //     // Obtener las alianzas ya asociadas a este instituto
+            //     $existing_managers_for_institute = $wpdb->get_results($wpdb->prepare(
+            //         "SELECT user_id FROM {$table_managers_by_institute} WHERE institute_id = %d",
+            //         $institute_id
+            //     ));
 
-                // Mapear los resultados a un array simple de IDs para facilitar la verificación en el HTML
-                $selected_manager_user_ids = array_map(function ($item) {
-                    return (int) $item->user_id;
-                }, $existing_managers_for_institute);
-            }
+            //     // Mapear los resultados a un array simple de IDs para facilitar la verificación en el HTML
+            //     $selected_manager_user_ids = array_map(function ($item) {
+            //         return (int) $item->user_id;
+            //     }, $existing_managers_for_institute);
+            // }
+
+            $selected_manager_user_ids = get_managers_institute($institute_id);
 
             $selected_alliance_fees_data = [];
             if (isset($institute_id) && !empty($institute_id)) {
@@ -1174,4 +1176,25 @@ function get_name_institute($institute_id)
     $table_institutes = $wpdb->prefix . 'institutes';
     $institute = $wpdb->get_row("SELECT * FROM {$table_institutes} WHERE id = " . $institute_id);
     return $institute->name;
+}
+
+function get_managers_institute($institute_id)
+{
+    $selected_manager_user_ids = [];
+    if (isset($institute_id) && !empty($institute_id)) {
+        global $wpdb;
+        $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
+
+        // Obtener las alianzas ya asociadas a este instituto
+        $existing_managers_for_institute = $wpdb->get_results($wpdb->prepare(
+            "SELECT user_id FROM {$table_managers_by_institute} WHERE institute_id = %d",
+            $institute_id
+        ));
+
+        // Mapear los resultados a un array simple de IDs para facilitar la verificación en el HTML
+        $selected_manager_user_ids = array_map(function ($item) {
+            return (int) $item->user_id;
+        }, $existing_managers_for_institute);
+    }
+    return $selected_manager_user_ids;
 }
