@@ -1091,16 +1091,16 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
     foreach ($order->get_items() as $item_id => $item) {
         $product = $item->get_product();
-        if (!$product) {
-            continue;
-        }
 
+        if ( !$product ) continue;
+
+        // obtiene el id del producto, de la variacion si lo tiene y el id de la regla si lo tiene
         $product_id = $item->get_product_id();
-        $variation_id = $item->get_variation_id();
+        $variation_id = $item->get_variation_id() ?? 0;
 
         // Determinar si este producto es un FEE de inscripción o graduación.
         // Asegúrate de que FEE_INSCRIPTION y FEE_GRADUATION estén definidos como constantes.
-        $is_fee_product = in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]);
+        $is_fee_product = in_array( $product_id, [FEE_INSCRIPTION, FEE_GRADUATION] );
 
         // Evita la redundancia procesando solo si no existe un registro previo para este producto en esta orden.
         $existing_record_count = $wpdb->get_var($wpdb->prepare(
@@ -1108,46 +1108,9 @@ function process_program_payments(WC_Order $order, int $order_id): void
             $student_id,
             $product_id
         ));
-
-        if ($existing_record_count > 0) {
-            continue;
-        }
-
-        $installments = 1;
-        $interval = '';
-        $attribute_value = '';
-
-        if ($product->is_type('variation')) {
-            $variation_attributes = $product->get_variation_attributes();
-            foreach ($variation_attributes as $attribute_taxonomy => $term_slug) {
-                $taxonomy = str_replace('attribute_', '', $attribute_taxonomy);
-                if (taxonomy_exists($taxonomy)) {
-                    $term = get_term_by('slug', $term_slug, $taxonomy);
-                    if ($term) {
-                        $attribute_value = $term->name;
-                    }
-                } else {
-                    $attribute_value = $term_slug;
-                }
-            }
-
-            switch ($attribute_value) {
-                case 'Annual':
-                    $interval = '+1 year';
-                    break;
-                case 'Semiannual':
-                    $interval = '+6 months';
-                    break;
-            }
-            $installments = (int) ($product->get_meta('num_cuotes_text') ?: 1);
-        }
-
-        // --- Cálculos de precios ---
-        $original_price = (float) ($item->get_subtotal() / $item->get_quantity());
-        $price_per_installment = (float) ($item->get_total() / $item->get_quantity());
-        $total_amount_to_pay = $price_per_installment * $installments;
-        $total_original_amount = $original_price * $installments;
-        $total_discount_amount = $total_original_amount - $total_amount_to_pay;
+        
+        // salta el producto si encuentra un registro previo
+        if ($existing_record_count > 0) continue;
 
         // --- Recalcular tarifas de alianzas para este producto específico ---
         $current_item_alliances_fees = [];
@@ -1173,32 +1136,96 @@ function process_program_payments(WC_Order $order, int $order_id): void
         }
 
         $current_item_alliances_json = json_encode($current_item_alliances_fees);
-        if ($current_item_alliances_json === false) {
-            $current_item_alliances_json = json_encode([]);
+        if ($current_item_alliances_json === false) $current_item_alliances_json = json_encode([]);
+
+        $installments = 1;
+
+        // reglas de las quotas a aplicar
+        $rule_id = $item->get_meta('quota_rule_id');
+        if( $rule_id ){
+
+            $data_quota_rule = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM `{$wpdb->prefix}quota_rules` WHERE id = %d",
+                (int) $rule_id
+            ));
+
+            if( $data_quota_rule ){
+
+                $quotas_quantity_rule = (int) $data_quota_rule->quotas_quantity;
+                $initial_price = (double) $data_quota_rule->initial_price;
+                $quote_price = (double) $data_quota_rule->quote_price;
+                $type_frequency = $data_quota_rule->type_frequency;
+                $frequency_value = $data_quota_rule->frequency_value;
+                
+                $total = (double) ( $quotas_quantity_rule * $quote_price ) + $initial_price;
+
+                $installments = $quotas_quantity_rule;
+
+                if( $initial_price > 0 ) $installments ++;
+
+                $discount_value = 0;
+                $applied_coupons = $order->get_used_coupons();
+                if ( !empty($applied_coupons) ) {
+                    foreach ($applied_coupons as $coupon_code) {
+                        $coupon = new WC_Coupon($coupon_code);
+
+                        // Validar si el cupón es aplicable al producto y si es un descuento porcentual
+                        if ( $coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent' ) {
+                            $discount_value += (double) $coupon->get_amount();
+                        }
+                    }
+                }
+            }
+
+        } else {
+
+            // --- Cálculos de precios ---
+            $original_price = (double) ($item->get_subtotal() / $item->get_quantity());
+            $amount = (double) ($item->get_total() / $item->get_quantity());
+            $total_amount_to_pay = $amount * $installments;
+            $total_original_amount = $original_price * $installments;
+            $total_discount_amount = $original_price - $amount;
         }
 
         // --- Lógica de fechas ---
         $needs_next_payment = !$is_fee_product;
         $start_date = new DateTime();
+        $payment_date_obj = clone $start_date;
+        
+        for ( $i = 0; $i < $installments; $i++ ) {
 
-        for ($i = 0; $i < $installments; $i++) {
             $next_payment_date = null;
-            if ($needs_next_payment) {
-                $payment_date_obj = clone $start_date;
+            if ( $needs_next_payment ) {
 
-                if ($i > 0 && !empty($interval)) {
-                    if (preg_match('/^\+(\d+)\s*(year|month)s?$/i', $interval, $matches)) {
-                        $value = (int) $matches[1];
-                        $unit = $matches[2];
-                        $total_offset = $i * $value;
-                        $payment_date_obj->modify("+$total_offset $unit");
-                    }
+                if( $data_quota_rule ) {
+
+                    $original_price = ( $i == 0 ) ? $initial_price :  $quote_price;
+                    $amount = $original_price - ( ($original_price * $discount_value  ) /100);
+                    $total_amount_to_pay = $total - ( ($total * $discount_value  ) / 100 );
+                    $total_original_amount = $total;
+                    $total_discount_amount = $original_price - $amount;
+
+                    if ($i > 0 && $type_frequency ) {
+                        switch ($type_frequency) {
+                            case 'day':
+                                $payment_date_obj->modify("+{$frequency_value} days");
+                                break;
+                            case 'month':
+                                $payment_date_obj->modify("+{$frequency_value} months");
+                                break;
+                            case 'year':
+                                $payment_date_obj->modify("+{$frequency_value} years");
+                                break;
+                        }
+                    }  
                 }
+                
                 $next_payment_date = $payment_date_obj->format('Y-m-d');
             }
 
             // Calcular el institute_fee para este item específico
             $current_item_institute_fee = 0.0;
+
             // Solo se calcula la tarifa del instituto si el instituto existe y no es un producto FEE o beca.
             if ($institute && !$is_fee_product && !$is_scholarship) {
                 $institute_fee_percentage = (float) ($institute->fee ?? 0);
@@ -1214,7 +1241,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
                 'institute_id' => ($i + 1) == 1 ? $institute_id : null,
                 'institute_fee' => ($i + 1) == 1 ? $current_item_institute_fee : 0,
                 'alliances' => ($i + 1) == 1 ? $current_item_alliances_json : null,
-                'amount' => $price_per_installment,
+                'amount' => $amount,
                 'original_amount_product' => $original_price,
                 'total_amount' => $total_amount_to_pay,
                 'original_amount' => $total_original_amount,
@@ -1228,6 +1255,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
             $wpdb->insert($table_student_payment, $data);
         }
+
     }
 }
 
@@ -1738,6 +1766,34 @@ function update_price_product_cart_quota_rule() {
     wp_send_json_error( __( 'Product not found in cart','edusystem') );
     exit;
 }
+
+
+/**
+ * Guarda metadatos personalizados para los ítems de la orden durante el proceso de checkout.
+ * 
+ * Esta función se ejecuta cuando se crea un ítem de la orden a partir de los artículos del carrito.
+ * Si el producto en el carrito tiene un `quota_rule_id`, este se guarda como metadato en el ítem
+ * de la orden.
+ * 
+ * @param WC_Order_Item_Product $item El ítem de la orden que se está creando.
+ * @param string $cart_item_key La clave del artículo en el carrito.
+ * @param array $values Los valores del artículo del carrito, que pueden incluir metadatos personalizados.
+ * @param WC_Order $order La orden a la que pertenece el ítem.
+ * 
+ * @return void
+ * 
+ * @uses WC_Order_Item_Product
+ * @uses WC_Order
+ */
+add_action('woocommerce_checkout_create_order_line_item', 'save_metadata_checkout_create_order_item', 10, 4);
+function save_metadata_checkout_create_order_item($item, $cart_item_key, $values, $order) {
+    
+    // Si el producto en el carrito tiene un quote_rule_id, lo guarda en el ítem de la orden
+    if (isset($values['quota_rule_id'])) {
+        $item->add_meta_data('quota_rule_id', $values['quota_rule_id']);
+    }
+}
+
 
 
 add_action('wp_ajax_nopriv_reload_payment_table', 'reload_payment_table');
