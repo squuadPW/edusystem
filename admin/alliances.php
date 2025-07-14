@@ -35,29 +35,28 @@ function add_admin_partners_content()
             exit;
 
         } else if ($_GET['action'] == 'save_setting_alliance') {
-
             global $wpdb;
             $table_alliances = $wpdb->prefix . 'alliances';
             $table_managers_by_alliance = $wpdb->prefix . 'managers_by_alliances';
-            $alliance_id = $_POST['alliance_id'];
+            $alliance_id = isset($_POST['alliance_id']) ? intval($_POST['alliance_id']) : 0; // Asegurarse de que sea un entero y manejar si no está seteado
 
-            $name = $_POST['name'];
-            $last_name = $_POST['last_name'];
-            $legal_name = $_POST['legal_name'];
-            $code = $_POST['code'];
-            $type = $_POST['type'];
-            $email = $_POST['email'];
-            $phone_hidden = $_POST['phone_hidden'];
-            $country = $_POST['country'];
-            $state = $_POST['state'];
-            $city = $_POST['city'];
-            $address = $_POST['address'];
-            $description = $_POST['description'];
-            $fee = str_replace('%', '', $_POST['fee']);
-            $selected_managers = isset($_POST['managers']) ? array_map('intval', (array) $_POST['managers']) : [];
+            // Recopilar y sanitizar todos los datos del formulario
+            $name = sanitize_text_field($_POST['name']);
+            $last_name = sanitize_text_field($_POST['last_name']);
+            $legal_name = sanitize_text_field($_POST['legal_name']);
+            $code = sanitize_text_field($_POST['code']);
+            $type = sanitize_text_field($_POST['type']);
+            $email = sanitize_email($_POST['email']);
+            $phone_hidden = sanitize_text_field($_POST['phone_hidden']);
+            $country = sanitize_text_field($_POST['country']);
+            $state = sanitize_text_field($_POST['state']);
+            $city = sanitize_text_field($_POST['city']);
+            $address = sanitize_textarea_field($_POST['address']);
+            $description = sanitize_textarea_field($_POST['description']);
+            $fee = str_replace('%', '', sanitize_text_field($_POST['fee'])); // Asegúrate de que fee sea sanitizado correctamente si es un float
+            $selected_manager_id = isset($_POST['manager_id']) ? intval($_POST['manager_id']) : 0; // Capturamos el único ID del manager
 
-
-            if (isset($_POST['alliance_id']) && !empty($_POST['alliance_id'])) {
+            if ($alliance_id > 0) { // Si existe alliance_id, estamos actualizando
 
                 $wpdb->update($table_alliances, [
                     'code' => $code,
@@ -73,34 +72,37 @@ function add_admin_partners_content()
                     'address' => $address,
                     'description' => $description,
                     'fee' => $fee,
-                    'updated_at' => date('Y-m-d H:i:s')
+                    'updated_at' => current_time('mysql') // Usar current_time('mysql') para consistencia con WP
                 ], [
                     'id' => $alliance_id
                 ]);
 
+                // --- Gestionar el manager (ahora es un solo manager) ---
+                // 1. Eliminar cualquier manager previamente asociado a esta alianza
                 $wpdb->delete($table_managers_by_alliance, ['alliance_id' => $alliance_id]);
 
-                foreach ($selected_managers as $user_id) {
+                // 2. Insertar el nuevo manager seleccionado, si hay uno
+                if ($selected_manager_id > 0) {
                     $wpdb->insert(
                         $table_managers_by_alliance,
                         [
                             'alliance_id' => $alliance_id,
-                            'user_id' => $user_id,
+                            'user_id' => $selected_manager_id,
                             'created_at' => current_time('mysql')
-                        ]
+                        ],
+                        ['%d', '%d', '%s'] // Formatos para los valores
                     );
                 }
 
-                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 3600, '/');
-                wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id=' . $alliance_id . '&message=' . __('Changes saved successfully', 'edusystem')));
+                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/'); // Reducí el tiempo del cookie a 10 segundos, 3600 es mucho para un mensaje temporal.
+                wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=alliance_details&alliance_id=' . $alliance_id . '&message=' . urlencode(__('Changes saved successfully', 'edusystem')))); // Usar urlencode para el mensaje en la URL
                 exit;
 
-            } else {
+            } else { // Si no existe alliance_id, estamos insertando una nueva alianza
 
                 $user = get_user_by('email', $email);
 
-                if (!$user) {
-
+                if (!$user) { // Si el email no existe, podemos crear la alianza
                     $wpdb->insert($table_alliances, [
                         'code' => $code,
                         'type' => $type,
@@ -116,40 +118,42 @@ function add_admin_partners_content()
                         'description' => $description,
                         'status' => 1,
                         'fee' => floatval($fee),
-                        'created_at' => date('Y-m-d H:i:s')
+                        'created_at' => current_time('mysql')
                     ]);
 
-                    $alliance_id = $wpdb->insert_id;
+                    $alliance_id = $wpdb->insert_id; // Obtener el ID de la alianza recién insertada
 
-                    foreach ($selected_managers as $user_id) {
+                    // --- Gestionar el manager (ahora es un solo manager) ---
+                    // Insertar el manager seleccionado, si hay uno
+                    if ($selected_manager_id > 0) {
                         $wpdb->insert(
                             $table_managers_by_alliance,
                             [
                                 'alliance_id' => $alliance_id,
-                                'user_id' => $user_id,
+                                'user_id' => $selected_manager_id,
                                 'created_at' => current_time('mysql')
-                            ]
+                            ],
+                            ['%d', '%d', '%s']
                         );
                     }
 
-                    $alliance = $wpdb->get_row("SELECT * FROM {$table_alliances} WHERE id={$alliance_id}");
-                    create_user_alliance($alliance);
+                    $alliance = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_alliances} WHERE id=%d", $alliance_id)); // Usar prepare para seguridad
+                    create_user_alliance($alliance); // Asegúrate de que esta función maneje el nuevo esquema si es necesario
 
                     $email_approved_alliance = WC()->mailer()->get_emails()['WC_Approved_Partner_Email'];
                     $email_approved_alliance->trigger($alliance_id);
-                    setcookie('message', $name . ' ' . $last_name, time() + 3600, '/');
+                    setcookie('message', sprintf(__('%s %s added successfully.', 'edusystem'), $name, $last_name), time() + 10, '/'); // Mensaje más descriptivo
                     wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=all_alliances'));
                     exit;
 
-                } else {
-                    setcookie('message-error', __('Existing email, please enter another email', 'edusystem'), time() + 3600, '/');
-                    wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=add_alliance', 'edusystem'));
+                } else { // Si el email ya existe
+                    setcookie('message-error', __('Existing email, please enter another email', 'edusystem'), time() + 10, '/');
+                    wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=add_alliance')); // Quité el segundo argumento 'edusystem' ya que no es necesario para wp_redirect
                     exit;
                 }
             }
 
             exit;
-
         } else if ($_GET['action'] == 'delete_alliance') {
 
             global $wpdb;

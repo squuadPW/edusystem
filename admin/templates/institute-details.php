@@ -483,7 +483,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;">
+                            <!-- <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;">
                                 <b><?= __('Manager\'s information', 'edusystem'); ?></b>
                             </h3>
                             <table class="form-table table-customize" style="margin-top:0px;">
@@ -510,6 +510,41 @@
                                                         <option value="<?= esc_attr($manager->ID) ?>">
                                                             <?= esc_html($manager->first_name) ?>
                                                             <?= esc_html($manager->last_name) ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            <?php endif; ?>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table> -->
+                            <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;">
+                                <b><?= __('Manager\'s information', 'edusystem'); ?></b>
+                            </h3>
+                            <table class="form-table table-customize" style="margin-top:0px;">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="font-weight:400;">
+                                            <?php if (isset($institute) && !empty($institute)): ?>
+                                                <label for="input_id">
+                                                    <b><?= __('Manager\'s', 'edusystem'); ?></b><?= ($institute->status == 1) ? '<span class="text-danger">*</span>' : ''; ?>
+                                                </label><br>
+                                                <select name="manager" <?= ($institute->status == 0) ? 'disabled' : 'required'; ?> style="width: 100%">
+                                                    <?php foreach ($managers as $manager): ?>
+                                                        <option value="<?= esc_attr($manager->ID) ?>" 
+                                                            <?= in_array($manager->ID, $selected_manager_user_ids) ? 'selected' : ''; ?>>
+                                                            <?= esc_html($manager->first_name) ?> <?= esc_html($manager->last_name) ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            <?php else: ?>
+                                                <label for="input_id">
+                                                    <b><?= __('Manager\'s', 'edusystem'); ?></b><span class="text-danger">*</span>
+                                                </label><br>
+                                                <select name="manager" required style="width: 100%">
+                                                    <?php foreach ($managers as $manager): ?>
+                                                        <option value="<?= esc_attr($manager->ID) ?>">
+                                                            <?= esc_html($manager->first_name) ?> <?= esc_html($manager->last_name) ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>

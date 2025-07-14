@@ -34,13 +34,12 @@ function add_admin_institutes_content()
         }
 
         if ($_GET['action'] == 'save_institute_details') {
-
             global $wpdb;
             $table_institutes = $wpdb->prefix . 'institutes';
-            $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes'; // Tabla de alianzas por instituto
-            $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes'; // Asumo que esta tabla también existe y se gestiona
+            $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes';
+            $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
 
-            $institute_id = isset($_POST['institute_id']) ? intval($_POST['institute_id']) : 0; // Asegurarse de que sea un entero
+            $institute_id = isset($_POST['institute_id']) ? intval($_POST['institute_id']) : 0;
 
             // Recopilar y sanitizar datos del formulario principal del instituto
             $name = sanitize_text_field($_POST['name']);
@@ -50,7 +49,7 @@ function add_admin_institutes_content()
             $state = sanitize_text_field($_POST['state']);
             $city = sanitize_text_field($_POST['city']);
             $level = intval($_POST['level']);
-            $fee = str_replace('%', '', sanitize_text_field($_POST['fee'])); // Asegúrate que 'fee' es del instituto, no de la alianza
+            $fee = str_replace('%', '', sanitize_text_field($_POST['fee']));
             $rector_name = sanitize_text_field($_POST['rector_name']);
             $rector_last_name = sanitize_text_field($_POST['rector_last_name']);
             $rector_phone = sanitize_text_field($_POST['rector_phone_hidden']);
@@ -72,12 +71,11 @@ function add_admin_institutes_content()
             // Obtener los datos de montos de las alianzas (array asociativo de arrays)
             $alliances_fees_data = isset($_POST['alliances_fees']) ? (array) $_POST['alliances_fees'] : [];
 
-            // Obtener los managers seleccionados (si aplica)
-            $selected_managers = isset($_POST['managers']) ? array_map('intval', (array) $_POST['managers']) : [];
+            // Obtener el manager seleccionado (ahora es un solo valor, no un array)
+            $selected_manager = isset($_POST['manager']) ? intval($_POST['manager']) : 0;
 
             // --- Actualizar Instituto ---
             if ($institute_id > 0) {
-
                 $wpdb->update(
                     $table_institutes,
                     [
@@ -109,20 +107,12 @@ function add_admin_institutes_content()
                 );
 
                 // --- Gestionar alianzas en la tabla independiente (alliances_by_institutes) ---
-                // 1. Eliminar las alianzas existentes para este instituto
                 $wpdb->delete($table_alliances_by_institute, ['institute_id' => $institute_id]);
-
-                // 2. Insertar las nuevas alianzas seleccionadas con sus montos
                 foreach ($selected_alliances as $alliance_id) {
                     $alliance_fee = 0.0;
-                    // $institute_fee = 0.0;
-
-                    // Verificar si existen los montos para esta alianza en los datos enviados
                     if (isset($alliances_fees_data[$alliance_id])) {
                         $alliance_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['alliance_fee']));
-                        // $institute_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['institute_fee']));
                     }
-
                     $wpdb->insert(
                         $table_alliances_by_institute,
                         [
@@ -132,18 +122,20 @@ function add_admin_institutes_content()
                             'institute_fee' => $fee,
                             'created_at' => current_time('mysql')
                         ],
-                        ['%d', '%d', '%f', '%f', '%s'] // Formatos para los valores
+                        ['%d', '%d', '%f', '%f', '%s']
                     );
                 }
 
-                // --- Gestionar managers (si aplica) ---
+                // --- Gestionar manager (ahora es un solo manager) ---
+                // Primero, eliminamos cualquier manager asociado previamente para este instituto
                 $wpdb->delete($table_managers_by_institute, ['institute_id' => $institute_id]);
-                foreach ($selected_managers as $user_id) {
+                // Luego, insertamos el nuevo manager seleccionado, si hay uno
+                if ($selected_manager > 0) {
                     $wpdb->insert(
                         $table_managers_by_institute,
                         [
                             'institute_id' => $institute_id,
-                            'user_id' => $user_id,
+                            'user_id' => $selected_manager,
                             'created_at' => current_time('mysql')
                         ],
                         ['%d', '%d', '%s']
@@ -155,7 +147,6 @@ function add_admin_institutes_content()
                 exit;
 
             } else { // --- Insertar Nuevo Instituto ---
-
                 $user = get_user_by('email', $email);
 
                 if (!$user) {
@@ -190,15 +181,15 @@ function add_admin_institutes_content()
                         ]
                     );
 
-                    $institute_id = $wpdb->insert_id; // Obtener el ID del instituto recién insertado
+                    $institute_id = $wpdb->insert_id;
 
-                    // --- Gestionar managers (si aplica) ---
-                    foreach ($selected_managers as $user_id) {
+                    // --- Gestionar manager (ahora es un solo manager) ---
+                    if ($selected_manager > 0) {
                         $wpdb->insert(
                             $table_managers_by_institute,
                             [
                                 'institute_id' => $institute_id,
-                                'user_id' => $user_id,
+                                'user_id' => $selected_manager,
                                 'created_at' => current_time('mysql')
                             ],
                             ['%d', '%d', '%s']
@@ -208,14 +199,9 @@ function add_admin_institutes_content()
                     // --- Gestionar alianzas en la tabla independiente (alliances_by_institutes) ---
                     foreach ($selected_alliances as $alliance_id) {
                         $alliance_fee = 0.0;
-                        // $institute_fee = 0.0;
-
-                        // Verificar si existen los montos para esta alianza en los datos enviados
                         if (isset($alliances_fees_data[$alliance_id])) {
                             $alliance_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['alliance_fee']));
-                            // $institute_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['institute_fee']));
                         }
-
                         $wpdb->insert(
                             $table_alliances_by_institute,
                             [
@@ -225,12 +211,12 @@ function add_admin_institutes_content()
                                 'institute_fee' => $fee,
                                 'created_at' => current_time('mysql')
                             ],
-                            ['%d', '%d', '%f', '%f', '%s'] // Formatos para los valores
+                            ['%d', '%d', '%f', '%f', '%s']
                         );
                     }
 
                     $data_institute = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_institutes} WHERE id=%d", $institute_id));
-                    create_user_institute($data_institute); // Asegúrate de que esta función maneje el nuevo esquema si es necesario
+                    create_user_institute($data_institute);
 
                     $email_approved_institute = WC()->mailer()->get_emails()['WC_Approved_Institution_Email'];
                     $email_approved_institute->trigger($institute_id);
