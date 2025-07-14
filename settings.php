@@ -1,18 +1,18 @@
 <?php
 
-	// FGU AWS
+	// portal.floridaglobal.university
 	// define('FEE_INSCRIPTION', '114'); // Product registration fee
 	// define('FEE_GRADUATION', '118'); // Product graduation fee
 
-	// UTBP
+	// portal.utbp.edu.mx
 	// define('FEE_INSCRIPTION', '86'); // Product registration fee
 	// define('FEE_GRADUATION', '90'); // Product graduation fee
 
-	//AWS
+	// portal.americanelite.school
 	// define('FEE_INSCRIPTION', '63'); // Product registration fee
 	// define('FEE_GRADUATION', '1591'); // Product graduation fee
 
-	// DREAMHOST
+	// americanelite.dreamhosters.com & dev.edusof.com 
 	define('FEE_INSCRIPTION', '26'); // Product registration fee
 	define('FEE_GRADUATION', '30'); // Product graduation fee
 
@@ -22,7 +22,7 @@
 	define('TYPE_PROGRAM', '0'); // AES type of program for endpoint for laravel create user and move documents
 	define('URL_LARAVEL_PPADMIN', 'https://ppadmin.american-elite.us/'); 
 	define('ROLE_ID_STUDENT_MOODLE', 5); // Role ID moodle student
-	define('VERSIONS_JS', '2.0.77'); // Versions JS
-	define('MODE', 'UNI'); // Versions JS
+	define('VERSIONS_JS', '2.0.78'); // Versions JS
+	define('MODE', 'SCHOOL'); // Versions JS
 
 ?>
