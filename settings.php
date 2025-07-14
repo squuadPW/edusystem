@@ -22,7 +22,7 @@
 	define('TYPE_PROGRAM', '0'); // AES type of program for endpoint for laravel create user and move documents
 	define('URL_LARAVEL_PPADMIN', 'https://ppadmin.american-elite.us/'); 
 	define('ROLE_ID_STUDENT_MOODLE', 5); // Role ID moodle student
-	define('VERSIONS_JS', '2.0.79'); // Versions JS
+	define('VERSIONS_JS', '2.0.81'); // Versions JS
 	define('MODE', 'UNI'); // Versions JS
 
 ?>
