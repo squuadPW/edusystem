@@ -190,8 +190,6 @@ function add_admin_partners_content()
             $alliance_id = $_GET['alliance_id'];
             $alliance = get_alliance_detail($alliance_id);
 
-            $list_alliances = new TT_alliances_List_Table;
-            $list_alliances->prepare_items();
             $countries = get_countries();
             $institutes = get_institutes_from_alliance($alliance_id);
             $managers = get_managers();
@@ -344,31 +342,93 @@ class TT_alliances_review_List_Table extends WP_List_Table
 
     function get_list_alliances_review()
     {
-        global $wpdb;
+        global $wpdb, $current_user; 
+
+        // Define los nombres de las tablas de la base de datos.
         $table_alliances = $wpdb->prefix . 'alliances';
+        $table_managers_by_alliance = $wpdb->prefix . 'managers_by_alliances'; 
 
+        // Configuración de la paginación.
+        $per_page = 20; // Número de elementos a mostrar por página.
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1; // Página actual, asegurando que sea un entero absoluto.
+        $offset = ( $pagenum - 1 ) * $per_page; // Calcula el desplazamiento (offset) para la consulta SQL.
 
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
+        // Construcción inicial de la consulta SQL. 
+        // Siempre filtra por `status` = 0 (asumiendo que significa un estado específico, como "sin asignar" o "borrador").
+        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_alliances} WHERE `status` = %d";
+        $params = [0]; // El valor del estado 0 se añade como un parámetro.
+        $param_types = 'd'; // Indica que el parámetro anterior es un entero ('d' de decimal).
 
-            $search = $_POST['s'];
+        // --- Lógica de filtrado por roles del usuario ---
+        // Si el usuario NO es un 'owner' ni un 'administrator', filtramos las alianzas por su ID.
+        if (!in_array('owner', $current_user->roles) && !in_array('administrator', $current_user->roles)) {
+            // Obtiene un array simple de `alliance_id` asociados al usuario actual.
+            // `get_col` es eficiente para obtener una sola columna de resultados.
+            $alliance_ids_of_user = $wpdb->get_col($wpdb->prepare(
+                "SELECT alliance_id FROM {$table_managers_by_alliance} WHERE user_id = %d",
+                $current_user->ID
+            ));
 
-            $alliances = $wpdb->get_results(
-                "SELECT * 
-                    FROM {$table_alliances} WHERE 
-                    status = 0 AND 
-                    ( `name` LIKE '%{$search}%' || 
-                     last_name LIKE '%{$search}%' || 
-                     name_legal LIKE '%{$search}%' || 
-                     email LIKE '%{$search}%')"
-                ,
-                "ARRAY_A"
-            );
+            // Si el usuario no tiene alianzas asociadas, no hay resultados que mostrar.
+            // Se devuelve un array vacío para evitar consultas innecesarias.
+            if (empty($alliance_ids_of_user)) {
+                return ['data' => [], 'total_count' => 0];
+            }
 
-        } else {
-            $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 0", "ARRAY_A");
+            // Construye una lista de marcadores de posición `%d` para la cláusula `IN`.
+            // Esto es necesario para usar `wpdb::prepare` de forma segura con un array de IDs.
+            $ids_placeholder = implode(',', array_fill(0, count($alliance_ids_of_user), '%d'));
+            $sql .= " AND `id` IN ({$ids_placeholder})"; // Añade la condición `IN` a la consulta.
+            
+            // Añade cada ID individualmente al array de parámetros y su tipo ('d').
+            foreach ($alliance_ids_of_user as $id) {
+                $params[] = $id;
+                $param_types .= 'd'; 
+            }
         }
 
-        return $alliances;
+        // --- Lógica de búsqueda si se proporciona un término ---
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
+            // Sanitiza y escapa el término de búsqueda para seguridad SQL.
+            $search = '%' . $wpdb->esc_like(sanitize_text_field($_POST['s'])) . '%';
+            
+            $sql .= " AND ("; // Inicia un grupo de condiciones para la búsqueda.
+            $searchable_fields = [
+                'name', 
+                'last_name', 
+                'name_legal', 
+                'email'
+            ];
+            
+            $conditions = [];
+            // Itera sobre los campos y construye las condiciones `LIKE`.
+            foreach ($searchable_fields as $field) {
+                $conditions[] = "`{$field}` LIKE %s"; // Marcador de posición para string.
+                $params[] = $search; // Añade el término de búsqueda a los parámetros.
+                $param_types .= 's'; // Indica que el parámetro es un string ('s').
+            }
+            $sql .= implode(' || ', $conditions); // Une las condiciones con `OR` (`||`).
+            $sql .= ")"; // Cierra el grupo de condiciones.
+        }
+
+        // --- Añadir LIMIT y OFFSET para la paginación ---
+        $sql .= " LIMIT %d OFFSET %d"; // Añade los marcadores de posición para limit y offset.
+        $params[] = $per_page; // Añade el número de elementos por página.
+        $params[] = $offset; // Añade el valor del offset.
+        $param_types .= 'dd'; // Indica que estos dos parámetros son enteros.
+
+        // Prepara la consulta SQL final de forma segura usando `wpdb::prepare()`.
+        // Esto previene inyecciones SQL al escapar correctamente todos los parámetros.
+        $prepared_sql = $wpdb->prepare($sql, ...$params);
+
+        // Ejecuta la consulta y obtiene los resultados como un array asociativo.
+        $alliances_data = $wpdb->get_results($prepared_sql, 'ARRAY_A');
+
+        // Obtiene el conteo total de filas encontradas por la consulta anterior (antes de LIMIT y OFFSET).
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        // Retorna los datos de las alianzas y el conteo total.
+        return ['data' => $alliances_data, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -395,16 +455,15 @@ class TT_alliances_review_List_Table extends WP_List_Table
     function prepare_items()
     {
 
-        $data_institutes = $this->get_list_alliances_review();
-        $per_page = 10;
+        $data_alliances = $this->get_list_alliances_review();
+        $data = $data_alliances['data'];
+        $total_count = (int) $data_alliances['total_count'];
 
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
-
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        $data = $data_institutes;
 
         function usort_reorder($a, $b)
         {
@@ -414,8 +473,11 @@ class TT_alliances_review_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $current_page = $this->get_pagenum();
-        $total_items = count($data);
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
         $this->items = $data;
     }
 }
@@ -494,29 +556,90 @@ class TT_alliances_List_Table extends WP_List_Table
 
     function get_list_alliances()
     {
-        global $wpdb;
+        global $wpdb, $current_user; 
+
+        // Define los nombres de las tablas de la base de datos.
         $table_alliances = $wpdb->prefix . 'alliances';
+        $table_managers_by_alliance = $wpdb->prefix . 'managers_by_alliances'; // Nueva tabla para managers de alianzas.
 
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
-            $search = $_POST['s'];
+        // Configuración de la paginación.
+        $per_page = 20; // Número de elementos a mostrar por página.
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1; // Página actual, asegurando que sea un entero absoluto.
+        $offset = ( $pagenum - 1 ) * $per_page; // Calcula el desplazamiento (offset) para la consulta SQL.
 
-            $alliances = $wpdb->get_results(
-                "SELECT * 
-                    FROM {$table_alliances} WHERE 
-                    status = 1 AND 
-                    ( `name` LIKE '%{$search}%' || 
-                     last_name LIKE '%{$search}%' || 
-                     name_legal LIKE '%{$search}%' || 
-                     email LIKE '%{$search}%')"
-                ,
-                "ARRAY_A"
-            );
+        // Construcción inicial de la consulta SQL. 
+        // Siempre filtra por `status` = 1 (asumiendo "activas" o "aprobadas").
+        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_alliances} WHERE `status` = %d";
+        $params = [1]; // El valor del estado 1 se añade como un parámetro.
+        $param_types = 'd'; // Indica que el parámetro anterior es un entero ('d' de decimal).
 
-        } else {
-            $alliances = $wpdb->get_results("SELECT * FROM {$table_alliances} WHERE status = 1", "ARRAY_A");
+        // --- Lógica de filtrado por roles del usuario ---
+        // Si el usuario NO es un 'owner' ni un 'administrator', filtramos las alianzas por su ID.
+        if (!in_array('owner', $current_user->roles) && !in_array('administrator', $current_user->roles)) {
+            // Obtiene un array simple de `alliance_id` asociados al usuario actual.
+            $alliance_ids_of_user = $wpdb->get_col($wpdb->prepare(
+                "SELECT alliance_id FROM {$table_managers_by_alliance} WHERE user_id = %d",
+                $current_user->ID
+            ));
+
+            // Si el usuario no tiene alianzas asociadas, no hay resultados que mostrar.
+            // Se devuelve un array vacío para evitar consultas innecesarias.
+            if (empty($alliance_ids_of_user)) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            // Construye una lista de marcadores de posición `%d` para la cláusula `IN`.
+            $ids_placeholder = implode(',', array_fill(0, count($alliance_ids_of_user), '%d'));
+            $sql .= " AND `id` IN ({$ids_placeholder})"; // Añade la condición `IN` a la consulta.
+            
+            // Añade cada ID individualmente al array de parámetros y su tipo ('d').
+            foreach ($alliance_ids_of_user as $id) {
+                $params[] = $id;
+                $param_types .= 'd'; 
+            }
         }
 
-        return $alliances;
+        // --- Lógica de búsqueda si se proporciona un término ---
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
+            // Sanitiza y escapa el término de búsqueda para seguridad SQL.
+            $search = '%' . $wpdb->esc_like(sanitize_text_field($_POST['s'])) . '%';
+            
+            $sql .= " AND ("; // Inicia un grupo de condiciones para la búsqueda.
+            $searchable_fields = [
+                'name', 
+                'last_name', // Asumo 'last_name' es un campo de búsqueda válido aquí.
+                'name_legal', 
+                'email'
+            ];
+            
+            $conditions = [];
+            // Itera sobre los campos y construye las condiciones `LIKE`.
+            foreach ($searchable_fields as $field) {
+                $conditions[] = "`{$field}` LIKE %s"; // Marcador de posición para string.
+                $params[] = $search; // Añade el término de búsqueda a los parámetros.
+                $param_types .= 's'; // Indica que el parámetro es un string ('s').
+            }
+            $sql .= implode(' || ', $conditions); // Une las condiciones con `OR` (`||`).
+            $sql .= ")"; // Cierra el grupo de condiciones.
+        }
+
+        // --- Añadir LIMIT y OFFSET para la paginación ---
+        $sql .= " LIMIT %d OFFSET %d"; // Añade los marcadores de posición para limit y offset.
+        $params[] = $per_page; // Añade el número de elementos por página.
+        $params[] = $offset; // Añade el valor del offset.
+        $param_types .= 'dd'; // Indica que estos dos parámetros son enteros.
+
+        // Prepara la consulta SQL final de forma segura usando `wpdb::prepare()`.
+        $prepared_sql = $wpdb->prepare($sql, ...$params);
+
+        // Ejecuta la consulta y obtiene los resultados como un array asociativo.
+        $alliances_data = $wpdb->get_results($prepared_sql, 'ARRAY_A');
+
+        // Obtiene el conteo total de filas encontradas por la consulta anterior (antes de LIMIT y OFFSET).
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        // Retorna los datos de las alianzas y el conteo total.
+        return ['data' => $alliances_data, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -544,15 +667,15 @@ class TT_alliances_List_Table extends WP_List_Table
     {
 
         $data_alliances = $this->get_list_alliances();
-        $per_page = 10;
+
+        $data = $data_alliances['data'];
+        $total_count = (int) $data_alliances['total_count'];
 
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
-
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
-        $data = $data_alliances;
 
         function usort_reorder($a, $b)
         {
@@ -562,8 +685,11 @@ class TT_alliances_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $current_page = $this->get_pagenum();
-        $total_items = count($data);
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
         $this->items = $data;
     }
 }

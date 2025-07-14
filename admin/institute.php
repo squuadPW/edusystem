@@ -873,7 +873,7 @@ class TT_institutes_List_Table extends WP_List_Table
     function prepare_items()
     {
         $all_institutes = $this->get_list_institutes();
-        $data_institutes = $all_institutes['data'];
+
         $data = $all_institutes['data'];
         $total_count = (int) $all_institutes['total_count'];
         $columns = $this->get_columns();
