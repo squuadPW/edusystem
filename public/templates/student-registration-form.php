@@ -12,6 +12,8 @@
     <input type="hidden" name="crm_url" id="x-api-url" value="<?= get_option('crm_url') ?? ''; ?>">
     <input type="hidden" name="crm_id" id="x-api-id" value="<?= $_GET['crm_id'] ?? ''; ?>">
     <input type="hidden" name="crm_api" id="x-api" value="contacts">
+    <input type="hidden" name="squuad_stripe_selected_client_id" id="squuad_stripe_selected_client_id" value="<?= $connected_account ?>">
+    <input type="hidden" id="product_id_input" name="product_id">
 
     <!-- DATOS DEL ESTUDIANTE -->
     <div class="grid grid-cols-12 gap-4">
@@ -193,12 +195,14 @@
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span class="required">*</span></label>
-            <select name="program" autocomplete="off" required>
+            <select name="program" id="program" autocomplete="off" required>
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                <option value="aes"><?= __('Dual diploma', 'edusystem'); ?></option>
+                <?php foreach ($programs as $program): ?>
+                    <option value="<?= $program->identificator; ?>"><?= $program->name; ?></option>
+                <?php endforeach; ?>
             </select>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="institute-id-select" style="display:none">
             <label for="name_institute"><?= __('Name of School or Institution with Agreement', 'edusystem'); ?><span
                     id="institute_id_required" class="required">*</span></label>
             <select name="institute_id" autocomplete="off" id="institute_id" required>
@@ -216,14 +220,11 @@
             <label for="name_institute"><?= __('Name Institute', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata" autocomplete="off" type="text" id="name_institute" name="name_institute">
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+        <div id="grade_select" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="display: none">
             <label for="grade" id="grade_tooltip"><?= __('Grade', 'edusystem'); ?> <span style="color: #002fbd"
                     class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
-            <select name="grade" autocomplete="off" required>
+            <select name="grade" id="grade" autocomplete="off" required>
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                <?php foreach ($grades as $grade): ?>
-                    <option value="<?= $grade->id; ?>"><?= $grade->name; ?> <?= $grade->description; ?></option>
-                <?php endforeach; ?>
             </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
