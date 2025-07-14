@@ -880,7 +880,6 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
 
     // Calcular las tarifas de alianzas para este ítem específico
     $current_item_alliances_fees = [];
-    $product = $item->get_product(); // Necesitamos el producto para determinar si es un FEE
     // Asegúrate de que FEE_INSCRIPTION y FEE_GRADUATION estén definidas como constantes globales
     $is_fee_product = in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]);
     // Asumiendo que get_post_meta para 'is_scholarship' ya fue validado en la función principal o que siempre retorna un valor booleano o false.
@@ -907,6 +906,7 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
             }
         }
     }
+
     $current_item_alliances_json = json_encode($current_item_alliances_fees);
     if ($current_item_alliances_json === false) {
         $current_item_alliances_json = json_encode([]); // Asegurarse de que sea un JSON válido en caso de error
