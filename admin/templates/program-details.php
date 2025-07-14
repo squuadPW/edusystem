@@ -48,7 +48,7 @@
                                         <br>
 
                                         <div>
-                                            <input type="text" name="identificator" oninput="validate_input(this, '^[A-Z0-9-]*$'),check_program_identificator_exists_js(this)" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?> >
+                                            <input type="text" name="identificator" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_program_identificator_exists_js(this)" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?> >
                                             <span id="error-identificator" class="input-error" ></span>
                                         </div>
                                         
