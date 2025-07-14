@@ -207,10 +207,12 @@ function check_payment_status($wpdb, $table, $student_id) {
 function handle_virtual_classroom($wpdb, $table, $student_id, $current_user) {
     $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $student_id));
     
-    $user_data = prepare_user_data($student, $current_user);
-    $files_to_send = prepare_files_data($wpdb, $student_id);
+    if (MODE != 'UNI') {
+        $user_data = prepare_user_data($student, $current_user);
+        $files_to_send = prepare_files_data($wpdb, $student_id);
+        create_user_laravel(array_merge($user_data, ['files' => $files_to_send]));
+    }
 
-    create_user_laravel(array_merge($user_data, ['files' => $files_to_send]));
     update_status_student($student_id, 2);
 
     if (in_array('parent', $current_user->roles) && !in_array('student', $current_user->roles)) {
@@ -532,62 +534,66 @@ function save_documents()
                                 break;
                         }
                         $user_partner = get_user_by('id', $student->partner_id);
-                        $fields_to_send = array(
-                            // DATOS DEL ESTUDIANTE
-                            'id_document' => $student->id_document,
-                            'type_document' => $type_document,
-                            'firstname' => $student->name . ' ' . $student->middle_name,
-                            'lastname' => $student->last_name . ' ' . $student->middle_last_name,
-                            'birth_date' => $student->birth_date,
-                            'phone' => $student->phone,
-                            'email' => $student->email,
-                            'etnia' => $student->ethnicity,
-                            'grade' => $grade,
-                            'gender' => $gender,
-                            'cod_period' => $student->academic_period,
-        
-                            // PADRE
-                            'id_document_re' => get_user_meta($student->partner_id, 'id_document', true) ? get_user_meta($student->partner_id, 'id_document', true) : '000000',
-                            'type_document_re' => $type_document_re,
-                            'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
-                            'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
-                            'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
-                            'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
-                            'email_re' => $user_partner->user_email,
-                            'gender_re' => $gender_re,
-        
-                            'cod_program' => PROGRAM_ID,
-                            'cod_tip' => TYPE_PROGRAM,
-                            'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
-                            'country' => get_user_meta($student->partner_id, 'billing_country', true),
-                            'city' => get_user_meta($student->partner_id, 'billing_city', true),
-                            'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true) ? get_user_meta($student->partner_id, 'billing_postcode', true) : '-',
-                        );
-        
-                        $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
-                        $documents_to_send = [];
-                        foreach ($all_documents_student as $document) {
-                            if ($document->attachment_id) {
-                                array_push($documents_to_send, $document);
+
+
+                        if (MODE != 'UNI') {
+                            $fields_to_send = array(
+                                // DATOS DEL ESTUDIANTE
+                                'id_document' => $student->id_document,
+                                'type_document' => $type_document,
+                                'firstname' => $student->name . ' ' . $student->middle_name,
+                                'lastname' => $student->last_name . ' ' . $student->middle_last_name,
+                                'birth_date' => $student->birth_date,
+                                'phone' => $student->phone,
+                                'email' => $student->email,
+                                'etnia' => $student->ethnicity,
+                                'grade' => $grade,
+                                'gender' => $gender,
+                                'cod_period' => $student->academic_period,
+            
+                                // PADRE
+                                'id_document_re' => get_user_meta($student->partner_id, 'id_document', true) ? get_user_meta($student->partner_id, 'id_document', true) : '000000',
+                                'type_document_re' => $type_document_re,
+                                'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
+                                'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
+                                'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
+                                'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
+                                'email_re' => $user_partner->user_email,
+                                'gender_re' => $gender_re,
+            
+                                'cod_program' => PROGRAM_ID,
+                                'cod_tip' => TYPE_PROGRAM,
+                                'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
+                                'country' => get_user_meta($student->partner_id, 'billing_country', true),
+                                'city' => get_user_meta($student->partner_id, 'billing_city', true),
+                                'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true) ? get_user_meta($student->partner_id, 'billing_postcode', true) : '-',
+                            );
+            
+                            $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
+                            $documents_to_send = [];
+                            foreach ($all_documents_student as $document) {
+                                if ($document->attachment_id) {
+                                    array_push($documents_to_send, $document);
+                                }
                             }
-                        }
-        
-                        foreach ($documents_to_send as $key => $doc) {
-                            $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
-                            $attachment_id = $doc->attachment_id;
-                            $attachment_path = get_attached_file($attachment_id);
-                            if ($attachment_path) {
-                                $file_name = basename($attachment_path);
-                                $file_type = mime_content_type($attachment_path);
-        
-                                $files_to_send[] = array(
-                                    'file' => curl_file_create($attachment_path, $file_type, $file_name),
-                                    'id_requisito' => $id_requisito
-                                );
+            
+                            foreach ($documents_to_send as $key => $doc) {
+                                $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
+                                $attachment_id = $doc->attachment_id;
+                                $attachment_path = get_attached_file($attachment_id);
+                                if ($attachment_path) {
+                                    $file_name = basename($attachment_path);
+                                    $file_type = mime_content_type($attachment_path);
+            
+                                    $files_to_send[] = array(
+                                        'file' => curl_file_create($attachment_path, $file_type, $file_name),
+                                        'id_requisito' => $id_requisito
+                                    );
+                                }
                             }
+            
+                            create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
                         }
-        
-                        create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
         
                         update_status_student($student_id, 2);
 

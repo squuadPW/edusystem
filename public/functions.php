@@ -1269,8 +1269,10 @@ function process_inscription_fee($order, $order_id)
     sync_student_with_moodle($student_id);
 
     // 12. Centraliza la obtención de datos para la API.
-    $api_data = prepare_data_for_laravel_api($student_id);
-    create_user_laravel($api_data);
+    if (MODE != 'UNI') {
+        $api_data = prepare_data_for_laravel_api($student_id);
+        create_user_laravel($api_data);
+    }
 
     if ($order->get_meta('id_bitrix')) {
         sendOrderbitrix(floatval($order->get_meta('id_bitrix')), $order_id, $order->get_status());
