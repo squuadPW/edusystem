@@ -660,11 +660,24 @@ function get_subprogram_by_id_program( $program_id ) {
     $table_programs = $wpdb->prefix . 'programs';
 
     $subprogram = $wpdb->get_var( $wpdb->prepare(
-        "SELECT subprogram FROM $table_programs WHERE id LIKE %s",
+        "SELECT subprogram FROM $table_programs WHERE id LIKE %d",
         $program_id
     ));
 
     return json_decode( $subprogram, true ) ?? [];
+}
+
+function get_identificator_by_id_program( $program_id ) {
+
+    global $wpdb;
+    $table_programs = $wpdb->prefix . 'programs';
+
+    $identificator = $wpdb->get_var( $wpdb->prepare(
+        "SELECT identificator FROM $table_programs WHERE id LIKE %d",
+        $program_id
+    ));
+
+    return $identificator;
 }
 
 function get_product_id_by_identificador_program( $identificador ) {
@@ -686,7 +699,7 @@ function get_product_id_by_id_program( $program_id ) {
     $table_programs = $wpdb->prefix . 'programs';
 
     $product_id = $wpdb->get_var( $wpdb->prepare(
-        "SELECT product_id FROM $table_programs WHERE id LIKE %s",
+        "SELECT product_id FROM $table_programs WHERE id LIKE %d",
         $program_id
     ));
 

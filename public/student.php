@@ -41,8 +41,9 @@ function save_student()
         // DATOS EXTRAS
         $country = isset($_POST['country']) ? $_POST['country'] : null;
         $city = isset($_POST['city']) ? strtolower($_POST['city']) : null;
-        $program = isset($_POST['program']) ? $_POST['program'] : null;
-        $grade = isset($_POST['grade']) ? $_POST['grade'] : null;
+        $program_id = isset($_POST['program']) ? $_POST['program'] : null;
+        $program = get_identificator_by_id_program($program_id);
+        $grade = isset($_POST['grade']) && !empty($_POST['grade']) ? $_POST['grade'] : 4;
         $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
         $password = isset($_POST['password']) ? $_POST['password'] : null;
         $from_webinar = isset($_POST['from_webinar']) ? true : false;
