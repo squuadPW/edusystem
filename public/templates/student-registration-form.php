@@ -193,7 +193,7 @@
             style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
             <div class="subtitle text-align-center"><?= __('Degree details', 'edusystem'); ?></div>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select">
             <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span class="required">*</span></label>
             <select name="program" id="program" autocomplete="off" required>
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
