@@ -56,7 +56,7 @@
             </div>
         <?php endif ?>
 
-        <div class="text-center" style="padding: 18px 0px;">
+        <div class="text-center elements-quote-hidden" style="padding: 18px 0px;">
             <label><?=__('Apply to get the discount','edusystem')?></label>
             <div id="button-schoolship"></div>
         </div>
@@ -84,7 +84,7 @@
         
         <?php if( $quotas_rules ): ?>
             <div>
-                <div class="radio-group text-center">
+                <div class="radio-group text-center elements-quote-hidden">
                     <label class="m-5"><?=__('Program Payments','edusystem')?></label>
 
                     <div class="radio-group options-quotas">
