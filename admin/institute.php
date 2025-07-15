@@ -2,6 +2,8 @@
 
 function add_admin_institutes_content()
 {
+    global $current_user;
+    $roles = $current_user->roles;
 
     if (isset($_GET['action']) && !empty($_GET['action'])) {
 
@@ -34,13 +36,12 @@ function add_admin_institutes_content()
         }
 
         if ($_GET['action'] == 'save_institute_details') {
-
             global $wpdb;
             $table_institutes = $wpdb->prefix . 'institutes';
-            $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes'; // Tabla de alianzas por instituto
-            $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes'; // Asumo que esta tabla también existe y se gestiona
+            $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes';
+            $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
 
-            $institute_id = isset($_POST['institute_id']) ? intval($_POST['institute_id']) : 0; // Asegurarse de que sea un entero
+            $institute_id = isset($_POST['institute_id']) ? intval($_POST['institute_id']) : 0;
 
             // Recopilar y sanitizar datos del formulario principal del instituto
             $name = sanitize_text_field($_POST['name']);
@@ -50,7 +51,7 @@ function add_admin_institutes_content()
             $state = sanitize_text_field($_POST['state']);
             $city = sanitize_text_field($_POST['city']);
             $level = intval($_POST['level']);
-            $fee = str_replace('%', '', sanitize_text_field($_POST['fee'])); // Asegúrate que 'fee' es del instituto, no de la alianza
+            $fee = str_replace('%', '', sanitize_text_field($_POST['fee']));
             $rector_name = sanitize_text_field($_POST['rector_name']);
             $rector_last_name = sanitize_text_field($_POST['rector_last_name']);
             $rector_phone = sanitize_text_field($_POST['rector_phone_hidden']);
@@ -72,12 +73,15 @@ function add_admin_institutes_content()
             // Obtener los datos de montos de las alianzas (array asociativo de arrays)
             $alliances_fees_data = isset($_POST['alliances_fees']) ? (array) $_POST['alliances_fees'] : [];
 
-            // Obtener los managers seleccionados (si aplica)
-            $selected_managers = isset($_POST['managers']) ? array_map('intval', (array) $_POST['managers']) : [];
+            // Obtener el manager seleccionado (ahora es un solo valor, no un array)
+            if (in_array('owner', $roles) || in_array('administrator', $roles)) {
+                $selected_manager = isset($_POST['manager']) ? intval($_POST['manager']) : 0;
+            } else {
+                $selected_manager = $current_user->ID;
+            }
 
             // --- Actualizar Instituto ---
             if ($institute_id > 0) {
-
                 $wpdb->update(
                     $table_institutes,
                     [
@@ -109,20 +113,12 @@ function add_admin_institutes_content()
                 );
 
                 // --- Gestionar alianzas en la tabla independiente (alliances_by_institutes) ---
-                // 1. Eliminar las alianzas existentes para este instituto
                 $wpdb->delete($table_alliances_by_institute, ['institute_id' => $institute_id]);
-
-                // 2. Insertar las nuevas alianzas seleccionadas con sus montos
                 foreach ($selected_alliances as $alliance_id) {
                     $alliance_fee = 0.0;
-                    // $institute_fee = 0.0;
-
-                    // Verificar si existen los montos para esta alianza en los datos enviados
                     if (isset($alliances_fees_data[$alliance_id])) {
                         $alliance_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['alliance_fee']));
-                        // $institute_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['institute_fee']));
                     }
-
                     $wpdb->insert(
                         $table_alliances_by_institute,
                         [
@@ -132,18 +128,20 @@ function add_admin_institutes_content()
                             'institute_fee' => $fee,
                             'created_at' => current_time('mysql')
                         ],
-                        ['%d', '%d', '%f', '%f', '%s'] // Formatos para los valores
+                        ['%d', '%d', '%f', '%f', '%s']
                     );
                 }
 
-                // --- Gestionar managers (si aplica) ---
+                // --- Gestionar manager (ahora es un solo manager) ---
+                // Primero, eliminamos cualquier manager asociado previamente para este instituto
                 $wpdb->delete($table_managers_by_institute, ['institute_id' => $institute_id]);
-                foreach ($selected_managers as $user_id) {
+                // Luego, insertamos el nuevo manager seleccionado, si hay uno
+                if ($selected_manager > 0) {
                     $wpdb->insert(
                         $table_managers_by_institute,
                         [
                             'institute_id' => $institute_id,
-                            'user_id' => $user_id,
+                            'user_id' => $selected_manager,
                             'created_at' => current_time('mysql')
                         ],
                         ['%d', '%d', '%s']
@@ -155,7 +153,6 @@ function add_admin_institutes_content()
                 exit;
 
             } else { // --- Insertar Nuevo Instituto ---
-
                 $user = get_user_by('email', $email);
 
                 if (!$user) {
@@ -190,15 +187,15 @@ function add_admin_institutes_content()
                         ]
                     );
 
-                    $institute_id = $wpdb->insert_id; // Obtener el ID del instituto recién insertado
+                    $institute_id = $wpdb->insert_id;
 
-                    // --- Gestionar managers (si aplica) ---
-                    foreach ($selected_managers as $user_id) {
+                    // --- Gestionar manager (ahora es un solo manager) ---
+                    if ($selected_manager > 0) {
                         $wpdb->insert(
                             $table_managers_by_institute,
                             [
                                 'institute_id' => $institute_id,
-                                'user_id' => $user_id,
+                                'user_id' => $selected_manager,
                                 'created_at' => current_time('mysql')
                             ],
                             ['%d', '%d', '%s']
@@ -208,14 +205,9 @@ function add_admin_institutes_content()
                     // --- Gestionar alianzas en la tabla independiente (alliances_by_institutes) ---
                     foreach ($selected_alliances as $alliance_id) {
                         $alliance_fee = 0.0;
-                        // $institute_fee = 0.0;
-
-                        // Verificar si existen los montos para esta alianza en los datos enviados
                         if (isset($alliances_fees_data[$alliance_id])) {
                             $alliance_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['alliance_fee']));
-                            // $institute_fee = floatval(sanitize_text_field($alliances_fees_data[$alliance_id]['institute_fee']));
                         }
-
                         $wpdb->insert(
                             $table_alliances_by_institute,
                             [
@@ -225,12 +217,12 @@ function add_admin_institutes_content()
                                 'institute_fee' => $fee,
                                 'created_at' => current_time('mysql')
                             ],
-                            ['%d', '%d', '%f', '%f', '%s'] // Formatos para los valores
+                            ['%d', '%d', '%f', '%f', '%s']
                         );
                     }
 
                     $data_institute = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_institutes} WHERE id=%d", $institute_id));
-                    create_user_institute($data_institute); // Asegúrate de que esta función maneje el nuevo esquema si es necesario
+                    create_user_institute($data_institute);
 
                     $email_approved_institute = WC()->mailer()->get_emails()['WC_Approved_Institution_Email'];
                     $email_approved_institute->trigger($institute_id);
@@ -296,22 +288,24 @@ function add_admin_institutes_content()
             $alliances = get_alliances();
             $managers = get_managers();
 
-            $selected_manager_user_ids = [];
-            if (isset($institute_id) && !empty($institute_id)) {
-                global $wpdb;
-                $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
+            // $selected_manager_user_ids = [];
+            // if (isset($institute_id) && !empty($institute_id)) {
+            //     global $wpdb;
+            //     $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
 
-                // Obtener las alianzas ya asociadas a este instituto
-                $existing_managers_for_institute = $wpdb->get_results($wpdb->prepare(
-                    "SELECT user_id FROM {$table_managers_by_institute} WHERE institute_id = %d",
-                    $institute_id
-                ));
+            //     // Obtener las alianzas ya asociadas a este instituto
+            //     $existing_managers_for_institute = $wpdb->get_results($wpdb->prepare(
+            //         "SELECT user_id FROM {$table_managers_by_institute} WHERE institute_id = %d",
+            //         $institute_id
+            //     ));
 
-                // Mapear los resultados a un array simple de IDs para facilitar la verificación en el HTML
-                $selected_manager_user_ids = array_map(function ($item) {
-                    return (int) $item->user_id;
-                }, $existing_managers_for_institute);
-            }
+            //     // Mapear los resultados a un array simple de IDs para facilitar la verificación en el HTML
+            //     $selected_manager_user_ids = array_map(function ($item) {
+            //         return (int) $item->user_id;
+            //     }, $existing_managers_for_institute);
+            // }
+
+            $selected_manager_user_ids = get_managers_institute($institute_id);
 
             $selected_alliance_fees_data = [];
             if (isset($institute_id) && !empty($institute_id)) {
@@ -561,35 +555,93 @@ class TT_institutes_review_List_Table extends WP_List_Table
 
     function get_list_institutes_review()
     {
-        global $wpdb;
+        global $wpdb, $current_user;
+
+        // Define los nombres de las tablas de la base de datos.
         $table_institutes = $wpdb->prefix . 'institutes';
-        $per_page = 20; // number of items per page
-        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-        $offset = (($pagenum - 1) * $per_page);
+        $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
 
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
+        // Configuración de la paginación.
+        $per_page = 20; // Número de elementos a mostrar por página.
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1; // Página actual, asegurando que sea un entero absoluto.
+        $offset = ($pagenum - 1) * $per_page; // Calcula el desplazamiento (offset) para la consulta SQL.
 
-            $search = $_POST['s'];
+        // Construcción inicial de la consulta SQL. 
+        // Siempre filtra por `status` = 0 (asumiendo que significa "no asignado" o "sin estado definido").
+        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status` = %d";
+        $params = [0]; // El valor del estado 0 se añade como un parámetro.
+        $param_types = 'd'; // Indica que el parámetro anterior es un entero ('d' de decimal).
 
-            $institutes = $wpdb->get_results(
-                "SELECT SQL_CALC_FOUND_ROWS * 
-                FROM {$table_institutes} WHERE 
-                `status` = 0  AND 
-                ( `name` LIKE '%{$search}%' || 
-                email LIKE '%{$search}%' || 
-                name_rector LIKE '%{$search}%' || 
-                lastname_rector LIKE '%{$search}%' || 
-                name_contact LIKE '%{$search}%' || 
-                lastname_contact LIKE '%{$search}%') LIMIT {$per_page} OFFSET {$offset}",
-                "ARRAY_A"
-            );
+        // --- Lógica de filtrado por roles del usuario ---
+        // Si el usuario NO es un 'owner' ni un 'administrator', filtramos los institutos por su ID.
+        if (!in_array('owner', $current_user->roles) && !in_array('administrator', $current_user->roles)) {
+            // Obtiene un array simple de `institute_id` asociados al usuario actual.
+            $institute_ids_of_user = $wpdb->get_col($wpdb->prepare(
+                "SELECT institute_id FROM {$table_managers_by_institute} WHERE user_id = %d",
+                $current_user->ID
+            ));
 
-        } else {
-            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status` = 0 LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+            // Si el usuario no tiene institutos asociados, no hay resultados que mostrar.
+            // Se devuelve un array vacío para evitar consultas innecesarias.
+            if (empty($institute_ids_of_user)) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            // Construye una lista de marcadores de posición `%d` para la cláusula `IN`.
+            $ids_placeholder = implode(',', array_fill(0, count($institute_ids_of_user), '%d'));
+            $sql .= " AND `id` IN ({$ids_placeholder})"; // Añade la condición `IN` a la consulta.
+
+            // Añade cada ID individualmente al array de parámetros y su tipo ('d').
+            foreach ($institute_ids_of_user as $id) {
+                $params[] = $id;
+                $param_types .= 'd';
+            }
         }
 
+        // --- Lógica de búsqueda si se proporciona un término ---
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
+            // Sanitiza y escapa el término de búsqueda para seguridad SQL.
+            $search = '%' . $wpdb->esc_like(sanitize_text_field($_POST['s'])) . '%';
+
+            $sql .= " AND ("; // Inicia un grupo de condiciones para la búsqueda.
+            $searchable_fields = [
+                'name',
+                'email',
+                'name_rector',
+                'lastname_rector',
+                'name_contact',
+                'lastname_contact'
+            ];
+
+            $conditions = [];
+            // Itera sobre los campos y construye las condiciones `LIKE`.
+            foreach ($searchable_fields as $field) {
+                $conditions[] = "`{$field}` LIKE %s"; // Marcador de posición para string.
+                $params[] = $search; // Añade el término de búsqueda a los parámetros.
+                $param_types .= 's'; // Indica que el parámetro es un string ('s').
+            }
+            $sql .= implode(' || ', $conditions); // Une las condiciones con `OR` (`||`).
+            $sql .= ")"; // Cierra el grupo de condiciones.
+        }
+
+        // --- Añadir LIMIT y OFFSET para la paginación ---
+        $sql .= " LIMIT %d OFFSET %d"; // Añade los marcadores de posición para limit y offset.
+        $params[] = $per_page; // Añade el número de elementos por página.
+        $params[] = $offset; // Añade el valor del offset.
+        $param_types .= 'dd'; // Indica que estos dos parámetros son enteros.
+
+        // Prepara la consulta SQL final de forma segura usando `wpdb::prepare()`.
+        // Esto previene inyecciones SQL al escapar correctamente todos los parámetros.
+        $prepared_sql = $wpdb->prepare($sql, ...$params);
+
+        // Ejecuta la consulta y obtiene los resultados como un array asociativo.
+        $institutes_data = $wpdb->get_results($prepared_sql, 'ARRAY_A');
+
+        // Obtiene el conteo total de filas encontradas por la consulta anterior (antes de LIMIT y OFFSET).
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
-        return ['data' => $institutes, 'total_count' => $total_count];
+
+        // Retorna los datos de los institutos y el conteo total.
+        return ['data' => $institutes_data, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -725,35 +777,76 @@ class TT_institutes_List_Table extends WP_List_Table
 
     function get_list_institutes()
     {
-
-        global $wpdb;
+        global $wpdb, $current_user;
         $table_institutes = $wpdb->prefix . 'institutes';
-        $per_page = 20; // number of items per page
+        $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
+
+        $per_page = 20; // Número de elementos por página
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-        $offset = (($pagenum - 1) * $per_page);
+        $offset = ($pagenum - 1) * $per_page;
 
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
+        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status` = 1";
+        $params = [];
+        $param_types = '';
 
-            $search = $_POST['s'];
+        // Lógica para filtrar por institutes_id si el usuario no es 'owner' o 'administrator'
+        if (!in_array('owner', $current_user->roles) && !in_array('administrator', $current_user->roles)) {
+            // Obtener los institutes_id asociados a este usuario
+            $institute_ids_of_user = $wpdb->get_col($wpdb->prepare(
+                "SELECT institute_id FROM {$table_managers_by_institute} WHERE user_id = %d",
+                $current_user->ID
+            ));
 
-            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * 
-                FROM {$table_institutes}
-                WHERE `status`=1
-                AND 
-                ( `name` LIKE '%{$search}%' ||
-                   email LIKE '%{$search}%' || 
-                   name_rector LIKE '%{$search}%' || 
-                   lastname_rector LIKE '%{$search}%' || 
-                   name_contact LIKE '%{$search}%' || 
-                   lastname_contact LIKE '%{$search}%'
-                ) LIMIT {$per_page} OFFSET {$offset}", 'ARRAY_A');
+            // Si el usuario no tiene institutos asignados, no hay resultados que mostrar
+            if (empty($institute_ids_of_user)) {
+                return ['data' => [], 'total_count' => 0];
+            }
 
-        } else {
-            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status`=1 LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+            // Convertir el array de IDs a una lista separada por comas para la cláusula IN
+            $ids_placeholder = implode(',', array_fill(0, count($institute_ids_of_user), '%d'));
+            $sql .= " AND `id` IN ({$ids_placeholder})";
+
+            // Añadir los IDs a los parámetros. Usamos array_merge para combinarlos correctamente.
+            // Aquí no se añade a $param_types directamente porque implode ya maneja el %d.
+            // La ventaja de get_col es que ya nos da un array de strings/int, y wpdb::prepare
+            // se encarga de tratarlos como %d si se usan con implode.
+            foreach ($institute_ids_of_user as $id) {
+                $params[] = $id;
+                $param_types .= 'd'; // Aseguramos que se traten como enteros
+            }
         }
 
+        // Lógica de búsqueda (igual que antes)
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
+            $search = '%' . $wpdb->esc_like(sanitize_text_field($_POST['s'])) . '%';
+            $sql .= " AND (";
+            $searchable_fields = ['name', 'email', 'name_rector', 'lastname_rector', 'name_contact', 'lastname_contact'];
+
+            $conditions = [];
+            foreach ($searchable_fields as $field) {
+                $conditions[] = "`{$field}` LIKE %s";
+                $params[] = $search;
+                $param_types .= 's';
+            }
+            $sql .= implode(' || ', $conditions);
+            $sql .= ")";
+        }
+
+        // Añadir LIMIT y OFFSET al final
+        $sql .= " LIMIT %d OFFSET %d";
+        $params[] = $per_page;
+        $params[] = $offset;
+        $param_types .= 'dd'; // 'd' para entero (per_page, offset)
+
+        // Prepara la consulta usando wpdb::prepare para seguridad
+        // Asegúrate de que el número de marcadores de posición en $sql coincida con el número de elementos en $params
+        $prepared_sql = $wpdb->prepare($sql, ...$params);
+
+        $institutes_data = $wpdb->get_results($prepared_sql, 'ARRAY_A');
+
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
-        return ['data' => $institutes, 'total_count' => $total_count];
+
+        return ['data' => $institutes_data, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -780,7 +873,7 @@ class TT_institutes_List_Table extends WP_List_Table
     function prepare_items()
     {
         $all_institutes = $this->get_list_institutes();
-        $data_institutes = $all_institutes['data'];
+
         $data = $all_institutes['data'];
         $total_count = (int) $all_institutes['total_count'];
         $columns = $this->get_columns();
@@ -886,35 +979,95 @@ class TT_institutes_declined_List_Table extends WP_List_Table
 
     function get_list_institutes()
     {
+        global $wpdb, $current_user;
 
-        global $wpdb;
+        // Define los nombres de las tablas de la base de datos.
         $table_institutes = $wpdb->prefix . 'institutes';
-        $per_page = 20; // number of items per page
-        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-        $offset = (($pagenum - 1) * $per_page);
+        $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
 
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
+        // Configuración de la paginación.
+        $per_page = 20; // Número de elementos a mostrar por página.
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1; // Página actual, asegurando que sea un entero absoluto.
+        $offset = ($pagenum - 1) * $per_page; // Calcula el desplazamiento (offset) para la consulta SQL.
 
-            $search = $_POST['s'];
+        // Construcción inicial de la consulta SQL. 
+        // Siempre filtra por `status` = 2 (asumiendo que significa "pendiente" o "inactivo").
+        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status` = %d";
+        $params = [2]; // El valor del estado 2 se añade como un parámetro.
+        $param_types = 'd'; // Indica que el parámetro anterior es un entero ('d' de decimal).
 
-            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * 
-                FROM {$table_institutes}
-                WHERE `status`=2
-                AND 
-                ( `name` LIKE '%{$search}%' ||
-                   email LIKE '%{$search}%' || 
-                   name_rector LIKE '%{$search}%' || 
-                   lastname_rector LIKE '%{$search}%' || 
-                   name_contact LIKE '%{$search}%' || 
-                   lastname_contact LIKE '%{$search}%'
-                ) LIMIT {$per_page} OFFSET {$offset}", 'ARRAY_A');
+        // --- Lógica de filtrado por roles del usuario ---
+        // Si el usuario NO es un 'owner' ni un 'administrator', filtramos los institutos por su ID.
+        if (!in_array('owner', $current_user->roles) && !in_array('administrator', $current_user->roles)) {
+            // Obtiene un array simple de `institute_id` asociados al usuario actual.
+            // `get_col` es eficiente para obtener una sola columna de resultados.
+            $institute_ids_of_user = $wpdb->get_col($wpdb->prepare(
+                "SELECT institute_id FROM {$table_managers_by_institute} WHERE user_id = %d",
+                $current_user->ID
+            ));
 
-        } else {
-            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status`=2 LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+            // Si el usuario no tiene institutos asociados, no hay resultados que mostrar.
+            // Se devuelve un array vacío para evitar consultas innecesarias.
+            if (empty($institute_ids_of_user)) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            // Construye una lista de marcadores de posición `%d` para la cláusula `IN`.
+            // Esto es necesario para usar `wpdb::prepare` de forma segura con un array de IDs.
+            $ids_placeholder = implode(',', array_fill(0, count($institute_ids_of_user), '%d'));
+            $sql .= " AND `id` IN ({$ids_placeholder})"; // Añade la condición `IN` a la consulta.
+
+            // Añade cada ID individualmente al array de parámetros y su tipo ('d').
+            foreach ($institute_ids_of_user as $id) {
+                $params[] = $id;
+                $param_types .= 'd';
+            }
         }
 
+        // --- Lógica de búsqueda si se proporciona un término ---
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
+            // Sanitiza y escapa el término de búsqueda para seguridad SQL.
+            $search = '%' . $wpdb->esc_like(sanitize_text_field($_POST['s'])) . '%';
+
+            $sql .= " AND ("; // Inicia un grupo de condiciones para la búsqueda.
+            $searchable_fields = [
+                'name',
+                'email',
+                'name_rector',
+                'lastname_rector',
+                'name_contact',
+                'lastname_contact'
+            ];
+
+            $conditions = [];
+            // Itera sobre los campos y construye las condiciones `LIKE`.
+            foreach ($searchable_fields as $field) {
+                $conditions[] = "`{$field}` LIKE %s"; // Marcador de posición para string.
+                $params[] = $search; // Añade el término de búsqueda a los parámetros.
+                $param_types .= 's'; // Indica que el parámetro es un string ('s').
+            }
+            $sql .= implode(' || ', $conditions); // Une las condiciones con `OR` (`||`).
+            $sql .= ")"; // Cierra el grupo de condiciones.
+        }
+
+        // --- Añadir LIMIT y OFFSET para la paginación ---
+        $sql .= " LIMIT %d OFFSET %d"; // Añade los marcadores de posición para limit y offset.
+        $params[] = $per_page; // Añade el número de elementos por página.
+        $params[] = $offset; // Añade el valor del offset.
+        $param_types .= 'dd'; // Indica que estos dos parámetros son enteros.
+
+        // Prepara la consulta SQL final de forma segura usando `wpdb::prepare()`.
+        // Esto previene inyecciones SQL al escapar correctamente todos los parámetros.
+        $prepared_sql = $wpdb->prepare($sql, ...$params);
+
+        // Ejecuta la consulta y obtiene los resultados como un array asociativo.
+        $institutes_data = $wpdb->get_results($prepared_sql, 'ARRAY_A');
+
+        // Obtiene el conteo total de filas encontradas por la consulta anterior (antes de LIMIT y OFFSET).
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
-        return ['data' => $institutes, 'total_count' => $total_count];
+
+        // Retorna los datos de los institutos y el conteo total.
+        return ['data' => $institutes_data, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -1048,34 +1201,95 @@ class TT_institutes_suspended_List_Table extends WP_List_Table
     function get_list_institutes()
     {
 
-        global $wpdb;
+        global $wpdb, $current_user;
+
+        // Define los nombres de las tablas de la base de datos.
         $table_institutes = $wpdb->prefix . 'institutes';
-        $per_page = 20; // number of items per page
-        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-        $offset = (($pagenum - 1) * $per_page);
+        $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
 
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
+        // Configuración de la paginación.
+        $per_page = 20; // Número de elementos a mostrar por página.
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1; // Página actual, asegurando que sea un entero absoluto.
+        $offset = ($pagenum - 1) * $per_page; // Calcula el desplazamiento (offset) para la consulta SQL.
 
-            $search = $_POST['s'];
+        // Construcción inicial de la consulta SQL. 
+        // Siempre filtra por `status` = 3 (asumiendo que significa "inactivo" o "desactivado").
+        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status` = %d";
+        $params = [3]; // El valor del estado 3 se añade como un parámetro.
+        $param_types = 'd'; // Indica que el parámetro anterior es un entero ('d' de decimal).
 
-            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * 
-                FROM {$table_institutes}
-                WHERE `status`=3
-                AND 
-                ( `name` LIKE '%{$search}%' ||
-                   email LIKE '%{$search}%' || 
-                   name_rector LIKE '%{$search}%' || 
-                   lastname_rector LIKE '%{$search}%' || 
-                   name_contact LIKE '%{$search}%' || 
-                   lastname_contact LIKE '%{$search}%'
-                ) LIMIT {$per_page} OFFSET {$offset}", 'ARRAY_A');
+        // --- Lógica de filtrado por roles del usuario ---
+        // Si el usuario NO es un 'owner' ni un 'administrator', filtramos los institutos por su ID.
+        if (!in_array('owner', $current_user->roles) && !in_array('administrator', $current_user->roles)) {
+            // Obtiene un array simple de `institute_id` asociados al usuario actual.
+            // `get_col` es eficiente para obtener una sola columna de resultados.
+            $institute_ids_of_user = $wpdb->get_col($wpdb->prepare(
+                "SELECT institute_id FROM {$table_managers_by_institute} WHERE user_id = %d",
+                $current_user->ID
+            ));
 
-        } else {
-            $institutes = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_institutes} WHERE `status`=3 LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+            // Si el usuario no tiene institutos asociados, no hay resultados que mostrar.
+            // Se devuelve un array vacío para evitar consultas innecesarias.
+            if (empty($institute_ids_of_user)) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            // Construye una lista de marcadores de posición `%d` para la cláusula `IN`.
+            // Esto es necesario para usar `wpdb::prepare` de forma segura con un array de IDs.
+            $ids_placeholder = implode(',', array_fill(0, count($institute_ids_of_user), '%d'));
+            $sql .= " AND `id` IN ({$ids_placeholder})"; // Añade la condición `IN` a la consulta.
+
+            // Añade cada ID individualmente al array de parámetros y su tipo ('d').
+            foreach ($institute_ids_of_user as $id) {
+                $params[] = $id;
+                $param_types .= 'd';
+            }
         }
 
+        // --- Lógica de búsqueda si se proporciona un término ---
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
+            // Sanitiza y escapa el término de búsqueda para seguridad SQL.
+            $search = '%' . $wpdb->esc_like(sanitize_text_field($_POST['s'])) . '%';
+
+            $sql .= " AND ("; // Inicia un grupo de condiciones para la búsqueda.
+            $searchable_fields = [
+                'name',
+                'email',
+                'name_rector',
+                'lastname_rector',
+                'name_contact',
+                'lastname_contact'
+            ];
+
+            $conditions = [];
+            // Itera sobre los campos y construye las condiciones `LIKE`.
+            foreach ($searchable_fields as $field) {
+                $conditions[] = "`{$field}` LIKE %s"; // Marcador de posición para string.
+                $params[] = $search; // Añade el término de búsqueda a los parámetros.
+                $param_types .= 's'; // Indica que el parámetro es un string ('s').
+            }
+            $sql .= implode(' || ', $conditions); // Une las condiciones con `OR` (`||`).
+            $sql .= ")"; // Cierra el grupo de condiciones.
+        }
+
+        // --- Añadir LIMIT y OFFSET para la paginación ---
+        $sql .= " LIMIT %d OFFSET %d"; // Añade los marcadores de posición para limit y offset.
+        $params[] = $per_page; // Añade el número de elementos por página.
+        $params[] = $offset; // Añade el valor del offset.
+        $param_types .= 'dd'; // Indica que estos dos parámetros son enteros.
+
+        // Prepara la consulta SQL final de forma segura usando `wpdb::prepare()`.
+        // Esto previene inyecciones SQL al escapar correctamente todos los parámetros.
+        $prepared_sql = $wpdb->prepare($sql, ...$params);
+
+        // Ejecuta la consulta y obtiene los resultados como un array asociativo.
+        $institutes_data = $wpdb->get_results($prepared_sql, 'ARRAY_A');
+
+        // Obtiene el conteo total de filas encontradas por la consulta anterior (antes de LIMIT y OFFSET).
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
-        return ['data' => $institutes, 'total_count' => $total_count];
+
+        // Retorna los datos de los institutos y el conteo total.
+        return ['data' => $institutes_data, 'total_count' => $total_count];
     }
 
     function get_sortable_columns()
@@ -1188,4 +1402,25 @@ function get_name_institute($institute_id)
     $table_institutes = $wpdb->prefix . 'institutes';
     $institute = $wpdb->get_row("SELECT * FROM {$table_institutes} WHERE id = " . $institute_id);
     return $institute->name;
+}
+
+function get_managers_institute($institute_id)
+{
+    $selected_manager_user_ids = [];
+    if (isset($institute_id) && !empty($institute_id)) {
+        global $wpdb;
+        $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
+
+        // Obtener las alianzas ya asociadas a este instituto
+        $existing_managers_for_institute = $wpdb->get_results($wpdb->prepare(
+            "SELECT user_id FROM {$table_managers_by_institute} WHERE institute_id = %d",
+            $institute_id
+        ));
+
+        // Mapear los resultados a un array simple de IDs para facilitar la verificación en el HTML
+        $selected_manager_user_ids = array_map(function ($item) {
+            return (int) $item->user_id;
+        }, $existing_managers_for_institute);
+    }
+    return $selected_manager_user_ids;
 }

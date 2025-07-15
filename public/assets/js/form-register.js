@@ -108,28 +108,37 @@ document.addEventListener("DOMContentLoaded", function () {
         if (XHR.status === 200 && XHR.response && XHR.response) {
           let subprograms = [];
           let data = XHR.response.data.subprograms;
-          if (Array.isArray(data)) {
-            subprograms = data;
+          let product_id = XHR.response.data.product_id;
+
+          if (data.length > 0) {
+            if (Array.isArray(data)) {
+              subprograms = data;
+            } else {
+              subprograms = Object.values(data);
+            }
+
+            // Clear existing options except the first one
+            while (gradeSelect.options.length > 1) {
+              gradeSelect.remove(1);
+            }
+
+            document.getElementById("institute-id-select").style.display =
+              "block";
+
+            // Add new options from the grades array
+            subprograms.forEach((program, index) => {
+              const option = document.createElement("option");
+              option.value = index;
+              option.textContent = program.name;
+              gradeSelect.appendChild(option);
+            });
+            subprograms_arr = subprograms;
           } else {
-            subprograms = Object.values(data);
+                        document.getElementById("institute-id-select").style.display =
+              "block";
+
+            productIdInput.value = product_id;
           }
-
-          // Clear existing options except the first one
-          while (gradeSelect.options.length > 1) {
-            gradeSelect.remove(1);
-          }
-
-          document.getElementById("institute-id-select").style.display =
-            "block";
-
-          // Add new options from the grades array
-          subprograms.forEach((program, index) => {
-            const option = document.createElement("option");
-            option.value = index;
-            option.textContent = program.name;
-            gradeSelect.appendChild(option);
-          });
-          subprograms_arr = subprograms;
         }
       };
 
@@ -141,39 +150,41 @@ document.addEventListener("DOMContentLoaded", function () {
     grade.addEventListener("change", (e) => {
       const selectedIndex = parseInt(e.target.value, 10); // Convert string to integer
 
-      // Make sure the hidden input element exists
-      if (productIdInput) {
-        // Check if the index is valid for the subprograms_arr
-        if (selectedIndex >= 0 && selectedIndex < subprograms_arr.length) {
-          const selectedProgram = subprograms_arr[selectedIndex - 1];
+      if (subprograms_arr.length > 0) {
+        // Make sure the hidden input element exists
+        if (productIdInput) {
+          // Check if the index is valid for the subprograms_arr
+          if (selectedIndex >= 0 && selectedIndex < subprograms_arr.length) {
+            const selectedProgram = subprograms_arr[selectedIndex - 1];
 
-          // Now you have the selectedProgram object/item
-          console.log("Selected Program Object:", selectedProgram);
+            // Now you have the selectedProgram object/item
+            console.log("Selected Program Object:", selectedProgram);
 
-          // --- Set the value of the hidden input here ---
-          // Ensure 'product_id' is the correct property name in your 'selectedProgram' object
-          if (selectedProgram && selectedProgram.product_id !== undefined) {
-            productIdInput.value = selectedProgram.product_id;
-            console.log(
-              "product_id set to hidden input:",
-              productIdInput.value
-            );
+            // --- Set the value of the hidden input here ---
+            // Ensure 'product_id' is the correct property name in your 'selectedProgram' object
+            if (selectedProgram && selectedProgram.product_id !== undefined) {
+              productIdInput.value = selectedProgram.product_id;
+              console.log(
+                "product_id set to hidden input:",
+                productIdInput.value
+              );
+            } else {
+              console.warn(
+                "The 'product_id' property was not found or is undefined in the selected object."
+              );
+              productIdInput.value = ""; // Clear the input if the property doesn't exist
+            }
           } else {
             console.warn(
-              "The 'product_id' property was not found or is undefined in the selected object."
+              "Invalid index selected or subprograms_arr is not populated."
             );
-            productIdInput.value = ""; // Clear the input if the property doesn't exist
+            productIdInput.value = ""; // Clear the input if the index is invalid (e.g., "Select an option")
           }
         } else {
           console.warn(
-            "Invalid index selected or subprograms_arr is not populated."
+            "The hidden input with ID 'product_id_input' was not found in the DOM."
           );
-          productIdInput.value = ""; // Clear the input if the index is invalid (e.g., "Select an option")
         }
-      } else {
-        console.warn(
-          "The hidden input with ID 'product_id_input' was not found in the DOM."
-        );
       }
     });
   }

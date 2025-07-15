@@ -189,6 +189,8 @@ function student_registration_form()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
+    $programs = get_programs();
+
     add_action('wp_footer', 'modal_continue_checkout');
     include(plugin_dir_path(__FILE__) . 'templates/student-registration-form-structure.php');
 }
@@ -858,6 +860,7 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
     $institute_id = null;
     $institute = null;
     $alliances = [];
+    $manager_user_id = 0;
     $current_item_alliances_json = json_encode([]); // Por defecto, JSON vacío
 
     $student_data = get_student_detail($student_id);
@@ -865,6 +868,8 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
     if ($student_data && isset($student_data->institute_id) && !empty($student_data->institute_id)) {
         $institute_id = $student_data->institute_id;
         $institute = get_institute_details($institute_id);
+        $selected_manager_user_ids = get_managers_institute($institute_id);
+        $manager_user_id = isset($selected_manager_user_ids) ? $selected_manager_user_ids[0] : 0;
 
         if ($institute) { // Solo si el instituto existe, intenta obtener las alianzas.
             $alliances = get_alliances_from_institute($institute_id);
@@ -877,7 +882,6 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
 
     // Calcular las tarifas de alianzas para este ítem específico
     $current_item_alliances_fees = [];
-    $product = $item->get_product(); // Necesitamos el producto para determinar si es un FEE
     // Asegúrate de que FEE_INSCRIPTION y FEE_GRADUATION estén definidas como constantes globales
     $is_fee_product = in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]);
     // Asumiendo que get_post_meta para 'is_scholarship' ya fue validado en la función principal o que siempre retorna un valor booleano o false.
@@ -904,6 +908,7 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
             }
         }
     }
+
     $current_item_alliances_json = json_encode($current_item_alliances_fees);
     if ($current_item_alliances_json === false) {
         $current_item_alliances_json = json_encode([]); // Asegurarse de que sea un JSON válido en caso de error
@@ -928,6 +933,7 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
         'institute_id' => $institute_id,         // ¡Nueva columna en UPDATE!
         'institute_fee' => $current_item_institute_fee, // ¡Nueva columna en UPDATE!
         'alliances' => $current_item_alliances_json,   // ¡Nueva columna en UPDATE!
+        'manager_id' => $manager_user_id
     ];
 
     // No se puede usar LIMIT y ORDER BY directamente con $wpdb->update().
@@ -958,6 +964,7 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
             'student_id' => $student_id,
             'product_id' => $product_id,
             'variation_id' => $item->get_variation_id(),
+            'manager_id' => $manager_user_id,
             'institute_id' => $institute_id,
             'institute_fee' => $current_item_institute_fee,
             'alliances' => $current_item_alliances_json,
@@ -1070,9 +1077,12 @@ function process_program_payments(WC_Order $order, int $order_id): void
         $institute_id = null; // No hay un institute_id válido
         $institute = null;
         $alliances = []; // Array de alianzas vacío
+        $manager_user_id = 0;
     } else {
         $institute_id = $student_data->institute_id;
         $institute = get_institute_details($institute_id);
+        $selected_manager_user_ids = get_managers_institute($institute_id);
+        $manager_user_id = isset($selected_manager_user_ids) ? $selected_manager_user_ids[0] : 0;
 
         // Si el instituto no existe, el fee será 0 y las alianzas vacías, pero no salimos.
         if (!$institute) {
@@ -1238,6 +1248,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
                 'student_id' => $student_id,
                 'product_id' => $product_id,
                 'variation_id' => $variation_id,
+                'manager_id' => ($i + 1) == 1 ? $manager_user_id : null,
                 'institute_id' => ($i + 1) == 1 ? $institute_id : null,
                 'institute_fee' => ($i + 1) == 1 ? $current_item_institute_fee : 0,
                 'alliances' => ($i + 1) == 1 ? $current_item_alliances_json : null,
@@ -3369,7 +3380,11 @@ function load_subprograms_by_program_callback()
 {
     $program_identificator = $_POST['program_identificator'];
     $subprograms = get_subprogram_by_identificador_program($program_identificator);
+    $product_id = 0;
+    if (count($subprograms) == 0) {
+        $product_id = get_product_id_by_identificador_program($program_identificator);
+    }
 
-    wp_send_json_success(array('subprograms' => $subprograms));
+    wp_send_json_success(array('subprograms' => $subprograms, 'product_id' => $product_id));
     exit;
 }

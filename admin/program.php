@@ -646,6 +646,19 @@ function get_subprogram_by_identificador_program( $identificador ) {
     return json_decode( $subprogram, true ) ?? [];
 }
 
+function get_product_id_by_identificador_program( $identificador ) {
+
+    global $wpdb;
+    $table_programs = $wpdb->prefix . 'programs';
+
+    $product_id = $wpdb->get_var( $wpdb->prepare(
+        "SELECT product_id FROM $table_programs WHERE identificator LIKE %s",
+        $identificador
+    ));
+
+    return $product_id;
+}
+
 /**
  * Verifica si un identificador de programa ya existe en la base de datos.
  * Esta función se utiliza para comprobar la disponibilidad de un identificador
