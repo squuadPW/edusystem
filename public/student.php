@@ -57,7 +57,8 @@ function save_student()
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
                 $crm_exist = crm_request('contacts', '?email=' . $email_partner, 'GET', null);
-                if (isset($crm_exist['items']) && count($crm_exist['items']) > 0) {
+                // Check if $crm_exist is a WP_Error object
+                if (!is_wp_error($crm_exist) && isset($crm_exist['items']) && count($crm_exist['items']) > 0) {
                     setcookie('crm_id', $crm_exist['items'][0]['id'], time() + 864000, '/');
                 }
             }
@@ -198,7 +199,7 @@ function save_student()
             default:
 
                 global $current_user;
-                setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 864000, '/');
+                setcookie('agent_name', ucwords(get_user_user_meta(get_current_user_id(), 'first_name', true)), time() + 864000, '/');
                 setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 864000, '/');
                 setcookie('email_partner', $current_user->user_email, time() + 864000, '/');
                 setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 864000, '/');
@@ -296,7 +297,6 @@ function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $r
             // Aplicar cupón si NO ha expirado
             $woocommerce->cart->apply_coupon(get_option('offer_complete'));
         }
-
     } else if ($is_scholarship) {
         global $wpdb;
         $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
@@ -671,7 +671,7 @@ function get_average_calification_for_subject_period($subject_id, $code_subject,
     if (null === $results) {
         $results = (object) ['average_calification' => null, 'inscription_count' => 0]; // Cambié null a 0 para count
     }
-    
+
     return $results;
 }
 
@@ -810,7 +810,8 @@ function update_elective_student($student_id, $status_id)
  * @param int $student_id ID del estudiante.
  * @param int $grade_id ID del grado del estudiante.
  */
-function insert_register_documents($student_id, $grade_id) {
+function insert_register_documents($student_id, $grade_id)
+{
     global $wpdb;
 
     // 1. OBTENCIÓN DE DATOS INICIALES
@@ -818,7 +819,7 @@ function insert_register_documents($student_id, $grade_id) {
     if (!$student) {
         return; // Salir si no se encuentra el estudiante
     }
-    
+
     $birthDate = new DateTime($student->birth_date);
     $is_legal_age = ($birthDate->diff(new DateTime())->y >= 18);
 
@@ -833,12 +834,12 @@ function insert_register_documents($student_id, $grade_id) {
     if (empty($documents_for_grade)) {
         return;
     }
-    
+
     // 3. SEGUNDA CONSULTA: Obtiene los documentos que YA existen para el estudiante.
     // Esto reemplaza la consulta dentro del bucle.
     $document_names = wp_list_pluck($documents_for_grade, 'name'); // Extrae solo los nombres
     $placeholders = implode(', ', array_fill(0, count($document_names), '%s'));
-    
+
     $query_params = array_merge([$student_id], $document_names);
     $existing_docs = $wpdb->get_col(
         $wpdb->prepare(
@@ -867,12 +868,12 @@ function insert_register_documents($student_id, $grade_id) {
 
         // Inserción segura en la base de datos
         $wpdb->insert($table_student_documents, [
-            'student_id'  => $student_id,
+            'student_id' => $student_id,
             'document_id' => $document->name,
             'is_required' => $is_required,
-            'is_visible'  => $is_visible,
-            'status'      => 0,
-            'created_at'  => current_time('mysql'),
+            'is_visible' => $is_visible,
+            'status' => 0,
+            'created_at' => current_time('mysql'),
         ]);
     }
 }
@@ -899,14 +900,14 @@ function get_payments($student_id, $product_id = false)
         $products = ['FEE_INSCRIPTION', 'FEE_GRADUATION'];
         $products_list = "'" . implode("','", $products) . "'";
         $payments = $wpdb->get_row(
-            "SELECT * FROM {$table_student_payments} 
-            WHERE student_id = {$student_id} 
+            "SELECT * FROM {$table_student_payments}
+            WHERE student_id = {$student_id}
             AND product_id NOT IN ({$products_list})"
         );
 
         $has_pending_payments = $wpdb->get_results(
-            "SELECT * FROM {$table_student_payments} 
-            WHERE student_id = {$student_id} 
+            "SELECT * FROM {$table_student_payments}
+            WHERE student_id = {$student_id}
             AND product_id NOT IN ({$products_list})
             AND status_id = 0"
         );
@@ -930,7 +931,7 @@ function get_name_program($identificator)
     global $wpdb;
     $table_programs = $wpdb->prefix . 'programs';
 
-    $name = $wpdb->get_var( $wpdb->prepare(
+    $name = $wpdb->get_var($wpdb->prepare(
         "SELECT `name` FROM $table_programs WHERE identificator LIKE %s",
         $identificator
     ));
@@ -964,7 +965,6 @@ function get_gender($gender_id)
     };
 
     return $gender;
-
 }
 
 function save_student_details()
@@ -1013,7 +1013,6 @@ function save_student_details()
             wc_add_notice(__('information changed successfully.', 'edusystem'), 'success');
             wp_redirect(wc_get_account_endpoint_url('student-details') . '/?student=' . $student_id);
             exit;
-
         }
 
         if ($_POST['action'] == 'save_password_moodle') {
@@ -1156,14 +1155,14 @@ function set_max_date_student($student_id)
     // Excluyendo los product_id de inscripción y graduación
     $next_payment = $wpdb->get_row(
         $wpdb->prepare(
-            "SELECT date_next_payment, date_payment 
-             FROM {$table_student_payments} 
-             WHERE status_id = 0 
-               AND student_id = %d 
-               AND date_payment IS NULL 
-               AND product_id <> %d 
-               AND product_id <> %d 
-             ORDER BY cuote ASC 
+            "SELECT date_next_payment, date_payment
+             FROM {$table_student_payments}
+             WHERE status_id = 0
+               AND student_id = %d
+               AND date_payment IS NULL
+               AND product_id <> %d
+               AND product_id <> %d
+             ORDER BY cuote ASC
              LIMIT 1",
             $student_id,
             $fee_inscription_id,
