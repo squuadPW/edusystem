@@ -73,7 +73,7 @@
                                                             <b><?= __('Initial price', 'edusystem'); ?></b>
                                                             <span class="text-danger">*</span>
                                                         </label>
-                                                        <input type="number" name="rules[<?= $i ?>][initial_price]" value="<?= $rule['initial_price'] ?? 0.00 ?>" oninput="validate_input(this, '/^[0-9]*\.?[0-9]*$/')"  required>
+                                                        <input type="number" name="rules[<?= $i ?>][initial_price]" value="<?= $rule['initial_price'] ?? 0.00 ?>" step="0.01"  required>
                                                     </div>
 
                                                     <div class="space-offer">
@@ -82,7 +82,7 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="number" name="rules[<?= $i ?>][quantity]" value="<?= $rule['quotas_quantity'] ?? 0 ?>" oninput="validate_input(this, '^\\d*$')"  min="1" step="1"  required >
+                                                        <input type="number" name="rules[<?= $i ?>][quantity]" value="<?= $rule['quotas_quantity'] ?? 0 ?>" step="0.01"  min="1" step="1"  required >
                                                     </div>
 
                                                     <div class="space-offer">
@@ -92,7 +92,7 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="number" name="rules[<?= $i ?>][price]" value="<?= $rule['quote_price'] ?? 0.00 ?>" oninput="validate_input(this, '^[0-9]*$')" required>
+                                                        <input type="number" name="rules[<?= $i ?>][price]" value="<?= $rule['quote_price'] ?? 0.00 ?>" step="0.01" required>
                                                     </div>
 
                                                 </div>
@@ -168,7 +168,7 @@
                                                     <b><?= __('Initial price', 'edusystem'); ?></b>
                                                     <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="number" name="rules[][initial_price]" value="0" oninput="validate_input(this, '/^[0-9]*\.?[0-9]*$/')" disabled required>
+                                                <input type="text" name="rules[][initial_price]" value="0" step="0.01" disabled required>
                                             </div>
 
                                             <div class="space-offer">
@@ -177,7 +177,7 @@
                                                     <span class="text-danger">*</span>
                                                 </label>
 
-                                                <input type="number" name="rules[][quantity]" value="0" oninput="validate_input(this, '^[0-9]*$')"  min="1" step="1" disabled required >
+                                                <input type="number" name="rules[][quantity]" value="0"  min="1" step="1" disabled required >
                                             </div>
 
                                             <div class="space-offer">
@@ -187,7 +187,7 @@
                                                     <span class="text-danger">*</span>
                                                 </label>
 
-                                                <input type="number" name="rules[][price]" value="0" oninput="validate_input(this, '^[0-9]*$')" disabled required>
+                                                <input type="number" name="rules[][price]" value="0" step="0.01" disabled required>
                                             </div>
                                         </div>
 
