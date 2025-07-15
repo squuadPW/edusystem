@@ -66,6 +66,9 @@ function add_admin_form_program_content()
                 // guarda el stock en caso de que este activo o no
                 update_post_meta($program_product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
 
+                // Asignar la categoría al producto
+                wp_set_object_terms($program_product_id, $category_id, 'product_cat');
+
             } else {
 
                 // Función para crear un producto
