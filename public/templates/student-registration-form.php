@@ -198,7 +198,7 @@
             <select name="program" id="program" autocomplete="off" required>
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                 <?php foreach ($programs as $program): ?>
-                    <option value="<?= $program->identificator; ?>"><?= $program->name; ?></option>
+                    <option value="<?= $program->id; ?>"><?= $program->name; ?></option>
                 <?php endforeach; ?>
             </select>
         </div>

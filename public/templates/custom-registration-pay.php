@@ -24,8 +24,11 @@
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select">
             <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span class="required">*</span></label>
-            <select name="program" autocomplete="off" required>
-                <option value="aes" selected="selected"><?= __('Dual diploma', 'edusystem'); ?></option>
+            <select name="program" id="program" autocomplete="off" required>
+                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                <?php foreach ($programs as $program): ?>
+                    <option value="<?= $program->id; ?>"><?= $program->name; ?></option>
+                <?php endforeach; ?>
             </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
