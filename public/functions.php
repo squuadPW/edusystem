@@ -3388,3 +3388,10 @@ function load_subprograms_by_program_callback()
     wp_send_json_success(array('subprograms' => $subprograms, 'product_id' => $product_id));
     exit;
 }
+
+add_action('wp_ajax_nopriv_load_product_id_rule', 'load_product_id_rule');
+add_action('wp_ajax_load_product_id_rule', 'load_product_id_rule');
+function load_product_id_rule()
+{
+    
+}

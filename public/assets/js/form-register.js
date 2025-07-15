@@ -109,14 +109,15 @@ document.addEventListener("DOMContentLoaded", function () {
           let subprograms = [];
           let data = XHR.response.data.subprograms;
           let product_id = XHR.response.data.product_id;
+          if (Array.isArray(data)) {
+            subprograms = data;
+          } else {
+            subprograms = Object.values(data);
+          }
 
-          if (data.length > 0) {
-            if (Array.isArray(data)) {
-              subprograms = data;
-            } else {
-              subprograms = Object.values(data);
-            }
+          if (subprograms.length > 0) {
 
+            console.log(subprograms)
             // Clear existing options except the first one
             while (gradeSelect.options.length > 1) {
               gradeSelect.remove(1);
@@ -150,6 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
     grade.addEventListener("change", (e) => {
       const selectedIndex = parseInt(e.target.value, 10); // Convert string to integer
 
+      console.log(subprograms_arr)
       if (subprograms_arr.length > 0) {
         // Make sure the hidden input element exists
         if (productIdInput) {

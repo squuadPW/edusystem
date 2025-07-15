@@ -6,8 +6,8 @@
         // excluye los productos de fee
         $fee_inscription = FEE_INSCRIPTION;
         $fee_graduation = FEE_GRADUATION;
-        $filtered_products = array_filter($cart, function($product) use($FEE_INSCRIPTION, $fee_graduation) {
-            return ( $product['product_id'] != $fee_inscription ) || ( $product['product_id'] != $fee_inscription );
+        $filtered_products = array_filter($cart, function($product) use($fee_inscription, $fee_graduation) {
+            return ( $product['product_id'] != $fee_inscription ) || ( $product['product_id'] != $fee_graduation );
         });
 
         // obtiene los cupones
