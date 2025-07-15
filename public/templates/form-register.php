@@ -13,6 +13,7 @@
     <input type="hidden" name="crm_id" id="x-api-id" value="<?= $_GET['crm_id'] ?? ''; ?>">
     <input type="hidden" name="crm_api" id="x-api" value="contacts">
     <input type="hidden" name="squuad_stripe_selected_client_id" id="squuad_stripe_selected_client_id" value="<?= $connected_account ?>">
+    <input type="hidden" name="coupon_code" id="coupon_code" value="<?= $coupon_code ?>">
     <input type="hidden" id="product_id_input" name="product_id">
 
     <!-- DATOS DEL ESTUDIANTE -->

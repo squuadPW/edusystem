@@ -165,14 +165,15 @@ function form_asp_psp($atts)
     // Define los atributos por defecto
     $atts = shortcode_atts(
         array(
-            'connected_account' => '', // Valor por defecto para connected_account
+            'connected_account' => '',
+            'coupon_code' => '',
         ),
         $atts,
         'form_asp_psp'
     );
 
-    // Ahora puedes acceder al atributo con $atts['connected_account']
     $connected_account = $atts['connected_account'];
+    $coupon_code = $atts['coupon_code'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active();
@@ -209,8 +210,6 @@ function use_previous_form_aes_callback()
 {
     $use_previous_form = $_POST['use'];
     if ($use_previous_form == 1) {
-        // Redirigir a la URL especificada
-        // $url = redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false, true);
         wp_send_json_success(array('redirect' => 'close'));
         exit;
     } else {
