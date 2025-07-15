@@ -1388,6 +1388,10 @@ h2 {
 #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer:has(input[type=checkbox]) input[type=checkbox] {
   width: 10px;
 }
+#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer .input-frequency {
+  display: flex;
+  gap: 10px;
+}
 
 #toplevel_page_logo_based_menu {
   /* ESTILOS BASE PARA MÓVILES (O PANTALLAS PEQUEÑAS) */

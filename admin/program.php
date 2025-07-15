@@ -37,17 +37,18 @@ function add_admin_form_program_content()
 
             $subprograms = [];// array para guardas los subprogramas
             
-            // verifica y crea en caso de necesitar una categoria llamada programa;"
+            // verifica y crea en caso de necesitar una categoria llamada programs;"
             $category_id = 0;
-            $category = term_exists('programs', 'product_cat');
+            $name_category = 'programs';
+            $category = term_exists($name_category, 'product_cat');
             if ( $category ) {
-                $category_id = $category['term_id'];
+                $category_id = (int) $category['term_id'];
 
             } else {
                 // La categoría no existe, crearla
-                $new_category = wp_insert_term('programs', 'product_cat');
-                if ( !is_wp_error($new_category) ) {
-                    $category_id = $new_category['term_id'];// Devolver el ID de la nueva categoría creada
+                $category = wp_insert_term($name_category, 'product_cat');
+                if ( !is_wp_error($category) ) {
+                    $category_id = (int) $category['term_id'];// Devolver el ID de la nueva categoría creada
                 } 
             }
 
@@ -65,6 +66,9 @@ function add_admin_form_program_content()
 
                 // guarda el stock en caso de que este activo o no
                 update_post_meta($program_product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
+
+                // Asignar la categoría al producto
+                wp_set_object_terms($program_product_id, $category_id, 'product_cat');
 
             } else {
 
@@ -87,7 +91,7 @@ function add_admin_form_program_content()
                     update_post_meta($program_product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
 
                     // Asignar la categoría al producto
-                    wp_set_object_terms($program_product_id, $category_id, 'product_cat');
+                    wp_set_object_terms($program_product_id, (int) $category_id, 'product_cat');
                 }
             }
 
@@ -139,6 +143,8 @@ function add_admin_form_program_content()
                         // guarda el stock en caso de que este activo o no
                         update_post_meta($product_id, '_stock_status', ( $is_active && $is_active_subprogram ) ? 'instock' : 'outofstock');
 
+                        wp_set_object_terms($product_id, (int) $category_id, 'product_cat');
+
                     } else  {
 
                         // Función para crear un producto
@@ -157,6 +163,8 @@ function add_admin_form_program_content()
                             update_post_meta( $product_id, '_price', $price );
                             update_post_meta( $product_id, '_stock_status', 'instock' ); // Estado del stock
                             update_post_meta( $product_id, 'attribute_'.$attribute_name , sanitize_title($name_subprogram));
+
+                            wp_set_object_terms($product_id, (int) $category_id, 'product_cat');
         
                             // Añadir el término al atributo "subprograms"
                             wp_set_object_terms($program_product_id, $name_subprogram, $attribute_name, true);
