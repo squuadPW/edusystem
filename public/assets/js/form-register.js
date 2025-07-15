@@ -88,6 +88,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const gradeSelect = document.querySelector('select[name="grade"]');
       gradeSelect.value = "";
 
+      let programIdentificator;
+      if (e instanceof CustomEvent && e.detail && e.detail.value !== undefined) {
+        programIdentificator = e.detail.value; // Get value from custom event
+      } else {
+        programIdentificator = e.target.value; // Get value from native event
+      }
+
       const institute_id_select = document.querySelector(
         'select[name="institute_id"]'
       );
@@ -106,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const params = new URLSearchParams({
         action: "load_subprograms_by_program",
-        program_identificator: e.target.value,
+        program_identificator: programIdentificator, // Use the determined value
       });
 
       XHR.onload = () => {
@@ -120,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
             subprograms = Object.values(data);
           }
 
+          productIdInput.value = product_id;
           if (subprograms.length > 0) {
             // Clear existing options except the first one
             while (gradeSelect.options.length > 1) {
@@ -140,8 +148,6 @@ document.addEventListener("DOMContentLoaded", function () {
           } else {
             document.getElementById("institute-id-select").style.display =
               "block";
-
-            productIdInput.value = product_id;
           }
         }
       };
