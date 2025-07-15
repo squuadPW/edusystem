@@ -143,6 +143,8 @@ function add_admin_form_program_content()
                         // guarda el stock en caso de que este activo o no
                         update_post_meta($product_id, '_stock_status', ( $is_active && $is_active_subprogram ) ? 'instock' : 'outofstock');
 
+                        wp_set_object_terms($product_id, (int) $category_id, 'product_cat');
+
                     } else  {
 
                         // Función para crear un producto
@@ -161,6 +163,8 @@ function add_admin_form_program_content()
                             update_post_meta( $product_id, '_price', $price );
                             update_post_meta( $product_id, '_stock_status', 'instock' ); // Estado del stock
                             update_post_meta( $product_id, 'attribute_'.$attribute_name , sanitize_title($name_subprogram));
+
+                            wp_set_object_terms($product_id, (int) $category_id, 'product_cat');
         
                             // Añadir el término al atributo "subprograms"
                             wp_set_object_terms($program_product_id, $name_subprogram, $attribute_name, true);
