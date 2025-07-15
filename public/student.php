@@ -924,15 +924,18 @@ function get_name_grade($grade_id)
     return $grade->name;
 }
 
-function get_name_program($program_id)
+function get_name_program($identificator)
 {
 
-    $program = match ($program_id) {
-        'aes' => __('AES (Dual Diploma)', 'edusystem'),
-        default => "",
-    };
+    global $wpdb;
+    $table_programs = $wpdb->prefix . 'programs';
 
-    return $program;
+    $name = $wpdb->get_var( $wpdb->prepare(
+        "SELECT `name` FROM $table_programs WHERE identificator LIKE %s",
+        $identificator
+    ));
+
+    return $name;
 }
 
 function get_ethnicity($ethnicity)
