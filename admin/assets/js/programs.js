@@ -321,7 +321,7 @@ function check_program_identificator_exists_js( input ){
                 }
                     
             })
-            .catch( err => console.log( err ) ); 
+            .catch( err => {} ); 
         
         }, 0);    
     }

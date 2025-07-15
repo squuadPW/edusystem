@@ -117,7 +117,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
           if (subprograms.length > 0) {
 
-            console.log(subprograms)
             // Clear existing options except the first one
             while (gradeSelect.options.length > 1) {
               gradeSelect.remove(1);
@@ -151,7 +150,6 @@ document.addEventListener("DOMContentLoaded", function () {
     grade.addEventListener("change", (e) => {
       const selectedIndex = parseInt(e.target.value, 10); // Convert string to integer
 
-      console.log(subprograms_arr)
       if (subprograms_arr.length > 0) {
         // Make sure the hidden input element exists
         if (productIdInput) {
@@ -159,33 +157,16 @@ document.addEventListener("DOMContentLoaded", function () {
           if (selectedIndex >= 0 && selectedIndex < subprograms_arr.length) {
             const selectedProgram = subprograms_arr[selectedIndex - 1];
 
-            // Now you have the selectedProgram object/item
-            console.log("Selected Program Object:", selectedProgram);
-
             // --- Set the value of the hidden input here ---
             // Ensure 'product_id' is the correct property name in your 'selectedProgram' object
             if (selectedProgram && selectedProgram.product_id !== undefined) {
               productIdInput.value = selectedProgram.product_id;
-              console.log(
-                "product_id set to hidden input:",
-                productIdInput.value
-              );
             } else {
-              console.warn(
-                "The 'product_id' property was not found or is undefined in the selected object."
-              );
               productIdInput.value = ""; // Clear the input if the property doesn't exist
             }
           } else {
-            console.warn(
-              "Invalid index selected or subprograms_arr is not populated."
-            );
             productIdInput.value = ""; // Clear the input if the index is invalid (e.g., "Select an option")
           }
-        } else {
-          console.warn(
-            "The hidden input with ID 'product_id_input' was not found in the DOM."
-          );
         }
       }
     });
@@ -228,7 +209,6 @@ document.addEventListener("DOMContentLoaded", function () {
     XHR.onload = () => {
       // 5. Manejar errores HTTP
       if (XHR.status !== 200) {
-        console.error("Error en la solicitud:", XHR.status, XHR.statusText);
         return;
       }
 

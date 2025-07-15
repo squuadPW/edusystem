@@ -196,15 +196,10 @@ function update_price_product_cart_quota_rule_js ( product_id, rule_id ) {
     })
     .then(response => response.json())
     .then(data => {
-        if (!data.success) {
-            console.log('Error:', data.data);
-        }
 
         refresh_wc_cart();
     })
-    .catch(error => {
-        console.log('Error en la petición:', error);
-    });
+    .catch(error => {});
 }
 
 /**
