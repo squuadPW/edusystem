@@ -1386,4 +1386,15 @@ body.modal-open {
   text-decoration: underline;
   color: #002fbd;
   font-size: 14px;
+}
+
+#modal-request .select-type-document {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+#modal-request .select-type-document .price-type {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
 }/*# sourceMappingURL=style.css.map */

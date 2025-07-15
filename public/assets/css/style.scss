@@ -1457,3 +1457,25 @@ body.modal-open {
   color: #002fbd;
   font-size: 14px;
 }
+
+//modal para solicitar un documento
+
+#modal-request {
+
+    .select-type-document {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+
+        .price-type {
+            display: flex;
+            gap: 5px;
+            flex-direction: column;
+        }
+
+    }
+  
+}
+
+
+

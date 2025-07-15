@@ -18,14 +18,14 @@
                         <select class="form-control" name="type_id" autocomplete="off" required>
                             <option value="" class="text-uppercase">Select an option</option>
                             <?php foreach ($types as $type) { ?>
-                                <option value="<?php echo $type->id ?>" class="text-uppercase"><?= $type->type ?></option>
+                                <option value="<?php echo $type->id ?>" data-price='<?= wc_price(0) ?>' class="text-uppercase"><?= $type->type ?></option>
                             <?php } ?>
                         </select>
 
                     </div>
                     
                     <div class="price-type" >
-                        <label ><?= __('Price Type', 'edusystem'); ?></label>
+                        <label ><?= __('Price', 'edusystem'); ?></label>
                         <span id="price-type" ><?= wc_price(0) ?></span>
                     </div>
 
