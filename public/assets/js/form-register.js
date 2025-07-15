@@ -24,13 +24,18 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("name_institute").required = true;
         document.getElementById("institute_id").required = false;
         document.getElementById("institute_id_required").textContent = "";
-        document.getElementById("grade_select").style.display = "block";
+        if (subprograms_arr.length > 0) {
+          document.getElementById("grade_select").style.display = "block";
+        }
       } else {
         document.getElementById("name-institute-field").style.display = "none";
         document.getElementById("name_institute").required = false;
         document.getElementById("institute_id").required = true;
         document.getElementById("institute_id_required").textContent = "*";
-        document.getElementById("grade_select").style.display = "none";
+
+        if (subprograms_arr.length > 0) {
+          document.getElementById("grade_select").style.display = "none";
+        }
       }
 
       if (subprograms_arr.length > 0) {
@@ -89,7 +94,11 @@ document.addEventListener("DOMContentLoaded", function () {
       gradeSelect.value = "";
 
       let programId;
-      if (e instanceof CustomEvent && e.detail && e.detail.value !== undefined) {
+      if (
+        e instanceof CustomEvent &&
+        e.detail &&
+        e.detail.value !== undefined
+      ) {
         programId = e.detail.value; // Get value from custom event
       } else {
         programId = e.target.value; // Get value from native event
