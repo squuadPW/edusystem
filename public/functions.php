@@ -3378,9 +3378,9 @@ add_action('wp_ajax_nopriv_load_subprograms_by_program', 'load_subprograms_by_pr
 
 function load_subprograms_by_program_callback()
 {
-    $program_identificator = $_POST['program_identificator'];
-    $subprograms = get_subprogram_by_identificador_program($program_identificator);
-    $product_id = get_product_id_by_identificador_program($program_identificator);
+    $program_id = $_POST['program_id'];
+    $subprograms = get_subprogram_by_id_program($program_id);
+    $product_id = get_product_id_by_id_program($program_id);
 
     wp_send_json_success(array('subprograms' => $subprograms, 'product_id' => $product_id));
     exit;
