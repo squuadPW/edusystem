@@ -309,6 +309,7 @@ function one_time_payment()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
+    $programs = get_programs();
     include(plugin_dir_path(__FILE__) . 'templates/one-time-payment-registration.php');
 }
 
@@ -317,6 +318,7 @@ add_shortcode('one_time_payment', 'one_time_payment');
 function custom_registration_pay()
 {
     $grades = get_grades();
+    $programs = get_programs();
     include(plugin_dir_path(__FILE__) . 'templates/custom-registration-pay.php');
 }
 
@@ -327,6 +329,7 @@ function form_scholarship_application()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
+    $programs = get_programs();
     include(plugin_dir_path(__FILE__) . 'templates/scholarship-application.php');
 }
 
