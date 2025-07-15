@@ -33,46 +33,51 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("grade_select").style.display = "none";
       }
 
-      const XHR = new XMLHttpRequest();
-      XHR.open(
-        "POST",
-        `${ajax_object.ajax_url}?action=load_grades_institute`,
-        true
-      );
-      XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      XHR.responseType = "json";
+      if (subprograms_arr.length > 0) {
+        const XHR = new XMLHttpRequest();
+        XHR.open(
+          "POST",
+          `${ajax_object.ajax_url}?action=load_grades_institute`,
+          true
+        );
+        XHR.setRequestHeader(
+          "Content-Type",
+          "application/x-www-form-urlencoded"
+        );
+        XHR.responseType = "json";
 
-      const params = new URLSearchParams({
-        action: "load_grades_institute",
-        institute_id: e.target.value,
-      });
+        const params = new URLSearchParams({
+          action: "load_grades_institute",
+          institute_id: e.target.value,
+        });
 
-      XHR.onload = () => {
-        if (XHR.status === 200 && XHR.response && XHR.response) {
-          let grades = XHR.response.data.grades;
+        XHR.onload = () => {
+          if (XHR.status === 200 && XHR.response && XHR.response) {
+            let grades = XHR.response.data.grades;
 
-          // Get the grades select element
+            // Get the grades select element
 
-          // Clear existing options except the first one
-          while (gradeSelect.options.length > 1) {
-            gradeSelect.remove(1);
+            // Clear existing options except the first one
+            while (gradeSelect.options.length > 1) {
+              gradeSelect.remove(1);
+            }
+
+            document.getElementById("grade_select").style.display = "block";
+
+            // Add new options from the grades array
+            grades.forEach((grade) => {
+              const option = document.createElement("option");
+              option.value = grade.id;
+              option.textContent = grade.description
+                ? `${grade.name} ${grade.description}`
+                : grade.name;
+              gradeSelect.appendChild(option);
+            });
           }
+        };
 
-          document.getElementById("grade_select").style.display = "block";
-
-          // Add new options from the grades array
-          grades.forEach((grade) => {
-            const option = document.createElement("option");
-            option.value = grade.id;
-            option.textContent = grade.description
-              ? `${grade.name} ${grade.description}`
-              : grade.name;
-            gradeSelect.appendChild(option);
-          });
-        }
-      };
-
-      XHR.send(params.toString());
+        XHR.send(params.toString());
+      }
     });
   }
 
@@ -116,7 +121,6 @@ document.addEventListener("DOMContentLoaded", function () {
           }
 
           if (subprograms.length > 0) {
-
             // Clear existing options except the first one
             while (gradeSelect.options.length > 1) {
               gradeSelect.remove(1);
@@ -134,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             subprograms_arr = subprograms;
           } else {
-                        document.getElementById("institute-id-select").style.display =
+            document.getElementById("institute-id-select").style.display =
               "block";
 
             productIdInput.value = product_id;
