@@ -73,7 +73,7 @@
                                                             <b><?= __('Initial price', 'edusystem'); ?></b>
                                                             <span class="text-danger">*</span>
                                                         </label>
-                                                        <input type="number" name="rules[<?= $i ?>][initial_price]" value="<?= $rule['initial_price'] ?? 0.00 ?>" step="0.01"  required>
+                                                        <input type="number" name="rules[<?= $i ?>][initial_price]" value="<?= $rule['initial_price'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
                                                     </div>
 
                                                     <div class="space-offer">
@@ -82,7 +82,7 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="number" name="rules[<?= $i ?>][quantity]" value="<?= $rule['quotas_quantity'] ?? 0 ?>" step="0.01"  min="1" step="1"  required >
+                                                        <input type="number" name="rules[<?= $i ?>][quantity]" value="<?= $rule['quotas_quantity'] ?? 0 ?>" min="1" step="1" onkeydown="return !['.', '-', 'e'].includes(event.key)" required >
                                                     </div>
 
                                                     <div class="space-offer">
@@ -92,7 +92,7 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="number" name="rules[<?= $i ?>][price]" value="<?= $rule['quote_price'] ?? 0.00 ?>" step="0.01" required>
+                                                        <input type="number" name="rules[<?= $i ?>][price]" value="<?= $rule['quote_price'] ?? 0.00 ?>" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" required>
                                                     </div>
 
                                                 </div>
@@ -106,9 +106,9 @@
                                                         </label>
 
                                                         <div class="input-frequency" >
-                                                            <input type="number" name="rules[<?= $i ?>][frequency_value]" value="<?= $rule['frequency_value'] ?? 0 ?>" oninput="validate_input(this, '^[0-9]*$')" >
+                                                            <input type="number" name="rules[<?= $i ?>][frequency_value]" value="<?= $rule['frequency_value'] ?? 0 ?>" step="1" min="0" onkeydown="return !['.', '-', 'e'].includes(event.key)" required >
 
-                                                            <select name="rules[<?= $i ?>][type_frequency]" required >
+                                                            <select name="rules[<?= $i ?>][type_frequency]" >
                                                                 <option value="" <?= ($rule['type_frequency'] == '') ? 'selected' : '' ?> ><?= __('Select a frequency type','edusystem') ?></option>
                                                                 <option value="day" <?= ($rule['type_frequency'] == 'day') ? 'selected' : '' ?> ><?= __('Day','edusystem') ?></option>
                                                                 <option value="month" <?= ($rule['type_frequency'] == 'month') ? 'selected' : '' ?> ><?= __('Month','edusystem') ?></option>
@@ -126,7 +126,7 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="number" name="rules[<?= $i ?>][position]" value="<?= $rule['position'] ?? 0 ?>" oninput="validate_input(this, '^[0-9]*$')" required>
+                                                        <input type="number" name="rules[<?= $i ?>][position]" value="<?= $rule['position'] ?? 0 ?>" step="1" min="0"  onkeydown="return !['.', '-', 'e'].includes(event.key)" required>
                                                     </div>
 
                                                 </div>
@@ -168,7 +168,7 @@
                                                     <b><?= __('Initial price', 'edusystem'); ?></b>
                                                     <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="text" name="rules[][initial_price]" value="0" step="0.01" disabled required>
+                                                <input type="text" name="rules[][initial_price]" value="0" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" disabled required>
                                             </div>
 
                                             <div class="space-offer">
@@ -177,7 +177,7 @@
                                                     <span class="text-danger">*</span>
                                                 </label>
 
-                                                <input type="number" name="rules[][quantity]" value="0"  min="1" step="1" disabled required >
+                                                <input type="number" name="rules[][quantity]" value="0" step="1" min="0" onkeydown="return !['.', '-', 'e'].includes(event.key)" disabled required >
                                             </div>
 
                                             <div class="space-offer">
@@ -187,7 +187,7 @@
                                                     <span class="text-danger">*</span>
                                                 </label>
 
-                                                <input type="number" name="rules[][price]" value="0" step="0.01" disabled required>
+                                                <input type="number" name="rules[][price]" value="0" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" disabled required>
                                             </div>
                                         </div>
 
@@ -200,9 +200,9 @@
                                                 </label>
 
                                                 <div class="input-frequency" >
-                                                    <input type="number" name="rules[][frequency_value]" value="0" oninput="validate_input(this, '^[0-9]*$')" disabled >
+                                                    <input type="number" name="rules[][frequency_value]" value="0" step="1" min="0" onkeydown="return !['.', '-', 'e'].includes(event.key)" disabled >
 
-                                                    <select name="rules[][type_frequency]" disabled required >
+                                                    <select name="rules[][type_frequency]" disabled >
                                                         <option value="" ><?= __('Select a frequency type','edusystem') ?></option>
                                                         <option value="day"><?= __('Day','edusystem') ?></option>
                                                         <option value="month"><?= __('Month','edusystem') ?></option>
@@ -220,7 +220,7 @@
                                                     <span class="text-danger">*</span>
                                                 </label>
 
-                                                <input type="number" name="rules[][position]" value="0" oninput="validate_input(this, '^[0-9]*$')" disabled required>
+                                                <input type="number" name="rules[][position]" value="0" step="1" min="0" onkeydown="return !['.', '-', 'e'].includes(event.key)" disabled required>
                                             </div>
 
                                         </div>
