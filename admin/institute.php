@@ -451,10 +451,6 @@ function get_users_managers()
 
     $managers = get_users($args);
 
-    error_log('Argumentos para get_users: ' . print_r($args, true)); // Ver los argumentos pasados
-    error_log('Resultado de get_users: ' . print_r($managers, true)); // Ver el resultado completo
-
-    // Puedes devolver los managers o hacer algo con ellos
     return $managers;
 }
 

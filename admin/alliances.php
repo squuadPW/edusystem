@@ -216,6 +216,8 @@ function add_admin_partners_content()
         } else if ($_GET['section_tab'] == 'add_alliance') {
 
             $countries = get_countries();
+            $managers = get_users_managers();
+
             include(plugin_dir_path(__FILE__) . 'templates/alliance-details.php');
 
         } else if ($_GET['section_tab'] == 'fee_alliance') {
