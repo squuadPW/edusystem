@@ -1344,30 +1344,54 @@ class TT_institutes_suspended_List_Table extends WP_List_Table
 
 function create_user_institute($institute)
 {
-
     $user = get_user_by('email', $institute->email);
 
     if (!$user) {
-
-        $password = generate_password_user();
+        $password = wp_generate_password(12, false); // Generate a strong password, not necessarily unique
+        // You had 'generate_password_user()'. Ensure this function returns a plaintext password.
+        // If it's your custom function, it might be the culprit.
+        // Using wp_generate_password is safer and recommended.
 
         $userdata = [
-            'user_login' => $institute->email,
-            'user_pass' => $password,
-            'user_email' => $institute->email,
-            'first_name' => $institute->name,
+            'user_login'    => $institute->email,
+            'user_pass'     => $password, // Pass the plaintext password here
+            'user_email'    => $institute->email,
+            'first_name'    => $institute->name,
+            'role'          => 'institutes', // Assign the role directly during user creation
         ];
 
         $user_id = wp_insert_user($userdata);
-        $user = new WP_User($user_id);
-        $user->remove_role('subscriber');
-        $user->add_role('institutes');
+
+        if (is_wp_error($user_id)) {
+            // Handle error during user creation (e.g., log it or display a message)
+            error_log('Error creating institute user: ' . $user_id->get_error_message());
+            return; // Exit if user creation failed
+        }
+
+        // No need to remove and add role if set directly above
+        // $user = new WP_User($user_id);
+        // $user->remove_role('subscriber');
+        // $user->add_role('institutes');
 
         update_user_meta($user_id, 'institute_id', $institute->id);
 
-        wp_new_user_notification($user_id, null, 'both');
+        // Pass the plaintext password as the second argument
+        wp_new_user_notification($user_id, $password, 'both');
+
     } else {
-        update_user_meta($user->id, 'institute_id', $institute->id);
+        // If user already exists, just update their institute_id and ensure their role.
+        // You might want to add logic here to ensure the existing user has the 'institutes' role
+        // if they don't already, or handle cases where the email already belongs to a
+        // non-institute user.
+        update_user_meta($user->ID, 'institute_id', $institute->id);
+
+        // Optionally, ensure the role is correct for an existing user
+        $existing_user_obj = new WP_User($user->ID);
+        if (!in_array('institutes', (array) $existing_user_obj->roles)) {
+            $existing_user_obj->add_role('institutes');
+            // Consider if you need to remove other roles here, e.g., 'subscriber'
+            // $existing_user_obj->remove_role('subscriber');
+        }
     }
 }
 
