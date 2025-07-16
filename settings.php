@@ -17,7 +17,7 @@
 	define('FEE_GRADUATION', '30'); // Product graduation fee
 
 	// GLOBAL
-	define('ROLES_OF_STAFF', array('owner', 'administrador', 'admision', 'admission', 'alliance', 'administration', 'allied', 'webinar-aliance'));
+	define('ROLES_OF_STAFF', array('owner', 'administrador', 'admision', 'admission', 'alliance', 'administration', 'allied', 'webinar-aliance', 'manager'));
 	define('PROGRAM_ID', 'HSD-01'); // AES program for endpoint for laravel create user and move documents
 	define('TYPE_PROGRAM', '0'); // AES type of program for endpoint for laravel create user and move documents
 	define('URL_LARAVEL_PPADMIN', 'https://ppadmin.american-elite.us/'); 
