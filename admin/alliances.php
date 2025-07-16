@@ -192,7 +192,7 @@ function add_admin_partners_content()
 
             $countries = get_countries();
             $institutes = get_institutes_from_alliance($alliance_id);
-            $managers = get_managers();
+            $managers = get_users_managers();
 
             $selected_manager_user_ids = [];
             if (isset($alliance_id) && !empty($alliance_id)) {

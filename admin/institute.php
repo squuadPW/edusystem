@@ -286,7 +286,7 @@ function add_admin_institutes_content()
             $countries = get_countries();
             $states = get_states_by_country_code($institute->country);
             $alliances = get_alliances();
-            $managers = get_managers();
+            $managers = get_users_managers();
 
             // $selected_manager_user_ids = [];
             // if (isset($institute_id) && !empty($institute_id)) {
@@ -354,7 +354,7 @@ function add_admin_institutes_content()
         if ($_GET['section_tab'] == 'add_institute') {
             $countries = get_countries();
             $alliances = get_alliances();
-            $managers = get_managers();
+            $managers = get_users_managers();
             include(plugin_dir_path(__FILE__) . 'templates/institute-details.php');
         }
 
@@ -441,7 +441,7 @@ function get_alliances()
     return $alliances;
 }
 
-function get_managers()
+function get_users_managers()
 {
     $args = array(
         'role' => 'manager', // Especifica el rol 'manager'
@@ -450,6 +450,9 @@ function get_managers()
     );
 
     $managers = get_users($args);
+
+    error_log('Argumentos para get_users: ' . print_r($args, true)); // Ver los argumentos pasados
+    error_log('Resultado de get_users: ' . print_r($managers, true)); // Ver el resultado completo
 
     // Puedes devolver los managers o hacer algo con ellos
     return $managers;

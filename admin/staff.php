@@ -20,12 +20,12 @@ function add_admin_form_staff_content()
         if ($_GET['section_tab'] == 'staff_details') {
             $staff_id = $_GET['staff_id'];
             $staff = get_staff_details($staff_id);
-            $managers = get_managers();
+            $managers = get_users_managers();
             include(plugin_dir_path(__FILE__) . 'templates/staff-detail.php');
         }
 
         if ($_GET['section_tab'] == 'add_staff') {
-            $managers = get_managers();
+            $managers = get_users_managers();
             include(plugin_dir_path(__FILE__) . 'templates/staff-detail.php');
         }
 
