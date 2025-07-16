@@ -46,6 +46,8 @@
 
                                                 <input type="hidden" name="rules[<?= $i ?>][id]" value="<?= $rule['id'] ?>" >
 
+                                                <div class="id" ><?= $rule['id'] ?></div>
+
                                                 <div class="group-input" >
 
                                                     <div class="space-offer">

@@ -1445,6 +1445,17 @@ h2 {
                 border: 1px solid #8080805c;
                 border-radius: 5px;
                 padding: 5px 15px;
+                position: relative;
+
+                .id {
+                    position: absolute;
+                    right: 0px;
+                    top: 0px;
+                    padding: 0px 15px;
+                    background-color: #ccc;
+                    border-radius: 0px 0px 0px 5px;
+                    font-size: 12px;
+                }
 
                 &#template-subprogram {
                     display: none;
@@ -1516,6 +1527,17 @@ h2 {
                 border: 1px solid #8080805c;
                 border-radius: 5px;
                 padding: 5px 15px;
+                position: relative;
+
+                .id {
+                    position: absolute;
+                    right: 0px;
+                    top: 0px;
+                    padding: 2px 15px;
+                    background-color: #ccc;
+                    border-radius: 0px 0px 0px 5px;
+                    font-size: 12px;
+                }
 
                 &#template-quota-rule {
                     display: none;

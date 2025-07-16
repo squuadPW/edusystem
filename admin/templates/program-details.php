@@ -108,6 +108,8 @@
                                                 <input type="hidden" name="subprogram[<?= $i ?>][id]" value="<?= $subprogram_id ?>" >
                                                 <input type="hidden" name="subprogram[<?= $i ?>][product_id]" value="<?= $subprogram['product_id'] ?>" >
 
+                                                <div class="id" ><?=  $subprogram['product_id'] ?></div>
+
                                                 <div class="group-input" >
 
                                                     <div class="space-offer">

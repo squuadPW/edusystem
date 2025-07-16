@@ -1317,6 +1317,16 @@ h2 {
   border: 1px solid rgba(128, 128, 128, 0.3607843137);
   border-radius: 5px;
   padding: 5px 15px;
+  position: relative;
+}
+.container-programs #subprograms-container #subprograms .subprogram .id {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  padding: 0px 15px;
+  background-color: #ccc;
+  border-radius: 0px 0px 0px 5px;
+  font-size: 12px;
 }
 .container-programs #subprograms-container #subprograms .subprogram#template-subprogram {
   display: none;
@@ -1368,6 +1378,16 @@ h2 {
   border: 1px solid rgba(128, 128, 128, 0.3607843137);
   border-radius: 5px;
   padding: 5px 15px;
+  position: relative;
+}
+#quota-rules-programs .quotas_rules #rules .rule .id {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  padding: 2px 15px;
+  background-color: #ccc;
+  border-radius: 0px 0px 0px 5px;
+  font-size: 12px;
 }
 #quota-rules-programs .quotas_rules #rules .rule#template-quota-rule {
   display: none;
