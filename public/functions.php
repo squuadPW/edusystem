@@ -167,6 +167,7 @@ function form_asp_psp($atts)
         array(
             'connected_account' => '',
             'coupon_code' => '',
+            'flywire_portal_code' => 'FGY',
         ),
         $atts,
         'form_asp_psp'
@@ -174,6 +175,7 @@ function form_asp_psp($atts)
 
     $connected_account = $atts['connected_account'];
     $coupon_code = $atts['coupon_code'];
+    $flywire_portal_code = $atts['flywire_portal_code'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active();
@@ -185,8 +187,23 @@ function form_asp_psp($atts)
 
 add_shortcode('form_asp_psp', 'form_asp_psp');
 
-function student_registration_form()
+function student_registration_form($atts)
 {
+    // Define los atributos por defecto
+    $atts = shortcode_atts(
+        array(
+            'connected_account' => '',
+            'coupon_code' => '',
+            'flywire_portal_code' => 'FGY',
+        ),
+        $atts,
+        'form_asp_psp'
+    );
+
+    $connected_account = $atts['connected_account'];
+    $coupon_code = $atts['coupon_code'];
+    $flywire_portal_code = $atts['flywire_portal_code'];
+
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
