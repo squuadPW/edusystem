@@ -1499,8 +1499,4 @@ a.toplevel_page_logo_based_menu {
   max-width: 100%; /* Asegura que la imagen no se desborde */
   height: auto; /* Mantiene la proporción de la imagen */
   display: block; /* Elimina espacio extra debajo de la imagen */
-}
-
-.select2-container {
-  z-index: 99999 !important;
 }/*# sourceMappingURL=style.css.map */
