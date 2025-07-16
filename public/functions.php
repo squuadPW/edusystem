@@ -738,7 +738,7 @@ function add_loginout_link($items, $args)
             $color = '#12e354 !important';
             $count = "(" . sizeof($notices) . ")";
         } else {
-            $color = '#002fbd !important';
+            $color = 'var(--primary-color)';
             $count = "";
         }
         if ($args->theme_location == 'primary') {
