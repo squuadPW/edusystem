@@ -259,8 +259,6 @@ document.addEventListener("DOMContentLoaded", function () {
           productIdInput.value = "";
         }
       }
-
-      console.log(productIdInput.value)
     });
   }
 
