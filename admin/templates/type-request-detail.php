@@ -52,7 +52,7 @@
 
                                         <br>
 
-                                        <input type="number" name="price" value="<?= $type->price; ?>" required>
+                                        <input type="number" name="price" value="<?= $type->price; ?>" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" required>
                                     </div>
 
                                     <br>

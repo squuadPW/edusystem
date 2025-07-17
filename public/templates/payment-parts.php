@@ -27,7 +27,8 @@
 
     ?>
     
-    <?php if ( $product && !isset($_COOKIE['is_scholarship']) ) : ?>
+    
+    <?php if ( has_term('programs', 'product_cat', $product_id) && $product && !isset($_COOKIE['is_scholarship']) ) : ?>
 
 
         <!-- <div>

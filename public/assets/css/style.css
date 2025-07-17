@@ -1393,8 +1393,22 @@ body.modal-open {
   gap: 10px;
   justify-content: space-between;
 }
+#modal-request .select-type-document div {
+  flex: 1.2;
+}
 #modal-request .select-type-document .price-type {
   display: flex;
   gap: 5px;
   flex-direction: column;
+  align-items: flex-end;
+  flex: 0.8;
+  width: 100%;
+}
+#modal-request .total {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1254901961);
 }/*# sourceMappingURL=style.css.map */

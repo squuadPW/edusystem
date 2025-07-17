@@ -13,6 +13,7 @@ require plugin_dir_path(__FILE__) . 'endpoint.php';
 require plugin_dir_path(__FILE__) . 'moodle.php';
 require plugin_dir_path(__FILE__) . 'automatically_enrollment.php';
 require plugin_dir_path(__FILE__) . 'escala/rest.php';
+require plugin_dir_path(__FILE__) . 'document-request.php';
 
 function form_plugin_scripts()
 {
@@ -222,7 +223,6 @@ function use_previous_form_aes_callback()
 
 add_action('wp_ajax_load_grades_institute', 'load_grades_institute_callback');
 add_action('wp_ajax_nopriv_load_grades_institute', 'load_grades_institute_callback');
-
 function load_grades_institute_callback()
 {
     $institute_id = $_POST['institute_id'];
@@ -264,45 +264,6 @@ function load_grades_institute_callback()
     exit;
 }
 
-add_action('wp_ajax_send_request', 'send_request_callback');
-add_action('wp_ajax_nopriv_send_request', 'send_request_callback');
-
-function send_request_callback()
-{
-    global $wpdb, $current_user;
-    $roles = $current_user->roles;
-    $table_students = $wpdb->prefix . 'students';
-    $table_requests = $wpdb->prefix . 'requests';
-
-    $type_id = sanitize_text_field($_POST['type_id']);
-    $reason = sanitize_text_field($_POST['reason']);
-    $student_id = sanitize_text_field($_POST['student_id']);
-    $partner_id = sanitize_text_field($_POST['partner_id']);
-
-    if (!$partner_id) {
-        if (in_array('parent', $roles) && !in_array('student', $roles)) {
-            $partner_id = $current_user->ID;
-        } else if (in_array('parent', $roles) && in_array('student', $roles)) {
-            $partner_id = $current_user->ID;
-        } else if (!in_array('parent', $roles) && in_array('student', $roles)) {
-            $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
-            $partner_id = $student->partner_id;
-        }
-    }
-
-    $wpdb->insert($table_requests, [
-        'partner_id' => $partner_id,
-        'student_id' => $student_id,
-        'description' => $reason,
-        'type_id' => $type_id,
-        'status_id' => 0,
-    ]);
-
-    send_notification_staff_particular('New request', 'Please be informed that we have received a new request to the system, so please check it in the system as soon as possible in order to be able to attend it.', 0);
-    send_notification_staff_particular('New request', 'Please be informed that we have received a new request to the system, so please check it in the system as soon as possible in order to be able to attend it.', 2);
-    wp_send_json_success(array('success' => true));
-    exit;
-}
 
 function one_time_payment()
 {

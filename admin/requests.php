@@ -65,6 +65,21 @@ function add_admin_form_requests_content()
             $price = sanitize_text_field($_POST['price']);
             $document_certificate_id = sanitize_text_field($_POST['document_certificate_id']);
 
+            // verifica y crea en caso de necesitar una categoria llamada programs;"
+            $category_id = 0;
+            $name_category = 'documents';
+            $category = term_exists($name_category, 'product_cat');
+            if ( $category ) {
+                $category_id = (int) $category['term_id'];
+
+            } else {
+                // La categoría no existe, crearla
+                $category = wp_insert_term($name_category, 'product_cat');
+                if ( !is_wp_error($category) ) {
+                    $category_id = (int) $category['term_id'];// Devolver el ID de la nueva categoría creada
+                } 
+            }
+
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             if (isset($type_id) && isset($product_id) && !empty($type_id) && !empty($price) && !empty($document_certificate_id) ) {
                 
@@ -75,6 +90,9 @@ function add_admin_form_requests_content()
 
                 update_post_meta( $product_id, '_regular_price', $price );
                 update_post_meta( $product_id, '_price', $price );
+
+                // Asignar la categoría al producto
+                wp_set_object_terms($product_id, $category_id, 'product_cat');
 
                 $wpdb->update($table_type_requests, [
                     'type' => $type,
@@ -99,6 +117,9 @@ function add_admin_form_requests_content()
                     update_post_meta( $product_id, '_regular_price', $price );
                     update_post_meta( $product_id, '_price', $price );
                     update_post_meta( $product_id, '_stock_status', 'instock' ); // Estado del stock
+
+                    // Asignar la categoría al producto
+                    wp_set_object_terms($product_id, $category_id, 'product_cat');
 
                     $wpdb->insert($table_type_requests, [
                         'type' => $type,
