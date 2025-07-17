@@ -35,6 +35,13 @@ document.addEventListener("DOMContentLoaded", function () {
         // If 'other' is selected and subprograms exist, show grade select
         if (subprograms_arr.length > 0) {
           document.getElementById("grade_select").style.display = "block";
+
+          subprograms_arr.forEach((subprogram, index) => {
+            const option = document.createElement("option");
+            option.value = index + 1;
+            option.textContent = subprogram.name || "N/A";
+            gradeSelect.appendChild(option);
+          });
         }
       } else {
         document.getElementById("name-institute-field").style.display = "none";
