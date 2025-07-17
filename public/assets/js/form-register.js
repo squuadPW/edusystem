@@ -19,11 +19,20 @@ document.addEventListener("DOMContentLoaded", function () {
       const gradeSelect = document.querySelector('select[name="grade"]');
       gradeSelect.value = "";
 
+      // Clear existing options
+      while (gradeSelect.options.length > 1) {
+        gradeSelect.remove(1);
+      }
+      // Hide grade select initially
+      document.getElementById("grade_select").style.display = "none";
+
       if (e.target.value == "other") {
         document.getElementById("name-institute-field").style.display = "block";
         document.getElementById("name_institute").required = true;
         document.getElementById("institute_id").required = false;
         document.getElementById("institute_id_required").textContent = "";
+
+        // If 'other' is selected and subprograms exist, show grade select
         if (subprograms_arr.length > 0) {
           document.getElementById("grade_select").style.display = "block";
         }
@@ -33,55 +42,87 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("institute_id").required = true;
         document.getElementById("institute_id_required").textContent = "*";
 
+        // If a specific institute is selected, hide grade select (it will be re-populated by AJAX if needed)
         if (subprograms_arr.length > 0) {
+          // This condition was previously leading to hiding it always if subprograms_arr.length > 0
           document.getElementById("grade_select").style.display = "none";
         }
-      }
 
-      if (subprograms_arr.length > 0) {
-        const XHR = new XMLHttpRequest();
-        XHR.open(
-          "POST",
-          `${ajax_object.ajax_url}?action=load_grades_institute`,
-          true
-        );
-        XHR.setRequestHeader(
-          "Content-Type",
-          "application/x-www-form-urlencoded"
-        );
-        XHR.responseType = "json";
+        // Proceed with AJAX call only if an institute is actually selected (not "other" or empty)
+        if (e.target.value) {
+          const XHR = new XMLHttpRequest();
+          XHR.open(
+            "POST",
+            `${ajax_object.ajax_url}?action=load_grades_institute`,
+            true
+          );
+          XHR.setRequestHeader(
+            "Content-Type",
+            "application/x-www-form-urlencoded"
+          );
+          XHR.responseType = "json";
 
-        const params = new URLSearchParams({
-          action: "load_grades_institute",
-          institute_id: e.target.value,
-        });
+          const params = new URLSearchParams({
+            action: "load_grades_institute",
+            institute_id: e.target.value,
+          });
 
-        XHR.onload = () => {
-          if (XHR.status === 200 && XHR.response && XHR.response) {
-            let grades = XHR.response.data.grades;
+          XHR.onload = () => {
+            if (
+              XHR.status === 200 &&
+              XHR.response &&
+              XHR.response.data &&
+              XHR.response.data.grades
+            ) {
+              let grades = XHR.response.data.grades;
 
-            // Get the grades select element
+              // Clear existing options before populating
+              while (gradeSelect.options.length > 1) {
+                gradeSelect.remove(1);
+              }
 
-            // Clear existing options except the first one
+              // --- Start of the specific adjustment for not_institute ---
+              // Iterate over subprograms_arr and use grades array for text
+              if (subprograms_arr.length > 0) {
+                document.getElementById("grade_select").style.display = "block";
+                subprograms_arr.forEach((subprogram, index) => {
+                  const option = document.createElement("option");
+                  option.value = index + 1; // Use index + 1 as value, aligning with program change event
+                  // Find the corresponding grade by index
+                  const gradeFromInstitute = grades[index];
+
+                  if (gradeFromInstitute) {
+                    option.textContent = gradeFromInstitute.description
+                      ? `${gradeFromInstitute.name} ${gradeFromInstitute.description}`
+                      : gradeFromInstitute.name;
+                  } else {
+                    // Fallback if no corresponding grade is found at this index
+                    option.textContent = subprogram.name || "N/A";
+                  }
+                  gradeSelect.appendChild(option);
+                });
+              } else {
+                // If no subprograms are loaded, hide grade select
+                document.getElementById("grade_select").style.display = "none";
+              }
+              // --- End of specific adjustment ---
+            } else {
+              // Handle error or empty grades response: clear and hide
+              while (gradeSelect.options.length > 1) {
+                gradeSelect.remove(1);
+              }
+              document.getElementById("grade_select").style.display = "none";
+            }
+          };
+          XHR.onerror = () => {
+            // Handle AJAX error: clear and hide
             while (gradeSelect.options.length > 1) {
               gradeSelect.remove(1);
             }
-
-            document.getElementById("grade_select").style.display = "block";
-
-            // Add new options from the grades array
-            grades.forEach((grade) => {
-              const option = document.createElement("option");
-              option.value = grade.id;
-              option.textContent = grade.description
-                ? `${grade.name} ${grade.description}`
-                : grade.name;
-              gradeSelect.appendChild(option);
-            });
-          }
-        };
-
-        XHR.send(params.toString());
+            document.getElementById("grade_select").style.display = "none";
+          };
+          XHR.send(params.toString());
+        }
       }
     });
   }
@@ -90,8 +131,10 @@ document.addEventListener("DOMContentLoaded", function () {
     program.addEventListener("change", (e) => {
       document.getElementById("grade_select").style.display = "none";
       document.getElementById("institute-id-select").style.display = "none";
+
       const gradeSelect = document.querySelector('select[name="grade"]');
       gradeSelect.value = "";
+      productIdInput.value = "";
 
       let programId;
       if (
@@ -99,17 +142,26 @@ document.addEventListener("DOMContentLoaded", function () {
         e.detail &&
         e.detail.value !== undefined
       ) {
-        programId = e.detail.value; // Get value from custom event
+        programId = e.detail.value;
       } else {
-        programId = e.target.value; // Get value from native event
+        programId = e.target.value;
       }
 
       const institute_id_select = document.querySelector(
         'select[name="institute_id"]'
       );
       institute_id_select.value = "";
-
       document.getElementById("name-institute-field").style.display = "none";
+
+      // If no program is selected, reset subprograms_arr and related fields
+      if (!programId) {
+        subprograms_arr = [];
+        while (gradeSelect.options.length > 1) {
+          gradeSelect.remove(1);
+        }
+        document.getElementById("institute-id-select").style.display = "none";
+        return;
+      }
 
       const XHR = new XMLHttpRequest();
       XHR.open(
@@ -122,72 +174,93 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const params = new URLSearchParams({
         action: "load_subprograms_by_program",
-        program_id: programId, // Use the determined value
+        program_id: programId,
       });
 
       XHR.onload = () => {
-        if (XHR.status === 200 && XHR.response && XHR.response) {
+        if (XHR.status === 200 && XHR.response && XHR.response.data) {
           let subprograms = [];
-          let data = XHR.response.data.subprograms;
-          let product_id = XHR.response.data.product_id;
+          const data = XHR.response.data.subprograms;
+          const product_id = XHR.response.data.product_id;
+
           if (Array.isArray(data)) {
             subprograms = data;
-          } else {
+          } else if (data) {
             subprograms = Object.values(data);
           }
 
-          productIdInput.value = product_id;
-          if (subprograms.length > 0) {
-            // Clear existing options except the first one
-            while (gradeSelect.options.length > 1) {
-              gradeSelect.remove(1);
-            }
+          productIdInput.value = product_id || "";
+          subprograms_arr = subprograms; // Update subprograms_arr
 
+          while (gradeSelect.options.length > 1) {
+            gradeSelect.remove(1);
+          }
+
+          if (subprograms_arr.length > 0) {
             document.getElementById("institute-id-select").style.display =
               "block";
+            // document.getElementById("grade_select").style.display = "block";
 
-            // Add new options from the grades array
-            subprograms.forEach((program, index) => {
+            // Populate grade select using subprograms_arr data directly
+            subprograms_arr.forEach((programItem, index) => {
               const option = document.createElement("option");
-              option.value = index;
-              option.textContent = program.name;
+              option.value = index + 1; // Align value with not_institute logic
+              option.textContent = programItem.description
+                ? `${programItem.name} ${programItem.description}`
+                : programItem.name;
               gradeSelect.appendChild(option);
             });
-            subprograms_arr = subprograms;
           } else {
             document.getElementById("institute-id-select").style.display =
               "block";
+            // document.getElementById("grade_select").style.display = "none";
           }
+        } else {
+          // Handle error or empty response: reset and hide
+          subprograms_arr = [];
+          while (gradeSelect.options.length > 1) {
+            gradeSelect.remove(1);
+          }
+          productIdInput.value = "";
+          // document.getElementById("grade_select").style.display = "none";
+          document.getElementById("institute-id-select").style.display =
+            "block";
         }
       };
-
+      XHR.onerror = () => {
+        // Handle AJAX error: reset and hide
+        subprograms_arr = [];
+        while (gradeSelect.options.length > 1) {
+          gradeSelect.remove(1);
+        }
+        productIdInput.value = "";
+        // document.getElementById("grade_select").style.display = "none";
+        document.getElementById("institute-id-select").style.display = "block";
+      };
       XHR.send(params.toString());
     });
   }
 
   if (grade) {
     grade.addEventListener("change", (e) => {
-      const selectedIndex = parseInt(e.target.value, 10); // Convert string to integer
+      // Subtract 1 because option values are index + 1
+      const selectedIndex = parseInt(e.target.value, 10) - 1;
 
-      if (subprograms_arr.length > 0) {
-        // Make sure the hidden input element exists
-        if (productIdInput) {
-          // Check if the index is valid for the subprograms_arr
-          if (selectedIndex >= 0 && selectedIndex < subprograms_arr.length) {
-            const selectedProgram = subprograms_arr[selectedIndex - 1];
+      if (productIdInput) {
+        if (selectedIndex >= 0 && selectedIndex < subprograms_arr.length) {
+          const selectedProgram = subprograms_arr[selectedIndex];
 
-            // --- Set the value of the hidden input here ---
-            // Ensure 'product_id' is the correct property name in your 'selectedProgram' object
-            if (selectedProgram && selectedProgram.product_id !== undefined) {
-              productIdInput.value = selectedProgram.product_id;
-            } else {
-              productIdInput.value = ""; // Clear the input if the property doesn't exist
-            }
+          if (selectedProgram && selectedProgram.product_id !== undefined) {
+            productIdInput.value = selectedProgram.product_id;
           } else {
-            productIdInput.value = ""; // Clear the input if the index is invalid (e.g., "Select an option")
+            productIdInput.value = "";
           }
+        } else {
+          productIdInput.value = "";
         }
       }
+
+      console.log(productIdInput.value)
     });
   }
 
