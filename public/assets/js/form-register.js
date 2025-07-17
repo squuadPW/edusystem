@@ -137,14 +137,20 @@ document.addEventListener("DOMContentLoaded", function () {
       productIdInput.value = "";
 
       let programId;
+      let programIdentificator; // Declare variable for identificator
+
       if (
         e instanceof CustomEvent &&
         e.detail &&
         e.detail.value !== undefined
       ) {
         programId = e.detail.value;
+        // For custom events, you might need to pass the identificator in detail
+        // programIdentificator = e.detail.identificator;
       } else {
-        programId = e.target.value;
+        const selectedOption = e.target.selectedOptions[0];
+        programId = selectedOption.value;
+        programIdentificator = selectedOption.getAttribute("identificator"); // Get the identificator
       }
 
       const institute_id_select = document.querySelector(
@@ -174,46 +180,85 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const params = new URLSearchParams({
         action: "load_subprograms_by_program",
-        program_id: programId,
+        program_id: programId
       });
 
       XHR.onload = () => {
         if (XHR.status === 200 && XHR.response && XHR.response.data) {
-          let subprograms = [];
-          const data = XHR.response.data.subprograms;
-          const product_id = XHR.response.data.product_id;
+          if (programIdentificator == 'AES') {
+            let subprograms = [];
+            const data = XHR.response.data.subprograms;
+            const product_id = XHR.response.data.product_id;
 
-          if (Array.isArray(data)) {
-            subprograms = data;
-          } else if (data) {
-            subprograms = Object.values(data);
-          }
+            if (Array.isArray(data)) {
+              subprograms = data;
+            } else if (data) {
+              subprograms = Object.values(data);
+            }
 
-          productIdInput.value = product_id || "";
-          subprograms_arr = subprograms; // Update subprograms_arr
+            productIdInput.value = product_id || "";
+            subprograms_arr = subprograms; // Update subprograms_arr
 
-          while (gradeSelect.options.length > 1) {
-            gradeSelect.remove(1);
-          }
+            while (gradeSelect.options.length > 1) {
+              gradeSelect.remove(1);
+            }
 
-          if (subprograms_arr.length > 0) {
-            document.getElementById("institute-id-select").style.display =
-              "block";
-            // document.getElementById("grade_select").style.display = "block";
+            if (subprograms_arr.length > 0) {
+              document.getElementById("institute-id-select").style.display =
+                "block";
+              // document.getElementById("grade_select").style.display = "block";
 
-            // Populate grade select using subprograms_arr data directly
-            subprograms_arr.forEach((programItem, index) => {
-              const option = document.createElement("option");
-              option.value = index + 1; // Align value with not_institute logic
-              option.textContent = programItem.description
-                ? `${programItem.name} ${programItem.description}`
-                : programItem.name;
-              gradeSelect.appendChild(option);
-            });
+              // Populate grade select using subprograms_arr data directly
+              subprograms_arr.forEach((programItem, index) => {
+                const option = document.createElement("option");
+                option.value = index + 1; // Align value with not_institute logic
+                option.textContent = programItem.description
+                  ? `${programItem.name} ${programItem.description}`
+                  : programItem.name;
+                gradeSelect.appendChild(option);
+              });
+            } else {
+              document.getElementById("institute-id-select").style.display =
+                "block";
+              // document.getElementById("grade_select").style.display = "none";
+            }
           } else {
-            document.getElementById("institute-id-select").style.display =
-              "block";
-            // document.getElementById("grade_select").style.display = "none";
+            let subprograms = [];
+            const data = XHR.response.data.subprograms;
+            const product_id = XHR.response.data.product_id;
+
+            if (Array.isArray(data)) {
+              subprograms = data;
+            } else if (data) {
+              subprograms = Object.values(data);
+            }
+
+            productIdInput.value = product_id || "";
+            subprograms_arr = subprograms; // Update subprograms_arr
+
+            while (gradeSelect.options.length > 1) {
+              gradeSelect.remove(1);
+            }
+
+            if (subprograms_arr.length > 0) {
+              // document.getElementById("institute-id-select").style.display =
+              //   "block";
+              document.getElementById("grade_select").style.display = "block";
+
+              // Populate grade select using subprograms_arr data directly
+              subprograms_arr.forEach((programItem, index) => {
+                const option = document.createElement("option");
+                option.value = index + 1; // Align value with not_institute logic
+                option.textContent = programItem.description
+                  ? `${programItem.name} ${programItem.description}`
+                  : programItem.name;
+                gradeSelect.appendChild(option);
+              });
+            } else {
+              // document.getElementById("institute-id-select").style.display =
+              //   "block";
+              document.getElementById("grade_select").style.display = "none";
+            }
           }
         } else {
           // Handle error or empty response: reset and hide

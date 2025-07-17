@@ -677,7 +677,7 @@ function get_identificator_by_id_program( $program_id ) {
         $program_id
     ));
 
-    return $identificator;
+    return strtolower($identificator);
 }
 
 function get_product_id_by_identificador_program( $identificador ) {
