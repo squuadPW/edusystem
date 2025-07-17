@@ -28,7 +28,7 @@ function crear_y_loguear_usuario_si_pago_exitoso($order_id, $old_status, $new_st
 
     $email = $order->get_billing_email();
     if (email_exists($email)) {
-        return; // Ya existe, no lo creamos ni logueamos
+        return; 
     }
 
     $nombre = $order->get_billing_first_name();
@@ -46,13 +46,17 @@ function crear_y_loguear_usuario_si_pago_exitoso($order_id, $old_status, $new_st
         ]);
 
         $user = new WP_User($user_id);
-        $user->set_role('customer');
+        $user->set_role('parent');
 
-        // Loguear al usuario automáticamente
+        // Set the newly created user as the customer for the order
+        $order->set_customer_id($user_id);
+        $order->save(); // Make sure to save the order to persist the change
+
+        // Loguear al usuario automáticamente (this part is for logging in the user who triggered the action, not necessarily the customer)
+        // If this function runs on a cron job or background process, this part might not be necessary or effective.
         wp_set_current_user($user_id);
         wp_set_auth_cookie($user_id, true); // true = sesión persistente
 
-        // Redirigir al área de pedidos
         /* wp_redirect(get_permalink(get_option('woocommerce_myaccount_page_id')) . '/orders');
         exit; */
     }
