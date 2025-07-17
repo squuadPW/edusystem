@@ -49,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const renderStudentsList = (students) => {
     const container = document.querySelector(".admin-add-offer");
     if (!container) {
-      console.error("Contenedor principal no encontrado");
       return;
     }
 

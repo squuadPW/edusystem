@@ -41,8 +41,9 @@ function save_student()
         // DATOS EXTRAS
         $country = isset($_POST['country']) ? $_POST['country'] : null;
         $city = isset($_POST['city']) ? strtolower($_POST['city']) : null;
-        $program = isset($_POST['program']) ? $_POST['program'] : null;
-        $grade = isset($_POST['grade']) ? $_POST['grade'] : null;
+        $program_id = isset($_POST['program']) ? $_POST['program'] : null;
+        $program = get_identificator_by_id_program($program_id);
+        $grade = isset($_POST['grade']) && !empty($_POST['grade']) ? $_POST['grade'] : 4;
         $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
         $password = isset($_POST['password']) ? $_POST['password'] : null;
         $from_webinar = isset($_POST['from_webinar']) ? true : false;
@@ -51,11 +52,14 @@ function save_student()
         $crm_id = isset($_POST['crm_id']) ? $_POST['crm_id'] : false;
         $squuad_stripe_selected_client_id = isset($_POST['squuad_stripe_selected_client_id']) ? $_POST['squuad_stripe_selected_client_id'] : false;
         $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : false;
+        $coupon_code = isset($_POST['coupon_code']) ? $_POST['coupon_code'] : false;
+        $flywire_portal_code = isset($_POST['flywire_portal_code']) ? $_POST['flywire_portal_code'] : false;
 
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
                 $crm_exist = crm_request('contacts', '?email=' . $email_partner, 'GET', null);
-                if (isset($crm_exist['items']) && count($crm_exist['items']) > 0) {
+                // Check if $crm_exist is a WP_Error object
+                if (!is_wp_error($crm_exist) && isset($crm_exist['items']) && count($crm_exist['items']) > 0) {
                     setcookie('crm_id', $crm_exist['items'][0]['id'], time() + 864000, '/');
                 }
             }
@@ -90,6 +94,7 @@ function save_student()
         setcookie('gender', $gender, time() + 864000, '/');
         setcookie('password', $password, time() + 864000, '/');
         setcookie('squuad_stripe_selected_client_id', $squuad_stripe_selected_client_id, time() + 864000, '/');
+        setcookie('flywire_portal_code', $flywire_portal_code, time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);
@@ -123,7 +128,7 @@ function save_student()
                     setcookie('gender_parent', $gender, time() + 864000, '/');
                 }
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship ? $id_document : false, false, $product_id);
+                redirect_to_checkout($from_webinar, $is_scholarship ? $id_document : false, false, $product_id, $coupon_code);
                 // wp_redirect(home_url('/select-payment'));
                 break;
 
@@ -189,14 +194,14 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship, false, $product_id);
+                redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code);
                 // wp_redirect(home_url('/select-payment'));
                 break;
 
             default:
 
                 global $current_user;
-                setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 864000, '/');
+                setcookie('agent_name', ucwords(get_user_user_meta(get_current_user_id(), 'first_name', true)), time() + 864000, '/');
                 setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 864000, '/');
                 setcookie('email_partner', $current_user->user_email, time() + 864000, '/');
                 setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 864000, '/');
@@ -205,7 +210,7 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($program, $grade, $from_webinar, $is_scholarship, false, $product_id);
+                redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code);
                 // wp_redirect(home_url('/select-payment'));
                 break;
         }
@@ -245,7 +250,7 @@ function save_student()
         setcookie('billing_postcode', ucwords($billing_postcode), time() + 864000, '/');
 
         // Redirigir al checkout
-        redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false, false, $product_id);
+        redirect_to_checkout(false, false, false, $product_id, $coupon_code);
     }
 
     if (isset($_GET['action']) && $_GET['action'] === 'pay_graduation_fee') {
@@ -272,39 +277,17 @@ function save_student()
     }
 }
 
-function redirect_to_checkout($program, $grade, $from_webinar = false, $is_scholarship = false, $return_url = false, $product_id = false)
+function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $return_url = false, $product_id = false, $coupon_code = false)
 {
     global $woocommerce;
     $woocommerce->cart->empty_cart();
 
-    // if ($program == 'aes') {
-    //     switch ($grade) {
-    //         case '1':
-    //             $variation = wc_get_product(DUAL_9NO_VARIABLE);
-    //             $metadata = $variation->get_meta_data();
-    //             $woocommerce->cart->add_to_cart(DUAL_9NO, 1, DUAL_9NO_VARIABLE, $metadata);
-    //             $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
-    //             break;
-
-    //         case '2':
-    //             $variation = wc_get_product(DUAL_10MO_VARIABLE);
-    //             $metadata = $variation->get_meta_data();
-    //             $woocommerce->cart->add_to_cart(DUAL_10MO, 1, DUAL_10MO_VARIABLE, $metadata);
-    //             $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
-    //             break;
-
-    //         default:
-    //             $variation = wc_get_product(DUAL_DEFAULT_VARIABLE);
-    //             $metadata = $variation->get_meta_data();
-    //             $woocommerce->cart->add_to_cart(DUAL_DEFAULT, 1, DUAL_DEFAULT_VARIABLE, $metadata);
-    //             $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
-    //             break;
-    //     }
-
-    // }
-
     $woocommerce->cart->add_to_cart($product_id, 1);
     $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
+
+    if (isset($coupon_code) && !empty($coupon_code)) {
+        $woocommerce->cart->apply_coupon($coupon_code);
+    }
 
     if (!$from_webinar && !$is_scholarship) {
 
@@ -316,7 +299,6 @@ function redirect_to_checkout($program, $grade, $from_webinar = false, $is_schol
             // Aplicar cupón si NO ha expirado
             $woocommerce->cart->apply_coupon(get_option('offer_complete'));
         }
-
     } else if ($is_scholarship) {
         global $wpdb;
         $table_pre_scholarship = $wpdb->prefix . 'pre_scholarship';
@@ -691,7 +673,7 @@ function get_average_calification_for_subject_period($subject_id, $code_subject,
     if (null === $results) {
         $results = (object) ['average_calification' => null, 'inscription_count' => 0]; // Cambié null a 0 para count
     }
-    
+
     return $results;
 }
 
@@ -830,7 +812,8 @@ function update_elective_student($student_id, $status_id)
  * @param int $student_id ID del estudiante.
  * @param int $grade_id ID del grado del estudiante.
  */
-function insert_register_documents($student_id, $grade_id) {
+function insert_register_documents($student_id, $grade_id)
+{
     global $wpdb;
 
     // 1. OBTENCIÓN DE DATOS INICIALES
@@ -838,7 +821,7 @@ function insert_register_documents($student_id, $grade_id) {
     if (!$student) {
         return; // Salir si no se encuentra el estudiante
     }
-    
+
     $birthDate = new DateTime($student->birth_date);
     $is_legal_age = ($birthDate->diff(new DateTime())->y >= 18);
 
@@ -853,12 +836,12 @@ function insert_register_documents($student_id, $grade_id) {
     if (empty($documents_for_grade)) {
         return;
     }
-    
+
     // 3. SEGUNDA CONSULTA: Obtiene los documentos que YA existen para el estudiante.
     // Esto reemplaza la consulta dentro del bucle.
     $document_names = wp_list_pluck($documents_for_grade, 'name'); // Extrae solo los nombres
     $placeholders = implode(', ', array_fill(0, count($document_names), '%s'));
-    
+
     $query_params = array_merge([$student_id], $document_names);
     $existing_docs = $wpdb->get_col(
         $wpdb->prepare(
@@ -887,12 +870,12 @@ function insert_register_documents($student_id, $grade_id) {
 
         // Inserción segura en la base de datos
         $wpdb->insert($table_student_documents, [
-            'student_id'  => $student_id,
+            'student_id' => $student_id,
             'document_id' => $document->name,
             'is_required' => $is_required,
-            'is_visible'  => $is_visible,
-            'status'      => 0,
-            'created_at'  => current_time('mysql'),
+            'is_visible' => $is_visible,
+            'status' => 0,
+            'created_at' => current_time('mysql'),
         ]);
     }
 }
@@ -919,14 +902,14 @@ function get_payments($student_id, $product_id = false)
         $products = ['FEE_INSCRIPTION', 'FEE_GRADUATION'];
         $products_list = "'" . implode("','", $products) . "'";
         $payments = $wpdb->get_row(
-            "SELECT * FROM {$table_student_payments} 
-            WHERE student_id = {$student_id} 
+            "SELECT * FROM {$table_student_payments}
+            WHERE student_id = {$student_id}
             AND product_id NOT IN ({$products_list})"
         );
 
         $has_pending_payments = $wpdb->get_results(
-            "SELECT * FROM {$table_student_payments} 
-            WHERE student_id = {$student_id} 
+            "SELECT * FROM {$table_student_payments}
+            WHERE student_id = {$student_id}
             AND product_id NOT IN ({$products_list})
             AND status_id = 0"
         );
@@ -944,15 +927,18 @@ function get_name_grade($grade_id)
     return $grade->name;
 }
 
-function get_name_program($program_id)
+function get_name_program($identificator)
 {
 
-    $program = match ($program_id) {
-        'aes' => __('AES (Dual Diploma)', 'edusystem'),
-        default => "",
-    };
+    global $wpdb;
+    $table_programs = $wpdb->prefix . 'programs';
 
-    return $program;
+    $name = $wpdb->get_var($wpdb->prepare(
+        "SELECT `name` FROM $table_programs WHERE identificator LIKE %s",
+        $identificator
+    ));
+
+    return $name;
 }
 
 function get_ethnicity($ethnicity)
@@ -981,7 +967,6 @@ function get_gender($gender_id)
     };
 
     return $gender;
-
 }
 
 function save_student_details()
@@ -1030,7 +1015,6 @@ function save_student_details()
             wc_add_notice(__('information changed successfully.', 'edusystem'), 'success');
             wp_redirect(wc_get_account_endpoint_url('student-details') . '/?student=' . $student_id);
             exit;
-
         }
 
         if ($_POST['action'] == 'save_password_moodle') {
@@ -1173,14 +1157,14 @@ function set_max_date_student($student_id)
     // Excluyendo los product_id de inscripción y graduación
     $next_payment = $wpdb->get_row(
         $wpdb->prepare(
-            "SELECT date_next_payment, date_payment 
-             FROM {$table_student_payments} 
-             WHERE status_id = 0 
-               AND student_id = %d 
-               AND date_payment IS NULL 
-               AND product_id <> %d 
-               AND product_id <> %d 
-             ORDER BY cuote ASC 
+            "SELECT date_next_payment, date_payment
+             FROM {$table_student_payments}
+             WHERE status_id = 0
+               AND student_id = %d
+               AND date_payment IS NULL
+               AND product_id <> %d
+               AND product_id <> %d
+             ORDER BY cuote ASC
              LIMIT 1",
             $student_id,
             $fee_inscription_id,

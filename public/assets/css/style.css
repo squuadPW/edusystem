@@ -121,7 +121,7 @@ input, textarea {
   width: 50%;
   padding: 10px 20px !important;
   text-align: center;
-  background-color: #002fbd !important;
+  background-color: var(--primary-color) !important;
   border-radius: 4px;
   color: white;
   font-size: 18px;
@@ -194,7 +194,7 @@ input, textarea {
 }
 
 .select2-container--default .select2-results__option--highlighted[aria-selected], .select2-container--default .select2-results__option--highlighted[data-selected] {
-  background-color: #002fbd !important;
+  background-color: var(--primary-color) !important;
 }
 
 .select2-selection__arrow {
@@ -290,7 +290,7 @@ input, textarea {
   width: 100%;
   padding: 5px 20px !important;
   text-align: center;
-  background-color: #002fbd !important;
+  background-color: var(--primary-color) !important;
   border-radius: 20px;
   color: white !important;
   font-size: 18px;
@@ -337,8 +337,8 @@ input, textarea {
 }
 
 .flatpickr-day.selected {
-  background: #002fbd !important;
-  border-color: #002fbd !important;
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
 }
 
 .hentry .entry-content a {
@@ -355,12 +355,12 @@ input, textarea {
 }
 
 .color-link {
-  color: #002fbd !important;
+  color: var(--primary-color) !important;
 }
 
 #terms:checked {
-  background-color: #002fbd !important;
-  color: #002fbd !important;
+  background-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
 }
 
 .hentry .entry-content .woocommerce-MyAccount-navigation ul {
@@ -378,7 +378,7 @@ input, textarea {
 .hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active {
   width: 100%;
   text-align: left;
-  background-color: #E71F3B !important;
+  background-color: var(--secondary-color) !important;
   color: white !important;
 }
 .hentry .entry-content .woocommerce-MyAccount-navigation ul li.is-active:hover {
@@ -395,7 +395,7 @@ input, textarea {
 }
 
 .hentry .entry-content .woocommerce-MyAccount-navigation ul li:hover {
-  background-color: #E71F3B !important;
+  background-color: var(--secondary-color) !important;
   opacity: 0.75;
   color: white !important;
 }
@@ -409,7 +409,7 @@ input, textarea {
 }
 
 .woocommerce-info {
-  background-color: #002fbd !important;
+  background-color: var(--primary-color) !important;
 }
 
 fieldset {
@@ -436,7 +436,7 @@ fieldset {
 
 button.alt {
   border-radius: 20px !important;
-  background-color: #002fbd !important;
+  background-color: var(--primary-color) !important;
   color: white !important;
 }
 
@@ -449,7 +449,7 @@ button.alt {
 }
 
 input[type=radio]:first-child:checked + label:before {
-  color: #002fbd !important;
+  color: var(--primary-color) !important;
 }
 
 .button {
@@ -466,7 +466,7 @@ h3 {
 }
 
 .powered-by-text {
-  color: #002fbd !important;
+  color: var(--primary-color) !important;
   font-weight: 600;
 }
 
@@ -535,9 +535,9 @@ h3 {
 }
 
 .radio-input input[type=radio]:checked + label {
-  background-color: #002fbd;
+  background-color: var(--primary-color);
   color: #fff;
-  border: 1px solid #002fbd;
+  border: 1px solid var(--primary-color);
 }
 
 .radio-input input[type=radio]:checked + label::before {
@@ -608,7 +608,7 @@ h3 {
 
 /* When the checkbox is checked, add a blue background */
 .fee-container input:checked ~ .checkmark {
-  background-color: #002fbd;
+  background-color: var(--primary-color);
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
@@ -803,7 +803,7 @@ h3 {
 }
 
 .segment-button.active {
-  background-color: #002fbd;
+  background-color: var(--primary-color);
   color: #fff;
 }
 
@@ -887,7 +887,7 @@ h3 {
 }
 .loader {
   border: 16px solid #f3f3f3;
-  border-top: 16px solid #002fbd;
+  border-top: 16px solid var(--primary-color);
   border-radius: 50%;
   width: 120px;
   height: 120px;
@@ -1021,7 +1021,7 @@ body.modal-open {
   padding: 10px;
 }
 .container-content .container-content-text .container-content-text-title {
-  color: #002fbd;
+  color: var(--primary-color);
 }
 .container-content .container-content-text .container-content-text-content {
   color: black;
@@ -1040,7 +1040,7 @@ body.modal-open {
 }
 .card .header-select-payment {
   display: flex;
-  background-color: #002fbd;
+  background-color: var(--primary-color);
   border-radius: 10px 10px 0px 0px;
 }
 .card .header-select-payment .letter-select-payment {
@@ -1074,7 +1074,7 @@ body.modal-open {
   font-size: 38px;
   font-weight: bold;
   font-family: emoji;
-  color: #002fbd;
+  color: var(--primary-color);
 }
 .card .card-content .card-content-divisor {
   width: 70%;
@@ -1090,7 +1090,7 @@ body.modal-open {
 
 .card-selected-payment {
   transform: scale(1.05);
-  border: 1px solid #002fbd;
+  border: 1px solid var(--primary-color);
 }
 
 .text-uppercase {
@@ -1121,7 +1121,7 @@ body.modal-open {
   overflow: hidden;
   cursor: pointer;
   color: white !important;
-  background-color: #002fbd;
+  background-color: var(--primary-color);
   margin: auto;
 }
 @media screen and (max-width: 900px) {
@@ -1169,7 +1169,7 @@ body.modal-open {
 }
 
 .logout-button-container {
-  background-color: rgba(0, 47, 189, 0.5294117647);
+  background-color: rgba(var(--primary-color-rgb), 0.5);
   border-radius: 16px;
   display: flex;
   justify-content: space-between;

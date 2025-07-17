@@ -12,7 +12,9 @@
     <input type="hidden" name="crm_url" id="x-api-url" value="<?= get_option('crm_url') ?? ''; ?>">
     <input type="hidden" name="crm_id" id="x-api-id" value="<?= $_GET['crm_id'] ?? ''; ?>">
     <input type="hidden" name="crm_api" id="x-api" value="contacts">
-    <input type="hidden" name="squuad_stripe_selected_client_id" id="squuad_stripe_selected_client_id" value="<?= $connected_account ?>">
+    <input type="hidden" name="squuad_stripe_selected_client_id" id="squuad_stripe_selected_client_id" value="<?= $connected_account ?? '' ?>">
+    <input type="hidden" name="coupon_code" id="coupon_code" value="<?= $coupon_code ?? '' ?>">
+    <input type="hidden" name="flywire_portal_code" id="flywire_portal_code" value="<?= $flywire_portal_code ?? '' ?>">
     <input type="hidden" id="product_id_input" name="product_id">
 
     <!-- DATOS DEL ESTUDIANTE -->
@@ -193,12 +195,12 @@
             style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
             <div class="subtitle text-align-center"><?= __('Degree details', 'edusystem'); ?></div>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select">
             <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span class="required">*</span></label>
             <select name="program" id="program" autocomplete="off" required>
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                 <?php foreach ($programs as $program): ?>
-                    <option value="<?= $program->identificator; ?>"><?= $program->name; ?></option>
+                    <option value="<?= $program->id; ?>"><?= $program->name; ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -223,7 +225,7 @@
         <div id="grade_select" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="display: none">
             <label for="grade" id="grade_tooltip"><?= __('Grade', 'edusystem'); ?> <span style="color: #002fbd"
                     class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
-            <select name="grade" id="grade" autocomplete="off" required>
+            <select name="grade" id="grade" autocomplete="off">
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
             </select>
         </div>

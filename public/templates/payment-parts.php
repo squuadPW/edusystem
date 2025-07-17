@@ -6,8 +6,8 @@
         // excluye los productos de fee
         $fee_inscription = FEE_INSCRIPTION;
         $fee_graduation = FEE_GRADUATION;
-        $filtered_products = array_filter($cart, function($product) use($FEE_INSCRIPTION, $fee_graduation) {
-            return ( $product['product_id'] != $fee_inscription ) || ( $product['product_id'] != $fee_inscription );
+        $filtered_products = array_filter($cart, function($product) use($fee_inscription, $fee_graduation) {
+            return ( $product['product_id'] != $fee_inscription ) || ( $product['product_id'] != $fee_graduation );
         });
 
         // obtiene los cupones
@@ -57,7 +57,7 @@
             </div>
         <?php endif ?>
 
-        <div class="text-center" style="padding: 18px 0px;">
+        <div class="text-center elements-quote-hidden" style="padding: 18px 0px;">
             <label><?=__('Apply to get the discount','edusystem')?></label>
             <div id="button-schoolship"></div>
         </div>
@@ -85,7 +85,7 @@
         
         <?php if( $quotas_rules ): ?>
             <div>
-                <div class="radio-group text-center">
+                <div class="radio-group text-center elements-quote-hidden">
                     <label class="m-5"><?=__('Program Payments','edusystem')?></label>
 
                     <div class="radio-group options-quotas">

@@ -101,18 +101,20 @@
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="grade" id="grade_tooltip"><?= __('Grade', 'edusystem'); ?> <span style="color: #002fbd"
                     class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
-            <select name="grade" autocomplete="off" required>
+            <select name="grade" autocomplete="off">
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                 <?php foreach ($grades as $grade): ?>
                     <option value="<?= $grade->id; ?>"><?= $grade->name; ?>     <?= $grade->description; ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select">
             <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span class="required">*</span></label>
-            <select name="program" autocomplete="off" required>
+            <select name="program" id="program" autocomplete="off" required>
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                <option value="aes"><?= __('Dual diploma', 'edusystem'); ?></option>
+                <?php foreach ($programs as $program): ?>
+                    <option value="<?= $program->id; ?>"><?= $program->name; ?></option>
+                <?php endforeach; ?>
             </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">

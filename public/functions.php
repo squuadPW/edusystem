@@ -166,14 +166,17 @@ function form_asp_psp($atts)
     // Define los atributos por defecto
     $atts = shortcode_atts(
         array(
-            'connected_account' => '', // Valor por defecto para connected_account
+            'connected_account' => '',
+            'coupon_code' => '',
+            'flywire_portal_code' => 'FGY',
         ),
         $atts,
         'form_asp_psp'
     );
 
-    // Ahora puedes acceder al atributo con $atts['connected_account']
     $connected_account = $atts['connected_account'];
+    $coupon_code = $atts['coupon_code'];
+    $flywire_portal_code = $atts['flywire_portal_code'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active();
@@ -185,8 +188,23 @@ function form_asp_psp($atts)
 
 add_shortcode('form_asp_psp', 'form_asp_psp');
 
-function student_registration_form()
+function student_registration_form($atts)
 {
+    // Define los atributos por defecto
+    $atts = shortcode_atts(
+        array(
+            'connected_account' => '',
+            'coupon_code' => '',
+            'flywire_portal_code' => 'FGY',
+        ),
+        $atts,
+        'form_asp_psp'
+    );
+
+    $connected_account = $atts['connected_account'];
+    $coupon_code = $atts['coupon_code'];
+    $flywire_portal_code = $atts['flywire_portal_code'];
+
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
@@ -210,8 +228,6 @@ function use_previous_form_aes_callback()
 {
     $use_previous_form = $_POST['use'];
     if ($use_previous_form == 1) {
-        // Redirigir a la URL especificada
-        // $url = redirect_to_checkout($_COOKIE['program_id'], $_COOKIE['initial_grade'], false, false, true);
         wp_send_json_success(array('redirect' => 'close'));
         exit;
     } else {
@@ -270,6 +286,7 @@ function one_time_payment()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
+    $programs = get_programs();
     include(plugin_dir_path(__FILE__) . 'templates/one-time-payment-registration.php');
 }
 
@@ -278,6 +295,7 @@ add_shortcode('one_time_payment', 'one_time_payment');
 function custom_registration_pay()
 {
     $grades = get_grades();
+    $programs = get_programs();
     include(plugin_dir_path(__FILE__) . 'templates/custom-registration-pay.php');
 }
 
@@ -288,6 +306,7 @@ function form_scholarship_application()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
+    $programs = get_programs();
     include(plugin_dir_path(__FILE__) . 'templates/scholarship-application.php');
 }
 
@@ -680,7 +699,7 @@ function add_loginout_link($items, $args)
             $color = '#12e354 !important';
             $count = "(" . sizeof($notices) . ")";
         } else {
-            $color = '#002fbd !important';
+            $color = 'var(--primary-color)';
             $count = "";
         }
         if ($args->theme_location == 'primary') {
@@ -3339,13 +3358,17 @@ add_action('wp_ajax_nopriv_load_subprograms_by_program', 'load_subprograms_by_pr
 
 function load_subprograms_by_program_callback()
 {
-    $program_identificator = $_POST['program_identificator'];
-    $subprograms = get_subprogram_by_identificador_program($program_identificator);
-    $product_id = 0;
-    if (count($subprograms) == 0) {
-        $product_id = get_product_id_by_identificador_program($program_identificator);
-    }
+    $program_id = $_POST['program_id'];
+    $subprograms = get_subprogram_by_id_program($program_id);
+    $product_id = get_product_id_by_id_program($program_id);
 
     wp_send_json_success(array('subprograms' => $subprograms, 'product_id' => $product_id));
     exit;
+}
+
+add_action('wp_ajax_nopriv_load_product_id_rule', 'load_product_id_rule');
+add_action('wp_ajax_load_product_id_rule', 'load_product_id_rule');
+function load_product_id_rule()
+{
+    
 }
