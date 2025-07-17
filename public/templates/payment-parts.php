@@ -13,7 +13,10 @@
         // obtiene los cupones
         $cupones = $woocommerce->cart->get_coupons();
 
+        $is_category = true;
         foreach ($filtered_products as $key => $product) {
+
+            $is_category = has_term('programs', 'product_cat', (int) $product['product_id'] );
 
             if( $product['variation_id'] ) { 
                 $product_id =$product['variation_id'];
@@ -27,8 +30,7 @@
 
     ?>
     
-    
-    <?php if ( has_term('programs', 'product_cat', $product_id) && $product && !isset($_COOKIE['is_scholarship']) ) : ?>
+    <?php if ( $product && !isset($_COOKIE['is_scholarship']) && $is_category ) : ?>
 
 
         <!-- <div>
@@ -42,8 +44,8 @@
             <div >
                 <div style="margin-bottom: 10px !important; text-align: center">
                     <?php
-                        $product_fee = wc_get_product(FEE_INSCRIPTION);
-                        $product_price = $product_fee->get_price();
+                        $product_fee = wc_get_product(FEE_INSCRIPTION ?? 0);
+                        $product_price = $product_fee->get_price() ?? 0;
                     ?>
                     <label class="fee-container">
                         <strong><?=__('Registration fee','edusystem')?></strong> 

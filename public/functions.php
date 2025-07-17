@@ -6,7 +6,7 @@ require plugin_dir_path(__FILE__) . 'account.php';
 require plugin_dir_path(__FILE__) . 'institute.php';
 require plugin_dir_path(__FILE__) . 'document.php';
 require plugin_dir_path(__FILE__) . 'alliances.php';
-require plugin_dir_path(__FILE__) . 'user.php';
+require plugin_dir_path(__FILE__) . 'user.php'; 
 require plugin_dir_path(__FILE__) . 'notes.php';
 require plugin_dir_path(__FILE__) . 'academic_services.php';
 require plugin_dir_path(__FILE__) . 'endpoint.php';

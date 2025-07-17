@@ -16,18 +16,47 @@ function filter_woocommerce_new_customer_data( $args ) {
 
 add_filter( 'woocommerce_new_customer_data', 'filter_woocommerce_new_customer_data', 10, 1 );
 
-// verificar si se va a crear la cuenta
-function checkout_create_user_account( $post_data ) {
-	$user = get_user_by('email', $post_data['billing_email']);
-	if ( $user ) {
-		$post_data['createaccount'] = 0;
-	} else {
-		$post_data['createaccount'] = 1;
-	}
-	return $post_data;
-}
 
-add_filter('woocommerce_checkout_posted_data','checkout_create_user_account');
+
+add_action('woocommerce_order_status_changed', 'crear_y_loguear_usuario_si_pago_exitoso', 10, 4);
+function crear_y_loguear_usuario_si_pago_exitoso($order_id, $old_status, $new_status, $order) {
+    $estados_validos = ['on-hold', 'processing', 'completed'];
+
+    if (!in_array($new_status, $estados_validos)) {
+        return;
+    }
+
+    $email = $order->get_billing_email();
+    if (email_exists($email)) {
+        return; // Ya existe, no lo creamos ni logueamos
+    }
+
+    $nombre = $order->get_billing_first_name();
+    $apellido = $order->get_billing_last_name();
+    $usuario = sanitize_user(current(explode('@', $email)), true);
+    $password = wp_generate_password();
+
+    $user_id = wp_create_user($usuario, $password, $email);
+
+    if (!is_wp_error($user_id)) {
+        wp_update_user([
+            'ID' => $user_id,
+            'first_name' => $nombre,
+            'last_name' => $apellido,
+        ]);
+
+        $user = new WP_User($user_id);
+        $user->set_role('customer');
+
+        // Loguear al usuario automáticamente
+        wp_set_current_user($user_id);
+        wp_set_auth_cookie($user_id, true); // true = sesión persistente
+
+        // Redirigir al área de pedidos
+        /* wp_redirect(get_permalink(get_option('woocommerce_myaccount_page_id')) . '/orders');
+        exit; */
+    }
+}
 
 function checkout_set_customer_id( $current_user_id ) { 
 	if(!$current_user_id ){
@@ -46,7 +75,7 @@ function save_account_details( $user_id ) {
     global $current_user;
     $roles = $current_user->roles;
 
-    if(in_array('parent',$roles) && !in_array('student',$roles)){
+    if( in_array('parent',$roles) && !in_array('student',$roles) ){
 
 
         if(isset( $_POST['billing_city']) && !empty($_POST['billing_city'])){
