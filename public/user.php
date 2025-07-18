@@ -75,6 +75,7 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
     update_user_meta($user_id, 'billing_city', $order->get_billing_city());
     update_user_meta($user_id, 'billing_postcode', $order->get_billing_postcode());
     update_user_meta($user_id, 'billing_phone', $order->get_billing_phone());
+    update_user_meta($user_id, 'billing_address_1', $order->get_billing_address_1());
 
     // User metadata from cookies (grouped for readability)
     $cookie_meta_map = [
