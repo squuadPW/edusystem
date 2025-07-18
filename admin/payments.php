@@ -1718,64 +1718,135 @@ class TT_Invoices_Institutes_List_Table extends WP_List_Table
 
 add_action('wp_ajax_nopriv_generate_quote_public', 'generate_quote_public_callback');
 add_action('wp_ajax_generate_quote_public', 'generate_quote_public_callback');
-function generate_quote_public_callback()
-{
-    global $wpdb;
-    $amount = $_POST['amount'];
-    $student_id = $_POST['student_id'];
 
+function generate_quote_public_callback() {
+    // 1. Input Validation and Sanitization
+    if (!isset($_POST['amount']) || !isset($_POST['student_id'])) {
+        wp_send_json_error(array('message' => 'Missing required parameters.'));
+        die();
+    }
+
+    $amount = floatval($_POST['amount']);
+    $student_id = intval($_POST['student_id']);
+
+    if ($amount <= 0) {
+        wp_send_json_error(array('message' => 'Invalid amount. Amount must be a positive number.'));
+        die();
+    }
+    if ($student_id <= 0) {
+        wp_send_json_error(array('message' => 'Invalid student ID.'));
+        die();
+    }
+
+    // Retrieve student details
     $student = get_student_detail($student_id);
+    if (empty($student) || !isset($student->partner_id)) {
+        wp_send_json_error(array('message' => 'Student not found or partner ID missing.'));
+        die();
+    }
     $customer_id = $student->partner_id;
 
+    // Retrieve the customer user object
+    $user_customer = get_user_by('id', $customer_id);
+    if (!$user_customer) {
+        wp_send_json_error(array('message' => 'Customer user not found.'));
+        die();
+    }
+
+    // Get the oldest order for the customer
     $orders_customer = wc_get_orders(array(
         'customer_id' => $customer_id,
-        'limit' => 1,
-        'orderby' => 'date',
-        'order' => 'ASC' // Para obtener la primera orden
+        'limit'       => 1,
+        'orderby'     => 'date',
+        'order'       => 'ASC',
+        'return'      => 'objects', // Ensure objects are returned
     ));
-    $order_old = $orders_customer[0];
-    $order_id = $order_old->get_id();
-    $old_order_items = $order_old->get_items();
-    $first_item = reset($old_order_items);
 
-    $order_args = array(
-        'customer_id' => $customer_id,
-        'status' => 'pending-payment',
-    );
-
-    $new_order = wc_create_order($order_args);
-    $new_order->add_meta_data('old_order_primary', $order_id);
-    $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
-    $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
-    $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
-    $new_order->add_meta_data('student_data', $order_old->get_meta('student_data'));
-    $new_order->add_meta_data('cuote_payment', 1);
-    $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin');
-    $product = $first_item->get_product();
-    $product->set_price($amount);
-    $new_order->add_product($product, $first_item->get_quantity());
-    $new_order->calculate_totals();
-    if ($order_old->get_address('billing')) {
-        $billing_address = $order_old->get_address('billing');
-        $new_order->set_billing_first_name($billing_address['first_name']);
-        $new_order->set_billing_last_name($billing_address['last_name']);
-        $new_order->set_billing_company($billing_address['company']);
-        $new_order->set_billing_address_1($billing_address['address_1']);
-        $new_order->set_billing_address_2($billing_address['address_2']);
-        $new_order->set_billing_city($billing_address['city']);
-        $new_order->set_billing_state($billing_address['state']);
-        $new_order->set_billing_postcode($billing_address['postcode']);
-        $new_order->set_billing_country($billing_address['country']);
-        $new_order->set_billing_email($billing_address['email']);
-        $new_order->set_billing_phone($billing_address['phone']);
+    if (empty($orders_customer)) {
+        wp_send_json_error(array('message' => 'No previous orders found for this customer.'));
+        die();
     }
-    $new_order->save();
-    set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
 
-    // hacemos el envio del email al email del customer, es decir, al que paga.
-    $user_customer = get_user_by('id', $customer_id);
-    $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
-    $email_user->trigger($user_customer, 'You have pending payments', 'We invite you to log in to our platform as soon as possible so you can see your pending payments.');
+    $old_order = $orders_customer[0];
+    $old_order_id = $old_order->get_id();
+    $old_order_items = $old_order->get_items();
+
+    if (empty($old_order_items)) {
+        wp_send_json_error(array('message' => 'Old order has no items. Cannot create new quote.'));
+        die();
+    }
+
+    $first_old_item = reset($old_order_items);
+    $product_to_add = $first_old_item->get_product();
+
+    // Ensure the product exists
+    if (!$product_to_add) {
+        wp_send_json_error(array('message' => 'Product from old order item not found.'));
+        die();
+    }
+
+    // Set the new price for the product on the fly (or create a new product if needed for a "quote")
+    // This directly modifies the product object's price for the new order.
+    $product_to_add->set_price($amount);
+
+    // Create the new order
+    $new_order = wc_create_order([
+        'customer_id' => $customer_id,
+        'status'      => 'pending-payment',
+    ]);
+
+    if (is_wp_error($new_order)) {
+        wp_send_json_error(array('message' => 'Failed to create new order: ' . $new_order->get_error_message()));
+        die();
+    }
+
+    // Add product to the new order with the updated price
+    $new_order->add_product($product_to_add, $first_old_item->get_quantity());
+
+    // Copy meta data from the old order
+    // Fetch all meta data at once if possible or specific keys as needed.
+    // Assuming get_meta() is optimized to cache results.
+    $new_order->add_meta_data('old_order_primary', $old_order_id);
+    $new_order->add_meta_data('alliance_id', $old_order->get_meta('alliance_id'));
+    $new_order->add_meta_data('institute_id', $old_order->get_meta('institute_id'));
+    $new_order->add_meta_data('student_id', $old_order->get_meta('student_id'));
+    $new_order->add_meta_data('student_data', $old_order->get_meta('student_data'));
+    $new_order->add_meta_data('cuote_payment', 1);
+    $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin'); // Use update_meta_data as good practice
+
+    // Set billing address
+    $billing_address = $old_order->get_address('billing');
+    if (!empty($billing_address)) {
+        $new_order->set_address($billing_address, 'billing');
+    }
+
+    // Calculate totals and save the order
+    $new_order->calculate_totals();
+    $new_order->save();
+
+    // Set institute if available
+    $institute_id = $old_order->get_meta('institute_id');
+    if ($institute_id) {
+        set_institute_in_order($new_order, $institute_id);
+    }
+
+    // Send email to the customer
+    $mailer = WC()->mailer();
+    $email_sender_user = $mailer->get_emails()['WC_Email_Sender_User_Email'] ?? null;
+
+    if ($email_sender_user) {
+        $email_sender_user->trigger(
+            $user_customer,
+            'You have pending payments',
+            'We invite you to log in to our platform as soon as possible so you can see your pending payments.'
+        );
+    } else {
+        // Log or handle the case where the email class isn't found
+        error_log('WC_Email_Sender_User_Email class not found for sending email.');
+    }
+
+
+    // Generate checkout URL
     $checkout_url = wc_get_checkout_url() . 'order-pay/' . $new_order->get_id() . '/?pay_for_order=true&key=' . $new_order->get_order_key();
 
     wp_send_json_success(array('url' => $checkout_url));
