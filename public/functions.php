@@ -372,90 +372,90 @@ function change_default_checkout_state($state)
 
 add_filter('default_checkout_billing_state', 'change_default_checkout_state');
 
-function woocommerce_checkout_order_created_action($order)
-{
-    $customer_id = $order->get_customer_id();
+// function woocommerce_checkout_order_created_action($order)
+// {
+//     $customer_id = $order->get_customer_id();
 
-    if (!get_user_meta($customer_id, 'status_register', true)) {
-        update_user_meta($customer_id, 'status_register', 0);
-    }
+//     if (!get_user_meta($customer_id, 'status_register', true)) {
+//         update_user_meta($customer_id, 'status_register', 0);
+//     }
 
-    if (
-        isset($_COOKIE['name_student']) && !empty($_COOKIE['name_student']) &&
-        isset($_COOKIE['last_name_student']) && !empty($_COOKIE['last_name_student']) &&
-        isset($_COOKIE['birth_date']) && !empty($_COOKIE['birth_date']) &&
-        isset($_COOKIE['initial_grade']) && !empty($_COOKIE['initial_grade']) &&
-        isset($_COOKIE['program_id']) && !empty($_COOKIE['program_id']) &&
-        isset($_COOKIE['email_partner']) && !empty($_COOKIE['email_partner']) &&
-        isset($_COOKIE['number_partner']) && !empty($_COOKIE['number_partner'])
-    ) {
-        $student_id = insert_student($customer_id);
-        insert_register_documents($student_id, $_COOKIE['initial_grade']);
+//     if (
+//         isset($_COOKIE['name_student']) && !empty($_COOKIE['name_student']) &&
+//         isset($_COOKIE['last_name_student']) && !empty($_COOKIE['last_name_student']) &&
+//         isset($_COOKIE['birth_date']) && !empty($_COOKIE['birth_date']) &&
+//         isset($_COOKIE['initial_grade']) && !empty($_COOKIE['initial_grade']) &&
+//         isset($_COOKIE['program_id']) && !empty($_COOKIE['program_id']) &&
+//         isset($_COOKIE['email_partner']) && !empty($_COOKIE['email_partner']) &&
+//         isset($_COOKIE['number_partner']) && !empty($_COOKIE['number_partner'])
+//     ) {
+//         $student_id = insert_student($customer_id);
+//         insert_register_documents($student_id, $_COOKIE['initial_grade']);
 
-        if (!$order->meta_exists('student_id')) {
-            $order->update_meta_data('student_id', $student_id);
-        }
+//         if (!$order->meta_exists('student_id')) {
+//             $order->update_meta_data('student_id', $student_id);
+//         }
 
-        $order->update_meta_data('id_bitrix', $_COOKIE['id_bitrix']);
-        $order->save();
+//         $order->update_meta_data('id_bitrix', $_COOKIE['id_bitrix']);
+//         $order->save();
 
-        $email_new_student = WC()->mailer()->get_emails()['WC_New_Applicant_Email'];
-        $email_new_student->trigger($student_id);
+//         $email_new_student = WC()->mailer()->get_emails()['WC_New_Applicant_Email'];
+//         $email_new_student->trigger($student_id);
 
-        insert_data_student($order);
-        if (isset($_COOKIE['is_scholarship']) && !empty($_COOKIE['is_scholarship'])) {
-            save_scholarship();
-        }
-    }
+//         insert_data_student($order);
+//         if (isset($_COOKIE['is_scholarship']) && !empty($_COOKIE['is_scholarship'])) {
+//             save_scholarship();
+//         }
+//     }
 
-    if (isset($_COOKIE['is_older']) && !empty($_COOKIE['is_older'])) {
-        add_role_user($customer_id, 'parent');
-    }
+//     if (isset($_COOKIE['is_older']) && !empty($_COOKIE['is_older'])) {
+//         add_role_user($customer_id, 'parent');
+//     }
 
-    if (isset($_COOKIE['id_document_parent']) && !empty($_COOKIE['id_document_parent'])) {
-        update_user_meta($customer_id, 'id_document', $_COOKIE['id_document_parent']);
-    }
+//     if (isset($_COOKIE['id_document_parent']) && !empty($_COOKIE['id_document_parent'])) {
+//         update_user_meta($customer_id, 'id_document', $_COOKIE['id_document_parent']);
+//     }
 
-    if (isset($_COOKIE['parent_document_type']) && !empty($_COOKIE['parent_document_type'])) {
-        update_user_meta($customer_id, 'type_document', $_COOKIE['parent_document_type']);
-    }
+//     if (isset($_COOKIE['parent_document_type']) && !empty($_COOKIE['parent_document_type'])) {
+//         update_user_meta($customer_id, 'type_document', $_COOKIE['parent_document_type']);
+//     }
 
-    if (isset($_COOKIE['birth_date_parent']) && !empty($_COOKIE['birth_date_parent'])) {
-        update_user_meta($customer_id, 'birth_date', $_COOKIE['birth_date_parent']);
-    }
+//     if (isset($_COOKIE['birth_date_parent']) && !empty($_COOKIE['birth_date_parent'])) {
+//         update_user_meta($customer_id, 'birth_date', $_COOKIE['birth_date_parent']);
+//     }
 
-    if (isset($_COOKIE['gender_parent']) && !empty($_COOKIE['gender_parent'])) {
-        update_user_meta($customer_id, 'gender', $_COOKIE['gender_parent']);
-    }
+//     if (isset($_COOKIE['gender_parent']) && !empty($_COOKIE['gender_parent'])) {
+//         update_user_meta($customer_id, 'gender', $_COOKIE['gender_parent']);
+//     }
 
-    if (isset($_COOKIE['ethnicity_parent']) && !empty($_COOKIE['ethnicity_parent'])) {
-        update_user_meta($customer_id, 'ethnicity', $_COOKIE['ethnicity_parent']);
-    }
+//     if (isset($_COOKIE['ethnicity_parent']) && !empty($_COOKIE['ethnicity_parent'])) {
+//         update_user_meta($customer_id, 'ethnicity', $_COOKIE['ethnicity_parent']);
+//     }
 
-    if (isset($_COOKIE['password']) && !empty($_COOKIE['password'])) {
-        global $wpdb;
+//     if (isset($_COOKIE['password']) && !empty($_COOKIE['password'])) {
+//         global $wpdb;
 
-        $user_data = array(
-            'ID' => $customer_id,
-            'user_pass' => $_COOKIE['password'],
-            'user_pass_reset' => 1
-        );
+//         $user_data = array(
+//             'ID' => $customer_id,
+//             'user_pass' => $_COOKIE['password'],
+//             'user_pass_reset' => 1
+//         );
 
-        wp_update_user($user_data);
-    }
+//         wp_update_user($user_data);
+//     }
 
-    //validate cookie and set metadata
-    if (isset($_COOKIE['fee_student_id']) && !empty($_COOKIE['fee_student_id'])) {
-        if (!$order->meta_exists('student_id')) {
-            $order->update_meta_data('student_id', $_COOKIE['fee_student_id']);
-        }
-        $order->save();
-    }
+//     //validate cookie and set metadata
+//     if (isset($_COOKIE['fee_student_id']) && !empty($_COOKIE['fee_student_id'])) {
+//         if (!$order->meta_exists('student_id')) {
+//             $order->update_meta_data('student_id', $_COOKIE['fee_student_id']);
+//         }
+//         $order->save();
+//     }
 
-    set_institute_in_order($order);
-}
+//     set_institute_in_order($order);
+// }
 
-add_action('woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action');
+// add_action('woocommerce_checkout_order_created', 'woocommerce_checkout_order_created_action');
 
 add_filter('woocommerce_checkout_fields', 'custom_override_value_checkout_fields');
 
@@ -758,30 +758,30 @@ function add_loginout_link($items, $args)
     return $items;
 }
 
-function status_changed_payment($order_id, $status_transition_from, $current_status, $that)
-{
-    $order = wc_get_order($order_id);
-    $customer_id = $order->get_customer_id();
-    $status_register = get_user_meta($customer_id, 'status_register', true);
+// function status_changed_payment($order_id, $status_transition_from, $current_status, $that)
+// {
+//     $order = wc_get_order($order_id);
+//     $customer_id = $order->get_customer_id();
+//     $status_register = get_user_meta($customer_id, 'status_register', true);
 
-    // Limpiar cookies solo para estados válidos
-    if (!in_array($current_status, ['failed', 'pending'])) {
-        clear_all_cookies();
-    }
+//     // Limpiar cookies solo para estados válidos
+//     if (!in_array($current_status, ['failed', 'pending'])) {
+//         clear_all_cookies();
+//     }
 
-    if (in_array($current_status, ['on-hold'])) {
-        send_notification_staff_particular('New payment received for approval', 'There is a new payment waiting for approval, please login to the platform as soon as possible.', 3);
-    }
+//     if (in_array($current_status, ['on-hold'])) {
+//         send_notification_staff_particular('New payment received for approval', 'There is a new payment waiting for approval, please login to the platform as soon as possible.', 3);
+//     }
 
-    // Determinar qué función ejecutar
-    if ($current_status === 'completed') {
-        status_order_completed($order, $order_id, $customer_id, $status_register);
-    } elseif (!in_array($current_status, ['failed', 'pending'])) {
-        status_order_not_completed($order, $order_id, $customer_id, $status_register);
-    }
-}
+//     // Determinar qué función ejecutar
+//     if ($current_status === 'completed') {
+//         update_process_payments_student($order, $order_id, $customer_id, $status_register);
+//     } elseif (!in_array($current_status, ['failed', 'pending'])) {
+//         process_payments_student($order, $order_id, $customer_id, $status_register);
+//     }
+// }
 
-add_action('woocommerce_order_status_changed', 'status_changed_payment', 10, 4);
+// add_action('woocommerce_order_status_changed', 'status_changed_payment', 10, 4);
 
 /**
  * Orquesta las acciones cuando una orden se marca como "completada".
@@ -791,7 +791,7 @@ add_action('woocommerce_order_status_changed', 'status_changed_payment', 10, 4);
  * @param int      $order_id ID de la orden.
  * @param int      $customer_id ID del cliente.
  */
-function status_order_completed($order, $order_id, $customer_id)
+function update_process_payments_student($order, $order_id, $customer_id)
 {
     // 1. Actualiza los metadatos del usuario de forma directa.
     update_user_meta($customer_id, 'status_register', 1);
@@ -1019,7 +1019,7 @@ function update_student_status_and_notify($student_id)
  * @param int      $customer_id ID del cliente.
  * @param mixed    $status_register Estado de registro del usuario.
  */
-function status_order_not_completed($order, $order_id, $customer_id, $status_register)
+function process_payments_student($order, $order_id, $customer_id, $status_register)
 {
     // 1. Usa comparaciones estrictas y evita la globalización innecesaria.
     if ($status_register != 1) {
