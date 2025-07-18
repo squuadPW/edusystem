@@ -23,6 +23,6 @@
 	define('URL_LARAVEL_PPADMIN', 'https://ppadmin.american-elite.us/'); 
 	define('ROLE_ID_STUDENT_MOODLE', 5); // Role ID moodle student
 	define('VERSIONS_JS', '2.0.88'); // Versions JS
-	define('MODE', 'SCHOOL'); // Versions JS
+	define('MODE', 'UNI'); // Versions JS
 
 ?>
