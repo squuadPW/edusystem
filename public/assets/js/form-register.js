@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
       XHR.onload = () => {
         if (XHR.status === 200 && XHR.response && XHR.response.data) {
           if (programIdentificator == 'AES') {
-            not_institute.required = true;
+            document.getElementById("institute_id").required = true;
             let subprograms = [];
             const data = XHR.response.data.subprograms;
             const product_id = XHR.response.data.product_id;
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
               // document.getElementById("grade_select").style.display = "none";
             }
           } else {
-            not_institute.required = false;
+            document.getElementById("institute_id").required = false;
             let subprograms = [];
             const data = XHR.response.data.subprograms;
             const product_id = XHR.response.data.product_id;
