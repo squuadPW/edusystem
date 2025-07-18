@@ -228,9 +228,9 @@ function save_student()
         $status_register = get_user_meta($customer_id, 'status_register', true);
         woocommerce_checkout_order_created_action($order);
 
-        process_payments_student($order, $order_id, $customer_id, $status_register);
+        status_order_not_completed($order, $order_id, $customer_id, $status_register);
 
-        update_process_payments_student($order, $order_id, $customer_id);
+        status_order_completed($order, $order_id, $customer_id, $status_register);
     }
 
     if (isset($_GET['action']) && !empty($_GET['action']) && $_GET['action'] == 'select_payment') {
