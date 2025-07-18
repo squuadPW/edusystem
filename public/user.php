@@ -18,7 +18,7 @@ add_filter( 'woocommerce_new_customer_data', 'filter_woocommerce_new_customer_da
 
 
 
-add_action('woocommerce_order_status_changed', 'crear_y_loguear_usuario_si_pago_exitoso', 10, 4);
+add_action('woocommerce_order_status_changed', 'crear_y_loguear_usuario_si_pago_exitoso', 9, 4);
 function crear_y_loguear_usuario_si_pago_exitoso($order_id, $old_status, $new_status, $order) {
     $estados_validos = ['on-hold', 'processing', 'completed'];
 
@@ -51,6 +51,84 @@ function crear_y_loguear_usuario_si_pago_exitoso($order_id, $old_status, $new_st
         // Set the newly created user as the customer for the order
         $order->set_customer_id($user_id);
         $order->save(); // Make sure to save the order to persist the change
+
+        if (!get_user_meta($user_id, 'status_register', true)) {
+            update_user_meta($user_id, 'status_register', 0);
+        }
+
+        if (
+            isset($_COOKIE['name_student']) && !empty($_COOKIE['name_student']) &&
+            isset($_COOKIE['last_name_student']) && !empty($_COOKIE['last_name_student']) &&
+            isset($_COOKIE['birth_date']) && !empty($_COOKIE['birth_date']) &&
+            isset($_COOKIE['initial_grade']) && !empty($_COOKIE['initial_grade']) &&
+            isset($_COOKIE['program_id']) && !empty($_COOKIE['program_id']) &&
+            isset($_COOKIE['email_partner']) && !empty($_COOKIE['email_partner']) &&
+            isset($_COOKIE['number_partner']) && !empty($_COOKIE['number_partner'])
+        ) {
+            $student_id = insert_student($user_id);
+            insert_register_documents($student_id, $_COOKIE['initial_grade']);
+
+            if (!$order->meta_exists('student_id')) {
+                $order->update_meta_data('student_id', $student_id);
+            }
+
+            $order->update_meta_data('id_bitrix', $_COOKIE['id_bitrix']);
+            $order->save();
+
+            $email_new_student = WC()->mailer()->get_emails()['WC_New_Applicant_Email'];
+            $email_new_student->trigger($student_id);
+
+            insert_data_student($order);
+            if (isset($_COOKIE['is_scholarship']) && !empty($_COOKIE['is_scholarship'])) {
+                save_scholarship();
+            }
+        }
+
+        if (isset($_COOKIE['is_older']) && !empty($_COOKIE['is_older'])) {
+            add_role_user($user_id, 'parent');
+        }
+
+        if (isset($_COOKIE['id_document_parent']) && !empty($_COOKIE['id_document_parent'])) {
+            update_user_meta($user_id, 'id_document', $_COOKIE['id_document_parent']);
+        }
+
+        if (isset($_COOKIE['parent_document_type']) && !empty($_COOKIE['parent_document_type'])) {
+            update_user_meta($user_id, 'type_document', $_COOKIE['parent_document_type']);
+        }
+
+        if (isset($_COOKIE['birth_date_parent']) && !empty($_COOKIE['birth_date_parent'])) {
+            update_user_meta($user_id, 'birth_date', $_COOKIE['birth_date_parent']);
+        }
+
+        if (isset($_COOKIE['gender_parent']) && !empty($_COOKIE['gender_parent'])) {
+            update_user_meta($user_id, 'gender', $_COOKIE['gender_parent']);
+        }
+
+        if (isset($_COOKIE['ethnicity_parent']) && !empty($_COOKIE['ethnicity_parent'])) {
+            update_user_meta($user_id, 'ethnicity', $_COOKIE['ethnicity_parent']);
+        }
+
+        if (isset($_COOKIE['password']) && !empty($_COOKIE['password'])) {
+            global $wpdb;
+
+            $user_data = array(
+                'ID' => $user_id,
+                'user_pass' => $_COOKIE['password'],
+                'user_pass_reset' => 1
+            );
+
+            wp_update_user($user_data);
+        }
+
+        //validate cookie and set metadata
+        if (isset($_COOKIE['fee_student_id']) && !empty($_COOKIE['fee_student_id'])) {
+            if (!$order->meta_exists('student_id')) {
+                $order->update_meta_data('student_id', $_COOKIE['fee_student_id']);
+            }
+            $order->save();
+        }
+
+        set_institute_in_order($order);
 
         // Loguear al usuario automáticamente (this part is for logging in the user who triggered the action, not necessarily the customer)
         // If this function runs on a cron job or background process, this part might not be necessary or effective.
