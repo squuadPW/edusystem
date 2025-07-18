@@ -59,10 +59,12 @@
             </div>
         <?php endif ?>
 
-        <div class="text-center elements-quote-hidden" style="padding: 18px 0px;">
-            <label><?=__('Apply to get the discount','edusystem')?></label>
-            <div id="button-schoolship"></div>
-        </div>
+        <?php if(MODE != 'UNI') { ?>
+            <div class="text-center elements-quote-hidden" style="padding: 18px 0px;">
+                <label><?=__('Apply to get the discount','edusystem')?></label>
+                <div id="button-schoolship"></div>
+            </div>
+        <?php } ?>
 
         <?php 
             $product_id = $product->get_id();
