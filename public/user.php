@@ -34,6 +34,11 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
         if (!$order->meta_exists('student_id')) {
             $order->update_meta_data('student_id', sanitize_text_field(wp_unslash($_COOKIE['fee_student_id'])));
             $order->save();
+
+            $student_details = get_student_detail(sanitize_text_field(wp_unslash($_COOKIE['fee_student_id'])));
+            if ($student_details && $student_details->institute_id) {
+                set_institute_in_order($order, $student_details->institute_id);
+            }
         }
     }
 
@@ -140,11 +145,6 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
         }
     }
 
-    // Add 'parent' role if 'is_older' cookie is set (redundant if already set above, but good for safety)
-    if (isset($_COOKIE['is_older']) && !empty($_COOKIE['is_older'])) {
-        // add_role_user($user_id, 'parent'); // Assuming this function exists, but user already set to 'parent' role above
-    }
-
     // Update password if 'password' cookie is set
     if (isset($_COOKIE['password']) && !empty($_COOKIE['password'])) {
         wp_update_user([
@@ -155,7 +155,7 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
         // If the intention is to set the password and prevent a reset, remove 'user_pass_reset'.
     }
 
-    set_institute_in_order($order); // Assuming this function exists and works
+    set_institute_in_order($order);
 
     // Log the user in automatically
     wp_set_current_user($user_id);
