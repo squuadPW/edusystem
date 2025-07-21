@@ -29,6 +29,14 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
 
     $email = $order->get_billing_email();
 
+    // Set student_id on order from cookie if it's for a fee
+    if (isset($_COOKIE['fee_student_id']) && !empty($_COOKIE['fee_student_id'])) {
+        if (!$order->meta_exists('student_id')) {
+            $order->update_meta_data('student_id', sanitize_text_field(wp_unslash($_COOKIE['fee_student_id'])));
+            $order->save();
+        }
+    }
+
     // Exit if user already exists
     if (email_exists($email)) {
         return;
@@ -145,14 +153,6 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
         ]);
         // Note: 'user_pass_reset' => 1 is usually for forcing a password reset on next login, not for directly setting.
         // If the intention is to set the password and prevent a reset, remove 'user_pass_reset'.
-    }
-
-    // Set student_id on order from cookie if it's for a fee
-    if (isset($_COOKIE['fee_student_id']) && !empty($_COOKIE['fee_student_id'])) {
-        if (!$order->meta_exists('student_id')) {
-            $order->update_meta_data('student_id', sanitize_text_field(wp_unslash($_COOKIE['fee_student_id'])));
-            $order->save();
-        }
     }
 
     set_institute_in_order($order); // Assuming this function exists and works
