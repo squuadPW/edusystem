@@ -178,75 +178,53 @@ function get_alliances_from_institute($institute_id)
 function set_institute_in_order(WC_Order $order, ?int $id = null): void
 {
     global $wpdb;
+
+    // 1. Obtener y validar el ID del instituto.
     $institute_id = $id ?? ($_COOKIE['institute_id'] ?? null);
 
-    // Validar que el ID del instituto sea válido
     if (empty($institute_id)) {
         return;
     }
 
+    // 2. Obtener datos del instituto de forma segura.
     $table_institutes = $wpdb->prefix . 'institutes';
+    $institute_data   = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT id, fee FROM {$table_institutes} WHERE id = %d",
+            $institute_id
+        )
+    );
 
-    // Obtener datos del instituto de forma segura
-    $institute_data = $wpdb->get_row($wpdb->prepare(
-        "SELECT id, fee FROM {$table_institutes} WHERE id = %d",
-        $institute_id
-    ));
-
-    if (!$institute_data) {
-        return;
+    if (empty($institute_data) || !isset($institute_data->fee)) {
+        return; // Retornar si no se encuentra el instituto o no tiene una tarifa.
     }
 
+    // 3. Almacenar el ID del instituto en la orden.
     $order->update_meta_data('institute_id', $institute_id);
+
+    // 4. Calcular el porcentaje de la tarifa del instituto.
     $institute_fee_percentage = (float) $institute_data->fee;
 
-    // Calcular el subtotal de la orden excluyendo ciertos productos
-    $subtotal = 0.0;
+    // 5. Calcular el total relevante para la tarifa (total de productos excluyendo específicos).
+    $total_for_fee_calculation = 0.0;
     foreach ($order->get_items() as $item) {
         $product_id = $item->get_product_id();
+        // Asegúrate de que FEE_INSCRIPTION y FEE_GRADUATION estén definidos como constantes
+        // o reemplaza con los IDs de producto reales si no lo son.
         if (!in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION])) {
-            $subtotal += (float) $item->get_subtotal();
+            // Usamos get_total() del item, que ya considera la cantidad y el precio.
+            $total_for_fee_calculation += (float) $item->get_total();
         }
     }
 
-    // Calcular descuentos y la beca "latam scholarship"
-    $latam_scholarship_amount = 0.0;
-    foreach ($order->get_coupons() as $coupon) {
-        if (strtolower($coupon->get_code()) === 'latam scholarship') {
-            $latam_scholarship_amount = (float) $coupon->get_discount();
-            break; // No necesitamos buscar más si ya encontramos la beca
-        }
-    }
-
-    $total_for_fee_calculation = $subtotal - $latam_scholarship_amount;
-
-    // Calcular la tarifa del instituto
+    // 6. Calcular la tarifa final del instituto.
     $total_institute_fee = 0.0;
-    if (!$order->get_meta('is_scholarship')) {
+    // Solo calcular la tarifa si la orden no es una beca.
+    if (! (bool) $order->get_meta('is_scholarship')) {
         $total_institute_fee = ($institute_fee_percentage * $total_for_fee_calculation) / 100;
     }
     $order->update_meta_data('institute_fee', $total_institute_fee);
 
-    // Lógica comentada para la alianza (mantener si se necesita en el futuro)
-    /*
-    if (!empty($institute_data->alliance_id)) {
-        $table_alliances = $wpdb->prefix . 'alliances';
-        $alliance_data = $wpdb->get_row($wpdb->prepare(
-            "SELECT fee FROM {$table_alliances} WHERE id = %d",
-            $institute_data->alliance_id
-        ));
-
-        if ($alliance_data) {
-            $order->update_meta_data('alliance_id', $institute_data->alliance_id);
-            $total_alliance_fee = 0.0;
-            if (!$order->get_meta('is_scholarship')) {
-                $alliance_fee_percentage = (float) $alliance_data->fee;
-                $total_alliance_fee = ($alliance_fee_percentage * $total_for_fee_calculation) / 100;
-            }
-            $order->update_meta_data('alliance_fee', $total_alliance_fee);
-        }
-    }
-    */
-
+    // 7. Guardar los cambios en la orden.
     $order->save();
 }
