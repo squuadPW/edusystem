@@ -795,9 +795,9 @@ function status_changed_payment($order_id, $status_transition_from, $current_sta
     $status_register = get_user_meta($customer_id, 'status_register', true);
 
     // Limpiar cookies solo para estados válidos
-    if (!in_array($current_status, ['failed', 'pending'])) {
-        clear_all_cookies();
-    }
+    // if (!in_array($current_status, ['failed', 'pending'])) {
+    //     clear_all_cookies();
+    // }
 
     if (in_array($current_status, ['on-hold'])) {
         send_notification_staff_particular('New payment received for approval', 'There is a new payment waiting for approval, please login to the platform as soon as possible.', 3);
@@ -805,7 +805,8 @@ function status_changed_payment($order_id, $status_transition_from, $current_sta
 
     // Determinar qué función ejecutar
     if ($current_status === 'completed') {
-        status_order_completed($order, $order_id, $customer_id, $status_register);
+        status_order_completed($order, $order_id, $customer_id);
+        clear_all_cookies();
     } elseif (!in_array($current_status, ['failed', 'pending'])) {
         status_order_not_completed($order, $order_id, $customer_id, $status_register);
     }
