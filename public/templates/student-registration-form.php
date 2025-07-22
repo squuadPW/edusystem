@@ -18,6 +18,7 @@
     <input type="hidden" name="manager_user_id" id="manager_user_id" value="<?= $manager_user_id ?? '' ?>">
     <input type="hidden" name="zelle_account" id="zelle_account" value="<?= $zelle_account ?? '' ?>">
     <input type="hidden" name="hidden_payment_methods" id="hidden_payment_methods" value="<?= $hidden_payment_methods ?? '' ?>">
+    <input type="hidden" name="register_psp" id="register_psp" value="<?= $register_psp ?? '' ?>">
     <input type="hidden" id="product_id_input" name="product_id">
 
     <!-- DATOS DEL ESTUDIANTE -->
@@ -201,9 +202,11 @@
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select">
             <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span class="required">*</span></label>
             <select name="program" id="program" autocomplete="off" required>
-                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                <?php if(count($programs) > 0) { ?>
+                    <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                <?php } ?>
                 <?php foreach ($programs as $program): ?>
-                    <option value="<?= $program->id; ?>" identificator="<?= $program->identificator; ?>"><?= $program->name; ?></option>
+                    <option value="<?= $program->id; ?>" identificator="<?= $program->identificator; ?>" <?= count($programs) == 1 ? 'selected' : '' ?>><?= $program->name; ?></option>
                 <?php endforeach; ?>
             </select>
         </div>

@@ -192,43 +192,68 @@ document.addEventListener("DOMContentLoaded", function () {
 
       XHR.onload = () => {
         if (XHR.status === 200 && XHR.response && XHR.response.data) {
-          if (programIdentificator == 'AES') {
-            document.getElementById("institute_id").required = true;
-            let subprograms = [];
-            const data = XHR.response.data.subprograms;
-            const product_id = XHR.response.data.product_id;
+          if (programIdentificator == "AES") {
+            // Check for the 'register_psp' condition
+            if (
+              document.getElementById("register_psp").value &&
+              document.getElementById("register_psp").value != ""
+            ) {
+              // New logic for register_psp condition
+              const instituteSelectElement = document.getElementById("institute_id");
 
-            if (Array.isArray(data)) {
-              subprograms = data;
-            } else if (data) {
-              subprograms = Object.values(data);
-            }
-
-            productIdInput.value = product_id || "";
-            subprograms_arr = subprograms; // Update subprograms_arr
-
-            while (gradeSelect.options.length > 1) {
-              gradeSelect.remove(1);
-            }
-
-            if (subprograms_arr.length > 0) {
-              document.getElementById("institute-id-select").style.display =
-                "block";
-              // document.getElementById("grade_select").style.display = "block";
-
-              // Populate grade select using subprograms_arr data directly
-              subprograms_arr.forEach((programItem, index) => {
-                const option = document.createElement("option");
-                option.value = index + 1; // Align value with not_institute logic
-                option.textContent = programItem.description
-                  ? `${programItem.name} ${programItem.description}`
-                  : programItem.name;
-                gradeSelect.appendChild(option);
-              });
+              // Assuming institute_id_select already refers to the select element
+              // Check if there's only one option (excluding the default/placeholder if any)
+              // You might need to adjust the condition based on how many "default" options you have.
+              // For example, if the first option is "Select an Institute", you'd check `options.length === 2`.
+              if (instituteSelectElement.options.length === 2) { // Assuming 1 default option + 1 actual option
+                  // Automatically select the second option (index 1) which is the single actual value
+                  instituteSelectElement.value = instituteSelectElement.options[1].value;
+                  // Hide the institute_id select element
+                  instituteSelectElement.style.display = "none";
+                  document.getElementById("institute-id-select").style.display = "none"; // Hide its container if necessary
+              } else {
+                  // If there's more than one option or no options, make it visible and required
+                  document.getElementById("institute_id").required = true;
+                  document.getElementById("institute-id-select").style.display = "block";
+              }
             } else {
-              document.getElementById("institute-id-select").style.display =
-                "block";
-              // document.getElementById("grade_select").style.display = "none";
+              document.getElementById("institute_id").required = true;
+              let subprograms = [];
+              const data = XHR.response.data.subprograms;
+              const product_id = XHR.response.data.product_id;
+
+              if (Array.isArray(data)) {
+                subprograms = data;
+              } else if (data) {
+                subprograms = Object.values(data);
+              }
+
+              productIdInput.value = product_id || "";
+              subprograms_arr = subprograms; // Update subprograms_arr
+
+              while (gradeSelect.options.length > 1) {
+                gradeSelect.remove(1);
+              }
+
+              if (subprograms_arr.length > 0) {
+                document.getElementById("institute-id-select").style.display =
+                  "block";
+                // document.getElementById("grade_select").style.display = "block";
+
+                // Populate grade select using subprograms_arr data directly
+                subprograms_arr.forEach((programItem, index) => {
+                  const option = document.createElement("option");
+                  option.value = index + 1; // Align value with not_institute logic
+                  option.textContent = programItem.description
+                    ? `${programItem.name} ${programItem.description}`
+                    : programItem.name;
+                  gradeSelect.appendChild(option);
+                });
+              } else {
+                document.getElementById("institute-id-select").style.display =
+                  "block";
+                // document.getElementById("grade_select").style.display = "none";
+              }
             }
           } else {
             document.getElementById("institute_id").required = false;
