@@ -168,7 +168,8 @@ function form_asp_psp($atts)
             'connected_account' => '',
             'coupon_code' => '',
             'flywire_portal_code' => 'FGY',
-            'manager_user_id' => ''
+            'manager_user_id' => '',
+            'zelle_account' => ''
         ),
         $atts,
         'form_asp_psp'
@@ -178,6 +179,7 @@ function form_asp_psp($atts)
     $coupon_code = $atts['coupon_code'];
     $flywire_portal_code = $atts['flywire_portal_code'];
     $manager_user_id = $atts['manager_user_id'];
+    $zelle_account = $atts['zelle_account'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
@@ -198,6 +200,7 @@ function student_registration_form($atts)
             'coupon_code' => '',
             'flywire_portal_code' => 'FGY',
             'manager_user_id' => '',
+            'zelle_account' => ''
         ),
         $atts,
         'student_registration_form'
@@ -207,6 +210,7 @@ function student_registration_form($atts)
     $coupon_code = $atts['coupon_code'];
     $flywire_portal_code = $atts['flywire_portal_code'];
     $manager_user_id = $atts['manager_user_id'];
+    $zelle_account = $atts['zelle_account'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);

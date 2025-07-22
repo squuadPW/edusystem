@@ -54,6 +54,7 @@ function save_student()
         $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : false;
         $coupon_code = isset($_POST['coupon_code']) ? $_POST['coupon_code'] : false;
         $flywire_portal_code = isset($_POST['flywire_portal_code']) ? $_POST['flywire_portal_code'] : false;
+        $zelle_account = isset($_POST['zelle_account']) ? $_POST['zelle_account'] : false;
 
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
@@ -95,6 +96,7 @@ function save_student()
         setcookie('password', $password, time() + 864000, '/');
         setcookie('squuad_stripe_selected_client_id', $squuad_stripe_selected_client_id, time() + 864000, '/');
         setcookie('flywire_portal_code', $flywire_portal_code, time() + 864000, '/');
+        setcookie('zelle_account', $zelle_account, time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);

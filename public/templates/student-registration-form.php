@@ -16,6 +16,7 @@
     <input type="hidden" name="coupon_code" id="coupon_code" value="<?= $coupon_code ?? '' ?>">
     <input type="hidden" name="flywire_portal_code" id="flywire_portal_code" value="<?= $flywire_portal_code ?? '' ?>">
     <input type="hidden" name="manager_user_id" id="manager_user_id" value="<?= $manager_user_id ?? '' ?>">
+    <input type="hidden" name="zelle_account" id="zelle_account" value="<?= $zelle_account ?? '' ?>">
     <input type="hidden" id="product_id_input" name="product_id">
 
     <!-- DATOS DEL ESTUDIANTE -->
