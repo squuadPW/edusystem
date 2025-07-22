@@ -513,10 +513,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (countrySelect && instituteSelect) {
     countrySelect.addEventListener("change", function () {
-      if (document.getElementById("manager_user_id") && document.getElementById("manager_user_id").value != '') {
-        return;
-      }
-
       if (document.getElementById("institute_id")) {
         document.getElementById("institute_id").value = "";
       }
