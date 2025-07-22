@@ -200,7 +200,8 @@ function student_registration_form($atts)
             'coupon_code' => '',
             'flywire_portal_code' => 'FGY',
             'manager_user_id' => '',
-            'zelle_account' => ''
+            'zelle_account' => '',
+            'hidden_payment_methods' => '' // Nuevo atributo
         ),
         $atts,
         'student_registration_form'
@@ -211,6 +212,7 @@ function student_registration_form($atts)
     $flywire_portal_code = $atts['flywire_portal_code'];
     $manager_user_id = $atts['manager_user_id'];
     $zelle_account = $atts['zelle_account'];
+    $hidden_payment_methods = $atts['hidden_payment_methods']; // Obtener el valor del nuevo atributo
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
@@ -222,6 +224,27 @@ function student_registration_form($atts)
 }
 
 add_shortcode('student_registration_form', 'student_registration_form');
+
+
+add_filter('woocommerce_available_payment_gateways', 'hide_payment_gateways_from_cookie');
+
+function hide_payment_gateways_from_cookie($available_gateways) {
+    // Verificar si la cookie existe
+    if (!isset($_COOKIE['student_registration_hidden_payments']) || empty($_COOKIE['student_registration_hidden_payments'])) {
+        return $available_gateways;
+    }
+
+    // Obtener los IDs de la cookie y convertirlos a un array
+    $hidden_payment_methods_str = sanitize_text_field($_COOKIE['student_registration_hidden_payments']);
+    $hidden_payment_methods = array_map('trim', explode(',', $hidden_payment_methods_str));
+
+    foreach ($available_gateways as $gateway_id => $gateway) {
+        if (in_array($gateway_id, $hidden_payment_methods)) {
+            unset($available_gateways[$gateway_id]);
+        }
+    }
+    return $available_gateways;
+}
 
 function modal_continue_checkout()
 {
