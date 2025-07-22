@@ -143,14 +143,36 @@ function save_institute()
 
 add_action('wp_loaded', 'save_institute');
 
-function get_list_institutes_active()
+function get_list_institutes_active($manager_user_id = false)
 {
-
     global $wpdb;
     $table_institutes = $wpdb->prefix . 'institutes';
 
-    $list_institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status=1");
-    return $list_institutes;
+    if ($manager_user_id) {
+        $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
+        $institute_ids_of_user = $wpdb->get_col($wpdb->prepare(
+            "SELECT institute_id FROM {$table_managers_by_institute} WHERE user_id = %d",
+            $manager_user_id
+        ));
+
+        // If no institute IDs are found for the user, return an empty array.
+        if (empty($institute_ids_of_user)) {
+            return [];
+        }
+
+        // Prepare the IN clause for the SQL query and filter by status = 1.
+        $ids_placeholder = implode(',', array_fill(0, count($institute_ids_of_user), '%d'));
+        $list_institutes = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$table_institutes} WHERE id IN ({$ids_placeholder}) AND status = 1",
+            ...$institute_ids_of_user
+        ));
+        return $list_institutes;
+
+    } else {
+        // Fetch all active institutes where status = 1.
+        $list_institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE status = 1");
+        return $list_institutes;
+    }
 }
 
 function get_alliances_from_institute($institute_id)
