@@ -198,6 +198,54 @@ document.addEventListener("DOMContentLoaded", function () {
             ? registerPspInput.value
             : "";
 
+          // --- INICIO DEL CAMBIO CLAVE: Nueva función para seleccionar el instituto ---
+          function autoSelectInstitute() {
+            const options = institute_id_select.options;
+            // Si solo hay una opción (normalmente "Select an option"), o menos de 2, no hacemos nada.
+            if (options.length <= 1) {
+              institute_id_select.value = "";
+              institute_id_select.selectedIndex = 0;
+              return;
+            }
+
+            // Si la segunda opción (índice 1) no es "other", es un instituto real.
+            // Esto cubre los casos de:
+            // 1. "Select an option", "Instituto Real"
+            // 2. "Select an option", "Instituto Real", "Other"
+            // 3. "Select an option", "Instituto 1", "Instituto 2", ..., "Other"
+            if (options[1].value !== "other") {
+              institute_id_select.selectedIndex = 1;
+              institute_id_select.value = options[1].value;
+            } else if (options.length === 2 && options[1].value === "other") {
+              // Caso específico: "Select an option", "Other"
+              institute_id_select.selectedIndex = 1;
+              institute_id_select.value = "other";
+            }
+            // Si el orden es "select an option, other, instituto real",
+            // y hay más de 2 opciones, seleccionar el instituto real.
+            else if (options.length > 2 && options[2].value !== "other") {
+              institute_id_select.selectedIndex = 2;
+              institute_id_select.value = options[2].value;
+            } else {
+              // En cualquier otro caso que no cubra la lógica anterior,
+              // por ejemplo, si solo hay "Select an option" y "Other",
+              // se selecciona "Other" si es la única opción válida aparte de la primera.
+              // O si no hay institutos reales después de "Select an option".
+              // Se podría dejar en blanco o seleccionar "Other" si es el caso.
+              // Dada la estructura que mencionaste ("Select an option", Instituto(s), "Other"),
+              // si options[1] es "other", significa que no hay institutos reales.
+              // En ese caso, si hay "other", se selecciona.
+              const lastOptionIndex = options.length - 1;
+              if (options[lastOptionIndex].value === "other") {
+                institute_id_select.selectedIndex = lastOptionIndex;
+                institute_id_select.value = "other";
+              } else {
+                institute_id_select.value = "";
+                institute_id_select.selectedIndex = 0;
+              }
+            }
+          }
+
           if (programIdentificator === "AES" && registerPspValue === "1") {
             document.getElementById("institute_id").required = false;
             document.getElementById("institute-id-select").style.display =
@@ -205,32 +253,8 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("name-institute-field").style.display =
               "none";
 
-            // --- INICIO DEL CAMBIO CLAVE ---
-            // Intenta seleccionar la segunda opción (el instituto real si existe)
-            if (institute_id_select.options.length > 1) {
-              // Verifica si existe al menos una opción más allá de "Select an option"
-              // Verifica si la segunda opción es "Other" o un instituto real
-              if (institute_id_select.options[1].value !== "other") {
-                // Si la segunda opción NO es "other", es un instituto, seleccionalo
-                institute_id_select.selectedIndex = 1;
-                institute_id_select.value =
-                  institute_id_select.options[1].value;
-              } else if (institute_id_select.options.length > 2) {
-                // Si la segunda opción es "other" y hay una tercera, esa tercera debe ser un instituto
-                institute_id_select.selectedIndex = 2;
-                institute_id_select.value =
-                  institute_id_select.options[2].value;
-              } else {
-                // Si solo hay "Select an option" y "other", selecciona "other"
-                institute_id_select.selectedIndex = 2; // "Other" está en la tercera posición (índice 2)
-                institute_id_select.value = "other";
-              }
-            } else {
-              // Si no hay opciones más allá de "Select an option", selecciona la opción vacía por defecto (aunque no debería pasar con tu HTML)
-              institute_id_select.value = "";
-              institute_id_select.selectedIndex = 0;
-            }
-            // --- FIN DEL CAMBIO CLAVE ---
+            // Llama a la nueva función para aplicar la lógica de selección
+            autoSelectInstitute();
 
             let subprograms = [];
             const data = XHR.response.data.subprograms;
@@ -294,6 +318,8 @@ document.addEventListener("DOMContentLoaded", function () {
               document.getElementById("institute-id-select").style.display =
                 "block";
             }
+            // Aquí también se puede aplicar la misma lógica si es necesario
+            autoSelectInstitute();
           } else {
             document.getElementById("institute_id").required = false;
             let subprograms = [];
@@ -330,6 +356,7 @@ document.addEventListener("DOMContentLoaded", function () {
               "none";
             document.getElementById("name-institute-field").style.display =
               "none";
+            autoSelectInstitute();
           }
         } else {
           subprograms_arr = [];
@@ -347,24 +374,8 @@ document.addEventListener("DOMContentLoaded", function () {
               "none";
             document.getElementById("name-institute-field").style.display =
               "none";
-            // Asegúrate de seleccionar el valor correcto también en caso de error AJAX para este escenario
-            if (institute_id_select.options.length > 1) {
-              if (institute_id_select.options[1].value !== "other") {
-                institute_id_select.selectedIndex = 1;
-                institute_id_select.value =
-                  institute_id_select.options[1].value;
-              } else if (institute_id_select.options.length > 2) {
-                institute_id_select.selectedIndex = 2;
-                institute_id_select.value =
-                  institute_id_select.options[2].value;
-              } else {
-                institute_id_select.selectedIndex = 2;
-                institute_id_select.value = "other";
-              }
-            } else {
-              institute_id_select.value = "";
-              institute_id_select.selectedIndex = 0;
-            }
+            // Llama a la nueva función también en caso de error AJAX
+            autoSelectInstitute();
           } else {
             document.getElementById("institute-id-select").style.display =
               "block";
@@ -386,22 +397,8 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("institute-id-select").style.display = "none";
           document.getElementById("name-institute-field").style.display =
             "none";
-          // Asegúrate de seleccionar el valor correcto también en caso de error AJAX para este escenario
-          if (institute_id_select.options.length > 1) {
-            if (institute_id_select.options[1].value !== "other") {
-              institute_id_select.selectedIndex = 1;
-              institute_id_select.value = institute_id_select.options[1].value;
-            } else if (institute_id_select.options.length > 2) {
-              institute_id_select.selectedIndex = 2;
-              institute_id_select.value = institute_id_select.options[2].value;
-            } else {
-              institute_id_select.selectedIndex = 2;
-              institute_id_select.value = "other";
-            }
-          } else {
-            institute_id_select.value = "";
-            institute_id_select.selectedIndex = 0;
-          }
+          // Llama a la nueva función también en caso de error de red
+          autoSelectInstitute();
         } else {
           document.getElementById("institute-id-select").style.display =
             "block";
