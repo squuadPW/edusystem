@@ -647,7 +647,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("name_institute").required = false;
       }
       if (document.getElementById("institute_id")) {
-        document.getElementById("institute_id").required = true;
+        // document.getElementById("institute_id").required = true;
       }
       if (document.getElementById("institute_id_required")) {
         document.getElementById("institute_id_required").textContent = "*";
