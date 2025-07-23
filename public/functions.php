@@ -171,7 +171,8 @@ function form_asp_psp($atts)
             'manager_user_id' => '',
             'zelle_account' => '',
             'bank_transfer_account' => '',
-            'register_psp' => false
+            'register_psp' => false,
+            'hidden_payment_methods' => ''
         ),
         $atts,
         'form_asp_psp'
@@ -184,6 +185,7 @@ function form_asp_psp($atts)
     $zelle_account = $atts['zelle_account'];
     $register_psp = $atts['register_psp'];
     $bank_transfer_account = $atts['bank_transfer_account'];
+    $hidden_payment_methods = $atts['hidden_payment_methods'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
@@ -206,7 +208,8 @@ function student_registration_form($atts)
             'manager_user_id' => '',
             'zelle_account' => '',
             'bank_transfer_account' => '',
-            'register_psp' => false
+            'register_psp' => false,
+            'hidden_payment_methods' => ''
         ),
         $atts,
         'student_registration_form'
@@ -219,6 +222,7 @@ function student_registration_form($atts)
     $zelle_account = $atts['zelle_account'];
     $register_psp = $atts['register_psp'];
     $bank_transfer_account = $atts['bank_transfer_account'];
+    $hidden_payment_methods = $atts['hidden_payment_methods'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
