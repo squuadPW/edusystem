@@ -55,6 +55,7 @@ function save_student()
         $coupon_code = isset($_POST['coupon_code']) ? $_POST['coupon_code'] : false;
         $flywire_portal_code = isset($_POST['flywire_portal_code']) ? $_POST['flywire_portal_code'] : false;
         $zelle_account = isset($_POST['zelle_account']) ? $_POST['zelle_account'] : false;
+        $bank_transfer_account = isset($_POST['bank_transfer_account']) ? $_POST['bank_transfer_account'] : false;
         $student_registration_hidden_payments = isset($_POST['hidden_payment_methods']) ? $_POST['hidden_payment_methods'] : false;
 
         if (!$crm_id) {
@@ -98,6 +99,7 @@ function save_student()
         setcookie('squuad_stripe_selected_client_id', $squuad_stripe_selected_client_id, time() + 864000, '/');
         setcookie('flywire_portal_code', $flywire_portal_code, time() + 864000, '/');
         setcookie('zelle_account', $zelle_account, time() + 864000, '/');
+        setcookie('bank_transfer_account', $bank_transfer_account, time() + 864000, '/');
         setcookie('student_registration_hidden_payments', $student_registration_hidden_payments, time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {

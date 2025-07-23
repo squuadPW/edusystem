@@ -170,7 +170,8 @@ function form_asp_psp($atts)
             'flywire_portal_code' => 'FGY',
             'manager_user_id' => '',
             'zelle_account' => '',
-            'register_psp' => false,
+            'bank_transfer_account' => '',
+            'register_psp' => false
         ),
         $atts,
         'form_asp_psp'
@@ -182,6 +183,7 @@ function form_asp_psp($atts)
     $manager_user_id = $atts['manager_user_id'];
     $zelle_account = $atts['zelle_account'];
     $register_psp = $atts['register_psp'];
+    $bank_transfer_account = $atts['bank_transfer_account'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
@@ -203,7 +205,7 @@ function student_registration_form($atts)
             'flywire_portal_code' => 'FGY',
             'manager_user_id' => '',
             'zelle_account' => '',
-            'hidden_payment_methods' => '',
+            'bank_transfer_account' => '',
             'register_psp' => false
         ),
         $atts,
@@ -215,8 +217,8 @@ function student_registration_form($atts)
     $flywire_portal_code = $atts['flywire_portal_code'];
     $manager_user_id = $atts['manager_user_id'];
     $zelle_account = $atts['zelle_account'];
-    $hidden_payment_methods = $atts['hidden_payment_methods']; // Obtener el valor del nuevo atributo
     $register_psp = $atts['register_psp'];
+    $bank_transfer_account = $atts['bank_transfer_account'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
