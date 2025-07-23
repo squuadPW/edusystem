@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
-  subprograms_arr = [];
-  grade = document.getElementById("grade");
-  program = document.getElementById("program");
-  not_institute = document.getElementById("institute_id");
-  not_institute_others = document.getElementById("institute_id_others");
-  productIdInput = document.getElementById("product_id_input");
+  let subprograms_arr = [];
+  const grade = document.getElementById("grade");
+  const program = document.getElementById("program");
+  const not_institute = document.getElementById("institute_id");
+  const not_institute_others = document.getElementById("institute_id_others"); // Se mantiene si lo usas en otro lado
+  const productIdInput = document.getElementById("product_id_input");
+  const registerPspInput = document.getElementById("register_psp"); // Asumo que este es tu input hidden
 
   if (document.getElementById("birth_date")) {
     flatpickr(document.getElementById("birth_date"), {
@@ -144,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
       productIdInput.value = "";
 
       let programId;
-      let programIdentificator; // Declare variable for identificator
+      let programIdentificator;
 
       if (
         e instanceof CustomEvent &&
@@ -152,12 +153,10 @@ document.addEventListener("DOMContentLoaded", function () {
         e.detail.value !== undefined
       ) {
         programId = e.detail.value;
-        // For custom events, you might need to pass the identificator in detail
-        // programIdentificator = e.detail.identificator;
       } else {
         const selectedOption = e.target.selectedOptions[0];
         programId = selectedOption.value;
-        programIdentificator = selectedOption.getAttribute("identificator"); // Get the identificator
+        programIdentificator = selectedOption.getAttribute("identificator");
       }
 
       const institute_id_select = document.querySelector(
@@ -166,13 +165,18 @@ document.addEventListener("DOMContentLoaded", function () {
       institute_id_select.value = "";
       document.getElementById("name-institute-field").style.display = "none";
 
-      // If no program is selected, reset subprograms_arr and related fields
+      // Si no se selecciona ningún programa, resetea subprograms_arr y los campos relacionados
       if (!programId) {
         subprograms_arr = [];
         while (gradeSelect.options.length > 1) {
           gradeSelect.remove(1);
         }
         document.getElementById("institute-id-select").style.display = "none";
+        // Asegúrate de resetear el instituto también si no hay programa
+        institute_id_select.value = ""; // Resetea el valor del select de instituto
+        document.getElementById("institute_id").required = false; // Remueve 'required' si no hay programa
+        document.getElementById("institute-id-select").style.display = "none"; // Asegura que esté oculto
+        document.getElementById("name-institute-field").style.display = "none"; // Oculta el campo de "Otro instituto"
         return;
       }
 
@@ -187,12 +191,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const params = new URLSearchParams({
         action: "load_subprograms_by_program",
-        program_id: programId
+        program_id: programId,
       });
 
       XHR.onload = () => {
         if (XHR.status === 200 && XHR.response && XHR.response.data) {
-          if (programIdentificator == 'AES') {
+          // Obtener el valor de register_psp (asegúrate de que exista y sea un valor numérico/cadena)
+          const registerPspValue = registerPspInput
+            ? registerPspInput.value
+            : "";
+
+          if (programIdentificator === "AES" && registerPspValue === "1") {
+            // Caso especial para AES y register_psp === '1'
+            document.getElementById("institute_id").required = false; // No es requerido
+            document.getElementById("institute-id-select").style.display =
+              "none"; // Oculta el select
+            document.getElementById("name-institute-field").style.display =
+              "none"; // Oculta el campo "Otro"
+
+            // Selecciona la primera opción (value="") del select de instituto
+            institute_id_select.value = "";
+            // Si la primera opción no tiene value="", y es "Select an option", asegúrate de que el selectedIndex sea 0
+            institute_id_select.selectedIndex = 0;
+
+            // Resto de la lógica de subprogramas si es necesaria aquí
+            // (En este caso, se asume que no necesitas cargar subprogramas específicos para "AES" si el instituto está oculto)
+            let subprograms = [];
+            const data = XHR.response.data.subprograms;
+            const product_id = XHR.response.data.product_id;
+
+            if (Array.isArray(data)) {
+              subprograms = data;
+            } else if (data) {
+              subprograms = Object.values(data);
+            }
+            productIdInput.value = product_id || "";
+            subprograms_arr = subprograms;
+
+            while (gradeSelect.options.length > 1) {
+              gradeSelect.remove(1);
+            }
+            // Si hay subprogramas, el campo de grado debería aparecer
+            if (subprograms_arr.length > 0) {
+              document.getElementById("grade_select").style.display = "block";
+              subprograms_arr.forEach((programItem, index) => {
+                const option = document.createElement("option");
+                option.value = index + 1;
+                option.textContent = programItem.description
+                  ? `${programItem.name} ${programItem.description}`
+                  : programItem.name;
+                gradeSelect.appendChild(option);
+              });
+            } else {
+              document.getElementById("grade_select").style.display = "none";
+            }
+          } else if (programIdentificator === "AES") {
+            // Lógica original para AES cuando register_psp NO es '1'
             document.getElementById("institute_id").required = true;
             let subprograms = [];
             const data = XHR.response.data.subprograms;
@@ -205,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             productIdInput.value = product_id || "";
-            subprograms_arr = subprograms; // Update subprograms_arr
+            subprograms_arr = subprograms;
 
             while (gradeSelect.options.length > 1) {
               gradeSelect.remove(1);
@@ -214,12 +268,11 @@ document.addEventListener("DOMContentLoaded", function () {
             if (subprograms_arr.length > 0) {
               document.getElementById("institute-id-select").style.display =
                 "block";
-              // document.getElementById("grade_select").style.display = "block";
+              // document.getElementById("grade_select").style.display = "block"; // Originalmente comentado
 
-              // Populate grade select using subprograms_arr data directly
               subprograms_arr.forEach((programItem, index) => {
                 const option = document.createElement("option");
-                option.value = index + 1; // Align value with not_institute logic
+                option.value = index + 1;
                 option.textContent = programItem.description
                   ? `${programItem.name} ${programItem.description}`
                   : programItem.name;
@@ -228,9 +281,10 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
               document.getElementById("institute-id-select").style.display =
                 "block";
-              // document.getElementById("grade_select").style.display = "none";
+              // document.getElementById("grade_select").style.display = "none"; // Originalmente comentado
             }
           } else {
+            // Lógica para otros identificadores (NO AES)
             document.getElementById("institute_id").required = false;
             let subprograms = [];
             const data = XHR.response.data.subprograms;
@@ -243,56 +297,91 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             productIdInput.value = product_id || "";
-            subprograms_arr = subprograms; // Update subprograms_arr
+            subprograms_arr = subprograms;
 
             while (gradeSelect.options.length > 1) {
               gradeSelect.remove(1);
             }
 
             if (subprograms_arr.length > 0) {
-              // document.getElementById("institute-id-select").style.display =
-              //   "block";
               document.getElementById("grade_select").style.display = "block";
 
-              // Populate grade select using subprograms_arr data directly
               subprograms_arr.forEach((programItem, index) => {
                 const option = document.createElement("option");
-                option.value = index + 1; // Align value with not_institute logic
+                option.value = index + 1;
                 option.textContent = programItem.description
                   ? `${programItem.name} ${programItem.description}`
                   : programItem.name;
                 gradeSelect.appendChild(option);
               });
             } else {
-              // document.getElementById("institute-id-select").style.display =
-              //   "block";
               document.getElementById("grade_select").style.display = "none";
             }
+            document.getElementById("institute-id-select").style.display =
+              "none"; // Asegúrate de ocultarlo si no es AES
+            document.getElementById("name-institute-field").style.display =
+              "none"; // También oculta el campo de nombre de instituto
           }
         } else {
-          // Handle error or empty response: reset and hide
+          // Maneja errores o respuesta vacía: resetea y oculta
           subprograms_arr = [];
           while (gradeSelect.options.length > 1) {
             gradeSelect.remove(1);
           }
           productIdInput.value = "";
-          // document.getElementById("grade_select").style.display = "none";
-          document.getElementById("institute-id-select").style.display =
-            "block";
+          document.getElementById("grade_select").style.display = "none"; // Ocultar si no hay subprogramas
+          // Si no hay respuesta válida, ¿qué debe pasar con el instituto?
+          // Asumo que si falla la carga de subprogramas, el instituto no se mostrará por defecto,
+          // a menos que sea el caso AES y registerPspValue === '1'
+          const registerPspValue = registerPspInput
+            ? registerPspInput.value
+            : "";
+          if (programIdentificator === "AES" && registerPspValue === "1") {
+            document.getElementById("institute_id").required = false;
+            document.getElementById("institute-id-select").style.display =
+              "none";
+            document.getElementById("name-institute-field").style.display =
+              "none";
+            institute_id_select.value = "";
+            institute_id_select.selectedIndex = 0;
+          } else {
+            document.getElementById("institute-id-select").style.display =
+              "block"; // O se mantiene visible si hay un error y no es el caso especial
+            document.getElementById("institute_id").required = false; // O según tu lógica predeterminada
+          }
         }
       };
       XHR.onerror = () => {
-        // Handle AJAX error: reset and hide
+        // Maneja errores AJAX: resetea y oculta
         subprograms_arr = [];
         while (gradeSelect.options.length > 1) {
           gradeSelect.remove(1);
         }
         productIdInput.value = "";
-        // document.getElementById("grade_select").style.display = "none";
-        document.getElementById("institute-id-select").style.display = "block";
+        document.getElementById("grade_select").style.display = "none"; // Ocultar si hay error
+
+        // Si hay error en AJAX, ¿qué debe pasar con el instituto?
+        const registerPspValue = registerPspInput ? registerPspInput.value : "";
+        if (programIdentificator === "AES" && registerPspValue === "1") {
+          document.getElementById("institute_id").required = false;
+          document.getElementById("institute-id-select").style.display = "none";
+          document.getElementById("name-institute-field").style.display =
+            "none";
+          institute_id_select.value = "";
+          institute_id_select.selectedIndex = 0;
+        } else {
+          document.getElementById("institute-id-select").style.display =
+            "block"; // O se mantiene visible si hay un error y no es el caso especial
+          document.getElementById("institute_id").required = false; // O según tu lógica predeterminada
+        }
       };
       XHR.send(params.toString());
     });
+
+    // --- Dispara el evento 'change' si solo hay una opción preseleccionada ---
+    if (program.options.length === 2 && program.selectedIndex === 1) {
+      program.dispatchEvent(new Event("change"));
+    }
   }
 
   if (grade) {
@@ -513,7 +602,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (countrySelect && instituteSelect) {
     countrySelect.addEventListener("change", function () {
-      if (document.getElementById("manager_user_id") && document.getElementById("manager_user_id").value != '') {
+      if (
+        document.getElementById("manager_user_id") &&
+        document.getElementById("manager_user_id").value != ""
+      ) {
         return;
       }
 
