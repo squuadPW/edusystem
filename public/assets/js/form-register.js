@@ -3,9 +3,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const grade = document.getElementById("grade");
   const program = document.getElementById("program");
   const not_institute = document.getElementById("institute_id");
-  const not_institute_others = document.getElementById("institute_id_others"); // Se mantiene si lo usas en otro lado
+  const not_institute_others = document.getElementById("institute_id_others");
   const productIdInput = document.getElementById("product_id_input");
-  const registerPspInput = document.getElementById("register_psp"); // Asumo que este es tu input hidden
+  const registerPspInput = document.getElementById("register_psp");
 
   if (document.getElementById("birth_date")) {
     flatpickr(document.getElementById("birth_date"), {
@@ -165,18 +165,16 @@ document.addEventListener("DOMContentLoaded", function () {
       institute_id_select.value = "";
       document.getElementById("name-institute-field").style.display = "none";
 
-      // Si no se selecciona ningún programa, resetea subprograms_arr y los campos relacionados
       if (!programId) {
         subprograms_arr = [];
         while (gradeSelect.options.length > 1) {
           gradeSelect.remove(1);
         }
         document.getElementById("institute-id-select").style.display = "none";
-        // Asegúrate de resetear el instituto también si no hay programa
-        institute_id_select.value = ""; // Resetea el valor del select de instituto
-        document.getElementById("institute_id").required = false; // Remueve 'required' si no hay programa
-        document.getElementById("institute-id-select").style.display = "none"; // Asegura que esté oculto
-        document.getElementById("name-institute-field").style.display = "none"; // Oculta el campo de "Otro instituto"
+        institute_id_select.value = "";
+        document.getElementById("institute_id").required = false;
+        document.getElementById("institute-id-select").style.display = "none";
+        document.getElementById("name-institute-field").style.display = "none";
         return;
       }
 
@@ -196,26 +194,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
       XHR.onload = () => {
         if (XHR.status === 200 && XHR.response && XHR.response.data) {
-          // Obtener el valor de register_psp (asegúrate de que exista y sea un valor numérico/cadena)
           const registerPspValue = registerPspInput
             ? registerPspInput.value
             : "";
 
           if (programIdentificator === "AES" && registerPspValue === "1") {
-            // Caso especial para AES y register_psp === '1'
-            document.getElementById("institute_id").required = false; // No es requerido
+            document.getElementById("institute_id").required = false;
             document.getElementById("institute-id-select").style.display =
-              "none"; // Oculta el select
+              "none";
             document.getElementById("name-institute-field").style.display =
-              "none"; // Oculta el campo "Otro"
+              "none";
 
-            // Selecciona la primera opción (value="") del select de instituto
-            institute_id_select.value = "";
-            // Si la primera opción no tiene value="", y es "Select an option", asegúrate de que el selectedIndex sea 0
-            institute_id_select.selectedIndex = 0;
+            // --- INICIO DEL CAMBIO CLAVE ---
+            // Intenta seleccionar la segunda opción (el instituto real si existe)
+            if (institute_id_select.options.length > 1) {
+              // Verifica si existe al menos una opción más allá de "Select an option"
+              // Verifica si la segunda opción es "Other" o un instituto real
+              if (institute_id_select.options[1].value !== "other") {
+                // Si la segunda opción NO es "other", es un instituto, seleccionalo
+                institute_id_select.selectedIndex = 1;
+                institute_id_select.value =
+                  institute_id_select.options[1].value;
+              } else if (institute_id_select.options.length > 2) {
+                // Si la segunda opción es "other" y hay una tercera, esa tercera debe ser un instituto
+                institute_id_select.selectedIndex = 2;
+                institute_id_select.value =
+                  institute_id_select.options[2].value;
+              } else {
+                // Si solo hay "Select an option" y "other", selecciona "other"
+                institute_id_select.selectedIndex = 2; // "Other" está en la tercera posición (índice 2)
+                institute_id_select.value = "other";
+              }
+            } else {
+              // Si no hay opciones más allá de "Select an option", selecciona la opción vacía por defecto (aunque no debería pasar con tu HTML)
+              institute_id_select.value = "";
+              institute_id_select.selectedIndex = 0;
+            }
+            // --- FIN DEL CAMBIO CLAVE ---
 
-            // Resto de la lógica de subprogramas si es necesaria aquí
-            // (En este caso, se asume que no necesitas cargar subprogramas específicos para "AES" si el instituto está oculto)
             let subprograms = [];
             const data = XHR.response.data.subprograms;
             const product_id = XHR.response.data.product_id;
@@ -231,7 +247,6 @@ document.addEventListener("DOMContentLoaded", function () {
             while (gradeSelect.options.length > 1) {
               gradeSelect.remove(1);
             }
-            // Si hay subprogramas, el campo de grado debería aparecer
             if (subprograms_arr.length > 0) {
               document.getElementById("grade_select").style.display = "block";
               subprograms_arr.forEach((programItem, index) => {
@@ -246,7 +261,6 @@ document.addEventListener("DOMContentLoaded", function () {
               document.getElementById("grade_select").style.display = "none";
             }
           } else if (programIdentificator === "AES") {
-            // Lógica original para AES cuando register_psp NO es '1'
             document.getElementById("institute_id").required = true;
             let subprograms = [];
             const data = XHR.response.data.subprograms;
@@ -268,8 +282,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (subprograms_arr.length > 0) {
               document.getElementById("institute-id-select").style.display =
                 "block";
-              // document.getElementById("grade_select").style.display = "block"; // Originalmente comentado
-
               subprograms_arr.forEach((programItem, index) => {
                 const option = document.createElement("option");
                 option.value = index + 1;
@@ -281,10 +293,8 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
               document.getElementById("institute-id-select").style.display =
                 "block";
-              // document.getElementById("grade_select").style.display = "none"; // Originalmente comentado
             }
           } else {
-            // Lógica para otros identificadores (NO AES)
             document.getElementById("institute_id").required = false;
             let subprograms = [];
             const data = XHR.response.data.subprograms;
@@ -305,7 +315,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (subprograms_arr.length > 0) {
               document.getElementById("grade_select").style.display = "block";
-
               subprograms_arr.forEach((programItem, index) => {
                 const option = document.createElement("option");
                 option.value = index + 1;
@@ -318,21 +327,17 @@ document.addEventListener("DOMContentLoaded", function () {
               document.getElementById("grade_select").style.display = "none";
             }
             document.getElementById("institute-id-select").style.display =
-              "none"; // Asegúrate de ocultarlo si no es AES
+              "none";
             document.getElementById("name-institute-field").style.display =
-              "none"; // También oculta el campo de nombre de instituto
+              "none";
           }
         } else {
-          // Maneja errores o respuesta vacía: resetea y oculta
           subprograms_arr = [];
           while (gradeSelect.options.length > 1) {
             gradeSelect.remove(1);
           }
           productIdInput.value = "";
-          document.getElementById("grade_select").style.display = "none"; // Ocultar si no hay subprogramas
-          // Si no hay respuesta válida, ¿qué debe pasar con el instituto?
-          // Asumo que si falla la carga de subprogramas, el instituto no se mostrará por defecto,
-          // a menos que sea el caso AES y registerPspValue === '1'
+          document.getElementById("grade_select").style.display = "none";
           const registerPspValue = registerPspInput
             ? registerPspInput.value
             : "";
@@ -342,43 +347,70 @@ document.addEventListener("DOMContentLoaded", function () {
               "none";
             document.getElementById("name-institute-field").style.display =
               "none";
-            institute_id_select.value = "";
-            institute_id_select.selectedIndex = 0;
+            // Asegúrate de seleccionar el valor correcto también en caso de error AJAX para este escenario
+            if (institute_id_select.options.length > 1) {
+              if (institute_id_select.options[1].value !== "other") {
+                institute_id_select.selectedIndex = 1;
+                institute_id_select.value =
+                  institute_id_select.options[1].value;
+              } else if (institute_id_select.options.length > 2) {
+                institute_id_select.selectedIndex = 2;
+                institute_id_select.value =
+                  institute_id_select.options[2].value;
+              } else {
+                institute_id_select.selectedIndex = 2;
+                institute_id_select.value = "other";
+              }
+            } else {
+              institute_id_select.value = "";
+              institute_id_select.selectedIndex = 0;
+            }
           } else {
             document.getElementById("institute-id-select").style.display =
-              "block"; // O se mantiene visible si hay un error y no es el caso especial
-            document.getElementById("institute_id").required = false; // O según tu lógica predeterminada
+              "block";
+            document.getElementById("institute_id").required = false;
           }
         }
       };
       XHR.onerror = () => {
-        // Maneja errores AJAX: resetea y oculta
         subprograms_arr = [];
         while (gradeSelect.options.length > 1) {
           gradeSelect.remove(1);
         }
         productIdInput.value = "";
-        document.getElementById("grade_select").style.display = "none"; // Ocultar si hay error
+        document.getElementById("grade_select").style.display = "none";
 
-        // Si hay error en AJAX, ¿qué debe pasar con el instituto?
         const registerPspValue = registerPspInput ? registerPspInput.value : "";
         if (programIdentificator === "AES" && registerPspValue === "1") {
           document.getElementById("institute_id").required = false;
           document.getElementById("institute-id-select").style.display = "none";
           document.getElementById("name-institute-field").style.display =
             "none";
-          institute_id_select.value = "";
-          institute_id_select.selectedIndex = 0;
+          // Asegúrate de seleccionar el valor correcto también en caso de error AJAX para este escenario
+          if (institute_id_select.options.length > 1) {
+            if (institute_id_select.options[1].value !== "other") {
+              institute_id_select.selectedIndex = 1;
+              institute_id_select.value = institute_id_select.options[1].value;
+            } else if (institute_id_select.options.length > 2) {
+              institute_id_select.selectedIndex = 2;
+              institute_id_select.value = institute_id_select.options[2].value;
+            } else {
+              institute_id_select.selectedIndex = 2;
+              institute_id_select.value = "other";
+            }
+          } else {
+            institute_id_select.value = "";
+            institute_id_select.selectedIndex = 0;
+          }
         } else {
           document.getElementById("institute-id-select").style.display =
-            "block"; // O se mantiene visible si hay un error y no es el caso especial
-          document.getElementById("institute_id").required = false; // O según tu lógica predeterminada
+            "block";
+          document.getElementById("institute_id").required = false;
         }
       };
       XHR.send(params.toString());
     });
 
-    // --- Dispara el evento 'change' si solo hay una opción preseleccionada ---
     if (program.options.length === 2 && program.selectedIndex === 1) {
       program.dispatchEvent(new Event("change"));
     }
