@@ -213,49 +213,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const countrySelect = document.getElementById("country-select");
   const instituteSelect = document.getElementById("institute_id");
-
   if (countrySelect && instituteSelect) {
-    // Check if the number of options in instituteSelect is greater than 3
-    if (instituteSelect.options.length > 3) {
-      // This is the new condition
-      countrySelect.addEventListener("change", function () {
-        if (document.getElementById("institute_id")) {
-          document.getElementById("institute_id").value = "";
-        }
-        if (document.getElementById("name_institute")) {
-          document.getElementById("name_institute").value = "";
-        }
-        if (document.getElementById("name-institute-field")) {
-          document.getElementById("name-institute-field").style.display =
-            "none";
-        }
-        if (document.getElementById("name_institute")) {
-          document.getElementById("name_institute").required = false;
-        }
-        if (document.getElementById("institute_id")) {
-          document.getElementById("institute_id").required = true;
-        }
-        if (document.getElementById("institute_id_required")) {
-          document.getElementById("institute_id_required").textContent = "*";
-        }
+    countrySelect.addEventListener("change", function () {
+      if (document.getElementById("institute_id")) {
+        document.getElementById("institute_id").value = "";
+      }
+      if (document.getElementById("name_institute")) {
+        document.getElementById("name_institute").value = "";
+      }
+      if (document.getElementById("name-institute-field")) {
+        document.getElementById("name-institute-field").style.display =
+          "none";
+      }
+      if (document.getElementById("name_institute")) {
+        document.getElementById("name_institute").required = false;
+      }
+      if (document.getElementById("institute_id")) {
+        document.getElementById("institute_id").required = true;
+      }
+      if (document.getElementById("institute_id_required")) {
+        document.getElementById("institute_id_required").textContent = "*";
+      }
 
-        const selectedCountry = countrySelect.value;
-        const options = instituteSelect.options;
-        for (let i = 0; i < options.length; i++) {
-          const option = options[i];
-          if (option.dataset.others == "0") {
-            if (
-              option.dataset.country === selectedCountry ||
-              option.value === ""
-            ) {
-              option.style.display = "block";
-            } else {
-              option.style.display = "none";
-            }
+      const selectedCountry = countrySelect.value;
+      const options = instituteSelect.options;
+      for (let i = 0; i < options.length; i++) {
+        const option = options[i];
+        if (option.dataset.others == "0") {
+          if (
+            option.dataset.country === selectedCountry ||
+            option.value === ""
+          ) {
+            option.style.display = "block";
+          } else {
+            option.style.display = "none";
           }
         }
-      });
-    }
+      }
+
+      program.dispatchEvent(new Event("change"));
+    });
   }
 
   if (grade) {
