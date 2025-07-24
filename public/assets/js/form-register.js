@@ -137,15 +137,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (program) {
     program.addEventListener("change", (e) => {
-      document.getElementById("grade_select").style.display = "none";
+      document.getElementById("institute_id").value = "";
       document.getElementById("institute-id-select").style.display = "none";
+      document.getElementById("name-institute-field").style.display = "none";
+      document.getElementById("grade_select").style.display = "none";
 
-      const gradeSelect = document.querySelector('select[name="grade"]');
-      gradeSelect.value = "";
-      productIdInput.value = "";
+      const numberOfOptions =
+        document.getElementById("institute_id").options.length;
 
       let programId;
-      let programIdentificator;
 
       if (
         e instanceof CustomEvent &&
@@ -157,25 +157,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const selectedOption = e.target.selectedOptions[0];
         programId = selectedOption.value;
         programIdentificator = selectedOption.getAttribute("identificator");
-      }
-
-      const institute_id_select = document.querySelector(
-        'select[name="institute_id"]'
-      );
-      institute_id_select.value = "";
-      document.getElementById("name-institute-field").style.display = "none";
-
-      if (!programId) {
-        subprograms_arr = [];
-        while (gradeSelect.options.length > 1) {
-          gradeSelect.remove(1);
-        }
-        document.getElementById("institute-id-select").style.display = "none";
-        institute_id_select.value = "";
-        document.getElementById("institute_id").required = false;
-        document.getElementById("institute-id-select").style.display = "none";
-        document.getElementById("name-institute-field").style.display = "none";
-        return;
       }
 
       const XHR = new XMLHttpRequest();
@@ -194,222 +175,86 @@ document.addEventListener("DOMContentLoaded", function () {
 
       XHR.onload = () => {
         if (XHR.status === 200 && XHR.response && XHR.response.data) {
-          const registerPspValue = registerPspInput
-            ? registerPspInput.value
-            : "";
+          let subprograms = [];
+          const data = XHR.response.data.subprograms;
+          const product_id = XHR.response.data.product_id;
 
-          // --- INICIO DEL CAMBIO CLAVE: Nueva función para seleccionar el instituto ---
-          function autoSelectInstitute() {
-            const options = institute_id_select.options;
-            // Si solo hay una opción (normalmente "Select an option"), o menos de 2, no hacemos nada.
-            if (options.length <= 1) {
-              institute_id_select.value = "";
-              institute_id_select.selectedIndex = 0;
-              return;
-            }
-
-            // Si la segunda opción (índice 1) no es "other", es un instituto real.
-            // Esto cubre los casos de:
-            // 1. "Select an option", "Instituto Real"
-            // 2. "Select an option", "Instituto Real", "Other"
-            // 3. "Select an option", "Instituto 1", "Instituto 2", ..., "Other"
-            if (options[1].value !== "other") {
-              institute_id_select.selectedIndex = 1;
-              institute_id_select.value = options[1].value;
-            } else if (options.length === 2 && options[1].value === "other") {
-              // Caso específico: "Select an option", "Other"
-              institute_id_select.selectedIndex = 1;
-              institute_id_select.value = "other";
-            }
-            // Si el orden es "select an option, other, instituto real",
-            // y hay más de 2 opciones, seleccionar el instituto real.
-            else if (options.length > 2 && options[2].value !== "other") {
-              institute_id_select.selectedIndex = 2;
-              institute_id_select.value = options[2].value;
-            } else {
-              // En cualquier otro caso que no cubra la lógica anterior,
-              // por ejemplo, si solo hay "Select an option" y "Other",
-              // se selecciona "Other" si es la única opción válida aparte de la primera.
-              // O si no hay institutos reales después de "Select an option".
-              // Se podría dejar en blanco o seleccionar "Other" si es el caso.
-              // Dada la estructura que mencionaste ("Select an option", Instituto(s), "Other"),
-              // si options[1] es "other", significa que no hay institutos reales.
-              // En ese caso, si hay "other", se selecciona.
-              const lastOptionIndex = options.length - 1;
-              if (options[lastOptionIndex].value === "other") {
-                institute_id_select.selectedIndex = lastOptionIndex;
-                institute_id_select.value = "other";
-              } else {
-                institute_id_select.value = "";
-                institute_id_select.selectedIndex = 0;
-              }
-            }
+          if (Array.isArray(data)) {
+            subprograms = data;
+          } else if (data) {
+            subprograms = Object.values(data);
           }
 
-          if (programIdentificator === "AES" && registerPspValue === "1") {
+          productIdInput.value = product_id || "";
+          subprograms_arr = subprograms;
+
+          // Quiere decir que solo existe un instituto, opciones: (Select an option, INSTITUTO, Other)
+          if (numberOfOptions == 3) {
             document.getElementById("institute_id").required = false;
-            document.getElementById("institute-id-select").style.display =
-              "none";
-            document.getElementById("name-institute-field").style.display =
-              "none";
-
-            // Llama a la nueva función para aplicar la lógica de selección
-            autoSelectInstitute();
-
-            let subprograms = [];
-            const data = XHR.response.data.subprograms;
-            const product_id = XHR.response.data.product_id;
-
-            if (Array.isArray(data)) {
-              subprograms = data;
-            } else if (data) {
-              subprograms = Object.values(data);
-            }
-            productIdInput.value = product_id || "";
-            subprograms_arr = subprograms;
-
-            while (gradeSelect.options.length > 1) {
-              gradeSelect.remove(1);
-            }
-            if (subprograms_arr.length > 0) {
-              document.getElementById("grade_select").style.display = "block";
-              subprograms_arr.forEach((programItem, index) => {
-                const option = document.createElement("option");
-                option.value = index + 1;
-                option.textContent = programItem.description
-                  ? `${programItem.name} ${programItem.description}`
-                  : programItem.name;
-                gradeSelect.appendChild(option);
-              });
-            } else {
-              document.getElementById("grade_select").style.display = "none";
-            }
-          } else if (programIdentificator === "AES") {
+            document.getElementById("institute-id-select").style.display = "none";
+            document.getElementById("institute_id").selectedIndex = 1;
+            document
+              .getElementById("institute_id")
+              .dispatchEvent(new Event("change"));
+          } else {
             document.getElementById("institute_id").required = true;
-            let subprograms = [];
-            const data = XHR.response.data.subprograms;
-            const product_id = XHR.response.data.product_id;
-
-            if (Array.isArray(data)) {
-              subprograms = data;
-            } else if (data) {
-              subprograms = Object.values(data);
-            }
-
-            productIdInput.value = product_id || "";
-            subprograms_arr = subprograms;
-
-            while (gradeSelect.options.length > 1) {
-              gradeSelect.remove(1);
-            }
-
-            if (subprograms_arr.length > 0) {
-              document.getElementById("institute-id-select").style.display =
-                "block";
-              subprograms_arr.forEach((programItem, index) => {
-                const option = document.createElement("option");
-                option.value = index + 1;
-                option.textContent = programItem.description
-                  ? `${programItem.name} ${programItem.description}`
-                  : programItem.name;
-                gradeSelect.appendChild(option);
-              });
-            } else {
-              document.getElementById("institute-id-select").style.display =
-                "block";
-            }
-            // Aquí también se puede aplicar la misma lógica si es necesario
-            autoSelectInstitute();
-          } else {
-            document.getElementById("institute_id").required = false;
-            let subprograms = [];
-            const data = XHR.response.data.subprograms;
-            const product_id = XHR.response.data.product_id;
-
-            if (Array.isArray(data)) {
-              subprograms = data;
-            } else if (data) {
-              subprograms = Object.values(data);
-            }
-
-            productIdInput.value = product_id || "";
-            subprograms_arr = subprograms;
-
-            while (gradeSelect.options.length > 1) {
-              gradeSelect.remove(1);
-            }
-
-            if (subprograms_arr.length > 0) {
-              document.getElementById("grade_select").style.display = "block";
-              subprograms_arr.forEach((programItem, index) => {
-                const option = document.createElement("option");
-                option.value = index + 1;
-                option.textContent = programItem.description
-                  ? `${programItem.name} ${programItem.description}`
-                  : programItem.name;
-                gradeSelect.appendChild(option);
-              });
-            } else {
-              document.getElementById("grade_select").style.display = "none";
-            }
-            document.getElementById("institute-id-select").style.display =
-              "none";
-            document.getElementById("name-institute-field").style.display =
-              "none";
-            autoSelectInstitute();
-          }
-        } else {
-          subprograms_arr = [];
-          while (gradeSelect.options.length > 1) {
-            gradeSelect.remove(1);
-          }
-          productIdInput.value = "";
-          document.getElementById("grade_select").style.display = "none";
-          const registerPspValue = registerPspInput
-            ? registerPspInput.value
-            : "";
-          if (programIdentificator === "AES" && registerPspValue === "1") {
-            document.getElementById("institute_id").required = false;
-            document.getElementById("institute-id-select").style.display =
-              "none";
-            document.getElementById("name-institute-field").style.display =
-              "none";
-            // Llama a la nueva función también en caso de error AJAX
-            autoSelectInstitute();
-          } else {
-            document.getElementById("institute-id-select").style.display =
-              "block";
-            document.getElementById("institute_id").required = false;
+            document.getElementById("institute-id-select").style.display = "block";
           }
         }
       };
-      XHR.onerror = () => {
-        subprograms_arr = [];
-        while (gradeSelect.options.length > 1) {
-          gradeSelect.remove(1);
-        }
-        productIdInput.value = "";
-        document.getElementById("grade_select").style.display = "none";
 
-        const registerPspValue = registerPspInput ? registerPspInput.value : "";
-        if (programIdentificator === "AES" && registerPspValue === "1") {
-          document.getElementById("institute_id").required = false;
-          document.getElementById("institute-id-select").style.display = "none";
-          document.getElementById("name-institute-field").style.display =
-            "none";
-          // Llama a la nueva función también en caso de error de red
-          autoSelectInstitute();
-        } else {
-          document.getElementById("institute-id-select").style.display =
-            "block";
-          document.getElementById("institute_id").required = false;
-        }
-      };
       XHR.send(params.toString());
     });
 
-    if (program.options.length === 2 && program.selectedIndex === 1) {
+    if (program.selectedIndex === 1) {
       program.dispatchEvent(new Event("change"));
+    }
+  }
+
+  const countrySelect = document.getElementById("country-select");
+  const instituteSelect = document.getElementById("institute_id");
+
+  if (countrySelect && instituteSelect) {
+    // Check if the number of options in instituteSelect is greater than 3
+    if (instituteSelect.options.length > 3) {
+      // This is the new condition
+      countrySelect.addEventListener("change", function () {
+        if (document.getElementById("institute_id")) {
+          document.getElementById("institute_id").value = "";
+        }
+        if (document.getElementById("name_institute")) {
+          document.getElementById("name_institute").value = "";
+        }
+        if (document.getElementById("name-institute-field")) {
+          document.getElementById("name-institute-field").style.display =
+            "none";
+        }
+        if (document.getElementById("name_institute")) {
+          document.getElementById("name_institute").required = false;
+        }
+        if (document.getElementById("institute_id")) {
+          document.getElementById("institute_id").required = true;
+        }
+        if (document.getElementById("institute_id_required")) {
+          document.getElementById("institute_id_required").textContent = "*";
+        }
+
+        const selectedCountry = countrySelect.value;
+        const options = instituteSelect.options;
+        for (let i = 0; i < options.length; i++) {
+          const option = options[i];
+          if (option.dataset.others == "0") {
+            if (
+              option.dataset.country === selectedCountry ||
+              option.value === ""
+            ) {
+              option.style.display = "block";
+            } else {
+              option.style.display = "none";
+            }
+          }
+        }
+      });
     }
   }
 
@@ -625,53 +470,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
-
-  const countrySelect = document.getElementById("country-select");
-  const instituteSelect = document.getElementById("institute_id");
-
-  if (countrySelect && instituteSelect) {
-    // Check if the number of options in instituteSelect is greater than 3
-    if (instituteSelect.options.length > 3) {
-      // This is the new condition
-      countrySelect.addEventListener("change", function () {
-        if (document.getElementById("institute_id")) {
-          document.getElementById("institute_id").value = "";
-        }
-        if (document.getElementById("name_institute")) {
-          document.getElementById("name_institute").value = "";
-        }
-        if (document.getElementById("name-institute-field")) {
-          document.getElementById("name-institute-field").style.display =
-            "none";
-        }
-        if (document.getElementById("name_institute")) {
-          document.getElementById("name_institute").required = false;
-        }
-        if (document.getElementById("institute_id")) {
-          document.getElementById("institute_id").required = true;
-        }
-        if (document.getElementById("institute_id_required")) {
-          document.getElementById("institute_id_required").textContent = "*";
-        }
-
-        const selectedCountry = countrySelect.value;
-        const options = instituteSelect.options;
-        for (let i = 0; i < options.length; i++) {
-          const option = options[i];
-          if (option.dataset.others == "0") {
-            if (
-              option.dataset.country === selectedCountry ||
-              option.value === ""
-            ) {
-              option.style.display = "block";
-            } else {
-              option.style.display = "none";
-            }
-          }
-        }
-      });
-    }
-  }
 
   let modalContinueCheckout = document.getElementById(
     "modal-continue-checkout"
