@@ -1,5 +1,90 @@
 <?php
 
+add_action('woocommerce_checkout_order_created', 'custom_checkout_order_created_action', 10, 1);
+function custom_checkout_order_created_action($order) {
+    
+        /* $_COOKIE['from_webinar'];
+        $_COOKIE['one_time_payment'];
+        $_COOKIE['is_scholarship'];
+        $_COOKIE['is_older'];
+        $_COOKIE['initial_grade'];
+        $_COOKIE['program_id'];
+        $_COOKIE['program_id_number'];
+        $_COOKIE['password'];
+        
+        $_COOKIE['payment_method_selected'];
+        $_COOKIE['student_registration_hidden_payments'];
+
+        $_COOKIE['institute_id'];
+        $_COOKIE['name_institute'];
+        
+        $_COOKIE['middle_name_student'];
+        $_COOKIE['middle_last_name_student'];
+        
+        $_COOKIE['name_student'];
+        $_COOKIE['last_name_student'];
+        $_COOKIE['phone_student'];
+        $_COOKIE['id_document'];
+        $_COOKIE['document_type'];
+        $_COOKIE['email_student'];
+        $_COOKIE['birth_date'];
+        $_COOKIE['gender'];
+        $_COOKIE['ethnicity_parent'];
+
+        $_COOKIE['agent_name'];
+        $_COOKIE['agent_last_name'];
+        $_COOKIE['email_partner'];
+        $_COOKIE['number_partner'];
+        $_COOKIE['birth_date_parent'];
+        $_COOKIE['parent_document_type'];
+        $_COOKIE['id_document_parent'];
+        $_COOKIE['gender_parent']; */
+
+    $registration_data = json_encode([
+
+        "password" => $_COOKIE['password'] ?? null,
+
+        "initial_grade" => $_COOKIE['initial_grade'] ?? null,
+        "program_id" => $_COOKIE['program_id'] ?? null,
+        "program_id_number" => $_COOKIE['program_id_number'] ?? null,
+        "institute_id" => $_COOKIE['institute_id'] ?? null,
+        "name_institute" => $_COOKIE['name_institute'] ?? null,
+
+        "middle_name_student" => $_COOKIE['middle_name_student'] ?? null,
+        "middle_last_name_student" => $_COOKIE['middle_last_name_student'] ?? null,
+        "is_older" => $_COOKIE['is_older'] ?? null,
+        "name_student" => $_COOKIE['name_student'] ?? null,
+        "last_name_student" => $_COOKIE['last_name_student'] ?? null,
+        "phone_student" => $_COOKIE['phone_student'] ?? null,
+        "id_document" => $_COOKIE['id_document'] ?? null,
+        "document_type" => $_COOKIE['document_type'] ?? null,
+        "email_student" => $_COOKIE['email_student'] ?? null,
+        "birth_date" => $_COOKIE['birth_date'] ?? null,
+        "gender" => $_COOKIE['gender'] ?? null,
+        "ethnicity" => $_COOKIE['ethnicity'] ?? null,
+
+        "ethnicity_parent" => $_COOKIE['ethnicity_parent'] ?? null,
+        "agent_name" => $_COOKIE['agent_name'] ?? null,
+        "agent_last_name" => $_COOKIE['agent_last_name'] ?? null,
+        "email_partner" => $_COOKIE['email_partner'] ?? null,
+        "number_partner" => $_COOKIE['number_partner'] ?? null,
+        "birth_date_parent" => $_COOKIE['birth_date_parent'] ?? null,
+        "parent_document_type" => $_COOKIE['parent_document_type'] ?? null,
+        "id_document_parent" => $_COOKIE['id_document_parent'] ?? null,
+        "gender_parent" => $_COOKIE['gender_parent'] ?? null
+    ]);
+
+    $order->update_meta_data('registration_data', 'custom_value');
+
+    $order->update_meta_data('payment_method_selected', $_COOKIE['payment_method_selected'] );
+    $order->update_meta_data('is_scholarship', $_COOKIE['is_scholarship'] );
+    $order->update_meta_data('one_time_payment', $_COOKIE['one_time_payment'] );
+    $order->update_meta_data('from_webinar', $_COOKIE['from_webinar'] );
+
+    $order->save();
+}
+
+
 function save_student()
 {
     if (
