@@ -25,7 +25,7 @@
     <!-- DATOS DEL ESTUDIANTE -->
     <div class="grid grid-cols-12 gap-4">
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
-            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
+            style="<?= $styles_shortcode ?>">
             <div class="subtitle text-align-center"><?= __('Student details', 'edusystem'); ?></div>
         </div>
         <!-- <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -111,7 +111,7 @@
 
         <!-- DATOS DEL PADRE -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title"
-            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
+            style="<?= $styles_shortcode ?>">
             <div class="subtitle text-align-center"><?= __('Parent details', 'edusystem'); ?></div>
         </div>
         <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -176,7 +176,7 @@
 
         <!-- DATOS DE ACCESO -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
+            style="<?= $styles_shortcode ?>">
             <div class="subtitle text-align-center" id="access_data"><?= __('Platform access data of parent', 'edusystem'); ?>
             </div>
         </div>
@@ -197,7 +197,7 @@
 
         <!-- DATOS DEL GRADO -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
+            style="<?= $styles_shortcode ?>">
             <div class="subtitle text-align-center"><?= __('Degree details', 'edusystem'); ?></div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select">

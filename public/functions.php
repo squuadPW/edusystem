@@ -172,7 +172,8 @@ function form_asp_psp($atts)
             'zelle_account' => '',
             'bank_transfer_account' => '',
             'register_psp' => false,
-            'hidden_payment_methods' => ''
+            'hidden_payment_methods' => '',
+            'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black'
         ),
         $atts,
         'form_asp_psp'
@@ -186,6 +187,7 @@ function form_asp_psp($atts)
     $register_psp = $atts['register_psp'];
     $bank_transfer_account = $atts['bank_transfer_account'];
     $hidden_payment_methods = $atts['hidden_payment_methods'];
+    $styles_shortcode = $atts['styles_shortcode'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
@@ -209,7 +211,8 @@ function student_registration_form($atts)
             'zelle_account' => '',
             'bank_transfer_account' => '',
             'register_psp' => false,
-            'hidden_payment_methods' => ''
+            'hidden_payment_methods' => '',
+            'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black'
         ),
         $atts,
         'student_registration_form'
@@ -223,6 +226,7 @@ function student_registration_form($atts)
     $register_psp = $atts['register_psp'];
     $bank_transfer_account = $atts['bank_transfer_account'];
     $hidden_payment_methods = $atts['hidden_payment_methods'];
+    $styles_shortcode = $atts['styles_shortcode'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
