@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded',function(){
               document.querySelector("input[name=email_student]").value = getCookie("email_student");
               document.querySelector("select[name=gender]").value = getCookie("gender");
               document.querySelector("select[name=country]").value = getCookie("billing_country");
+              // document.querySelector("select[name=country]").dispatchEvent(new Event("change"));
+
               document.querySelector("input[name=city]").value = getCookie("billing_city");
               document.querySelector("select[name=etnia]").value = getCookie("ethnicity");
               document.querySelector("input[name=birth_date_parent]").value = getCookie("birth_date_parent");
@@ -39,9 +41,15 @@ document.addEventListener('DOMContentLoaded',function(){
               document.querySelector("select[name=gender_parent]").value = getCookie("gender_parent");
               document.querySelector("input[name=email_partner]").value = getCookie("email_partner");
               document.querySelector("input[name=password]").value = getCookie("password");
-              document.querySelector("select[name=grade]").value = getCookie("initial_grade");
-              document.querySelector("select[name=program]").value = getCookie("program_id");
-              document.querySelector("select[name=institute_id]").value = getCookie("institute_id");
+              // document.querySelector("select[name=program]").value = getCookie("program_id_number");
+              // document.querySelector("select[name=program]").dispatchEvent(new Event("change"));
+
+              // document.querySelector("select[name=institute_id]").value = getCookie("institute_id");
+              // document.querySelector("select[name=institute_id]").dispatchEvent(new Event("change"));
+
+              // document.querySelector("select[name=grade]").value = getCookie("initial_grade");
+              // document.querySelector("select[name=grade]").dispatchEvent(new Event("change"));
+
               document.getElementById('modal-continue-checkout').style.display = 'none';
             }
           } else {

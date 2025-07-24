@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       // Hide grade select initially
       document.getElementById("grade_select").style.display = "none";
+      document.getElementById("grade").required = false;
 
       if (e.target.value == "other") {
         document.getElementById("name-institute-field").style.display = "block";
@@ -36,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // If 'other' is selected and subprograms exist, show grade select
         if (subprograms_arr.length > 0) {
           document.getElementById("grade_select").style.display = "block";
+          document.getElementById("grade").required = true;
 
           subprograms_arr.forEach((subprogram, index) => {
             const option = document.createElement("option");
@@ -54,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (subprograms_arr.length > 0) {
           // This condition was previously leading to hiding it always if subprograms_arr.length > 0
           document.getElementById("grade_select").style.display = "none";
+          document.getElementById("grade").required = false;
         }
 
         // Proceed with AJAX call only if an institute is actually selected (not "other" or empty)
@@ -93,6 +96,8 @@ document.addEventListener("DOMContentLoaded", function () {
               // Iterate over subprograms_arr and use grades array for text
               if (subprograms_arr.length > 0) {
                 document.getElementById("grade_select").style.display = "block";
+                document.getElementById("grade").required = true;
+
                 subprograms_arr.forEach((subprogram, index) => {
                   const option = document.createElement("option");
                   option.value = index + 1; // Use index + 1 as value, aligning with program change event
@@ -112,6 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
               } else {
                 // If no subprograms are loaded, hide grade select
                 document.getElementById("grade_select").style.display = "none";
+                document.getElementById("grade").required = false;
               }
               // --- End of specific adjustment ---
             } else {
@@ -120,15 +126,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 gradeSelect.remove(1);
               }
               document.getElementById("grade_select").style.display = "none";
+              document.getElementById("grade").required = false;
             }
           };
-          XHR.onerror = () => {
-            // Handle AJAX error: clear and hide
-            while (gradeSelect.options.length > 1) {
-              gradeSelect.remove(1);
-            }
-            document.getElementById("grade_select").style.display = "none";
-          };
+
           XHR.send(params.toString());
         }
       }

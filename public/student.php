@@ -85,6 +85,7 @@ function save_student()
         setcookie('billing_country', $country, time() + 864000, '/');
         setcookie('initial_grade', $grade, time() + 864000, '/');
         setcookie('program_id', $program, time() + 864000, '/');
+        setcookie('program_id_number', $program_id, time() + 864000, '/');
         setcookie('phone_student', $number_phone, time() + 864000, '/');
         setcookie('id_document', $id_document, time() + 864000, '/');
         setcookie('document_type', $document_type, time() + 864000, '/');
