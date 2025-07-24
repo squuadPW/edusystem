@@ -2888,6 +2888,14 @@ function yaycommerce_add_checkout_fee_for_gateway()
             $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
             WC()->cart->add_fee('Credit Card Fee', $stripe_fee_amount);
         }
+
+        if ($chosen_gateway == 'ppcp-gateway') {
+            $stripe_fee_percentage = 4.5; // 4.5% fee
+            $cart_subtotal = WC()->cart->get_subtotal();
+            $discount = WC()->cart->get_cart_discount_total();
+            $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
+            WC()->cart->add_fee('PayPal Fee', $stripe_fee_amount);
+        }
     }
 }
 add_action('woocommerce_after_checkout_form', 'yaycommerce_refresh_checkout_on_payment_methods_change');
@@ -2922,7 +2930,7 @@ function loadFeesSplit()
 
         if ($order) {
             foreach ($order->get_items('fee') as $item_id => $item_fee) {
-                if ($item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee') {
+                if ($item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' || $item_fee->get_name() === 'PayPal Fee') {
                     $order->remove_item($item_id);
                 }
             }
@@ -2988,6 +2996,46 @@ function loadFeesSplit()
                     if ($split_payment != 1) {
                         $item_fee_payment_method = new WC_Order_Item_Fee();
                         $item_fee_payment_method->set_name("Credit Card Fee");
+                        $item_fee_payment_method->set_amount($fee);
+                        $item_fee_payment_method->set_tax_class('');
+                        $item_fee_payment_method->set_tax_status('none');
+                        $item_fee_payment_method->set_total($fee);
+                        $order->add_item($item_fee_payment_method);
+                        $order->calculate_totals();
+                        $order->save();
+                    }
+                }
+            }
+        }
+
+        if ($chosen_gateway == 'ppcp-gateway') {
+            if ($payment_page == 0) {
+                $stripe_fee_percentage = 4.5; // 4.5% fee
+                $cart_subtotal = $cart->get_subtotal();
+                $discount = $cart->get_cart_discount_total();
+                $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
+                $fee = $stripe_fee_amount;
+
+                // Solo agregar fee si es mayor que 0
+                if ($stripe_fee_amount > 0) {
+                    $cart->add_fee('PayPal Fee', $stripe_fee_amount);
+                }
+            } else {
+                $stripe_fee_percentage = 4.5; // 4.5% fee
+                $cart_subtotal = (float) $order->get_meta('pending_payment');
+                $is_total = false;
+                if (!$cart_subtotal || $cart_subtotal == 0) {
+                    $is_total = true;
+                    $cart_subtotal = $order->get_subtotal();
+                }
+                $stripe_fee_amount = ($cart_subtotal / 100) * $stripe_fee_percentage;
+                $fee = $stripe_fee_amount;
+
+                if ($is_total) {
+                    $split_payment = $order->get_meta('split_payment');
+                    if ($split_payment != 1) {
+                        $item_fee_payment_method = new WC_Order_Item_Fee();
+                        $item_fee_payment_method->set_name("PayPal Fee");
                         $item_fee_payment_method->set_amount($fee);
                         $item_fee_payment_method->set_tax_class('');
                         $item_fee_payment_method->set_tax_status('none');
@@ -3245,7 +3293,7 @@ function detect_orders_endpoint()
 
         if ($order) {
             foreach ($order->get_items('fee') as $item_id => $item_fee) {
-                if ($item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee') {
+                if ($item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' || $item_fee->get_name() === 'PayPal Fee') {
                     $order->remove_item($item_id);
                 }
             }
