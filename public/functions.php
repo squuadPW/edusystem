@@ -1503,18 +1503,18 @@ function insert_data_student($order)
 
 function split_payment()
 {
-    $cart = WC()->cart;
+    // $cart = WC()->cart;
 
-    if (!$cart || $cart->is_empty()) {
-        // Carrito vacío
-        include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
-        return;
-    }
+    // if (!$cart || $cart->is_empty()) {
+    //     // Carrito vacío
+    //     include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
+    //     return;
+    // }
 
-    $total = $cart->total;
-    if ($total > 0) {
-        include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
-    }
+    // $total = $cart->total;
+    // if ($total > 0) {
+    //     include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
+    // }
 }
 add_action('woocommerce_review_order_before_payment', 'split_payment');
 add_action('woocommerce_pay_order_before_payment', 'split_payment');
