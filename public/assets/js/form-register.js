@@ -297,7 +297,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
 
-      program.dispatchEvent(new Event("change"));
+      if (program.selectedIndex != 0) {
+        program.dispatchEvent(new Event("change"));        
+      }
     });
   }
 
