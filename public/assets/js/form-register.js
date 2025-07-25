@@ -10,6 +10,32 @@ document.addEventListener("DOMContentLoaded", function () {
   const productIdInput = document.getElementById("product_id_input");
   const registerPspInput = document.getElementById("register_psp");
 
+  loadGradesDefault();
+  function loadGradesDefault() {
+    const XHR = new XMLHttpRequest();
+    XHR.open(
+      "POST",
+      `${ajax_object.ajax_url}?action=load_grades_institute`,
+      true
+    );
+    XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    XHR.responseType = "json";
+
+    const params = new URLSearchParams({
+      action: "load_grades_institute",
+      institute_id: null,
+    });
+
+    XHR.onload = () => {
+      if (XHR.status === 200 && XHR.response && XHR.response.data) {
+        grades_default = XHR.response.data.default_grades;
+        // grades_institute = XHR.response.data.institute_grades;
+      }
+    };
+
+    XHR.send(params.toString());
+  }
+
   if (document.getElementById("birth_date")) {
     flatpickr(document.getElementById("birth_date"), {
       dateFormat: "m/d/Y",
@@ -44,8 +70,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
           subprograms_arr.forEach((subprogram, index) => {
             const option = document.createElement("option");
-            option.value = index + 1;
-            option.textContent = subprogram.name || "N/A";
+            option.value = index + 1; // Use index + 1 as value, aligning with program change event
+
+            let optionText = "";
+
+            // New priority logic for optionText
+            if (grades_institute && grades_institute[index]) {
+              // Priority 1: Use grades_institute
+              const grade = grades_institute[index];
+              optionText = grade.description
+                ? `${grade.name} ${grade.description}`
+                : grade.name;
+            } else if (grades_country_arr && grades_country_arr[index]) {
+              // Priority 2: Use grades_country_arr
+              const grade = grades_country_arr[index];
+              // Assuming grades_country_arr elements also have name and description or are just strings
+              // If it's a string, use it directly. If an object, use name/description.
+              optionText =
+                typeof grade === "object" && grade !== null && grade.name
+                  ? grade.description
+                    ? `${grade.name} ${grade.description}`
+                    : grade.name
+                  : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+            } else if (grades_default && grades_default[index]) {
+              // Priority 3: Use grades_default
+              const grade = grades_default[index];
+              // Assuming grades_default elements also have name and description or are just strings
+              optionText =
+                typeof grade === "object" && grade !== null && grade.name
+                  ? grade.description
+                    ? `${grade.name} ${grade.description}`
+                    : grade.name
+                  : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+            } else {
+              // Fallback: If no specific grade is found, use the subprogram name
+              optionText = subprogram.name || "N/A";
+            }
+
+            option.textContent = optionText;
             gradeSelect.appendChild(option);
           });
         }
