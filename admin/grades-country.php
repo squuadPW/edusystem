@@ -248,3 +248,33 @@ function get_grades_country_details($id)
     $grades = $wpdb->get_row("SELECT * FROM {$table_grades_by_country} WHERE id={$id}");
     return $grades;
 }
+
+function get_grades_by_country_code($country)
+{
+    global $wpdb;
+    $table_grades_by_country = $wpdb->prefix . 'grades_by_country';
+
+    // It's good practice to sanitize the input country code
+    $country = esc_sql($country); 
+
+    $result = $wpdb->get_row("SELECT grades FROM {$table_grades_by_country} WHERE country='{$country}'");
+
+    $grades_array = [];
+
+    // Check if a result was found and if the 'grades' property exists
+    if ($result && isset($result->grades)) {
+        // Explode the comma-separated string into an array
+        $grades_string = $result->grades;
+        
+        // Trim whitespace from each grade and remove empty entries
+        $grades_array = array_map('trim', explode(',', $grades_string));
+        $grades_array = array_filter($grades_array, function($value) {
+            return $value !== ''; // Remove any empty strings resulting from multiple commas or leading/trailing commas
+        });
+        
+        // Re-index the array if necessary after filtering
+        $grades_array = array_values($grades_array);
+    }
+
+    return $grades_array;
+}

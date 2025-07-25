@@ -3460,6 +3460,18 @@ function load_subprograms_by_program_callback()
     exit;
 }
 
+add_action('wp_ajax_load_grades_by_country', 'load_grades_by_country_callback');
+add_action('wp_ajax_nopriv_load_grades_by_country', 'load_grades_by_country_callback');
+
+function load_grades_by_country_callback()
+{
+    $country = $_POST['country'];
+    $grades = get_grades_by_country_code($country);
+
+    wp_send_json_success(array('grades' => $grades));
+    exit;
+}
+
 add_action('wp_ajax_nopriv_load_product_id_rule', 'load_product_id_rule');
 add_action('wp_ajax_load_product_id_rule', 'load_product_id_rule');
 function load_product_id_rule()

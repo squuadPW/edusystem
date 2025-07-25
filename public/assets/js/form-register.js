@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   let subprograms_arr = [];
+  let grades_country_arr = [];
   const grade = document.getElementById("grade");
   const program = document.getElementById("program");
   const not_institute = document.getElementById("institute_id");
@@ -101,17 +102,38 @@ document.addEventListener("DOMContentLoaded", function () {
                 subprograms_arr.forEach((subprogram, index) => {
                   const option = document.createElement("option");
                   option.value = index + 1; // Use index + 1 as value, aligning with program change event
+
                   // Find the corresponding grade by index
-                  const gradeFromInstitute = grades[index];
+                  const gradeFromInstitute =
+                    grades && grades[index] ? grades[index] : null; // Explicitly check if 'grades' array exists and then the index
+                  const gradeFromCountry =
+                    grades_country_arr && grades_country_arr[index]
+                      ? grades_country_arr[index]
+                      : null; // Explicitly check if 'grades_country_arr' exists and then the index
+
+                  let optionText = "";
 
                   if (gradeFromInstitute) {
-                    option.textContent = gradeFromInstitute.description
+                    // Use a template literal for cleaner string construction
+                    optionText = gradeFromInstitute.description
                       ? `${gradeFromInstitute.name} ${gradeFromInstitute.description}`
                       : gradeFromInstitute.name;
                   } else {
-                    // Fallback if no corresponding grade is found at this index
-                    option.textContent = subprogram.name || "N/A";
+                    // Fallback if no corresponding grade from institute is found at this index
+                    optionText = subprogram.name || "N/A";
                   }
+
+                  // Concatenate gradeFromCountry only if it's a valid, non-empty string
+                  // Added explicit check for gradeFromCountry being not null before checking type and trim
+                  if (
+                    gradeFromCountry !== null &&
+                    typeof gradeFromCountry === "string" &&
+                    gradeFromCountry.trim() !== ""
+                  ) {
+                    optionText += ` (${gradeFromCountry})`;
+                  }
+
+                  option.textContent = optionText;
                   gradeSelect.appendChild(option);
                 });
               } else {
@@ -192,14 +214,16 @@ document.addEventListener("DOMContentLoaded", function () {
           // Quiere decir que solo existe un instituto, opciones: (Select an option, INSTITUTO, Other)
           if (numberOfOptions == 3) {
             document.getElementById("institute_id").required = false;
-            document.getElementById("institute-id-select").style.display = "none";
+            document.getElementById("institute-id-select").style.display =
+              "none";
             document.getElementById("institute_id").selectedIndex = 1;
             document
               .getElementById("institute_id")
               .dispatchEvent(new Event("change"));
           } else {
             document.getElementById("institute_id").required = true;
-            document.getElementById("institute-id-select").style.display = "block";
+            document.getElementById("institute-id-select").style.display =
+              "block";
           }
         }
       };
@@ -215,7 +239,29 @@ document.addEventListener("DOMContentLoaded", function () {
   const countrySelect = document.getElementById("country-select");
   const instituteSelect = document.getElementById("institute_id");
   if (countrySelect && instituteSelect) {
-    countrySelect.addEventListener("change", function () {
+    countrySelect.addEventListener("change", function (e) {
+      const XHR = new XMLHttpRequest();
+      XHR.open(
+        "POST",
+        `${ajax_object.ajax_url}?action=load_grades_by_country`,
+        true
+      );
+      XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      XHR.responseType = "json";
+
+      const params = new URLSearchParams({
+        action: "load_grades_by_country",
+        country: e.target.value,
+      });
+
+      XHR.onload = () => {
+        if (XHR.status === 200 && XHR.response && XHR.response.data) {
+          grades_country_arr = XHR.response.data.grades ?? [];
+        }
+      };
+
+      XHR.send(params.toString());
+
       if (document.getElementById("institute_id")) {
         document.getElementById("institute_id").value = "";
       }
@@ -223,8 +269,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("name_institute").value = "";
       }
       if (document.getElementById("name-institute-field")) {
-        document.getElementById("name-institute-field").style.display =
-          "none";
+        document.getElementById("name-institute-field").style.display = "none";
       }
       if (document.getElementById("name_institute")) {
         document.getElementById("name_institute").required = false;
