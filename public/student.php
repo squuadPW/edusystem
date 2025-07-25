@@ -14,7 +14,7 @@ function save_essential_data_order($order) {
     }
 
     // Solo continuar si hay al menos un producto de la categoría "programs"
-    if (!$has_program) return;
+    if ( !$has_program ) return;
 
     // datos generales
     $order->update_meta_data('payment_method_selected', $_COOKIE['payment_method_selected'] ?? null );
