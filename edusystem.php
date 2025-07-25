@@ -66,11 +66,21 @@ function create_tables()
   $table_managers_by_institute = $wpdb->prefix . 'managers_by_institutes';
   $table_managers_by_alliance = $wpdb->prefix . 'managers_by_alliances';
   $table_custom_inputs = $wpdb->prefix . 'custom_inputs';
+  $table_grades_by_country = $wpdb->prefix . 'grades_by_country';
 
 
   // Para todas las tablas: Mueve la llamada a dbDelta() FUERA del if de existencia de tabla.
   // Esto asegura que dbDelta() siempre compare la estructura actual con la deseada
   // y añada columnas si faltan, o cree la tabla si no existe.
+
+  dbDelta(
+    "CREATE TABLE " . $table_grades_by_country . " (
+      `id` INT(11) NOT NULL AUTO_INCREMENT,
+      `country` TEXT NOT NULL,
+      `grades` TEXT NOT NULL,
+      `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id))$charset_collate;"
+  );
 
   // Ejemplo para table_custom_inputs:
   dbDelta(
