@@ -6,7 +6,7 @@ require plugin_dir_path(__FILE__) . 'account.php';
 require plugin_dir_path(__FILE__) . 'institute.php';
 require plugin_dir_path(__FILE__) . 'document.php';
 require plugin_dir_path(__FILE__) . 'alliances.php';
-require plugin_dir_path(__FILE__) . 'user.php'; 
+require plugin_dir_path(__FILE__) . 'user.php';
 require plugin_dir_path(__FILE__) . 'notes.php';
 require plugin_dir_path(__FILE__) . 'academic_services.php';
 require plugin_dir_path(__FILE__) . 'endpoint.php';
@@ -242,7 +242,8 @@ add_shortcode('student_registration_form', 'student_registration_form');
 
 add_filter('woocommerce_available_payment_gateways', 'hide_payment_gateways_from_cookie');
 
-function hide_payment_gateways_from_cookie($available_gateways) {
+function hide_payment_gateways_from_cookie($available_gateways)
+{
     // Verificar si la cookie existe
     if (!isset($_COOKIE['student_registration_hidden_payments']) || empty($_COOKIE['student_registration_hidden_payments'])) {
         return $available_gateways;
@@ -283,44 +284,53 @@ function use_previous_form_aes_callback()
 
 add_action('wp_ajax_load_grades_institute', 'load_grades_institute_callback');
 add_action('wp_ajax_nopriv_load_grades_institute', 'load_grades_institute_callback');
+
 function load_grades_institute_callback()
 {
     $institute_id = $_POST['institute_id'];
     $institute = get_institute_details($institute_id);
-    $grades = get_grades();
+    $default_grades = get_grades(); // Siempre obtenemos las calificaciones por defecto
+
+    $institute_grades = []; // Inicializamos el array de calificaciones del instituto
+    $has_custom_grades = false; // Bandera para saber si se aplicó alguna personalización
+
+    // Mapeamos los nombres de los campos del instituto a los IDs de las calificaciones
+    $institute_field_map = [
+        1 => 'lower_text',
+        2 => 'middle_text',
+        3 => 'upper_text',
+        4 => 'graduated_text',
+    ];
 
     if ($institute) {
-        foreach ($grades as $grade) {
-            switch ($grade->id) {
-                case 1:
-                    if ($grade->name !== $institute->lower_text) {
-                        $grade->name = $institute->lower_text;
-                        $grade->description = '';
-                    }
-                    break;
-                case 2:
-                    if ($grade->name !== $institute->middle_text) {
-                        $grade->name = $institute->middle_text;
-                        $grade->description = '';
-                    }
-                    break;
-                case 3:
-                    if ($grade->name !== $institute->upper_text) {
-                        $grade->name = $institute->upper_text;
-                        $grade->description = '';
-                    }
-                    break;
-                case 4:
-                    if ($grade->name !== $institute->graduated_text) {
-                        $grade->name = $institute->graduated_text;
-                        $grade->description = '';
-                    }
-                    break;
+        foreach ($default_grades as $grade) {
+            $current_grade = clone $grade; // Clonamos la calificación por defecto
+
+            if (isset($institute_field_map[$current_grade->id])) {
+                $field_name = $institute_field_map[$current_grade->id];
+                $institute_text = $institute->$field_name;
+
+                // Si el texto del instituto no está vacío Y es diferente al nombre por defecto
+                if (!empty($institute_text) && $current_grade->name !== $institute_text) {
+                    $current_grade->name = $institute_text;
+                    $current_grade->description = '';
+                    $has_custom_grades = true; // Marcamos que hubo una personalización
+                }
             }
+            $institute_grades[] = $current_grade; // Agregamos la calificación (modificada o no)
         }
     }
 
-    wp_send_json_success(array('grades' => $grades));
+    // Si no hubo ninguna personalización para el instituto (todos los campos estaban vacíos
+    // o eran iguales a los por defecto), entonces institute_grades debería estar vacío.
+    if (!$has_custom_grades) {
+        $institute_grades = [];
+    }
+
+    wp_send_json_success(array(
+        'default_grades' => $default_grades,
+        'institute_grades' => $institute_grades
+    ));
     exit;
 }
 
@@ -643,7 +653,7 @@ function remove_my_account_links($menu_links)
 
     if (in_array('parent', $roles) || in_array('student', $roles)) {
         $menu_links['my-tickets'] = __('Support Tickets', 'edusystem');
-        
+
         if (MODE != 'UNI') {
             $menu_links['my-requests'] = __('Requests', 'edusystem');
         }
@@ -1128,7 +1138,8 @@ function process_program_payments(WC_Order $order, int $order_id): void
     foreach ($order->get_items() as $item_id => $item) {
         $product = $item->get_product();
 
-        if ( !$product ) continue;
+        if (!$product)
+            continue;
 
         // obtiene el id del producto, de la variacion si lo tiene y el id de la regla si lo tiene
         $product_id = $item->get_product_id();
@@ -1136,7 +1147,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
         // Determinar si este producto es un FEE de inscripción o graduación.
         // Asegúrate de que FEE_INSCRIPTION y FEE_GRADUATION estén definidos como constantes.
-        $is_fee_product = in_array( $product_id, [FEE_INSCRIPTION, FEE_GRADUATION] );
+        $is_fee_product = in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]);
 
         // Evita la redundancia procesando solo si no existe un registro previo para este producto en esta orden.
         $existing_record_count = $wpdb->get_var($wpdb->prepare(
@@ -1144,9 +1155,10 @@ function process_program_payments(WC_Order $order, int $order_id): void
             $student_id,
             $product_id
         ));
-        
+
         // salta el producto si encuentra un registro previo
-        if ($existing_record_count > 0) continue;
+        if ($existing_record_count > 0)
+            continue;
 
         // --- Recalcular tarifas de alianzas para este producto específico ---
         $current_item_alliances_fees = [];
@@ -1172,41 +1184,43 @@ function process_program_payments(WC_Order $order, int $order_id): void
         }
 
         $current_item_alliances_json = json_encode($current_item_alliances_fees);
-        if ($current_item_alliances_json === false) $current_item_alliances_json = json_encode([]);
+        if ($current_item_alliances_json === false)
+            $current_item_alliances_json = json_encode([]);
 
         $installments = 1;
 
         // reglas de las quotas a aplicar
         $rule_id = $item->get_meta('quota_rule_id');
-        if( $rule_id ){
+        if ($rule_id) {
 
             $data_quota_rule = $wpdb->get_row($wpdb->prepare(
                 "SELECT * FROM `{$wpdb->prefix}quota_rules` WHERE id = %d",
                 (int) $rule_id
             ));
 
-            if( $data_quota_rule ){
+            if ($data_quota_rule) {
 
                 $quotas_quantity_rule = (int) $data_quota_rule->quotas_quantity;
                 $initial_price = (double) $data_quota_rule->initial_price;
                 $quote_price = (double) $data_quota_rule->quote_price;
                 $type_frequency = $data_quota_rule->type_frequency;
                 $frequency_value = $data_quota_rule->frequency_value;
-                
-                $total = (double) ( $quotas_quantity_rule * $quote_price ) + $initial_price;
+
+                $total = (double) ($quotas_quantity_rule * $quote_price) + $initial_price;
 
                 $installments = $quotas_quantity_rule;
 
-                if( $initial_price > 0 ) $installments ++;
+                if ($initial_price > 0)
+                    $installments++;
 
                 $discount_value = 0;
                 $applied_coupons = $order->get_used_coupons();
-                if ( !empty($applied_coupons) ) {
+                if (!empty($applied_coupons)) {
                     foreach ($applied_coupons as $coupon_code) {
                         $coupon = new WC_Coupon($coupon_code);
 
                         // Validar si el cupón es aplicable al producto y si es un descuento porcentual
-                        if ( $coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent' ) {
+                        if ($coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent') {
                             $discount_value += (double) $coupon->get_amount();
                         }
                     }
@@ -1227,21 +1241,21 @@ function process_program_payments(WC_Order $order, int $order_id): void
         $needs_next_payment = !$is_fee_product;
         $start_date = new DateTime();
         $payment_date_obj = clone $start_date;
-        
-        for ( $i = 0; $i < $installments; $i++ ) {
+
+        for ($i = 0; $i < $installments; $i++) {
 
             $next_payment_date = null;
-            if ( $needs_next_payment ) {
+            if ($needs_next_payment) {
 
-                if( $data_quota_rule ) {
+                if ($data_quota_rule) {
 
-                    $original_price = ( $i == 0 && $initial_price > 0 ) ? $initial_price :  $quote_price;
-                    $amount = $original_price - ( ($original_price * $discount_value  ) /100);
-                    $total_amount_to_pay = $total - ( ($total * $discount_value  ) / 100 );
+                    $original_price = ($i == 0 && $initial_price > 0) ? $initial_price : $quote_price;
+                    $amount = $original_price - (($original_price * $discount_value) / 100);
+                    $total_amount_to_pay = $total - (($total * $discount_value) / 100);
                     $total_original_amount = $total;
                     $total_discount_amount = $original_price - $amount;
 
-                    if ($i > 0 && $type_frequency ) {
+                    if ($i > 0 && $type_frequency) {
                         switch ($type_frequency) {
                             case 'day':
                                 $payment_date_obj->modify("+{$frequency_value} days");
@@ -1253,9 +1267,9 @@ function process_program_payments(WC_Order $order, int $order_id): void
                                 $payment_date_obj->modify("+{$frequency_value} years");
                                 break;
                         }
-                    }  
+                    }
                 }
-                
+
                 $next_payment_date = $payment_date_obj->format('Y-m-d');
             }
 
@@ -1744,13 +1758,14 @@ function load_signatures_data()
  */
 add_action('wp_ajax_update_price_product_cart_quota_rule', 'update_price_product_cart_quota_rule');
 add_action('wp_ajax_nopriv_update_price_product_cart_quota_rule', 'update_price_product_cart_quota_rule');
-function update_price_product_cart_quota_rule() {
-    
+function update_price_product_cart_quota_rule()
+{
+
     $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
     $rule_id = isset($_POST['rule_id']) ? intval($_POST['rule_id']) : 0;
 
     if ($product_id <= 0 || $rule_id <= 0) {
-        wp_send_json_error(__('Invalid data','edusystem'));
+        wp_send_json_error(__('Invalid data', 'edusystem'));
         exit;
     }
 
@@ -1769,15 +1784,15 @@ function update_price_product_cart_quota_rule() {
     );
 
     if (!$price) {
-        wp_send_json_error( __('Rule not found in database','edusystem') );
+        wp_send_json_error(__('Rule not found in database', 'edusystem'));
         exit;
     }
 
     $cart = WC()->cart;
-    foreach ( $cart->get_cart() as $cart_item_key => $cart_item ) {
+    foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
 
         // Verificar si el ID del producto o el ID de la variación coinciden
-        if  ( $cart_item['product_id'] === $product_id || ( isset($cart_item['variation_id']) && $cart_item['variation_id'] === $product_id ) ) {
+        if ($cart_item['product_id'] === $product_id || (isset($cart_item['variation_id']) && $cart_item['variation_id'] === $product_id)) {
 
             $cart_item['data']->set_price($price);
             $cart_item['data']->set_sale_price($price);
@@ -1786,7 +1801,7 @@ function update_price_product_cart_quota_rule() {
             $cart_item['custom_price'] = $price; // Aquí se almacena el nuevo precio
 
             // Guarda el id de la regla de la cuota
-            $cart_item['quota_rule_id'] = $rule_id; 
+            $cart_item['quota_rule_id'] = $rule_id;
 
             // Actualizar el artículo del carrito
             $cart->cart_contents[$cart_item_key] = $cart_item;
@@ -1794,13 +1809,13 @@ function update_price_product_cart_quota_rule() {
             // Actualizar el carrito
             WC()->cart->set_session();
 
-            wp_send_json_success(__('Precio actualizado','edusystem') );
+            wp_send_json_success(__('Precio actualizado', 'edusystem'));
             exit;
         }
     }
 
     // en caso de no encontrar el producto
-    wp_send_json_error( __( 'Product not found in cart','edusystem') );
+    wp_send_json_error(__('Product not found in cart', 'edusystem'));
     exit;
 }
 
@@ -1823,8 +1838,9 @@ function update_price_product_cart_quota_rule() {
  * @uses WC_Order
  */
 add_action('woocommerce_checkout_create_order_line_item', 'save_metadata_checkout_create_order_item', 10, 4);
-function save_metadata_checkout_create_order_item($item, $cart_item_key, $values, $order) {
-    
+function save_metadata_checkout_create_order_item($item, $cart_item_key, $values, $order)
+{
+
     // Si el producto en el carrito tiene un quote_rule_id, lo guarda en el ítem de la orden
     if (isset($values['quota_rule_id'])) {
         $item->add_meta_data('quota_rule_id', $values['quota_rule_id']);
@@ -1840,81 +1856,82 @@ function reload_payment_table()
 {
     ob_start();
     ?>
-    <?php
-    $value = $_POST['option'];
-    global $woocommerce;
-    $cart = $woocommerce->cart->get_cart();
-    $id = FEE_INSCRIPTION;
-    $filtered_products = array_filter($cart, function ($product) use ($id) {
-        return $product['product_id'] != $id;
-    });
+        <?php
+        $value = $_POST['option'];
+        global $woocommerce;
+        $cart = $woocommerce->cart->get_cart();
+        $id = FEE_INSCRIPTION;
+        $filtered_products = array_filter($cart, function ($product) use ($id) {
+            return $product['product_id'] != $id;
+        });
 
-    $cart_total = 0;
-    $product_id = null;
-    foreach ($filtered_products as $key => $product) {
-        $product_id = $product['product_id'];
-        $cart_total = $product['line_total'];
-        // $price = $product['line_total']; 
-    }
-    if (isset($product_id)) {
-        $product = wc_get_product($product_id);
-        if ($product->is_type('variable')) {
-            $variations = $product->get_available_variations();
-            $date = new DateTime();
-            $date = $date->format('Y-m-d');
-            foreach ($variations as $key => $variation) {
-                if ($variation['attributes']['attribute_payments'] === $value) {
-                    ?>
-                                                                                                                    <table class="payment-parts-table mt-5">
-                                                                                                                        <tr>
-                                                                                                                            <th class="payment-parts-table-header">Payment</th>
-                                                                                                                            <th class="payment-parts-table-header">Next date payment</th>
-                                                                                                                            <th class="payment-parts-table-header">Amount</th>
-                                                                                                                        </tr>
-                                                                                                                        <?php
-                                                                                                                        $date_calc = '';
-                                                                                                                        switch ($value) {
-                                                                                                                            case 'Annual':
-                                                                                                                                $date_calc = '+1 year';
-                                                                                                                                break;
-                                                                                                                            case 'Semiannual':
-                                                                                                                                $date_calc = '+6 months';
-                                                                                                                                break;
-                                                                                                                        }
-                                                                                                                        $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true);
-                                                                                                                        for ($i = 0; $i < $cuotes; $i++) {
-                                                                                                                            $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
-                                                                                                                            ?>
-                                                                                                                                                                        <tr class="payment-parts-table-row">
-                                                                                                                                                                            <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
-                                                                                                                                                                            <td class="payment-parts-table-data">
-                                                                                                                                                                                <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?>
-                                                                                                                                                                            </td>
-                                                                                                                                                                            <td class="payment-parts-table-data"><?php echo wc_price($cart_total) ?></td>
-                                                                                                                                                                        </tr>
-                                                                                                                                                                        <?php
-                                                                                                                        }
-                                                                                                                        ?>
-                                                                                                                        <tr>
-                                                                                                                            <th class="payment-parts-table-header text-end" colspan="3">Total</th>
-                                                                                                                        </tr>
-                                                                                                                        <tr class="payment-parts-table-row">
-                                                                                                                            <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes)) ?></td>
-                                                                                                                        </tr>
-                                                                                                                    </table>
-                                                                                                                    <?php
+        $cart_total = 0;
+        $product_id = null;
+        foreach ($filtered_products as $key => $product) {
+            $product_id = $product['product_id'];
+            $cart_total = $product['line_total'];
+            // $price = $product['line_total']; 
+        }
+        if (isset($product_id)) {
+            $product = wc_get_product($product_id);
+            if ($product->is_type('variable')) {
+                $variations = $product->get_available_variations();
+                $date = new DateTime();
+                $date = $date->format('Y-m-d');
+                foreach ($variations as $key => $variation) {
+                    if ($variation['attributes']['attribute_payments'] === $value) {
+                        ?>
+                                                                                                                                        <table class="payment-parts-table mt-5">
+                                                                                                                                            <tr>
+                                                                                                                                                <th class="payment-parts-table-header">Payment</th>
+                                                                                                                                                <th class="payment-parts-table-header">Next date payment</th>
+                                                                                                                                                <th class="payment-parts-table-header">Amount</th>
+                                                                                                                                            </tr>
+                                                                                                                                            <?php
+                                                                                                                                            $date_calc = '';
+                                                                                                                                            switch ($value) {
+                                                                                                                                                case 'Annual':
+                                                                                                                                                    $date_calc = '+1 year';
+                                                                                                                                                    break;
+                                                                                                                                                case 'Semiannual':
+                                                                                                                                                    $date_calc = '+6 months';
+                                                                                                                                                    break;
+                                                                                                                                            }
+                                                                                                                                            $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true);
+                                                                                                                                            for ($i = 0; $i < $cuotes; $i++) {
+                                                                                                                                                $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
+                                                                                                                                                ?>
+                                                                                                                                                                                                <tr class="payment-parts-table-row">
+                                                                                                                                                                                                    <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
+                                                                                                                                                                                                    <td class="payment-parts-table-data">
+                                                                                                                                                                                                        <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?>
+                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                    <td class="payment-parts-table-data"><?php echo wc_price($cart_total) ?></td>
+                                                                                                                                                                                                </tr>
+                                                                                                                                                                                                <?php
+                                                                                                                                            }
+                                                                                                                                            ?>
+                                                                                                                                            <tr>
+                                                                                                                                                <th class="payment-parts-table-header text-end" colspan="3">Total</th>
+                                                                                                                                            </tr>
+                                                                                                                                            <tr class="payment-parts-table-row">
+                                                                                                                                                <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes)) ?></td>
+                                                                                                                                            </tr>
+                                                                                                                                        </table>
+                                                                                                                                        <?php
+                    }
                 }
             }
         }
-    }
-    $html = ob_get_clean();
-    echo $html;
-    wp_die();
+        $html = ob_get_clean();
+        echo $html;
+        wp_die();
 }
 
 add_action('wp_ajax_nopriv_reload_button_schoolship', 'reload_button_schoolship');
 add_action('wp_ajax_reload_button_schoolship', 'reload_button_schoolship');
-function reload_button_schoolship() {
+function reload_button_schoolship()
+{
     ob_start();
     global $woocommerce;
     $has_scholarship = false;
@@ -1930,29 +1947,30 @@ function reload_button_schoolship() {
     // Check if the 'name_institute' cookie is NOT set or is empty
     /* if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) { */
     ?>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
-        <?php if ($has_scholarship): ?>
-        <button id="apply-scholarship-btn" type="button" disabled>
-        <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
-        </button>
-        <?php else: ?>
-        <button id="apply-scholarship-btn" type="button">
-        <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
-        </button>
-        <?php endif; ?>
-        </div>
-    <?php
-    /* } */
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
+            <?php if ($has_scholarship): ?>
+                <button id="apply-scholarship-btn" type="button" disabled>
+                <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
+                </button>
+            <?php else: ?>
+                <button id="apply-scholarship-btn" type="button">
+                <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
+                </button>
+            <?php endif; ?>
+            </div>
+        <?php
+        /* } */
 
-    $html = ob_get_clean();
-    echo $html;
-    wp_die();
+        $html = ob_get_clean();
+        echo $html;
+        wp_die();
 }
 
 add_action('wp_ajax_nopriv_apply_scholarship', 'apply_scholarship');
 add_action('wp_ajax_apply_scholarship', 'apply_scholarship');
-function apply_scholarship() {
-    
+function apply_scholarship()
+{
+
     $product_id = $_POST['product_id'] ?? 0;
 
     global $woocommerce;
@@ -1968,14 +1986,14 @@ function apply_scholarship() {
     $coupons = $cart->get_coupons();
 
     // Definir el producto a validar 
-    $discount_value = 0;    
+    $discount_value = 0;
     $product = wc_get_product($product_id);
-    if( $product && !empty($coupons) ){
+    if ($product && !empty($coupons)) {
 
         // Verificar si hay cupones aplicados
-        foreach ( $coupons as $code => $coupon ) {
+        foreach ($coupons as $code => $coupon) {
             // Validar si el cupón es aplicable al producto y si es un descuento porcentual
-            if ( $coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent' ) {
+            if ($coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent') {
                 $discount_value += $coupon->get_amount();
             }
         }
@@ -3407,7 +3425,8 @@ function upload_file_attchment_edusystem($upload_data, $document_name)
     return $attach_id;
 }
 
-function custom_inputs_edusystem($atts) {
+function custom_inputs_edusystem($atts)
+{
     // Define los atributos por defecto.
     // 'page_slug' es el nombre del atributo que esperarás en el shortcode.
     // 'default_page' es el valor que tendrá si el usuario no especifica 'page_slug'.
@@ -3421,7 +3440,7 @@ function custom_inputs_edusystem($atts) {
     $page_to_get = $a['page_slug'];
     $use_form = $a['use_form'] ?? 0;
     $action_loaded = $a['action'];
-    $action = home_url('?action='.$action_loaded);
+    $action = home_url('?action=' . $action_loaded);
 
     // Llama a tu función para obtener los custom inputs filtrados por el atributo
     $custom_inputs_list = get_custom_inputs_page($page_to_get);
@@ -3476,5 +3495,5 @@ add_action('wp_ajax_nopriv_load_product_id_rule', 'load_product_id_rule');
 add_action('wp_ajax_load_product_id_rule', 'load_product_id_rule');
 function load_product_id_rule()
 {
-    
+
 }

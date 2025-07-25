@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   let subprograms_arr = [];
   let grades_country_arr = [];
+  let grades_institute = [];
+  let grades_default = [];
   const grade = document.getElementById("grade");
   const program = document.getElementById("program");
   const not_institute = document.getElementById("institute_id");
@@ -80,13 +82,9 @@ document.addEventListener("DOMContentLoaded", function () {
           });
 
           XHR.onload = () => {
-            if (
-              XHR.status === 200 &&
-              XHR.response &&
-              XHR.response.data &&
-              XHR.response.data.grades
-            ) {
-              let grades = XHR.response.data.grades;
+            if (XHR.status === 200 && XHR.response && XHR.response.data) {
+              grades_default = XHR.response.data.default_grades;
+              grades_institute = XHR.response.data.institute_grades;
 
               // Clear existing options before populating
               while (gradeSelect.options.length > 1) {
@@ -103,34 +101,39 @@ document.addEventListener("DOMContentLoaded", function () {
                   const option = document.createElement("option");
                   option.value = index + 1; // Use index + 1 as value, aligning with program change event
 
-                  // Find the corresponding grade by index
-                  const gradeFromInstitute =
-                    grades && grades[index] ? grades[index] : null; // Explicitly check if 'grades' array exists and then the index
-                  const gradeFromCountry =
-                    grades_country_arr && grades_country_arr[index]
-                      ? grades_country_arr[index]
-                      : null; // Explicitly check if 'grades_country_arr' exists and then the index
-
                   let optionText = "";
 
-                  if (gradeFromInstitute) {
-                    // Use a template literal for cleaner string construction
-                    optionText = gradeFromInstitute.description
-                      ? `${gradeFromInstitute.name} ${gradeFromInstitute.description}`
-                      : gradeFromInstitute.name;
+                  // New priority logic for optionText
+                  if (grades_institute && grades_institute[index]) {
+                    // Priority 1: Use grades_institute
+                    const grade = grades_institute[index];
+                    optionText = grade.description
+                      ? `${grade.name} ${grade.description}`
+                      : grade.name;
+                  } else if (grades_country_arr && grades_country_arr[index]) {
+                    // Priority 2: Use grades_country_arr
+                    const grade = grades_country_arr[index];
+                    // Assuming grades_country_arr elements also have name and description or are just strings
+                    // If it's a string, use it directly. If an object, use name/description.
+                    optionText =
+                      typeof grade === "object" && grade !== null && grade.name
+                        ? grade.description
+                          ? `${grade.name} ${grade.description}`
+                          : grade.name
+                        : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+                  } else if (grades_default && grades_default[index]) {
+                    // Priority 3: Use grades_default
+                    const grade = grades_default[index];
+                    // Assuming grades_default elements also have name and description or are just strings
+                    optionText =
+                      typeof grade === "object" && grade !== null && grade.name
+                        ? grade.description
+                          ? `${grade.name} ${grade.description}`
+                          : grade.name
+                        : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
                   } else {
-                    // Fallback if no corresponding grade from institute is found at this index
+                    // Fallback: If no specific grade is found, use the subprogram name
                     optionText = subprogram.name || "N/A";
-                  }
-
-                  // Concatenate gradeFromCountry only if it's a valid, non-empty string
-                  // Added explicit check for gradeFromCountry being not null before checking type and trim
-                  if (
-                    gradeFromCountry !== null &&
-                    typeof gradeFromCountry === "string" &&
-                    gradeFromCountry.trim() !== ""
-                  ) {
-                    optionText += ` (${gradeFromCountry})`;
                   }
 
                   option.textContent = optionText;
@@ -298,7 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       if (program.selectedIndex != 0) {
-        program.dispatchEvent(new Event("change"));        
+        program.dispatchEvent(new Event("change"));
       }
     });
   }
