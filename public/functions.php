@@ -292,7 +292,6 @@ function load_grades_institute_callback()
     $default_grades = get_grades(); // Siempre obtenemos las calificaciones por defecto
 
     $institute_grades = []; // Inicializamos el array de calificaciones del instituto
-    $has_custom_grades = false; // Bandera para saber si se aplicó alguna personalización
 
     // Mapeamos los nombres de los campos del instituto a los IDs de las calificaciones
     $institute_field_map = [
@@ -304,36 +303,35 @@ function load_grades_institute_callback()
 
     if ($institute) {
         foreach ($default_grades as $grade) {
-            $current_grade = clone $grade; // Clonamos la calificación por defecto
-
-            if (isset($institute_field_map[$current_grade->id])) {
-                $field_name = $institute_field_map[$current_grade->id];
+            if (isset($institute_field_map[$grade->id])) {
+                $field_name = $institute_field_map[$grade->id];
                 $institute_text = $institute->$field_name;
 
-                // Si el texto del instituto no está vacío Y es diferente al nombre por defecto
-                if (!empty($institute_text) && $current_grade->name !== $institute_text) {
-                    $current_grade->name = $institute_text;
-                    $current_grade->description = '';
-                    $has_custom_grades = true; // Marcamos que hubo una personalización
+                // Preparamos las versiones en minúsculas para la comparación
+                $default_grade_name_lower = strtolower($grade->name);
+                $institute_text_lower = strtolower($institute_text);
+
+                // Verificamos si hay una personalización real:
+                // 1. El texto del instituto no está vacío.
+                // 2. El texto del instituto (ignorando mayúsculas/minúsculas) es diferente al nombre por defecto.
+                if (!empty($institute_text) && $default_grade_name_lower !== $institute_text_lower) {
+                    // Si hay una personalización, creamos un nuevo objeto para el instituto
+                    // y lo agregamos al array institute_grades.
+                    $custom_grade = clone $grade; // Clonamos el objeto default
+                    $custom_grade->name = $institute_text; // Aplicamos el nombre personalizado
+                    $custom_grade->description = ''; // La descripción se limpia según tu lógica original
+                    $institute_grades[] = $custom_grade;
                 }
             }
-            $institute_grades[] = $current_grade; // Agregamos la calificación (modificada o no)
         }
-    }
-
-    // Si no hubo ninguna personalización para el instituto (todos los campos estaban vacíos
-    // o eran iguales a los por defecto), entonces institute_grades debería estar vacío.
-    if (!$has_custom_grades) {
-        $institute_grades = [];
     }
 
     wp_send_json_success(array(
         'default_grades' => $default_grades,
-        'institute_grades' => $institute_grades
+        'institute_grades' => $institute_grades // Este array contendrá solo las calificaciones personalizadas o estará vacío
     ));
     exit;
 }
-
 
 function one_time_payment()
 {
