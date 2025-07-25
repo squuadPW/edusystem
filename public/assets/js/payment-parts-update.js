@@ -139,7 +139,15 @@ function payment_table( rule_data ) {
 
                 const amount_cell = document.createElement('td');
                 amount_cell.className = 'payment-parts-table-data';
-                amount_cell.textContent = `$${parseFloat(quote_price).toFixed(2)}`;
+
+                const usdFormatter = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                });
+
+                amount_cell.textContent = usdFormatter.format(parseFloat(quote_price));
                 row.appendChild(amount_cell);
 
             // Añadir fila a la tabla
