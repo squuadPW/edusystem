@@ -1756,7 +1756,6 @@ add_action('wp_ajax_update_price_product_cart_quota_rule', 'update_price_product
 add_action('wp_ajax_nopriv_update_price_product_cart_quota_rule', 'update_price_product_cart_quota_rule');
 function update_price_product_cart_quota_rule()
 {
-
     $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
     $rule_id = isset($_POST['rule_id']) ? intval($_POST['rule_id']) : 0;
 
@@ -1784,12 +1783,42 @@ function update_price_product_cart_quota_rule()
         exit;
     }
 
+    // Get the quotas_quantity
+    $quotas_quantity = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT quotas_quantity
+            FROM {$wpdb->prefix}quota_rules
+            WHERE id = %d",
+            $rule_id
+        )
+    );
+
+    // Get the coupon codes to potentially remove
+    $offer_complete_coupon = get_option('offer_complete');
+    $offer_quote_coupon = get_option('offer_quote');
+
+    // Remove 'offer_complete' coupon if it's applied
+    if (WC()->cart->has_discount($offer_complete_coupon)) {
+        WC()->cart->remove_coupon($offer_complete_coupon);
+    }
+
+    // Remove 'offer_quote' coupon if it's applied
+    if (WC()->cart->has_discount($offer_quote_coupon)) {
+        WC()->cart->remove_coupon($offer_quote_coupon);
+    }
+
+    if ( $quotas_quantity === 1 ) {
+        WC()->cart->apply_coupon($offer_complete_coupon);
+    }
+
+    if ( $quotas_quantity > 1 ) {
+        WC()->cart->apply_coupon($offer_quote_coupon);
+    }
+
     $cart = WC()->cart;
     foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
-
         // Verificar si el ID del producto o el ID de la variación coinciden
         if ($cart_item['product_id'] === $product_id || (isset($cart_item['variation_id']) && $cart_item['variation_id'] === $product_id)) {
-
             $cart_item['data']->set_price($price);
             $cart_item['data']->set_sale_price($price);
 
@@ -1814,7 +1843,6 @@ function update_price_product_cart_quota_rule()
     wp_send_json_error(__('Product not found in cart', 'edusystem'));
     exit;
 }
-
 
 /**
  * Guarda metadatos personalizados para los ítems de la orden durante el proceso de checkout.
