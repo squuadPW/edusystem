@@ -173,6 +173,7 @@ function form_asp_psp($atts)
             'bank_transfer_account' => '',
             'register_psp' => false,
             'hidden_payment_methods' => '',
+            'fixed_fee_inscription' => false,
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black'
         ),
         $atts,
@@ -188,6 +189,7 @@ function form_asp_psp($atts)
     $bank_transfer_account = $atts['bank_transfer_account'];
     $hidden_payment_methods = $atts['hidden_payment_methods'];
     $styles_shortcode = $atts['styles_shortcode'];
+    $fixed_fee_inscription = $atts['fixed_fee_inscription'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
@@ -212,6 +214,7 @@ function student_registration_form($atts)
             'bank_transfer_account' => '',
             'register_psp' => false,
             'hidden_payment_methods' => '',
+            'fixed_fee_inscription' => false,
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black'
         ),
         $atts,
@@ -227,6 +230,7 @@ function student_registration_form($atts)
     $bank_transfer_account = $atts['bank_transfer_account'];
     $hidden_payment_methods = $atts['hidden_payment_methods'];
     $styles_shortcode = $atts['styles_shortcode'];
+    $fixed_fee_inscription = $atts['fixed_fee_inscription'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
@@ -1534,12 +1538,6 @@ function split_payment()
 }
 add_action('woocommerce_review_order_before_payment', 'split_payment');
 add_action('woocommerce_pay_order_before_payment', 'split_payment');
-
-function totals_split($order_id)
-{
-    echo '1uiasdi0;';
-}
-add_action('woocommerce_pay_order_after_totals', 'totals_split');
 
 function payments_parts()
 {

@@ -20,6 +20,7 @@
     <input type="hidden" name="hidden_payment_methods" id="hidden_payment_methods" value="<?= $hidden_payment_methods ?? '' ?>">
     <input type="hidden" name="register_psp" id="register_psp" value="<?= $register_psp ?? '' ?>">
     <input type="hidden" name="bank_transfer_account" id="bank_transfer_account" value="<?= $bank_transfer_account ?? '' ?>">
+    <input type="hidden" name="fixed_fee_inscription" id="fixed_fee_inscription" value="<?= $fixed_fee_inscription ?? '' ?>">
     <input type="hidden" id="product_id_input" name="product_id">
 
     <!-- DATOS DEL ESTUDIANTE -->
