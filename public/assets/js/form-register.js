@@ -966,13 +966,23 @@ if (document.getElementById("birth_date_student")) {
   document
     .getElementById("birth_date_student")
     .addEventListener("change", (e) => {
-      date = e.target.value;
+      let max_age = parseInt(document.getElementById("max_age").value);
+      let limit_age = parseInt(document.getElementById("limit_age").value);
+      let date = e.target.value;
       date = date.split("/");
 
-      start = new Date(date[2], date[0] - 1, date[1]);
-      today = new Date();
-      diff = diff_years(today, start);
-      if (diff >= 18) {
+      const start = new Date(date[2], date[0] - 1, date[1]);
+      const today = new Date();
+      const diff = diff_years(today, start);
+
+      if (diff > limit_age) {
+        alert(`The maximum age is ${limit_age} years old.`);
+        // Reset the input field
+        e.target.value = "";
+        return;
+      }
+
+      if (diff >= max_age) {
         var accessDataTitle = document.getElementById("access_data");
         if (accessDataTitle) {
           accessDataTitle.innerHTML = "Platform access data of student";

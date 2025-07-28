@@ -21,6 +21,8 @@
     <input type="hidden" name="register_psp" id="register_psp" value="<?= $register_psp ?? '' ?>">
     <input type="hidden" name="bank_transfer_account" id="bank_transfer_account" value="<?= $bank_transfer_account ?? '' ?>">
     <input type="hidden" name="fixed_fee_inscription" id="fixed_fee_inscription" value="<?= $fixed_fee_inscription ?? '' ?>">
+    <input type="hidden" name="max_age" id="max_age" value="<?= $max_age ?>">
+    <input type="hidden" name="limit_age" id="limit_age" value="<?= $limit_age ?>">
     <input type="hidden" id="product_id_input" name="product_id">
 
     <!-- DATOS DEL ESTUDIANTE -->
