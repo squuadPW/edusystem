@@ -1793,26 +1793,36 @@ function update_price_product_cart_quota_rule()
         )
     );
 
-    // Get the coupon codes to potentially remove
-    $offer_complete_coupon = get_option('offer_complete');
-    $offer_quote_coupon = get_option('offer_quote');
+    $cookie_name = 'fixed_fee_inscription';
+    $cookie_does_not_exist = !isset($_COOKIE[$cookie_name]);
+    $cookie_exists_and_condition_met = (
+        isset($_COOKIE[$cookie_name]) &&
+        !empty($_COOKIE[$cookie_name]) &&
+        $_COOKIE[$cookie_name] !== 'true'
+    );
 
-    // Remove 'offer_complete' coupon if it's applied
-    if (WC()->cart->has_discount($offer_complete_coupon)) {
-        WC()->cart->remove_coupon($offer_complete_coupon);
-    }
+    if (($cookie_does_not_exist || $cookie_exists_and_condition_met)) {
+        // Get the coupon codes to potentially remove
+        $offer_complete_coupon = get_option('offer_complete');
+        $offer_quote_coupon = get_option('offer_quote');
+        
+        // Remove 'offer_complete' coupon if it's applied
+        if (WC()->cart->has_discount($offer_complete_coupon)) {
+            WC()->cart->remove_coupon($offer_complete_coupon);
+        }
 
-    // Remove 'offer_quote' coupon if it's applied
-    if (WC()->cart->has_discount($offer_quote_coupon)) {
-        WC()->cart->remove_coupon($offer_quote_coupon);
-    }
+        // Remove 'offer_quote' coupon if it's applied
+        if (WC()->cart->has_discount($offer_quote_coupon)) {
+            WC()->cart->remove_coupon($offer_quote_coupon);
+        }
 
-    if ( $quotas_quantity === 1 ) {
-        WC()->cart->apply_coupon($offer_complete_coupon);
-    }
+        if ( $quotas_quantity == 1 ) {
+            WC()->cart->apply_coupon($offer_complete_coupon);
+        }
 
-    if ( $quotas_quantity > 1 ) {
-        WC()->cart->apply_coupon($offer_quote_coupon);
+        if ( $quotas_quantity > 1 ) {
+            WC()->cart->apply_coupon($offer_quote_coupon);
+        }
     }
 
     $cart = WC()->cart;
