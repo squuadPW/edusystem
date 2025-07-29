@@ -1148,7 +1148,7 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
             'wrap' => true,
         ],
         'program' => [
-            'value' => get_name_program($student->program_id),
+            'value' => get_name_program_student($student->id),
             'wrap' => true,
         ],
         'academic_year' => [

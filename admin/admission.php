@@ -439,12 +439,6 @@ class TT_document_review_List_Table extends WP_List_Table
                     return '<label class="text-uppercase">' . strtoupper($item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name']) . '</label>';
                 }
 
-            // case 'program':
-            //     $program = get_name_program($item['program_id']);
-            //     return $program;
-            // case 'access_classroom':
-            //     $status_id = $item['status_id'];
-            //     return $status_id < 2 ? 'No' : 'Yes';
             case 'grade':
                 $grade = get_name_grade($item['grade_id']) . ' (' . $item['academic_period'] . ' - ' . $item['initial_cut'] . ')';
                 return $grade;
@@ -780,7 +774,7 @@ class TT_all_student_List_Table extends WP_List_Table
             case 'email':
                 return $item['email'];
             case 'program':
-                $program = get_name_program($item['program_id']);
+                $program = get_name_program_student($item['id']);
                 return $program;
             case 'grade':
                 $grade = get_name_grade($item['grade_id']);
@@ -1576,7 +1570,7 @@ function generate_document()
 
     $url = ['url' => '', 'image_url' => ''];
     if ($create_certificate_qr) {
-        $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, get_name_program($student->program_id), 1, $student, $emission_date);
+        $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, get_name_program_student($student->id), 1, $student, $emission_date);
     }
 
     wp_send_json(array('url' => $url['url'], 'image_url' => $url['image_url'], 'html' => $document->content, 'header' => $document->header, 'footer' => $document->footer, 'document' => $document));
@@ -1625,7 +1619,7 @@ function get_data_student()
         $documents = get_documents($student->id);
         $data = [];
         $data_documents = [];
-        $program = get_name_program($student->program_id);
+        $program = get_name_program_student($student->id);
         $grade = get_name_grade($student->grade_id);
 
         foreach ($documents as $document) {

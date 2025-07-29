@@ -120,8 +120,11 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
     }
 
     if ($all_student_cookies_set) {
-        $student_id = insert_student($user_id); // Assuming this function exists and works
-        insert_register_documents($student_id, sanitize_text_field(wp_unslash($_COOKIE['initial_grade']))); // Assuming this function exists and works
+        $student_id = insert_student($user_id);
+        insert_register_documents($student_id, sanitize_text_field(wp_unslash($_COOKIE['initial_grade'])));
+        error_log('el student id es ' . $student_id);
+        error_log('el programa es ' . sanitize_text_field(wp_unslash($_COOKIE['program_id'])));
+        insert_register_program($student_id, sanitize_text_field(wp_unslash($_COOKIE['program_id'])));
 
         if (!$order->meta_exists('student_id')) {
             $order->update_meta_data('student_id', $student_id);
@@ -138,7 +141,7 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
             $email_new_student->trigger($student_id);
         }
 
-        insert_data_student($order); // Assuming this function exists and works
+        // insert_data_student($order); // Assuming this function exists and works
 
         if (isset($_COOKIE['is_scholarship']) && !empty($_COOKIE['is_scholarship'])) {
             save_scholarship(); // Assuming this function exists and works

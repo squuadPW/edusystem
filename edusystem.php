@@ -76,8 +76,8 @@ function create_tables()
   dbDelta(
     "CREATE TABLE " . $table_programs_by_student . " (
       `id` INT(11) NOT NULL AUTO_INCREMENT,
-      `program_id` TEXT NOT NULL,
       `student_id` INT(11) NOT NULL,
+      `program_identificator` TEXT NOT NULL,
       `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );
@@ -627,7 +627,7 @@ function create_tables()
       grade_id INT(11) NOT NULL,
       name_institute TEXT NOT NULL,
       institute_id INT(11) NULL,
-      program_id TEXT NOT NULL,
+      program_id TEXT NULL,
       partner_id INT(11) NOT NULL,
       status_id INT(11) NOT NULL,
       condition_student BOOLEAN NOT NULL DEFAULT 1,

@@ -28,7 +28,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
                 </tr>
                 <tr>
                     <th class="td" scope="row" colspan="2" style="text-align:left;" ><?= __('Program','edusystem'); ?></th>
-                    <td class="td" style="text-align:right;"><?= get_name_program($student->program_id); ?></td>
+                    <td class="td" style="text-align:right;"><?= get_name_program_student($student->id); ?></td>
                 </tr>
                 <tr>
                     <th class="td" scope="row" colspan="2" style="text-align:left;" ><?= __('Grade','edusystem'); ?></th>
