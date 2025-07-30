@@ -607,6 +607,15 @@ function get_program_details($id)
     return $program;
 }
 
+function get_program_details_by_identificator($identificator)
+{
+    global $wpdb;
+    $table_programs = $wpdb->prefix . 'programs';
+
+    $program = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE id={$identificator}");
+    return $program;
+}
+
 /**
  * Obtiene las reglas de cuotas asociadas a un programa específico
  * Realiza una consulta a la tabla de reglas de cuotas (quota_rules)

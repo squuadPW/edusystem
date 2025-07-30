@@ -2187,7 +2187,7 @@ class TT_All_Payment_Plans_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'identificator' => __('Identificator', 'edusystem'),
+            'program' => __('Program', 'edusystem'),
             'name' => __('Name', 'edusystem'),
             'status' => __('Status', 'edusystem'),
             'price' => __('Price', 'edusystem'),
@@ -2216,9 +2216,10 @@ class TT_All_Payment_Plans_List_Table extends WP_List_Table
 
         if ($programs) {
             foreach ($programs as $pensum) {
+                $program = get_program_details_by_identificator($pensum['program_identificator']);
                 array_push($programs_array, [
                     'id' => $pensum['id'],
-                    'identificator' => $pensum['identificator'],
+                    'program' => $program->name,
                     'status' => $pensum['is_active'] ? 'Active' : 'Inactive',
                     'name' => $pensum['name'],
                     'price' => $pensum['total_price'],

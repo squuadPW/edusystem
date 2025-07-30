@@ -70,15 +70,15 @@ function create_tables()
   $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
   $table_careers_by_program = $wpdb->prefix . 'careers_by_program';
   $table_mentions_by_carrer = $wpdb->prefix . 'mentions_by_carrer';
+  $table_student_program = $wpdb->prefix . 'student_program';
 
   // Para todas las tablas: Mueve la llamada a dbDelta() FUERA del if de existencia de tabla.
   // Esto asegura que dbDelta() siempre compare la estructura actual con la deseada
   // y añada columnas si faltan, o cree la tabla si no existe.
 
   dbDelta(
-    "CREATE TABLE " . $table_mentions_by_carrer . " (
+    "CREATE TABLE " . $table_student_program . " (
       `id` INT(11) NOT NULL AUTO_INCREMENT,
-      `carrer_identificator` TEXT NOT NULL,
       `identificator` TEXT NOT NULL,
       `name` TEXT NOT NULL,
       `description` TEXT NOT NULL,
@@ -95,6 +95,34 @@ function create_tables()
       `description` TEXT NOT NULL,
       `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
+  );
+
+  dbDelta(
+    "CREATE TABLE " . $table_mentions_by_carrer . " (
+      `id` INT(11) NOT NULL AUTO_INCREMENT,
+      `carrer_identificator` TEXT NOT NULL,
+      `identificator` TEXT NOT NULL,
+      `name` TEXT NOT NULL,
+      `description` TEXT NOT NULL,
+      `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id))$charset_collate;"
+  );
+
+  // table_programs (PLANES DE PAGOS/PAYMENT PLANS)
+  dbDelta(
+    "CREATE TABLE $table_programs (
+      id INT(11) NOT NULL AUTO_INCREMENT,
+      `is_active` tinyint(1) DEFAULT 1,
+      program_identificator TEXT NOT NULL,
+      `name` TEXT NOT NULL,
+      `description` TEXT NOT NULL,
+      total_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+      product_id INT(11) NULL DEFAULT NULL,
+      subprogram JSON NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (id)
+  )$charset_collate;"
   );
 
   dbDelta(
@@ -187,23 +215,6 @@ function create_tables()
       scholarship_id INT(11) NOT NULL,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
-  );
-
-  // table_programs
-  dbDelta(
-    "CREATE TABLE $table_programs (
-              id INT(11) NOT NULL AUTO_INCREMENT,
-              `is_active` tinyint(1) DEFAULT 1,
-              identificator TEXT NOT NULL,
-              `name` TEXT NOT NULL,
-              `description` TEXT NOT NULL,
-              total_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-              product_id INT(11) NULL DEFAULT NULL,
-              subprogram JSON NULL,
-              created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-              updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-              PRIMARY KEY (id)
-          )$charset_collate;"
   );
 
   // table_quota_rules
