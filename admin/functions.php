@@ -291,13 +291,13 @@ function aes_scripts_admin()
         ]);
     }
 
-    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_program_content') {
-        wp_enqueue_script('programs', plugins_url('edusystem') . '/admin/assets/js/programs.js', array('jquery'), $version, true);
+    // if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_program_content') {
+    //     wp_enqueue_script('programs', plugins_url('edusystem') . '/admin/assets/js/programs.js', array('jquery'), $version, true);
 
-        wp_localize_script('programs', 'ajax_object', [
-            'url_ajax' => admin_url('admin-ajax.php')
-        ]);
-    }
+    //     wp_localize_script('programs', 'ajax_object', [
+    //         'url_ajax' => admin_url('admin-ajax.php')
+    //     ]);
+    // }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_payments_plans_content') {
         wp_enqueue_script('programs', plugins_url('edusystem') . '/admin/assets/js/programs.js', array('jquery'), $version, true);
