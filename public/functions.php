@@ -804,6 +804,7 @@ function status_changed_payment($order_id, $status_transition_from, $current_sta
     $customer_id = $order->get_customer_id();
     $status_register = get_user_meta($customer_id, 'status_register', true);
 
+
     // Limpiar cookies solo para estados válidos
     // if (!in_array($current_status, ['failed', 'pending'])) {
     //     clear_all_cookies();
@@ -1087,10 +1088,8 @@ function process_program_payments(WC_Order $order, int $order_id): void
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
     $student_id = $order->get_meta('student_id');
-
-    if (empty($student_id)) {
-        return; // Salir si no hay ID de estudiante, ya que es un dato crítico.
-    }
+    
+    if (empty($student_id)) return; // Salir si no hay ID de estudiante, ya que es un dato crítico.
 
     $student_data = get_student_detail($student_id);
 
@@ -1119,8 +1118,8 @@ function process_program_payments(WC_Order $order, int $order_id): void
         }
     }
 
-    $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca.
-
+    $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca. 
+    
     foreach ($order->get_items() as $item_id => $item) {
         $product = $item->get_product();
 
@@ -1266,8 +1265,8 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
             $data = [
                 'status_id' => 0,
-                'order_id' => ($i + 1) == 1 ? $order_id : null,
                 'student_id' => $student_id,
+                'order_id' => ($i + 1) == 1 ? $order_id : null,
                 'product_id' => $product_id,
                 'variation_id' => $variation_id,
                 'manager_id' => ($i + 1) == 1 ? $manager_user_id : null,
@@ -1286,7 +1285,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
                 'date_next_payment' => $next_payment_date,
             ];
 
-            $wpdb->insert($table_student_payment, $data);
+            $result = $wpdb->insert($table_student_payment, $data);
         }
 
     }
@@ -1445,61 +1444,7 @@ function get_student_files_for_api($student_id)
     return $files_to_send;
 }
 
-function insert_data_student($order)
-{
 
-    if (isset($_COOKIE['institute_id']) && !empty($_COOKIE['institute_id'])) {
-
-        $institute = get_institute_details($_COOKIE['institute_id']);
-
-        $data_student = [
-            'birth_date' => $_COOKIE['birth_date'],
-            'gender' => $_COOKIE['gender'],
-            'ethnicity' => $_COOKIE['ethnicity'],
-            'name_student' => $_COOKIE['name_student'],
-            'middle_name_student' => $_COOKIE['middle_name_student'],
-            'last_name_student' => $_COOKIE['last_name_student'],
-            'middle_last_name_student' => $_COOKIE['middle_last_name_student'],
-            'phone_student' => $_COOKIE['phone_student'],
-            'email_student' => $_COOKIE['email_student'],
-            'initial_grade' => get_name_grade($_COOKIE['initial_grade']),
-            'program' => get_name_program($_COOKIE['program_id']),
-            'name_institute' => strtoupper($institute->name),
-            'country' => get_name_country($_POST['billing_country']),
-            'state' => $_POST['billing_city'],
-            'parent_name' => $_POST['agent_name'],
-            'parent_last_name' => $_POST['agent_last_name'],
-            'parent_email' => $_POST['email_partner'],
-            'parent_number' => $_POST['number_partner'],
-        ];
-
-    } else {
-
-        $data_student = [
-            'birth_date' => $_COOKIE['birth_date'],
-            'gender' => $_COOKIE['gender'],
-            'ethnicity' => $_COOKIE['ethnicity'],
-            'name_student' => $_COOKIE['name_student'],
-            'middle_name_student' => $_COOKIE['middle_name_student'],
-            'last_name_student' => $_COOKIE['last_name_student'],
-            'middle_last_name_student' => $_COOKIE['middle_last_name_student'],
-            'phone_student' => $_COOKIE['phone_student'],
-            'email_student' => $_COOKIE['email_student'],
-            'initial_grade' => get_name_grade($_COOKIE['initial_grade']),
-            'program' => get_name_program($_COOKIE['program_id']),
-            'name_institute' => strtoupper($_COOKIE['name_institute']),
-            'country' => get_name_country($_POST['billing_country']),
-            'state' => $_POST['billing_city'],
-            'parent_name' => $_POST['agent_name'],
-            'parent_last_name' => $_POST['agent_last_name'],
-            'parent_email' => $_POST['email_partner'],
-            'parent_number' => $_POST['number_partner'],
-        ];
-    }
-
-    $order->update_meta_data('student_data', $data_student);
-    $order->save();
-}
 
 function split_payment()
 {
