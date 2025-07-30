@@ -7,7 +7,7 @@ function add_admin_form_student_program_content()
             global $wpdb;
             $program_id = $_GET['program_id'];
             $program = get_program_details($program_id);
-            include(plugin_dir_path(__FILE__) . 'templates/program-details.php');
+            include(plugin_dir_path(__FILE__) . 'templates/student-program-details.php');
 
         } else if ($_GET['section_tab'] == 'quotas_rules_programs') {
 
@@ -234,7 +234,7 @@ function add_admin_form_student_program_content()
             }
             
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
-            wp_redirect( admin_url( 'admin.php?page=add_admin_form_program_content&section_tab=program_details&program_id='.$program_id ) );
+            wp_redirect( admin_url( 'admin.php?page=add_admin_form_student_program_content&section_tab=program_details&program_id='.$program_id ) );
             exit;
 
         } else if ( $_GET['action'] == 'save_quotas_rules') {
@@ -296,7 +296,7 @@ function add_admin_form_student_program_content()
 
             } else {
                 setcookie('message-error', __('Identifier not found', 'edusystem'), time() + 10, '/');
-                wp_redirect(admin_url("admin.php?page=add_admin_form_program_content&section_tab=program_details"));
+                wp_redirect(admin_url("admin.php?page=add_admin_form_student_program_content&section_tab=program_details"));
             }
 
             exit;
@@ -429,9 +429,9 @@ function add_admin_form_student_program_content()
             exit;
 
         } else {
-            $list_program = new TT_All_Program_List_Table;
+            $list_program = new TT_All_Student_Program_List_Table;
             $list_program->prepare_items();
-            include(plugin_dir_path(__FILE__) . 'templates/list-program.php');
+            include(plugin_dir_path(__FILE__) . 'templates/list-student-program.php');
 
             // modal de eleiminar un programa
             include(plugin_dir_path(__FILE__).'/templates/modal-delete-program.php');
@@ -464,7 +464,7 @@ class TT_All_Student_Program_List_Table extends WP_List_Table
         switch ($column_name) {
             case 'view_details':
                 $buttons = '';
-                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_program_content&section_tab=program_details&program_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_student_program_content&section_tab=program_details&program_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
                 $buttons .= "<a class='button button-danger' data-program_id='".$item['id']."' onclick='modal_delete_program_js ( this )' ><span class='dashicons dashicons-trash'></span></a>";
                 return $buttons;
             default:
