@@ -20,7 +20,7 @@ add_filter( 'woocommerce_new_customer_data', 'filter_woocommerce_new_customer_da
 
 add_action('woocommerce_order_status_changed', 'crear_y_loguear_usuario_si_pago_exitoso_optimizado', 9, 4);
 function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_status, $new_status, $order) {
-    $valid_statuses = ['on-hold', 'processing', 'completed'];
+    $valid_statuses = ['on-hold', 'processing', 'completed', 'split-payment'];
 
     // Exit if the new status is not one of the valid statuses
     if (!in_array($new_status, $valid_statuses)) {
@@ -88,6 +88,7 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
     update_user_meta($user_id, 'billing_postcode', $order->get_billing_postcode());
     update_user_meta($user_id, 'billing_phone', $order->get_billing_phone());
     update_user_meta($user_id, 'billing_address_1', $order->get_billing_address_1());
+    update_user_meta($user_id, 'pay_application_password', true);
 
     // User metadata from cookies (grouped for readability)
     $cookie_meta_map = [

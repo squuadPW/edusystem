@@ -1531,18 +1531,18 @@ function insert_data_student($order)
 
 function split_payment()
 {
-    // $cart = WC()->cart;
+    $cart = WC()->cart;
 
-    // if (!$cart || $cart->is_empty()) {
-    //     // Carrito vacío
-    //     include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
-    //     return;
-    // }
+    if (!$cart || $cart->is_empty()) {
+        // Carrito vacío
+        include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
+        return;
+    }
 
-    // $total = $cart->total;
-    // if ($total > 0) {
-    //     include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
-    // }
+    $total = $cart->total;
+    if ($total > 0) {
+        include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
+    }
 }
 add_action('woocommerce_review_order_before_payment', 'split_payment');
 add_action('woocommerce_pay_order_before_payment', 'split_payment');
@@ -2497,7 +2497,7 @@ function verificar_acciones_mi_cuenta_optimizado()
  */
 function _mi_cuenta_handle_split_payments($user_id)
 {
-    $pending_orders = wc_get_orders(['status' => 'pending', 'customer_id' => $user_id, 'limit' => 1]);
+    $pending_orders = wc_get_orders(['status' => 'split-payment', 'customer_id' => $user_id, 'limit' => 1]);
 
     if (empty($pending_orders)) {
         return;
@@ -2968,148 +2968,164 @@ function yaycommerce_refresh_checkout_on_payment_methods_change()
    ");
 }
 
-function loadFeesSplit()
-{
-    global $current_user, $wpdb;
-    $orders = wc_get_orders(array(
-        'status' => 'pending',
-        'customer_id' => $current_user->ID,
-    ));
+/**
+ * Calcula y aplica tarifas de pago dinámicamente al carrito de WooCommerce o a un pedido existente.
+ *
+ * Esta función maneja la lógica para aplicar tarifas basadas en el método de pago seleccionado,
+ * tanto en la página del carrito/checkout como en una página de pago de pedido dividido.
+ *
+ * @return void Envía una respuesta JSON con la tarifa calculada y el total pendiente/del carrito.
+ */
+function loadFeesSplit() {
+    // Verificar si es una solicitud AJAX y si el nonce es válido para mayor seguridad.
+    // Aunque no está en la función original, es una buena práctica para funciones AJAX.
+    // if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+    //     wp_die( 'Acceso directo no permitido.' );
+    // }
+    // if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'your_custom_nonce_action' ) ) {
+    //     wp_die( 'Security check failed.' );
+    // }
 
-    if (count($orders) > 0) {
-        $order_id = $orders[0]->get_id(); // Get the first pending order ID
-        $order = wc_get_order($order_id);
+    $chosen_gateway = isset( $_POST['option'] ) ? sanitize_text_field( $_POST['option'] ) : '';
+    $payment_page   = isset( $_POST['payment_page'] ) ? (int) $_POST['payment_page'] : 0;
+    $fee            = 0;
+    $order          = null;
+    $cart           = WC()->cart;
+
+    // --- Manejo de Usuario y Pedido ---
+    if ( is_user_logged_in() ) {
+        $current_user_id = get_current_user_id();
+        $orders = wc_get_orders( array(
+            'status'      => 'wc-split-payment', // Asumiendo que 'wc-split-payment' es un estado de pedido personalizado.
+            'customer_id' => $current_user_id,
+            'limit'       => 1,
+            'orderby'     => 'date',
+            'order'       => 'DESC', // Obtener el pedido más reciente si hay varios
+        ) );
+
+        if ( ! empty( $orders ) ) {
+            $order = $orders[0];
+        }
+    } else {
+        // En caso de que el usuario no esté logueado y se acceda a esta función,
+        // puedes manejarlo aquí, por ejemplo, redirigiendo o mostrando un error.
+        // Para este contexto, simplemente no habrá un objeto $order.
     }
 
-    $cart = WC()->cart;
-    $chosen_gateway = $_POST['option'];
-    $payment_page = $_POST['payment_page'];
-    $fee = 0;
+    // --- Lógica para omitir la aplicación de tarifas basada en la cookie ---
+    if ( isset( $_COOKIE['from_webinar'] ) && ! empty( $_COOKIE['from_webinar'] ) ) {
+        // Si la cookie está presente y no vacía, no aplicamos ninguna tarifa.
+        wp_send_json( array(
+            'fee'     => (float) number_format( $fee, 2 ),
+            'pending' => $order ? (float) $order->get_meta( 'pending_payment' ) : ( $cart ? (float) $cart->get_total( false ) : 0 ),
+        ) );
+        return;
+    }
 
-    if (!isset($_COOKIE['from_webinar']) || empty($_COOKIE['from_webinar'])) {
+    // --- Eliminación de tarifas existentes del pedido si aplica ---
+    // Esto asegura que no se dupliquen las tarifas si la función se llama varias veces.
+    if ( $order ) {
+        $fees_to_remove = ['Bank Transfer Fee', 'Credit Card Fee', 'PayPal Fee'];
+        $order_modified = false;
 
-        if ($order) {
-            foreach ($order->get_items('fee') as $item_id => $item_fee) {
-                if ($item_fee->get_name() === 'Bank Transfer Fee' || $item_fee->get_name() === 'Credit Card Fee' || $item_fee->get_name() === 'PayPal Fee') {
-                    $order->remove_item($item_id);
-                }
+        foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
+            if ( in_array( $item_fee->get_name(), $fees_to_remove ) ) {
+                $order->remove_item( $item_id );
+                $order_modified = true;
             }
+        }
 
+        if ( $order_modified ) {
             $order->calculate_totals();
             $order->save();
         }
+    }
 
-        if ($chosen_gateway == 'aes_payment') {
-            $fee = 35;
-            if ($payment_page == 0) {
-                $cart->add_fee('Bank Transfer Fee', $fee);
-            } else {
-                $cart_subtotal = (float) $order->get_meta('pending_payment');
-                $is_total = false;
-                if (!$cart_subtotal || $cart_subtotal == 0) {
-                    $is_total = true;
-                    $cart_subtotal = $order->get_subtotal();
-                }
-
-                if ($is_total) {
-                    $split_payment = $order->get_meta('split_payment');
-                    if ($split_payment != 1) {
-                        $item_fee_payment_method = new WC_Order_Item_Fee();
-                        $item_fee_payment_method->set_name("Bank Transfer Fee");
-                        $item_fee_payment_method->set_amount($fee);
-                        $item_fee_payment_method->set_tax_class('');
-                        $item_fee_payment_method->set_tax_status('none');
-                        $item_fee_payment_method->set_total($fee);
-                        $order->add_item($item_fee_payment_method);
-                        $order->calculate_totals();
-                        $order->save();
-                    }
-                }
-            }
+    // --- Determinación de la base para el cálculo de la tarifa ---
+    $base_amount_for_fee = 0;
+    if ( $payment_page == 0 ) {
+        // Calculando para el carrito
+        $base_amount_for_fee = $cart->get_subtotal() - $cart->get_cart_discount_total();
+    } elseif ( $order ) {
+        // Calculando para un pedido existente (pago dividido)
+        $pending_payment = (float) $order->get_meta( 'pending_payment' );
+        if ( $pending_payment > 0 ) {
+            $base_amount_for_fee = $pending_payment;
+        } else {
+            // Si no hay 'pending_payment' o es 0, usamos el subtotal del pedido
+            $base_amount_for_fee = $order->get_subtotal();
         }
+    }
 
-        if ($chosen_gateway == 'woo_squuad_stripe') {
-            if ($payment_page == 0) {
-                $stripe_fee_percentage = 4.5; // 4.5% fee
-                $cart_subtotal = $cart->get_subtotal();
-                $discount = $cart->get_cart_discount_total();
-                $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
-                $fee = $stripe_fee_amount;
+    // --- Lógica de aplicación de tarifas basada en el gateway ---
+    $fee_percentage = 0;
+    $fee_name       = '';
+    $is_fixed_fee   = false;
 
-                // Solo agregar fee si es mayor que 0
-                if ($stripe_fee_amount > 0) {
-                    $cart->add_fee('Credit Card Fee', $stripe_fee_amount);
-                }
-            } else {
-                $stripe_fee_percentage = 4.5; // 4.5% fee
-                $cart_subtotal = (float) $order->get_meta('pending_payment');
-                $is_total = false;
-                if (!$cart_subtotal || $cart_subtotal == 0) {
-                    $is_total = true;
-                    $cart_subtotal = $order->get_subtotal();
-                }
-                $stripe_fee_amount = ($cart_subtotal / 100) * $stripe_fee_percentage;
-                $fee = $stripe_fee_amount;
+    switch ( $chosen_gateway ) {
+        case 'aes_payment':
+            $fee            = 35; // Cuota fija
+            $fee_name       = 'Bank Transfer Fee';
+            $is_fixed_fee   = true;
+            break;
+        case 'woo_squuad_stripe':
+            $fee_percentage = 4.5;
+            $fee_name       = 'Credit Card Fee';
+            break;
+        case 'ppcp-gateway':
+            $fee_percentage = 4.5;
+            $fee_name       = 'PayPal Fee';
+            break;
+        default:
+            // No se aplica ninguna tarifa si el gateway no es reconocido
+            break;
+    }
 
-                if ($is_total) {
-                    $split_payment = $order->get_meta('split_payment');
-                    if ($split_payment != 1) {
-                        $item_fee_payment_method = new WC_Order_Item_Fee();
-                        $item_fee_payment_method->set_name("Credit Card Fee");
-                        $item_fee_payment_method->set_amount($fee);
-                        $item_fee_payment_method->set_tax_class('');
-                        $item_fee_payment_method->set_tax_status('none');
-                        $item_fee_payment_method->set_total($fee);
-                        $order->add_item($item_fee_payment_method);
-                        $order->calculate_totals();
-                        $order->save();
-                    }
-                }
-            }
-        }
+    if ( $is_fixed_fee ) {
+        // La tarifa ya está establecida en $fee para pagos fijos.
+    } elseif ( $fee_percentage > 0 && $base_amount_for_fee > 0 ) {
+        $fee = ( $base_amount_for_fee / 100 ) * $fee_percentage;
+    }
 
-        if ($chosen_gateway == 'ppcp-gateway') {
-            if ($payment_page == 0) {
-                $stripe_fee_percentage = 4.5; // 4.5% fee
-                $cart_subtotal = $cart->get_subtotal();
-                $discount = $cart->get_cart_discount_total();
-                $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
-                $fee = $stripe_fee_amount;
-
-                // Solo agregar fee si es mayor que 0
-                if ($stripe_fee_amount > 0) {
-                    $cart->add_fee('PayPal Fee', $stripe_fee_amount);
-                }
-            } else {
-                $stripe_fee_percentage = 4.5; // 4.5% fee
-                $cart_subtotal = (float) $order->get_meta('pending_payment');
-                $is_total = false;
-                if (!$cart_subtotal || $cart_subtotal == 0) {
-                    $is_total = true;
-                    $cart_subtotal = $order->get_subtotal();
-                }
-                $stripe_fee_amount = ($cart_subtotal / 100) * $stripe_fee_percentage;
-                $fee = $stripe_fee_amount;
-
-                if ($is_total) {
-                    $split_payment = $order->get_meta('split_payment');
-                    if ($split_payment != 1) {
-                        $item_fee_payment_method = new WC_Order_Item_Fee();
-                        $item_fee_payment_method->set_name("PayPal Fee");
-                        $item_fee_payment_method->set_amount($fee);
-                        $item_fee_payment_method->set_tax_class('');
-                        $item_fee_payment_method->set_tax_status('none');
-                        $item_fee_payment_method->set_total($fee);
-                        $order->add_item($item_fee_payment_method);
-                        $order->calculate_totals();
-                        $order->save();
-                    }
-                }
+    // --- Aplicación de la tarifa al carrito o al pedido ---
+    if ( $fee > 0 && ! empty( $fee_name ) ) {
+        if ( $payment_page == 0 ) {
+            // Aplicar al carrito de WooCommerce
+            $cart->add_fee( $fee_name, $fee );
+        } elseif ( $order ) {
+            // Aplicar al pedido si no es un pago dividido y la tarifa debe ser aplicada
+            $split_payment_meta = $order->get_meta('split_payment');
+            // La lógica original solo agregaba la tarifa si 'split_payment' != 1.
+            // Asegúrate de que esta lógica sea la deseada.
+            if ( $split_payment_meta != 1 ) {
+                $item_fee_payment_method = new WC_Order_Item_Fee();
+                $item_fee_payment_method->set_name( $fee_name );
+                $item_fee_payment_method->set_amount( $fee );
+                $item_fee_payment_method->set_tax_class( '' );
+                $item_fee_payment_method->set_tax_status( 'none' );
+                $item_fee_payment_method->set_total( $fee ); // total debe ser igual a amount para tarifas sin impuestos
+                $order->add_item( $item_fee_payment_method );
+                $order->calculate_totals();
+                $order->save();
             }
         }
     }
 
-    wp_send_json(array('fee' => (float) number_format($fee, 2), 'pending' => isset($order) ? (float) $order->get_meta('pending_payment') : 0));
+    // --- Respuesta JSON ---
+    $pending_total = 0;
+    if ( $order ) {
+        $pending_total = (float) $order->get_meta( 'pending_payment' );
+        if ( $pending_total === 0.0 && $order->get_total() > 0 ) { // Si pending_payment es 0, usamos el total del pedido si no está vacío
+            $pending_total = (float) $order->get_total();
+        }
+    } elseif ( $cart ) {
+        $pending_total = (float) $cart->get_total( false );
+    }
+
+    wp_send_json( array(
+        'fee'     => (float) number_format( $fee, 2 ),
+        'pending' => $pending_total,
+    ) );
 }
 
 add_action('wp_ajax_nopriv_load_cart_for_split', 'loadFeesSplit');
