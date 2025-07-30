@@ -826,7 +826,6 @@ function insert_register_program($student_id, $program_identificator)
 {
     global $wpdb;
     $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
-    error_log($table_programs_by_student);
     $wpdb->insert($table_programs_by_student, [
         'student_id' => $student_id,
         'program_identificator' => $program_identificator

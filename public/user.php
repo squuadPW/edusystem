@@ -57,7 +57,6 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
     // Handle user creation errors
     if (is_wp_error($user_id)) {
         // Log the error for debugging purposes
-        error_log('Error creating user for order ' . $order_id . ': ' . $user_id->get_error_message());
         return;
     }
 
@@ -122,8 +121,6 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
     if ($all_student_cookies_set) {
         $student_id = insert_student($user_id);
         insert_register_documents($student_id, sanitize_text_field(wp_unslash($_COOKIE['initial_grade'])));
-        error_log('el student id es ' . $student_id);
-        error_log('el programa es ' . sanitize_text_field(wp_unslash($_COOKIE['program_id'])));
         insert_register_program($student_id, sanitize_text_field(wp_unslash($_COOKIE['program_id'])));
 
         if (!$order->meta_exists('student_id')) {

@@ -298,6 +298,14 @@ function aes_scripts_admin()
         ]);
     }
 
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_payments_plans_content') {
+        wp_enqueue_script('programs', plugins_url('edusystem') . '/admin/assets/js/programs.js', array('jquery'), $version, true);
+
+        wp_localize_script('programs', 'ajax_object', [
+            'url_ajax' => admin_url('admin-ajax.php')
+        ]);
+    }
+
 }
 
 add_action('admin_enqueue_scripts', 'aes_scripts_admin', 3);
@@ -434,6 +442,10 @@ function add_custom_admin_page()
             5
         );
 
+        // Subpáginas
+        add_submenu_page('add_admin_form_payments_content', __('Payments', 'edusystem'), __('Payments', 'edusystem'), 'manager_payments_aes', 'add_admin_form_payments_content', 'add_admin_form_payments_content', 10);
+        add_submenu_page('add_admin_form_payments_content', __('Payment Plans', 'edusystem'), __('Payment Plans', 'edusystem'), 'manager_payment_plans', 'add_admin_form_payments_plans_content', 'add_admin_form_payments_content', 10);
+
         add_menu_page(
             __('Staff', 'edusystem'),
             __('Staff', 'edusystem'),
@@ -542,6 +554,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_accounts_receivables_aes');
     $role->add_cap('manager_documents_aes');
     $role->add_cap('manager_payments_aes');
+    $role->add_cap('manager_payment_plans');
     $role->add_cap('manager_alliances_aes');
     $role->add_cap('manager_institutes_aes');
     $role->add_cap('manager_moodle_aes');
