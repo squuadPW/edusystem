@@ -2497,7 +2497,7 @@ function verificar_acciones_mi_cuenta_optimizado()
  */
 function _mi_cuenta_handle_split_payments($user_id)
 {
-    $pending_orders = wc_get_orders(['status' => 'pending', 'customer_id' => $user_id, 'limit' => 1]);
+    $pending_orders = wc_get_orders(['status' => 'split-payment', 'customer_id' => $user_id, 'limit' => 1]);
 
     if (empty($pending_orders)) {
         return;
@@ -2972,7 +2972,7 @@ function loadFeesSplit()
 {
     global $current_user, $wpdb;
     $orders = wc_get_orders(array(
-        'status' => 'pending',
+        'status' => 'wc-split-payment',
         'customer_id' => $current_user->ID,
     ));
 
