@@ -162,7 +162,7 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
 
     // Log the user in automatically
 
-    if( !is_admin() ) {
+    if( !is_admin() && ( is_checkout() /* || is_order_received_page() */ ) ) {
         wp_set_current_user($user_id);
         wp_set_auth_cookie($user_id, true);
     }
