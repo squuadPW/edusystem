@@ -32,6 +32,7 @@ require plugin_dir_path(__FILE__) . 'academic-offers.php';
 require plugin_dir_path(__FILE__) . 'requests.php';
 require plugin_dir_path(__FILE__) . 'pensum.php';
 require plugin_dir_path(__FILE__) . 'program.php';
+require plugin_dir_path(__FILE__) . 'student-program.php';
 require plugin_dir_path(__FILE__) . 'student-graduation.php';
 require plugin_dir_path(__FILE__) . 'feed.php';
 require plugin_dir_path(__FILE__) . 'auto-inscription.php';
@@ -427,7 +428,7 @@ function add_custom_admin_page()
         add_submenu_page('add_admin_form_academic_content', __('Scholarship students', 'edusystem'), __('Scholarship students', 'edusystem'), 'manager_scholarship_aes', 'add_admin_form_scholarships_content', 'add_admin_form_scholarships_content', 10);
         add_submenu_page('add_admin_form_academic_content', __('Available scholarships', 'edusystem'), __('Available scholarships', 'edusystem'), 'manager_availables_scholarship_aes', 'add_admin_form_available_scholarships_content', 'add_admin_form_available_scholarships_content', 10);
         add_submenu_page('add_admin_form_academic_content', __('Pensum', 'edusystem'), __('Pensum', 'edusystem'), 'manager_pensums', 'add_admin_form_pensum_content', 'add_admin_form_pensum_content', 10);
-        add_submenu_page('add_admin_form_academic_content', __('Program', 'edusystem'), __('Program', 'edusystem'), 'manager_programs', 'add_admin_form_program_content', 'add_admin_form_program_content', 10);
+        add_submenu_page('add_admin_form_academic_content', __('Program', 'edusystem'), __('Program', 'edusystem'), 'manager_programs', 'add_admin_form_student_program_content', 'add_admin_form_student_program_content', 10);
         add_submenu_page('add_admin_form_academic_content', __('School subjects', 'edusystem'), __('School subjects', 'edusystem'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
         add_submenu_page('add_admin_form_academic_content', __('Student banners', 'edusystem'), __('Student banners', 'edusystem'), 'manager_feed', 'add_admin_form_feed_content', 'add_admin_form_feed_content', 10);
         remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
