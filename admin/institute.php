@@ -254,7 +254,7 @@ function add_admin_institutes_content()
             }
 
             $wpdb->delete($table_institutes, ['id' => $institute_id]);
-            setcookie('message-delete', $data_institute->name, time() + 3600, '/');
+            setcookie('message', $data_institute->name, time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_institutes_content&section_tab=all_institutes'));
             exit;
         }

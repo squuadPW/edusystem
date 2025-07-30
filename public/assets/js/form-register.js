@@ -1,11 +1,40 @@
 document.addEventListener("DOMContentLoaded", function () {
   let subprograms_arr = [];
+  let grades_country_arr = [];
+  let grades_institute = [];
+  let grades_default = [];
   const grade = document.getElementById("grade");
   const program = document.getElementById("program");
   const not_institute = document.getElementById("institute_id");
   const not_institute_others = document.getElementById("institute_id_others");
   const productIdInput = document.getElementById("product_id_input");
   const registerPspInput = document.getElementById("register_psp");
+
+  loadGradesDefault();
+  function loadGradesDefault() {
+    const XHR = new XMLHttpRequest();
+    XHR.open(
+      "POST",
+      `${ajax_object.ajax_url}?action=load_grades_institute`,
+      true
+    );
+    XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    XHR.responseType = "json";
+
+    const params = new URLSearchParams({
+      action: "load_grades_institute",
+      institute_id: null,
+    });
+
+    XHR.onload = () => {
+      if (XHR.status === 200 && XHR.response && XHR.response.data) {
+        grades_default = XHR.response.data.default_grades;
+        // grades_institute = XHR.response.data.institute_grades;
+      }
+    };
+
+    XHR.send(params.toString());
+  }
 
   if (document.getElementById("birth_date")) {
     flatpickr(document.getElementById("birth_date"), {
@@ -41,8 +70,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
           subprograms_arr.forEach((subprogram, index) => {
             const option = document.createElement("option");
-            option.value = index + 1;
-            option.textContent = subprogram.name || "N/A";
+            option.value = index + 1; // Use index + 1 as value, aligning with program change event
+
+            let optionText = "";
+
+            // New priority logic for optionText
+            if (grades_institute && grades_institute[index]) {
+              // Priority 1: Use grades_institute
+              const grade = grades_institute[index];
+              optionText = grade.description
+                ? `${grade.name} ${grade.description}`
+                : grade.name;
+            } else if (grades_country_arr && grades_country_arr[index]) {
+              // Priority 2: Use grades_country_arr
+              const grade = grades_country_arr[index];
+              // Assuming grades_country_arr elements also have name and description or are just strings
+              // If it's a string, use it directly. If an object, use name/description.
+              optionText =
+                typeof grade === "object" && grade !== null && grade.name
+                  ? grade.description
+                    ? `${grade.name} ${grade.description}`
+                    : grade.name
+                  : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+            } else if (grades_default && grades_default[index]) {
+              // Priority 3: Use grades_default
+              const grade = grades_default[index];
+              // Assuming grades_default elements also have name and description or are just strings
+              optionText =
+                typeof grade === "object" && grade !== null && grade.name
+                  ? grade.description
+                    ? `${grade.name} ${grade.description}`
+                    : grade.name
+                  : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+            } else {
+              // Fallback: If no specific grade is found, use the subprogram name
+              optionText = subprogram.name || "N/A";
+            }
+
+            option.textContent = optionText;
             gradeSelect.appendChild(option);
           });
         }
@@ -79,13 +144,9 @@ document.addEventListener("DOMContentLoaded", function () {
           });
 
           XHR.onload = () => {
-            if (
-              XHR.status === 200 &&
-              XHR.response &&
-              XHR.response.data &&
-              XHR.response.data.grades
-            ) {
-              let grades = XHR.response.data.grades;
+            if (XHR.status === 200 && XHR.response && XHR.response.data) {
+              grades_default = XHR.response.data.default_grades;
+              grades_institute = XHR.response.data.institute_grades;
 
               // Clear existing options before populating
               while (gradeSelect.options.length > 1) {
@@ -101,17 +162,43 @@ document.addEventListener("DOMContentLoaded", function () {
                 subprograms_arr.forEach((subprogram, index) => {
                   const option = document.createElement("option");
                   option.value = index + 1; // Use index + 1 as value, aligning with program change event
-                  // Find the corresponding grade by index
-                  const gradeFromInstitute = grades[index];
 
-                  if (gradeFromInstitute) {
-                    option.textContent = gradeFromInstitute.description
-                      ? `${gradeFromInstitute.name} ${gradeFromInstitute.description}`
-                      : gradeFromInstitute.name;
+                  let optionText = "";
+
+                  // New priority logic for optionText
+                  if (grades_institute && grades_institute[index]) {
+                    // Priority 1: Use grades_institute
+                    const grade = grades_institute[index];
+                    optionText = grade.description
+                      ? `${grade.name} ${grade.description}`
+                      : grade.name;
+                  } else if (grades_country_arr && grades_country_arr[index]) {
+                    // Priority 2: Use grades_country_arr
+                    const grade = grades_country_arr[index];
+                    // Assuming grades_country_arr elements also have name and description or are just strings
+                    // If it's a string, use it directly. If an object, use name/description.
+                    optionText =
+                      typeof grade === "object" && grade !== null && grade.name
+                        ? grade.description
+                          ? `${grade.name} ${grade.description}`
+                          : grade.name
+                        : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+                  } else if (grades_default && grades_default[index]) {
+                    // Priority 3: Use grades_default
+                    const grade = grades_default[index];
+                    // Assuming grades_default elements also have name and description or are just strings
+                    optionText =
+                      typeof grade === "object" && grade !== null && grade.name
+                        ? grade.description
+                          ? `${grade.name} ${grade.description}`
+                          : grade.name
+                        : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
                   } else {
-                    // Fallback if no corresponding grade is found at this index
-                    option.textContent = subprogram.name || "N/A";
+                    // Fallback: If no specific grade is found, use the subprogram name
+                    optionText = subprogram.name || "N/A";
                   }
+
+                  option.textContent = optionText;
                   gradeSelect.appendChild(option);
                 });
               } else {
@@ -192,14 +279,16 @@ document.addEventListener("DOMContentLoaded", function () {
           // Quiere decir que solo existe un instituto, opciones: (Select an option, INSTITUTO, Other)
           if (numberOfOptions == 3) {
             document.getElementById("institute_id").required = false;
-            document.getElementById("institute-id-select").style.display = "none";
+            document.getElementById("institute-id-select").style.display =
+              "none";
             document.getElementById("institute_id").selectedIndex = 1;
             document
               .getElementById("institute_id")
               .dispatchEvent(new Event("change"));
           } else {
             document.getElementById("institute_id").required = true;
-            document.getElementById("institute-id-select").style.display = "block";
+            document.getElementById("institute-id-select").style.display =
+              "block";
           }
         }
       };
@@ -215,7 +304,29 @@ document.addEventListener("DOMContentLoaded", function () {
   const countrySelect = document.getElementById("country-select");
   const instituteSelect = document.getElementById("institute_id");
   if (countrySelect && instituteSelect) {
-    countrySelect.addEventListener("change", function () {
+    countrySelect.addEventListener("change", function (e) {
+      const XHR = new XMLHttpRequest();
+      XHR.open(
+        "POST",
+        `${ajax_object.ajax_url}?action=load_grades_by_country`,
+        true
+      );
+      XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      XHR.responseType = "json";
+
+      const params = new URLSearchParams({
+        action: "load_grades_by_country",
+        country: e.target.value,
+      });
+
+      XHR.onload = () => {
+        if (XHR.status === 200 && XHR.response && XHR.response.data) {
+          grades_country_arr = XHR.response.data.grades ?? [];
+        }
+      };
+
+      XHR.send(params.toString());
+
       if (document.getElementById("institute_id")) {
         document.getElementById("institute_id").value = "";
       }
@@ -223,8 +334,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("name_institute").value = "";
       }
       if (document.getElementById("name-institute-field")) {
-        document.getElementById("name-institute-field").style.display =
-          "none";
+        document.getElementById("name-institute-field").style.display = "none";
       }
       if (document.getElementById("name_institute")) {
         document.getElementById("name_institute").required = false;
@@ -252,7 +362,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
 
-      program.dispatchEvent(new Event("change"));
+      if (program.selectedIndex != 0) {
+        program.dispatchEvent(new Event("change"));
+      }
     });
   }
 
@@ -854,13 +966,23 @@ if (document.getElementById("birth_date_student")) {
   document
     .getElementById("birth_date_student")
     .addEventListener("change", (e) => {
-      date = e.target.value;
+      let max_age = parseInt(document.getElementById("max_age").value);
+      let limit_age = parseInt(document.getElementById("limit_age").value);
+      let date = e.target.value;
       date = date.split("/");
 
-      start = new Date(date[2], date[0] - 1, date[1]);
-      today = new Date();
-      diff = diff_years(today, start);
-      if (diff >= 18) {
+      const start = new Date(date[2], date[0] - 1, date[1]);
+      const today = new Date();
+      const diff = diff_years(today, start);
+
+      if (diff > limit_age) {
+        alert(`The maximum age is ${limit_age} years old.`);
+        // Reset the input field
+        e.target.value = "";
+        return;
+      }
+
+      if (diff >= max_age) {
         var accessDataTitle = document.getElementById("access_data");
         if (accessDataTitle) {
           accessDataTitle.innerHTML = "Platform access data of student";

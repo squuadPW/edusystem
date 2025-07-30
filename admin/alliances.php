@@ -171,7 +171,7 @@ function add_admin_partners_content()
             $data_alliance = $wpdb->get_row("SELECT * FROM {$table_alliances} WHERE id={$delete_alliance}");
 
             $wpdb->delete($table_alliances, ['id' => $delete_alliance]);
-            setcookie('message-delete', $data_alliance->name . ' ' . $data_alliance->last_name, time() + 3600, '/');
+            setcookie('message', $data_alliance->name . ' ' . $data_alliance->last_name, time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_partners_content&section_tab=all_alliances'));
             exit;
         }

@@ -20,12 +20,15 @@
     <input type="hidden" name="hidden_payment_methods" id="hidden_payment_methods" value="<?= $hidden_payment_methods ?? '' ?>">
     <input type="hidden" name="register_psp" id="register_psp" value="<?= $register_psp ?? '' ?>">
     <input type="hidden" name="bank_transfer_account" id="bank_transfer_account" value="<?= $bank_transfer_account ?? '' ?>">
+    <input type="hidden" name="fixed_fee_inscription" id="fixed_fee_inscription" value="<?= $fixed_fee_inscription ?? '' ?>">
+    <input type="hidden" name="max_age" id="max_age" value="<?= $max_age ?>">
+    <input type="hidden" name="limit_age" id="limit_age" value="<?= $limit_age ?>">
     <input type="hidden" id="product_id_input" name="product_id">
 
     <!-- DATOS DEL ESTUDIANTE -->
     <div class="grid grid-cols-12 gap-4">
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
-            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
+            style="<?= $styles_shortcode ?>">
             <div class="subtitle text-align-center"><?= __('Student details', 'edusystem'); ?></div>
         </div>
         <!-- <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -111,7 +114,7 @@
 
         <!-- DATOS DEL PADRE -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title"
-            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
+            style="<?= $styles_shortcode ?>">
             <div class="subtitle text-align-center"><?= __('Parent details', 'edusystem'); ?></div>
         </div>
         <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -176,7 +179,7 @@
 
         <!-- DATOS DE ACCESO -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
+            style="<?= $styles_shortcode ?>">
             <div class="subtitle text-align-center" id="access_data"><?= __('Platform access data of parent', 'edusystem'); ?>
             </div>
         </div>
@@ -197,7 +200,7 @@
 
         <!-- DATOS DEL GRADO -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
+            style="<?= $styles_shortcode ?>">
             <div class="subtitle text-align-center"><?= __('Degree details', 'edusystem'); ?></div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select">

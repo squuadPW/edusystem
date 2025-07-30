@@ -72,7 +72,7 @@ function list_admin_form_department_content()
                 $wpdb->update($table_departments, ['description' => $description], ['id' => $department_id]);
 
                 $message_success = __('Department updated', 'edusystem');
-                setcookie('message_success', $message_success, time() + 3600, '/');
+                setcookie('message', $message_success, time() + 3600, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_department_content&action=edit&department_id=' . $department_id));
                 exit;
             }

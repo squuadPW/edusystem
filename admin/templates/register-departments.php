@@ -9,7 +9,7 @@
         <div class="notice notice-success is-dismissible">
             <p><?= $_COOKIE['message_success']; ?></p>
         </div>
-        <?php setcookie('message_success', '', time(), '/') ?>
+        <?php setcookie('message', '', time(), '/') ?>
     <?php endif; ?>
     <?php if (isset($_GET['department_id']) && !empty($_GET['department_id'])): ?>
         <h2 style="margin-bottom:15px;"><?= __('Edit Departments', 'edusystem'); ?></h2>
@@ -305,6 +305,11 @@
                     <input <?= !in_array('manager_custom_inputs', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_custom_inputs" id="manager_custom_inputs" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_custom_inputs'])) ? 'checked' : ''; ?>>
                     <label for="manager_custom_inputs" <?= !in_array('manager_custom_inputs', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Custom inputs', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_grades_by_country', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_grades_by_country" id="manager_grades_by_country" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_grades_by_country'])) ? 'checked' : ''; ?>>
+                    <label for="manager_grades_by_country" <?= !in_array('manager_grades_by_country', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Grades by Country', 'edusystem'); ?></label>
                 </div>
             </div>
 
