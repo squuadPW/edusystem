@@ -74,44 +74,63 @@ function get_order_alliance($start_date, $end_date, $id = "")
 
     $data_fees = [];
     $alliance_id = get_user_meta(get_current_user_id(), 'alliance_id', true);
-    $strtotime_start = strtotime($start_date);
-    $strtotime_end = strtotime($end_date);
     $total = 0.00;
 
-    if (isset($_GET['alliance_id']) && !empty($_GET['alliance_id'])) {
-        $alliance_id = $_GET['alliance_id'];
+    if (isset($_GET['alliance_id']) && !empty($_GET['alliance_id'])) $alliance_id = $_GET['alliance_id'];
+
+    if (!empty($id)) $alliance_id = $id;
+
+    if (empty($alliance_id)) return [];
+
+    $date = "";
+    if ( !empty($start_date) && !empty($end_date) ) {
+
+        // Convertir fechas a formato MySQL (YYYY-MM-DD)
+        $start_date = date('Y-m-d', strtotime($start_date));
+        $end_date = date('Y-m-d', strtotime($end_date));
+
+        $date = " AND date_payment BETWEEN '$start_date' AND '$end_date' ";
     }
 
-    if (!empty($id)) {
-        $alliance_id = $id;
-    }
+    global $wpdb;
+    $sql = $wpdb->prepare(
+        "SELECT *
+        FROM `wp_student_payments`
+        WHERE status_id = 1 AND JSON_CONTAINS(`alliances`, JSON_OBJECT('id', %s)) $date
+        ORDER BY date_payment DESC",
+        $alliance_id
+    );
 
-    if (empty($alliance_id)) {
-        return [];
-    }
+    $payments = $wpdb->get_results($sql);
 
-    $args['alliance_id'] = $alliance_id;
-    $args['limit'] = -1;
-    $args['status'] = 'wc-completed';
-    $args['date_created'] = $strtotime_start . '...' . $strtotime_end;
-    $orders = wc_get_orders($args);
+    foreach ( $payments as $payment ) {
 
-    foreach ($orders as $order) {
+        // Inicializar el fee_amount
+        $fee_amount = 0;
 
-        if ($order->get_meta('alliance_id') == $alliance_id) {
-
-            array_push($data_fees, [
-                'order_id' => $order->get_id(),
-                'customer' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
-                'fee' => $order->get_meta('alliance_fee'),
-                'created_at' => $order->get_date_created()->format('F j, Y g:i a')
-            ]);
-
-            $total += $order->get_meta('alliance_fee');
+        foreach ( json_decode($payment->alliances, true) as $alliance) {
+            if ( $alliance['id'] == $alliance_id ) {
+                $fee_amount = $alliance['calculated_fee_amount'];
+                break;
+            }
         }
-    }
 
-    return ['total' => number_format($total, 2, '.', ','), 'orders' => $data_fees];
+        // $order_id = $payment->order_id;
+        $order = wc_get_order( $payment->order_id );
+
+        array_push($data_fees, [
+            'order_id' => $order->get_id(),
+            'customer' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+            'fee' => $fee_amount,
+            'created_at' => $payment->date_payment
+        ]);
+
+        $total += (float) $fee_amount;
+
+    }
+    
+    return ['total' => $total, 'orders' => $data_fees];
+
 }
 
 function get_list_fee_alliance()
@@ -132,9 +151,9 @@ function get_list_fee_alliance()
         $transactions_pending = get_transactions_alliances($dates[0], $dates[1], $alliance_id, 0);
         $transactions_complete = get_transactions_alliances($dates[0], $dates[1], $alliance_id, 1);
 
-        if (!empty($filtered_invices['orders'])) {
+        if ( !empty( $filtered_invices['orders'] ) ) {
 
-            foreach ($filtered_invices['orders'] as $order) {
+            foreach ( $filtered_invices['orders'] as $order ) {
                 $html .= "<tr>";
                 $html .= "<td class='column column-primary' data-colname='" . __('Payment ID', 'edusystem') . "'>";
                 $html .= '#' . $order['order_id'];
@@ -151,7 +170,6 @@ function get_list_fee_alliance()
                     $html .= "<a class='button button-primary' href=" . admin_url('admin.php?page=list_admin_partner_payments_content&action=payment-detail&payment_id=' . $order['order_id']) . ">" . __('View details', 'edusystem') . "</a>";
                 }
 
-
                 $html .= "</td>";
                 $html .= "</tr>";
             }
@@ -162,9 +180,9 @@ function get_list_fee_alliance()
             $html .= "</tr>";
         }
 
-        $transactions['total_pending'] = wc_price($transactions_pending['total']);
-        $transactions['total_paid'] = wc_price($transactions_complete['total']);
-        $transactions['total'] = wc_price(($transactions_complete['total'] + $transactions_pending['total']));
+        $transactions['total_pending'] = wc_price( (float) $transactions_pending['total']);
+        $transactions['total_paid'] = wc_price( (float) $transactions_complete['total']);
+        $transactions['total'] = wc_price( (float) ($transactions_complete['total'] + (float) $transactions_pending['total']) );
         $transactions['orders'] = array_merge($transactions_pending['orders'], $transactions_complete['orders']);
         if (!empty($transactions['orders'])) {
 
@@ -185,8 +203,14 @@ function get_list_fee_alliance()
             $html_transactions .= "</tr>";
         }
 
-        $current_invoice['total'] = wc_price($current_invoice['total']);
-        $filtered_invices['total'] = wc_price($filtered_invices['total']);
+        $logger = wc_get_logger();
+        $logger->info('pruebas', [ 'total' => $filtered_invices['total'], "price" => wc_price( $filtered_invices['total']) ] );
+
+        $current_invoice['total'] = wc_price( (float) $current_invoice['total']);
+        $filtered_invices['total'] = wc_price( (float) $filtered_invices['total']);
+
+        
+        
         echo json_encode(['status' => 'success', 'html' => $html, 'html_transactions' => $html_transactions, 'data' => $filtered_invices, 'current_invoice' => $current_invoice, 'transactions' => $transactions]);
         exit;
     }
@@ -199,45 +223,60 @@ function get_invoices_alliances($start, $end, $id = "")
 {
 
     $data_fees = [];
-    $total = 0.00;
-    $strtotime_start = strtotime($start);
-    $strtotime_end = strtotime($end);
-
     $alliance_id = get_user_meta(get_current_user_id(), 'alliance_id', true);
+    $total = 0.00;
 
+    if (isset($_GET['alliance_id']) && !empty($_GET['alliance_id'])) $alliance_id = $_GET['alliance_id'];
 
-    if (empty($alliance_id)) {
-        $alliance_id = $_GET['alliance_id'];
+    if (!empty($id)) $alliance_id = $id;
+
+    if (empty($alliance_id)) return [];
+
+    $date = "";
+    if ( !empty($start) && !empty($end) ) {
+
+        // Convertir fechas a formato MySQL (YYYY-MM-DD)
+        $start_date = date('Y-m-d', strtotime($start));
+        $end_date = date('Y-m-d', strtotime($end));
+
+        $date = " AND date_payment BETWEEN '$start_date' AND '$end_date' ";
     }
 
-    if (!empty($id)) {
-        $alliance_id = $id;
-    }
+    global $wpdb;
+    $sql = $wpdb->prepare(
+        "SELECT *
+        FROM `wp_student_payments`
+        WHERE status_id = 1 AND JSON_CONTAINS(`alliances`, JSON_OBJECT('id', %s)) $date
+        ORDER BY date_payment DESC",
+        $alliance_id
+    );
 
-    if (empty($alliance_id)) {
-        return [];
-    }
+    $payments = $wpdb->get_results($sql);
 
-    $args['alliance_id'] = $alliance_id;
-    $args['limit'] = -1;
-    $args['status'] = 'wc-completed';
-    $args['date_created'] = $strtotime_start . '...' . $strtotime_end;
-    $orders = wc_get_orders($args);
+    foreach ( $payments as $payment ) {
 
+        // Inicializar el fee_amount
+        $fee_amount = 0;
 
-    foreach ($orders as $order) {
-
-        if ($order->get_meta('alliance_id') == $alliance_id) {
-
-            array_push($data_fees, [
-                'order_id' => $order->get_id(),
-                'customer' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
-                'fee' => $order->get_meta('alliance_fee'),
-                'created_at' => $order->get_date_created()->format('F j, Y g:i a')
-            ]);
-
-            $total += (float) $order->get_meta('alliance_fee');
+        foreach ( json_decode($payment->alliances, true) as $alliance) {
+            if ( $alliance['id'] == $alliance_id ) {
+                $fee_amount = $alliance['calculated_fee_amount'];
+                break;
+            }
         }
+
+        // $order_id = $payment->order_id;
+        $order = wc_get_order( $payment->order_id );
+
+        array_push($data_fees, [
+            'order_id' => $order->get_id(),
+            'customer' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+            'fee' => $fee_amount,
+            'created_at' => $payment->date_payment
+        ]);
+
+        $total += (float) $fee_amount;
+
     }
 
     return ['total' => $total, 'orders' => $data_fees];
