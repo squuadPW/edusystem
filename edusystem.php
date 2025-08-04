@@ -79,6 +79,7 @@ function create_tables()
   dbDelta(
     "CREATE TABLE " . $table_student_program . " (
       `id` INT(11) NOT NULL AUTO_INCREMENT,
+      `is_active` tinyint(1) DEFAULT 1,
       `identificator` TEXT NOT NULL,
       `name` TEXT NOT NULL,
       `description` TEXT NOT NULL,

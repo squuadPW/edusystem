@@ -291,6 +291,14 @@ function aes_scripts_admin()
         ]);
     }
 
+    if ((isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_student_program_content') && (isset($_GET['from']) && !empty($_GET['from']) && $_GET['from'] == 'programs')) {
+        wp_enqueue_script('student-program', plugins_url('edusystem') . '/admin/assets/js/student-program.js', array('jquery'), $version, true);
+
+        wp_localize_script('student-program', 'ajax_object', [
+            'url_ajax' => admin_url('admin-ajax.php')
+        ]);
+    }
+
     if ((isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_student_program_content') && (isset($_GET['from']) && !empty($_GET['from']) && $_GET['from'] == 'mentions')) {
         wp_enqueue_script('mention', plugins_url('edusystem') . '/admin/assets/js/mention.js', array('jquery'), $version, true);
 

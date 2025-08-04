@@ -54,11 +54,10 @@ function add_admin_form_student_program_content()
 
             // Sanitizar valores
             $program_id = isset($_POST['program_id']) ? sanitize_text_field($_POST['program_id']) : '';
+            $is_active = isset($_POST['is_active']) ? true : false;
             $identificator = strtoupper(sanitize_text_field($_POST['identificator']));
-            $program_identificator = strtoupper(sanitize_text_field($_POST['program_identificator']));
             $name = strtoupper(sanitize_text_field($_POST['name']));
             $description = strtoupper(sanitize_text_field($_POST['description']));
-            $is_active = isset($_POST['is_active']) ? true : false;
 
             // Comprobar si el identificador ya existe
             $query_check = $wpdb->prepare(
@@ -78,7 +77,6 @@ function add_admin_form_student_program_content()
             // Prepara los datos a insertar o actualizar
             $data = [
                 'is_active' => $is_active,
-                'program_identificator' => $program_identificator,
                 'identificator' => $identificator,
                 'name' => $name,
                 'description' => $description,
@@ -95,7 +93,7 @@ function add_admin_form_student_program_content()
                 setcookie('message', __('New record added successfully.', 'edusystem'), time() + 10, '/');
             }
 
-            wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content&section_tab=careers'));
+            wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content'));
             exit;
         } else if ($_GET['action'] == 'save_quotas_rules') {
 

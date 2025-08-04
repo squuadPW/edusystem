@@ -865,6 +865,36 @@ function check_mention_identificator_exists() {
     } 
 }
 
+add_action('wp_ajax_check_student_program_identificator_exists', 'check_student_program_identificator_exists');
+add_action('wp_ajax_nopriv_check_student_program_identificator_exists', 'check_student_program_identificator_exists');
+function check_student_program_identificator_exists() {
+   
+    if ( !isset($_POST['identificator']) || empty($_POST['identificator']) ) {
+        wp_send_json_error('Identificador no proporcionado');
+    }
+    
+    $identificator = sanitize_text_field($_POST['identificator']);
+    
+    global $wpdb;
+    $table_student_program = $wpdb->prefix . 'student_program';
+    $exists = $wpdb->get_var( $wpdb->prepare(
+        "SELECT id FROM $table_student_program WHERE identificator LIKE %s",
+        $identificator
+    ));
+
+    if( $exists ){
+        wp_send_json_success([
+            'exists' => true,
+            'message' => __('Identifier in use, please choose another.','edusystem'),
+        ]);
+    } else {
+        wp_send_json_success([
+            'exists' => false,
+            'message' => __('Identifier is not in use.','edusystem'),
+        ]);
+    } 
+}
+
 
 
 
