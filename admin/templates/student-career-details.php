@@ -43,7 +43,7 @@
                                     <div style="font-weight:400;">
                                         <label for="hc"><b><?= __('Program to which it belongs', 'edusystem'); ?></b></label><br>
                                         <select name="program_identificator" required>
-                                            <option value="AES" selected>Select a program</option>
+                                            <option value="" selected>Select a program</option>
                                             <?php foreach ($programs as $key => $program) { ?>
                                                 <option value="<?= $program->identificator ?>" <?= ($career->program_identificator == $program->identificator) ? 'selected' : ''; ?>><?= $program->name ?></option>
                                             <?php } ?>
