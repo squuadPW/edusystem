@@ -155,7 +155,7 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
 
         insert_data_student($order); // Assuming this function exists and works
 
-        if (isset($_COOKIE['is_scholarship']) && !empty($_COOKIE['is_scholarship'])) {
+        if ( isset($_COOKIE['is_scholarship']) && !empty($_COOKIE['is_scholarship']) ) {
             save_scholarship(); // Assuming this function exists and works
         }
     }
