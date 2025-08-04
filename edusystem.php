@@ -69,7 +69,7 @@ function create_tables()
   $table_grades_by_country = $wpdb->prefix . 'grades_by_country';
   $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
   $table_careers_by_program = $wpdb->prefix . 'careers_by_program';
-  $table_mentions_by_carrer = $wpdb->prefix . 'mentions_by_carrer';
+  $table_mentions_by_career = $wpdb->prefix . 'mentions_by_career';
   $table_student_program = $wpdb->prefix . 'student_program';
 
   // Para todas las tablas: Mueve la llamada a dbDelta() FUERA del if de existencia de tabla.
@@ -89,6 +89,7 @@ function create_tables()
   dbDelta(
     "CREATE TABLE " . $table_careers_by_program . " (
       `id` INT(11) NOT NULL AUTO_INCREMENT,
+      `is_active` tinyint(1) DEFAULT 1,
       `program_identificator` TEXT NOT NULL,
       `identificator` TEXT NOT NULL,
       `name` TEXT NOT NULL,
@@ -98,9 +99,10 @@ function create_tables()
   );
 
   dbDelta(
-    "CREATE TABLE " . $table_mentions_by_carrer . " (
+    "CREATE TABLE " . $table_mentions_by_career . " (
       `id` INT(11) NOT NULL AUTO_INCREMENT,
-      `carrer_identificator` TEXT NOT NULL,
+      `is_active` tinyint(1) DEFAULT 1,
+      `career_identificator` TEXT NOT NULL,
       `identificator` TEXT NOT NULL,
       `name` TEXT NOT NULL,
       `description` TEXT NOT NULL,
