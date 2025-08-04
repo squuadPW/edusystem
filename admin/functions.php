@@ -291,7 +291,7 @@ function aes_scripts_admin()
         ]);
     }
 
-    if ((isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_student_program_content') && (isset($_GET['from']) && !empty($_GET['from']) && $_GET['from'] == 'programs')) {
+    if ((isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_student_program_content') && (!isset($_GET['section_tab']) || empty($_GET['section_tab'])) || (isset($_GET['section_tab']) && !empty($_GET['section_tab'] && $_GET['section_tab'] == 'programs'))) {
         wp_enqueue_script('student-program', plugins_url('edusystem') . '/admin/assets/js/student-program.js', array('jquery'), $version, true);
 
         wp_localize_script('student-program', 'ajax_object', [
@@ -299,7 +299,7 @@ function aes_scripts_admin()
         ]);
     }
 
-    if ((isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_student_program_content') && (isset($_GET['from']) && !empty($_GET['from']) && $_GET['from'] == 'mentions')) {
+    if ((isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_student_program_content') && (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'mentions')) {
         wp_enqueue_script('mention', plugins_url('edusystem') . '/admin/assets/js/mention.js', array('jquery'), $version, true);
 
         wp_localize_script('mention', 'ajax_object', [
@@ -307,7 +307,7 @@ function aes_scripts_admin()
         ]);
     }
 
-    if ((isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_student_program_content') && (isset($_GET['from']) && !empty($_GET['from']) && $_GET['from'] == 'careers')) {
+    if ((isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_student_program_content') && (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'careers')) {
         wp_enqueue_script('career', plugins_url('edusystem') . '/admin/assets/js/career.js', array('jquery'), $version, true);
 
         wp_localize_script('career', 'ajax_object', [

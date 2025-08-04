@@ -961,7 +961,7 @@ function get_name_program_student($student_id)
     global $wpdb;
 
     $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
-    $table_programs = $wpdb->prefix . 'programs';
+    $table_student_program = $wpdb->prefix . 'student_program';
 
     // Get all program_identificators for the given student_id
     $program_identificators = $wpdb->get_col(
@@ -986,7 +986,7 @@ function get_name_program_student($student_id)
     $program_names = $wpdb->get_col(
         $wpdb->prepare(
             "SELECT name FROM %i WHERE identificator IN ($placeholders)",
-            $table_programs,
+            $table_student_program,
             ...$escaped_identificators
         )
     );
@@ -1000,10 +1000,10 @@ function get_name_program($identificator)
 {
 
     global $wpdb;
-    $table_programs = $wpdb->prefix . 'programs';
+    $table_student_program = $wpdb->prefix . 'student_program';
 
     $name = $wpdb->get_var($wpdb->prepare(
-        "SELECT `name` FROM $table_programs WHERE identificator LIKE %s",
+        "SELECT `name` FROM $table_student_program WHERE identificator LIKE %s",
         $identificator
     ));
 

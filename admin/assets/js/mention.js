@@ -209,12 +209,12 @@ function modal_delete_subprogram_js(button) {
  *
  * @return void No retorna ningún valor.
  */
-function modal_delete_program_js(button) {
-  let modal_delete_program = document.getElementById("modalDeleteProgram");
-  if (modal_delete_program) {
-    id = button.getAttribute("data-program_id");
-    modal_delete_program.querySelector("#delete_program_input").value = id;
-    modal_delete_program.style.display = "block";
+function modal_delete_mention_js(button) {
+  let modal_delete_mention = document.getElementById("modalDeleteMention");
+  if (modal_delete_mention) {
+    id = button.getAttribute("data-mention_id");
+    modal_delete_mention.querySelector("#delete_mention_input").value = id;
+    modal_delete_mention.style.display = "block";
   }
 }
 

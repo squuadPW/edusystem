@@ -24,26 +24,22 @@ function add_admin_form_student_program_content()
                 include(plugin_dir_path(__FILE__) . 'templates/student-mention-details.php');
             }
 
-        } else if ($_GET['section_tab'] == 'quotas_rules_programs') {
-
-            global $wpdb;
-            $program_id = $_GET['program_id'];
-            $identificator = $_GET['identificator'];
-            $rules = get_quotas_rules_programs($identificator);
-            include(plugin_dir_path(__FILE__) . 'templates/quotas-rules-programs.php');
-
         } else if ($_GET['section_tab'] == 'careers') {
 
             $list_program = new TT_All_Careers_List_Table;
             $list_program->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-student-program.php');
 
+            // modal de eleiminar una carrera
+            include(plugin_dir_path(__FILE__) . '/templates/modal-delete-career.php');
         } else if ($_GET['section_tab'] == 'mentions') {
 
             $list_program = new TT_All_Mentions_List_Table;
             $list_program->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-student-program.php');
 
+            // modal de eleiminar una mencion
+            include(plugin_dir_path(__FILE__) . '/templates/modal-delete-mention.php');
         }
 
     } else {
@@ -95,194 +91,140 @@ function add_admin_form_student_program_content()
 
             wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content'));
             exit;
-        } else if ($_GET['action'] == 'save_quotas_rules') {
-
-            global $wpdb;
-            $table_quota_rules = $wpdb->prefix . 'quota_rules';
-
-            // Sanitizar 
-            $program_id = $_POST['program_id'] ?? '';
-            $identificator = isset($_POST['identificator']) ? sanitize_text_field($_POST['identificator']) : '';
-
-            if (!empty($identificator)) {
-                $rules_post = $_POST['rules'] ?? '';
-
-                foreach ($rules_post as $rule) {
-
-                    $rule_id = $rule['id'] ?? '';
-                    $is_active = $rule['is_active'] ? true : false;
-                    $name = $rule['name'];
-                    $initial_price = $rule['initial_price'];
-                    $quantity = $rule['quantity'];
-                    $price = $rule['price'];
-                    $frequency_value = $rule['frequency_value'];
-                    $type_frequency = $rule['type_frequency'];
-                    $position = $rule['position'] ?? 0;
-
-                    // crea o actualiza el sub programa
-                    if (!empty($rule_id)) {
-
-                        $wpdb->update($table_quota_rules, [
-                            'is_active' => $is_active,
-                            'name' => $name,
-                            'initial_price' => $initial_price,
-                            'quotas_quantity' => $quantity,
-                            'quote_price' => $price,
-                            'frequency_value' => $frequency_value,
-                            'type_frequency' => $type_frequency,
-                            'position' => $position,
-                        ], ['id' => $rule_id]);
-
-                    } else {
-
-                        $wpdb->insert($table_quota_rules, [
-                            'is_active' => $is_active,
-                            'name' => $name,
-                            'initial_price' => $initial_price,
-                            'quotas_quantity' => $quantity,
-                            'quote_price' => $price,
-                            'program_id' => $identificator,
-                            'frequency_value' => $frequency_value,
-                            'type_frequency' => $type_frequency,
-                            'position' => $position,
-                        ]);
-                    }
-                }
-
-                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
-                wp_redirect($_SERVER['HTTP_REFERER']);
-
-            } else {
-                setcookie('message-error', __('Identifier not found', 'edusystem'), time() + 10, '/');
-                wp_redirect(admin_url("admin.php?page=add_admin_form_student_program_content&section_tab=program_details"));
-            }
-
-            exit;
-
-        } else if ($_GET['action'] == 'delete_quota_rule') {
-
-            global $wpdb;
-            $table_quota_rules = $wpdb->prefix . 'quota_rules';
-
-            $rule_id = $_POST['quota_rule_id'];
-
-            $deleted = $wpdb->delete(
-                $table_quota_rules,
-                ['id' => $rule_id],
-                ['%d']
-            );
-
-            if ($deleted) {
-                setcookie('message', __('The quota rule has been deleted successfully.', 'edusystem'), time() + 10, '/');
-            } else {
-                setcookie('message-error', __('The quota rule has not been deleted correctly.', 'edusystem'), time() + 10, '/');
-            }
-
-            wp_redirect($_SERVER['HTTP_REFERER']);
-            exit;
-
-        } else if ($_GET['action'] == 'delete_subprogram') {
-
-            $subprogram_id = $_POST['subprogram_id'];
-
-            global $wpdb;
-            $table_students = $wpdb->prefix . 'students';
-            $students = $wpdb->get_var($wpdb->prepare(
-                "SELECT COUNT(*) FROM $table_students WHERE program_id LIKE %s",
-                $subprogram_id
-            ));
-
-            // Si no hay registros en table_y, proceder a eliminar
-            if ($students == 0) {
-
-                $separacion = strpos($subprogram_id, '_');
-                if ($separacion !== false) {
-                    $program_id = substr($subprogram_id, 0, $separacion);
-                    $subprogram_indice = substr($subprogram_id, $separacion + 1);
-                }
-
-                $subprogram_data = get_subprogram_by_identificador_program($program_id);
-
-                // obtiene el id del producto a eliminar
-                $product_id = $subprogram_data[$subprogram_indice]['product_id'];
-
-                // elimina el producto
-                wp_delete_post($product_id, true);
-
-                // elemina el subprograma
-                unset($subprogram_data[$subprogram_indice]);
-
-                //guardar la subprogramas
-                $table_programs = $wpdb->prefix . 'programs';
-                $update = $wpdb->update($table_programs, [
-                    'subprogram' => json_encode($subprogram_data) ?? null,
-                ], ['identificator' => $program_id]);
-
-                if ($update) {
-                    setcookie('message', __('The subprogram has been successfully removed.', 'edusystem'), time() + 10, '/');
-                } else {
-                    setcookie('message-error', __('The subprogram was not removed correctly.', 'edusystem'), time() + 10, '/');
-                }
-
-            } else {
-                setcookie('message-error', __('The subprogram contains enrolled students.', 'edusystem'), time() + 10, '/');
-            }
-
-            wp_redirect($_SERVER['HTTP_REFERER']);
-            exit;
-
         } else if ($_GET['action'] == 'delete_program') {
 
-            $program_id = $_POST['program_id'];
+            // Make sure a program ID was provided
+            if (!isset($_POST['program_id']) || !is_numeric($_POST['program_id'])) {
+                wp_redirect($_SERVER['HTTP_REFERER']);
+                exit;
+            }
+
+            $program_id = intval($_POST['program_id']);
 
             global $wpdb;
-            $table_programs = $wpdb->prefix . 'programs';
-            $table_quotas_rules = $wpdb->prefix . 'quota_rules';
-            $table_students = $wpdb->prefix . 'students';
+            $table_student_program = $wpdb->prefix . 'student_program';
+            $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
 
-            $program_data = $wpdb->get_row($wpdb->prepare(
-                "SELECT identificator, product_id FROM $table_programs WHERE id = %d ",
-                $program_id,
-            ));
-
+            // Check for students and get the program identifier in a single query
             $students = $wpdb->get_var($wpdb->prepare(
-                "SELECT COUNT(*) FROM $table_students WHERE program_id LIKE %s || program_id LIKE %s",
-                $program_data->identificator,
-                $program_data->identificator . '_%'
+                "SELECT COUNT(t2.student_id) 
+                FROM $table_student_program AS t1
+                LEFT JOIN $table_programs_by_student AS t2 
+                ON t1.identificator = t2.program_identificator
+                WHERE t1.id = %d",
+                $program_id
             ));
 
-            // Si no hay registros en table_y, proceder a eliminar
             if ($students == 0) {
-
-                $product = wc_get_product($program_data->product_id);
-                if ($product)
-                    $product->delete(true);
-
+                // No students, so we delete the program
                 $deleted = $wpdb->delete(
-                    $table_programs,
+                    $table_student_program,
                     ['id' => $program_id],
                     ['%d']
                 );
 
-
-
                 if ($deleted) {
-
-                    // eliminar las reglas de los quotas
-                    $wpdb->query($wpdb->prepare(
-                        "DELETE FROM $table_quotas_rules WHERE program_id = %s OR program_id LIKE %s",
-                        $program_data->identificator,
-                        $program_data->identificator . '_%'
-                    ));
-
                     setcookie('message', __('The subprogram has been successfully removed.', 'edusystem'), time() + 10, '/');
                 } else {
-                    setcookie('message-error', __('The subprogram was not removed correctly.', 'edusystem'), time() + 10, '/');
+                    setcookie('message-error', __('Error removing the subprogram.', 'edusystem'), time() + 10, '/');
                 }
-
             } else {
+                // Students found, so we show an error
                 setcookie('message-error', __('The subprogram contains enrolled students.', 'edusystem'), time() + 10, '/');
             }
+
+            wp_redirect($_SERVER['HTTP_REFERER']);
+            exit;
+
+        } else if ($_GET['action'] == 'delete_career') {
+
+            // Make sure a program ID was provided
+            if (!isset($_POST['career_id']) || !is_numeric($_POST['career_id'])) {
+                wp_redirect($_SERVER['HTTP_REFERER']);
+                exit;
+            }
+
+            $career_id = intval($_POST['career_id']);
+
+            global $wpdb;
+            // $table_student_program = $wpdb->prefix . 'student_program';
+            // $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
+            $table_careers_by_program = $wpdb->prefix . 'careers_by_program';
+
+            // // Check for students and get the program identifier in a single query
+            // $students = $wpdb->get_var($wpdb->prepare(
+            //     "SELECT COUNT(t2.student_id) 
+            //     FROM $table_student_program AS t1
+            //     LEFT JOIN $table_programs_by_student AS t2 
+            //     ON t1.identificator = t2.program_identificator
+            //     WHERE t1.id = %d",
+            //     $program_id
+            // ));
+
+            // if ($students == 0) {
+                // No students, so we delete the program
+                $deleted = $wpdb->delete(
+                    $table_careers_by_program,
+                    ['id' => $career_id],
+                    ['%d']
+                );
+
+                if ($deleted) {
+                    setcookie('message', __('The career has been successfully removed.', 'edusystem'), time() + 10, '/');
+                } else {
+                    setcookie('message-error', __('Error removing the career.', 'edusystem'), time() + 10, '/');
+                }
+            // } else {
+            //     // Students found, so we show an error
+            //     setcookie('message-error', __('The subprogram contains enrolled students.', 'edusystem'), time() + 10, '/');
+            // }
+
+            wp_redirect($_SERVER['HTTP_REFERER']);
+            exit;
+
+        } else if ($_GET['action'] == 'delete_mention') {
+
+
+            // Make sure a program ID was provided
+            if (!isset($_POST['mention_id']) || !is_numeric($_POST['mention_id'])) {
+                wp_redirect($_SERVER['HTTP_REFERER']);
+                exit;
+            }
+
+            $mention_id = intval($_POST['mention_id']);
+
+            global $wpdb;
+            // $table_student_program = $wpdb->prefix . 'student_program';
+            // $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
+            $table_mentions_by_career = $wpdb->prefix . 'mentions_by_career';
+
+            // // Check for students and get the program identifier in a single query
+            // $students = $wpdb->get_var($wpdb->prepare(
+            //     "SELECT COUNT(t2.student_id) 
+            //     FROM $table_student_program AS t1
+            //     LEFT JOIN $table_programs_by_student AS t2 
+            //     ON t1.identificator = t2.program_identificator
+            //     WHERE t1.id = %d",
+            //     $program_id
+            // ));
+
+            // if ($students == 0) {
+                // No students, so we delete the program
+                $deleted = $wpdb->delete(
+                    $table_mentions_by_career,
+                    ['id' => $mention_id],
+                    ['%d']
+                );
+
+                if ($deleted) {
+                    setcookie('message', __('The mention has been successfully removed.', 'edusystem'), time() + 10, '/');
+                } else {
+                    setcookie('message-error', __('Error removing the mention.', 'edusystem'), time() + 10, '/');
+                }
+            // } else {
+            //     // Students found, so we show an error
+            //     setcookie('message-error', __('The subprogram contains enrolled students.', 'edusystem'), time() + 10, '/');
+            // }
 
             wp_redirect($_SERVER['HTTP_REFERER']);
             exit;
@@ -570,7 +512,7 @@ class TT_All_Careers_List_Table extends WP_List_Table
             case 'view_details':
                 $buttons = '';
                 $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_student_program_content&section_tab=program_details&from=careers&career_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
-                $buttons .= "<a class='button button-danger' data-program_id='" . $item['id'] . "' onclick='modal_delete_program_js ( this )' ><span class='dashicons dashicons-trash'></span></a>";
+                $buttons .= "<a class='button button-danger' data-career_id='" . $item['id'] . "' onclick='modal_delete_career_js ( this )' ><span class='dashicons dashicons-trash'></span></a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);
@@ -721,7 +663,7 @@ class TT_All_Mentions_List_Table extends WP_List_Table
             case 'view_details':
                 $buttons = '';
                 $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_student_program_content&section_tab=program_details&from=mentions&mention_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
-                $buttons .= "<a class='button button-danger' data-program_id='" . $item['id'] . "' onclick='modal_delete_program_js ( this )' ><span class='dashicons dashicons-trash'></span></a>";
+                $buttons .= "<a class='button button-danger' data-mention_id='" . $item['id'] . "' onclick='modal_delete_mention_js ( this )' ><span class='dashicons dashicons-trash'></span></a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);
