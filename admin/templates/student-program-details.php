@@ -30,7 +30,6 @@
                                 <div style="margin: 18px;">
 
                                     <input type="hidden" name="program_id" value="<?= $program->id ?>">
-                                    <input type="hidden" name="product_id" value="<?= $program->product_id ?>">
 
                                     <div style="font-weight:400; text-align: center; margin-bottom: 10px;">
                                         <div>

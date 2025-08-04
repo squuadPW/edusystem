@@ -50,220 +50,53 @@ function add_admin_form_student_program_content()
 
         if ($_GET['action'] == 'save_program_details') {
             global $wpdb;
-            $table_programs = $wpdb->prefix . 'programs';
+            $table_student_program = $wpdb->prefix . 'student_program';
 
             // Sanitizar valores
             $program_id = isset($_POST['program_id']) ? sanitize_text_field($_POST['program_id']) : '';
-            $program_product_id = isset($_POST['product_id']) ? sanitize_text_field($_POST['product_id']) : '';
             $identificator = strtoupper(sanitize_text_field($_POST['identificator']));
+            $program_identificator = strtoupper(sanitize_text_field($_POST['program_identificator']));
             $name = strtoupper(sanitize_text_field($_POST['name']));
             $description = strtoupper(sanitize_text_field($_POST['description']));
-            $total_price = floatval(sanitize_text_field($_POST['total_price']));
-            $is_active = $_POST['is_active'] ? true : false;
-            $subprograms_post = $_POST['subprogram'] ?? '';
+            $is_active = isset($_POST['is_active']) ? true : false;
 
-            $subprograms = [];// array para guardas los subprogramas
+            // Comprobar si el identificador ya existe
+            $query_check = $wpdb->prepare(
+                "SELECT COUNT(*) FROM $table_student_program WHERE identificator = %s AND id != %d",
+                $identificator,
+                $program_id
+            );
+            $identificator_exists = $wpdb->get_var($query_check);
 
-            // verifica y crea en caso de necesitar una categoria llamada programs;"
-            $category_id = 0;
-            $name_category = 'programs';
-            $category = term_exists($name_category, 'product_cat');
-            if ($category) {
-                $category_id = (int) $category['term_id'];
-
-            } else {
-                // La categoría no existe, crearla
-                $category = wp_insert_term($name_category, 'product_cat');
-                if (!is_wp_error($category)) {
-                    $category_id = (int) $category['term_id'];// Devolver el ID de la nueva categoría creada
-                }
+            if ($identificator_exists > 0) {
+                // Si el identificador ya existe, establece un mensaje de error y redirige.
+                setcookie('message', __('Error: The identifier already exists.', 'edusystem'), time() + 10, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content&section_tab=careers'));
+                exit;
             }
 
-            //crea o actualiza el producto
-            if (!empty($program_id)) {
-
-                wp_update_post(array(
-                    'ID' => $program_product_id,
-                    'post_title' => $name,
-                    'post_content' => $description,
-                ), true);
-
-                update_post_meta($program_product_id, '_regular_price', $total_price);
-                update_post_meta($program_product_id, '_price', $total_price);
-
-                // guarda el stock en caso de que este activo o no
-                update_post_meta($program_product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
-
-                // Asignar la categoría al producto
-                wp_set_object_terms($program_product_id, $category_id, 'product_cat');
-
-            } else {
-
-                // Función para crear un producto
-                $program_product_id = wp_insert_post([
-                    'post_title' => $name,
-                    'post_content' => $description, // Descripción del producto
-                    'post_status' => 'publish',
-                    'post_type' => 'product',
-                ]);
-
-                // Verificar si el producto se creó correctamente
-                if (!is_wp_error($program_product_id)) {
-
-                    update_post_meta($program_product_id, '_sku', $identificator);
-                    update_post_meta($program_product_id, '_regular_price', $total_price);
-                    update_post_meta($program_product_id, '_price', $total_price);
-
-                    // guarda el stock en caso de que este activo o no
-                    update_post_meta($program_product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
-
-                    // Asignar la categoría al producto
-                    wp_set_object_terms($program_product_id, (int) $category_id, 'product_cat');
-                }
-            }
-
-            // obtiene los subprogramas y crea  los productos 
-            // vinculados a ellos si los 
-            $product = wc_get_product((int) $program_product_id);
-            if ($product && !empty($subprograms_post)) {
-
-                $attribute_name = 'subprograms';
-
-                if (!$product->is_type('variable')) {
-
-                    // Establecer como producto variable
-                    wp_set_object_terms($program_product_id, 'variable', 'product_type');
-
-                    // Crear atributo "subprograma" vacío
-                    $product_attributes = array(
-                        $attribute_name => array(
-                            'name' => __('Subprograms', 'edusystem'),
-                            'value' => '',
-                            'is_visible' => true,
-                            'is_variation' => true,
-                            'is_taxonomy' => false
-                        )
-                    );
-
-                    update_post_meta($program_product_id, '_product_attributes', $product_attributes);
-                }
-
-                foreach ($subprograms_post as $subprogram) {
-
-                    $name_subprogram = $subprogram['name'];
-                    $price = $subprogram['price'];
-                    $is_active_subprogram = $subprogram['is_active'] ? true : false;
-
-                    // crea o actualiza el producto 
-                    if ($subprogram['product_id']) {
-
-                        $product_id = $subprogram['product_id'];
-
-                        wp_update_post(array(
-                            'ID' => $product_id,
-                            'post_title' => $name_subprogram,
-                        ), true);
-
-                        update_post_meta($product_id, '_regular_price', $price);
-                        update_post_meta($product_id, '_price', $price);
-
-                        // guarda el stock en caso de que este activo o no
-                        update_post_meta($product_id, '_stock_status', ($is_active && $is_active_subprogram) ? 'instock' : 'outofstock');
-
-                        wp_set_object_terms($product_id, (int) $category_id, 'product_cat');
-
-                    } else {
-
-                        // Función para crear un producto
-                        $product_id = wp_insert_post([
-                            'post_title' => $name_subprogram,
-                            'post_name' => $name_subprogram,
-                            'post_status' => 'publish',
-                            'post_type' => 'product_variation',
-                            'post_parent' => $program_product_id,
-                        ]);
-
-                        // Verificar si el producto se creó correctamente
-                        if (!is_wp_error($product_id)) {
-
-                            update_post_meta($product_id, '_regular_price', $price);
-                            update_post_meta($product_id, '_price', $price);
-                            update_post_meta($product_id, '_stock_status', 'instock'); // Estado del stock
-                            update_post_meta($product_id, 'attribute_' . $attribute_name, sanitize_title($name_subprogram));
-
-                            wp_set_object_terms($product_id, (int) $category_id, 'product_cat');
-
-                            // Añadir el término al atributo "subprograms"
-                            wp_set_object_terms($program_product_id, $name_subprogram, $attribute_name, true);
-
-                            // Actualizar el valor del atributo "subprogramas"
-                            $current_values = get_post_meta($program_product_id, '_product_attributes', true);
-                            if (isset($current_values[$attribute_name])) {
-                                $current_values[$attribute_name]['value'] .= (empty($current_values[$attribute_name]['value']) ? '' : '| ') . $name_subprogram;
-                            }
-                            update_post_meta($program_product_id, '_product_attributes', $current_values);
-                        }
-
-                    }
-
-                    // crea el array con los datos del subprograma
-                    $subprogram_data = [
-                        'is_active' => $is_active_subprogram ? 1 : 0,
-                        'name' => $name_subprogram,
-                        'price' => $price,
-                        'product_id' => (string) $product_id ?? null,
-                    ];
-
-                    // actualiza en caso de que ya exista o anade un subprograma nuevo
-                    if ($subprogram['id']) {
-                        $subprograms[$subprogram['id']] = $subprogram_data;
-                    } else {
-                        $subprograms[(array_key_last($subprograms) ?? 0) + 1] = $subprogram_data;
-                        update_post_meta($product_id, '_sku', $identificator . "-" . (array_key_last($subprograms) + 1));
-                    }
-                }
-            }
+            // Prepara los datos a insertar o actualizar
+            $data = [
+                'is_active' => $is_active,
+                'program_identificator' => $program_identificator,
+                'identificator' => $identificator,
+                'name' => $name,
+                'description' => $description,
+            ];
 
             // crea o actualiza el sub programa
             if (!empty($program_id)) {
-
-                $wpdb->update($table_programs, [
-                    'name' => $name,
-                    'description' => $description,
-                    'total_price' => $total_price,
-                    'is_active' => $is_active,
-                    'subprogram' => json_encode($subprograms) ?? null,
-                ], ['id' => $program_id]);
-
+                // Actualizar el registro
+                $wpdb->update($table_student_program, $data, ['id' => $program_id]);
+                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             } else {
-
-                if (!empty($subprograms)) {
-                    //pone indices a los subprogramas que serviran como ids
-                    $index = range(1, count($subprograms));
-                    $subprograms = array_combine($index, $subprograms);
-
-                    $subprogram = json_encode($subprograms);
-                } else {
-                    $subprogram = null;
-                }
-
-                $wpdb->insert($table_programs, [
-                    'identificator' => $identificator,
-                    'name' => $name,
-                    'description' => $description,
-                    'total_price' => $total_price,
-                    'is_active' => $is_active,
-                    'product_id' => $program_product_id,
-                    'subprogram' => $subprogram,
-                ]);
-
-                $program_id = $wpdb->insert_id;
+                // Insertar un nuevo registro
+                $wpdb->insert($table_student_program, $data);
+                setcookie('message', __('New record added successfully.', 'edusystem'), time() + 10, '/');
             }
 
-            setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
-            wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content&section_tab=program_details&program_id=' . $program_id));
+            wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content&section_tab=careers'));
             exit;
-
         } else if ($_GET['action'] == 'save_quotas_rules') {
 
             global $wpdb;
@@ -634,8 +467,8 @@ class TT_All_Student_Program_List_Table extends WP_List_Table
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
 
-        $table_programs = $wpdb->prefix . 'programs';
-        $programs = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_programs} ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        $table_student_program = $wpdb->prefix . 'student_program';
+        $programs = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_student_program} ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
 
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
