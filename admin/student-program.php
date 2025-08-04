@@ -566,7 +566,7 @@ class TT_All_Careers_List_Table extends WP_List_Table
                 $program = get_student_program_details_by_identificator($career['program_identificator']);
                 array_push($careers_array, [
                     'id' => $career['id'],
-                    'program' => $program->name,
+                    'program' => $program->name ?? 'N/A',
                     'identificator' => $career['identificator'],
                     'status' => $career['is_active'] ? 'Active' : 'Inactive',
                     'name' => $career['name'],
@@ -718,7 +718,7 @@ class TT_All_Mentions_List_Table extends WP_List_Table
                 array_push($mentions_array, [
                     'id' => $mention['id'],
                     'identificator' => $mention['identificator'],
-                    'career' => $career->name,
+                    'career' => $career->name ?? 'N/A',
                     'status' => $mention['is_active'] ? 'Active' : 'Inactive',
                     'name' => $mention['name'],
                     'description' => $mention['description'],
