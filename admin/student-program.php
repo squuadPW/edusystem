@@ -8,7 +8,7 @@ function add_admin_form_student_program_content()
             if ($_GET['from'] == 'programs') {
                 global $wpdb;
                 $program_id = $_GET['program_id'];
-                $program = get_program_details($program_id);
+                $program = get_student_program_details($program_id);
                 include(plugin_dir_path(__FILE__) . 'templates/student-program-details.php');
             } else if ($_GET['from'] == 'careers') {
                 global $wpdb;

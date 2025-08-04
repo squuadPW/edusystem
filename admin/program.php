@@ -607,6 +607,15 @@ function get_program_details($id)
     return $program;
 }
 
+function get_student_program_details($id)
+{
+    global $wpdb;
+    $table_student_program = $wpdb->prefix . 'student_program';
+
+    $program = $wpdb->get_row("SELECT * FROM {$table_student_program} WHERE id={$id}");
+    return $program;
+}
+
 function get_career_details($id)
 {
     global $wpdb;

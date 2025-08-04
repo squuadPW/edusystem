@@ -10,7 +10,7 @@
     ?>
 
     <div style="display:flex;width:100%;">
-        <a class="button button-outline-primary" href="<?= admin_url("/admin.php?page=add_admin_form_student_program_content" ) ?? $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
+        <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder admin-add-offer container-programs" style="width: 70%">
