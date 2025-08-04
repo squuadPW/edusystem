@@ -65,8 +65,8 @@ function add_admin_form_student_program_content()
 
             if ($identificator_exists > 0) {
                 // Si el identificador ya existe, establece un mensaje de error y redirige.
-                setcookie('message', __('Error: The identifier already exists.', 'edusystem'), time() + 10, '/');
-                wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content&section_tab=careers'));
+                setcookie('message-error', __('Error: The identifier already exists.', 'edusystem'), time() + 10, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content'));
                 exit;
             }
 
@@ -251,7 +251,7 @@ function add_admin_form_student_program_content()
 
             if ($identificator_exists > 0) {
                 // Si el identificador ya existe, establece un mensaje de error y redirige.
-                setcookie('message', __('Error: The identifier already exists.', 'edusystem'), time() + 10, '/');
+                setcookie('message-error', __('Error: The identifier already exists.', 'edusystem'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content&section_tab=careers'));
                 exit;
             }
@@ -300,8 +300,8 @@ function add_admin_form_student_program_content()
 
             if ($identificator_exists > 0) {
                 // Si el identificador ya existe, establece un mensaje de error y redirige.
-                setcookie('message', __('Error: The identifier already exists.', 'edusystem'), time() + 10, '/');
-                wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content&section_tab=careers'));
+                setcookie('message-error', __('Error: The identifier already exists.', 'edusystem'), time() + 10, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content&section_tab=mentions'));
                 exit;
             }
 

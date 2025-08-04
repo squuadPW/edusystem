@@ -795,9 +795,9 @@ function check_program_identificator_exists() {
     $identificator = sanitize_text_field($_POST['identificator']);
     
     global $wpdb;
-    $table_name = $wpdb->prefix . 'programs';
+    $table_student_program = $wpdb->prefix . 'student_program';
     $exists = $wpdb->get_var( $wpdb->prepare(
-        "SELECT id FROM $table_name WHERE identificator LIKE %s",
+        "SELECT id FROM $table_student_program WHERE identificator LIKE %s",
         $identificator
     ));
 
