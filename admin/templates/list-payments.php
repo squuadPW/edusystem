@@ -24,7 +24,7 @@ if ($_GET['page'] == 'add_admin_form_payments_content') {
 		<?php if ($_GET['page'] == 'add_admin_form_payments_plans_content') { ?>
 			<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 				<a href="<?= admin_url('admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details'); ?>"
-					class="button button-outline-primary"><?= __('Add program', 'edusystem'); ?></a>
+					class="button button-outline-primary"><?= __('Add new plan', 'edusystem'); ?></a>
 			</div>
 		<?php } ?>
 		<form action="" id="post-filter" method="post">
