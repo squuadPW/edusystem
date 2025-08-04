@@ -1364,7 +1364,6 @@ function create_user_institute($institute)
 
         if (is_wp_error($user_id)) {
             // Handle error during user creation (e.g., log it or display a message)
-            error_log('Error creating institute user: ' . $user_id->get_error_message());
             return; // Exit if user creation failed
         }
 

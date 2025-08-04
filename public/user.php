@@ -56,7 +56,6 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
     // Handle user creation errors
     if (is_wp_error($user_id)) {
         // Log the error for debugging purposes
-        error_log('Error creating user for order ' . $order_id . ': ' . $user_id->get_error_message());
         return;
     }
 
@@ -153,6 +152,8 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
         if ($email_new_student) {
             $email_new_student->trigger($student_id);
         }
+
+        insert_data_student($order); // Assuming this function exists and works
 
         if (isset($_COOKIE['is_scholarship']) && !empty($_COOKIE['is_scholarship'])) {
             save_scholarship(); // Assuming this function exists and works

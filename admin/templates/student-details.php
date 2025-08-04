@@ -192,7 +192,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                                         <th colspan="2" style="font-weight:400; text-align: center">
                                             <label for="program"><b><?php _e('Program', 'edusystem'); ?></b></label><br>
                                             <input readonly type="text" id="program" name="program"
-                                                value="<?php echo get_name_program($student->program_id); ?>"
+                                                value="<?php echo get_name_program_student($student->id); ?>"
                                                 style="width:100%">
                                         </th>
                                         <th scope="row" style="font-weight:400; text-align: center">

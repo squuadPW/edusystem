@@ -82,7 +82,7 @@ if (in_array('student', $roles)) {
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                         data-title="<?= __('Program', 'edusystem') ?>">
-                        <?= $program = get_name_program($row->program_id); ?>
+                        <?= $program = get_name_program_student($row->id); ?>
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                         data-title="<?= __('Email', 'edusystem') ?>">

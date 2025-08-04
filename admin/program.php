@@ -607,6 +607,62 @@ function get_program_details($id)
     return $program;
 }
 
+function get_career_details($id)
+{
+    global $wpdb;
+    $table_careers_by_program = $wpdb->prefix . 'careers_by_program';
+
+    $career = $wpdb->get_row("SELECT * FROM {$table_careers_by_program} WHERE id={$id}");
+    return $career;
+}
+
+
+function get_mention_details($id)
+{
+    global $wpdb;
+    $table_mentions_by_career = $wpdb->prefix . 'mentions_by_career';
+
+    $mention = $wpdb->get_row("SELECT * FROM {$table_mentions_by_career} WHERE id={$id}");
+    return $mention;
+}
+
+
+function get_program_details_by_identificator($identificator)
+{
+    global $wpdb;
+    $table_programs = $wpdb->prefix . 'programs';
+
+    $program = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$identificator}'");
+    return $program;
+}
+
+function get_student_program_details_by_identificator($identificator)
+{
+    global $wpdb;
+    $table_student_program = $wpdb->prefix . 'student_program';
+
+    $program = $wpdb->get_row("SELECT * FROM {$table_student_program} WHERE identificator='{$identificator}'");
+    return $program;
+}
+
+function get_career_details_by_identificator($identificator)
+{
+    global $wpdb;
+    $table_careers_by_program = $wpdb->prefix . 'careers_by_program';
+
+    $program = $wpdb->get_row("SELECT * FROM {$table_careers_by_program} WHERE identificator='{$identificator}'");
+    return $program;
+}
+
+function get_mention_details_by_identificator($identificator)
+{
+    global $wpdb;
+    $table_mentions_by_career = $wpdb->prefix . 'mentions_by_career';
+
+    $program = $wpdb->get_row("SELECT * FROM {$table_mentions_by_career} WHERE identificator='{$identificator}'");
+    return $program;
+}
+
 /**
  * Obtiene las reglas de cuotas asociadas a un programa específico
  * Realiza una consulta a la tabla de reglas de cuotas (quota_rules)
@@ -733,6 +789,66 @@ function check_program_identificator_exists() {
     $table_name = $wpdb->prefix . 'programs';
     $exists = $wpdb->get_var( $wpdb->prepare(
         "SELECT id FROM $table_name WHERE identificator LIKE %s",
+        $identificator
+    ));
+
+    if( $exists ){
+        wp_send_json_success([
+            'exists' => true,
+            'message' => __('Identifier in use, please choose another.','edusystem'),
+        ]);
+    } else {
+        wp_send_json_success([
+            'exists' => false,
+            'message' => __('Identifier is not in use.','edusystem'),
+        ]);
+    } 
+}
+
+add_action('wp_ajax_check_career_identificator_exists', 'check_career_identificator_exists');
+add_action('wp_ajax_nopriv_check_career_identificator_exists', 'check_career_identificator_exists');
+function check_career_identificator_exists() {
+   
+    if ( !isset($_POST['identificator']) || empty($_POST['identificator']) ) {
+        wp_send_json_error('Identificador no proporcionado');
+    }
+    
+    $identificator = sanitize_text_field($_POST['identificator']);
+    
+    global $wpdb;
+    $table_careers_by_program = $wpdb->prefix . 'careers_by_program';
+    $exists = $wpdb->get_var( $wpdb->prepare(
+        "SELECT id FROM $table_careers_by_program WHERE identificator LIKE %s",
+        $identificator
+    ));
+
+    if( $exists ){
+        wp_send_json_success([
+            'exists' => true,
+            'message' => __('Identifier in use, please choose another.','edusystem'),
+        ]);
+    } else {
+        wp_send_json_success([
+            'exists' => false,
+            'message' => __('Identifier is not in use.','edusystem'),
+        ]);
+    } 
+}
+
+add_action('wp_ajax_check_mention_identificator_exists', 'check_mention_identificator_exists');
+add_action('wp_ajax_nopriv_check_mention_identificator_exists', 'check_mention_identificator_exists');
+function check_mention_identificator_exists() {
+   
+    if ( !isset($_POST['identificator']) || empty($_POST['identificator']) ) {
+        wp_send_json_error('Identificador no proporcionado');
+    }
+    
+    $identificator = sanitize_text_field($_POST['identificator']);
+    
+    global $wpdb;
+    $table_mentions_by_career = $wpdb->prefix . 'mentions_by_career';
+    $exists = $wpdb->get_var( $wpdb->prepare(
+        "SELECT id FROM $table_mentions_by_career WHERE identificator LIKE %s",
         $identificator
     ));
 

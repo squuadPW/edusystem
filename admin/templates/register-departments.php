@@ -192,6 +192,12 @@
                         value="manager_payments_aes" id="manager_payments_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payments_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_payments_aes" <?= !in_array('manager_payments_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?>><?= __('Payments', 'edusystem'); ?></label>
                 </div>
+
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_payment_plans', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_payment_plans" id="manager_payment_plans" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payment_plans'])) ? 'checked' : ''; ?>>
+                    <label for="manager_payment_plans" <?= !in_array('manager_payment_plans', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Payment plans', 'edusystem'); ?></label>
+                </div>
             </div>
 
             <div class="capability-group">

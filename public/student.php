@@ -901,6 +901,25 @@ function update_elective_student($student_id, $status_id)
  * independientemente de la cantidad de documentos.
  *
  * @param int $student_id ID del estudiante.
+ * @param int $program_identificator identificador del programa
+ */
+function insert_register_program($student_id, $program_identificator)
+{
+    global $wpdb;
+    $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
+    $wpdb->insert($table_programs_by_student, [
+        'student_id' => $student_id,
+        'program_identificator' => $program_identificator
+    ]);
+}
+
+/**
+ * Inserta los registros de documentos requeridos para un estudiante, evitando duplicados.
+ *
+ * Esta versión está optimizada para usar solo dos consultas a la base de datos,
+ * independientemente de la cantidad de documentos.
+ *
+ * @param int $student_id ID del estudiante.
  * @param int $grade_id ID del grado del estudiante.
  */
 function insert_register_documents($student_id, $grade_id)
@@ -1017,6 +1036,46 @@ function get_name_grade($grade_id)
     $grade = $wpdb->get_row("SELECT * FROM {$table_grades} WHERE id = " . $grade_id);
     return $grade->name;
 }
+
+function get_name_program_student($student_id)
+{
+    global $wpdb;
+
+    $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
+    $table_programs = $wpdb->prefix . 'programs';
+
+    // Get all program_identificators for the given student_id
+    $program_identificators = $wpdb->get_col(
+        $wpdb->prepare(
+            "SELECT program_identificator FROM %i WHERE student_id = %d",
+            $table_programs_by_student,
+            $student_id
+        )
+    );
+
+    // If no program_identificators are found, return an empty string
+    if (empty($program_identificators)) {
+        return '';
+    }
+
+    // Prepare the list of identificators for the SQL IN clause
+    // array_map and esc_sql are used to properly escape each identificator
+    $placeholders = implode(', ', array_fill(0, count($program_identificators), '%s'));
+    $escaped_identificators = array_map('esc_sql', $program_identificators);
+
+    // Get the program names from the wp_programs table
+    $program_names = $wpdb->get_col(
+        $wpdb->prepare(
+            "SELECT name FROM %i WHERE identificator IN ($placeholders)",
+            $table_programs,
+            ...$escaped_identificators
+        )
+    );
+
+    // Return the program names as a comma-separated string
+    return implode(', ', $program_names);
+}
+
 
 function get_name_program($identificator)
 {

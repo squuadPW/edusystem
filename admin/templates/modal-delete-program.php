@@ -5,7 +5,7 @@
 			<span class="modal-close disabled"><span class="dashicons dashicons-no-alt"></span></span>
 		</div>
 		<form method="post"
-			action="<?= admin_url('/admin.php?page=add_admin_form_program_content&action=delete_program'); ?>">
+			action="<?= admin_url('/admin.php?page=' . $_GET['page'] . '&action=delete_program'); ?>">
 			<div class="modal-body" style="margin: 10px; padding: 0px">
 				<div class="display:flex">
 					<p><?= __('Do you want to remove this program?', 'edusystem'); ?></p>

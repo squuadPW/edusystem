@@ -1025,7 +1025,7 @@ function list_report_students()
             $html .= "<td data-colname='" . __('Parent email', 'edusystem') . "'>" . $parent->user_email . "</td>";
             $html .= "<td data-colname='" . __('Country', 'edusystem') . "'>" . $student->country . "</td>";
             $html .= "<td data-colname='" . __('Grade', 'edusystem') . "'>" . get_name_grade($student->grade_id) . "</td>";
-            $html .= "<td data-colname='" . __('Program', 'edusystem') . "'>" . get_name_program($student->program_id) . "</td>";
+            $html .= "<td data-colname='" . __('Program', 'edusystem') . "'>" . get_name_program_student($student->id) . "</td>";
             $html .= "<td data-colname='" . __('Institute', 'edusystem') . "'>" . $student->name_institute . "</td>";
             $html .= "</tr>";
         }
