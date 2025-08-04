@@ -1,8 +1,8 @@
 <div class="wrap">
     <?php if (isset($program) && !empty($program)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Program details', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Payment plan details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Create program', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Create payment plan', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php
@@ -24,7 +24,7 @@
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Program Information', 'edusystem'); ?></b>
+                                    <b><?= __('Payment plan Information', 'edusystem'); ?></b>
                                 </h3>
 
                                 <div style="margin: 18px;">
