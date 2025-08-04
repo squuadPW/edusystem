@@ -2,7 +2,7 @@
 	<div class='modal-content'>
 		<div class="modal-header">
 			<h3 style="font-size:20px;"><?= __('Delete mention') ?></h3>
-			<span class="modal-close disabled"><span class="dashicons dashicons-no-alt"></span></span>
+			<span class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
 		</div>
 		<form method="post"
 			action="<?= admin_url('/admin.php?page=' . $_GET['page'] . '&action=delete_mention'); ?>">
