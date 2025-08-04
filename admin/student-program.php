@@ -81,6 +81,7 @@ function add_admin_form_student_program_content()
             // crea o actualiza el sub programa
             if (!empty($program_id)) {
                 // Actualizar el registro
+                unset($data['identificator']);
                 $wpdb->update($table_student_program, $data, ['id' => $program_id]);
                 setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             } else {
@@ -268,6 +269,7 @@ function add_admin_form_student_program_content()
             // crea o actualiza el sub programa
             if (!empty($career_id)) {
                 // Actualizar el registro
+                unset($data['identificator']);
                 $wpdb->update($table_careers_by_program, $data, ['id' => $career_id]);
                 setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             } else {
@@ -317,6 +319,7 @@ function add_admin_form_student_program_content()
             // crea o actualiza el sub programa
             if (!empty($mention_id)) {
                 // Actualizar el registro
+                unset($data['identificator']);
                 $wpdb->update($table_mentions_by_career, $data, ['id' => $mention_id]);
                 setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             } else {
