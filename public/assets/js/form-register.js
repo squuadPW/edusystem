@@ -183,16 +183,16 @@ document.addEventListener("DOMContentLoaded", function () {
                           ? `${grade.name} ${grade.description}`
                           : grade.name
                         : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-                  } else if (grades_default && grades_default[index]) {
-                    // Priority 3: Use grades_default
-                    const grade = grades_default[index];
-                    // Assuming grades_default elements also have name and description or are just strings
-                    optionText =
-                      typeof grade === "object" && grade !== null && grade.name
-                        ? grade.description
-                          ? `${grade.name} ${grade.description}`
-                          : grade.name
-                        : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+                  // } else if (grades_default && grades_default[index]) {
+                  //   // Priority 3: Use grades_default
+                  //   const grade = grades_default[index];
+                  //   // Assuming grades_default elements also have name and description or are just strings
+                  //   optionText =
+                  //     typeof grade === "object" && grade !== null && grade.name
+                  //       ? grade.description
+                  //         ? `${grade.name} ${grade.description}`
+                  //         : grade.name
+                  //       : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
                   } else {
                     // Fallback: If no specific grade is found, use the subprogram name
                     optionText = subprogram.name || "N/A";
