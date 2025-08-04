@@ -1,5 +1,81 @@
 <?php
 
+add_action('woocommerce_checkout_order_created', 'save_essential_data_order', 10, 1);
+function save_essential_data_order($order) {
+
+    /* // Verificar si algún producto es de la categoría "programs"
+    $has_program = false;
+    foreach ($order->get_items() as $item) {
+        $product = $item->get_product();
+        if ( $product && has_term('programs', 'product_cat', $product->get_id()) ) {
+            $has_program = true;
+            break;
+        }
+    }
+
+    // Solo continuar si hay al menos un producto de la categoría "programs"
+    if ( !$has_program ) return; */
+
+    // datos generales
+    $order->update_meta_data('payment_method_selected', $_COOKIE['payment_method_selected'] ?? null );
+    $order->update_meta_data('is_scholarship', $_COOKIE['is_scholarship'] ?? null );
+    $order->update_meta_data('one_time_payment', $_COOKIE['one_time_payment'] ?? null );
+    $order->update_meta_data('from_webinar', $_COOKIE['from_webinar'] ?? null );
+    $order->update_meta_data('crm_id', $_COOKIE['crm_id'] ?? null );
+
+    // obtiene el nombre del instituto
+    if ( isset($_COOKIE['institute_id']) && !empty($_COOKIE['institute_id']) ) {
+        $institute = get_institute_details($_COOKIE['institute_id']);
+        $name_institute = $institute->name ?? null; 
+    } else {
+        $name_institute = $_COOKIE['name_institute'] ?? null;
+    }
+    
+    // datos del registro del estudiante
+    $registration_data = json_encode([
+        "student" => [
+            "name" => $_COOKIE['name_student'] ?? null,
+            "middle_name" => $_COOKIE['middle_name_student'] ?? null,
+            "last_name" => $_COOKIE['last_name_student'] ?? null,
+            "middle_last_name" => $_COOKIE['middle_last_name_student'] ?? null,
+            "type_document" => $_COOKIE['document_type'] ?? null,
+            "id_document" => $_COOKIE['id_document'] ?? null,
+            "birth_date" => $_COOKIE['birth_date'] ?? null,
+            "gender" => $_COOKIE['gender'] ?? null,
+            "ethnicity" => $_COOKIE['ethnicity'] ?? null,
+            "email" => $_COOKIE['email_student'] ?? null,
+            "phone" => $_COOKIE['phone_student'] ?? null,
+            "is_older" => $_COOKIE['is_older'] ?? null
+        ],
+        "parent" => [
+            "agent_name" => $_COOKIE['agent_name'] ?? null,
+            "agent_last_name" => $_COOKIE['agent_last_name'] ?? null,
+            "type_document" => $_COOKIE['parent_document_type'] ?? null,
+            "id_document" => $_COOKIE['id_document_parent'] ?? null,
+            "birth_date" => $_COOKIE['birth_date_parent'] ?? null,
+            "gender" => $_COOKIE['gender_parent'] ?? null,
+            "ethnicity" => $_COOKIE['ethnicity_parent'] ?? null,
+            "email" => $_COOKIE['email_partner'] ?? null,
+            "phone" => $_COOKIE['number_partner'] ?? null
+        ],
+        "program" => [
+            "program_id" => $_COOKIE['program_id'] ?? null,
+            "program_id_number" => $_COOKIE['program_id_number'] ?? null,
+            "initial_grade" => $_COOKIE['initial_grade'] ?? null,
+            "institute_id" => $_COOKIE['institute_id'] ?? null,
+            "name_institute" => $name_institute
+        ],
+        "access" => [
+            "password" => base64_encode( sanitize_text_field(wp_unslash( $_COOKIE['password'] )) ) ?? null
+        ]
+    ]);
+
+    $order->update_meta_data('registration_data', $registration_data);
+
+    $order->save();
+}
+
+
 function save_student()
 {
     if (
@@ -712,8 +788,12 @@ function get_student_from_id($student_id)
     return $data;
 }
 
-function insert_student($customer_id)
+function insert_student($order)
 {
+    $customer_id = $order->get_customer_id();
+    $registration_data = $order->meta_exists('registration_data') ?  json_decode( $order->get_meta('registration_data'), true ) : null;
+    $student = $registration_data['student'];
+    $program = $registration_data['program'];
 
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
@@ -721,36 +801,36 @@ function insert_student($customer_id)
     $code = $load['code'];
     $cut = $load['cut'];
 
-    $birth_date = date_i18n('Y-m-d', strtotime($_COOKIE['birth_date']));
+    $birth_date = date_i18n('Y-m-d', strtotime($student['birth_date']));
     $today = new DateTime();
     $age = $today->diff(new DateTime($birth_date))->y;
 
-    $exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '{$_COOKIE['email_student']}'");
+    $exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '{$student['email']}'");
     if (!$exist) {
         $wpdb->insert($table_students, [
-            'name' => $_COOKIE['name_student'],
-            'type_document' => $_COOKIE['document_type'],
-            'id_document' => $_COOKIE['id_document'],
+            'name' => $student['name'],
+            'type_document' => $student['type_document'],
+            'id_document' => $student['id_document'],
             'academic_period' => $code,
             'initial_cut' => $cut,
-            'middle_name' => $_COOKIE['middle_name_student'],
-            'last_name' => $_COOKIE['last_name_student'],
-            'middle_last_name' => $_COOKIE['middle_last_name_student'],
-            'birth_date' => date_i18n('Y-m-d', strtotime($_COOKIE['birth_date'])),
-            'grade_id' => $_COOKIE['initial_grade'],
-            'name_institute' => strtoupper($_COOKIE['name_institute']),
-            'institute_id' => $_COOKIE['institute_id'],
-            'postal_code' => $_POST['billing_postcode'],
-            'gender' => $_COOKIE['gender'],
-            'program_id' => $_COOKIE['program_id'],
+            'middle_name' => $student['middle_name'],
+            'last_name' => $student['last_name'],
+            'middle_last_name' => $student['middle_last_name'],
+            'birth_date' => date_i18n('Y-m-d', strtotime($student['birth_date'])),
+            'grade_id' => $program['initial_grade'],
+            'name_institute' => strtoupper($program['name_institute']),
+            'institute_id' => $program['institute_id'],
+            'postal_code' => $order->get_billing_postcode(),
+            'gender' => $student['gender'],
+            'program_id' => $program['program_id'],
             'partner_id' => $customer_id,
-            'phone' => $_COOKIE['phone_student'],
-            'email' => $_COOKIE['email_student'],
+            'phone' => $student['phone'],
+            'email' => $student['email'],
             'status_id' => 0,
             'set_password' => ($age >= 18 ? 1 : 0),
-            'country' => $_POST['billing_country'],
-            'city' => $_POST['billing_city'],
-            'ethnicity' => $_COOKIE['ethnicity'],
+            'country' => $order->get_billing_country(),
+            'city' => $order->get_billing_city(),
+            'ethnicity' => $student['ethnicity'],
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ]);
@@ -1235,3 +1315,27 @@ function get_active_students()
 
     return $students_active;
 }
+
+/**
+ * Obtiene el ID del instituto asociado a un estudiante dado su ID.
+ * Utiliza la base de datos de WordPress para realizar la consulta.
+ *
+ * @param int $student_id ID del estudiante cuyo instituto se desea obtener.
+ * 
+ * @return int|null ID del instituto si se encuentra, null en caso contrario.
+ */
+function get_institute_by_student( ?int $student_id = null ) {
+
+    if ( is_null($student_id) ) return null; // Retorna null si no se proporciona un ID de estudiante
+
+    global $wpdb;
+    $institute_id = $wpdb->get_var( $wpdb->prepare("SELECT institute_id FROM {$wpdb->prefix}students WHERE id = %d", $student_id) );
+
+    return (int) $institute_id ?? null;
+}
+
+
+
+
+
+
