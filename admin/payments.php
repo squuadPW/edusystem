@@ -1145,7 +1145,7 @@ function add_admin_form_payments_content()
             global $wpdb;
             $program_id = $_GET['program_id'];
             $program = get_program_details($program_id);
-            $programs = get_student_programs();
+            // $programs = get_student_programs();
             include(plugin_dir_path(__FILE__) . 'templates/payment-plans-details.php');
         } else if ($_GET['section_tab'] == 'quotas_rules_programs') {
             global $wpdb;

@@ -39,7 +39,7 @@
                                         </div>
                                     </div>
 
-                                    <div style="font-weight:400;">
+                                    <!-- <div style="font-weight:400;">
                                         <label for="hc"><b><?= __('Program to which it belongs', 'edusystem'); ?></b></label><br>
                                         <select name="identificator" required>
                                             <option value="" selected>Select a program</option>
@@ -47,9 +47,9 @@
                                                 <option value="<?= $student_program->identificator ?>" <?= ($student_program->identificator == $program->identificator) ? 'selected' : ''; ?>><?= $student_program->name ?></option>
                                             <?php } ?>
                                         </select>
-                                    </div>
+                                    </div> -->
 
-                                    <!-- <div style="font-weight:400;" class="space-offer">
+                                    <div style="font-weight:400;" class="space-offer">
                                         <label for="identificator">
                                             <b><?= __('Identificator', 'edusystem'); ?></b>
                                             <span class="text-danger">*</span>
@@ -62,7 +62,7 @@
                                             <span id="error-identificator" class="input-error" ></span>
                                         </div>
                                         
-                                    </div> -->
+                                    </div>
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="name"><b><?= __('Name', 'edusystem'); ?></b><span
