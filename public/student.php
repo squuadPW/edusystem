@@ -1315,3 +1315,27 @@ function get_active_students()
 
     return $students_active;
 }
+
+/**
+ * Obtiene el ID del instituto asociado a un estudiante dado su ID.
+ * Utiliza la base de datos de WordPress para realizar la consulta.
+ *
+ * @param int $student_id ID del estudiante cuyo instituto se desea obtener.
+ * 
+ * @return int|null ID del instituto si se encuentra, null en caso contrario.
+ */
+function get_institute_by_student( ?int $student_id = null ) {
+
+    if ( is_null($student_id) ) return null; // Retorna null si no se proporciona un ID de estudiante
+
+    global $wpdb;
+    $institute_id = $wpdb->get_var( $wpdb->prepare("SELECT institute_id FROM {$wpdb->prefix}students WHERE id = %d", $student_id) );
+
+    return (int) $institute_id ?? null;
+}
+
+
+
+
+
+
