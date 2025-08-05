@@ -3544,8 +3544,9 @@ add_action('wp_ajax_nopriv_load_careers_by_program', 'load_careers_by_program_ca
 
 function load_careers_by_program_callback()
 {
-    $program_identificator = $_POST['program_identificator'];
-    $careers = get_career_by_program($program_identificator);
+    $program_id = $_POST['program_id'];
+    $program = get_student_program_details($program_id);
+    $careers = get_career_by_program($program->identificator);
 
     wp_send_json_success(array('careers' => $careers));
     exit;
@@ -3556,8 +3557,9 @@ add_action('wp_ajax_nopriv_load_mentions_by_career', 'load_mentions_by_career_ca
 
 function load_mentions_by_career_callback()
 {
-    $career_identificator = $_POST['career_identificator'];
-    $mentions = get_mentions_by_career($career_identificator);
+    $career_id = $_POST['career_id'];
+    $career = get_career_details($career_id);
+    $mentions = get_mentions_by_career($career->identificator);
 
     wp_send_json_success(array('mentions' => $mentions));
     exit;

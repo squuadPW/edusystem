@@ -231,9 +231,6 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("name-institute-field").style.display = "none";
       document.getElementById("grade_select").style.display = "none";
 
-      const numberOfOptions =
-        document.getElementById("institute_id").options.length;
-
       let programId;
 
       if (
@@ -245,7 +242,6 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         const selectedOption = e.target.selectedOptions[0];
         programId = selectedOption.value;
-        programIdentificator = selectedOption.getAttribute("identificator");
       }
 
       const XHR = new XMLHttpRequest();
@@ -259,7 +255,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const params = new URLSearchParams({
         action: "load_careers_by_program",
-        program_identificator: programIdentificator,
+        program_id: programId,
       });
 
       XHR.onload = () => {
@@ -284,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const option = document.createElement("option");
             option.value = index + 1;
             option.textContent = career.name;
-            option.setAttribute("data-identificator", career.identificator); // ¡Aquí está la corrección!
+            // option.setAttribute("data-identificator", career.identificator); // ¡Aquí está la corrección!
             careerSelect.appendChild(option);
           });
 
@@ -345,7 +341,6 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         const selectedOption = e.target.selectedOptions[0];
         careerId = selectedOption.value;
-        careerIdentificator = selectedOption.getAttribute("data-identificator"); // ¡Y aquí la otra corrección!
       }
 
       const XHR = new XMLHttpRequest();
@@ -359,7 +354,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const params = new URLSearchParams({
         action: "load_mentions_by_career",
-        career_identificator: careerIdentificator,
+        career_id: careerId,
       });
 
       XHR.onload = () => {
@@ -384,7 +379,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const option = document.createElement("option");
             option.value = index + 1;
             option.textContent = mention.name;
-            option.setAttribute("data-identificator", mention.identificator); // ¡Aquí está la corrección!
             mentionSelect.appendChild(option);
           });
         }
@@ -395,6 +389,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (career.selectedIndex === 1) {
       career.dispatchEvent(new Event("change"));
+    }
+  }
+
+  if (mention) {
+    mention.addEventListener("change", (e) => {
+      document.getElementById("institute_id").value = "";
+      document.getElementById("institute-id-select").style.display = "none";
+      document.getElementById("name-institute-field").style.display = "none";
+      document.getElementById("grade_select").style.display = "none";
+
+      const numberOfOptions =
+        document.getElementById("institute_id").options.length;
+      if (numberOfOptions == 3) {
+        document.getElementById("institute_id").required = false;
+        document.getElementById("institute-id-select").style.display = "none";
+        document.getElementById("institute_id").selectedIndex = 1;
+        document
+          .getElementById("institute_id")
+          .dispatchEvent(new Event("change"));
+      } else {
+        document.getElementById("institute_id").required = true;
+        document.getElementById("institute-id-select").style.display = "block";
+      }
+    });
+
+    if (mention.selectedIndex === 1) {
+      mention.dispatchEvent(new Event("change"));
     }
   }
 

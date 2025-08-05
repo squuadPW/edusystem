@@ -210,7 +210,7 @@
                     <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                 <?php } ?>
                 <?php foreach ($programs as $program): ?>
-                    <option value="<?= $program->id; ?>" identificator="<?= $program->identificator; ?>" <?= count($programs) == 1 ? 'selected' : '' ?>><?= $program->name; ?></option>
+                    <option value="<?= $program->id; ?>" <?= count($programs) == 1 ? 'selected' : '' ?>><?= $program->name; ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
