@@ -176,7 +176,10 @@ function form_asp_psp($atts)
             'fixed_fee_inscription' => false,
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
-            'limit_age' => 21
+            'limit_age' => 21,
+            'program' => '',
+            'career' => '',
+            'mention' => ''
         ),
         $atts,
         'form_asp_psp'
@@ -194,6 +197,9 @@ function form_asp_psp($atts)
     $fixed_fee_inscription = $atts['fixed_fee_inscription'];
     $max_age = $atts['max_age'];
     $limit_age = $atts['limit_age'];
+    $program = $atts['program'];
+    $career = $atts['career'];
+    $mention = $atts['mention'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
@@ -221,7 +227,10 @@ function student_registration_form($atts)
             'fixed_fee_inscription' => false,
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
-            'limit_age' => 21
+            'limit_age' => 21,
+            'program' => '',
+            'career' => '',
+            'mention' => ''
         ),
         $atts,
         'student_registration_form'
@@ -239,7 +248,10 @@ function student_registration_form($atts)
     $fixed_fee_inscription = $atts['fixed_fee_inscription'];
     $max_age = $atts['max_age'];
     $limit_age = $atts['limit_age'];
-
+    $program = $atts['program'];
+    $career = $atts['career'];
+    $mention = $atts['mention'];
+    
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
     $grades = get_grades();
@@ -3544,10 +3556,9 @@ add_action('wp_ajax_nopriv_load_data_program', 'load_data_program_callback');
 
 function load_data_program_callback()
 {
-    $program_id = $_GET['program_id'];
-    $program = get_student_program_details($program_id);
-    $careers = get_career_by_program($program->identificator);
-    $payment_plans = get_associated_plans_by_program_id($program->identificator);
+    $program_identificator = $_GET['program_identificator'];
+    $careers = get_career_by_program($program_identificator);
+    $payment_plans = get_associated_plans_by_program_id($program_identificator);
 
     wp_send_json_success(array('careers' => $careers, 'payment_plans' => $payment_plans));
     exit;
@@ -3558,9 +3569,8 @@ add_action('wp_ajax_nopriv_load_mentions_by_career', 'load_mentions_by_career_ca
 
 function load_mentions_by_career_callback()
 {
-    $career_id = $_GET['career_id'];
-    $career = get_career_details($career_id);
-    $mentions = get_mentions_by_career($career->identificator);
+    $career_identificator = $_GET['career_identificator'];
+    $mentions = get_mentions_by_career($career_identificator);
 
     wp_send_json_success(array('mentions' => $mentions));
     exit;

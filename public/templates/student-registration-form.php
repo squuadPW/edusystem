@@ -25,6 +25,9 @@
         value="<?= $fixed_fee_inscription ?? '' ?>">
     <input type="hidden" name="max_age" id="max_age" value="<?= $max_age ?>">
     <input type="hidden" name="limit_age" id="limit_age" value="<?= $limit_age ?>">
+    <input type="hidden" name="program_shortcode" id="program_shortcode" value="<?= $program ?>">
+    <input type="hidden" name="career_shortcode" id="career_shortcode" value="<?= $career ?>">
+    <input type="hidden" name="mention_shortcode" id="mention_shortcode" value="<?= $mention ?>">
     <input type="hidden" id="product_id_input" name="product_id">
 
     <!-- DATOS DEL ESTUDIANTE -->
@@ -212,33 +215,50 @@
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" style="<?= $styles_shortcode ?>">
             <div class="subtitle text-align-center"><?= __('Degree details', 'edusystem'); ?></div>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select"
-            style="display: <?= count($programs) > 1 ? 'block' : 'none' ?>;">
-            <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span
-                    class="required">*</span></label>
-            <select name="program" id="program" autocomplete="off" required>
-                <option value="" <?= count($programs) > 1 ? 'selected' : '' ?>>
-                    <?= __('Select an option', 'edusystem'); ?></option>
-                <?php foreach ($programs as $program): ?>
-                    <option value="<?= $program->id; ?>" <?= count($programs) == 1 ? 'selected' : '' ?>><?= $program->name; ?>
+
+        <?php if (!isset($program) || empty($program)) { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select">
+                <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span
+                        class="required">*</span></label>
+                <select name="program" id="program" autocomplete="off" required>
+                    <option value="" selected>
+                        <?= __('Select an option', 'edusystem'); ?>
                     </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="careers_select" style="display: none">
-            <label for="career"><?= __('Career of your interest', 'edusystem'); ?><span
-                    class="required">*</span></label>
-            <select name="career" id="career" autocomplete="off" required>
-                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-            </select>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="mentions_select" style="display: none;">
-            <label for="mention"><?= __('Mention of your interest', 'edusystem'); ?><span
-                    class="required">*</span></label>
-            <select name="mention" id="mention" autocomplete="off" required>
-                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-            </select>
-        </div>
+                    <?php foreach ($programs as $program): ?>
+                        <option value="<?= $program->identificator; ?>">
+                            <?= $program->name; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        <?php } else { ?>
+            <input type="hidden" name="program" id="program" value="<?= $program ?>">
+        <?php } ?>
+
+        <?php if (!isset($career) || empty($career)) { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="careers_select" style="display: none">
+                <label for="career"><?= __('Career of your interest', 'edusystem'); ?><span
+                        class="required">*</span></label>
+                <select name="career" id="career" autocomplete="off" required>
+                    <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                </select>
+            </div>
+        <?php } else { ?>
+            <input type="hidden" name="career" id="career" value="<?= $career ?>">
+        <?php } ?>
+
+        <?php if (!isset($mention) || empty($mention)) { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="mentions_select" style="display: none;">
+                <label for="mention"><?= __('Mention of your interest', 'edusystem'); ?><span
+                        class="required">*</span></label>
+                <select name="mention" id="mention" autocomplete="off" required>
+                    <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                </select>
+            </div>
+        <?php } else { ?>
+            <input type="hidden" name="mention" id="mention" value="<?= $mention ?>">
+        <?php } ?>
+
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="institute-id-select" style="display:none">
             <label for="name_institute"><?= __('Name of School or Institution with Agreement', 'edusystem'); ?><span
                     id="institute_id_required" class="required">*</span></label>
@@ -258,6 +278,7 @@
             <label for="name_institute"><?= __('Name Institute', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata" autocomplete="off" type="text" id="name_institute" name="name_institute">
         </div>
+
         <div id="grade_select" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="display: none">
             <label for="grade" id="grade_tooltip"><?= __('Grade', 'edusystem'); ?> <span style="color: #002fbd"
                     class="dashicons dashicons-editor-help"></span><span class="required">*</span></label>
@@ -265,6 +286,7 @@
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
             </select>
         </div>
+
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <input type="checkbox" id="terms" name="terms" required>
             <?= __('Accept ', 'edusystem'); ?>

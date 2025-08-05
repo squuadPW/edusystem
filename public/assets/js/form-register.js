@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const not_institute = document.getElementById("institute_id");
   const not_institute_others = document.getElementById("institute_id_others");
   const productIdInput = document.getElementById("product_id_input");
+  const careerIdShortcode = document.getElementById("career_shortcode");
+  const mentionIdShortcode = document.getElementById("mention_shortcode");
 
   loadGradesDefault();
   function loadGradesDefault() {
@@ -231,24 +233,37 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("name-institute-field").style.display = "none";
       document.getElementById("grade_select").style.display = "none";
 
-      const programId = e.target.value;
+      const programIdentificator = e.target.value;
       const careerSelectContainer = document.getElementById("careers_select");
-      const careerSelect = document.getElementById("career");
+      const careerElement = document.getElementById("career");
 
-      // Limpiar el select de carreras y ocultar el contenedor en cada cambio
-      while (careerSelect.options.length > 1) {
-        careerSelect.remove(1);
+      // Lógica para limpiar el select si es un <select>
+      if (careerElement && careerElement.tagName === "SELECT") {
+        while (careerElement.options.length > 1) {
+          careerElement.remove(1);
+        }
+        careerSelectContainer.style.display = "none";
+        careerElement.required = false;
       }
-      careerSelectContainer.style.display = "none";
-      careerSelect.required = false;
 
-      if (!programId) {
+      if (!programIdentificator) {
         return;
       }
 
+      const isCareerSelect =
+        careerElement && careerElement.tagName === "SELECT";
+      const isCareerShortcodeValid =
+        careerIdShortcode && careerIdShortcode.value;
+
+      // Si el shortcode de la carrera existe y no es un select, no se hace nada.
+      if (isCareerShortcodeValid && !isCareerSelect) {
+        return;
+      }
+
+      // Si el shortcode de la carrera no existe o es un select, procedemos a cargar.
       const params = new URLSearchParams({
         action: "load_data_program",
-        program_id: programId,
+        program_identificator: programIdentificator,
       });
 
       try {
@@ -266,35 +281,32 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = await response.json();
         const careers = data.data.careers || [];
 
-        if (careers.length > 1) {
-          // Si hay más de una carrera, mostrar el select y llenarlo
+        if (isCareerSelect) {
           careerSelectContainer.style.display = "block";
-          careerSelect.required = true;
+          careerElement.required = true;
 
           careers.forEach((career) => {
             const option = document.createElement("option");
-            option.value = career.id;
+            option.value = career.identificator;
             option.textContent = career.name;
-            careerSelect.appendChild(option);
+            careerElement.appendChild(option);
           });
-        } else if (careers.length === 1) {
-          // Si hay una sola carrera, la agregamos como la única opción
-          const singleCareer = careers[0];
-          const option = document.createElement("option");
-          option.value = singleCareer.id;
-          option.textContent = singleCareer.name;
-          careerSelect.appendChild(option);
 
-          // Seleccionamos esta única opción
-          careerSelect.value = singleCareer.id;
-          careerSelect.dispatchEvent(new Event("change"));
+          // Si hay un shortcode válido, seleccionamos la opción correspondiente
+          if (isCareerShortcodeValid) {
+            careerElement.value = careerIdShortcode.value;
+          }
         }
       } catch (error) {
         console.error("Error al cargar las carreras:", error);
       }
     });
 
-    if (program.selectedIndex === 1) {
+    const programIdShortcode = document.getElementById("program_shortcode");
+    if (
+      (program.value && program.value !== "") ||
+      (programIdShortcode && programIdShortcode.value)
+    ) {
       program.dispatchEvent(new Event("change"));
     }
   }
@@ -308,19 +320,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const careerId = e.target.value;
       const mentionSelectContainer = document.getElementById("mentions_select");
-      const mentionSelect = document.getElementById("mention");
+      const mentionElement = document.getElementById("mention");
 
-      // Limpiar el select de menciones y ocultar el contenedor en cada cambio
-      while (mentionSelect.options.length > 1) {
-        mentionSelect.remove(1);
+      // Limpiar el select de menciones si existe y es un <select>
+      if (mentionElement && mentionElement.tagName === "SELECT") {
+        while (mentionElement.options.length > 1) {
+          mentionElement.remove(1);
+        }
+        mentionSelectContainer.style.display = "none";
+        mentionElement.required = false;
       }
-      mentionSelectContainer.style.display = "none";
-      mentionSelect.required = false;
 
       if (!careerId) {
         return;
       }
 
+      const isMentionSelect =
+        mentionElement && mentionElement.tagName === "SELECT";
+      const isMentionShortcodeValid =
+        mentionIdShortcode && mentionIdShortcode.value;
+
+      // Si el shortcode de la mención existe y no es un select, no se hace nada.
+      if (isMentionShortcodeValid && !isMentionSelect) {
+        return;
+      }
+
+      // Si el shortcode de la mención no existe o es un select, procedemos a cargar.
       const params = new URLSearchParams({
         action: "load_mentions_by_career",
         career_id: careerId,
@@ -341,35 +366,29 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = await response.json();
         const mentions = data.data.mentions || [];
 
-        if (mentions.length > 1) {
-          // Si hay más de una mención, mostrar el select y llenarlo
+        if (isMentionSelect) {
           mentionSelectContainer.style.display = "block";
-          mentionSelect.required = true;
+          mentionElement.required = true;
 
           mentions.forEach((mention) => {
             const option = document.createElement("option");
-            option.value = mention.id; // Asume que 'id' es el valor de la mención
+            option.value = mention.id;
             option.textContent = mention.name;
-            mentionSelect.appendChild(option);
+            mentionElement.appendChild(option);
           });
-        } else if (mentions.length === 1) {
-          // Si hay una sola mención, la agregamos como la única opción
-          const singleMention = mentions[0];
-          const option = document.createElement("option");
-          option.value = singleMention.id;
-          option.textContent = singleMention.name;
-          mentionSelect.appendChild(option);
 
-          // Seleccionamos esta única opción
-          mentionSelect.value = singleMention.id;
-          mentionSelect.dispatchEvent(new Event("change"));
+          // Si hay un shortcode válido, seleccionamos la opción correspondiente
+          if (isMentionShortcodeValid) {
+            mentionElement.value = mentionIdShortcode.value;
+          }
         }
       } catch (error) {
         console.error("Error al cargar las menciones:", error);
       }
     });
 
-    if (career.selectedIndex === 1) {
+    const careerIdShortcode = document.getElementById("career_shortcode");
+    if (careerIdShortcode && careerIdShortcode.value) {
       career.dispatchEvent(new Event("change"));
     }
   }
@@ -396,7 +415,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    if (mention.selectedIndex === 1) {
+    const mentionIdShortcode = document.getElementById("mention_shortcode");
+    if (mentionIdShortcode && mentionIdShortcode.value) {
       mention.dispatchEvent(new Event("change"));
     }
   }
