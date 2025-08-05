@@ -3539,16 +3539,17 @@ function load_subprograms_by_program_callback()
     exit;
 }
 
-add_action('wp_ajax_load_careers_by_program', 'load_careers_by_program_callback');
-add_action('wp_ajax_nopriv_load_careers_by_program', 'load_careers_by_program_callback');
+add_action('wp_ajax_load_data_program', 'load_data_program_callback');
+add_action('wp_ajax_nopriv_load_data_program', 'load_data_program_callback');
 
-function load_careers_by_program_callback()
+function load_data_program_callback()
 {
-    $program_id = $_POST['program_id'];
+    $program_id = $_GET['program_id'];
     $program = get_student_program_details($program_id);
     $careers = get_career_by_program($program->identificator);
+    $payment_plans = get_associated_plans_by_program_id($program->identificator);
 
-    wp_send_json_success(array('careers' => $careers));
+    wp_send_json_success(array('careers' => $careers, 'payment_plans' => $payment_plans));
     exit;
 }
 
@@ -3557,7 +3558,7 @@ add_action('wp_ajax_nopriv_load_mentions_by_career', 'load_mentions_by_career_ca
 
 function load_mentions_by_career_callback()
 {
-    $career_id = $_POST['career_id'];
+    $career_id = $_GET['career_id'];
     $career = get_career_details($career_id);
     $mentions = get_mentions_by_career($career->identificator);
 
@@ -3575,11 +3576,4 @@ function load_grades_by_country_callback()
 
     wp_send_json_success(array('grades' => $grades));
     exit;
-}
-
-add_action('wp_ajax_nopriv_load_product_id_rule', 'load_product_id_rule');
-add_action('wp_ajax_load_product_id_rule', 'load_product_id_rule');
-function load_product_id_rule()
-{
-
 }

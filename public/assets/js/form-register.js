@@ -225,97 +225,73 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (program) {
-    program.addEventListener("change", (e) => {
+    program.addEventListener("change", async (e) => {
       document.getElementById("institute_id").value = "";
       document.getElementById("institute-id-select").style.display = "none";
       document.getElementById("name-institute-field").style.display = "none";
       document.getElementById("grade_select").style.display = "none";
 
-      let programId;
+      const programId = e.target.value;
+      const careerSelectContainer = document.getElementById("careers_select");
+      const careerSelect = document.getElementById("career");
 
-      if (
-        e instanceof CustomEvent &&
-        e.detail &&
-        e.detail.value !== undefined
-      ) {
-        programId = e.detail.value;
-      } else {
-        const selectedOption = e.target.selectedOptions[0];
-        programId = selectedOption.value;
+      // Limpiar el select de carreras y ocultar el contenedor en cada cambio
+      while (careerSelect.options.length > 1) {
+        careerSelect.remove(1);
+      }
+      careerSelectContainer.style.display = "none";
+      careerSelect.required = false;
+
+      if (!programId) {
+        return;
       }
 
-      const XHR = new XMLHttpRequest();
-      XHR.open(
-        "POST",
-        `${ajax_object.ajax_url}?action=load_careers_by_program`,
-        true
-      );
-      XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      XHR.responseType = "json";
-
       const params = new URLSearchParams({
-        action: "load_careers_by_program",
+        action: "load_data_program",
         program_id: programId,
       });
 
-      XHR.onload = () => {
-        if (XHR.status === 200 && XHR.response && XHR.response.data) {
-          const careerSelect = document.querySelector('select[name="career"]');
-          while (careerSelect.options.length > 1) {
-            careerSelect.remove(1);
+      try {
+        const response = await fetch(
+          `${ajax_object.ajax_url}?${params.toString()}`,
+          {
+            method: "POST",
           }
+        );
 
-          let careers = [];
-          const data = XHR.response.data.careers;
-          if (Array.isArray(data)) {
-            careers = data;
-          } else if (data) {
-            careers = Object.values(data);
-          }
+        if (!response.ok) {
+          throw new Error("La respuesta de la red no fue exitosa.");
+        }
 
-          document.getElementById("careers_select").style.display = "block";
-          document.getElementById("career").required = true;
+        const data = await response.json();
+        const careers = data.data.careers || [];
 
-          careers.forEach((career, index) => {
+        if (careers.length > 1) {
+          // Si hay más de una carrera, mostrar el select y llenarlo
+          careerSelectContainer.style.display = "block";
+          careerSelect.required = true;
+
+          careers.forEach((career) => {
             const option = document.createElement("option");
-            option.value = index + 1;
+            option.value = career.id;
             option.textContent = career.name;
-            // option.setAttribute("data-identificator", career.identificator); // ¡Aquí está la corrección!
             careerSelect.appendChild(option);
           });
+        } else if (careers.length === 1) {
+          // Si hay una sola carrera, la agregamos como la única opción
+          const singleCareer = careers[0];
+          const option = document.createElement("option");
+          option.value = singleCareer.id;
+          option.textContent = singleCareer.name;
+          careerSelect.appendChild(option);
 
-          // OLD CONFIGURATION
-          // let subprograms = [];
-          // const data = XHR.response.data.subprograms;
-          // const product_id = XHR.response.data.product_id;
-
-          // if (Array.isArray(data)) {
-          //   subprograms = data;
-          // } else if (data) {
-          //   subprograms = Object.values(data);
-          // }
-
-          // productIdInput.value = product_id || "";
-          // subprograms_arr = subprograms;
-
-          // // Quiere decir que solo existe un instituto, opciones: (Select an option, INSTITUTO, Other)
-          // if (numberOfOptions == 3) {
-          //   document.getElementById("institute_id").required = false;
-          //   document.getElementById("institute-id-select").style.display =
-          //     "none";
-          //   document.getElementById("institute_id").selectedIndex = 1;
-          //   document
-          //     .getElementById("institute_id")
-          //     .dispatchEvent(new Event("change"));
-          // } else {
-          //   document.getElementById("institute_id").required = true;
-          //   document.getElementById("institute-id-select").style.display =
-          //     "block";
-          // }
+          // Seleccionamos esta única opción
+          careerSelect.value = singleCareer.id;
+          careerSelect.dispatchEvent(new Event("change"));
         }
-      };
-
-      XHR.send(params.toString());
+      } catch (error) {
+        console.error("Error al cargar las carreras:", error);
+      }
     });
 
     if (program.selectedIndex === 1) {
@@ -324,67 +300,73 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (career) {
-    career.addEventListener("change", (e) => {
+    career.addEventListener("change", async (e) => {
       document.getElementById("institute_id").value = "";
       document.getElementById("institute-id-select").style.display = "none";
       document.getElementById("name-institute-field").style.display = "none";
       document.getElementById("grade_select").style.display = "none";
 
-      let careerId;
+      const careerId = e.target.value;
+      const mentionSelectContainer = document.getElementById("mentions_select");
+      const mentionSelect = document.getElementById("mention");
 
-      if (
-        e instanceof CustomEvent &&
-        e.detail &&
-        e.detail.value !== undefined
-      ) {
-        careerId = e.detail.value;
-      } else {
-        const selectedOption = e.target.selectedOptions[0];
-        careerId = selectedOption.value;
+      // Limpiar el select de menciones y ocultar el contenedor en cada cambio
+      while (mentionSelect.options.length > 1) {
+        mentionSelect.remove(1);
       }
+      mentionSelectContainer.style.display = "none";
+      mentionSelect.required = false;
 
-      const XHR = new XMLHttpRequest();
-      XHR.open(
-        "POST",
-        `${ajax_object.ajax_url}?action=load_mentions_by_career`,
-        true
-      );
-      XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      XHR.responseType = "json";
+      if (!careerId) {
+        return;
+      }
 
       const params = new URLSearchParams({
         action: "load_mentions_by_career",
         career_id: careerId,
       });
 
-      XHR.onload = () => {
-        if (XHR.status === 200 && XHR.response && XHR.response.data) {
-          const mentionSelect = document.querySelector('select[name="mention"]');
-          while (mentionSelect.options.length > 1) {
-            mentionSelect.remove(1);
+      try {
+        const response = await fetch(
+          `${ajax_object.ajax_url}?${params.toString()}`,
+          {
+            method: "POST",
           }
+        );
 
-          let mentions = [];
-          const data = XHR.response.data.mentions;
-          if (Array.isArray(data)) {
-            mentions = data;
-          } else if (data) {
-            mentions = Object.values(data);
-          }
+        if (!response.ok) {
+          throw new Error("La respuesta de la red no fue exitosa.");
+        }
 
-          document.getElementById("mentions_select").style.display = "block";
-          document.getElementById("mention").required = true;
+        const data = await response.json();
+        const mentions = data.data.mentions || [];
 
-          mentions.forEach((mention, index) => {
+        if (mentions.length > 1) {
+          // Si hay más de una mención, mostrar el select y llenarlo
+          mentionSelectContainer.style.display = "block";
+          mentionSelect.required = true;
+
+          mentions.forEach((mention) => {
             const option = document.createElement("option");
-            option.value = index + 1;
+            option.value = mention.id; // Asume que 'id' es el valor de la mención
             option.textContent = mention.name;
             mentionSelect.appendChild(option);
           });
-        }
-      };
+        } else if (mentions.length === 1) {
+          // Si hay una sola mención, la agregamos como la única opción
+          const singleMention = mentions[0];
+          const option = document.createElement("option");
+          option.value = singleMention.id;
+          option.textContent = singleMention.name;
+          mentionSelect.appendChild(option);
 
-      XHR.send(params.toString());
+          // Seleccionamos esta única opción
+          mentionSelect.value = singleMention.id;
+          mentionSelect.dispatchEvent(new Event("change"));
+        }
+      } catch (error) {
+        console.error("Error al cargar las menciones:", error);
+      }
     });
 
     if (career.selectedIndex === 1) {
