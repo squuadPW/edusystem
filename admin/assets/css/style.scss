@@ -1464,6 +1464,18 @@ h2 {
                     flex-wrap: wrap;
                     gap: 10px;
 
+                    @media ( max-width: 520px ) {
+                        gap: 0px;
+                        flex-wrap: wrap;
+                        flex-direction: column;
+
+                        .active {
+                            display: flex;
+                            gap: 10px;
+                            margin-bottom: 0px
+                        }
+                    }
+
                     .space-offer {
                         flex: 1;
                         font-weight:400;
@@ -1549,6 +1561,16 @@ h2 {
                     .space-offer {
                         flex: 1;
                         font-weight:400;
+
+                        @media ( max-width: 520px ) {
+                            min-width: 100% !important;
+
+                            &.active {
+                                display: flex;
+                                gap: 10px;
+                                margin-bottom: 0px
+                            }
+                        }
 
                         &:has( input[type="checkbox"] ) {
                             max-width: max-content;

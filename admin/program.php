@@ -682,7 +682,8 @@ function get_quotas_rules_programs($program_id) {
     $table_quota_rules = $wpdb->prefix . 'quota_rules';
     
     $rules = $wpdb->get_results(
-        "SELECT * FROM {$table_quota_rules} WHERE program_id = '$program_id'", 
+        "SELECT * FROM {$table_quota_rules} WHERE program_id = '$program_id'
+        ORDER BY `position` ASC", 
         ARRAY_A
     );
     

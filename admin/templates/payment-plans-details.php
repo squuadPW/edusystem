@@ -112,7 +112,7 @@
 
                                                 <div class="group-input" >
 
-                                                    <div class="space-offer">
+                                                    <div class="space-offer active">
                                                         <label for="">
                                                             <b><?= __('Active', 'edusystem'); ?></b>
                                                         </label>

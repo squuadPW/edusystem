@@ -95,7 +95,7 @@ function get_order_alliance($start_date, $end_date, $id = "")
     global $wpdb;
     $sql = $wpdb->prepare(
         "SELECT *
-        FROM `wp_student_payments`
+        FROM `{$wpdb->prefix}student_payments`
         WHERE status_id = 1 AND JSON_CONTAINS(`alliances`, JSON_OBJECT('id', %s)) $date
         ORDER BY date_payment DESC",
         $alliance_id

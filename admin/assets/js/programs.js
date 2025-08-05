@@ -99,10 +99,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else if (elem.tagName.toLowerCase() === 'label') {
                     // Obtener el 'for' actual y reemplazar los corchetes
                     const current_for = elem.getAttribute('for');
-                    const new_for = current_for.replace(/\[\]/, `[${rules_count}]`);
-                    elem.setAttribute('for', new_for);
+                    if( current_for ){
+                        const new_for = current_for.replace(/\[\]/, `[${rules_count}]`);
+                        elem.setAttribute('for', new_for); 
+                    }
                 }
             });
+
+            const position_input = new_rule.querySelector('input[name*="[position]"]');
+            if ( position_input ) position_input.value = rules_count; // Establecer el valor de position al nuevo índice
 
             //quita el id del template
             new_rule.removeAttribute('id');
@@ -111,6 +116,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const remove_button = new_rule.querySelector('.remove-rule-button');
             remove_button.addEventListener('click', function() {
                 new_rule.remove(); 
+
+                // Actualizar las posiciones de las reglas al eliminar una.
+                update_positions_rule();
             });
 
             // Actualizar el atributo data-rules_count en el contenedor
@@ -119,6 +127,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // Agregar el nueva regla al contenedor
             rules.appendChild(new_rule);
         });
+
+        if (Sortable) {
+            Sortable.create( rules, {
+                animation: 150, // Duración de la animación en milisegundos
+                ghostClass: 'sortable-ghost', // Clase CSS para el elemento fantasma
+                chosenClass: 'sortable-chosen', // Clase CSS para el elemento seleccionado
+                dragClass: 'sortable-drag', // Clase CSS para el elemento arrastrado
+                onEnd: function (evt) {
+                    update_positions_rule()
+                },
+            });
+        }
     }
 
     /**
@@ -151,6 +171,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 });
+
+// Función para actualizar las posiciones de las reglas
+function update_positions_rule() {
+    const rules = document.querySelectorAll(' #rules .rule');
+    rules.forEach((rule, index) => {
+        const positionInput = rule.querySelector('input[name*="[position]"]');
+        if (positionInput) {
+            positionInput.value = index; // Actualiza el valor de posición
+        }
+    });
+}
+
 
 /**
  * Abre el modal para eliminar una regla de cuota.
@@ -269,7 +301,10 @@ function validate_input(input, regex_pattern, convert_to_upper = false, max_leng
         }
 
         const numberInput = document.getElementById('numberInput');
-        restrictInput(numberInput, ['-', 'e', 'E'], 'Por favor ingresa solo números positivos sin notación científica.');
+        if( numberInput ){
+            restrictInput(numberInput, ['-', 'e', 'E'], 'Por favor ingresa solo números positivos sin notación científica.');
+        }
+        
  
 
 let timeout_id = null;
