@@ -350,7 +350,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Si el shortcode de la mención no existe o es un select, procedemos a cargar.
       const params = new URLSearchParams({
         action: "load_mentions_by_career",
-        career_id: careerId,
+        career_identificator: careerId,
       });
 
       try {
