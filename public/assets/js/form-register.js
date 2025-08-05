@@ -7,11 +7,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const program = document.getElementById("program");
   const career = document.getElementById("career");
   const mention = document.getElementById("mention");
+  const plan = document.getElementById("plan");
   const not_institute = document.getElementById("institute_id");
   const not_institute_others = document.getElementById("institute_id_others");
   const productIdInput = document.getElementById("product_id_input");
+  const programIdShortcode = document.getElementById("program_shortcode");
   const careerIdShortcode = document.getElementById("career_shortcode");
   const mentionIdShortcode = document.getElementById("mention_shortcode");
+  const planIdShortcode = document.getElementById("plan_shortcode");
 
   loadGradesDefault();
   function loadGradesDefault() {
@@ -302,7 +305,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    const programIdShortcode = document.getElementById("program_shortcode");
     if (
       (program.value && program.value !== "") ||
       (programIdShortcode && programIdShortcode.value)
@@ -387,7 +389,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    const careerIdShortcode = document.getElementById("career_shortcode");
     if (careerIdShortcode && careerIdShortcode.value) {
       career.dispatchEvent(new Event("change"));
     }
@@ -415,9 +416,73 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    const mentionIdShortcode = document.getElementById("mention_shortcode");
     if (mentionIdShortcode && mentionIdShortcode.value) {
       mention.dispatchEvent(new Event("change"));
+    }
+  }
+
+  // copiado de career
+  if (plan) {
+    plan.addEventListener("change", async (e) => {
+      document.getElementById("institute_id").value = "";
+      document.getElementById("institute-id-select").style.display = "none";
+      document.getElementById("name-institute-field").style.display = "none";
+      document.getElementById("grade_select").style.display = "none";
+
+      const planId = e.target.value;
+      // const mentionSelectContainer = document.getElementById("mentions_select");
+      // const mentionElement = document.getElementById("mention");
+
+      // Limpiar el select de menciones si existe y es un <select>
+      // if (mentionElement && mentionElement.tagName === "SELECT") {
+      //   while (mentionElement.options.length > 1) {
+      //     mentionElement.remove(1);
+      //   }
+      //   mentionSelectContainer.style.display = "none";
+      //   mentionElement.required = false;
+      // }
+
+      if (!planId) {
+        return;
+      }
+
+      // const isMentionSelect =
+      //   mentionElement && mentionElement.tagName === "SELECT";
+      // const isMentionShortcodeValid =
+      //   mentionIdShortcode && mentionIdShortcode.value;
+
+      // // Si el shortcode de la mención existe y no es un select, no se hace nada.
+      // if (isMentionShortcodeValid && !isMentionSelect) {
+      //   return;
+      // }
+
+      // Si el shortcode de la mención no existe o es un select, procedemos a cargar.
+      const params = new URLSearchParams({
+        action: "load_subprograms_by_program",
+        program_id: planId,
+      });
+
+      try {
+        const response = await fetch(
+          `${ajax_object.ajax_url}?${params.toString()}`,
+          {
+            method: "POST",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("La respuesta de la red no fue exitosa.");
+        }
+
+        const data = await response.json();
+        subprograms_arr = data.data.subprograms || [];
+      } catch (error) {
+        console.error("Error al cargar las menciones:", error);
+      }
+    });
+
+    if (planIdShortcode && planIdShortcode.value) {
+      plan.dispatchEvent(new Event("change"));
     }
   }
 
