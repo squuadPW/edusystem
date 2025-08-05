@@ -1220,17 +1220,19 @@ function process_program_payments(WC_Order $order, int $order_id): void
             if ($data_quota_rule) {
 
                 $quotas_quantity_rule = (int) $data_quota_rule->quotas_quantity;
-                $initial_price = (double) $data_quota_rule->initial_price;
+                $initial_payment = (double) $data_quota_rule->initial_payment;
                 $quote_price = (double) $data_quota_rule->quote_price;
+                $final_payment = (double) $data_quota_rule->final_payment;
                 $type_frequency = $data_quota_rule->type_frequency;
                 $frequency_value = $data_quota_rule->frequency_value;
 
-                $total = (double) ($quotas_quantity_rule * $quote_price) + $initial_price;
+                $total = (double) ($quotas_quantity_rule * $quote_price) + $initial_payment;
 
                 $installments = $quotas_quantity_rule;
 
-                if ($initial_price > 0)
-                    $installments++;
+                if ($initial_payment > 0) $installments++;
+
+                if ($final_payment > 0) $installments++;
 
                 $discount_value = 0;
                 $applied_coupons = $order->get_used_coupons();
@@ -1268,7 +1270,13 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
                 if ($data_quota_rule) {
 
-                    $original_price = ($i == 0 && $initial_price > 0) ? $initial_price : $quote_price;
+                    $original_price = $quote_price;
+                    if ($i == 0 && $initial_payment > 0) {
+                        $original_price = $initial_payment;
+                    } else if ($i+1 == $installments && $final_payment > 0){
+                        $original_price = $final_payment;
+                    }
+
                     $amount = $original_price - (($original_price * $discount_value) / 100);
                     $total_amount_to_pay = $total - (($total * $discount_value) / 100);
                     $total_original_amount = $total;
@@ -1734,7 +1742,7 @@ function update_price_product_cart_quota_rule()
         $wpdb->prepare(
             "SELECT 
                 CASE 
-                    WHEN initial_price > 0 THEN initial_price 
+                    WHEN initial_payment > 0 THEN initial_payment 
                     ELSE quote_price 
                 END AS price 
             FROM {$wpdb->prefix}quota_rules

@@ -71,11 +71,11 @@
                                                 <div class="group-input" >
                                                     <div class="space-offer">
 
-                                                        <label for="rules[<?= $i ?>][initial_price]">
-                                                            <b><?= __('Initial price', 'edusystem'); ?></b>
+                                                        <label for="rules[<?= $i ?>][initial_payment]">
+                                                            <b><?= __('Initial payment', 'edusystem'); ?></b>
                                                             <span class="text-danger">*</span>
                                                         </label>
-                                                        <input type="number" name="rules[<?= $i ?>][initial_price]" value="<?= $rule['initial_price'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
+                                                        <input type="number" name="rules[<?= $i ?>][initial_payment]" value="<?= $rule['initial_payment'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
                                                     </div>
 
                                                     <div class="space-offer">
@@ -95,6 +95,15 @@
                                                         </label>
 
                                                         <input type="number" name="rules[<?= $i ?>][price]" value="<?= $rule['quote_price'] ?? 0.00 ?>" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" required>
+                                                    </div>
+
+                                                    <div class="space-offer">
+
+                                                        <label for="rules[<?= $i ?>][final_payment]">
+                                                            <b><?= __('Final payment', 'edusystem'); ?></b>
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+                                                        <input type="number" name="rules[<?= $i ?>][final_payment]" value="<?= $rule['final_payment'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
                                                     </div>
 
                                                 </div>
@@ -166,11 +175,11 @@
                                         <div class="group-input" >
                                             <div class="space-offer">
 
-                                                <label for="rules[][initial_price]">
-                                                    <b><?= __('Initial price', 'edusystem'); ?></b>
+                                                <label for="rules[][initial_payment]">
+                                                    <b><?= __('Initial payment', 'edusystem'); ?></b>
                                                     <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="text" name="rules[][initial_price]" value="0" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" disabled required>
+                                                <input type="text" name="rules[][initial_payment]" value="0" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" disabled required>
                                             </div>
 
                                             <div class="space-offer">
@@ -191,12 +200,22 @@
 
                                                 <input type="number" name="rules[][price]" value="0" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" disabled required>
                                             </div>
+
+                                            <div class="space-offer">
+
+                                                <label for="rules[][final_payment]">
+                                                    <b><?= __('Final payment', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" name="rules[][final_payment]" value="0" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" disabled required>
+                                            </div>
+
                                         </div>
 
                                         <div class="group-input" >
                                             <div class="space-offer">
 
-                                                <label for="rules[][initial_price]">
+                                                <label >
                                                     <b><?= __('Frequency', 'edusystem'); ?></b>
                                                     <span class="text-danger">*</span>
                                                 </label>

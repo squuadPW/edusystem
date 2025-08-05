@@ -54,7 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
  * @param {string} rule_data.type_frequency - Tipo de frecuencia de los pagos (día, mes, año).
  * @param {number} rule_data.frequency_value - Valor de la frecuencia de los pagos.
  * @param {number} rule_data.quote_price - Precio de cada cuota.
- * @param {number} rule_data.initial_price - Precio inicial de la regla.
+ * @param {number} rule_data.initial_payment - Precio inicial de la regla.
+ * @param {number} rule_data.final_payment - Precio final de la regla.
  *
  * @return {void} No retorna ningún valor.
  *
@@ -92,9 +93,12 @@ function payment_table(rule_data) {
   );
 
   quotas_quantity = rule_data.quotas_quantity;
-  initial_price = parseFloat(rule_data.initial_price);
+  initial_payment = parseFloat(rule_data.initial_payment);
+  final_payment = parseFloat(rule_data.final_payment);
 
-  if (initial_price > 0) quotas_quantity++;
+  if (initial_payment > 0) quotas_quantity++;
+
+  if (final_payment > 0) quotas_quantity++;
 
   // Crear filas de datos
   total = 0;
@@ -104,8 +108,9 @@ function payment_table(rule_data) {
     quote_price = parseFloat(rule_data.quote_price);
 
     if (discount_value > 0) {
-      quote_price = quote_price - (quote_price * discount_value) / 100;
-      initial_price = initial_price - (initial_price * discount_value) / 100;
+      quote_price = quote_price - ( quote_price * discount_value) / 100;
+      initial_payment = initial_payment - (initial_payment * discount_value) / 100;
+      final_payment = final_payment - (final_payment * discount_value) / 100;
     }
 
     const row = document.createElement("tr");
@@ -119,6 +124,9 @@ function payment_table(rule_data) {
     // Calcular la fecha del próximo pago
     const date = new Date();
     if (i > 0) {
+
+      if ( i+1 == quotas_quantity && final_payment > 0 ) quote_price = final_payment;
+
       frequency = i * frequency_value;
       date.setFullYear(
         date.getFullYear() + (type_frequency == "year" ? frequency : 0)
@@ -128,7 +136,7 @@ function payment_table(rule_data) {
       );
       date.setDate(date.getDate() + (type_frequency == "day" ? frequency : 0));
     } else {
-      if (initial_price > 0) quote_price = initial_price;
+      if (initial_payment > 0) quote_price = initial_payment;
     }
     const lang = document.documentElement.lang;
 
