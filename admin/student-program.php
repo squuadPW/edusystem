@@ -850,3 +850,25 @@ function get_associated_plans_by_program_id($program_identificator) {
     
     return $results;
 }
+
+function get_associated_all_plans_by_program_id($program_identificator) {
+    global $wpdb;
+    $table_plans_by_program = $wpdb->prefix . 'plans_by_program';
+    $table_programs = $wpdb->prefix . 'programs';
+
+    // Usamos INNER JOIN para combinar ambas tablas
+    // Y filtramos por el program_identificator en la tabla de planes
+    $query = $wpdb->prepare(
+        "SELECT T2.*
+         FROM $table_plans_by_program AS T1
+         INNER JOIN $table_programs AS T2
+         ON T1.payment_plan_identificator = T2.identificator
+         WHERE T1.program_identificator = %s",
+        $program_identificator
+    );
+
+    // get_results devuelve un array de objetos, ya que puede haber varios planes
+    $results = $wpdb->get_results($query);
+
+    return $results;
+}

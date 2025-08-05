@@ -236,11 +236,22 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("name-institute-field").style.display = "none";
       document.getElementById("grade_select").style.display = "none";
 
+      // Limpiar y ocultar el select de planes de pago en cada cambio
+      const planElement = document.getElementById("plan");
+      const planSelectContainer = document.getElementById("plans_select");
+      if (planElement && planElement.tagName === "SELECT") {
+        while (planElement.options.length > 1) {
+          planElement.remove(1);
+        }
+        planSelectContainer.style.display = "none";
+        planElement.required = false;
+      }
+
       const programIdentificator = e.target.value;
       const careerSelectContainer = document.getElementById("careers_select");
       const careerElement = document.getElementById("career");
 
-      // Lógica para limpiar el select si es un <select>
+      // Lógica para limpiar el select de carreras si es un <select>
       if (careerElement && careerElement.tagName === "SELECT") {
         while (careerElement.options.length > 1) {
           careerElement.remove(1);
@@ -257,13 +268,24 @@ document.addEventListener("DOMContentLoaded", function () {
         careerElement && careerElement.tagName === "SELECT";
       const isCareerShortcodeValid =
         careerIdShortcode && careerIdShortcode.value;
+      const isPlanSelect = planElement && planElement.tagName === "SELECT";
+      const isPlanShortcodeValid = planIdShortcode && planIdShortcode.value;
 
       // Si el shortcode de la carrera existe y no es un select, no se hace nada.
       // if (isCareerShortcodeValid && !isCareerSelect) {
+      //     return;
+      // }
+
+      // Si el shortcode del plan existe y no es un select, no se hace nada.
+      // if (
+      //   isPlanShortcodeValid &&
+      //   !isPlanSelect &&
+      //   isCareerShortcodeValid &&
+      //   !isCareerSelect
+      // ) {
       //   return;
       // }
 
-      // Si el shortcode de la carrera no existe o es un select, procedemos a cargar.
       const params = new URLSearchParams({
         action: "load_data_program",
         program_identificator: programIdentificator,
@@ -283,7 +305,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const data = await response.json();
         const careers = data.data.careers || [];
+        const paymentPlans = data.data.payment_plans || []; // Nuevo dato del backend
 
+        // --- Lógica para el select de Carreras ---
         if (isCareerSelect) {
           careerSelectContainer.style.display = "block";
           careerElement.required = true;
@@ -295,13 +319,29 @@ document.addEventListener("DOMContentLoaded", function () {
             careerElement.appendChild(option);
           });
 
-          // Si hay un shortcode válido, seleccionamos la opción correspondiente
           if (isCareerShortcodeValid) {
             careerElement.value = careerIdShortcode.value;
           }
         }
+
+        // --- Lógica para el select de Planes de Pago ---
+        if (isPlanSelect) {
+          planSelectContainer.style.display = "block";
+          planElement.required = true;
+
+          paymentPlans.forEach((plan) => {
+            const option = document.createElement("option");
+            option.value = plan.identificator;
+            option.textContent = plan.name;
+            planElement.appendChild(option);
+          });
+
+          if (isPlanShortcodeValid) {
+            planElement.value = planIdShortcode.value;
+          }
+        }
       } catch (error) {
-        console.error("Error al cargar las carreras:", error);
+        console.error("Error al cargar las carreras o planes de pago:", error);
       }
     });
 
@@ -424,10 +464,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // copiado de career
   if (plan) {
     plan.addEventListener("change", async (e) => {
-      document.getElementById("institute_id").value = "";
-      document.getElementById("institute-id-select").style.display = "none";
-      document.getElementById("name-institute-field").style.display = "none";
-      document.getElementById("grade_select").style.display = "none";
+      // document.getElementById("institute_id").value = "";
+      // document.getElementById("institute-id-select").style.display = "none";
+      // document.getElementById("name-institute-field").style.display = "none";
+      // document.getElementById("grade_select").style.display = "none";
 
       const planId = e.target.value;
       // const mentionSelectContainer = document.getElementById("mentions_select");

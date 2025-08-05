@@ -3562,7 +3562,7 @@ function load_data_program_callback()
 {
     $program_identificator = $_GET['program_identificator'];
     $careers = get_career_by_program($program_identificator);
-    $payment_plans = get_associated_plans_by_program_id($program_identificator);
+    $payment_plans = get_associated_all_plans_by_program_id($program_identificator);
 
     wp_send_json_success(array('careers' => $careers, 'payment_plans' => $payment_plans));
     exit;
