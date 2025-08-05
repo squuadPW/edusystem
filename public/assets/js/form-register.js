@@ -256,9 +256,9 @@ document.addEventListener("DOMContentLoaded", function () {
         careerIdShortcode && careerIdShortcode.value;
 
       // Si el shortcode de la carrera existe y no es un select, no se hace nada.
-      if (isCareerShortcodeValid && !isCareerSelect) {
-        return;
-      }
+      // if (isCareerShortcodeValid && !isCareerSelect) {
+      //   return;
+      // }
 
       // Si el shortcode de la carrera no existe o es un select, procedemos a cargar.
       const params = new URLSearchParams({

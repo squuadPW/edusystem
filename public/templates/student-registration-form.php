@@ -28,6 +28,7 @@
     <input type="hidden" name="program_shortcode" id="program_shortcode" value="<?= $program ?>">
     <input type="hidden" name="career_shortcode" id="career_shortcode" value="<?= $career ?>">
     <input type="hidden" name="mention_shortcode" id="mention_shortcode" value="<?= $mention ?>">
+    <input type="hidden" name="plan_shortcode" id="plan_shortcode" value="<?= $plan ?>">
     <input type="hidden" id="product_id_input" name="product_id">
 
     <!-- DATOS DEL ESTUDIANTE -->
@@ -278,6 +279,18 @@
             <label for="name_institute"><?= __('Name Institute', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata" autocomplete="off" type="text" id="name_institute" name="name_institute">
         </div>
+
+        <?php if (!isset($plan) || empty($plan)) { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="plans_select" style="display: none;">
+                <label for="plan"><?= __('Payment plan of your interest', 'edusystem'); ?><span
+                        class="required">*</span></label>
+                <select name="plan" id="plan" autocomplete="off" required>
+                    <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                </select>
+            </div>
+        <?php } else { ?>
+            <input type="hidden" name="plan" id="plan" value="<?= $plan ?>">
+        <?php } ?>
 
         <div id="grade_select" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="display: none">
             <label for="grade" id="grade_tooltip"><?= __('Grade', 'edusystem'); ?> <span style="color: #002fbd"
