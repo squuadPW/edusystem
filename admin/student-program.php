@@ -9,7 +9,7 @@ function add_admin_form_student_program_content()
                 global $wpdb;
                 $program_id = $_GET['program_id'];
                 $program = get_student_program_details($program_id);
-                $payment_plans = get_programs();
+                $payment_plans = get_payment_plans();
                 $associated_plans_ids = get_associated_plans_by_program_id($program->identificator);
                 include(plugin_dir_path(__FILE__) . 'templates/student-program-details.php');
             } else if ($_GET['from'] == 'careers') {

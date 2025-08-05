@@ -214,6 +214,18 @@
                 <?php endforeach; ?>
             </select>
         </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="careers_select" style="display: none">
+            <label for="career"><?= __('Career of your interest', 'edusystem'); ?><span class="required">*</span></label>
+            <select name="career" id="career" autocomplete="off" required>
+                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+            </select>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="mentions_select" style="display: none;">
+            <label for="mention"><?= __('Mention of your interest', 'edusystem'); ?><span class="required">*</span></label>
+            <select name="mention" id="mention" autocomplete="off" required>
+                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+            </select>
+        </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="institute-id-select" style="display:none">
             <label for="name_institute"><?= __('Name of School or Institution with Agreement', 'edusystem'); ?><span
                     id="institute_id_required" class="required">*</span></label>

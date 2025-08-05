@@ -5,10 +5,11 @@ document.addEventListener("DOMContentLoaded", function () {
   let grades_default = [];
   const grade = document.getElementById("grade");
   const program = document.getElementById("program");
+  const career = document.getElementById("career");
+  const mention = document.getElementById("mention");
   const not_institute = document.getElementById("institute_id");
   const not_institute_others = document.getElementById("institute_id_others");
   const productIdInput = document.getElementById("product_id_input");
-  const registerPspInput = document.getElementById("register_psp");
 
   loadGradesDefault();
   function loadGradesDefault() {
@@ -183,16 +184,16 @@ document.addEventListener("DOMContentLoaded", function () {
                           ? `${grade.name} ${grade.description}`
                           : grade.name
                         : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-                  // } else if (grades_default && grades_default[index]) {
-                  //   // Priority 3: Use grades_default
-                  //   const grade = grades_default[index];
-                  //   // Assuming grades_default elements also have name and description or are just strings
-                  //   optionText =
-                  //     typeof grade === "object" && grade !== null && grade.name
-                  //       ? grade.description
-                  //         ? `${grade.name} ${grade.description}`
-                  //         : grade.name
-                  //       : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+                    // } else if (grades_default && grades_default[index]) {
+                    //   // Priority 3: Use grades_default
+                    //   const grade = grades_default[index];
+                    //   // Assuming grades_default elements also have name and description or are just strings
+                    //   optionText =
+                    //     typeof grade === "object" && grade !== null && grade.name
+                    //       ? grade.description
+                    //         ? `${grade.name} ${grade.description}`
+                    //         : grade.name
+                    //       : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
                   } else {
                     // Fallback: If no specific grade is found, use the subprogram name
                     optionText = subprogram.name || "N/A";
@@ -250,46 +251,71 @@ document.addEventListener("DOMContentLoaded", function () {
       const XHR = new XMLHttpRequest();
       XHR.open(
         "POST",
-        `${ajax_object.ajax_url}?action=load_subprograms_by_program`,
+        `${ajax_object.ajax_url}?action=load_careers_by_program`,
         true
       );
       XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       XHR.responseType = "json";
 
       const params = new URLSearchParams({
-        action: "load_subprograms_by_program",
-        program_id: programId,
+        action: "load_careers_by_program",
+        program_identificator: programIdentificator,
       });
 
       XHR.onload = () => {
         if (XHR.status === 200 && XHR.response && XHR.response.data) {
-          let subprograms = [];
-          const data = XHR.response.data.subprograms;
-          const product_id = XHR.response.data.product_id;
+          const careerSelect = document.querySelector('select[name="career"]');
+          while (careerSelect.options.length > 1) {
+            careerSelect.remove(1);
+          }
 
+          let careers = [];
+          const data = XHR.response.data.careers;
           if (Array.isArray(data)) {
-            subprograms = data;
+            careers = data;
           } else if (data) {
-            subprograms = Object.values(data);
+            careers = Object.values(data);
           }
 
-          productIdInput.value = product_id || "";
-          subprograms_arr = subprograms;
+          document.getElementById("careers_select").style.display = "block";
+          document.getElementById("career").required = true;
 
-          // Quiere decir que solo existe un instituto, opciones: (Select an option, INSTITUTO, Other)
-          if (numberOfOptions == 3) {
-            document.getElementById("institute_id").required = false;
-            document.getElementById("institute-id-select").style.display =
-              "none";
-            document.getElementById("institute_id").selectedIndex = 1;
-            document
-              .getElementById("institute_id")
-              .dispatchEvent(new Event("change"));
-          } else {
-            document.getElementById("institute_id").required = true;
-            document.getElementById("institute-id-select").style.display =
-              "block";
-          }
+          careers.forEach((career, index) => {
+            const option = document.createElement("option");
+            option.value = index + 1;
+            option.textContent = career.name;
+            option.setAttribute("data-identificator", career.identificator); // ¡Aquí está la corrección!
+            careerSelect.appendChild(option);
+          });
+
+          // OLD CONFIGURATION
+          // let subprograms = [];
+          // const data = XHR.response.data.subprograms;
+          // const product_id = XHR.response.data.product_id;
+
+          // if (Array.isArray(data)) {
+          //   subprograms = data;
+          // } else if (data) {
+          //   subprograms = Object.values(data);
+          // }
+
+          // productIdInput.value = product_id || "";
+          // subprograms_arr = subprograms;
+
+          // // Quiere decir que solo existe un instituto, opciones: (Select an option, INSTITUTO, Other)
+          // if (numberOfOptions == 3) {
+          //   document.getElementById("institute_id").required = false;
+          //   document.getElementById("institute-id-select").style.display =
+          //     "none";
+          //   document.getElementById("institute_id").selectedIndex = 1;
+          //   document
+          //     .getElementById("institute_id")
+          //     .dispatchEvent(new Event("change"));
+          // } else {
+          //   document.getElementById("institute_id").required = true;
+          //   document.getElementById("institute-id-select").style.display =
+          //     "block";
+          // }
         }
       };
 
@@ -298,6 +324,77 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (program.selectedIndex === 1) {
       program.dispatchEvent(new Event("change"));
+    }
+  }
+
+  if (career) {
+    career.addEventListener("change", (e) => {
+      document.getElementById("institute_id").value = "";
+      document.getElementById("institute-id-select").style.display = "none";
+      document.getElementById("name-institute-field").style.display = "none";
+      document.getElementById("grade_select").style.display = "none";
+
+      let careerId;
+
+      if (
+        e instanceof CustomEvent &&
+        e.detail &&
+        e.detail.value !== undefined
+      ) {
+        careerId = e.detail.value;
+      } else {
+        const selectedOption = e.target.selectedOptions[0];
+        careerId = selectedOption.value;
+        careerIdentificator = selectedOption.getAttribute("data-identificator"); // ¡Y aquí la otra corrección!
+      }
+
+      const XHR = new XMLHttpRequest();
+      XHR.open(
+        "POST",
+        `${ajax_object.ajax_url}?action=load_mentions_by_career`,
+        true
+      );
+      XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      XHR.responseType = "json";
+
+      const params = new URLSearchParams({
+        action: "load_mentions_by_career",
+        career_identificator: careerIdentificator,
+      });
+
+      XHR.onload = () => {
+        if (XHR.status === 200 && XHR.response && XHR.response.data) {
+          const mentionSelect = document.querySelector('select[name="mention"]');
+          while (mentionSelect.options.length > 1) {
+            mentionSelect.remove(1);
+          }
+
+          let mentions = [];
+          const data = XHR.response.data.mentions;
+          if (Array.isArray(data)) {
+            mentions = data;
+          } else if (data) {
+            mentions = Object.values(data);
+          }
+
+          document.getElementById("mentions_select").style.display = "block";
+          document.getElementById("mention").required = true;
+
+          mentions.forEach((mention, index) => {
+            const option = document.createElement("option");
+            option.value = index + 1;
+            option.textContent = mention.name;
+            option.setAttribute("data-identificator", mention.identificator); // ¡Aquí está la corrección!
+            mentionSelect.appendChild(option);
+          });
+        }
+      };
+
+      XHR.send(params.toString());
+    });
+
+    if (career.selectedIndex === 1) {
+      career.dispatchEvent(new Event("change"));
     }
   }
 

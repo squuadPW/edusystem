@@ -589,7 +589,16 @@ class TT_All_Program_List_Table extends WP_List_Table
 
 }
 
-function get_programs()
+function get_student_program()
+{
+    global $wpdb;
+    $table_student_program = $wpdb->prefix . 'student_program';
+
+    $program = $wpdb->get_results("SELECT * FROM {$table_student_program} WHERE is_active=1");
+    return $program;
+}
+
+function get_payment_plans()
 {
     global $wpdb;
     $table_programs = $wpdb->prefix . 'programs';
@@ -671,6 +680,25 @@ function get_mention_details_by_identificator($identificator)
     $program = $wpdb->get_row("SELECT * FROM {$table_mentions_by_career} WHERE identificator='{$identificator}'");
     return $program;
 }
+
+function get_career_by_program($identificator)
+{
+    global $wpdb;
+    $table_careers_by_program = $wpdb->prefix . 'careers_by_program';
+
+    $program = $wpdb->get_results("SELECT * FROM {$table_careers_by_program} WHERE program_identificator='{$identificator}'");
+    return $program;
+}
+
+function get_mentions_by_career($identificator)
+{
+    global $wpdb;
+    $table_mentions_by_career = $wpdb->prefix . 'mentions_by_career';
+
+    $program = $wpdb->get_results("SELECT * FROM {$table_mentions_by_career} WHERE career_identificator='{$identificator}'");
+    return $program;
+}
+
 
 /**
  * Obtiene las reglas de cuotas asociadas a un programa específico

@@ -198,7 +198,7 @@ function form_asp_psp($atts)
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
     $grades = get_grades();
-    $programs = get_programs();
+    $programs = get_student_program();
     add_action('wp_footer', 'modal_continue_checkout');
     include(plugin_dir_path(__FILE__) . 'templates/asp-psp-registration.php');
 }
@@ -243,7 +243,9 @@ function student_registration_form($atts)
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
     $grades = get_grades();
-    $programs = get_programs();
+    $programs = get_student_program();
+    $careers = [];
+    $mentions = [];
 
     add_action('wp_footer', 'modal_continue_checkout');
     include(plugin_dir_path(__FILE__) . 'templates/student-registration-form-structure.php');
@@ -350,7 +352,7 @@ function one_time_payment()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
-    $programs = get_programs();
+    $programs = get_student_program();
     include(plugin_dir_path(__FILE__) . 'templates/one-time-payment-registration.php');
 }
 
@@ -359,7 +361,7 @@ add_shortcode('one_time_payment', 'one_time_payment');
 function custom_registration_pay()
 {
     $grades = get_grades();
-    $programs = get_programs();
+    $programs = get_student_program();
     include(plugin_dir_path(__FILE__) . 'templates/custom-registration-pay.php');
 }
 
@@ -370,7 +372,7 @@ function form_scholarship_application()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
-    $programs = get_programs();
+    $programs = get_student_program();
     include(plugin_dir_path(__FILE__) . 'templates/scholarship-application.php');
 }
 
@@ -3534,6 +3536,30 @@ function load_subprograms_by_program_callback()
     $product_id = get_product_id_by_id_program($program_id);
 
     wp_send_json_success(array('subprograms' => $subprograms, 'product_id' => $product_id));
+    exit;
+}
+
+add_action('wp_ajax_load_careers_by_program', 'load_careers_by_program_callback');
+add_action('wp_ajax_nopriv_load_careers_by_program', 'load_careers_by_program_callback');
+
+function load_careers_by_program_callback()
+{
+    $program_identificator = $_POST['program_identificator'];
+    $careers = get_career_by_program($program_identificator);
+
+    wp_send_json_success(array('careers' => $careers));
+    exit;
+}
+
+add_action('wp_ajax_load_mentions_by_career', 'load_mentions_by_career_callback');
+add_action('wp_ajax_nopriv_load_mentions_by_career', 'load_mentions_by_career_callback');
+
+function load_mentions_by_career_callback()
+{
+    $career_identificator = $_POST['career_identificator'];
+    $mentions = get_mentions_by_career($career_identificator);
+
+    wp_send_json_success(array('mentions' => $mentions));
     exit;
 }
 

@@ -109,7 +109,7 @@ if (in_array('student', $roles)) {
 </table>
 
 <?php if (count($students) == 0) {
-    $programs = get_programs();
+    $programs = get_student_program();
     include('fill-info-student.php');
 } ?>
 
