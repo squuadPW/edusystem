@@ -99,6 +99,24 @@
                             <?php endif; ?>
                         </form>
                     </div>
+
+                    <?php if (isset($related_careers) && count($related_careers) > 0) { ?>
+                        <div class="inside">
+                            <h3 style="margin-top:20px;margin-bottom:20px;text-align:center; border-bottom: 1px solid #8080805c; padding-bottom: 10px;">
+                                <b><?= __('Related careers', 'edusystem'); ?></b>
+                            </h3>
+                            <div>
+                                <ul>
+                                    <?php foreach($related_careers as $key => $career) { ?>
+                                        <li class="career-item">
+                                            <h4 class="career-name"><?= $career->name; ?></h4>
+                                            <span class="career-id">ID: <?= $career->identificator ?></span>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                        </div>
+                    <?php } ?>
                 </div>
             </div>
         </div>

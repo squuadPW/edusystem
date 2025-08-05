@@ -11,12 +11,14 @@ function add_admin_form_student_program_content()
                 $program = get_student_program_details($program_id);
                 $payment_plans = get_payment_plans();
                 $associated_plans_ids = get_associated_plans_by_program_id($program->identificator);
+                $related_careers = get_career_by_program($program->identificator);
                 include(plugin_dir_path(__FILE__) . 'templates/student-program-details.php');
             } else if ($_GET['from'] == 'careers') {
                 global $wpdb;
                 $career_id = $_GET['career_id'];
                 $career = get_career_details($career_id);
                 $programs = get_student_programs();
+                $related_mentions = get_mentions_by_career($career->identificator);
                 include(plugin_dir_path(__FILE__) . 'templates/student-career-details.php');
             } else if ($_GET['from'] == 'mentions') {
                 global $wpdb;

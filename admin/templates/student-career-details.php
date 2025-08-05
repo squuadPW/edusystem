@@ -100,6 +100,24 @@
                             <?php endif; ?>
                         </form>
                     </div>
+
+                    <?php if (isset($related_mentions) && count($related_mentions) > 0) { ?>
+                        <div class="inside">
+                            <h3 style="margin-top:20px;margin-bottom:20px;text-align:center; border-bottom: 1px solid #8080805c; padding-bottom: 10px;">
+                                <b><?= __('Related mentions', 'edusystem'); ?></b>
+                            </h3>
+                            <div>
+                                <ul>
+                                    <?php foreach($related_mentions as $key => $mention) { ?>
+                                        <li class="career-item">
+                                            <h4 class="career-name"><?= $mention->name; ?></h4>
+                                            <span class="career-id">ID: <?= $mention->identificator ?></span>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                        </div>
+                    <?php } ?>
                 </div>
             </div>
         </div>
