@@ -65,6 +65,22 @@
                                         <textarea style="width: 100%" name="description" id="description" rows="4" required><?= $program->description; ?></textarea>
                                     </div>
 
+                                    <div style="font-weight:400;">
+                                        <label for="hc"><b><?= __('Associated payment plans', 'edusystem'); ?></b></label><br>
+                                        
+                                        <!-- Se agrega el atributo 'multiple' y se cambia el nombre a un array (associated_plans[]) -->
+                                        <select name="associated_plans[]" multiple style="min-height: 150px; width: 100%;" required>
+                                            <?php foreach ($payment_plans as $key => $plan) { ?>
+                                                <!-- La lógica de 'selected' ahora revisa si el identificador del plan está en el array $associated_plans_ids -->
+                                                <option 
+                                                    value="<?= $plan->identificator ?>" 
+                                                    <?= in_array($plan->identificator, $associated_plans_ids) ? 'selected' : ''; ?>>
+                                                    <?= $plan->name ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+
                                 </div>
                             </div>
 

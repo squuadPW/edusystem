@@ -9,6 +9,8 @@ function add_admin_form_student_program_content()
                 global $wpdb;
                 $program_id = $_GET['program_id'];
                 $program = get_student_program_details($program_id);
+                $payment_plans = get_programs();
+                $associated_plans_ids = get_associated_plans_by_program_id($program->identificator);
                 include(plugin_dir_path(__FILE__) . 'templates/student-program-details.php');
             } else if ($_GET['from'] == 'careers') {
                 global $wpdb;
@@ -47,15 +49,18 @@ function add_admin_form_student_program_content()
         if ($_GET['action'] == 'save_program_details') {
             global $wpdb;
             $table_student_program = $wpdb->prefix . 'student_program';
+            
+            // --- NUEVO CÓDIGO ---
+            $table_plans_by_program = $wpdb->prefix . 'plans_by_program';
 
-            // Sanitizar valores
+            // Sanitizar valores del programa principal
             $program_id = isset($_POST['program_id']) ? sanitize_text_field($_POST['program_id']) : '';
             $is_active = isset($_POST['is_active']) ? true : false;
             $identificator = strtoupper(sanitize_text_field($_POST['identificator']));
             $name = strtoupper(sanitize_text_field($_POST['name']));
             $description = strtoupper(sanitize_text_field($_POST['description']));
 
-            // Comprobar si el identificador ya existe
+            // Comprobar si el identificador ya existe (tu código original)
             $query_check = $wpdb->prepare(
                 "SELECT COUNT(*) FROM $table_student_program WHERE identificator = %s AND id != %d",
                 $identificator,
@@ -64,13 +69,12 @@ function add_admin_form_student_program_content()
             $identificator_exists = $wpdb->get_var($query_check);
 
             if ($identificator_exists > 0) {
-                // Si el identificador ya existe, establece un mensaje de error y redirige.
                 setcookie('message-error', __('Error: The identifier already exists.', 'edusystem'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content'));
                 exit;
             }
 
-            // Prepara los datos a insertar o actualizar
+            // Prepara los datos para el programa principal (tu código original)
             $data = [
                 'is_active' => $is_active,
                 'identificator' => $identificator,
@@ -78,18 +82,41 @@ function add_admin_form_student_program_content()
                 'description' => $description,
             ];
 
-            // crea o actualiza el sub programa
+            // Crea o actualiza el programa principal (tu código original)
             if (!empty($program_id)) {
-                // Actualizar el registro
                 unset($data['identificator']);
                 $wpdb->update($table_student_program, $data, ['id' => $program_id]);
-                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             } else {
-                // Insertar un nuevo registro
                 $wpdb->insert($table_student_program, $data);
-                setcookie('message', __('New record added successfully.', 'edusystem'), time() + 10, '/');
+                $program_id = $wpdb->insert_id; // Obtener el ID del nuevo programa insertado
             }
 
+            // --- NUEVA LÓGICA PARA EL SELECTOR MÚLTIPLE ---
+            $program = get_student_program_details($program_id); // Volver a cargar el programa para tener el identificador
+            $program_identificator = $program->identificator;
+            
+            // Recibir y sanitizar los identificadores de los planes de pago
+            $associated_plans = isset($_POST['associated_plans']) ? (array) $_POST['associated_plans'] : [];
+            $sanitized_plans = array_map('sanitize_text_field', $associated_plans);
+
+            // 1. Eliminar todas las asociaciones existentes para este programa
+            $wpdb->delete($table_plans_by_program, ['program_identificator' => $program_identificator]);
+
+            // 2. Recorrer el array de planes seleccionados e insertar los nuevos registros
+            if (!empty($sanitized_plans)) {
+                foreach ($sanitized_plans as $plan_identificator) {
+                    $wpdb->insert(
+                        $table_plans_by_program,
+                        [
+                            'program_identificator' => $program_identificator,
+                            'payment_plan_identificator' => $plan_identificator,
+                        ],
+                        ['%s', '%s']
+                    );
+                }
+            }
+            
+            setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_student_program_content'));
             exit;
         } else if ($_GET['action'] == 'delete_program') {
@@ -807,4 +834,17 @@ function get_careers()
 
     $careers = $wpdb->get_results("SELECT * FROM {$table_careers_by_program} WHERE is_active=1");
     return $careers;
+}
+
+function get_associated_plans_by_program_id($program_identificator) {
+    global $wpdb;
+    $table_plans_by_program = $wpdb->prefix . 'plans_by_program';
+    
+    // Consulta la tabla y devuelve un array de los identificadores de los planes.
+    $results = $wpdb->get_col($wpdb->prepare(
+        "SELECT payment_plan_identificator FROM $table_plans_by_program WHERE program_identificator = %s",
+        $program_identificator
+    ));
+    
+    return $results;
 }
