@@ -68,55 +68,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("name_institute").required = true;
         document.getElementById("institute_id").required = false;
         document.getElementById("institute_id_required").textContent = "";
-
-        // If 'other' is selected and subprograms exist, show grade select
-        if (subprograms_arr.length > 0) {
-          document.getElementById("grade_select").style.display = "block";
-          document.getElementById("grade").required = true;
-
-          subprograms_arr.forEach((subprogram, index) => {
-            const option = document.createElement("option");
-            option.value = index + 1; // Use index + 1 as value, aligning with program change event
-
-            let optionText = "";
-
-            // New priority logic for optionText
-            if (grades_institute && grades_institute[index]) {
-              // Priority 1: Use grades_institute
-              const grade = grades_institute[index];
-              optionText = grade.description
-                ? `${grade.name} ${grade.description}`
-                : grade.name;
-            } else if (grades_country_arr && grades_country_arr[index]) {
-              // Priority 2: Use grades_country_arr
-              const grade = grades_country_arr[index];
-              // Assuming grades_country_arr elements also have name and description or are just strings
-              // If it's a string, use it directly. If an object, use name/description.
-              optionText =
-                typeof grade === "object" && grade !== null && grade.name
-                  ? grade.description
-                    ? `${grade.name} ${grade.description}`
-                    : grade.name
-                  : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-            } else if (grades_default && grades_default[index]) {
-              // Priority 3: Use grades_default
-              const grade = grades_default[index];
-              // Assuming grades_default elements also have name and description or are just strings
-              optionText =
-                typeof grade === "object" && grade !== null && grade.name
-                  ? grade.description
-                    ? `${grade.name} ${grade.description}`
-                    : grade.name
-                  : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-            } else {
-              // Fallback: If no specific grade is found, use the subprogram name
-              optionText = subprogram.name || "N/A";
-            }
-
-            option.textContent = optionText;
-            gradeSelect.appendChild(option);
-          });
-        }
       } else {
         document.getElementById("name-institute-field").style.display = "none";
         document.getElementById("name_institute").required = false;
@@ -153,66 +104,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (XHR.status === 200 && XHR.response && XHR.response.data) {
               grades_default = XHR.response.data.default_grades;
               grades_institute = XHR.response.data.institute_grades;
-
-              // Clear existing options before populating
-              while (gradeSelect.options.length > 1) {
-                gradeSelect.remove(1);
-              }
-
-              // --- Start of the specific adjustment for not_institute ---
-              // Iterate over subprograms_arr and use grades array for text
-              if (subprograms_arr.length > 0) {
-                document.getElementById("grade_select").style.display = "block";
-                document.getElementById("grade").required = true;
-
-                subprograms_arr.forEach((subprogram, index) => {
-                  const option = document.createElement("option");
-                  option.value = index + 1; // Use index + 1 as value, aligning with program change event
-
-                  let optionText = "";
-
-                  // New priority logic for optionText
-                  if (grades_institute && grades_institute[index]) {
-                    // Priority 1: Use grades_institute
-                    const grade = grades_institute[index];
-                    optionText = grade.description
-                      ? `${grade.name} ${grade.description}`
-                      : grade.name;
-                  } else if (grades_country_arr && grades_country_arr[index]) {
-                    // Priority 2: Use grades_country_arr
-                    const grade = grades_country_arr[index];
-                    // Assuming grades_country_arr elements also have name and description or are just strings
-                    // If it's a string, use it directly. If an object, use name/description.
-                    optionText =
-                      typeof grade === "object" && grade !== null && grade.name
-                        ? grade.description
-                          ? `${grade.name} ${grade.description}`
-                          : grade.name
-                        : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-                    // } else if (grades_default && grades_default[index]) {
-                    //   // Priority 3: Use grades_default
-                    //   const grade = grades_default[index];
-                    //   // Assuming grades_default elements also have name and description or are just strings
-                    //   optionText =
-                    //     typeof grade === "object" && grade !== null && grade.name
-                    //       ? grade.description
-                    //         ? `${grade.name} ${grade.description}`
-                    //         : grade.name
-                    //       : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-                  } else {
-                    // Fallback: If no specific grade is found, use the subprogram name
-                    optionText = subprogram.name || "N/A";
-                  }
-
-                  option.textContent = optionText;
-                  gradeSelect.appendChild(option);
-                });
-              } else {
-                // If no subprograms are loaded, hide grade select
-                document.getElementById("grade_select").style.display = "none";
-                document.getElementById("grade").required = false;
-              }
-              // --- End of specific adjustment ---
             } else {
               // Handle error or empty grades response: clear and hide
               while (gradeSelect.options.length > 1) {
@@ -414,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
           mentions.forEach((mention) => {
             const option = document.createElement("option");
-            option.value = mention.id;
+            option.value = mention.identificator;
             option.textContent = mention.name;
             mentionElement.appendChild(option);
           });
@@ -464,6 +355,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // copiado de career
   if (plan) {
     plan.addEventListener("change", async (e) => {
+      const gradeSelect = document.querySelector('select[name="grade"]');
+      gradeSelect.value = "";
       // document.getElementById("institute_id").value = "";
       // document.getElementById("institute-id-select").style.display = "none";
       // document.getElementById("name-institute-field").style.display = "none";
@@ -516,6 +409,117 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const data = await response.json();
         subprograms_arr = data.data.subprograms || [];
+
+        // If 'other' is selected and subprograms exist, show grade select
+        const instituteInputValue = document.getElementById("institute_id");
+        if (instituteInputValue.value == "other") {
+          if (subprograms_arr.length > 0) {
+            document.getElementById("grade_select").style.display = "block";
+            document.getElementById("grade").required = true;
+
+            subprograms_arr.forEach((subprogram, index) => {
+              const option = document.createElement("option");
+              option.value = index + 1; // Use index + 1 as value, aligning with program change event
+
+              let optionText = "";
+
+              // New priority logic for optionText
+              if (grades_institute && grades_institute[index]) {
+                // Priority 1: Use grades_institute
+                const grade = grades_institute[index];
+                optionText = grade.description
+                  ? `${grade.name} ${grade.description}`
+                  : grade.name;
+              } else if (grades_country_arr && grades_country_arr[index]) {
+                // Priority 2: Use grades_country_arr
+                const grade = grades_country_arr[index];
+                // Assuming grades_country_arr elements also have name and description or are just strings
+                // If it's a string, use it directly. If an object, use name/description.
+                optionText =
+                  typeof grade === "object" && grade !== null && grade.name
+                    ? grade.description
+                      ? `${grade.name} ${grade.description}`
+                      : grade.name
+                    : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+              } else if (grades_default && grades_default[index]) {
+                // Priority 3: Use grades_default
+                const grade = grades_default[index];
+                // Assuming grades_default elements also have name and description or are just strings
+                optionText =
+                  typeof grade === "object" && grade !== null && grade.name
+                    ? grade.description
+                      ? `${grade.name} ${grade.description}`
+                      : grade.name
+                    : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+              } else {
+                // Fallback: If no specific grade is found, use the subprogram name
+                optionText = subprogram.name || "N/A";
+              }
+
+              option.textContent = optionText;
+              gradeSelect.appendChild(option);
+            });
+          }
+        } else {
+          // Clear existing options before populating
+          while (gradeSelect.options.length > 1) {
+            gradeSelect.remove(1);
+          }
+
+          // --- Start of the specific adjustment for not_institute ---
+          // Iterate over subprograms_arr and use grades array for text
+          if (subprograms_arr.length > 0) {
+            document.getElementById("grade_select").style.display = "block";
+            document.getElementById("grade").required = true;
+
+            subprograms_arr.forEach((subprogram, index) => {
+              const option = document.createElement("option");
+              option.value = index + 1; // Use index + 1 as value, aligning with program change event
+
+              let optionText = "";
+
+              // New priority logic for optionText
+              if (grades_institute && grades_institute[index]) {
+                // Priority 1: Use grades_institute
+                const grade = grades_institute[index];
+                optionText = grade.description
+                  ? `${grade.name} ${grade.description}`
+                  : grade.name;
+              } else if (grades_country_arr && grades_country_arr[index]) {
+                // Priority 2: Use grades_country_arr
+                const grade = grades_country_arr[index];
+                // Assuming grades_country_arr elements also have name and description or are just strings
+                // If it's a string, use it directly. If an object, use name/description.
+                optionText =
+                  typeof grade === "object" && grade !== null && grade.name
+                    ? grade.description
+                      ? `${grade.name} ${grade.description}`
+                      : grade.name
+                    : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+                // } else if (grades_default && grades_default[index]) {
+                //   // Priority 3: Use grades_default
+                //   const grade = grades_default[index];
+                //   // Assuming grades_default elements also have name and description or are just strings
+                //   optionText =
+                //     typeof grade === "object" && grade !== null && grade.name
+                //       ? grade.description
+                //         ? `${grade.name} ${grade.description}`
+                //         : grade.name
+                //       : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
+              } else {
+                // Fallback: If no specific grade is found, use the subprogram name
+                optionText = subprogram.name || "N/A";
+              }
+
+              option.textContent = optionText;
+              gradeSelect.appendChild(option);
+            });
+          } else {
+            // If no subprograms are loaded, hide grade select
+            document.getElementById("grade_select").style.display = "none";
+            document.getElementById("grade").required = false;
+          }
+        }
       } catch (error) {
         console.error("Error al cargar las menciones:", error);
       }

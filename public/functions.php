@@ -3550,8 +3550,9 @@ function load_subprograms_by_program_callback()
     $program_identificator = $_GET['program_id'];
     $subprograms = get_subprogram_by_identificador_program($program_identificator);
     $product_id = get_product_id_by_identificador_program($program_identificator);
+    $subprograms_as_array = array_values($subprograms);
 
-    wp_send_json_success(array('subprograms' => $subprograms, 'product_id' => $product_id));
+    wp_send_json_success(array('subprograms' => $subprograms_as_array, 'product_id' => $product_id));
     exit;
 }
 
