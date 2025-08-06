@@ -1336,6 +1336,18 @@ h2 {
   flex-wrap: wrap;
   gap: 10px;
 }
+@media (max-width: 520px) {
+  .container-programs #subprograms-container #subprograms .subprogram .group-input {
+    gap: 0px;
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+  .container-programs #subprograms-container #subprograms .subprogram .group-input .active {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0px;
+  }
+}
 .container-programs #subprograms-container #subprograms .subprogram .group-input .space-offer {
   flex: 1;
   font-weight: 400;
@@ -1400,6 +1412,16 @@ h2 {
 #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer {
   flex: 1;
   font-weight: 400;
+}
+@media (max-width: 520px) {
+  #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer {
+    min-width: 100% !important;
+  }
+  #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer.active {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0px;
+  }
 }
 #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer:has(input[type=checkbox]) {
   max-width: -moz-max-content;

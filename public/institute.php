@@ -202,11 +202,9 @@ function set_institute_in_order(WC_Order $order, ?int $id = null): void
     global $wpdb;
 
     // 1. Obtener y validar el ID del instituto.
-    $institute_id = $id ?? ($_COOKIE['institute_id'] ?? null);
+    $institute_id = $id ?? null;
 
-    if (empty($institute_id)) {
-        return;
-    }
+    if ( empty($institute_id) ) return;
 
     // 2. Obtener datos del instituto de forma segura.
     $table_institutes = $wpdb->prefix . 'institutes';

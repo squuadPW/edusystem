@@ -167,9 +167,6 @@ document.addEventListener('DOMContentLoaded',function(){
                     let result = JSON.parse(XHR.responseText);
 
                     if(result.status == 'success'){
-                        if (document.getElementById('table-institutes-payment')) {
-                            document.getElementById('table-institutes-payment').innerHTML = result.html;
-                        }
 
                         if (document.getElementById('table-payment-alliance')) {
                             document.getElementById('table-payment-alliance').innerHTML = result.html;
@@ -197,6 +194,10 @@ document.addEventListener('DOMContentLoaded',function(){
                             document.getElementById('total-transactions').innerHTML = result.transactions.total;  
                             document.getElementById('fee-total-paid').innerHTML = result.transactions.total_paid;
                             document.getElementById('fee-pending-payment').innerHTML = result.transactions.total_pending;
+                        }
+                        
+                        if (document.getElementById('table-institutes-payment')) {
+                            document.getElementById('table-institutes-payment').innerHTML = result.html;
                         }
                     }
                 }

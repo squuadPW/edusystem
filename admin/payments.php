@@ -201,6 +201,7 @@ function add_admin_form_payments_content()
 
                     $product_id = FEE_INSCRIPTION;
                     $customer_id = $student->partner_id;
+                    $institute_id = $student->institute_id;
 
                     // Get first order for customer
                     $orders_customer = wc_get_orders([
@@ -242,17 +243,9 @@ function add_admin_form_payments_content()
                     } else {
                         $order_old = $orders_customer[0];
 
-                        // Copy metadata from old order
-                        $meta_keys = [
-                            'alliance_id',
-                            'institute_id',
-                            'student_id',
-                            'student_data'
-                        ];
-
-                        foreach ($meta_keys as $key) {
-                            $new_order->add_meta_data($key, $order_old->get_meta($key));
-                        }
+                        $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
+                        $new_order->add_meta_data('institute_id', $institute_id);
+                        $new_order->add_meta_data('student_id', $student_id);
 
                         // Add additional metadata
                         $new_order->add_meta_data('old_order_primary', $order_old->get_id());
@@ -271,9 +264,8 @@ function add_admin_form_payments_content()
                     $new_order->save();
 
                     // Set institute in order
-                    if ($order_old) {
-                        set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
-                    }
+                    if ($order_old) set_institute_in_order($new_order, $institute_id );
+
 
                     // Send notification email
                     $user_customer = get_user_by('id', $customer_id);
@@ -306,6 +298,7 @@ function add_admin_form_payments_content()
 
                     $product_id = FEE_GRADUATION;
                     $customer_id = $student->partner_id;
+                    $institute_id = $student->institute_id;
 
                     // Get first order for customer
                     $orders_customer = wc_get_orders([
@@ -346,18 +339,10 @@ function add_admin_form_payments_content()
                         $new_order->set_billing_phone($user_customer->phone);
                     } else {
                         $order_old = $orders_customer[0];
-
-                        // Copy metadata from old order
-                        $meta_keys = [
-                            'alliance_id',
-                            'institute_id',
-                            'student_id',
-                            'student_data'
-                        ];
-
-                        foreach ($meta_keys as $key) {
-                            $new_order->add_meta_data($key, $order_old->get_meta($key));
-                        }
+                        
+                        $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
+                        $new_order->add_meta_data('institute_id', $institute_id);
+                        $new_order->add_meta_data('student_id', $student_id);
 
                         // Add additional metadata
                         $new_order->add_meta_data('old_order_primary', $order_old->get_id());
@@ -375,9 +360,7 @@ function add_admin_form_payments_content()
                     $new_order->save();
 
                     // Set institute in order
-                    if ($order_old) {
-                        set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
-                    }
+                    if ($order_old) set_institute_in_order($new_order, $institute_id );
 
                     // Send notification email
                     $user_customer = get_user_by('id', $customer_id);
@@ -448,9 +431,8 @@ function add_admin_form_payments_content()
                 $new_order = wc_create_order($order_args);
                 $new_order->add_meta_data('old_order_primary', $order_id);
                 $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
-                $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
-                $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
-                $new_order->add_meta_data('student_data', $order_old->get_meta('student_data'));
+                $new_order->add_meta_data('institute_id', $institute_id );
+                $new_order->add_meta_data('student_id', $student_id );
                 $new_order->add_meta_data('cuote_payment', 1);
                 $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin');
                 $product = $first_item->get_product();
@@ -472,7 +454,8 @@ function add_admin_form_payments_content()
                     $new_order->set_billing_phone($billing_address['phone']);
                 }
                 $new_order->save();
-                set_institute_in_order($new_order, $order_old->get_meta('institute_id'));
+
+                set_institute_in_order($new_order, $institute_id );
 
                 // hacemos el envio del email al email del customer, es decir, al que paga.
                 $user_customer = get_user_by('id', $customer_id);
@@ -893,12 +876,14 @@ function add_admin_form_payments_content()
                     $rule_id = $rule['id'] ?? '';
                     $is_active = $rule['is_active'] ? true : false;
                     $name = $rule['name'];
-                    $initial_price = $rule['initial_price'];
+                    $initial_payment = $rule['initial_payment'];
                     $quantity = $rule['quantity'];
                     $price = $rule['price'];
+                    $final_payment = $rule['final_payment'];
                     $frequency_value = $rule['frequency_value'];
                     $type_frequency = $rule['type_frequency'];
                     $position = $rule['position'] ?? 0;
+                    
 
                     // crea o actualiza el sub programa
                     if (!empty($rule_id)) {
@@ -906,9 +891,10 @@ function add_admin_form_payments_content()
                         $wpdb->update($table_quota_rules, [
                             'is_active' => $is_active,
                             'name' => $name,
-                            'initial_price' => $initial_price,
+                            'initial_payment' => $initial_payment,
                             'quotas_quantity' => $quantity,
                             'quote_price' => $price,
+                            'final_payment' => $final_payment,
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
                             'position' => $position,
@@ -919,9 +905,10 @@ function add_admin_form_payments_content()
                         $wpdb->insert($table_quota_rules, [
                             'is_active' => $is_active,
                             'name' => $name,
-                            'initial_price' => $initial_price,
+                            'initial_payment' => $initial_payment,
                             'quotas_quantity' => $quantity,
                             'quote_price' => $price,
+                            'final_payment' => $final_payment,
                             'program_id' => $identificator,
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
@@ -2296,8 +2283,7 @@ class TT_All_Payment_Plans_List_Table extends WP_List_Table
 add_action('wp_ajax_nopriv_generate_quote_public', 'generate_quote_public_callback');
 add_action('wp_ajax_generate_quote_public', 'generate_quote_public_callback');
 
-function generate_quote_public_callback()
-{
+function generate_quote_public_callback() {
     // 1. Input Validation and Sanitization
     if (!isset($_POST['amount']) || !isset($_POST['student_id'])) {
         wp_send_json_error(array('message' => 'Missing required parameters.'));
@@ -2323,6 +2309,7 @@ function generate_quote_public_callback()
         die();
     }
     $customer_id = $student->partner_id;
+    $institute_id = $student->institute_id;
 
     // Retrieve the customer user object
     $user_customer = get_user_by('id', $customer_id);
@@ -2385,28 +2372,21 @@ function generate_quote_public_callback()
     // Fetch all meta data at once if possible or specific keys as needed.
     // Assuming get_meta() is optimized to cache results.
     $new_order->add_meta_data('old_order_primary', $old_order_id);
-    $new_order->add_meta_data('alliance_id', $old_order->get_meta('alliance_id'));
-    $new_order->add_meta_data('institute_id', $old_order->get_meta('institute_id'));
-    $new_order->add_meta_data('student_id', $old_order->get_meta('student_id'));
-    $new_order->add_meta_data('student_data', $old_order->get_meta('student_data'));
+    $new_order->add_meta_data('institute_id', $institute_id );
+    $new_order->add_meta_data('student_id', $student_id );
     $new_order->add_meta_data('cuote_payment', 1);
     $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin'); // Use update_meta_data as good practice
 
     // Set billing address
     $billing_address = $old_order->get_address('billing');
-    if (!empty($billing_address)) {
-        $new_order->set_address($billing_address, 'billing');
-    }
+    if (!empty($billing_address)) $new_order->set_address($billing_address, 'billing');
 
     // Calculate totals and save the order
     $new_order->calculate_totals();
     $new_order->save();
 
     // Set institute if available
-    $institute_id = $old_order->get_meta('institute_id');
-    if ($institute_id) {
-        set_institute_in_order($new_order, $institute_id);
-    }
+    if ($institute_id) set_institute_in_order( $new_order, $institute_id );
 
     // Send email to the customer
     $mailer = WC()->mailer();
