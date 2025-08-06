@@ -70,14 +70,14 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("institute_id").required = false;
         document.getElementById("institute_id_required").textContent = "";
 
-      document.getElementById("grade_select").style.display = "block";
-      document.getElementById("grade").required = true;
+        document.getElementById("grade_select").style.display = "block";
+        document.getElementById("grade").required = true;
 
-      subprograms_arr.forEach((subprogram, index) => {
-        const optionText = getOptionText(index, subprogram);
-        const option = createOption(optionText, index + 1);
-        gradeSelect.appendChild(option);
-      });
+        subprograms_arr.forEach((subprogram, index) => {
+          const optionText = getOptionText(index, subprogram);
+          const option = createOption(optionText, index + 1);
+          gradeSelect.appendChild(option);
+        });
       } else {
         document.getElementById("name-institute-field").style.display = "none";
         document.getElementById("name_institute").required = false;
@@ -541,10 +541,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (grade) {
     grade.addEventListener("change", (e) => {
-      // Subtract 1 because option values are index + 1
-      const selectedIndex = parseInt(e.target.value, 10) - 1;
+      // Obtener el índice seleccionado directamente
+      const selectedIndex = grade.selectedIndex - 1;
+      if (selectedIndex < 0) {
+        return;
+      }
 
       if (productIdInput) {
+        // Usar el selectedIndex para acceder al array
         if (selectedIndex >= 0 && selectedIndex < subprograms_arr.length) {
           const selectedProgram = subprograms_arr[selectedIndex];
 

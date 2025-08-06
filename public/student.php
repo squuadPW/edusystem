@@ -123,6 +123,9 @@ function save_student()
         $career = isset($_POST['career']) ? $_POST['career'] : null;
         $mention = isset($_POST['mention']) ? $_POST['mention'] : null;
         $plan = isset($_POST['plan']) ? $_POST['plan'] : null;
+        // $plan_data = get_program_details_by_identificator($plan);
+        // $product_id = $plan_data->product_id;
+
         // $program = get_identificator_by_id_program($program_id);
         $grade = isset($_POST['grade']) && !empty($_POST['grade']) ? $_POST['grade'] : 4;
         $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
