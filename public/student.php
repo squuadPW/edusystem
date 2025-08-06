@@ -60,7 +60,9 @@ function save_essential_data_order($order) {
         ],
         "program" => [
             "program_id" => $_COOKIE['program_id'] ?? null,
-            "program_id_number" => $_COOKIE['program_id_number'] ?? null,
+            "career_id" => $_COOKIE['career_id'] ?? null,
+            "mention_id" => $_COOKIE['mention_id'] ?? null,
+            "plan_id" => $_COOKIE['plan_id'] ?? null,
             "initial_grade" => $_COOKIE['initial_grade'] ?? null,
             "institute_id" => $_COOKIE['institute_id'] ?? null,
             "name_institute" => $name_institute
