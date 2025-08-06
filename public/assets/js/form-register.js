@@ -61,8 +61,8 @@ document.addEventListener("DOMContentLoaded", function () {
         gradeSelect.remove(1);
       }
       // Hide grade select initially
-      document.getElementById("grade_select").style.display = "none";
-      document.getElementById("grade").required = false;
+      // document.getElementById("grade_select").style.display = "none";
+      // document.getElementById("grade").required = false;
 
       if (e.target.value == "other") {
         document.getElementById("name-institute-field").style.display = "block";
@@ -70,8 +70,8 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("institute_id").required = false;
         document.getElementById("institute_id_required").textContent = "";
 
-        document.getElementById("grade_select").style.display = "block";
-        document.getElementById("grade").required = true;
+        // document.getElementById("grade_select").style.display = "block";
+        // document.getElementById("grade").required = true;
 
         subprograms_arr.forEach((subprogram, index) => {
           const optionText = getOptionText(index, subprogram);
@@ -108,8 +108,8 @@ document.addEventListener("DOMContentLoaded", function () {
               // grades_default = XHR.response.data.default_grades;
               grades_institute = XHR.response.data.institute_grades;
 
-              document.getElementById("grade_select").style.display = "block";
-              document.getElementById("grade").required = true;
+              // document.getElementById("grade_select").style.display = "block";
+              // document.getElementById("grade").required = true;
 
               subprograms_arr.forEach((subprogram, index) => {
                 const optionText = getOptionText(index, subprogram);
@@ -127,10 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (program) {
     program.addEventListener("change", async (e) => {
-      document.getElementById("institute_id").value = "";
-      document.getElementById("institute-id-select").style.display = "none";
-      document.getElementById("name-institute-field").style.display = "none";
-      document.getElementById("grade_select").style.display = "none";
+      shutdownFields(["grade_select","plans_select","name-institute-field","institute-id-select","mentions_select","careers_select"], ["grade","plan","name_institute","institute_id","mention","career"]);
 
       // Limpiar y ocultar el select de planes de pago en cada cambio
       const planElement = document.getElementById("plan");
@@ -251,10 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (career) {
     career.addEventListener("change", async (e) => {
-      document.getElementById("institute_id").value = "";
-      document.getElementById("institute-id-select").style.display = "none";
-      document.getElementById("name-institute-field").style.display = "none";
-      document.getElementById("grade_select").style.display = "none";
+      shutdownFields(["mentions_select"], ["mention"]);
 
       const careerId = e.target.value;
       const mentionSelectContainer = document.getElementById("mentions_select");
@@ -332,10 +326,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (mention) {
     mention.addEventListener("change", (e) => {
-      document.getElementById("institute_id").value = "";
-      document.getElementById("institute-id-select").style.display = "none";
-      document.getElementById("name-institute-field").style.display = "none";
-      document.getElementById("grade_select").style.display = "none";
+      // document.getElementById("institute_id").value = "";
+      // document.getElementById("institute-id-select").style.display = "none";
+      // document.getElementById("name-institute-field").style.display = "none";
+      // document.getElementById("grade_select").style.display = "none";
 
       const numberOfOptions =
         document.getElementById("institute_id").options.length;
@@ -406,10 +400,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (plan) {
     plan.addEventListener("change", async (e) => {
+      shutdownFields(["grade_select"], ["grade"]);
+
       const gradeSelect = document.querySelector('select[name="grade"]');
       const gradeSelectContainer = document.getElementById("grade_select");
       const gradeInput = document.getElementById("grade");
-      const instituteInputValue = document.getElementById("institute_id");
       const planId = e.target.value;
 
       // Lógica para limpiar y salir temprano
@@ -444,8 +439,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = await response.json();
         subprograms_arr = data.data.subprograms || [];
 
-        const shouldShowGradeSelect =
-          subprograms_arr.length > 0 && instituteInputValue.value === "other";
+        const shouldShowGradeSelect = subprograms_arr.length > 0;
 
         if (shouldShowGradeSelect) {
           gradeSelectContainer.style.display = "block";
@@ -823,6 +817,27 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   }
+
+  function shutdownFields(elementsToHide, fieldsToClear) {
+
+    // Apaga y limpia los elementos de selección y sus campos de valor
+    elementsToHide.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.style.display = "none";
+      }
+    });
+
+    fieldsToClear.forEach((id) => {
+      const field = document.getElementById(id);
+      if (field) {
+        field.value = "";
+      }
+    });
+  }
+
+  // Para usar la función, solo necesitas llamarla:
+  // apagarCampos();
 });
 
 let timer = null;
