@@ -117,8 +117,11 @@ function save_student()
         // DATOS EXTRAS
         $country = isset($_POST['country']) ? $_POST['country'] : null;
         $city = isset($_POST['city']) ? strtolower($_POST['city']) : null;
-        $program_id = isset($_POST['program']) ? $_POST['program'] : null;
-        $program = get_identificator_by_id_program($program_id);
+        $program = isset($_POST['program']) ? $_POST['program'] : null;
+        $career = isset($_POST['career']) ? $_POST['career'] : null;
+        $mention = isset($_POST['mention']) ? $_POST['mention'] : null;
+        $plan = isset($_POST['plan']) ? $_POST['plan'] : null;
+        // $program = get_identificator_by_id_program($program_id);
         $grade = isset($_POST['grade']) && !empty($_POST['grade']) ? $_POST['grade'] : 4;
         $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
         $password = isset($_POST['password']) ? $_POST['password'] : null;
@@ -134,7 +137,6 @@ function save_student()
         $bank_transfer_account = isset($_POST['bank_transfer_account']) ? $_POST['bank_transfer_account'] : false;
         $student_registration_hidden_payments = isset($_POST['hidden_payment_methods']) ? $_POST['hidden_payment_methods'] : false;
         $fixed_fee_inscription = isset($_POST['fixed_fee_inscription']) ? $_POST['fixed_fee_inscription'] : false;
-
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
                 $crm_exist = crm_request('contacts', '?email=' . $email_partner, 'GET', null);
@@ -162,7 +164,10 @@ function save_student()
         setcookie('billing_country', $country, time() + 864000, '/');
         setcookie('initial_grade', $grade, time() + 864000, '/');
         setcookie('program_id', $program, time() + 864000, '/');
-        setcookie('program_id_number', $program_id, time() + 864000, '/');
+        setcookie('career_id', $career, time() + 864000, '/');
+        setcookie('mention_id', $mention, time() + 864000, '/');
+        setcookie('plan_id', $plan, time() + 864000, '/');
+        // setcookie('program_id_number', $program_id, time() + 864000, '/');
         setcookie('phone_student', $number_phone, time() + 864000, '/');
         setcookie('id_document', $id_document, time() + 864000, '/');
         setcookie('document_type', $document_type, time() + 864000, '/');
