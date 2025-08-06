@@ -829,9 +829,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     fieldsToClear.forEach((id) => {
+      console.log(id)
       const field = document.getElementById(id);
+      const hasValueShortcode = document.getElementById(`${id}_shortcode`);
+      const value = hasValueShortcode? hasValueShortcode.value : '';
       if (field) {
-        field.value = "";
+        field.value = value;
       }
     });
   }
