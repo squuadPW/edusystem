@@ -142,6 +142,9 @@ function create_tables()
       `id` INT(11) NOT NULL AUTO_INCREMENT,
       `student_id` INT(11) NOT NULL,
       `program_identificator` TEXT NOT NULL,
+      `career_identificator` TEXT NOT NULL,
+      `mention_identificator` TEXT NOT NULL,
+      `plan_identificator` TEXT NOT NULL,
       `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );

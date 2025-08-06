@@ -844,6 +844,7 @@ function insert_student($order)
     }
 
     $student_id = $wpdb->insert_id;
+    insert_register_program($student_id, $program);
     return $student_id;
 }
 
@@ -908,15 +909,17 @@ function update_elective_student($student_id, $status_id)
  * independientemente de la cantidad de documentos.
  *
  * @param int $student_id ID del estudiante.
- * @param int $program_identificator identificador del programa
  */
-function insert_register_program($student_id, $program_identificator)
+function insert_register_program($student_id, $program_data)
 {
     global $wpdb;
     $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
     $wpdb->insert($table_programs_by_student, [
         'student_id' => $student_id,
-        'program_identificator' => $program_identificator
+        'program_identificator' => $program_data['program_id'],
+        'career_identificator' => $program_data['career_id'],
+        'mention_identificator' => $program_data['mention_id'],
+        'plan_identificator' => $program_data['plan_id'],
     ]);
 }
 
