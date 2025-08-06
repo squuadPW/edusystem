@@ -52,6 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (not_institute) {
     not_institute.addEventListener("change", (e) => {
+      grades_institute = [];
       const gradeSelect = document.querySelector('select[name="grade"]');
       gradeSelect.value = "";
 
@@ -68,18 +69,20 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("name_institute").required = true;
         document.getElementById("institute_id").required = false;
         document.getElementById("institute_id_required").textContent = "";
+
+      document.getElementById("grade_select").style.display = "block";
+      document.getElementById("grade").required = true;
+
+      subprograms_arr.forEach((subprogram, index) => {
+        const optionText = getOptionText(index, subprogram);
+        const option = createOption(optionText, index + 1);
+        gradeSelect.appendChild(option);
+      });
       } else {
         document.getElementById("name-institute-field").style.display = "none";
         document.getElementById("name_institute").required = false;
         document.getElementById("institute_id").required = true;
         document.getElementById("institute_id_required").textContent = "*";
-
-        // If a specific institute is selected, hide grade select (it will be re-populated by AJAX if needed)
-        if (subprograms_arr.length > 0) {
-          // This condition was previously leading to hiding it always if subprograms_arr.length > 0
-          document.getElementById("grade_select").style.display = "none";
-          document.getElementById("grade").required = false;
-        }
 
         // Proceed with AJAX call only if an institute is actually selected (not "other" or empty)
         if (e.target.value) {
@@ -102,15 +105,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
           XHR.onload = () => {
             if (XHR.status === 200 && XHR.response && XHR.response.data) {
-              grades_default = XHR.response.data.default_grades;
+              // grades_default = XHR.response.data.default_grades;
               grades_institute = XHR.response.data.institute_grades;
-            } else {
-              // Handle error or empty grades response: clear and hide
-              while (gradeSelect.options.length > 1) {
-                gradeSelect.remove(1);
-              }
-              document.getElementById("grade_select").style.display = "none";
-              document.getElementById("grade").required = false;
+
+              document.getElementById("grade_select").style.display = "block";
+              document.getElementById("grade").required = true;
+
+              subprograms_arr.forEach((subprogram, index) => {
+                const optionText = getOptionText(index, subprogram);
+                const option = createOption(optionText, index + 1);
+                gradeSelect.appendChild(option);
+              });
             }
           };
 
@@ -353,49 +358,78 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // copiado de career
+  function createOption(text, value) {
+    const option = document.createElement("option");
+    option.textContent = text;
+    option.value = value;
+    return option;
+  }
+
+  /**
+   * Determina el texto de una opción de select basándose en la jerarquía de prioridades.
+   * @param {number} index El índice del elemento en los arrays de grados.
+   * @param {Object} subprogram El objeto subprograma actual.
+   * @returns {string} El texto final para la opción.
+   */
+  function getOptionText(index, subprogram) {
+    // Lógica de prioridad: grades_institute > grades_country_arr > grades_default
+    let gradeData = null;
+
+    if (grades_institute && grades_institute[index]) {
+      gradeData = grades_institute[index];
+    } else if (grades_country_arr && grades_country_arr[index]) {
+      gradeData = grades_country_arr[index];
+    }
+    // } else if (grades_default && grades_default[index]) {
+    //   gradeData = grades_default[index];
+    // }
+
+    // Formatear el texto de la opción si se encontró un grado.
+    if (gradeData) {
+      if (
+        typeof gradeData === "object" &&
+        gradeData !== null &&
+        gradeData.name
+      ) {
+        return gradeData.description
+          ? `${gradeData.name} ${gradeData.description}`
+          : gradeData.name;
+      } else {
+        // Si el dato es un string simple, usarlo directamente.
+        return gradeData;
+      }
+    }
+
+    // Fallback: Si no se encontró ningún grado, usar el nombre del subprograma.
+    return subprogram.name || "N/A";
+  }
+
   if (plan) {
     plan.addEventListener("change", async (e) => {
       const gradeSelect = document.querySelector('select[name="grade"]');
-      gradeSelect.value = "";
-      // document.getElementById("institute_id").value = "";
-      // document.getElementById("institute-id-select").style.display = "none";
-      // document.getElementById("name-institute-field").style.display = "none";
-      // document.getElementById("grade_select").style.display = "none";
-
+      const gradeSelectContainer = document.getElementById("grade_select");
+      const gradeInput = document.getElementById("grade");
+      const instituteInputValue = document.getElementById("institute_id");
       const planId = e.target.value;
-      // const mentionSelectContainer = document.getElementById("mentions_select");
-      // const mentionElement = document.getElementById("mention");
 
-      // Limpiar el select de menciones si existe y es un <select>
-      // if (mentionElement && mentionElement.tagName === "SELECT") {
-      //   while (mentionElement.options.length > 1) {
-      //     mentionElement.remove(1);
-      //   }
-      //   mentionSelectContainer.style.display = "none";
-      //   mentionElement.required = false;
-      // }
+      // Lógica para limpiar y salir temprano
+      gradeSelect.value = "";
+      while (gradeSelect.options.length > 1) {
+        gradeSelect.remove(1);
+      }
 
       if (!planId) {
+        gradeSelectContainer.style.display = "none";
+        gradeInput.required = false;
         return;
       }
 
-      // const isMentionSelect =
-      //   mentionElement && mentionElement.tagName === "SELECT";
-      // const isMentionShortcodeValid =
-      //   mentionIdShortcode && mentionIdShortcode.value;
-
-      // // Si el shortcode de la mención existe y no es un select, no se hace nada.
-      // if (isMentionShortcodeValid && !isMentionSelect) {
-      //   return;
-      // }
-
-      // Si el shortcode de la mención no existe o es un select, procedemos a cargar.
-      const params = new URLSearchParams({
-        action: "load_subprograms_by_program",
-        program_id: planId,
-      });
-
       try {
+        const params = new URLSearchParams({
+          action: "load_subprograms_by_program",
+          program_id: planId,
+        });
+
         const response = await fetch(
           `${ajax_object.ajax_url}?${params.toString()}`,
           {
@@ -410,118 +444,25 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = await response.json();
         subprograms_arr = data.data.subprograms || [];
 
-        // If 'other' is selected and subprograms exist, show grade select
-        const instituteInputValue = document.getElementById("institute_id");
-        if (instituteInputValue.value == "other") {
-          if (subprograms_arr.length > 0) {
-            document.getElementById("grade_select").style.display = "block";
-            document.getElementById("grade").required = true;
+        const shouldShowGradeSelect =
+          subprograms_arr.length > 0 && instituteInputValue.value === "other";
 
-            subprograms_arr.forEach((subprogram, index) => {
-              const option = document.createElement("option");
-              option.value = index + 1; // Use index + 1 as value, aligning with program change event
+        if (shouldShowGradeSelect) {
+          gradeSelectContainer.style.display = "block";
+          gradeInput.required = true;
 
-              let optionText = "";
-
-              // New priority logic for optionText
-              if (grades_institute && grades_institute[index]) {
-                // Priority 1: Use grades_institute
-                const grade = grades_institute[index];
-                optionText = grade.description
-                  ? `${grade.name} ${grade.description}`
-                  : grade.name;
-              } else if (grades_country_arr && grades_country_arr[index]) {
-                // Priority 2: Use grades_country_arr
-                const grade = grades_country_arr[index];
-                // Assuming grades_country_arr elements also have name and description or are just strings
-                // If it's a string, use it directly. If an object, use name/description.
-                optionText =
-                  typeof grade === "object" && grade !== null && grade.name
-                    ? grade.description
-                      ? `${grade.name} ${grade.description}`
-                      : grade.name
-                    : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-              } else if (grades_default && grades_default[index]) {
-                // Priority 3: Use grades_default
-                const grade = grades_default[index];
-                // Assuming grades_default elements also have name and description or are just strings
-                optionText =
-                  typeof grade === "object" && grade !== null && grade.name
-                    ? grade.description
-                      ? `${grade.name} ${grade.description}`
-                      : grade.name
-                    : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-              } else {
-                // Fallback: If no specific grade is found, use the subprogram name
-                optionText = subprogram.name || "N/A";
-              }
-
-              option.textContent = optionText;
-              gradeSelect.appendChild(option);
-            });
-          }
+          subprograms_arr.forEach((subprogram, index) => {
+            const optionText = getOptionText(index, subprogram);
+            const option = createOption(optionText, index + 1);
+            gradeSelect.appendChild(option);
+          });
         } else {
-          // Clear existing options before populating
-          while (gradeSelect.options.length > 1) {
-            gradeSelect.remove(1);
-          }
-
-          // --- Start of the specific adjustment for not_institute ---
-          // Iterate over subprograms_arr and use grades array for text
-          if (subprograms_arr.length > 0) {
-            document.getElementById("grade_select").style.display = "block";
-            document.getElementById("grade").required = true;
-
-            subprograms_arr.forEach((subprogram, index) => {
-              const option = document.createElement("option");
-              option.value = index + 1; // Use index + 1 as value, aligning with program change event
-
-              let optionText = "";
-
-              // New priority logic for optionText
-              if (grades_institute && grades_institute[index]) {
-                // Priority 1: Use grades_institute
-                const grade = grades_institute[index];
-                optionText = grade.description
-                  ? `${grade.name} ${grade.description}`
-                  : grade.name;
-              } else if (grades_country_arr && grades_country_arr[index]) {
-                // Priority 2: Use grades_country_arr
-                const grade = grades_country_arr[index];
-                // Assuming grades_country_arr elements also have name and description or are just strings
-                // If it's a string, use it directly. If an object, use name/description.
-                optionText =
-                  typeof grade === "object" && grade !== null && grade.name
-                    ? grade.description
-                      ? `${grade.name} ${grade.description}`
-                      : grade.name
-                    : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-                // } else if (grades_default && grades_default[index]) {
-                //   // Priority 3: Use grades_default
-                //   const grade = grades_default[index];
-                //   // Assuming grades_default elements also have name and description or are just strings
-                //   optionText =
-                //     typeof grade === "object" && grade !== null && grade.name
-                //       ? grade.description
-                //         ? `${grade.name} ${grade.description}`
-                //         : grade.name
-                //       : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-              } else {
-                // Fallback: If no specific grade is found, use the subprogram name
-                optionText = subprogram.name || "N/A";
-              }
-
-              option.textContent = optionText;
-              gradeSelect.appendChild(option);
-            });
-          } else {
-            // If no subprograms are loaded, hide grade select
-            document.getElementById("grade_select").style.display = "none";
-            document.getElementById("grade").required = false;
-          }
+          gradeSelectContainer.style.display = "none";
+          gradeInput.required = false;
         }
       } catch (error) {
         console.error("Error al cargar las menciones:", error);
+        // Opcionalmente, mostrar un mensaje de error al usuario
       }
     });
 
@@ -591,9 +532,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
 
-      if (program.selectedIndex != 0) {
-        program.dispatchEvent(new Event("change"));
-      }
+      program.dispatchEvent(new Event("change"));
+      career.dispatchEvent(new Event("change"));
+      mention.dispatchEvent(new Event("change"));
+      plan.dispatchEvent(new Event("change"));
     });
   }
 
