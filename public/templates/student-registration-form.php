@@ -260,7 +260,8 @@
             <input type="hidden" name="mention" id="mention" value="<?= $mention ?>">
         <?php } ?>
 
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="institute-id-select" style="display:none">
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="institute-id-select"
+            style="display: <?= count($institutes) > 1 ? 'block' : 'none' ?>">
             <label for="name_institute"><?= __('Name of School or Institution with Agreement', 'edusystem'); ?><span
                     id="institute_id_required" class="required">*</span></label>
             <select name="institute_id" autocomplete="off" id="institute_id" required>

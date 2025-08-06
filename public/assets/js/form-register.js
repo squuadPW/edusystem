@@ -52,6 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (not_institute) {
     not_institute.addEventListener("change", (e) => {
+      document.getElementById("buttonsave").disabled = true;
       grades_institute = [];
       const gradeSelect = document.querySelector('select[name="grade"]');
       gradeSelect.value = "";
@@ -78,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const option = createOption(optionText, index + 1);
           gradeSelect.appendChild(option);
         });
+        document.getElementById("buttonsave").disabled = false;
       } else {
         document.getElementById("name-institute-field").style.display = "none";
         document.getElementById("name_institute").required = false;
@@ -116,6 +118,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 const option = createOption(optionText, index + 1);
                 gradeSelect.appendChild(option);
               });
+
+              document.getElementById("buttonsave").disabled = false;
             }
           };
 
@@ -127,7 +131,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (program) {
     program.addEventListener("change", async (e) => {
-      shutdownFields(["grade_select","plans_select","name-institute-field","institute-id-select","mentions_select","careers_select"], ["grade","plan","name_institute","institute_id","mention","career"]);
+      document.getElementById("buttonsave").disabled = true;
+      shutdownFields(
+        ["grade_select", "plans_select", "mentions_select", "careers_select"],
+        ["grade", "plan", "mention", "career"]
+      );
 
       // Limpiar y ocultar el select de planes de pago en cada cambio
       const planElement = document.getElementById("plan");
@@ -233,6 +241,8 @@ document.addEventListener("DOMContentLoaded", function () {
             planElement.value = planIdShortcode.value;
           }
         }
+
+        document.getElementById("buttonsave").disabled = false;
       } catch (error) {
         console.error("Error al cargar las carreras o planes de pago:", error);
       }
@@ -248,6 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (career) {
     career.addEventListener("change", async (e) => {
+      document.getElementById("buttonsave").disabled = true;
       shutdownFields(["mentions_select"], ["mention"]);
 
       const careerId = e.target.value;
@@ -314,6 +325,8 @@ document.addEventListener("DOMContentLoaded", function () {
             mentionElement.value = mentionIdShortcode.value;
           }
         }
+
+        document.getElementById("buttonsave").disabled = false;
       } catch (error) {
         console.error("Error al cargar las menciones:", error);
       }
@@ -324,32 +337,32 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  if (mention) {
-    mention.addEventListener("change", (e) => {
-      // document.getElementById("institute_id").value = "";
-      // document.getElementById("institute-id-select").style.display = "none";
-      // document.getElementById("name-institute-field").style.display = "none";
-      // document.getElementById("grade_select").style.display = "none";
+  // if (mention) {
+  //   mention.addEventListener("change", (e) => {
+  //     // document.getElementById("institute_id").value = "";
+  //     // document.getElementById("institute-id-select").style.display = "none";
+  //     // document.getElementById("name-institute-field").style.display = "none";
+  //     // document.getElementById("grade_select").style.display = "none";
 
-      const numberOfOptions =
-        document.getElementById("institute_id").options.length;
-      if (numberOfOptions == 3) {
-        document.getElementById("institute_id").required = false;
-        document.getElementById("institute-id-select").style.display = "none";
-        document.getElementById("institute_id").selectedIndex = 1;
-        document
-          .getElementById("institute_id")
-          .dispatchEvent(new Event("change"));
-      } else {
-        document.getElementById("institute_id").required = true;
-        document.getElementById("institute-id-select").style.display = "block";
-      }
-    });
+  //     const numberOfOptions =
+  //       document.getElementById("institute_id").options.length;
+  //     if (numberOfOptions == 3) {
+  //       document.getElementById("institute_id").required = false;
+  //       document.getElementById("institute-id-select").style.display = "none";
+  //       document.getElementById("institute_id").selectedIndex = 1;
+  //       document
+  //         .getElementById("institute_id")
+  //         .dispatchEvent(new Event("change"));
+  //     } else {
+  //       document.getElementById("institute_id").required = true;
+  //       document.getElementById("institute-id-select").style.display = "block";
+  //     }
+  //   });
 
-    if (mentionIdShortcode && mentionIdShortcode.value) {
-      mention.dispatchEvent(new Event("change"));
-    }
-  }
+  //   if (mentionIdShortcode && mentionIdShortcode.value) {
+  //     mention.dispatchEvent(new Event("change"));
+  //   }
+  // }
 
   // copiado de career
   function createOption(text, value) {
@@ -400,6 +413,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (plan) {
     plan.addEventListener("change", async (e) => {
+      document.getElementById("buttonsave").disabled = true;
       shutdownFields(["grade_select"], ["grade"]);
 
       const gradeSelect = document.querySelector('select[name="grade"]');
@@ -454,6 +468,8 @@ document.addEventListener("DOMContentLoaded", function () {
           gradeSelectContainer.style.display = "none";
           gradeInput.required = false;
         }
+
+        document.getElementById("buttonsave").disabled = false;
       } catch (error) {
         console.error("Error al cargar las menciones:", error);
         // Opcionalmente, mostrar un mensaje de error al usuario
@@ -469,6 +485,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const instituteSelect = document.getElementById("institute_id");
   if (countrySelect && instituteSelect) {
     countrySelect.addEventListener("change", function (e) {
+      document.getElementById("buttonsave").disabled = true;
       const XHR = new XMLHttpRequest();
       XHR.open(
         "POST",
@@ -486,50 +503,52 @@ document.addEventListener("DOMContentLoaded", function () {
       XHR.onload = () => {
         if (XHR.status === 200 && XHR.response && XHR.response.data) {
           grades_country_arr = XHR.response.data.grades ?? [];
+
+          if (document.getElementById("institute_id")) {
+            document.getElementById("institute_id").value = "";
+          }
+          if (document.getElementById("name_institute")) {
+            document.getElementById("name_institute").value = "";
+          }
+          if (document.getElementById("name-institute-field")) {
+            document.getElementById("name-institute-field").style.display =
+              "none";
+          }
+          if (document.getElementById("name_institute")) {
+            document.getElementById("name_institute").required = false;
+          }
+          if (document.getElementById("institute_id")) {
+            document.getElementById("institute_id").required = true;
+          }
+          if (document.getElementById("institute_id_required")) {
+            document.getElementById("institute_id_required").textContent = "*";
+          }
+
+          grades_institute = [];
+          const instituteSelect = document.getElementById("institute_id");
+          const selectedCountry = countrySelect.value;
+          const options = instituteSelect.options;
+          for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            if (option.dataset.others == "0") {
+              if (
+                option.dataset.country === selectedCountry ||
+                option.value === ""
+              ) {
+                option.style.display = "block";
+              } else {
+                option.style.display = "none";
+              }
+            }
+          }
+
+          plan.dispatchEvent(new Event("change"));
+
+          document.getElementById("buttonsave").disabled = false;
         }
       };
 
       XHR.send(params.toString());
-
-      if (document.getElementById("institute_id")) {
-        document.getElementById("institute_id").value = "";
-      }
-      if (document.getElementById("name_institute")) {
-        document.getElementById("name_institute").value = "";
-      }
-      if (document.getElementById("name-institute-field")) {
-        document.getElementById("name-institute-field").style.display = "none";
-      }
-      if (document.getElementById("name_institute")) {
-        document.getElementById("name_institute").required = false;
-      }
-      if (document.getElementById("institute_id")) {
-        document.getElementById("institute_id").required = true;
-      }
-      if (document.getElementById("institute_id_required")) {
-        document.getElementById("institute_id_required").textContent = "*";
-      }
-
-      const selectedCountry = countrySelect.value;
-      const options = instituteSelect.options;
-      for (let i = 0; i < options.length; i++) {
-        const option = options[i];
-        if (option.dataset.others == "0") {
-          if (
-            option.dataset.country === selectedCountry ||
-            option.value === ""
-          ) {
-            option.style.display = "block";
-          } else {
-            option.style.display = "none";
-          }
-        }
-      }
-
-      program.dispatchEvent(new Event("change"));
-      career.dispatchEvent(new Event("change"));
-      mention.dispatchEvent(new Event("change"));
-      plan.dispatchEvent(new Event("change"));
     });
   }
 
@@ -819,7 +838,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function shutdownFields(elementsToHide, fieldsToClear) {
-
     // Apaga y limpia los elementos de selección y sus campos de valor
     elementsToHide.forEach((id) => {
       const element = document.getElementById(id);
@@ -829,10 +847,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     fieldsToClear.forEach((id) => {
-      console.log(id)
+      console.log(id);
       const field = document.getElementById(id);
       const hasValueShortcode = document.getElementById(`${id}_shortcode`);
-      const value = hasValueShortcode? hasValueShortcode.value : '';
+      const value = hasValueShortcode ? hasValueShortcode.value : "";
       if (field) {
         field.value = value;
       }
