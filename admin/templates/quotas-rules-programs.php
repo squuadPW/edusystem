@@ -1,3 +1,5 @@
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
 <div class="wrap">
     
     <h2 style="margin-bottom:15px;"><?= __('Rules for quotas', 'edusystem'); ?></h2>
@@ -17,7 +19,7 @@
     <?php } ?>
 
     <div style="display:flex;width:100%;">
-        <a class="button button-outline-primary" href="<?= admin_url("/admin.php?page=add_admin_form_program_content&section_tab=program_details&program_id=$program_id" ) ?? $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
+        <a class="button button-outline-primary" href="<?= admin_url("/admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details&program_id=$program_id" ) ?? $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
 
     <div id="quota-rules-programs" class="metabox-holder admin-add-offer " style="width: 70%">
@@ -27,7 +29,7 @@
                     <div class="inside">
 
                         <form method="post"
-                            action="<?= admin_url('admin.php?page=add_admin_form_program_content&action=save_quotas_rules'); ?>">
+                            action="<?= admin_url('admin.php?page=add_admin_form_payments_plans_content&action=save_quotas_rules'); ?>">
                             
                             <div class="quotas_rules"  >
                                         
@@ -45,12 +47,13 @@
                                             <div class="rule" >
 
                                                 <input type="hidden" name="rules[<?= $i ?>][id]" value="<?= $rule['id'] ?>" >
+                                                <input type="hidden" name="rules[<?= $i ?>][position]" value="<?= $rule['position'] ?? 0 ?>" >
 
                                                 <div class="id" ><?= $rule['id'] ?></div>
 
                                                 <div class="group-input" >
 
-                                                    <div class="space-offer">
+                                                    <div class="space-offer active">
                                                         <label for="rules[<?= $i ?>][is_active]">
                                                             <b><?= __('Active', 'edusystem'); ?></b>
                                                         </label>
@@ -79,6 +82,19 @@
                                                     </div>
 
                                                     <div class="space-offer">
+
+                                                        <label for="rules[<?= $i ?>][final_payment]">
+                                                            <b><?= __('Final payment', 'edusystem'); ?></b>
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+                                                        <input type="number" name="rules[<?= $i ?>][final_payment]" value="<?= $rule['final_payment'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="group-input" >
+
+                                                    <div class="space-offer">
                                                         <label for="rules[<?= $i ?>][quantity]">
                                                             <b><?= __('Quotas quantity ', 'edusystem'); ?></b>
                                                             <span class="text-danger">*</span>
@@ -99,18 +115,6 @@
 
                                                     <div class="space-offer">
 
-                                                        <label for="rules[<?= $i ?>][final_payment]">
-                                                            <b><?= __('Final payment', 'edusystem'); ?></b>
-                                                            <span class="text-danger">*</span>
-                                                        </label>
-                                                        <input type="number" name="rules[<?= $i ?>][final_payment]" value="<?= $rule['final_payment'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="group-input" >
-                                                    <div class="space-offer">
-
                                                         <label for="rules[<?= $i ?>][frequency_value]">
                                                             <b><?= __('Frequency', 'edusystem'); ?></b>
                                                             <span class="text-danger">*</span>
@@ -120,7 +124,7 @@
                                                             <input type="number" name="rules[<?= $i ?>][frequency_value]" value="<?= $rule['frequency_value'] ?? 0 ?>" step="1" min="0" onkeydown="return !['.', '-', 'e'].includes(event.key)" required >
 
                                                             <select name="rules[<?= $i ?>][type_frequency]" >
-                                                                <option value="" <?= ($rule['type_frequency'] == '') ? 'selected' : '' ?> ><?= __('Select a frequency type','edusystem') ?></option>
+                                                                <option value="" <?= ($rule['type_frequency'] == '') ? 'selected' : '' ?> ><?= __('Frequency type','edusystem') ?></option>
                                                                 <option value="day" <?= ($rule['type_frequency'] == 'day') ? 'selected' : '' ?> ><?= __('Day','edusystem') ?></option>
                                                                 <option value="month" <?= ($rule['type_frequency'] == 'month') ? 'selected' : '' ?> ><?= __('Month','edusystem') ?></option>
                                                                 <option value="year" <?= ($rule['type_frequency'] == 'year') ? 'selected' : '' ?> ><?= __('Year','edusystem') ?></option>
@@ -129,17 +133,7 @@
                                                         </div>
                                                         
                                                     </div>
-
-                                                    <div class="space-offer">
-
-                                                        <label for="rules[<?= $i ?>][position]">
-                                                            <b><?= __('Position', 'edusystem'); ?></b>
-                                                            <span class="text-danger">*</span>
-                                                        </label>
-
-                                                        <input type="number" name="rules[<?= $i ?>][position]" value="<?= $rule['position'] ?? 0 ?>" step="1" min="0"  onkeydown="return !['.', '-', 'e'].includes(event.key)" required>
-                                                    </div>
-
+                                                    
                                                 </div>
 
                                                 <div class="container-button" >
@@ -151,6 +145,8 @@
                                     <?php endif ?>
 
                                     <div id="template-quota-rule" class="rule" >
+
+                                        <input type="hidden" name="rules[][position]" >
 
                                         <div class="group-input" >
 
@@ -183,6 +179,19 @@
                                             </div>
 
                                             <div class="space-offer">
+
+                                                <label for="rules[][final_payment]">
+                                                    <b><?= __('Final payment', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" name="rules[][final_payment]" value="0" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" disabled required>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="group-input" >
+
+                                            <div class="space-offer">
                                                 <label for="rules[][quantity]">
                                                     <b><?= __('Quotas quantity ', 'edusystem'); ?></b>
                                                     <span class="text-danger">*</span>
@@ -203,18 +212,6 @@
 
                                             <div class="space-offer">
 
-                                                <label for="rules[][final_payment]">
-                                                    <b><?= __('Final payment', 'edusystem'); ?></b>
-                                                    <span class="text-danger">*</span>
-                                                </label>
-                                                <input type="text" name="rules[][final_payment]" value="0" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" disabled required>
-                                            </div>
-
-                                        </div>
-
-                                        <div class="group-input" >
-                                            <div class="space-offer">
-
                                                 <label >
                                                     <b><?= __('Frequency', 'edusystem'); ?></b>
                                                     <span class="text-danger">*</span>
@@ -232,16 +229,6 @@
 
                                                 </div>
                                                 
-                                            </div>
-
-                                            <div class="space-offer">
-
-                                                <label for="rules[][position]">
-                                                    <b><?= __('Position', 'edusystem'); ?></b>
-                                                    <span class="text-danger">*</span>
-                                                </label>
-
-                                                <input type="number" name="rules[][position]" value="0" step="1" min="0" onkeydown="return !['.', '-', 'e'].includes(event.key)" disabled required>
                                             </div>
 
                                         </div>
