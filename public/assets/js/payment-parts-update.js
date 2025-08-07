@@ -63,141 +63,146 @@ document.addEventListener("DOMContentLoaded", () => {
  * calculando las fechas y montos de cada cuota, y utilizando el precio inicial como el primer pago si está disponible.
  */
 function payment_table(rule_data) {
-  table_payment = document.getElementById("table-payment");
-  table_payment.innerHTML = "";
-  const text_total = table_payment.getAttribute("data-text_total");
-  const headers = JSON.parse(
-    table_payment.getAttribute("data-text_table_headers") ?? "{}"
-  );
+    
+    table_payment = document.getElementById("table-payment");
+    table_payment.innerHTML = "";
+    
+    const text_total = table_payment.getAttribute("data-text_total");
+    const headers = JSON.parse(
+        table_payment.getAttribute("data-text_table_headers") ?? "{}"
+    );
 
-  // Crear tabla
-  const table = document.createElement("table");
-  table.setAttribute("data-rule_id", rule_data.id);
-  table.className = "payment-parts-table mt-5";
+    // Crear tabla
+    const table = document.createElement("table");
+    table.setAttribute("data-rule_id", rule_data.id);
+    table.className = "payment-parts-table mt-5";
 
-  // Crear fila de encabezado
-  const header_row = document.createElement("tr");
-  // Crear encabezados
-  headers.forEach((header_text) => {
-    const th = document.createElement("th");
-    th.className = "payment-parts-table-header";
-    th.textContent = header_text;
-    header_row.appendChild(th);
-  });
-  table.appendChild(header_row);
+    // Crear fila de encabezado
+    const header_row = document.createElement("tr");
+    // Crear encabezados
+    headers.forEach((header_text) => {
+        const th = document.createElement("th");
+        th.className = "payment-parts-table-header";
+        th.textContent = header_text;
+        header_row.appendChild(th);
+    });
+    table.appendChild(header_row);
 
-  // fecha para formato
-  const opcions_date = { year: "numeric", month: "long", day: "numeric" };
-  const discount_value = parseFloat(
-    document.getElementById("discount_value").value ?? 0
-  );
+    // fecha para formato
+    const opcions_date = { year: "numeric", month: "long", day: "numeric" };
+    const discount_value = parseFloat(
+        document.getElementById("discount_value").value ?? 0
+    );
 
-  quotas_quantity = rule_data.quotas_quantity;
-  initial_payment = parseFloat(rule_data.initial_payment);
-  final_payment = parseFloat(rule_data.final_payment);
+    quotas_quantity = rule_data.quotas_quantity;
+    initial_payment = parseFloat(rule_data.initial_payment);
+    final_payment = parseFloat(rule_data.final_payment);
 
-  if ( initial_payment > 0 ) quotas_quantity++;
-  if ( final_payment > 0 ) quotas_quantity++;
+    if ( initial_payment > 0 ) quotas_quantity++;
+    if ( final_payment > 0 ) quotas_quantity++;
 
-  if (discount_value > 0) {
-    initial_payment = initial_payment - ( (initial_payment * discount_value) / 100 );
-    final_payment = final_payment - ( (final_payment * discount_value) / 100 );
-  }
-
-  // Crear filas de datos
-  total = 0;
-  for (let i = 0; i < quotas_quantity; i++) {
-    type_frequency = rule_data.type_frequency;
-    frequency_value = parseInt(rule_data.frequency_value);
-    quote_price = parseFloat(rule_data.quote_price);
-
-    if (discount_value > 0) quote_price = quote_price - ( quote_price * discount_value) / 100;
-
-    const row = document.createElement("tr");
-
-    // Crear celdas
-    const payment_cell = document.createElement("td");
-    payment_cell.className = "payment-parts-table-data";
-    payment_cell.textContent = (i + 1).toString();
-    row.appendChild(payment_cell);
-
-    // Calcular la fecha del próximo pago
-    const date = new Date();
-    if (i > 0) {
-
-      if ( i+1 == quotas_quantity && final_payment > 0 ) quote_price = final_payment;
-
-      frequency = i * frequency_value;
-      date.setFullYear(
-        date.getFullYear() + (type_frequency == "year" ? frequency : 0)
-      );
-      date.setMonth(
-        date.getMonth() + (type_frequency == "month" ? frequency : 0)
-      );
-      date.setDate(date.getDate() + (type_frequency == "day" ? frequency : 0));
-    } else {
-      if (initial_payment > 0) quote_price = initial_payment;
+    if (discount_value > 0) {
+        initial_payment = initial_payment - ( (initial_payment * discount_value) / 100 );
+        final_payment = final_payment - ( (final_payment * discount_value) / 100 );
     }
-    const lang = document.documentElement.lang;
 
-    const date_cell = document.createElement("td");
-    date_cell.className = "payment-parts-table-data";
-    date_cell.textContent =
-      new Intl.DateTimeFormat(lang ?? "en-US", opcions_date).format(date) +
-      (i === 0 ? " (Current)" : "");
-    row.appendChild(date_cell);
+    // Crear filas de datos
+    total = 0;
+    for (let i = 0; i < quotas_quantity; i++) {
+        type_frequency = rule_data.type_frequency;
+        frequency_value = parseInt(rule_data.frequency_value);
+        quote_price = parseFloat(rule_data.quote_price);
 
-    const amount_cell = document.createElement("td");
-    amount_cell.className = "payment-parts-table-data";
+        if (discount_value > 0) quote_price = quote_price - ( quote_price * discount_value) / 100;
 
+        const row = document.createElement("tr");
+
+        // Crear celdas
+        const payment_cell = document.createElement("td");
+        payment_cell.className = "payment-parts-table-data";
+        payment_cell.textContent = (i + 1).toString();
+        row.appendChild(payment_cell);
+
+        // Calcular la fecha del próximo pago
+        const date = new Date();
+        if (i > 0) {
+
+            if ( i+1 == quotas_quantity && final_payment > 0 ) quote_price = final_payment;
+
+                frequency = i * frequency_value;
+                date.setFullYear(
+                    date.getFullYear() + (type_frequency == "year" ? frequency : 0)
+                );
+                date.setMonth(
+                    date.getMonth() + (type_frequency == "month" ? frequency : 0)
+                );
+                date.setDate(date.getDate() + (type_frequency == "day" ? frequency : 0));
+        } else {
+            if (initial_payment > 0) quote_price = initial_payment;
+        }
+
+        // acomoda el precio para que solo tome 2 decimales
+        quote_price = parseFloat( parseFloat(quote_price).toFixed(2) );
+
+        const lang = document.documentElement.lang;
+
+        const date_cell = document.createElement("td");
+        date_cell.className = "payment-parts-table-data";
+        date_cell.textContent =
+        new Intl.DateTimeFormat(lang ?? "en-US", opcions_date).format(date) + (i === 0 ? " (Current)" : "");
+        row.appendChild(date_cell);
+
+        const amount_cell = document.createElement("td");
+        amount_cell.className = "payment-parts-table-data";
+
+        const usdFormatter = new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+
+        amount_cell.textContent = usdFormatter.format( quote_price );
+        row.appendChild(amount_cell);
+
+        // Añadir fila a la tabla
+        table.appendChild(row);
+        
+        total = +quote_price;
+    }
+
+    // Fila de total
+    const total_row = document.createElement("tr");
+    const total_header = document.createElement("th");
+    total_header.className = "payment-parts-table-header text-end";
+    total_header.colSpan = 3;
+    total_header.textContent = text_total;
+    total_row.appendChild(total_header);
+    table.appendChild(total_row);
+
+    const total_payment_row = document.createElement("tr");
+    total_payment_row.className = "payment-parts-table-row";
+
+    const total_payment_cell = document.createElement("td");
+    total_payment_cell.className = "payment-parts-table-data text-end";
+    total_payment_cell.colSpan = 3;
+
+    // Reutiliza el formateador de moneda USD
     const usdFormatter = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     });
 
-    amount_cell.textContent = usdFormatter.format(parseFloat(quote_price));
-    row.appendChild(amount_cell);
+    // Asegúrate de que 'total' sea un número antes de formatearlo
+    total_payment_cell.textContent = usdFormatter.format(parseFloat(total));
 
-    // Añadir fila a la tabla
-    table.appendChild(row);
+    total_payment_row.appendChild(total_payment_cell);
+    table.appendChild(total_payment_row);
 
-    total += quote_price;
-  }
-
-  // Fila de total
-  const total_row = document.createElement("tr");
-  const total_header = document.createElement("th");
-  total_header.className = "payment-parts-table-header text-end";
-  total_header.colSpan = 3;
-  total_header.textContent = text_total;
-  total_row.appendChild(total_header);
-  table.appendChild(total_row);
-
-  const total_payment_row = document.createElement("tr");
-  total_payment_row.className = "payment-parts-table-row";
-
-  const total_payment_cell = document.createElement("td");
-  total_payment_cell.className = "payment-parts-table-data text-end";
-  total_payment_cell.colSpan = 3;
-
-  // Reutiliza el formateador de moneda USD
-  const usdFormatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-
-  // Asegúrate de que 'total' sea un número antes de formatearlo
-  total_payment_cell.textContent = usdFormatter.format(parseFloat(total));
-
-  total_payment_row.appendChild(total_payment_cell);
-  table.appendChild(total_payment_row);
-
-  // Insertar tabla en el contenedor
-  table_payment.appendChild(table);
+    // Insertar tabla en el contenedor
+    table_payment.appendChild(table);
 }
 
 /**
