@@ -127,6 +127,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     });
+
+    verifyInstitute();
   }
 
   if (program) {
@@ -337,32 +339,31 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // if (mention) {
-  //   mention.addEventListener("change", (e) => {
-  //     // document.getElementById("institute_id").value = "";
-  //     // document.getElementById("institute-id-select").style.display = "none";
-  //     // document.getElementById("name-institute-field").style.display = "none";
-  //     // document.getElementById("grade_select").style.display = "none";
+  if (mention) {
+    mention.addEventListener("change", (e) => {
+      verifyInstitute();
+    });
 
-  //     const numberOfOptions =
-  //       document.getElementById("institute_id").options.length;
-  //     if (numberOfOptions == 3) {
-  //       document.getElementById("institute_id").required = false;
-  //       document.getElementById("institute-id-select").style.display = "none";
-  //       document.getElementById("institute_id").selectedIndex = 1;
-  //       document
-  //         .getElementById("institute_id")
-  //         .dispatchEvent(new Event("change"));
-  //     } else {
-  //       document.getElementById("institute_id").required = true;
-  //       document.getElementById("institute-id-select").style.display = "block";
-  //     }
-  //   });
+    if (mentionIdShortcode && mentionIdShortcode.value) {
+      mention.dispatchEvent(new Event("change"));
+    }
+  }
 
-  //   if (mentionIdShortcode && mentionIdShortcode.value) {
-  //     mention.dispatchEvent(new Event("change"));
-  //   }
-  // }
+  function verifyInstitute() {
+    const numberOfOptions =
+      document.getElementById("institute_id").options.length;
+    if (numberOfOptions == 3) {
+      document.getElementById("institute_id").required = false;
+      document.getElementById("institute-id-select").style.display = "none";
+      document.getElementById("institute_id").selectedIndex = 1;
+      document
+        .getElementById("institute_id")
+        .dispatchEvent(new Event("change"));
+    } else {
+      document.getElementById("institute_id").required = true;
+      document.getElementById("institute-id-select").style.display = "block";
+    }
+  }
 
   // copiado de career
   function createOption(text, value) {
@@ -452,6 +453,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const data = await response.json();
         subprograms_arr = data.data.subprograms || [];
+        const useProductId = data.data.product_id || 0;
 
         const shouldShowGradeSelect = subprograms_arr.length > 0;
 
@@ -467,6 +469,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           gradeSelectContainer.style.display = "none";
           gradeInput.required = false;
+          productIdInput.value = useProductId;
         }
 
         document.getElementById("buttonsave").disabled = false;
@@ -543,6 +546,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
 
           plan.dispatchEvent(new Event("change"));
+          verifyInstitute();
 
           document.getElementById("buttonsave").disabled = false;
         }
