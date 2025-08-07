@@ -168,7 +168,7 @@ function payment_table(rule_data) {
         // Añadir fila a la tabla
         table.appendChild(row);
         
-        total = +quote_price;
+        total += quote_price;
     }
 
     // Fila de total
