@@ -1615,10 +1615,14 @@ function woocommerce_update_cart()
         if ($coupon == strtolower(get_option('offer_complete')) || $coupon == strtolower(get_option('offer_quote'))) {
             $max_date_timestamp = get_option('max_date_offer');
             if ($max_date_timestamp >= current_time('timestamp')) {
-                $woocommerce->cart->apply_coupon($coupon);
+                if (isset($coupon) && !empty($coupon)) {
+                    $woocommerce->cart->apply_coupon($coupon);
+                }
             }
         } else {
-            $woocommerce->cart->apply_coupon($coupon);
+            if (isset($coupon) && !empty($coupon)) {
+                $woocommerce->cart->apply_coupon($coupon);
+            }
         }
     }
 
@@ -1807,11 +1811,11 @@ function update_price_product_cart_quota_rule()
             WC()->cart->remove_coupon($offer_quote_coupon);
         }
 
-        if ( $quotas_quantity == 1 ) {
+        if ( $quotas_quantity == 1 && !empty($offer_complete_coupon)) {
             WC()->cart->apply_coupon($offer_complete_coupon);
         }
 
-        if ( $quotas_quantity > 1 ) {
+        if ( $quotas_quantity > 1 && !empty($offer_quote_coupon)) {
             WC()->cart->apply_coupon($offer_quote_coupon);
         }
     }
