@@ -312,15 +312,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const mentions = data.data.mentions || [];
 
         if (isMentionSelect) {
-          mentionSelectContainer.style.display = "block";
-          mentionElement.required = true;
+          if (mentions.length > 0) {
+            mentionSelectContainer.style.display = "block";
+            mentionElement.required = true;
 
-          mentions.forEach((mention) => {
-            const option = document.createElement("option");
-            option.value = mention.identificator;
-            option.textContent = mention.name;
-            mentionElement.appendChild(option);
-          });
+            mentions.forEach((mention) => {
+              const option = document.createElement("option");
+              option.value = mention.identificator;
+              option.textContent = mention.name;
+              mentionElement.appendChild(option);
+            }); 
+          } else {
+            mentionSelectContainer.style.display = "none";
+            mentionElement.required = false;
+          }
 
           // Si hay un shortcode válido, seleccionamos la opción correspondiente
           if (isMentionShortcodeValid) {
