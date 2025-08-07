@@ -96,9 +96,13 @@ function payment_table(rule_data) {
   initial_payment = parseFloat(rule_data.initial_payment);
   final_payment = parseFloat(rule_data.final_payment);
 
-  if (initial_payment > 0) quotas_quantity++;
+  if ( initial_payment > 0 ) quotas_quantity++;
+  if ( final_payment > 0 ) quotas_quantity++;
 
-  if (final_payment > 0) quotas_quantity++;
+  if (discount_value > 0) {
+    initial_payment = initial_payment - ( (initial_payment * discount_value) / 100 );
+    final_payment = final_payment - ( (final_payment * discount_value) / 100 );
+  }
 
   // Crear filas de datos
   total = 0;
@@ -107,11 +111,7 @@ function payment_table(rule_data) {
     frequency_value = parseInt(rule_data.frequency_value);
     quote_price = parseFloat(rule_data.quote_price);
 
-    if (discount_value > 0) {
-      quote_price = quote_price - ( quote_price * discount_value) / 100;
-      initial_payment = initial_payment - (initial_payment * discount_value) / 100;
-      final_payment = final_payment - (final_payment * discount_value) / 100;
-    }
+    if (discount_value > 0) quote_price = quote_price - ( quote_price * discount_value) / 100;
 
     const row = document.createElement("tr");
 
