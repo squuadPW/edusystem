@@ -40,14 +40,16 @@
                 <label for="birth_date"><?= __('Year', 'edusystem'); ?><span class="required">*</span></label>
                 <select id="year-select" class="year-select"></select>
             </div> -->
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="birth_date_student"><?= __('Date of birth', 'edusystem'); ?><span
-                    class="required">*</span></label>
-            <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_student"
-                name="birth_date_student" required>
-            <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
-                value="0">
-        </div>
+        <?php if ($birth_date_position == 'UP') { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="birth_date_student"><?= __('Date of birth', 'edusystem'); ?><span
+                        class="required">*</span></label>
+                <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_student"
+                    name="birth_date_student" required>
+                <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
+                    value="0">
+            </div>
+        <?php } ?>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="document_type"><?= __('Type document', 'edusystem'); ?><span class="required">*</span></label>
             <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument(); validateIDs(false)" required>
@@ -86,6 +88,16 @@
                     class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
         </div>
+        <?php if ($birth_date_position == 'DOWN') { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="birth_date_student"><?= __('Date of birth', 'edusystem'); ?><span
+                        class="required">*</span></label>
+                <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_student"
+                    name="birth_date_student" required>
+                <input class="formdata" autocomplete="off" type="hidden" id="dont_allow_adult" name="dont_allow_adult"
+                    value="0">
+            </div>
+        <?php } ?>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="number_phone"><?= __('Contact number', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata" type="tel" id="number_phone" name="number_phone" autocomplete="off" required>
