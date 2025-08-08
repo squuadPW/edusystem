@@ -60,6 +60,13 @@ function aes_scripts_admin()
     wp_enqueue_script('intel-js', plugins_url('edusystem') . '/public/assets/js/intlTelInput.min.js');
     wp_enqueue_script('masker-js', plugins_url('edusystem') . '/public/assets/js/vanilla-masker.min.js');
 
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'fees_content') {
+        wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
+        wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', ['jquery']);
+
+        wp_enqueue_script('fees', plugins_url('edusystem') . '/admin/assets/js/fees.js', array('jquery'), $version, true);
+    }
+
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_payments_content') {
         wp_enqueue_script('student-payment', plugins_url('edusystem') . '/admin/assets/js/payment.js', array('jquery'), $version, true);
     }
@@ -454,6 +461,7 @@ function add_custom_admin_page()
         // Subpáginas
         add_submenu_page('add_admin_form_payments_content', __('Payments', 'edusystem'), __('Payments', 'edusystem'), 'manager_payments_aes', 'add_admin_form_payments_content', 'add_admin_form_payments_content', 10);
         add_submenu_page('add_admin_form_payments_content', __('Payment Plans', 'edusystem'), __('Payment Plans', 'edusystem'), 'manager_payment_plans', 'add_admin_form_payments_plans_content', 'add_admin_form_payments_content', 10);
+        add_submenu_page('add_admin_form_payments_content', __('Fees', 'edusystem'), __('Fees', 'edusystem'), 'manager_payments_aes', 'fees_content', 'add_admin_form_payments_content', 10);
 
         add_menu_page(
             __('Staff', 'edusystem'),

@@ -1052,6 +1052,126 @@ function add_admin_form_payments_content()
             wp_redirect($_SERVER['HTTP_REFERER']);
             exit;
 
+        } else if ($_GET['action'] == 'save_fee') {
+
+
+            global $wpdb;
+            $table_admission_fees = $wpdb->prefix . 'admission_fees';
+
+            // Sanitizar valores
+            $fee_id = isset($_POST['fee_id']) ? (int) sanitize_text_field($_POST['fee_id']) : '';
+    
+            $is_active = $_POST['is_active'] ? true : false;
+            $name = sanitize_text_field($_POST['name']);
+            $price = floatval(sanitize_text_field($_POST['price']));
+            $description = sanitize_text_field($_POST['description']);
+            $programs = array_map('intval', $_POST['programs'] ?? [] );
+
+            // verifica y crea en caso de necesitar una categoria llamada fees
+            $category_id = 0;
+            $name_category = 'fees';
+            $category = term_exists($name_category, 'product_cat');
+            if ($category) {
+                $category_id = (int) $category['term_id'];
+
+            } else {
+                // La categoría no existe, crearla
+                $category = wp_insert_term($name_category, 'product_cat');
+                if (!is_wp_error($category)) $category_id = (int) $category['term_id'];// Devolver el ID de la nueva categoría creada
+                
+            }
+            
+            //crea o actualiza el producto
+            if ( !empty($program_id) && !empty($product_id) ) {
+
+                wp_update_post(array(
+                    'ID' => $product_id,
+                    'post_title' => $name,
+                    'post_content' => $description,
+                ), true);
+
+                update_post_meta($product_id, '_regular_price', $price);
+                update_post_meta($product_id, '_price', $price);
+
+                // guarda el stock en caso de que este activo o no
+                update_post_meta($product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
+
+                // Asignar la categoría al producto
+                wp_set_object_terms($product_id, $category_id, 'product_cat');
+
+            } else {
+
+                // Función para crear un producto
+                $product_id = wp_insert_post([
+                    'post_title' => $name,
+                    'post_content' => $description, // Descripción del producto
+                    'post_status' => 'publish',
+                    'post_type' => 'product',
+                ]);
+
+                // Verificar si el producto se creó correctamente
+                if (!is_wp_error($product_id)) {
+
+                    update_post_meta($product_id, '_regular_price', $price);
+                    update_post_meta($product_id, '_price', $price);
+
+                    // guarda el stock en caso de que este activo o no
+                    update_post_meta($product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
+
+                    // Asignar la categoría al producto
+                    wp_set_object_terms($product_id, (int) $category_id, 'product_cat');
+                }
+            }
+
+            // crea o actualiza el sub programa
+            if (!empty($fee_id)) {
+
+                $wpdb->update($table_admission_fees, [
+                    'is_active' => $is_active,
+                    'name' => $name,
+                    'price' => $price,
+                    'description' => $description,
+                    'programs' => json_encode($programs),
+                ], ['id' => $fee_id]);
+
+            } else {
+
+                $wpdb->insert($table_admission_fees, [
+                    'is_active' => $is_active,
+                    'name' => $name,
+                    'price' => $price,
+                    'product_id' => $product_id,
+                    'description' => $description,
+                    'programs' => json_encode($programs),
+                ]);
+
+                $fee_id = $wpdb->insert_id;
+            }
+
+            setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
+            wp_redirect(admin_url('admin.php?page=fees_content&section_tab=fee_details&fee_id=' . $fee_id));
+            exit;
+
+        } else if ($_GET['action'] == 'delete_fee') {
+            
+            $fee_id = $_POST['fee_id'];
+
+            global $wpdb;
+            $deleted = $wpdb->delete(
+                "{$wpdb->prefix}admission_fees",
+                ['id' => $fee_id],
+                ['%d']
+            );
+
+            if ($deleted) {
+                setcookie('message', __('The fee has been deleted successfully.', 'edusystem'), time() + 10, '/');
+            } else {
+                setcookie('message-error', __('The fee has not been deleted correctly.', 'edusystem'), time() + 10, '/');
+            }
+
+            wp_redirect($_SERVER['HTTP_REFERER']);
+            exit;
+
         }
     }
 
@@ -1062,6 +1182,7 @@ function add_admin_form_payments_content()
             $list_payments = new TT_all_payments_List_Table;
             $list_payments->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-payments.php');
+
         } else if ($_GET['section_tab'] == 'order_detail') {
 
             global $current_user;
@@ -1071,6 +1192,7 @@ function add_admin_form_payments_content()
             $student = get_student_detail($order->get_meta('student_id'));
 
             include(plugin_dir_path(__FILE__) . 'templates/payment-details.php');
+
         } else if ($_GET['section_tab'] == 'invoices_alliances') {
 
             if ($_GET['id_payment']) {
@@ -1082,6 +1204,7 @@ function add_admin_form_payments_content()
             $list_payments = new TT_Invoices_Alliances_List_Table;
             $list_payments->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-invoices-alliance.php');
+
         } else if ($_GET['section_tab'] == 'invoices_institutes') {
 
             if ($_GET['id_payment']) {
@@ -1138,6 +1261,11 @@ function add_admin_form_payments_content()
             $identificator = $_GET['identificator'];
             $rules = get_quotas_rules_programs($identificator);
             include(plugin_dir_path(__FILE__) . 'templates/quotas-rules-payment-plans.php');
+        } else if ($_GET['section_tab'] == 'fee_details') {
+            global $wpdb;
+            $fee_id = $_GET['fee_id'];
+            $fee = get_admission_fee($fee_id);
+            include(plugin_dir_path(__FILE__) . 'templates/fee-details.php');
         }
 
     } else {
@@ -1150,6 +1278,14 @@ function add_admin_form_payments_content()
             $list_payments->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-payments.php');
             include(plugin_dir_path(__FILE__) . '/templates/modal-delete-program.php');
+
+        } else if ($_GET['page'] == 'fees_content') {
+
+            $list_payments = new TT_All_Fees_List_Table;
+            $list_payments->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/list-payments.php');
+            include(plugin_dir_path(__FILE__) . '/templates/modal-delete-admission-fee.php');
+
         }
     }
 }
@@ -2276,6 +2412,168 @@ class TT_All_Payment_Plans_List_Table extends WP_List_Table
     }
 
 }
+
+class TT_All_Fees_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => __('Fee', 'edusystem'),
+                'plural' => __('Fees', 'edusystem'),
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+
+        global $current_user;
+
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=fees_content&section_tab=fee_details&fee_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                $buttons .= "<a class='button button-danger' data-fee_id='" . $item['id'] . "' onclick='modal_delete_fee_js( this )' ><span class='dashicons dashicons-trash'></span></a>";
+                return $buttons;
+            default:
+                return strtoupper($item[$column_name]);
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+
+        $columns = array(
+            'name' => __('Name', 'edusystem'),
+            'price' => __('Price', 'edusystem'),
+            'description' => __('Description', 'edusystem'),
+            'created_at' => __('Created at', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_admission_fees()
+    {
+        global $wpdb;
+        $fees_array = [];
+
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+
+        $table_admission_fees = $wpdb->prefix . 'admission_fees';
+        $fees = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_admission_fees} ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", ARRAY_A);
+
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        if ($fees) {
+            foreach ($fees as $fee) {
+
+                array_push($fees_array, [
+                    'id' => $fee['id'],
+                    'name' => $fee['name'],
+                    'price' => wc_price( (float) $fee['price'] ),
+                    'description' => $fee['description'],
+                    'created_at' => $fee['created_at'],
+                ]);
+            }
+        }
+
+        return ['data' => $fees_array, 'total_count' => $total_count];
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function prepare_items()
+    {
+
+        $other_data = $this->get_admission_fees();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $other_data['data'];
+        $total_count = (int) $other_data['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
+function get_admission_fee($fee_id) {
+    global $wpdb;
+    $fee = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT * FROM  `{$wpdb->prefix}admission_fees` WHERE id = %d",
+            intval($fee_id)
+        ),
+        ARRAY_A
+    );
+
+    return $fee ?? null;
+}
+
 
 
 add_action('wp_ajax_nopriv_generate_quote_public', 'generate_quote_public_callback');

@@ -71,10 +71,26 @@ function create_tables()
   $table_careers_by_program = $wpdb->prefix . 'careers_by_program';
   $table_mentions_by_career = $wpdb->prefix . 'mentions_by_career';
   $table_student_program = $wpdb->prefix . 'student_program';
+  $table_fees = $wpdb->prefix . 'fees';
 
   // Para todas las tablas: Mueve la llamada a dbDelta() FUERA del if de existencia de tabla.
   // Esto asegura que dbDelta() siempre compare la estructura actual con la deseada
   // y añada columnas si faltan, o cree la tabla si no existe.
+
+    dbDelta(
+        "CREATE TABLE $table_fees (
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `is_active` tinyint(1) DEFAULT 1,
+            `name` TEXT NOT NULL,
+            `price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+            `product_id` INT(11) NULL DEFAULT NULL,
+            `description` TEXT DEFAULT NULL,
+            `programs` TEXT NOT NULL,
+            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        ) $charset_collate;"
+    );
 
   dbDelta(
     "CREATE TABLE " . $table_student_program . " (

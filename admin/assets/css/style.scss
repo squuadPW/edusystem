@@ -1592,6 +1592,59 @@ h2 {
     }
 }
 
+#admission_fees {
+
+	.fees_body {
+		margin-bottom: 20px;
+
+		.title {
+			margin-top:20px;
+			margin-bottom:0px;
+			text-align:center; 
+			border-bottom: 1px solid #8080805c;
+		}
+
+		.group-input {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+
+		.space-offer {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+			font-weight:400;
+
+			@media ( max-width: 520px ) {
+				min-width: 100% !important;
+
+				&.active {
+					display: flex;
+					gap: 10px;
+					margin-bottom: 0px
+				}
+			}
+
+			&.active {
+				max-width: 100%;
+				flex-direction: row-reverse;
+				gap: 1px;
+				justify-content: center;
+				align-items: center;
+
+				input[type="checkbox"] {
+					width: 10px;
+				}
+			}
+
+			select {
+				max-width: 100%;
+			}
+		}
+	}
+}
+
 #toplevel_page_logo_based_menu {
     /* ESTILOS BASE PARA MÓVILES (O PANTALLAS PEQUEÑAS) */
     background-image: var(--admin-logo-url);
