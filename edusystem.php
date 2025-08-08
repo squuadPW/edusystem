@@ -238,19 +238,22 @@ function create_tables()
   // table_quota_rules
   dbDelta(
     "CREATE TABLE $table_quota_rules (
-              id INT(11) NOT NULL AUTO_INCREMENT,
-              is_active tinyint(1) DEFAULT 1,
+              `id` INT(11) NOT NULL AUTO_INCREMENT,
+              `is_active` tinyint(1) DEFAULT 1,
               `name` TEXT NOT NULL,
-              initial_payment DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-              final_payment DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-              quotas_quantity INT(11) NOT NULL DEFAULT 1,
-              quote_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-              program_id TEXT NOT NULL,
-              frequency_value INT NOT NULL,
-              type_frequency TEXT NOT NULL,
-              position INT NOT NULL DEFAULT 0,
-              created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-              updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              `program_id` TEXT NOT NULL,
+              `initial_payment` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `initial_payment_sale` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `final_payment` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `final_payment_sale` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `quote_price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `quote_price_sale` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `quotas_quantity` INT(11) NOT NULL DEFAULT 1,
+              `frequency_value` INT NOT NULL,
+              `type_frequency` TEXT NOT NULL,
+              `position` INT NOT NULL DEFAULT 0,
+              `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
               PRIMARY KEY (id)
           )$charset_collate;"
   );

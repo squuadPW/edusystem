@@ -876,9 +876,12 @@ function add_admin_form_payments_content()
                     $is_active = $rule['is_active'] ? true : false;
                     $name = $rule['name'];
                     $initial_payment = $rule['initial_payment'];
-                    $quantity = $rule['quantity'];
-                    $price = $rule['price'];
+                    $initial_payment_sale = $rule['initial_payment_sale'];
                     $final_payment = $rule['final_payment'];
+                    $final_payment_sale = $rule['final_payment_sale'];
+                    $quote_price = $rule['quote_price'];
+                    $quote_price_sale = $rule['quote_price_sale'];
+                    $quantity = $rule['quantity'];
                     $frequency_value = $rule['frequency_value'];
                     $type_frequency = $rule['type_frequency'];
                     $position = $rule['position'] ?? 0;
@@ -891,9 +894,12 @@ function add_admin_form_payments_content()
                             'is_active' => $is_active,
                             'name' => $name,
                             'initial_payment' => $initial_payment,
-                            'quotas_quantity' => $quantity,
-                            'quote_price' => $price,
+                            'initial_payment_sale' => $initial_payment_sale,
                             'final_payment' => $final_payment,
+                            'final_payment_sale' => $final_payment_sale,
+                            'quote_price' => $quote_price,
+                            'quote_price_sale' => $quote_price_sale,
+                            'quotas_quantity' => $quantity,
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
                             'position' => $position,
@@ -903,12 +909,14 @@ function add_admin_form_payments_content()
 
                         $wpdb->insert($table_quota_rules, [
                             'is_active' => $is_active,
+                            'program_id' => $identificator,
                             'name' => $name,
                             'initial_payment' => $initial_payment,
-                            'quotas_quantity' => $quantity,
-                            'quote_price' => $price,
+                            'initial_payment_sale' => $initial_payment_sale,
                             'final_payment' => $final_payment,
-                            'program_id' => $identificator,
+                            'final_payment_sale' => $final_payment_sale,
+                            'quote_price' => $quote_price,
+                            'quote_price_sale' => $quote_price_sale,
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
                             'position' => $position,
