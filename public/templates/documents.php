@@ -72,7 +72,9 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                             <?php $document_name_complete = get_name_document($document->document_id); ?>
                             <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                                    data-title="<?= __('Document', 'edusystem'); ?>">
+                                    data-title="<?= __('Document', 'edusystem'); ?>"
+                                    style="max-width: 250px;">
+
                                     <input type="hidden" name="<?= 'file_student_' . $student->id . '_id[]'; ?>"
                                         value="<?= $document->id; ?>">
                                     <?php if ($document->is_required): ?>

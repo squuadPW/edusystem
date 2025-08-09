@@ -15,6 +15,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const careerIdShortcode = document.getElementById("career_shortcode");
   const mentionIdShortcode = document.getElementById("mention_shortcode");
   const planIdShortcode = document.getElementById("plan_shortcode");
+  const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirm_password");
+  const errorDiv = document.getElementById("password-error");
 
   loadGradesDefault();
   function loadGradesDefault() {
@@ -321,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
               option.value = mention.identificator;
               option.textContent = mention.name;
               mentionElement.appendChild(option);
-            }); 
+            });
           } else {
             mentionSelectContainer.style.display = "none";
             mentionElement.required = false;
@@ -856,7 +859,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     fieldsToClear.forEach((id) => {
-      console.log(id);
       const field = document.getElementById(id);
       const hasValueShortcode = document.getElementById(`${id}_shortcode`);
       const value = hasValueShortcode ? hasValueShortcode.value : "";
@@ -866,8 +868,27 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Para usar la función, solo necesitas llamarla:
-  // apagarCampos();
+  function validatePasswords() {
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    errorDiv.textContent = "";
+
+    if (password.length > 0 && confirmPassword.length > 0) {
+      if (password !== confirmPassword) {
+        // Usamos el texto traducido que viene de WordPress
+        document.getElementById("buttonsave").disabled = true;
+        errorDiv.textContent = formRegisterStrings.passwordsDontMatch;
+      }
+    }
+  }
+
+  if (passwordInput) {
+    passwordInput.addEventListener("input", validatePasswords);
+  }
+  if(confirmPasswordInput) {
+    confirmPasswordInput.addEventListener("input", validatePasswords);
+  }
 });
 
 let timer = null;
@@ -1562,7 +1583,8 @@ segmentButtons.forEach((button) => {
 customFlatpickr();
 function customFlatpickr() {
   let instances = flatpickr(".flatpickr", {
-    dateFormat: "m/d/Y",
+    locale: document.getElementById("site_lang") ? (document.getElementById("site_lang").value == "ES" ? "es" : "en") : "en",
+    dateFormat: document.getElementById("site_lang") ? (document.getElementById("site_lang").value == "ES" ? "d/m/Y" : "m/d/Y") : "m/d/Y",
     disableMobile: "true",
     onChange: function (selectedDates, dateStr, instance) {
       let id = instance.input.id;

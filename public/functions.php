@@ -20,14 +20,15 @@ function form_plugin_scripts()
     global $wp;
     $version = VERSIONS_JS;
     wp_enqueue_style('dashicons');
-    wp_enqueue_style('admin-flatpickr', plugins_url('edusystem') . '/public/assets/css/flatpickr.min.css');
+    wp_enqueue_style('flatpicker-css', plugins_url('edusystem') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('edusystem') . '/public/assets/css/intlTelInput.css');
     wp_enqueue_style('style-public', plugins_url('edusystem') . '/public/assets/css/style.css', array(), $version, 'all');
     wp_enqueue_script('tailwind', 'https://cdn.tailwindcss.com');
-    wp_enqueue_script('admin-flatpickr', plugins_url('edusystem') . '/public/assets/js/flatpickr.js');
+    wp_enqueue_script('flatpickr-js', plugins_url('edusystem') . '/public/assets/js/flatpickr.js');
+    wp_enqueue_script('flatpickr-js-es', plugins_url('edusystem') . '/public/assets/js/flatpickr-es.js');
     wp_enqueue_script('masker-js', plugins_url('edusystem') . '/public/assets/js/vanilla-masker.min.js');
     wp_enqueue_script('intel-js', plugins_url('edusystem') . '/public/assets/js/intlTelInput.min.js');
-    wp_enqueue_script('form-register', plugins_url('edusystem') . '/public/assets/js/form-register.js');
+    wp_enqueue_script('form-register', plugins_url('edusystem') . '/public/assets/js/form-register.js', array('jquery', 'flatpickr-js', 'flatpickr-js-es'));
     wp_enqueue_script('int-tel', plugins_url('edusystem') . '/public/assets/js/int-tel.js');
 
     // PAYMENTS PARTS
@@ -48,6 +49,13 @@ function form_plugin_scripts()
         'ajax_object',
         array(
             'ajax_url' => admin_url('admin-ajax.php')
+        )
+    );
+    wp_localize_script(
+        'form-register',
+        'formRegisterStrings', // Nombre de la variable JavaScript
+        array(
+            'passwordsDontMatch' => __('Las contraseñas no coinciden', 'edusystem')
         )
     );
     wp_enqueue_script('form-register');
@@ -175,6 +183,7 @@ function form_asp_psp($atts)
             'hidden_payment_methods' => '',
             'fixed_fee_inscription' => false,
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
             'limit_age' => 21,
             'program' => '',
@@ -182,6 +191,7 @@ function form_asp_psp($atts)
             'mention' => '',
             'plan' => '',
             'birth_date_position' => 'UP',
+            'title' => '',
         ),
         $atts,
         'form_asp_psp'
@@ -196,6 +206,7 @@ function form_asp_psp($atts)
     $bank_transfer_account = $atts['bank_transfer_account'];
     $hidden_payment_methods = $atts['hidden_payment_methods'];
     $styles_shortcode = $atts['styles_shortcode'];
+    $styles_title_shortcode = $atts['styles_title_shortcode'];
     $fixed_fee_inscription = $atts['fixed_fee_inscription'];
     $max_age = $atts['max_age'];
     $limit_age = $atts['limit_age'];
@@ -204,6 +215,7 @@ function form_asp_psp($atts)
     $mention = $atts['mention'];
     $plan = $atts['plan'];
     $birth_date_position = $atts['birth_date_position'];
+    $title = $atts['title'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
@@ -230,6 +242,7 @@ function student_registration_form($atts)
             'hidden_payment_methods' => '',
             'fixed_fee_inscription' => false,
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
             'limit_age' => 21,
             'program' => '',
@@ -237,6 +250,7 @@ function student_registration_form($atts)
             'mention' => '',
             'plan' => '',
             'birth_date_position' => 'UP',
+            'title' => '',
         ),
         $atts,
         'student_registration_form'
@@ -251,6 +265,7 @@ function student_registration_form($atts)
     $bank_transfer_account = $atts['bank_transfer_account'];
     $hidden_payment_methods = $atts['hidden_payment_methods'];
     $styles_shortcode = $atts['styles_shortcode'];
+    $styles_title_shortcode = $atts['styles_title_shortcode'];
     $fixed_fee_inscription = $atts['fixed_fee_inscription'];
     $max_age = $atts['max_age'];
     $limit_age = $atts['limit_age'];
@@ -259,6 +274,7 @@ function student_registration_form($atts)
     $mention = $atts['mention'];
     $plan = $atts['plan'];
     $birth_date_position = $atts['birth_date_position'];
+    $title = $atts['title'];
     
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);

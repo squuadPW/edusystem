@@ -25,7 +25,7 @@
                                     require you to set a password before accessing your account.</p>
                             </div>
                             <div>
-                                <label for="password"><?= __('Password of access', 'edusystem'); ?><span
+                                <label for="password"><?= __('Please establish your password', 'edusystem'); ?><span
                                         class="required">*</span></label>
                                 <input class="formdata" type="password" name="password" autocomplete="off" required>
                             </div>

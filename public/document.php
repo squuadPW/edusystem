@@ -751,31 +751,43 @@ function get_help_info_document($document_id){
     $text = '';
 
     if ($document_id == 'CERTIFIED NOTES HIGH SCHOOL') {
-        $text = 'Provide an official transcript or report card certified by a school authority. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Provide an official transcript or report card certified by a school authority. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'HIGH SCHOOL DIPLOMA') {
-        $text = 'Ensure you provide an official copy issued by the school of your high school diploma. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Ensure you provide an official copy issued by the school of your high school diploma. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'ID OR CI OF THE PARENTS') {
-        $text = 'Please provide a clear and legible copy of the document. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Please provide a clear and legible copy of the document. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'ID STUDENTS') {
-        $text = 'Please ensure you provide a clear and legible copy of the identification document. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Please ensure you provide a clear and legible copy of the identification document. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'STUDENT\'S PHOTO') {
-        $text = "<div>Please provide a recent, clear, and high-quality photo of the student</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div> <div>The allowed file type is " . get_type_file_document($document_id) . "</div>";
+        $text = "<div>" . __('Please provide a recent, clear, and high-quality photo of the student', 'edusystem') . "</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div> <div>" . __('The allowed file type is ', 'edusystem') . get_type_file_document($document_id) . "</div>";
     } else if ($document_id == 'PROOF OF GRADE') {
-        $text = 'Please provide an official document that clearly indicates the student\'s name, the course or subject, and the corresponding grade achieved. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Please provide an official document that clearly indicates the student\'s name, the course or subject, and the corresponding grade achieved. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'PROOF OF STUDY') {
-        $text = 'Please provide an official document that verifies the student\'s enrollment status. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Please provide an official document that verifies the student\'s enrollment status. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'VACCINATION CARD') {
-        $text = 'The card should clearly display the student\'s name, the type of vaccine received, the dates of vaccination, and any booster shots administered. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('The card should clearly display the student\'s name, the type of vaccine received, the dates of vaccination, and any booster shots administered. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'PHOTO') {
-        $text = 'teacher\'s profile picture, this will be visible to the public. The allowed file type is ' . get_type_file_document_teacher($document_id);
+        $text = __('Teacher\'s profile picture, this will be visible to the public. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
     } else if ($document_id == 'FORM 402') {
-        $text = 'FORM 402 is a document used in the U.S. immigration process, specifically related to the application for citizenship or naturalization. The allowed file type is ' . get_type_file_document_teacher($document_id);
+        $text = __('FORM 402 is a document used in the U.S. immigration process, specifically related to the application for citizenship or naturalization. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
     } else if ($document_id == 'DIGITAL COPY OF UNDERGRADUATE DEGREE') {
-        $text = 'Please provide a DIGITAL COPY OF YOUR UNIVERSITY DEGREE to validate your information and continue with the registration process. The allowed file type is ' . get_type_file_document_teacher($document_id);
+        $text = __('Please provide a DIGITAL COPY OF YOUR UNIVERSITY DEGREE to validate your information and continue with the registration process. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
     } else if ($document_id == 'DIGITAL COPY OF THE GRADUATE DEGREE') {
-        $text = 'Please provide DIGITAL COPY OF POSTGRADUATE DEGREE to validate your information and continue with the registration. The allowed file type is ' . get_type_file_document_teacher($document_id);
+        $text = __('Please provide DIGITAL COPY OF POSTGRADUATE DEGREE to validate your information and continue with the registration. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
     } else if ($document_id == 'CURRICULAR SUMMARY') {
-        $text = 'Please provide your CURRICULAR SUMMARY to validate your information and continue with the registration process. The allowed file type is ' . get_type_file_document_teacher($document_id);
+        $text = __('Please provide your CURRICULAR SUMMARY to validate your information and continue with the registration process. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
+    } else if ($document_id == 'ACTA O PARTIDA DE NACIMIENTO') {
+        $text = __('Official document that certifies the birth of a person. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'COPIA DE IDENTIFICACIÓN OFICIAL (DNI) O PASAPORTE') {
+        $text = __('Provide a clear and legible copy of your official identification document (DNI) or valid passport. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'CERTIFICADO DE BACHILLERATO O EQUIVALENTE EDUCACIÓN SECUNDARIA') {
+        $text = __('Attach the certificate that proves the completion of your high school or secondary education studies. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'TÍTULO Y/O CERTIFICADO CON NOTAS DE LOS ESTUDIOS FORMALES CURSADOS DEL ÁREA EN LA QUE SE QUIERE OBTENER EL TÍTULO PROFESIONAL') {
+        $text = __('Include your degree and/or certificate of formal studies, with the corresponding grades for the area in which you want to obtain the professional degree. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'CURRICULUM VITAE U HOJA DE VIDA CON SUS SOPORTES DOCUMENTALES') {
+        $text = __('Attach your curriculum vitae or resume, accompanied by the documents that support your experience and training. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'FOTO DEL ESTUDIANTE') {
+        $text = "<div>" . __('Please provide a recent, clear, and high-quality photo of the student.', 'edusystem') . "</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div> <div>" . __('The allowed file type is ', 'edusystem') . get_type_file_document($document_id) . "</div>";
     }
 
     return $text;

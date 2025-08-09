@@ -27,6 +27,6 @@
 	define('URL_LARAVEL_PPADMIN', 'https://ppadmin.americanelite.school/'); 
 	define('ROLE_ID_STUDENT_MOODLE', 5); // Role ID moodle student
 	define('VERSIONS_JS', '2.2.29'); // Versions JS
-	define('MODE', 'UNI'); // Versions JS
-
+	define('MODE', 'UNI');
+	define('LANG', 'ES');
 ?>

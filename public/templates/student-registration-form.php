@@ -29,6 +29,7 @@
     <input type="hidden" name="career_shortcode" id="career_shortcode" value="<?= $career ?>">
     <input type="hidden" name="mention_shortcode" id="mention_shortcode" value="<?= $mention ?>">
     <input type="hidden" name="plan_shortcode" id="plan_shortcode" value="<?= $plan ?>">
+    <input type="hidden" name="site_lang" id="site_lang" value="<?= LANG ?>">
     <input type="hidden" id="product_id_input" name="product_id">
 
     <!-- DATOS DEL ESTUDIANTE -->
@@ -220,8 +221,16 @@
                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student', 'edusystem'); ?></span>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="password"><?= __('Password of access', 'edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata" type="password" name="password" autocomplete="off" required>
+            <label for="password"><?= __('Please establish your password', 'edusystem'); ?><span
+                    class="required">*</span></label>
+            <input class="formdata" type="password" id="password" name="password" autocomplete="off" required>
+        </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+            <label for="confirm_password"><?= __('Confirm your password', 'edusystem'); ?><span
+                    class="required">*</span></label>
+            <input class="formdata" type="password" id="confirm_password" name="confirm_password" autocomplete="off"
+                required>
+            <div id="password-error" class="text-red-500 mt-2 text-sm"></div>
         </div>
 
         <!-- DATOS DEL GRADO -->

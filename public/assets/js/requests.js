@@ -118,7 +118,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 if(data.success) {
                     // Redireccionar al checkout
                     window.location.href = data.data.url; 
