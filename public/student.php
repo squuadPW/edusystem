@@ -414,7 +414,7 @@ function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $r
 
         setcookie('is_scholarship', 1, time() + 3600, '/');
     } else if ($from_webinar) {
-        $woocommerce->cart->apply_coupon(__('100% Registration fee','edusystem'));
+        $woocommerce->cart->apply_coupon('100% Registration fee');
         setcookie('from_webinar', 1, time() + 3600, '/', '/');
     }
 

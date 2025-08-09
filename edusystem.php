@@ -862,96 +862,59 @@ function create_tables()
       foreach ($grades as $grade) {
 
         $wpdb->insert($table_documents, [
-          'name' => 'CERTIFIED NOTES HIGH SCHOOL',
-          'type_file' => '.pdf',
-          'grade_id' => $grade->id,
-          'is_required' => 0,
-          'id_requisito' => 'NC',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'HIGH SCHOOL DIPLOMA',
-          'type_file' => '.pdf',
-          'grade_id' => $grade->id,
-          'is_required' => 0,
-          'id_requisito' => 'TB',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'ID OR CI OF THE PARENTS',
-          'type_file' => '.pdf, .png, .jpeg',
-          'grade_id' => $grade->id,
-          'is_required' => 1,
-          'id_requisito' => 'IR',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'ID STUDENTS',
-          'type_file' => '.pdf, .png, .jpeg',
-          'grade_id' => $grade->id,
-          'is_required' => 1,
-          'id_requisito' => 'ID',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'STUDENT\'S PHOTO',
-          'type_file' => '.pdf, .png, .jpeg',
-          'grade_id' => $grade->id,
-          'is_required' => 1,
-          'id_requisito' => 'FP',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'PROOF OF GRADE',
-          'type_file' => '.pdf',
-          'grade_id' => $grade->id,
-          'is_required' => 0,
-          'id_requisito' => 'PG',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'PROOF OF STUDY',
-          'type_file' => '.pdf',
-          'grade_id' => $grade->id,
-          'is_required' => 0,
-          'id_requisito' => 'PS',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'VACCINATION CARD',
-          'type_file' => '.pdf, .png, .jpeg',
-          'grade_id' => $grade->id,
-          'is_required' => 0,
-          'id_requisito' => 'TV',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'ENROLLMENT',
+          'name' => 'ACTA O PARTIDA DE NACIMIENTO',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 1,
-          'is_visible' => 0,
-          'id_requisito' => 'ENROLLMENT',
+          'id_requisito' => '',
           'created_at' => date('Y-m-d H:i:s')
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'MISSING DOCUMENT',
+          'name' => 'COPIA DE IDENTIFICACIÓN OFICIAL (DNI) O PASAPORTE',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
-          'is_required' => 0,
-          'is_visible' => 0,
-          'id_requisito' => 'CC',
+          'is_required' => 1,
+          'id_requisito' => '',
           'created_at' => date('Y-m-d H:i:s')
         ]);
+
+        $wpdb->insert($table_documents, [
+          'name' => 'CERTIFICADO DE BACHILLERATO O EQUIVALENTE EDUCACIÓN SECUNDARIA',
+          'type_file' => '.pdf',
+          'grade_id' => $grade->id,
+          'is_required' => 1,
+          'id_requisito' => '',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        $wpdb->insert($table_documents, [
+          'name' => 'TÍTULO Y/O CERTIFICADO CON NOTAS DE LOS ESTUDIOS FORMALES CURSADOS DEL ÁREA EN LA QUE SE QUIERE OBTENER EL TÍTULO PROFESIONAL',
+          'type_file' => '.pdf',
+          'grade_id' => $grade->id,
+          'is_required' => 1,
+          'id_requisito' => '',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        $wpdb->insert($table_documents, [
+          'name' => 'CURRICULUM VITAE U HOJA DE VIDA CON SUS SOPORTES DOCUMENTALES',
+          'type_file' => '.pdf',
+          'grade_id' => $grade->id,
+          'is_required' => 1,
+          'id_requisito' => '',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        $wpdb->insert($table_documents, [
+          'name' => 'FOTO DEL ESTUDIANTE',
+          'type_file' => '.jpeg, .png, .jpg',
+          'grade_id' => $grade->id,
+          'is_required' => 1,
+          'id_requisito' => '',
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+
       }
     }
   } else {

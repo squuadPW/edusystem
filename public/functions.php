@@ -664,19 +664,19 @@ function remove_my_account_links($menu_links)
 
             // Agregar "Califications"
             $menu_links['califications'] = __('Califications', 'edusystem');
+        }
 
-            if (in_array('parent', $roles)) {
-                if (get_user_meta($user_id, 'status_register', true) == 1) {
-                    $menu_links['student-documents'] = __('Documents', 'edusystem');
-                }
+        if (in_array('parent', $roles)) {
+            if (get_user_meta($user_id, 'status_register', true) == 1) {
+                $menu_links['student-documents'] = __('Documents', 'edusystem');
             }
+        }
 
-            if (in_array('student', $roles)) {
-                $student_id = get_user_meta($user_id, 'student_id', true);
-                $student = get_student_detail($student_id);
-                if (get_user_meta($student->partner_id, 'status_register', true) == 1) {
-                    $menu_links['student-documents'] = __('Documents', 'edusystem');
-                }
+        if (in_array('student', $roles)) {
+            $student_id = get_user_meta($user_id, 'student_id', true);
+            $student = get_student_detail($student_id);
+            if (get_user_meta($student->partner_id, 'status_register', true) == 1) {
+                $menu_links['student-documents'] = __('Documents', 'edusystem');
             }
         }
     }
@@ -815,8 +815,9 @@ function add_loginout_link($items, $args)
             if (MODE != 'UNI') {
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'edusystem') . '</a></li>';
-                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';
             }
+
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';
 
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account', 'edusystem') . '</a></li>';
 
@@ -1518,18 +1519,18 @@ function get_student_files_for_api($student_id)
 
 function split_payment()
 {
-    $cart = WC()->cart;
+    // $cart = WC()->cart;
 
-    if (!$cart || $cart->is_empty()) {
-        // Carrito vacío
-        include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
-        return;
-    }
+    // if (!$cart || $cart->is_empty()) {
+    //     // Carrito vacío
+    //     include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
+    //     return;
+    // }
 
-    $total = $cart->total;
-    if ($total > 0) {
-        include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
-    }
+    // $total = $cart->total;
+    // if ($total > 0) {
+    //     include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
+    // }
 }
 add_action('woocommerce_review_order_before_payment', 'split_payment');
 add_action('woocommerce_pay_order_before_payment', 'split_payment');
@@ -2080,7 +2081,7 @@ function custom_coupon_applied_notice($message)
     $applied_coupons = WC()->cart->get_applied_coupons();
     if (!empty($applied_coupons)) {
         $coupon_list = implode(', ', array_map('ucwords', $applied_coupons));
-        wc_add_notice(__($coupon_list . ' applied successfully', 'woocommerce'), 'success');
+        wc_add_notice($coupon_list . __(' applied successfully', 'edusystem'), 'success');
     }
 }
 add_action('woocommerce_applied_coupon', 'custom_coupon_applied_notice');
