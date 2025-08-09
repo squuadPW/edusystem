@@ -788,7 +788,7 @@ function get_help_info_document($document_id){
         $text = __('Attach your curriculum vitae or resume, accompanied by the documents that support your experience and training. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'FOTO DEL ESTUDIANTE') {
         $text = "<div>" . __('Please provide a recent, clear, and high-quality photo of the student.', 'edusystem') . "</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div> <div>" . __('The allowed file type is ', 'edusystem') . get_type_file_document($document_id) . "</div>";
-    } else if ($document_id == 'CERTIFICACIÓN DEL DESEMPEÑO LABORAL') {
+    } else if ($document_id == 'CERTIFICACIÓN DEL DESEMPEÑO LABORAL (CONSTANCIAS DE TRABAJO, CERTIFICACIÓN DE EJECUCIONES REALIZADAS, QUE SE RELACIONES CON EL PROGRAMA A CURSAR)') {
         $text = __('Include work certificates or certifications that prove job performance related to the program you wish to apply for. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'RECONOCIMIENTOS OBTENIDOS POR PARTICIPACIÓN EN CONGRESOS, EVENTOS Y/O JORNADAS') {
         $text = __('Attach copies of awards or recognitions received for your participation in academic or professional congresses, events, or workshops. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);

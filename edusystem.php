@@ -916,7 +916,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'CERTIFICACIÓN DEL DESEMPEÑO LABORAL (CONSTANCIAS DE TRABAJO, CERTIFICACIÓN DE EJECUCIONES REALIZADAS, QUE SE RELACIONES CON EL PROGRAMA A CURSAR).',
+          'name' => 'CERTIFICACIÓN DEL DESEMPEÑO LABORAL (CONSTANCIAS DE TRABAJO, CERTIFICACIÓN DE EJECUCIONES REALIZADAS, QUE SE RELACIONES CON EL PROGRAMA A CURSAR)',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
@@ -925,7 +925,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'RECONOCIMIENTOS OBTENIDOS POR PARTICIPACIÓN EN CONGRESOS, EVENTOS Y/O JORNADAS.',
+          'name' => 'RECONOCIMIENTOS OBTENIDOS POR PARTICIPACIÓN EN CONGRESOS, EVENTOS Y/O JORNADAS',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
@@ -934,7 +934,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'CERTIFICACIÓN DE DIPLOMADOS, CURSOS Y TALLERES.',
+          'name' => 'CERTIFICACIÓN DE DIPLOMADOS, CURSOS Y TALLERES',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
@@ -943,7 +943,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'PREMIOS O RECONOCIMIENTOS RECIBIDOS.',
+          'name' => 'PREMIOS O RECONOCIMIENTOS RECIBIDOS',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
@@ -952,7 +952,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'ARTÍCULOS EN PUBLICACIONES CIENTÍFICAS O INDEXADAS, LIBROS O COLUMNAS ESCRITAS.',
+          'name' => 'ARTÍCULOS EN PUBLICACIONES CIENTÍFICAS O INDEXADAS, LIBROS O COLUMNAS ESCRITAS',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
@@ -961,7 +961,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'ACTIVIDADES AUDIOVISUALES EJECUTADAS (PODCAST, TV, RADIO, ETC.).',
+          'name' => 'ACTIVIDADES AUDIOVISUALES EJECUTADAS (PODCAST, TV, RADIO, ETC.)',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
