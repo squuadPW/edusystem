@@ -788,8 +788,20 @@ function get_help_info_document($document_id){
         $text = __('Attach your curriculum vitae or resume, accompanied by the documents that support your experience and training. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'FOTO DEL ESTUDIANTE') {
         $text = "<div>" . __('Please provide a recent, clear, and high-quality photo of the student.', 'edusystem') . "</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div> <div>" . __('The allowed file type is ', 'edusystem') . get_type_file_document($document_id) . "</div>";
+    } else if ($document_id == 'CERTIFICACIÓN DEL DESEMPEÑO LABORAL') {
+        $text = __('Include work certificates or certifications that prove job performance related to the program you wish to apply for. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'RECONOCIMIENTOS OBTENIDOS POR PARTICIPACIÓN EN CONGRESOS, EVENTOS Y/O JORNADAS') {
+        $text = __('Attach copies of awards or recognitions received for your participation in academic or professional congresses, events, or workshops. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'CERTIFICACIÓN DE DIPLOMADOS, CURSOS Y TALLERES') {
+        $text = __('Upload the certifications of the diplomas, courses, and workshops you have completed. This will help validate your continuous training. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'PREMIOS O RECONOCIMIENTOS RECIBIDOS') {
+        $text = __('Attach copies of any awards or recognitions you have received throughout your professional or academic career. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'ARTÍCULOS EN PUBLICACIONES CIENTÍFICAS O INDEXADAS, LIBROS O COLUMNAS ESCRITAS') {
+        $text = __('Provide a list of your publications and, if possible, attach a PDF or a link to articles in scientific publications, books, or columns you have written. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'ACTIVIDADES AUDIOVISUALES EJECUTADAS (PODCAST, TV, RADIO, ETC.)') {
+        $text = __('Provide evidence of the audiovisual activities in which you have participated, such as podcasts, TV appearances, or radio shows. This can be a link, a screenshot, or the document that certifies it. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     }
-
+    
     return $text;
 }
 
