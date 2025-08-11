@@ -820,7 +820,7 @@ function add_loginout_link($items, $args)
         $birthday = get_user_meta($current_user->ID, 'birth_date', true);
         $age = floor((time() - strtotime($birthday)) / 31556926);
         if ($age >= 18) {
-            $items .= '<li><a href="' . home_url() . '">' . __('New applicant', 'edusystem') . '</a></li>';
+            // $items .= '<li><a href="' . home_url() . '">' . __('New applicant', 'edusystem') . '</a></li>';
         }
 
         $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '">' . __('Dashboard', 'edusystem') . '</a></li>';
