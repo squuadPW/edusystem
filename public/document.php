@@ -634,7 +634,7 @@ function save_documents()
 
 function view_pending_documents(){
     
-    if (MODE != 'UNI') {
+    // if (MODE != 'UNI') {
         global $current_user;
         $roles = $current_user->roles;
 
@@ -698,7 +698,7 @@ function view_pending_documents(){
         }else if(!in_array('parent',$roles) && in_array('student',$roles)){
             include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
         }
-    }
+    // }
 
 }
 
