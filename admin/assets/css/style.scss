@@ -1553,8 +1553,19 @@ h2 {
                     display: none;
                 }
 
-                .seccion-input .group-input {
-                    margin: 0px 5px;
+                .seccion-input {
+
+                    .seccion-title {
+                        color:#000;
+                    }
+
+                    .group-input {
+                        margin: 0px 5px;
+                    }
+
+                    .space-offer {
+                        margin-top: 0px;
+                    }
                 }
 
                 .group-input {

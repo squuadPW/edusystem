@@ -1404,8 +1404,14 @@ h2 {
 #quota-rules-programs .quotas_rules #rules .rule#template-quota-rule {
   display: none;
 }
+#quota-rules-programs .quotas_rules #rules .rule .seccion-input .seccion-title {
+  color: #000;
+}
 #quota-rules-programs .quotas_rules #rules .rule .seccion-input .group-input {
   margin: 0px 5px;
+}
+#quota-rules-programs .quotas_rules #rules .rule .seccion-input .space-offer {
+  margin-top: 0px;
 }
 #quota-rules-programs .quotas_rules #rules .rule .group-input {
   display: flex;
