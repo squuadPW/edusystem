@@ -5,11 +5,11 @@
 <div>
     <h2 style="font-size:24px;text-align:center;">
         <?php if (wp_date('H') < 12) { ?>
-            <?= __('Good Morning', 'storefront-child') . ', ' . $current_user->first_name; ?> 🙌
+            <?= __('Good Morning', 'edusystem') . ', ' . $current_user->first_name; ?> 🙌
         <?php } else if (wp_date('H') < 18) { ?>
-            <?= __('Good Afternoon', 'storefront-child') . ', ' . $current_user->first_name; ?> 👋
+            <?= __('Good Afternoon', 'edusystem') . ', ' . $current_user->first_name; ?> 👋
         <?php } else { ?>
-            <?= __('Good Evening', 'storefront-child') . ', ' . $current_user->first_name; ?> ✌
+            <?= __('Good Evening', 'edusystem') . ', ' . $current_user->first_name; ?> ✌
         <?php } ?>
     </h2>
 </div>
