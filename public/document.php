@@ -55,6 +55,7 @@ add_action('woocommerce_account_student-documents_endpoint', function() {
         $students = get_student(get_current_user_id());
     }
     
+    $arr_photos_student = ['PHOTO OF STUDENT CARD', 'STUDENT\'S PHOTO', 'FOTO DEL ESTUDIANTE'];
     include(plugin_dir_path(__FILE__).'templates/documents.php');
 });
 
