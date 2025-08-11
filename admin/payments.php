@@ -1068,6 +1068,7 @@ function add_admin_form_payments_content()
 
             // Sanitizar valores
             $fee_id = isset($_POST['fee_id']) ? (int) sanitize_text_field($_POST['fee_id']) : '';
+            $product_id = isset($_POST['product_id']) ? (int) sanitize_text_field($_POST['product_id']) : '';
     
             $is_active = $_POST['is_active'] ? true : false;
             $name = sanitize_text_field($_POST['name']);
@@ -1090,7 +1091,7 @@ function add_admin_form_payments_content()
             }
             
             //crea o actualiza el producto
-            if ( !empty($program_id) && !empty($product_id) ) {
+            if ( !empty($fee_id) && !empty($product_id) ) {
 
                 wp_update_post(array(
                     'ID' => $product_id,
@@ -1162,17 +1163,27 @@ function add_admin_form_payments_content()
 
         } else if ($_GET['action'] == 'delete_fee') {
             
-            $fee_id = $_POST['fee_id'];
+            $fee_id = (int) $_POST['fee_id'] ?? null;
+            $product_id = (int) $_POST['product_id'] ?? null;
 
-            global $wpdb;
-            $deleted = $wpdb->delete(
-                "{$wpdb->prefix}admission_fees",
-                ['id' => $fee_id],
-                ['%d']
-            );
+            if( !empty( $fee_id ) && !empty( $product_id ) ) {
 
-            if ($deleted) {
-                setcookie('message', __('The fee has been deleted successfully.', 'edusystem'), time() + 10, '/');
+                global $wpdb;
+                $deleted = $wpdb->delete(
+                    "{$wpdb->prefix}admission_fees",
+                    ['id' => $fee_id],
+                    ['%d']
+                );
+
+                if ( $deleted ) {
+
+                    $product = wc_get_product($product_id);
+                    if( $product ) 
+                        $product->delete(true);
+
+                    setcookie('message', __('The fee has been deleted successfully.', 'edusystem'), time() + 10, '/');
+                }
+
             } else {
                 setcookie('message-error', __('The fee has not been deleted correctly.', 'edusystem'), time() + 10, '/');
             }
@@ -2447,7 +2458,7 @@ class TT_All_Fees_List_Table extends WP_List_Table
             case 'view_details':
                 $buttons = '';
                 $buttons .= "<a href='" . admin_url('/admin.php?page=fees_content&section_tab=fee_details&fee_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
-                $buttons .= "<a class='button button-danger' data-fee_id='" . $item['id'] . "' onclick='modal_delete_fee_js( this )' ><span class='dashicons dashicons-trash'></span></a>";
+                $buttons .= "<a class='button button-danger' data-fee_id='" . $item['id'] . "' data-product_id='" . $item['product_id'] . "' onclick='modal_delete_fee_js( this )' ><span class='dashicons dashicons-trash'></span></a>";
                 return $buttons;
             default:
                 return strtoupper($item[$column_name]);
@@ -2499,8 +2510,9 @@ class TT_All_Fees_List_Table extends WP_List_Table
             foreach ($fees as $fee) {
 
                 array_push($fees_array, [
-                    'id' => $fee['id'],
+                    'id' => (int) $fee['id'],
                     'name' => $fee['name'],
+                    'product_id' => (int) $fee['product_id'],
                     'price' => wc_price( (float) $fee['price'] ),
                     'description' => $fee['description'],
                     'created_at' => $fee['created_at'],

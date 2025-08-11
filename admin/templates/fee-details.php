@@ -39,14 +39,15 @@
 
                                 <div>
 
-                                    <input type="hidden" name="fee_id" value="<?= $fee_id ?? '' ?>" >
+                                    <input type="hidden" name="fee_id" value="<?= $fee_id ?? 0 ?>" >
+                                    <input type="hidden" name="product_id" value="<?= $fee['product_id'] ?? 0 ?>" >
                                     
                                     <div class="space-offer active">
                                         <label for="is_active">
                                             <b><?= __('Active', 'edusystem'); ?></b>
                                         </label>
                                         <br/>
-                                        <input type="checkbox" name="is_active" <?= ( $fee['is_active'] ) ? 'checked' : ''; ?> >
+                                        <input type="checkbox" name="is_active" <?= ( $fee && $fee['is_active'] == 0 ) ? '' : 'checked'; ?> >
                                     </div>
                                         
                                     <div class="group-input" >
@@ -66,7 +67,7 @@
                                                 <b><?= __('Price', 'edusystem'); ?></b>
                                                 <span class="text-danger">*</span>
                                             </label>
-                                            <input type="number" name="price" value="<?= $fee['price'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
+                                            <input type="number" name="price" value="<?= $fee['price'] ?? 0.00 ?>" step="0.01" min="1"  onkeydown="return !['-', 'e'].includes(event.key)" required >
                                         </div>
                                     </div>
                                     

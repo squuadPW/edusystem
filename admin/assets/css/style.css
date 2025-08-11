@@ -151,7 +151,7 @@ div#application-passwords-section {
 }
 
 .modal-close {
-  cursor: pointer;
+  cursor: pointer !important;
   font-size: 18px;
   margin-left: 10px;
 }
