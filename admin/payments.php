@@ -881,7 +881,7 @@ function add_admin_form_payments_content()
                     $final_payment_sale = $rule['final_payment_sale'];
                     $quote_price = $rule['quote_price'];
                     $quote_price_sale = $rule['quote_price_sale'];
-                    $quantity = $rule['quantity'];
+                    $quotas_quantity = (int) $rule['quotas_quantity'];
                     $frequency_value = $rule['frequency_value'];
                     $type_frequency = $rule['type_frequency'];
                     $position = $rule['position'] ?? 0;
@@ -899,7 +899,7 @@ function add_admin_form_payments_content()
                             'final_payment_sale' => $final_payment_sale,
                             'quote_price' => $quote_price,
                             'quote_price_sale' => $quote_price_sale,
-                            'quotas_quantity' => $quantity,
+                            'quotas_quantity' => $quotas_quantity,
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
                             'position' => $position,
@@ -917,6 +917,7 @@ function add_admin_form_payments_content()
                             'final_payment_sale' => $final_payment_sale,
                             'quote_price' => $quote_price,
                             'quote_price_sale' => $quote_price_sale,
+                            'quotas_quantity' => $quotas_quantity,
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
                             'position' => $position,
