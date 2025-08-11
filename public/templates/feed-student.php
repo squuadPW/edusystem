@@ -46,7 +46,7 @@
 			<ul class="info-list">
 				<li>
 					<i class="fas fa-upload"></i>
-					<?= __('Once your payment is approved, the option to upload all required documents is enabled', 'edusystem') ?><a
+					<?= __('Once your payment is approved, the option to upload all required documents is enabled', 'edusystem') ?> <a
 						style="text-decoration: underline !important; color: #091c5c;"
 						href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents' ?>"><?= __('here', 'edusystem') ?></a>
 				</li>
