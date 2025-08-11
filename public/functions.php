@@ -681,9 +681,10 @@ function remove_my_account_links($menu_links)
     // Lógica para roles "parent" y "student"
     if (in_array('parent', $roles) || in_array('student', $roles)) {
 
+
+        $menu_links['student'] = __('Student Information', 'edusystem');
+
         if (MODE != 'UNI') {
-            // Agregar "Student Information"
-            $menu_links['student'] = __('Student Information', 'edusystem');
 
             // Agregar "Califications"
             $menu_links['califications'] = __('Califications', 'edusystem');
@@ -835,8 +836,9 @@ function add_loginout_link($items, $args)
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/orders">' . __('Payments', 'edusystem') . '</a></li>';
             }
 
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
+
             if (MODE != 'UNI') {
-                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'edusystem') . '</a></li>';
             }
 
