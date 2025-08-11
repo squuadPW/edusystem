@@ -55,7 +55,14 @@ function form_plugin_scripts()
         'form-register',
         'formRegisterStrings', // Nombre de la variable JavaScript
         array(
-            'passwordsDontMatch' => __('Las contraseñas no coinciden', 'edusystem')
+            'passwordsDontMatch' => __('Passwords do not match', 'edusystem'),
+            'networkFailed' => __('The network response was unsuccessful', 'edusystem'),
+            'noScholarship' => __('No scholarship assigned or already signed', 'edusystem'),
+            'scholarhip' => __('We have found that you have the following scholarship assigned to you:', 'edusystem'),
+            'maxAge' => __('The maximum age is', 'edusystem'),
+            'yearsOld' => __('years old', 'edusystem'),
+            'titleAccessStudent' => __('Platform access data of student', 'edusystem'),
+            'titleAccessParent' => __('Platform access data of parent', 'edusystem')
         )
     );
     wp_enqueue_script('form-register');

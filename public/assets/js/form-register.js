@@ -206,7 +206,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         if (!response.ok) {
-          throw new Error("La respuesta de la red no fue exitosa.");
+          throw new Error(formRegisterStrings.networkFailed);
         }
 
         const data = await response.json();
@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById("buttonsave").disabled = false;
       } catch (error) {
-        console.error("Error al cargar las carreras o planes de pago:", error);
+
       }
     });
 
@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         if (!response.ok) {
-          throw new Error("La respuesta de la red no fue exitosa.");
+          throw new Error(formRegisterStrings.networkFailed);
         }
 
         const data = await response.json();
@@ -338,7 +338,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById("buttonsave").disabled = false;
       } catch (error) {
-        console.error("Error al cargar las menciones:", error);
+        
       }
     });
 
@@ -456,7 +456,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         if (!response.ok) {
-          throw new Error("La respuesta de la red no fue exitosa.");
+          throw new Error(formRegisterStrings.networkFailed);
         }
 
         const data = await response.json();
@@ -482,8 +482,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById("buttonsave").disabled = false;
       } catch (error) {
-        console.error("Error al cargar las menciones:", error);
-        // Opcionalmente, mostrar un mensaje de error al usuario
       }
     });
 
@@ -1186,14 +1184,14 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
         if (XHR.response === "0") {
           document.getElementById(
             "scholarship_assigned"
-          ).innerText = `No scholarship assigned or already signed`;
+          ).innerText = formRegisterStrings.noScholarship;
           document.getElementById("scholarship_assigned").style.color = "gray";
 
           changeFieldsDisabled(true);
         } else {
           document.getElementById(
             "scholarship_assigned"
-          ).innerHTML = `We have found that you have the following scholarship assigned to you: <strong>${XHR.response}</strong>`;
+          ).innerHTML = `${formRegisterStrings.scholarhip} <strong>${XHR.response}</strong>`;
           document.getElementById("scholarship_assigned").style.color = "green";
 
           changeFieldsDisabled(false);
@@ -1217,7 +1215,7 @@ if (document.getElementById("birth_date_student")) {
       const diff = diff_years(today, start);
 
       if (diff > limit_age) {
-        alert(`The maximum age is ${limit_age} years old.`);
+        alert(`${formRegisterStrings.maxAge} ${limit_age} ${formRegisterStrings.yearsOld}`);
         // Reset the input field
         e.target.value = "";
         return;
@@ -1226,7 +1224,7 @@ if (document.getElementById("birth_date_student")) {
       if (diff >= max_age) {
         var accessDataTitle = document.getElementById("access_data");
         if (accessDataTitle) {
-          accessDataTitle.innerHTML = "Platform access data of student";
+          accessDataTitle.innerHTML = formRegisterStrings.titleAccessStudent;
         }
 
         if (dont_allow_adult && dont_allow_adult?.value == 1) {
@@ -1372,7 +1370,7 @@ if (document.getElementById("birth_date_student")) {
       } else {
         var accessDataTitle = document.getElementById("access_data");
         if (accessDataTitle) {
-          accessDataTitle.innerHTML = "Platform access data of parent";
+          accessDataTitle.innerHTML = formRegisterStrings.titleAccessParent;
         }
 
         if (dontBeAdult) {
