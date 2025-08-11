@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EduSystem\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 20:04+0000\n"
+"POT-Creation-Date: 2025-08-11 20:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -107,7 +107,7 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-#: public/functions.php:847
+#: public/functions.php:708 public/functions.php:847
 msgid "Account"
 msgstr ""
 
@@ -5909,6 +5909,10 @@ msgstr ""
 
 #: public/templates/feed-student.php:71
 msgid "You have pending payments"
+msgstr ""
+
+#: public/functions.php:618
+msgid "You must specify a split payment amount"
 msgstr ""
 
 #: public/templates/feed-student.php:62
