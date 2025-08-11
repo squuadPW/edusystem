@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EduSystem\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 18:18+0000\n"
+"POT-Creation-Date: 2025-08-11 19:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Loco-Version: 2.8.0; wp-6.8.2; php-8.3.14\n"
 "X-Domain: edusystem"
 
-#: public/functions.php:2107
+#: public/functions.php:2109
 msgid " applied successfully"
 msgstr ""
 
@@ -107,7 +107,7 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-#: public/functions.php:845
+#: public/functions.php:847
 msgid "Account"
 msgstr ""
 
@@ -642,7 +642,7 @@ msgstr ""
 
 #: admin/institute.php:372 admin/academic-projection.php:1230
 #: admin/academic-projection.php:1286 admin/admission.php:535
-#: admin/alliances.php:719 public/document.php:838
+#: admin/alliances.php:719 public/document.php:839
 #: public/templates/documents.php:112 public/templates/documents.php:162
 msgid "Approved"
 msgstr ""
@@ -698,26 +698,26 @@ msgstr ""
 msgid "Associated payment plans"
 msgstr ""
 
-#: public/document.php:798
+#: public/document.php:799
 msgid ""
 "Attach copies of any awards or recognitions you have received throughout "
 "your professional or academic career. The allowed file type is "
 msgstr ""
 
-#: public/document.php:794
+#: public/document.php:795
 msgid ""
 "Attach copies of awards or recognitions received for your participation in "
 "academic or professional congresses, events, or workshops. The allowed file "
 "type is "
 msgstr ""
 
-#: public/document.php:784
+#: public/document.php:785
 msgid ""
 "Attach the certificate that proves the completion of your high school or "
 "secondary education studies. The allowed file type is "
 msgstr ""
 
-#: public/document.php:788
+#: public/document.php:789
 msgid ""
 "Attach your curriculum vitae or resume, accompanied by the documents that "
 "support your experience and training. The allowed file type is "
@@ -843,7 +843,7 @@ msgstr ""
 msgid "Calification"
 msgstr ""
 
-#: public/functions.php:689 public/functions.php:840
+#: public/functions.php:690 public/functions.php:842
 #: public/templates/califications.php:1
 msgid "Califications"
 msgstr ""
@@ -1292,7 +1292,7 @@ msgstr ""
 msgid "Cut-off"
 msgstr ""
 
-#: public/functions.php:661 public/functions.php:825
+#: public/functions.php:661 public/functions.php:826
 msgid "Dashboard"
 msgstr ""
 
@@ -1364,7 +1364,8 @@ msgid ""
 "screening)."
 msgstr ""
 
-#: public/templates/documents.php:84 public/templates/documents.php:145
+#: public/templates/pending-documents.php:33 public/templates/documents.php:84
+#: public/templates/documents.php:145
 msgid "DEADLINE"
 msgstr ""
 
@@ -1388,7 +1389,7 @@ msgstr ""
 msgid "Decline Institution"
 msgstr ""
 
-#: admin/institute.php:373 admin/alliances.php:720 public/document.php:836
+#: admin/institute.php:373 admin/alliances.php:720 public/document.php:837
 #: admin/templates/alliance-details.php:283
 #: admin/templates/institute-details.php:610 public/templates/documents.php:107
 #: public/templates/documents.php:157
@@ -1620,8 +1621,8 @@ msgid ""
 "for revision to admission."
 msgstr ""
 
-#: public/functions.php:677 public/functions.php:694 public/functions.php:702
-#: public/functions.php:843 public/templates/teacher-documents.php:23
+#: public/functions.php:677 public/functions.php:695 public/functions.php:703
+#: public/functions.php:845 public/templates/teacher-documents.php:23
 #: public/templates/documents.php:11 public/templates/documents.php:25
 msgid "Documents"
 msgstr ""
@@ -1647,7 +1648,7 @@ msgstr ""
 msgid "Documents of certificates"
 msgstr ""
 
-#: public/document.php:128 public/document.php:629
+#: public/document.php:129 public/document.php:630
 msgid "Documents saved successfully."
 msgstr ""
 
@@ -1848,7 +1849,7 @@ msgstr ""
 msgid "Enrollments"
 msgstr ""
 
-#: public/document.php:756
+#: public/document.php:757
 msgid ""
 "Ensure you provide an official copy issued by the school of your high school "
 "diploma. The allowed file type is "
@@ -1963,7 +1964,7 @@ msgstr ""
 msgid "Expenses and payroll"
 msgstr ""
 
-#: public/document.php:837 public/templates/documents.php:109
+#: public/document.php:838 public/templates/documents.php:109
 #: public/templates/documents.php:159
 msgid "Expired"
 msgstr ""
@@ -2100,7 +2101,7 @@ msgstr ""
 msgid "For review"
 msgstr ""
 
-#: public/document.php:772
+#: public/document.php:773
 msgid ""
 "FORM 402 is a document used in the U.S. immigration process, specifically "
 "related to the application for citizenship or naturalization. The allowed "
@@ -2362,7 +2363,7 @@ msgstr ""
 msgid "Identification"
 msgstr ""
 
-#: public/document.php:850 admin/templates/student-details.php:255
+#: public/document.php:851 admin/templates/student-details.php:255
 #: admin/templates/student-details.php:416
 #: admin/templates/list-scholarships.php:57
 #: admin/templates/teacher-detail.php:51
@@ -2437,13 +2438,13 @@ msgstr ""
 msgid "Img mobile"
 msgstr ""
 
-#: public/document.php:792
+#: public/document.php:793
 msgid ""
 "Include work certificates or certifications that prove job performance "
 "related to the program you wish to apply for. The allowed file type is "
 msgstr ""
 
-#: public/document.php:786
+#: public/document.php:787
 msgid ""
 "Include your degree and/or certificate of formal studies, with the "
 "corresponding grades for the area in which you want to obtain the "
@@ -2595,7 +2596,7 @@ msgstr ""
 msgid "Internet search"
 msgstr ""
 
-#: public/functions.php:1786
+#: public/functions.php:1788
 msgid "Invalid data"
 msgstr ""
 
@@ -2737,11 +2738,11 @@ msgstr ""
 msgid "List of payments"
 msgstr ""
 
-#: public/functions.php:865
+#: public/functions.php:867
 msgid "Log in"
 msgstr ""
 
-#: public/functions.php:860
+#: public/functions.php:862
 msgid "Log out"
 msgstr ""
 
@@ -3126,7 +3127,7 @@ msgstr ""
 msgid "New amount"
 msgstr ""
 
-#: public/functions.php:822
+#: public/functions.php:823
 msgid "New applicant"
 msgstr ""
 
@@ -3237,7 +3238,7 @@ msgstr ""
 msgid "No scholarship assigned or already signed"
 msgstr ""
 
-#: public/document.php:833
+#: public/document.php:834 public/templates/pending-documents.php:39
 msgid "No sent"
 msgstr ""
 
@@ -3257,7 +3258,7 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
-#: public/functions.php:829 public/templates/users-notifications.php:1
+#: public/functions.php:830 public/templates/users-notifications.php:1
 msgid "Notifications"
 msgstr ""
 
@@ -3293,7 +3294,7 @@ msgstr ""
 msgid "Offers"
 msgstr ""
 
-#: public/document.php:780
+#: public/document.php:781
 msgid ""
 "Official document that certifies the birth of a person. The allowed file "
 "type is "
@@ -3450,7 +3451,7 @@ msgstr ""
 msgid "Parent Name"
 msgstr ""
 
-#: public/document.php:849 admin/templates/student-details.php:256
+#: public/document.php:850 admin/templates/student-details.php:256
 #: admin/templates/student-details.php:419
 #: admin/templates/list-scholarships.php:56
 #: admin/templates/teacher-detail.php:49
@@ -3507,7 +3508,7 @@ msgid "Payment details"
 msgstr ""
 
 #: admin/payments.php:1261 admin/payments.php:1514 admin/report.php:773
-#: public/functions.php:791 admin/institutes/payments.php:104
+#: public/functions.php:792 admin/institutes/payments.php:104
 #: admin/institutes/payments.php:393 admin/institutes/payments.php:452
 #: admin/alliance/payments.php:158 admin/templates/payment-details.php:34
 #: admin/templates/list-payment-alliance.php:46
@@ -3579,7 +3580,7 @@ msgid "Payment Total"
 msgstr ""
 
 #: admin/functions.php:468 admin/functions.php:469 admin/functions.php:478
-#: admin/functions.php:478 public/functions.php:672 public/functions.php:835
+#: admin/functions.php:478 public/functions.php:672 public/functions.php:836
 #: admin/alliance/institutes-registered.php:390
 #: admin/templates/generate-advance-payment.php:105
 #: admin/templates/register-departments.php:189
@@ -3607,12 +3608,17 @@ msgstr ""
 #: admin/institute.php:371 admin/admission.php:533 admin/alliances.php:718
 #: admin/templates/list-student-graduation.php:3
 #: admin/templates/list-student-graduation.php:17
-#: public/templates/documents.php:117 public/templates/documents.php:170
+#: public/templates/pending-documents.php:39 public/templates/documents.php:117
+#: public/templates/documents.php:170
 msgid "Pending"
 msgstr ""
 
 #: admin/teachers.php:300
 msgid "Pending documents"
+msgstr ""
+
+#: public/templates/pending-documents.php:14
+msgid "Pending Documents for"
 msgstr ""
 
 #: admin/templates/report-current-students.php:9
@@ -3738,7 +3744,7 @@ msgstr ""
 msgid "please ensure you complete the following steps"
 msgstr ""
 
-#: public/document.php:760
+#: public/document.php:761
 msgid ""
 "Please ensure you provide a clear and legible copy of the identification "
 "document. The allowed file type is "
@@ -3754,47 +3760,47 @@ msgstr ""
 msgid "Please establish your password"
 msgstr ""
 
-#: public/document.php:758
+#: public/document.php:759
 msgid ""
 "Please provide a clear and legible copy of the document. The allowed file "
 "type is "
 msgstr ""
 
-#: public/document.php:774
+#: public/document.php:775
 msgid ""
 "Please provide a DIGITAL COPY OF YOUR UNIVERSITY DEGREE to validate your "
 "information and continue with the registration process. The allowed file "
 "type is "
 msgstr ""
 
-#: public/document.php:762
+#: public/document.php:763
 msgid "Please provide a recent, clear, and high-quality photo of the student"
 msgstr ""
 
-#: public/document.php:790
+#: public/document.php:791
 msgid "Please provide a recent, clear, and high-quality photo of the student."
 msgstr ""
 
-#: public/document.php:764
+#: public/document.php:765
 msgid ""
 "Please provide an official document that clearly indicates the student's "
 "name, the course or subject, and the corresponding grade achieved. The "
 "allowed file type is "
 msgstr ""
 
-#: public/document.php:766
+#: public/document.php:767
 msgid ""
 "Please provide an official document that verifies the student's enrollment "
 "status. The allowed file type is "
 msgstr ""
 
-#: public/document.php:776
+#: public/document.php:777
 msgid ""
 "Please provide DIGITAL COPY OF POSTGRADUATE DEGREE to validate your "
 "information and continue with the registration. The allowed file type is "
 msgstr ""
 
-#: public/document.php:778
+#: public/document.php:779
 msgid ""
 "Please provide your CURRICULAR SUMMARY to validate your information and "
 "continue with the registration process. The allowed file type is "
@@ -3819,7 +3825,7 @@ msgstr ""
 msgid "Pre-Scholarships"
 msgstr ""
 
-#: public/functions.php:1870
+#: public/functions.php:1872
 msgid "Precio actualizado"
 msgstr ""
 
@@ -3854,12 +3860,12 @@ msgstr ""
 msgid "Proceed to Checkout"
 msgstr ""
 
-#: public/document.php:835 public/templates/documents.php:104
+#: public/document.php:836 public/templates/documents.php:104
 #: public/templates/documents.php:154
 msgid "Processing"
 msgstr ""
 
-#: public/functions.php:1876
+#: public/functions.php:1878
 msgid "Product not found in cart"
 msgstr ""
 
@@ -3938,26 +3944,26 @@ msgstr ""
 msgid "Prom califications"
 msgstr ""
 
-#: public/document.php:782
+#: public/document.php:783
 msgid ""
 "Provide a clear and legible copy of your official identification document "
 "(DNI) or valid passport. The allowed file type is "
 msgstr ""
 
-#: public/document.php:800
+#: public/document.php:801
 msgid ""
 "Provide a list of your publications and, if possible, attach a PDF or a link "
 "to articles in scientific publications, books, or columns you have written. "
 "The allowed file type is "
 msgstr ""
 
-#: public/document.php:754
+#: public/document.php:755
 msgid ""
 "Provide an official transcript or report card certified by a school "
 "authority. The allowed file type is "
 msgstr ""
 
-#: public/document.php:802
+#: public/document.php:803
 msgid ""
 "Provide evidence of the audiovisual activities in which you have "
 "participated, such as podcasts, TV appearances, or radio shows. This can be "
@@ -4193,7 +4199,7 @@ msgstr ""
 msgid "Request update"
 msgstr ""
 
-#: admin/functions.php:458 public/functions.php:713 public/functions.php:849
+#: admin/functions.php:458 public/functions.php:714 public/functions.php:851
 #: admin/templates/register-departments.php:143
 #: public/templates/my-requests.php:1
 msgid "Requests"
@@ -4238,7 +4244,7 @@ msgstr ""
 msgid "Roles"
 msgstr ""
 
-#: public/functions.php:1805
+#: public/functions.php:1807
 msgid "Rule not found in database"
 msgstr ""
 
@@ -4670,7 +4676,7 @@ msgstr ""
 msgid "Senior"
 msgstr ""
 
-#: public/document.php:834 public/templates/documents.php:103
+#: public/document.php:835 public/templates/documents.php:103
 #: public/templates/documents.php:153
 msgid "Sent"
 msgstr ""
@@ -4926,7 +4932,7 @@ msgstr ""
 msgid "Student graduations"
 msgstr ""
 
-#: public/functions.php:686 admin/templates/student-details.php:228
+#: public/functions.php:685 admin/templates/student-details.php:228
 #: admin/templates/enrollment-detail.php:29 public/templates/student.php:19
 #: public/templates/student.php:43
 msgid "Student Information"
@@ -5118,11 +5124,11 @@ msgstr ""
 msgid "Summary of commissions"
 msgstr ""
 
-#: public/functions.php:848
+#: public/functions.php:850
 msgid "Suppor tickets"
 msgstr ""
 
-#: public/functions.php:710
+#: public/functions.php:711
 msgid "Support Tickets"
 msgstr ""
 
@@ -5168,7 +5174,7 @@ msgstr ""
 msgid "Teacher profile not found."
 msgstr ""
 
-#: public/document.php:770
+#: public/document.php:771
 msgid ""
 "Teacher's profile picture, this will be visible to the public. The allowed "
 "file type is "
@@ -5219,11 +5225,11 @@ msgstr ""
 msgid "The academic term in progress is"
 msgstr ""
 
-#: public/document.php:762 public/document.php:790
+#: public/document.php:763 public/document.php:791
 msgid "The allowed file type is "
 msgstr ""
 
-#: public/document.php:768
+#: public/document.php:769
 msgid ""
 "The card should clearly display the student's name, the type of vaccine "
 "received, the dates of vaccination, and any booster shots administered. The "
@@ -5656,7 +5662,11 @@ msgstr ""
 msgid "Upload at"
 msgstr ""
 
-#: public/document.php:796
+#: public/templates/pending-documents.php:47
+msgid "Upload documents here"
+msgstr ""
+
+#: public/document.php:797
 msgid ""
 "Upload the certifications of the diplomas, courses, and workshops you have "
 "completed. This will help validate your continuous training. The allowed "
@@ -5795,7 +5805,7 @@ msgstr ""
 msgid "Waiting Time"
 msgstr ""
 
-#: public/document.php:839 public/templates/documents.php:108
+#: public/document.php:840 public/templates/documents.php:108
 #: public/templates/documents.php:158
 msgid "Waiting update"
 msgstr ""
