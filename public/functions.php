@@ -615,7 +615,7 @@ function change_billing_phone_checkout_field_value($order)
 {
 
     if ($_POST['aes_split_payment'] == 'on' && (!$_POST['aes_amount_split'] || $_POST['aes_amount_split'] == 0)) {
-        wc_add_notice(__('You must specify a split payment amount', 'woocommerce'), 'error');
+        wc_add_notice(__('You must specify a split payment amount', 'edusystem'), 'error');
         exit; // o exit; si deseas detener la ejecución del código
     }
 
@@ -705,7 +705,7 @@ function remove_my_account_links($menu_links)
         }
     }
 
-    $menu_links['edit-account'] = __('Account', 'woocommerce');
+    $menu_links['edit-account'] = __('Account', 'edusystem');
 
     if (in_array('parent', $roles) || in_array('student', $roles)) {
         $menu_links['my-tickets'] = __('Support Tickets', 'edusystem');
