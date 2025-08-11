@@ -42,30 +42,24 @@
 <?php if ($student && !$student->moodle_password) { ?>
 	<div class="text-center info-box content-dashboard">
 		<div>
-			<p>To help you get started on the right foot, we've put together a few simple steps to make your journey as
-				smooth and enjoyable as possible. Please take a few minutes to complete them, and let's get started on this
-				exciting path together</p>
+			<p><?= __("To help you get started on the right foot, we've put together a few simple steps to make your journey as smooth and enjoyable as possible. Please take a few minutes to complete them, and let's get started on this exciting path together", 'edusystem') ?></p>
 			<ul class="info-list">
 				<li>
 					<i class="fas fa-upload"></i>
-					Once your payment is approved, the option to upload all required documents is enabled <a
+					<?= __('Once your payment is approved, the option to upload all required documents is enabled', 'edusystem') ?><a
 						style="text-decoration: underline !important; color: #091c5c;"
-						href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents' ?>">here</a>
+						href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents' ?>"><?= __('here', 'edusystem') ?></a>
 				</li>
 				<li>
 					<i class="fas fa-credit-card"></i>
-					If you haven't already, please process the payment for your registration fee. This will enable us to
-					finalize your registration and grant you access to the <a
+					<?= __("If you haven't already, please process the payment for your registration fee. This will enable us to finalize your registration and grant you access to the", 'edusystem') ?> <a
 						style="text-decoration: underline !important; color: #091c5c;"
-						href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student' ?>">virtual
-						classroom</a>.
+						href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student' ?>"><?= __('virtual classroom', 'edusystem') ?></a>.
 				</li>
 			</ul>
-			<p class="info-note">Once we receive your documents and process your payment, we will review your application
-				and grant you access to the <a style="text-decoration: underline !important; color: #091c5c;"
-					href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student' ?>">virtual
-					classroom</a>. You will receive an email with instructions on how to access the classroom and start your
-				course.</p>
+			<p class="info-note"><?= __('Once we receive your documents and process your payment, we will review your application and grant you access to the', 'edusystem') ?> <a style="text-decoration: underline !important; color: #091c5c;"
+					href="<?php echo get_permalink(get_option('woo(commerce_myaccount_page_id')) . '/student' ?>">
+					<?= __('virtual classroom', 'edusystem') ?></a>. <?= __('You will receive an email with instructions on how to access the classroom and start your course', 'edusystem') ?>.</p>
 		</div>
 	</div>
 <?php } ?>
@@ -74,7 +68,7 @@
 	<a href="<?php echo home_url('my-account/orders') ?>">
 		<div class="text-center info-box"
 			style="margin: 20px 0px; background-color: #ff0000c2; color: white; font-weight: bold; font-size: 18px; -webkit-box-shadow: 0px 0px 10px 0px rgba(255, 0, 0, 1); -moz-box-shadow: 0px 0px 10px 0px rgba(255, 0, 0, 1); box-shadow: 0px 0px 10px 0px rgb(255 0 0 / 75%); border: 0px;">
-			You have pending payments
+			<?= __('You have pending payments', 'edusystem') ?>
 			<?php foreach ($orders as $key => $order) { ?>
 				<?php
 				$dates = $order->get_meta('dates_next_orders');
@@ -83,8 +77,7 @@
 					foreach ($dates as $key => $date) { 
 						$pending_payment = $order->get_meta('pending_payment');
 						if ($pending_payment) { ?>
-							<p><strong>Payment to: <?php echo $date['date'] ?> with an amount of
-									<?php echo wc_price($pending_payment) ?></strong></p>
+							<p><strong><?= __('Payment to:', 'edusystem') ?> <?php echo $date['date'] ?> <?= __('with an amount of', 'edusystem') ?> <?php echo wc_price($pending_payment) ?></strong></p>
 						<?php }
 					}
 				} ?>
@@ -96,11 +89,10 @@
 <?php if (get_user_meta($current_user->ID, 'pay_application_password', true) == '1') { ?>
 	<div class="text-center info-box" style="margin: 10px 0px; background-color: #ffff0045;">
 		<p>
-			We're excited to have you join our community! As we prepare for your on boarding process, we want to remind you
-			to schedule your meeting with our team to complete your registration.
+			<?= __("We're excited to have you join our community! As we prepare for your on boarding process, we want to remind you to schedule your meeting with our team to complete your registration", 'edusystem') ?>
 		</p><br>
 
-		<p>Don't Forget to Schedule <strong>Your Onboarding Meeting</strong></p> <br>
+		<p><?= __("Don't Forget to Schedule", 'edusystem') ?> <strong><?= __('Your Onboarding Meeting', 'edusystem') ?></strong></p> <br>
 
 		<p>
 		<div style="text-align:center;">
