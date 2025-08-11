@@ -44,7 +44,7 @@
                         
                         <div class="upload-link">
                             <a href="<?= get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
-                                <? __('Upload documents here', 'edusystem'); ?>
+                                <?= __('Upload documents here', 'edusystem'); ?>
                             </a>
                         </div>
                     </div>
