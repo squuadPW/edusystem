@@ -248,9 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         document.getElementById("buttonsave").disabled = false;
-      } catch (error) {
-
-      }
+      } catch (error) {}
     });
 
     if (
@@ -337,9 +335,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         document.getElementById("buttonsave").disabled = false;
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     });
 
     if (careerIdShortcode && careerIdShortcode.value) {
@@ -481,8 +477,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         document.getElementById("buttonsave").disabled = false;
-      } catch (error) {
-      }
+      } catch (error) {}
     });
 
     if (planIdShortcode && planIdShortcode.value) {
@@ -884,7 +879,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (passwordInput) {
     passwordInput.addEventListener("input", validatePasswords);
   }
-  if(confirmPasswordInput) {
+  if (confirmPasswordInput) {
     confirmPasswordInput.addEventListener("input", validatePasswords);
   }
 });
@@ -1182,9 +1177,8 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
       } else if (action === "action=check_scholarship") {
         document.getElementById("scholarship_assigned").style.display = "block";
         if (XHR.response === "0") {
-          document.getElementById(
-            "scholarship_assigned"
-          ).innerText = formRegisterStrings.noScholarship;
+          document.getElementById("scholarship_assigned").innerText =
+            formRegisterStrings.noScholarship;
           document.getElementById("scholarship_assigned").style.color = "gray";
 
           changeFieldsDisabled(true);
@@ -1202,310 +1196,322 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
 }
 
 if (document.getElementById("birth_date_student")) {
+  const today = new Date();
+  // Restar 20 años
+  const twentyYearsAgo = new Date(
+    today.getFullYear() - 20,
+    today.getMonth(),
+    today.getDate()
+  );
+
+  // Formatear la fecha en MM/DD/YYYY
+  const day = String(twentyYearsAgo.getDate()).padStart(2, "0");
+  const month = String(twentyYearsAgo.getMonth() + 1).padStart(2, "0"); // Se suma 1 porque los meses van de 0-11
+  const year = twentyYearsAgo.getFullYear();
+  const formattedDate = `${month}/${day}/${year}`;
+
+  setStudentBirthDate(formattedDate);
   document
     .getElementById("birth_date_student")
     .addEventListener("change", (e) => {
-      let max_age = parseInt(document.getElementById("max_age").value);
-      let limit_age = parseInt(document.getElementById("limit_age").value);
-      let date = e.target.value;
-      date = date.split("/");
+      setStudentBirthDate(e.target.value);
+    });
+}
 
-      const start = new Date(date[2], date[0] - 1, date[1]);
-      const today = new Date();
-      const diff = diff_years(today, start);
+function setStudentBirthDate(date) {
+  let max_age = parseInt(document.getElementById("max_age").value);
+  let limit_age = parseInt(document.getElementById("limit_age").value);
+  date = date.split("/");
 
-      if (diff > limit_age) {
-        alert(`${formRegisterStrings.maxAge} ${limit_age} ${formRegisterStrings.yearsOld}`);
-        // Reset the input field
-        e.target.value = "";
-        return;
+  const start = new Date(date[2], date[0] - 1, date[1]);
+  const today = new Date();
+  const diff = diff_years(today, start);
+
+  if (diff > limit_age) {
+    alert(
+      `${formRegisterStrings.maxAge} ${limit_age} ${formRegisterStrings.yearsOld}`
+    );
+    // Reset the input field
+    e.target.value = "";
+    return;
+  }
+
+  if (diff >= max_age) {
+    var accessDataTitle = document.getElementById("access_data");
+    if (accessDataTitle) {
+      accessDataTitle.innerHTML = formRegisterStrings.titleAccessStudent;
+    }
+
+    if (dont_allow_adult && dont_allow_adult?.value == 1) {
+      if (dontBeAdult) {
+        dontBeAdult.style.display = "block";
       }
-
-      if (diff >= max_age) {
-        var accessDataTitle = document.getElementById("access_data");
-        if (accessDataTitle) {
-          accessDataTitle.innerHTML = formRegisterStrings.titleAccessStudent;
-        }
-
-        if (dont_allow_adult && dont_allow_adult?.value == 1) {
-          if (dontBeAdult) {
-            dontBeAdult.style.display = "block";
-          }
-          buttonSave.disabled = true;
-        } else {
-          if (dontBeAdult) {
-            dontBeAdult.style.display = "none";
-          }
-          if (dont_allow_adult && dont_allow_adult?.value == 1) {
-            if (
-              existStudentEmail?.style.display === "none" &&
-              existStudentId?.style.display === "none" &&
-              sameEmailStudent?.style.display === "none" &&
-              dontBeAdult?.style.display === "none"
-            ) {
-              buttonSave.disabled = false;
-            }
-          } else {
-            if (
-              existParentEmail?.style.display === "none" &&
-              existStudentEmail?.style.display === "none" &&
-              existStudentId?.style.display === "none" &&
-              sameEmailParent?.style.display === "none" &&
-              sameEmailStudent?.style.display === "none"
-            ) {
-              buttonSave.disabled = false;
-            }
-          }
-
-          // Obtén el elemento div que contiene el input
-          const studentEmailDiv = document.getElementById("student-email");
-
-          if (studentEmailDiv) {
-            // Crea una copia del elemento div
-            const studentEmailDivClone = studentEmailDiv.cloneNode(true);
-            document.getElementById("student-email-access").innerHTML = "";
-            document.getElementById("student-email-detail").innerHTML = "";
-            document
-              .getElementById("student-email-access")
-              .appendChild(studentEmailDivClone);
-          }
-
-          var parentTitle = document.getElementById("parent-title");
-          if (parentTitle) {
-            parentTitle.style.display = "none";
-          }
-
-          var parentBirthDateField = document.getElementById(
-            "parent_birth_date_field"
-          );
-          if (parentBirthDateField) {
-            parentBirthDateField.style.display = "none";
-          }
-
-          var parentDocumentTypeField = document.getElementById(
-            "parent_document_type_field"
-          );
-          if (parentDocumentTypeField) {
-            parentDocumentTypeField.style.display = "none";
-          }
-
-          var parentIdDocumentField = document.getElementById(
-            "parent_id_document_field"
-          );
-          if (parentIdDocumentField) {
-            parentIdDocumentField.style.display = "none";
-          }
-
-          var parentNameField = document.getElementById("parent_name_field");
-          if (parentNameField) {
-            parentNameField.style.display = "none";
-          }
-
-          var parentLastNameField = document.getElementById(
-            "parent-lastname-field"
-          );
-          if (parentLastNameField) {
-            parentLastNameField.style.display = "none";
-          }
-
-          var parentPhoneField = document.getElementById("parent-phone-field");
-          if (parentPhoneField) {
-            parentPhoneField.style.display = "none";
-          }
-
-          var parentEmailField = document.getElementById("parent-email-field");
-          if (parentEmailField) {
-            parentEmailField.style.display = "none";
-          }
-
-          var parentGenderField = document.getElementById(
-            "parent-gender-field"
-          );
-          if (parentGenderField) {
-            parentGenderField.style.display = "none";
-          }
-
-          var parentDocumentType = document.getElementById(
-            "parent_document_type"
-          );
-          if (parentDocumentType) {
-            parentDocumentType.required = false;
-          }
-
-          var birthDateParent = document.getElementById("birth_date_parent");
-          if (birthDateParent) {
-            birthDateParent.required = false;
-          }
-
-          var parentIdDocument = document.getElementById("id_document_parent");
-          if (parentIdDocument) {
-            parentIdDocument.required = false;
-          }
-
-          var agentName = document.getElementById("agent_name");
-          if (agentName) {
-            agentName.required = false;
-          }
-
-          var agentLastName = document.getElementById("agent_last_name");
-          if (agentLastName) {
-            agentLastName.required = false;
-          }
-
-          var numberPartner = document.getElementById("number_partner");
-          if (numberPartner) {
-            numberPartner.required = false;
-          }
-
-          var emailPartner = document.getElementById("email_partner");
-          if (emailPartner) {
-            emailPartner.required = false;
-          }
-
-          var parentGenderField = document.getElementById("gender_parent");
-          if (parentGenderField) {
-            parentGenderField.required = false;
-          }
+      buttonSave.disabled = true;
+    } else {
+      if (dontBeAdult) {
+        dontBeAdult.style.display = "none";
+      }
+      if (dont_allow_adult && dont_allow_adult?.value == 1) {
+        if (
+          existStudentEmail?.style.display === "none" &&
+          existStudentId?.style.display === "none" &&
+          sameEmailStudent?.style.display === "none" &&
+          dontBeAdult?.style.display === "none"
+        ) {
+          buttonSave.disabled = false;
         }
       } else {
-        var accessDataTitle = document.getElementById("access_data");
-        if (accessDataTitle) {
-          accessDataTitle.innerHTML = formRegisterStrings.titleAccessParent;
-        }
-
-        if (dontBeAdult) {
-          dontBeAdult.style.display = "none";
-        }
-        if (dont_allow_adult && dont_allow_adult?.value == 1) {
-          if (
-            existStudentEmail?.style.display === "none" &&
-            existStudentId?.style.display === "none" &&
-            sameEmailStudent?.style.display === "none" &&
-            dontBeAdult?.style.display === "none"
-          ) {
-            buttonSave.disabled = false;
-          }
-        } else {
-          if (
-            existParentEmail?.style.display === "none" &&
-            existStudentEmail?.style.display === "none" &&
-            existStudentId?.style.display === "none" &&
-            sameEmailParent?.style.display === "none" &&
-            sameEmailStudent?.style.display === "none"
-          ) {
-            buttonSave.disabled = false;
-          }
-        }
-
-        // Obtén el elemento div que contiene el input
-        const studentEmailDiv = document.getElementById("student-email");
-
-        if (studentEmailDiv) {
-          // Crea una copia del elemento div
-          const studentEmailDivClone = studentEmailDiv.cloneNode(true);
-          document.getElementById("student-email-access").innerHTML = "";
-          document.getElementById("student-email-detail").innerHTML = "";
-          document
-            .getElementById("student-email-detail")
-            .appendChild(studentEmailDivClone);
-        }
-
-        var parentTitle = document.getElementById("parent-title");
-        if (parentTitle) {
-          parentTitle.style.display = "block";
-        }
-
-        var parentBirthDateField = document.getElementById(
-          "parent_birth_date_field"
-        );
-        if (parentBirthDateField) {
-          parentBirthDateField.style.display = "block";
-        }
-
-        var parentDocumentTypeField = document.getElementById(
-          "parent_document_type_field"
-        );
-        if (parentDocumentTypeField) {
-          parentDocumentTypeField.style.display = "block";
-        }
-
-        var parentIdDocumentField = document.getElementById(
-          "parent_id_document_field"
-        );
-        if (parentIdDocumentField) {
-          parentIdDocumentField.style.display = "block";
-        }
-
-        var parentNameField = document.getElementById("parent_name_field");
-        if (parentNameField) {
-          parentNameField.style.display = "block";
-        }
-
-        var parentLastNameField = document.getElementById(
-          "parent-lastname-field"
-        );
-        if (parentLastNameField) {
-          parentLastNameField.style.display = "block";
-        }
-
-        var parentPhoneField = document.getElementById("parent-phone-field");
-        if (parentPhoneField) {
-          parentPhoneField.style.display = "block";
-        }
-
-        var parentGenderField = document.getElementById("parent-gender-field");
-        if (parentGenderField) {
-          parentGenderField.style.display = "block";
-        }
-
-        var parentEmailField = document.getElementById("parent-email-field");
-        if (parentEmailField) {
-          parentEmailField.style.display = "block";
-        }
-
-        var parentDocumentType = document.getElementById(
-          "parent_document_type"
-        );
-        if (parentDocumentType) {
-          parentDocumentType.required = true;
-        }
-
-        var birthDateParent = document.getElementById("birth_date_parent");
-        if (birthDateParent) {
-          birthDateParent.required = true;
-        }
-
-        var parentIdDocument = document.getElementById("id_document_parent");
-        if (parentIdDocument) {
-          parentIdDocument.required = true;
-        }
-
-        var agentName = document.getElementById("agent_name");
-        if (agentName) {
-          agentName.required = true;
-        }
-
-        var agentLastName = document.getElementById("agent_last_name");
-        if (agentLastName) {
-          agentLastName.required = true;
-        }
-
-        var numberPartner = document.getElementById("number_partner");
-        if (numberPartner) {
-          numberPartner.required = true;
-        }
-
-        var emailPartner = document.getElementById("email_partner");
-        if (emailPartner) {
-          emailPartner.required = true;
-        }
-
-        var parentGenderField = document.getElementById("gender_parent");
-        if (parentGenderField) {
-          parentGenderField.required = true;
+        if (
+          existParentEmail?.style.display === "none" &&
+          existStudentEmail?.style.display === "none" &&
+          existStudentId?.style.display === "none" &&
+          sameEmailParent?.style.display === "none" &&
+          sameEmailStudent?.style.display === "none"
+        ) {
+          buttonSave.disabled = false;
         }
       }
-    });
+
+      // Obtén el elemento div que contiene el input
+      const studentEmailDiv = document.getElementById("student-email");
+
+      if (studentEmailDiv) {
+        // Crea una copia del elemento div
+        const studentEmailDivClone = studentEmailDiv.cloneNode(true);
+        document.getElementById("student-email-access").innerHTML = "";
+        document.getElementById("student-email-detail").innerHTML = "";
+        document
+          .getElementById("student-email-access")
+          .appendChild(studentEmailDivClone);
+      }
+
+      var parentTitle = document.getElementById("parent-title");
+      if (parentTitle) {
+        parentTitle.style.display = "none";
+      }
+
+      var parentBirthDateField = document.getElementById(
+        "parent_birth_date_field"
+      );
+      if (parentBirthDateField) {
+        parentBirthDateField.style.display = "none";
+      }
+
+      var parentDocumentTypeField = document.getElementById(
+        "parent_document_type_field"
+      );
+      if (parentDocumentTypeField) {
+        parentDocumentTypeField.style.display = "none";
+      }
+
+      var parentIdDocumentField = document.getElementById(
+        "parent_id_document_field"
+      );
+      if (parentIdDocumentField) {
+        parentIdDocumentField.style.display = "none";
+      }
+
+      var parentNameField = document.getElementById("parent_name_field");
+      if (parentNameField) {
+        parentNameField.style.display = "none";
+      }
+
+      var parentLastNameField = document.getElementById(
+        "parent-lastname-field"
+      );
+      if (parentLastNameField) {
+        parentLastNameField.style.display = "none";
+      }
+
+      var parentPhoneField = document.getElementById("parent-phone-field");
+      if (parentPhoneField) {
+        parentPhoneField.style.display = "none";
+      }
+
+      var parentEmailField = document.getElementById("parent-email-field");
+      if (parentEmailField) {
+        parentEmailField.style.display = "none";
+      }
+
+      var parentGenderField = document.getElementById("parent-gender-field");
+      if (parentGenderField) {
+        parentGenderField.style.display = "none";
+      }
+
+      var parentDocumentType = document.getElementById("parent_document_type");
+      if (parentDocumentType) {
+        parentDocumentType.required = false;
+      }
+
+      var birthDateParent = document.getElementById("birth_date_parent");
+      if (birthDateParent) {
+        birthDateParent.required = false;
+      }
+
+      var parentIdDocument = document.getElementById("id_document_parent");
+      if (parentIdDocument) {
+        parentIdDocument.required = false;
+      }
+
+      var agentName = document.getElementById("agent_name");
+      if (agentName) {
+        agentName.required = false;
+      }
+
+      var agentLastName = document.getElementById("agent_last_name");
+      if (agentLastName) {
+        agentLastName.required = false;
+      }
+
+      var numberPartner = document.getElementById("number_partner");
+      if (numberPartner) {
+        numberPartner.required = false;
+      }
+
+      var emailPartner = document.getElementById("email_partner");
+      if (emailPartner) {
+        emailPartner.required = false;
+      }
+
+      var parentGenderField = document.getElementById("gender_parent");
+      if (parentGenderField) {
+        parentGenderField.required = false;
+      }
+    }
+  } else {
+    var accessDataTitle = document.getElementById("access_data");
+    if (accessDataTitle) {
+      accessDataTitle.innerHTML = formRegisterStrings.titleAccessParent;
+    }
+
+    if (dontBeAdult) {
+      dontBeAdult.style.display = "none";
+    }
+    if (dont_allow_adult && dont_allow_adult?.value == 1) {
+      if (
+        existStudentEmail?.style.display === "none" &&
+        existStudentId?.style.display === "none" &&
+        sameEmailStudent?.style.display === "none" &&
+        dontBeAdult?.style.display === "none"
+      ) {
+        buttonSave.disabled = false;
+      }
+    } else {
+      if (
+        existParentEmail?.style.display === "none" &&
+        existStudentEmail?.style.display === "none" &&
+        existStudentId?.style.display === "none" &&
+        sameEmailParent?.style.display === "none" &&
+        sameEmailStudent?.style.display === "none"
+      ) {
+        buttonSave.disabled = false;
+      }
+    }
+
+    // Obtén el elemento div que contiene el input
+    const studentEmailDiv = document.getElementById("student-email");
+
+    if (studentEmailDiv) {
+      // Crea una copia del elemento div
+      const studentEmailDivClone = studentEmailDiv.cloneNode(true);
+      document.getElementById("student-email-access").innerHTML = "";
+      document.getElementById("student-email-detail").innerHTML = "";
+      document
+        .getElementById("student-email-detail")
+        .appendChild(studentEmailDivClone);
+    }
+
+    var parentTitle = document.getElementById("parent-title");
+    if (parentTitle) {
+      parentTitle.style.display = "block";
+    }
+
+    var parentBirthDateField = document.getElementById(
+      "parent_birth_date_field"
+    );
+    if (parentBirthDateField) {
+      parentBirthDateField.style.display = "block";
+    }
+
+    var parentDocumentTypeField = document.getElementById(
+      "parent_document_type_field"
+    );
+    if (parentDocumentTypeField) {
+      parentDocumentTypeField.style.display = "block";
+    }
+
+    var parentIdDocumentField = document.getElementById(
+      "parent_id_document_field"
+    );
+    if (parentIdDocumentField) {
+      parentIdDocumentField.style.display = "block";
+    }
+
+    var parentNameField = document.getElementById("parent_name_field");
+    if (parentNameField) {
+      parentNameField.style.display = "block";
+    }
+
+    var parentLastNameField = document.getElementById("parent-lastname-field");
+    if (parentLastNameField) {
+      parentLastNameField.style.display = "block";
+    }
+
+    var parentPhoneField = document.getElementById("parent-phone-field");
+    if (parentPhoneField) {
+      parentPhoneField.style.display = "block";
+    }
+
+    var parentGenderField = document.getElementById("parent-gender-field");
+    if (parentGenderField) {
+      parentGenderField.style.display = "block";
+    }
+
+    var parentEmailField = document.getElementById("parent-email-field");
+    if (parentEmailField) {
+      parentEmailField.style.display = "block";
+    }
+
+    var parentDocumentType = document.getElementById("parent_document_type");
+    if (parentDocumentType) {
+      parentDocumentType.required = true;
+    }
+
+    var birthDateParent = document.getElementById("birth_date_parent");
+    if (birthDateParent) {
+      birthDateParent.required = true;
+    }
+
+    var parentIdDocument = document.getElementById("id_document_parent");
+    if (parentIdDocument) {
+      parentIdDocument.required = true;
+    }
+
+    var agentName = document.getElementById("agent_name");
+    if (agentName) {
+      agentName.required = true;
+    }
+
+    var agentLastName = document.getElementById("agent_last_name");
+    if (agentLastName) {
+      agentLastName.required = true;
+    }
+
+    var numberPartner = document.getElementById("number_partner");
+    if (numberPartner) {
+      numberPartner.required = true;
+    }
+
+    var emailPartner = document.getElementById("email_partner");
+    if (emailPartner) {
+      emailPartner.required = true;
+    }
+
+    var parentGenderField = document.getElementById("gender_parent");
+    if (parentGenderField) {
+      parentGenderField.required = true;
+    }
+  }
 }
 
 function diff_years(dt2, dt1) {
@@ -1581,8 +1587,16 @@ segmentButtons.forEach((button) => {
 customFlatpickr();
 function customFlatpickr() {
   let instances = flatpickr(".flatpickr", {
-    locale: document.getElementById("site_lang") ? (document.getElementById("site_lang").value == "ES" ? "es" : "en") : "en",
-    dateFormat: document.getElementById("site_lang") ? (document.getElementById("site_lang").value == "ES" ? "d/m/Y" : "m/d/Y") : "m/d/Y",
+    locale: document.getElementById("site_lang")
+      ? document.getElementById("site_lang").value == "ES"
+        ? "es"
+        : "en"
+      : "en",
+    dateFormat: document.getElementById("site_lang")
+      ? document.getElementById("site_lang").value == "ES"
+        ? "d/m/Y"
+        : "m/d/Y"
+      : "m/d/Y",
     disableMobile: "true",
     onChange: function (selectedDates, dateStr, instance) {
       let id = instance.input.id;
