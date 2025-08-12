@@ -5,16 +5,16 @@
 	// define('FEE_GRADUATION', '118'); // Product graduation fee
 
 	// portal.utbp.edu.mx
-	define('FEE_INSCRIPTION', '86'); // Product registration fee
-	define('FEE_GRADUATION', '90'); // Product graduation fee
+	// define('FEE_INSCRIPTION', '86'); // Product registration fee
+	// define('FEE_GRADUATION', '90'); // Product graduation fee
 
 	// portal.americanelite.school
 	// define('FEE_INSCRIPTION', '63'); // Product registration fee
 	// define('FEE_GRADUATION', '1591'); // Product graduation fee
 
 	// americanelite.dreamhosters.com & dev.edusof.com 
-	// define('FEE_INSCRIPTION', '26'); // Product registration fee
-	// define('FEE_GRADUATION', '30'); // Product graduation fee
+	define('FEE_INSCRIPTION', '26'); // Product registration fee
+	define('FEE_GRADUATION', '30'); // Product graduation fee
 
 	// demo.edusof.com
 	// define('FEE_INSCRIPTION', '14'); // Product registration fee
