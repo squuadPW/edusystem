@@ -28,5 +28,5 @@
 	define('ROLE_ID_STUDENT_MOODLE', 5); // Role ID moodle student
 	define('VERSIONS_JS', '2.2.31'); // Versions JS
 	define('MODE', 'SCHOOL');
-	define('LANG', 'ES');
+	define('LANG', 'EN');
 ?>
