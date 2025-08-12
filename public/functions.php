@@ -1218,23 +1218,29 @@ function process_program_payments(WC_Order $order, int $order_id): void
             ));
 
             if ($data_quota_rule) {
+                
+                // precio inicial
+                $initial_payment_regular = (double) $data_quota_rule->initial_payment;
+                $initial_payment_sale = (double) $data_quota_rule->initial_payment_sale;
+                $initial_payment = (double) ( $initial_payment_sale > 0 ) ? $initial_payment_sale : $data_quota_rule->initial_payment;
+
+                // precio final
+                $final_payment_regular = (double) $data_quota_rule->final_payment;
+                $final_payment_sale = (double) $data_quota_rule->final_payment_sale;
+                $final_payment = (double) ( $final_payment_sale > 0 ) ? $final_payment_sale : $final_payment_regular;
+
+                //precio de la cuota
+                $quote_price_regular = (double) $data_quota_rule->quote_price;
+                $quote_price_sale = (double) $data_quota_rule->quote_price_sale;
+                $quote_price = (double) ( $quote_price_sale > 0 ) ? $quote_price_sale : $quote_price_regular;
 
                 $quotas_quantity_rule = (int) $data_quota_rule->quotas_quantity;
-                $initial_payment = (double) $data_quota_rule->initial_payment;
-                $quote_price = (double) $data_quota_rule->quote_price;
-                $final_payment = (double) $data_quota_rule->final_payment;
-                $type_frequency = $data_quota_rule->type_frequency;
                 $frequency_value = $data_quota_rule->frequency_value;
+                $type_frequency = $data_quota_rule->type_frequency;
 
-                $total = (double) ($quotas_quantity_rule * $quote_price) + $initial_payment;
+                $total = (double) ($quotas_quantity_rule * $quote_price) + $initial_payment + $final_payment;
 
-                $installments = $quotas_quantity_rule;
-
-                if ($initial_payment > 0) $installments++;
-
-                if ($final_payment > 0) $installments++;
-
-                $discount_value = 0;
+                $discount_cuppon_value = 0;
                 $applied_coupons = $order->get_used_coupons();
                 if (!empty($applied_coupons)) {
                     foreach ($applied_coupons as $coupon_code) {
@@ -1242,10 +1248,20 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
                         // Validar si el cupón es aplicable al producto y si es un descuento porcentual
                         if ($coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent') {
-                            $discount_value += (double) $coupon->get_amount();
+                            $discount_cuppon_value += (double) $coupon->get_amount();
                         }
                     }
                 }
+                
+                $total_amount_to_pay = $total - ( ($total * $discount_cuppon_value) / 100);
+                $total_original_amount = (double) ($quotas_quantity_rule * $quote_price_regular) + $initial_payment_regular + $final_payment_regular;
+                $total_discount_amount = $total_original_amount - $total_amount_to_pay;
+                
+                $installments = $quotas_quantity_rule;
+
+                if ($initial_payment > 0) $installments++;
+
+                if ($final_payment > 0) $installments++;
             }
 
         } else {
@@ -1266,21 +1282,21 @@ function process_program_payments(WC_Order $order, int $order_id): void
         for ($i = 0; $i < $installments; $i++) {
 
             $next_payment_date = null;
-            if ($needs_next_payment) {
+            if ( $needs_next_payment ) {
 
-                if ($data_quota_rule) {
+                if ( $data_quota_rule ) {
 
-                    $original_price = $quote_price;
+                    $original_price = $quote_price; // monto a pagar sin descuento de cupon
+                    $original_price_regular = $quote_price_regular; // monto original a pagar sin descuento de cupon
                     if ($i == 0 && $initial_payment > 0) {
                         $original_price = $initial_payment;
+                        $original_price_regular = $initial_payment_regular;
                     } else if ($i+1 == $installments && $final_payment > 0){
                         $original_price = $final_payment;
+                        $original_price_regular = $final_payment_regular;
                     }
 
-                    $amount = $original_price - (($original_price * $discount_value) / 100);
-                    $total_amount_to_pay = $total - (($total * $discount_value) / 100);
-                    $total_original_amount = $total;
-                    $total_discount_amount = $original_price - $amount;
+                    $amount = $original_price - (( $original_price * $discount_cuppon_value ) / 100);
 
                     if ($i > 0 && $type_frequency) {
                         switch ($type_frequency) {
@@ -1320,7 +1336,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
                 'institute_fee' => ($i + 1) == 1 ? $current_item_institute_fee : 0,
                 'alliances' => ($i + 1) == 1 ? $current_item_alliances_json : null,
                 'amount' => $amount,
-                'original_amount_product' => $original_price,
+                'original_amount_product' => $original_price_regular,
                 'total_amount' => $total_amount_to_pay,
                 'original_amount' => $total_original_amount,
                 'discount_amount' => $total_discount_amount,
@@ -1738,33 +1754,44 @@ function update_price_product_cart_quota_rule()
     }
 
     global $wpdb;
-    $price = $wpdb->get_var(
+    $rule = $wpdb->get_row(
         $wpdb->prepare(
             "SELECT 
-                CASE 
-                    WHEN initial_payment > 0 THEN initial_payment 
-                    ELSE quote_price 
-                END AS price 
+                initial_payment,
+                initial_payment_sale,
+                quote_price,
+                quote_price_sale,
+                quotas_quantity
             FROM {$wpdb->prefix}quota_rules
             WHERE id = %d",
             $rule_id
         )
     );
 
-    if (!$price) {
+    if (!$rule) {
         wp_send_json_error(__('Rule not found in database', 'edusystem'));
         exit;
     }
 
+    $initial_payment_regular = $rule->initial_payment;
+    $initial_payment_sale = $rule->initial_payment_sale;
+    $initial_payment = ( $initial_payment_sale > 0 ) ? $initial_payment_sale : $initial_payment_regular;
+
+    $quote_price_regular = $rule->quote_price;
+    $quote_price_sale = $rule->quote_price_sale;
+    $quote_price = ( $quote_price_sale > 0 ) ? $quote_price_sale : $quote_price_regular;
+
     // Get the quotas_quantity
-    $quotas_quantity = $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT quotas_quantity
-            FROM {$wpdb->prefix}quota_rules
-            WHERE id = %d",
-            $rule_id
-        )
-    );
+    $quotas_quantity = $rule->quotas_quantity;
+
+    if ( $initial_payment > 0 ) {
+        $price = $initial_payment;
+        $price_regular = $initial_payment_regular;
+
+    } else {
+        $price = $quote_price;
+        $price_regular = $quote_price_regular;
+    }
 
     $cookie_name = 'fixed_fee_inscription';
     $cookie_does_not_exist = !isset($_COOKIE[$cookie_name]);
@@ -1802,10 +1829,16 @@ function update_price_product_cart_quota_rule()
     foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
         // Verificar si el ID del producto o el ID de la variación coinciden
         if ($cart_item['product_id'] === $product_id || (isset($cart_item['variation_id']) && $cart_item['variation_id'] === $product_id)) {
+
+            // Establecer el precio de venta (descuento)
             $cart_item['data']->set_price($price);
             $cart_item['data']->set_sale_price($price);
+                
+            // Establecer el precio regular
+            $cart_item['data']->set_regular_price($price_regular);
 
             // Almacenar el nuevo precio en el array del artículo del carrito
+            $cart_item['custom_price_regular'] = $price_regular; // Aquí se almacena el nuevo precio_regular
             $cart_item['custom_price'] = $price; // Aquí se almacena el nuevo precio
 
             // Guarda el id de la regla de la cuota
@@ -1852,9 +1885,12 @@ function save_metadata_checkout_create_order_item($item, $cart_item_key, $values
     if (isset($values['quota_rule_id'])) {
         $item->add_meta_data('quota_rule_id', $values['quota_rule_id']);
     }
+
+    if ( isset( $values['custom_price_regular'] ) ) {
+        $item->set_subtotal( $values['custom_price_regular'] );
+    }
+
 }
-
-
 
 add_action('wp_ajax_nopriv_reload_payment_table', 'reload_payment_table');
 add_action('wp_ajax_reload_payment_table', 'reload_payment_table');
@@ -2012,20 +2048,24 @@ function apply_scholarship()
 
 }
 
+add_action('woocommerce_before_calculate_totals', 'woocommerce_custom_price_to_cart_item', 99);
 function woocommerce_custom_price_to_cart_item($cart_object)
 {
     if (!WC()->session->__isset("reload_checkout")) {
         foreach ($cart_object->cart_contents as $key => $value) {
-            if (isset($value["custom_price"])) {
-                //for woocommerce version lower than 3
-                //$value['data']->price = $value["custom_price"];
-                //for woocommerce version +3
+            if ( isset($value["custom_price"]) ) {
+                // Establecer el precio de venta (descuento)
                 $value['data']->set_price($value["custom_price"]);
+
+                $value['data']->set_sale_price($value["custom_price"]);
+                
+                // Establecer el precio regular
+                $value['data']->set_regular_price($value["custom_price_regular"]);
             }
         }
     }
 }
-add_action('woocommerce_before_calculate_totals', 'woocommerce_custom_price_to_cart_item', 99);
+
 
 
 add_filter('woocommerce_account_dashboard', 'fee_inscription_button', 2);

@@ -57,8 +57,8 @@
             <div>
                 <div style="margin-bottom: 10px !important; text-align: center">
                     <?php
-                    $product_fee = wc_get_product(FEE_INSCRIPTION ?? 0);
-                    $product_price = $product_fee->get_price() ?? 0;
+                        $product_fee = wc_get_product(FEE_INSCRIPTION ?? 0);
+                        $product_price = $product_fee->get_price() ?? 0;
                     ?>
                     <label class="fee-container">
                         <strong><?= __('Registration fee', 'edusystem') ?></strong>
@@ -80,27 +80,28 @@
         <?php } ?>
 
         <?php
-        $product_id = $product->get_id();
+            $product_id = $product->get_id();
         ?>
 
         <?php
-        global $wpdb;
-        $quotas_rules = $wpdb->get_results($wpdb->prepare(
-            "SELECT `qr`.*
-                FROM `{$wpdb->prefix}quota_rules` AS `qr`
-                INNER JOIN `{$wpdb->prefix}programs` AS `p` 
-                    ON (`qr`.program_id = `p`.identificator AND `p`.product_id = %1\$d) 
-                    OR `qr`.program_id = CONCAT(`p`.identificator, '_', 
-                        REGEXP_SUBSTR( JSON_UNQUOTE(JSON_SEARCH(`p`.subprogram, 'one', %1\$d, NULL, '$.*.product_id')),
-                            '[0-9]+'
-                        ))
-                ORDER BY position ASC",
-            $product_id
-        ));
+            global $wpdb;
+            $quotas_rules = $wpdb->get_results($wpdb->prepare(
+                "SELECT `qr`.*
+                    FROM `{$wpdb->prefix}quota_rules` AS `qr`
+                    INNER JOIN `{$wpdb->prefix}programs` AS `p` 
+                        ON (`qr`.program_id = `p`.identificator AND `p`.product_id = %1\$d) 
+                        OR `qr`.program_id = CONCAT(`p`.identificator, '_', 
+                            REGEXP_SUBSTR( JSON_UNQUOTE(JSON_SEARCH(`p`.subprogram, 'one', %1\$d, NULL, '$.*.product_id')),
+                                '[0-9]+'
+                            ))
+                    ORDER BY position ASC",
+                $product_id
+            ));
 
         ?>
 
         <?php if ($quotas_rules): ?>
+            
             <div>
                 <div class="radio-group text-center elements-quote-hidden">
                     <label class="m-5"><?= __('Program Payments', 'edusystem') ?></label>
@@ -108,16 +109,16 @@
                     <div class="radio-group options-quotas">
 
                         <?php
-                        $discount_value = 0;
-                        // valida el precio del progrma con los cupones
-                        if (!empty($cupones)) {
+                            $discount_value = 0;
+                            // valida el precio del programa con los cupones
+                            if (!empty($cupones)) {
 
-                            foreach ($cupones as $codigo => $cupon) {
-                                if ($cupon->is_valid_for_product($product) && $cupon->get_discount_type() == 'percent') {
-                                    $discount_value = $cupon->get_amount();
+                                foreach ($cupones as $codigo => $cupon) {
+                                    if ($cupon->is_valid_for_product($product) && $cupon->get_discount_type() == 'percent') {
+                                        $discount_value = $cupon->get_amount();
+                                    }
                                 }
                             }
-                        }
 
                         ?>
 
@@ -143,7 +144,9 @@
 
                 <div id="table-payment" data-product_id="<?= $product_id ?>"
                     data-text_table_headers="<?= htmlspecialchars(json_encode([__('Payment', 'edusystem'), __('Next date payment', 'edusystem'), __('Amount', 'edusystem')])) ?>"
-                    data-text_total="<?= __('Total', 'edusystem') ?>"> </div>
+                    data-text_total="<?= __('Total', 'edusystem') ?>">
+                </div>
+                
             </div>
         <?php endif ?>
 

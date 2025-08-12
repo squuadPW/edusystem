@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rule = document.getElementById(`data-rule-${rule_id}`)?.value;
       if (rule) {
         rule_data = JSON.parse(rule);
+        
         payment_table(rule_data);
 
         table_payment = document.getElementById("table-payment");
@@ -95,8 +96,11 @@ function payment_table(rule_data) {
     );
 
     quotas_quantity = rule_data.quotas_quantity;
-    initial_payment = parseFloat(rule_data.initial_payment);
-    final_payment = parseFloat(rule_data.final_payment);
+    initial_payment_sale = parseFloat(rule_data.initial_payment_sale);
+    initial_payment = ( initial_payment_sale > 0 ) ? initial_payment_sale : parseFloat(rule_data.initial_payment);
+
+    final_payment_sale = parseFloat(rule_data.final_payment_sale);
+    final_payment = ( final_payment_sale > 0 ) ? final_payment_sale : parseFloat(rule_data.final_payment);
 
     if ( initial_payment > 0 ) quotas_quantity++;
     if ( final_payment > 0 ) quotas_quantity++;
@@ -111,7 +115,9 @@ function payment_table(rule_data) {
     for (let i = 0; i < quotas_quantity; i++) {
         type_frequency = rule_data.type_frequency;
         frequency_value = parseInt(rule_data.frequency_value);
-        quote_price = parseFloat(rule_data.quote_price);
+
+        quote_price_sale = parseFloat(rule_data.quote_price_sale);
+        quote_price = ( quote_price_sale > 0 ) ? quote_price_sale : parseFloat(rule_data.quote_price);
 
         if (discount_value > 0) quote_price = quote_price - ( quote_price * discount_value) / 100;
 
