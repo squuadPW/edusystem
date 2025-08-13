@@ -151,58 +151,60 @@
 						</tr>
 					</thead>
 					<tbody id="the-list">
-						<?php foreach ($payments_data as $key => $student) { ?>
-							<tr id="post-<?= $key ?>"
-								class="iedit author-self post-<?= $key ?> post-<?= $key ?> type-post status-publish has-post-thumbnail hentry">
-								<td class="title column-title title column-title has-row-actions column-primary"
-									data-colname="<?= __('Nombre del alumno', 'edusystem') ?>">
-									<?= $student->student_name ?>
-									<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
+						<?php foreach ($payments_data as $payment) { ?>
+							<tr>
+								<td class="title column-title" data-colname="<?= __('Nombre del alumno', 'edusystem') ?>">
+									<?= esc_html($payment->student_name) ?>
 								</td>
-								<td class="title column-title has-row-actions column-primary"
-									data-colname="<?= __('Program', 'edusystem') ?>">
-									<?= $student->program ?>
+								<td class="title column-title" data-colname="<?= __('Program', 'edusystem') ?>">
+									<?= esc_html($payment->program) ?>
 								</td>
 								<td class="title column-title"
 									data-colname="<?= __('Name of the educational institution', 'edusystem') ?>">
-									<?= $student->institute_name ?>
+									<?= esc_html($payment->institute_name) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Grado del estudiante', 'edusystem') ?>">
-									<?= $student->grade ?>
+									<?= esc_html($payment->grade) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Territory', 'edusystem') ?>">
-									<?= $student->country ?>
+									<?= esc_html($payment->country) ?>
 								</td>
 								<td class="title column-title"
 									data-colname="<?= __('Name of the partner/vendor', 'edusystem') ?>">
-									...
+									<?= esc_html($payment->partner) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Payment type', 'edusystem') ?>">
-									...
+									<?= esc_html($payment->payment_type) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Initial fee USD', 'edusystem') ?>">
-									...
+									<?= number_format($payment->initial_fee_usd, 2) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Tuition amount paid USD', 'edusystem') ?>">
-									...
+									<?= number_format($payment->tuition_amount_usd, 2) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Total amount paid USD', 'edusystem') ?>">
-									...
+									<?= number_format($payment->total_amount_usd, 2) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Payment date', 'edusystem') ?>">
-									...
+									<?= esc_html($payment->payment_date) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Income account', 'edusystem') ?>">
-									...
+									<?= esc_html($payment->income_account) ?>
 								</td>
+
 								<?php foreach ($alliances_headers as $id => $name) { ?>
-									<td>
-										<?= isset($payment->alliances_fees->{"alliance_" . $id}) ? $payment->alliances_fees->{"alliance_" . $id} : '0.00' ?>
+									<td class="title column-title" data-colname="<?= esc_attr($name) ?>">
+										<?php
+										$fee_key = "alliance_" . $id;
+										$fee = isset($payment->alliances_fees->{$fee_key}) ? $payment->alliances_fees->{$fee_key} : 0;
+										echo number_format($fee, 2);
+										?>
 									</td>
 								<?php } ?>
+
 								<td class="title column-title"
 									data-colname="<?= __('Administrative observations', 'edusystem') ?>">
-									...
+									<?= esc_html($payment->observations) ?>
 								</td>
 							</tr>
 						<?php } ?>
