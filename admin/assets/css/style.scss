@@ -1728,3 +1728,12 @@ a.toplevel_page_logo_based_menu {
     color: #6c757d; /* Color gris suave */
     margin-top: 5px; /* Espacio entre el nombre y el identificador */
 }
+
+/* Este código CSS se debe añadir en tu plugin o tema */
+.wp-scroll-container {
+    /* Define el ancho máximo del contenedor para que la tabla se desborde */
+    max-width: 100%;
+    
+    /* Esta es la propiedad clave: crea el scroll horizontal automático */
+    overflow-x: auto;
+}

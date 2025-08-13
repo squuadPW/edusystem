@@ -5,8 +5,9 @@ function automatically_enrollment($student_id)
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+    $expected_periods = load_expected_periods($student->expected_graduation_date);
 
-    $expected_projection = load_expected_projection($student->initial_cut, $student->grade_id);
+    $expected_projection = load_expected_projection($student->initial_cut, $student->grade_id, $expected_periods);
     load_automatically_enrollment($expected_projection, $student);
 }
 
@@ -17,13 +18,19 @@ function next_enrollment($student_id)
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+    $expected_periods = load_expected_periods($student->expected_graduation_date);
 
-    $expected_projection = load_expected_projection($student->initial_cut, $student->grade_id);
+    $expected_projection = load_expected_projection($student->initial_cut, $student->grade_id, $expected_periods);
     $next = load_next_enrollment($expected_projection, $student);
     return $next;
 }
 
-function load_expected_projection($initial_cut, $grade)
+function load_expected_periods($expected_graduation_date) {
+    
+    return [];
+}
+
+function load_expected_projection($initial_cut, $grade, $expected_periods)
 {
     global $wpdb;
     $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
