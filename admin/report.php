@@ -145,7 +145,10 @@ function show_report_comissions()
             $filter = $_POST['typeFilter'] ?? 'this-month';
             $custom = $_POST['custom'] ?? false;
             $dates = get_dates_search($filter, $custom);
-            
+            $data = get_student_payments_table_data($dates[0], $dates[1]);
+            $payments_data = $data['payments_data'];
+            $alliances_headers = $data['alliances_headers'];
+
             include(plugin_dir_path(__FILE__) . 'templates/report-comissions.php');
         } else if ($_GET['section_tab'] == 'new_registrations') {
             $list_comissions = new TT_Non_Enrolled_List_Table;
@@ -503,6 +506,99 @@ function get_orders($start, $end)
         'cuotes' => $cuotes_array,
         'expenses' => $expenses_array,
         'orders' => $data_fees,
+    ];
+}
+
+function get_student_payments_table_data($start, $end)
+{
+    global $wpdb;
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+    $table_students = $wpdb->prefix . 'students';
+    $table_institutes = $wpdb->prefix . 'institutes';
+    $table_alliances = $wpdb->prefix . 'alliances';
+    $table_programs = $wpdb->prefix . 'programs'; // Nueva tabla
+    $table_grades = $wpdb->prefix . 'grades';     // Nueva tabla
+
+    $query = $wpdb->prepare("
+        SELECT
+            p.id,
+            p.amount,
+            p.date_payment,
+            p.alliances,
+            p.total_amount,
+            -- Combinamos los campos de nombre en el orden solicitado
+            CONCAT_WS(' ', s.last_name, s.middle_last_name, s.name, s.middle_name) AS student_name,
+            s.country,
+            i.name AS institute_name,
+            pr.name AS program_name,  -- Obtenemos el nombre del programa directamente
+            g.name AS grade_name     -- Obtenemos el nombre del grado directamente
+        FROM
+            {$table_student_payments} p
+        INNER JOIN
+            {$table_students} s ON p.student_id = s.id
+        LEFT JOIN
+            {$table_institutes} i ON p.institute_id = i.id
+        LEFT JOIN
+            {$table_programs} pr ON s.program_id = pr.identificator  -- Unión con la tabla de programas
+        LEFT JOIN
+            {$table_grades} g ON s.grade_id = g.id      -- Unión con la tabla de grados
+        WHERE
+            p.status_id = 1
+            AND p.date_payment BETWEEN %s AND %s
+        ORDER BY
+            p.date_payment DESC
+    ", $start, $end);
+
+    $raw_payments = $wpdb->get_results($query);
+
+    if (empty($raw_payments)) {
+        return ['payments_data' => [], 'alliances_headers' => []];
+    }
+
+    $payments_data = [];
+    $alliances_headers = [];
+    $seen_alliance_ids = [];
+
+    foreach ($raw_payments as $payment) {
+        $payment_row = new stdClass();
+        $payment_row->student_name = $payment->student_name;
+        $payment_row->institute_name = $payment->institute_name;
+        $payment_row->country = $payment->country;
+        $payment_row->program = $payment->program_name; // Asignamos el nombre del programa directamente
+        $payment_row->grade = $payment->grade_name;    // Asignamos el nombre del grado directamente
+        $payment_row->total_amount = $payment->total_amount;
+        $payment_row->payment_date = $payment->date_payment;
+        $payment_row->alliances_fees = new stdClass();
+
+        $payment_alliances = json_decode($payment->alliances);
+
+        if (is_array($payment_alliances)) {
+            foreach ($payment_alliances as $alliance) {
+                $fee = (isset($alliance->calculated_fee_amount)) ? $alliance->calculated_fee_amount : 0;
+                $payment_row->alliances_fees->{"alliance_" . $alliance->id} = $fee;
+
+                if (!in_array($alliance->id, $seen_alliance_ids)) {
+                    $seen_alliance_ids[] = $alliance->id;
+                }
+            }
+        }
+
+        $payments_data[] = $payment_row;
+    }
+
+    if (!empty($seen_alliance_ids)) {
+        $ids_string = implode(',', array_map('esc_sql', $seen_alliance_ids));
+        $alliances_query = "SELECT id, name FROM {$table_alliances} WHERE id IN ($ids_string)";
+        $alliances_results = $wpdb->get_results($alliances_query);
+
+        foreach ($alliances_results as $alliance) {
+            $alliances_headers[$alliance->id] = $alliance->name;
+        }
+    }
+
+    return [
+        'payments_data' => $payments_data,
+        'alliances_headers' => $alliances_headers
     ];
 }
 

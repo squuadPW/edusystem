@@ -68,7 +68,7 @@
 					<?php } else { ?>
 						<input type="text" value="<?= $start_date; ?>" id="inputStartDate"
 							style="display: <?= $_POST['typeFilter'] == 'custom' ? 'unset' : 'none' ?>;width:200px;"
-							name="custom"  value="<?= $_POST['custom'] ?? '' ?>">
+							name="custom" value="<?= $_POST['custom'] ?? '' ?>">
 					<?php } ?>
 					<?php if (wp_is_mobile()): ?>
 						<button type="submit"
@@ -105,14 +105,15 @@
 				<table class="wp-list-table widefat striped">
 					<thead>
 						<tr>
-							<th scope="col" id="program" class="manage-column column-title column-primary sortable asc">
+							<th scope="col" id="student_name"
+								class="manage-column column-title column-primary sortable asc">
+								<?= __('Nombre del alumno', 'edusystem') ?>
+							</th>
+							<th scope="col" id="program" class="manage-column column-title sortable asc">
 								<?= __('Program', 'edusystem') ?>
 							</th>
 							<th scope="col" id="institution" class="manage-column column-title sortable asc">
 								<?= __('Name of the educational institution', 'edusystem') ?>
-							</th>
-							<th scope="col" id="student_name" class="manage-column column-title sortable asc">
-								<?= __('Nombre del alumno', 'edusystem') ?>
 							</th>
 							<th scope="col" id="student_grade" class="manage-column column-title sortable asc">
 								<?= __('Grado del estudiante', 'edusystem') ?>
@@ -141,10 +142,8 @@
 							<th scope="col" id="income_account" class="manage-column column-title sortable asc">
 								<?= __('Income account', 'edusystem') ?>
 							</th>
-							<?php for ($i = 0; $i < 5; $i++) { ?>
-								<th scope="col" id="test<?= $i ?>" class="manage-column column-title sortable asc">
-									<?= __('test', 'edusystem') . $i ?>
-								</th>
+							<?php foreach ($alliances_headers as $id => $name) { ?>
+								<th scope="col" id="alliance_<?= $id ?>"><?= $name ?></th>
 							<?php } ?>
 							<th scope="col" id="observations" class="manage-column column-title sortable asc">
 								<?= __('Administrative observations', 'edusystem') ?>
@@ -152,58 +151,61 @@
 						</tr>
 					</thead>
 					<tbody id="the-list">
-						<tr id="post-1"
-							class="iedit author-self level-0 post-1 type-post status-publish has-post-thumbnail hentry">
-							<td class="title column-title has-row-actions column-primary"
-								data-colname="<?= __('Program', 'edusystem') ?>">
-								...
-								<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
-							</td>
-							<td class="title column-title"
-								data-colname="<?= __('Name of the educational institution', 'edusystem') ?>">
-								...
-							</td>
-							<td class="title column-title" data-colname="<?= __('Nombre del alumno', 'edusystem') ?>">
-								...
-							</td>
-							<td class="title column-title" data-colname="<?= __('Grado del estudiante', 'edusystem') ?>">
-								...
-							</td>
-							<td class="title column-title" data-colname="<?= __('Territory', 'edusystem') ?>">
-								...
-							</td>
-							<td class="title column-title"
-								data-colname="<?= __('Name of the partner/vendor', 'edusystem') ?>">
-								...
-							</td>
-							<td class="title column-title" data-colname="<?= __('Payment type', 'edusystem') ?>">
-								...
-							</td>
-							<td class="title column-title" data-colname="<?= __('Initial fee USD', 'edusystem') ?>">
-								...
-							</td>
-							<td class="title column-title" data-colname="<?= __('Tuition amount paid USD', 'edusystem') ?>">
-								...
-							</td>
-							<td class="title column-title" data-colname="<?= __('Total amount paid USD', 'edusystem') ?>">
-								...
-							</td>
-							<td class="title column-title" data-colname="<?= __('Payment date', 'edusystem') ?>">
-								...
-							</td>
-							<td class="title column-title" data-colname="<?= __('Income account', 'edusystem') ?>">
-								...
-							</td>
-							<?php for ($i = 0; $i < 5; $i++) { ?>
-								<td class="title column-title" data-colname="<?= __('test', 'edusystem') . $i ?>">
+						<?php foreach ($payments_data as $key => $student) { ?>
+							<tr id="post-<?= $key ?>"
+								class="iedit author-self post-<?= $key ?> post-<?= $key ?> type-post status-publish has-post-thumbnail hentry">
+								<td class="title column-title title column-title has-row-actions column-primary"
+									data-colname="<?= __('Nombre del alumno', 'edusystem') ?>">
+									<?= $student->student_name ?>
+									<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
+								</td>
+								<td class="title column-title has-row-actions column-primary"
+									data-colname="<?= __('Program', 'edusystem') ?>">
+									<?= $student->program ?>
+								</td>
+								<td class="title column-title"
+									data-colname="<?= __('Name of the educational institution', 'edusystem') ?>">
+									<?= $student->institute_name ?>
+								</td>
+								<td class="title column-title" data-colname="<?= __('Grado del estudiante', 'edusystem') ?>">
+									<?= $student->grade ?>
+								</td>
+								<td class="title column-title" data-colname="<?= __('Territory', 'edusystem') ?>">
+									<?= $student->country ?>
+								</td>
+								<td class="title column-title"
+									data-colname="<?= __('Name of the partner/vendor', 'edusystem') ?>">
 									...
 								</td>
-							<?php } ?>
-							<td class="title column-title"
-								data-colname="<?= __('Administrative observations', 'edusystem') ?>">
-								...
-							</td>
-						</tr>
+								<td class="title column-title" data-colname="<?= __('Payment type', 'edusystem') ?>">
+									...
+								</td>
+								<td class="title column-title" data-colname="<?= __('Initial fee USD', 'edusystem') ?>">
+									...
+								</td>
+								<td class="title column-title" data-colname="<?= __('Tuition amount paid USD', 'edusystem') ?>">
+									...
+								</td>
+								<td class="title column-title" data-colname="<?= __('Total amount paid USD', 'edusystem') ?>">
+									...
+								</td>
+								<td class="title column-title" data-colname="<?= __('Payment date', 'edusystem') ?>">
+									...
+								</td>
+								<td class="title column-title" data-colname="<?= __('Income account', 'edusystem') ?>">
+									...
+								</td>
+								<?php foreach ($alliances_headers as $id => $name) { ?>
+									<td>
+										<?= isset($payment->alliances_fees->{"alliance_" . $id}) ? $payment->alliances_fees->{"alliance_" . $id} : '0.00' ?>
+									</td>
+								<?php } ?>
+								<td class="title column-title"
+									data-colname="<?= __('Administrative observations', 'edusystem') ?>">
+									...
+								</td>
+							</tr>
+						<?php } ?>
 					</tbody>
 					<tfoot>
 					</tfoot>
