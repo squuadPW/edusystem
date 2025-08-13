@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * 
      * @return {void} No retorna ningún valor.
      */
-    document.querySelectorAll('.modal-close').forEach((close) => {
+    document.querySelectorAll('.modal-close').forEach( (close) => {
         close.addEventListener('click',(e) => {
 
             modal_delete_quota_rule = document.getElementById('modalDeleteQuotaRule');
@@ -172,6 +172,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+
+//  no esta terminado necesita un remplazo
+function inputs_price_sale( input, id_input_regular ) {
+
+    input_regular = document.getElementById(id_input_regular);
+    if( !input_regular ) return;
+
+    const price_regular = parseFloat( input_regular.value );
+    const price_sale = parseFloat( input.value );
+    
+    // Ajusta el valor mínimo del input de "sale"
+    input.min = price_regular ?? 0;
+            
+    // Verificamos si ambos valores son números válidos
+    if ( isNaN(price_regular) || isNaN(price_sale) ) {
+        mensaje_error.style.display = 'none';
+        return;
+    }
+            
+    // Validamos la condición
+    const mensaje_error = input.parentElement.querySelector('.text-danger.price-alert'); // Selecciona el mensaje de error
+    if (  mensaje_error && ( price_sale < price_regular ) ) {
+        mensaje_error.style.display = 'block';
+    } else if( mensaje_error ) {
+        mensaje_error.style.display = 'none';
+    }
+
+}
+
+
 // Función para actualizar las posiciones de las reglas
 function update_positions_rule() {
     const rules = document.querySelectorAll(' #rules .rule');
@@ -182,7 +212,6 @@ function update_positions_rule() {
         }
     });
 }
-
 
 /**
  * Abre el modal para eliminar una regla de cuota.

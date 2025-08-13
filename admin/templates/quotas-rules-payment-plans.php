@@ -96,6 +96,7 @@
                                                                 <span class="text-danger">*</span>
                                                             </label>
                                                             <input type="number" name="rules[<?= $i ?>][initial_payment_sale]" value="<?= $rule['initial_payment_sale'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
+                                                            <span class="text-danger" style="display:none" ><?= __('The price has to be lower than the regular price','edusysteml') ?></span>
                                                         </div>
 
                                                     </div>
