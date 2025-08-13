@@ -1336,6 +1336,18 @@ h2 {
   flex-wrap: wrap;
   gap: 10px;
 }
+@media (max-width: 520px) {
+  .container-programs #subprograms-container #subprograms .subprogram .group-input {
+    gap: 0px;
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+  .container-programs #subprograms-container #subprograms .subprogram .group-input .active {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0px;
+  }
+}
 .container-programs #subprograms-container #subprograms .subprogram .group-input .space-offer {
   flex: 1;
   font-weight: 400;
@@ -1400,6 +1412,16 @@ h2 {
 #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer {
   flex: 1;
   font-weight: 400;
+}
+@media (max-width: 520px) {
+  #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer {
+    min-width: 100% !important;
+  }
+  #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer.active {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0px;
+  }
 }
 #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer:has(input[type=checkbox]) {
   max-width: -moz-max-content;
@@ -1519,4 +1541,33 @@ a.toplevel_page_logo_based_menu {
   max-width: 100%; /* Asegura que la imagen no se desborde */
   height: auto; /* Mantiene la proporción de la imagen */
   display: block; /* Elimina espacio extra debajo de la imagen */
+}
+
+.career-item {
+  list-style: none;
+  margin-bottom: 15px; /* Espacio entre cada carrera */
+  padding-left: 0; /* Elimina la sangría de la lista */
+  text-align: left; /* Centra el contenido */
+}
+
+.career-name {
+  font-size: 1.2em; /* Hace el nombre más grande */
+  font-weight: bold;
+  margin: 0; /* Elimina márgenes por defecto */
+}
+
+.career-id {
+  display: block; /* Pone el identificador en una nueva línea */
+  font-size: 0.9em; /* Hace el identificador más pequeño */
+  color: #6c757d; /* Color gris suave */
+  margin-top: 5px; /* Espacio entre el nombre y el identificador */
+}
+
+/* Este código CSS se debe añadir en tu plugin o tema */
+.wp-scroll-container {
+  /* Define el ancho máximo del contenedor para que la tabla se desborde */
+  max-width: 100%;
+  /* Esta es la propiedad clave: crea el scroll horizontal automático */
+  overflow-x: auto;
+  margin-top: 20px;
 }/*# sourceMappingURL=style.css.map */

@@ -142,8 +142,10 @@ function show_report_comissions()
 
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         if ($_GET['section_tab'] == 'college_allies_comissions') {
-            $list_comissions = new TT_Pending_Elective_List_Table;
-            $list_comissions->prepare_items();
+            $filter = $_POST['typeFilter'] ?? 'this-month';
+            $custom = $_POST['custom'] ?? false;
+            $dates = get_dates_search($filter, $custom);
+            
             include(plugin_dir_path(__FILE__) . 'templates/report-comissions.php');
         } else if ($_GET['section_tab'] == 'new_registrations') {
             $list_comissions = new TT_Non_Enrolled_List_Table;
