@@ -646,7 +646,7 @@ function get_student_payments_table_data($start, $end)
         $payment_row->partner = implode(', ', $partner_names);
 
         // Payment type
-        $payment_row->payment_type = ($payment->cuote > 0 && $payment->variation_id > 0) ? 'A crédito' : 'De contado';
+        $payment_row->payment_type = ($payment->cuote > 0 && $payment->variation_id > 0) ? __('Credit', 'edusystem') : __('Complete', 'edusystem');
 
         // Initial fee USD
         $payment_row->initial_fee_usd = isset($initial_fee_amounts[$payment->student_id]) ? $initial_fee_amounts[$payment->student_id]->total_fee : '0.00';
