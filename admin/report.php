@@ -534,7 +534,8 @@ function get_new_student_payments_table_data($start, $end)
         JOIN {$table_students} AS s ON p.student_id = s.id
         LEFT JOIN {$table_programs} AS pr ON s.program_id = pr.identificator
         LEFT JOIN {$table_grades} AS g ON s.grade_id = g.id
-        WHERE p.created_at BETWEEN %s AND %s
+        WHERE p.date_payment BETWEEN %s AND %s
+        AND p.cuote = 1
         ORDER BY s.last_name, s.middle_last_name, s.name, s.middle_name",
         $start,
         $end
