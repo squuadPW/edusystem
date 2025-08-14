@@ -2996,7 +2996,7 @@ function loadFeesSplit() {
     if ( is_user_logged_in() ) {
         $current_user_id = get_current_user_id();
         $orders = wc_get_orders( array(
-            'status'      => 'wc-split-payment', // Asumiendo que 'wc-split-payment' es un estado de pedido personalizado.
+            'status'      => array('wc-split-payment', 'wc-pending'), // Array con múltiples estados.
             'customer_id' => $current_user_id,
             'limit'       => 1,
             'orderby'     => 'date',
