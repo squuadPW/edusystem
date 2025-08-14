@@ -507,48 +507,94 @@ document.addEventListener("DOMContentLoaded", function () {
   );
   if (export_excel_summary_comissions) {
     export_excel_summary_comissions.addEventListener("click", () => {
-      // Selecciona la tabla por su ID
+      // Obtiene el nombre del archivo del input o usa uno por defecto
+      const name =
+        document.querySelector("input[name=name_document]").value ||
+        "Reporte de Comisiones";
+      const wb = XLSX.utils.book_new();
+
+      // --- Lógica para la Hoja 1: Resumen de Comisiones (Summary of commissions) ---
+      // (Tu código original para data_summary)
       const tables = document.querySelectorAll(".wp-list-table");
-      const name = document.querySelector("input[name=name_document]").value;
       const data_summary = [];
 
       data_summary.push(["Commissions payable to schools"]);
       data_summary.push(["Institute", "Amount USD"]);
 
-      tables.forEach((table, index) => {
+      tables.forEach((table) => {
         for (let i = 1; i < table.rows.length - 1; i++) {
-          // <-- MODIFICACIÓN CLAVE AQUÍ: i = 1
           const rowData = [];
           const row = table.rows[i];
-
           for (let j = 0; j < row.cells.length; j++) {
             let cellText = row.cells[j].textContent.trim();
             cellText = cellText.replace(/Show more details/g, "");
             rowData.push(cellText);
           }
-
           data_summary.push(rowData);
-        }
-
-        if (index + 1 < tables.length) {
-          data_summary.push([]);
-          data_summary.push(["Allied comissions"]);
-          data_summary.push(["Alliance", "Amount USD"]);
         }
       });
 
-      const wb = XLSX.utils.book_new();
-
+      // Agregar la hoja de resumen al libro de trabajo
       const ws_summary = XLSX.utils.aoa_to_sheet(data_summary);
       XLSX.utils.book_append_sheet(wb, ws_summary, "Summary of commissions");
 
-      const ws_comissions = XLSX.utils.aoa_to_sheet([]);
-      XLSX.utils.book_append_sheet(wb, ws_comissions, "College commissions & allies");
+      // --- Lógica para la Hoja 2: Comisiones de Aliados (Commissions allies) ---
+      // El código que te propuse en la respuesta anterior, ya optimizado
+      const table_comissions_allies = document.getElementById(
+        "table_comissions_allies"
+      );
+      const data_comissions_allies = [];
 
+      if (table_comissions_allies) {
+        // Captura de encabezados
+        const headers = Array.from(
+          table_comissions_allies.querySelectorAll("thead th")
+        ).map((th) => {
+          let headerText = th.textContent.trim();
+          headerText = headerText
+            .replace("Alliance commission amount /", "")
+            .trim();
+          return headerText;
+        });
+        data_comissions_allies.push(headers);
+
+        // Captura de datos del cuerpo
+        const rows = table_comissions_allies.querySelectorAll("tbody tr");
+        rows.forEach((row) => {
+          const rowData = [];
+          const cells = row.querySelectorAll("td");
+          cells.forEach((cell) => {
+            let cellText = cell.textContent.trim();
+            cellText = cellText.replace("Show more details", "").trim();
+            rowData.push(cellText);
+          });
+          data_comissions_allies.push(rowData);
+        });
+
+        // Captura de totales del pie de tabla
+        const footerRows = table_comissions_allies.querySelectorAll("tfoot tr");
+        footerRows.forEach((row) => {
+          const rowData = [];
+          const cells = row.querySelectorAll("th, td");
+          cells.forEach((cell) => {
+            let cellText = cell.textContent.trim();
+            cellText = cellText.replace("Total:", "").trim();
+            rowData.push(cellText);
+          });
+          data_comissions_allies.push(rowData);
+        });
+      }
+
+      // Agregar la hoja de comisiones de aliados al libro de trabajo
+      const ws_comissions = XLSX.utils.aoa_to_sheet(data_comissions_allies);
+      XLSX.utils.book_append_sheet(wb, ws_comissions, "Commissions allies");
+
+      // --- Lógica para la Hoja 3: Nuevas Registraciones (New registrations) ---
       const ws_registration = XLSX.utils.aoa_to_sheet([]);
       XLSX.utils.book_append_sheet(wb, ws_registration, "New registrations");
 
-      XLSX.writeFile(wb, name);
+      // --- Exportar el archivo final ---
+      XLSX.writeFile(wb, `${name}.xlsx`);
     });
   }
 });

@@ -102,7 +102,7 @@
 
 		<?php if (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'college_allies_comissions') { ?>
 			<div class="wp-scroll-container">
-				<table class="wp-list-table widefat striped">
+				<table class="wp-list-table widefat striped" id="table_comissions_allies">
 					<thead>
 						<tr>
 							<th scope="col" id="student_name"
