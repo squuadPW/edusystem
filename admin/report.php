@@ -525,7 +525,7 @@ function get_new_student_payments_table_data($start, $end)
     $sql = $wpdb->prepare(
         "SELECT 
             -- 1. Selecciona columnas explícitas en lugar de p.*
-            p.id AS payment_id, p.amount, p.payment_date, p.cuote, 
+            p.id AS payment_id, p.amount, p.date_payment, p.cuote, 
             
             -- Columnas de otras tablas
             CONCAT_WS(' ', s.last_name, s.middle_last_name, s.name, s.middle_name) AS student_name_full,
