@@ -515,22 +515,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // --- Lógica para la Hoja 1: Resumen de Comisiones (Summary of commissions) ---
       // (Tu código original para data_summary)
-      const tables = document.querySelectorAll(".wp-list-table");
+      const tables = document.querySelectorAll(".wp-list-table:not(#table_comissions_allies)");
       const data_summary = [];
 
       data_summary.push(["Commissions payable to schools"]);
       data_summary.push(["Institute", "Amount USD"]);
 
-      tables.forEach((table) => {
+      tables.forEach((table, i) => {
+        
         for (let i = 1; i < table.rows.length - 1; i++) {
           const rowData = [];
           const row = table.rows[i];
           for (let j = 0; j < row.cells.length; j++) {
             let cellText = row.cells[j].textContent.trim();
-            cellText = cellText.replace(/Show more details/g, "");
+            
+            // Reemplaza "Show more details" O "Mostrar más detalles"
+            cellText = cellText.replace(/Show more details|Mostrar más detalles/g, "");
+            
             rowData.push(cellText);
           }
           data_summary.push(rowData);
+        }
+
+        if (i < (tables.length - 1)) {
+          data_summary.push([]);
+          data_summary.push(["Allied comissions"]);
+          data_summary.push(["Alliance", "Amount USD"]);
         }
       });
 
@@ -565,7 +575,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const cells = row.querySelectorAll("td");
           cells.forEach((cell) => {
             let cellText = cell.textContent.trim();
-            cellText = cellText.replace("Show more details", "").trim();
+            cellText = cellText.replace(/Show more details|Mostrar más detalles/g, "");
             rowData.push(cellText);
           });
           data_comissions_allies.push(rowData);
