@@ -822,6 +822,7 @@ function add_admin_form_payments_content()
             if (!empty($program_id)) {
 
                 $wpdb->update($table_programs, [
+                    'identificator' => $identificator,
                     'name' => $name,
                     'description' => $description,
                     'total_price' => $total_price,
@@ -1274,6 +1275,7 @@ function add_admin_form_payments_content()
             global $wpdb;
             $program_id = $_GET['program_id'];
             $program = get_program_details($program_id);
+            // $programs = get_student_programs();
             include(plugin_dir_path(__FILE__) . 'templates/payment-plans-details.php');
         } else if ($_GET['section_tab'] == 'quotas_rules_programs') {
             global $wpdb;
@@ -2330,7 +2332,7 @@ class TT_All_Payment_Plans_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'program' => __('Program', 'edusystem'),
+            // 'program' => __('Program', 'edusystem'),
             'name' => __('Name', 'edusystem'),
             'status' => __('Status', 'edusystem'),
             'price' => __('Price', 'edusystem'),
@@ -2359,10 +2361,10 @@ class TT_All_Payment_Plans_List_Table extends WP_List_Table
 
         if ($programs) {
             foreach ($programs as $pensum) {
-                $program = get_program_details_by_identificator($pensum['program_identificator']);
+                // $program = get_student_program_details_by_identificator($pensum['identificator']);
                 array_push($programs_array, [
                     'id' => $pensum['id'],
-                    'program' => $program->name,
+                    // 'program' => $program->name ?? 'N/A',
                     'status' => $pensum['is_active'] ? 'Active' : 'Inactive',
                     'name' => $pensum['name'],
                     'price' => $pensum['total_price'],

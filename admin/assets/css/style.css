@@ -1293,6 +1293,37 @@ h2 {
   padding: 10px 20px !important;
 }
 
+.seccion-input .seccion-title {
+  color: #000;
+}
+.seccion-input .group-input {
+  margin: 0px 5px;
+}
+.seccion-input .space-offer {
+  margin-top: 0px;
+}
+
+.group-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.space-offer {
+  flex: 1;
+  font-weight: 400;
+}
+@media (max-width: 520px) {
+  .space-offer {
+    min-width: 100% !important;
+  }
+  .space-offer.active {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0px;
+  }
+}
+
 .container-programs .container-button {
   display: flex;
   flex-direction: row;
@@ -1404,34 +1435,6 @@ h2 {
 #quota-rules-programs .quotas_rules #rules .rule#template-quota-rule {
   display: none;
 }
-#quota-rules-programs .quotas_rules #rules .rule .seccion-input .seccion-title {
-  color: #000;
-}
-#quota-rules-programs .quotas_rules #rules .rule .seccion-input .group-input {
-  margin: 0px 5px;
-}
-#quota-rules-programs .quotas_rules #rules .rule .seccion-input .space-offer {
-  margin-top: 0px;
-}
-#quota-rules-programs .quotas_rules #rules .rule .group-input {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer {
-  flex: 1;
-  font-weight: 400;
-}
-@media (max-width: 520px) {
-  #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer {
-    min-width: 100% !important;
-  }
-  #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer.active {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 0px;
-  }
-}
 #quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer:has(input[type=checkbox]) {
   max-width: -moz-max-content;
   max-width: max-content;
@@ -1453,26 +1456,9 @@ h2 {
   text-align: center;
   border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
 }
-#admission_fees .fees_body .group-input {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
 #admission_fees .fees_body .space-offer {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  font-weight: 400;
-}
-@media (max-width: 520px) {
-  #admission_fees .fees_body .space-offer {
-    min-width: 100% !important;
-  }
-  #admission_fees .fees_body .space-offer.active {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 0px;
-  }
 }
 #admission_fees .fees_body .space-offer.active {
   max-width: 100%;
@@ -1486,6 +1472,51 @@ h2 {
 }
 #admission_fees .fees_body .space-offer select {
   max-width: 100%;
+}
+
+#period-cuts-container #cuts {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  padding: 10px 0px;
+}
+#period-cuts-container #cuts .container-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+#period-cuts-container #cuts .cut {
+  margin: 7px 0px;
+  border: 1px solid rgba(128, 128, 128, 0.3607843137);
+  border-radius: 5px;
+  padding: 5px 15px;
+  position: relative;
+}
+#period-cuts-container #cuts .cut .id {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  padding: 0px 15px;
+  background-color: #ccc;
+  border-radius: 0px 0px 0px 5px;
+  font-size: 12px;
+}
+#period-cuts-container #cuts .cut#template-cut {
+  display: none;
+}
+#period-cuts-container #cuts .cut .group-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+@media (max-width: 520px) {
+  #period-cuts-container #cuts .cut .group-input {
+    gap: 0px;
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
 }
 
 #toplevel_page_logo_based_menu {
@@ -1594,4 +1625,32 @@ a.toplevel_page_logo_based_menu {
   max-width: 100%; /* Asegura que la imagen no se desborde */
   height: auto; /* Mantiene la proporción de la imagen */
   display: block; /* Elimina espacio extra debajo de la imagen */
+}
+
+.career-item {
+  list-style: none;
+  margin-bottom: 15px; /* Espacio entre cada carrera */
+  padding-left: 0; /* Elimina la sangría de la lista */
+  text-align: left; /* Centra el contenido */
+}
+
+.career-name {
+  font-size: 1.2em; /* Hace el nombre más grande */
+  font-weight: bold;
+  margin: 0; /* Elimina márgenes por defecto */
+}
+
+.career-id {
+  display: block; /* Pone el identificador en una nueva línea */
+  font-size: 0.9em; /* Hace el identificador más pequeño */
+  color: #6c757d; /* Color gris suave */
+  margin-top: 5px; /* Espacio entre el nombre y el identificador */
+}
+
+/* Este código CSS se debe añadir en tu plugin o tema */
+.wp-scroll-container {
+  /* Define el ancho máximo del contenedor para que la tabla se desborde */
+  max-width: 100%;
+  /* Esta es la propiedad clave: crea el scroll horizontal automático */
+  overflow-x: auto;
 }/*# sourceMappingURL=style.css.map */

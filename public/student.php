@@ -60,10 +60,13 @@ function save_essential_data_order($order) {
         ],
         "program" => [
             "program_id" => $_COOKIE['program_id'] ?? null,
-            "program_id_number" => $_COOKIE['program_id_number'] ?? null,
+            "career_id" => $_COOKIE['career_id'] ?? null,
+            "mention_id" => $_COOKIE['mention_id'] ?? null,
+            "plan_id" => $_COOKIE['plan_id'] ?? null,
             "initial_grade" => $_COOKIE['initial_grade'] ?? null,
             "institute_id" => $_COOKIE['institute_id'] ?? null,
-            "name_institute" => $name_institute
+            "name_institute" => $name_institute,
+            "expected_graduation_date" => $_COOKIE['expected_graduation_date'] ?? null
         ],
         "access" => [
             "password" => base64_encode( sanitize_text_field(wp_unslash( $_COOKIE['password'] )) ) ?? null
@@ -117,8 +120,14 @@ function save_student()
         // DATOS EXTRAS
         $country = isset($_POST['country']) ? $_POST['country'] : null;
         $city = isset($_POST['city']) ? strtolower($_POST['city']) : null;
-        $program_id = isset($_POST['program']) ? $_POST['program'] : null;
-        $program = get_identificator_by_id_program($program_id);
+        $program = isset($_POST['program']) ? $_POST['program'] : null;
+        $career = isset($_POST['career']) ? $_POST['career'] : null;
+        $mention = isset($_POST['mention']) ? $_POST['mention'] : null;
+        $plan = isset($_POST['plan']) ? $_POST['plan'] : null;
+        // $plan_data = get_program_details_by_identificator($plan);
+        // $product_id = $plan_data->product_id;
+
+        // $program = get_identificator_by_id_program($program_id);
         $grade = isset($_POST['grade']) && !empty($_POST['grade']) ? $_POST['grade'] : 4;
         $institute_id = isset($_POST['institute_id']) ? $_POST['institute_id'] : null;
         $password = isset($_POST['password']) ? $_POST['password'] : null;
@@ -134,6 +143,7 @@ function save_student()
         $bank_transfer_account = isset($_POST['bank_transfer_account']) ? $_POST['bank_transfer_account'] : false;
         $student_registration_hidden_payments = isset($_POST['hidden_payment_methods']) ? $_POST['hidden_payment_methods'] : false;
         $fixed_fee_inscription = isset($_POST['fixed_fee_inscription']) ? $_POST['fixed_fee_inscription'] : false;
+        $expected_graduation_date = isset($_POST['expected_graduation_date']) ? $_POST['expected_graduation_date'] : null;
 
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
@@ -162,7 +172,10 @@ function save_student()
         setcookie('billing_country', $country, time() + 864000, '/');
         setcookie('initial_grade', $grade, time() + 864000, '/');
         setcookie('program_id', $program, time() + 864000, '/');
-        setcookie('program_id_number', $program_id, time() + 864000, '/');
+        setcookie('career_id', $career, time() + 864000, '/');
+        setcookie('mention_id', $mention, time() + 864000, '/');
+        setcookie('plan_id', $plan, time() + 864000, '/');
+        // setcookie('program_id_number', $program_id, time() + 864000, '/');
         setcookie('phone_student', $number_phone, time() + 864000, '/');
         setcookie('id_document', $id_document, time() + 864000, '/');
         setcookie('document_type', $document_type, time() + 864000, '/');
@@ -180,6 +193,7 @@ function save_student()
         setcookie('bank_transfer_account', $bank_transfer_account, time() + 864000, '/');
         setcookie('student_registration_hidden_payments', $student_registration_hidden_payments, time() + 864000, '/');
         setcookie('fixed_fee_inscription', $fixed_fee_inscription, time() + 864000, '/');
+        setcookie('expected_graduation_date', $expected_graduation_date, time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);
@@ -823,6 +837,7 @@ function insert_student($order)
             'postal_code' => $order->get_billing_postcode(),
             'gender' => $student['gender'],
             'program_id' => $program['program_id'],
+            'expected_graduation_date' => $program['expected_graduation_date'],
             'partner_id' => $customer_id,
             'phone' => $student['phone'],
             'email' => $student['email'],
@@ -837,6 +852,7 @@ function insert_student($order)
     }
 
     $student_id = $wpdb->insert_id;
+    insert_register_program($student_id, $program);
     return $student_id;
 }
 
@@ -901,15 +917,17 @@ function update_elective_student($student_id, $status_id)
  * independientemente de la cantidad de documentos.
  *
  * @param int $student_id ID del estudiante.
- * @param int $program_identificator identificador del programa
  */
-function insert_register_program($student_id, $program_identificator)
+function insert_register_program($student_id, $program_data)
 {
     global $wpdb;
     $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
     $wpdb->insert($table_programs_by_student, [
         'student_id' => $student_id,
-        'program_identificator' => $program_identificator
+        'program_identificator' => $program_data['program_id'],
+        'career_identificator' => $program_data['career_id'],
+        'mention_identificator' => $program_data['mention_id'],
+        'plan_identificator' => $program_data['plan_id'],
     ]);
 }
 
@@ -1042,7 +1060,7 @@ function get_name_program_student($student_id)
     global $wpdb;
 
     $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
-    $table_programs = $wpdb->prefix . 'programs';
+    $table_student_program = $wpdb->prefix . 'student_program';
 
     // Get all program_identificators for the given student_id
     $program_identificators = $wpdb->get_col(
@@ -1067,7 +1085,7 @@ function get_name_program_student($student_id)
     $program_names = $wpdb->get_col(
         $wpdb->prepare(
             "SELECT name FROM %i WHERE identificator IN ($placeholders)",
-            $table_programs,
+            $table_student_program,
             ...$escaped_identificators
         )
     );
@@ -1081,10 +1099,10 @@ function get_name_program($identificator)
 {
 
     global $wpdb;
-    $table_programs = $wpdb->prefix . 'programs';
+    $table_student_program = $wpdb->prefix . 'student_program';
 
     $name = $wpdb->get_var($wpdb->prepare(
-        "SELECT `name` FROM $table_programs WHERE identificator LIKE %s",
+        "SELECT `name` FROM $table_student_program WHERE identificator LIKE %s",
         $identificator
     ));
 

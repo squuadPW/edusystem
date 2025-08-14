@@ -216,7 +216,7 @@ $grades = get_grades();
                                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same email as the student', 'edusystem'); ?></span>
                         </div>
                         <!-- <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-                            <label for="password"><?= __('Password of access', 'edusystem'); ?><span
+                            <label for="password"><?= __('Please establish your password', 'edusystem'); ?><span
                                     class="required">*</span></label>
                             <input class="formdata" type="password" name="password" autocomplete="off" required>
                         </div> -->

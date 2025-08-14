@@ -11,7 +11,7 @@
 
     <div style="display:flex;width:100%;">
         <a class="button button-outline-primary"
-            href="<?= admin_url("/admin.php?page=add_admin_form_student_program_content") ?? $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
+            href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder admin-add-offer container-programs" style="width: 70%">
@@ -43,7 +43,7 @@
                                     <div style="font-weight:400;">
                                         <label for="hc"><b><?= __('Program to which it belongs', 'edusystem'); ?></b></label><br>
                                         <select name="program_identificator" required>
-                                            <option value="AES" selected>Select a program</option>
+                                            <option value="" selected>Select a program</option>
                                             <?php foreach ($programs as $key => $program) { ?>
                                                 <option value="<?= $program->identificator ?>" <?= ($career->program_identificator == $program->identificator) ? 'selected' : ''; ?>><?= $program->name ?></option>
                                             <?php } ?>
@@ -100,6 +100,24 @@
                             <?php endif; ?>
                         </form>
                     </div>
+
+                    <?php if (isset($related_mentions) && count($related_mentions) > 0) { ?>
+                        <div class="inside">
+                            <h3 style="margin-top:20px;margin-bottom:20px;text-align:center; border-bottom: 1px solid #8080805c; padding-bottom: 10px;">
+                                <b><?= __('Related mentions', 'edusystem'); ?></b>
+                            </h3>
+                            <div>
+                                <ul>
+                                    <?php foreach($related_mentions as $key => $mention) { ?>
+                                        <li class="career-item">
+                                            <h4 class="career-name"><?= $mention->name; ?></h4>
+                                            <span class="career-id">ID: <?= $mention->identificator ?></span>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                        </div>
+                    <?php } ?>
                 </div>
             </div>
         </div>

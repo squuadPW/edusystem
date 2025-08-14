@@ -455,3 +455,4 @@ function refresh_wc_cart() {
     }
   });
 })(jQuery);
+

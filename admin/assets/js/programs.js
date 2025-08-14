@@ -302,7 +302,7 @@ function validate_input(input, regex_pattern, convert_to_upper = false, max_leng
     }
 }
 
-        function restrictInput(inputElement, blockedChars = [], message = '') {
+function restrictInput(inputElement, blockedChars = [], message = '') {
             // Prevenir entrada de caracteres no deseados
             inputElement.addEventListener('keydown', function(e) {
                 if (blockedChars.includes(e.key)) {
@@ -327,12 +327,12 @@ function validate_input(input, regex_pattern, convert_to_upper = false, max_leng
                     if (message) alert(message);
                 }
             });
-        }
+}
 
-        const numberInput = document.getElementById('numberInput');
-        if( numberInput ){
-            restrictInput(numberInput, ['-', 'e', 'E'], 'Por favor ingresa solo números positivos sin notación científica.');
-        }
+const numberInput = document.getElementById('numberInput');
+if( numberInput ){
+    restrictInput(numberInput, ['-', 'e', 'E'], 'Por favor ingresa solo números positivos sin notación científica.');
+}
         
  
 

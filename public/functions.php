@@ -20,14 +20,15 @@ function form_plugin_scripts()
     global $wp;
     $version = VERSIONS_JS;
     wp_enqueue_style('dashicons');
-    wp_enqueue_style('admin-flatpickr', plugins_url('edusystem') . '/public/assets/css/flatpickr.min.css');
+    wp_enqueue_style('flatpicker-css', plugins_url('edusystem') . '/public/assets/css/flatpickr.min.css');
     wp_enqueue_style('intel-css', plugins_url('edusystem') . '/public/assets/css/intlTelInput.css');
     wp_enqueue_style('style-public', plugins_url('edusystem') . '/public/assets/css/style.css', array(), $version, 'all');
     wp_enqueue_script('tailwind', 'https://cdn.tailwindcss.com');
-    wp_enqueue_script('admin-flatpickr', plugins_url('edusystem') . '/public/assets/js/flatpickr.js');
+    wp_enqueue_script('flatpickr-js', plugins_url('edusystem') . '/public/assets/js/flatpickr.js');
+    wp_enqueue_script('flatpickr-js-es', plugins_url('edusystem') . '/public/assets/js/flatpickr-es.js');
     wp_enqueue_script('masker-js', plugins_url('edusystem') . '/public/assets/js/vanilla-masker.min.js');
     wp_enqueue_script('intel-js', plugins_url('edusystem') . '/public/assets/js/intlTelInput.min.js');
-    wp_enqueue_script('form-register', plugins_url('edusystem') . '/public/assets/js/form-register.js');
+    wp_enqueue_script('form-register', plugins_url('edusystem') . '/public/assets/js/form-register.js', array('jquery', 'flatpickr-js', 'flatpickr-js-es'));
     wp_enqueue_script('int-tel', plugins_url('edusystem') . '/public/assets/js/int-tel.js');
 
     // PAYMENTS PARTS
@@ -48,6 +49,20 @@ function form_plugin_scripts()
         'ajax_object',
         array(
             'ajax_url' => admin_url('admin-ajax.php')
+        )
+    );
+    wp_localize_script(
+        'form-register',
+        'formRegisterStrings', // Nombre de la variable JavaScript
+        array(
+            'passwordsDontMatch' => __('Passwords do not match', 'edusystem'),
+            'networkFailed' => __('The network response was unsuccessful', 'edusystem'),
+            'noScholarship' => __('No scholarship assigned or already signed', 'edusystem'),
+            'scholarhip' => __('We have found that you have the following scholarship assigned to you:', 'edusystem'),
+            'maxAge' => __('The maximum age is', 'edusystem'),
+            'yearsOld' => __('years old', 'edusystem'),
+            'titleAccessStudent' => __('Platform access data of student', 'edusystem'),
+            'titleAccessParent' => __('Platform access data of parent', 'edusystem')
         )
     );
     wp_enqueue_script('form-register');
@@ -175,8 +190,15 @@ function form_asp_psp($atts)
             'hidden_payment_methods' => '',
             'fixed_fee_inscription' => false,
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
-            'limit_age' => 21
+            'limit_age' => 21,
+            'program' => '',
+            'career' => '',
+            'mention' => '',
+            'plan' => '',
+            'birth_date_position' => 'UP',
+            'title' => '',
         ),
         $atts,
         'form_asp_psp'
@@ -191,14 +213,21 @@ function form_asp_psp($atts)
     $bank_transfer_account = $atts['bank_transfer_account'];
     $hidden_payment_methods = $atts['hidden_payment_methods'];
     $styles_shortcode = $atts['styles_shortcode'];
+    $styles_title_shortcode = $atts['styles_title_shortcode'];
     $fixed_fee_inscription = $atts['fixed_fee_inscription'];
     $max_age = $atts['max_age'];
     $limit_age = $atts['limit_age'];
+    $program = $atts['program'];
+    $career = $atts['career'];
+    $mention = $atts['mention'];
+    $plan = $atts['plan'];
+    $birth_date_position = $atts['birth_date_position'];
+    $title = $atts['title'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
     $grades = get_grades();
-    $programs = get_programs();
+    $programs = get_student_program();
     add_action('wp_footer', 'modal_continue_checkout');
     include(plugin_dir_path(__FILE__) . 'templates/asp-psp-registration.php');
 }
@@ -220,8 +249,15 @@ function student_registration_form($atts)
             'hidden_payment_methods' => '',
             'fixed_fee_inscription' => false,
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
-            'limit_age' => 21
+            'limit_age' => 21,
+            'program' => '',
+            'career' => '',
+            'mention' => '',
+            'plan' => '',
+            'birth_date_position' => 'UP',
+            'title' => '',
         ),
         $atts,
         'student_registration_form'
@@ -236,14 +272,23 @@ function student_registration_form($atts)
     $bank_transfer_account = $atts['bank_transfer_account'];
     $hidden_payment_methods = $atts['hidden_payment_methods'];
     $styles_shortcode = $atts['styles_shortcode'];
+    $styles_title_shortcode = $atts['styles_title_shortcode'];
     $fixed_fee_inscription = $atts['fixed_fee_inscription'];
     $max_age = $atts['max_age'];
     $limit_age = $atts['limit_age'];
-
+    $program = $atts['program'];
+    $career = $atts['career'];
+    $mention = $atts['mention'];
+    $plan = $atts['plan'];
+    $birth_date_position = $atts['birth_date_position'];
+    $title = $atts['title'];
+    
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
     $grades = get_grades();
-    $programs = get_programs();
+    $programs = get_student_program();
+    $careers = [];
+    $mentions = [];
 
     add_action('wp_footer', 'modal_continue_checkout');
     include(plugin_dir_path(__FILE__) . 'templates/student-registration-form-structure.php');
@@ -350,7 +395,7 @@ function one_time_payment()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
-    $programs = get_programs();
+    $programs = get_student_program();
     include(plugin_dir_path(__FILE__) . 'templates/one-time-payment-registration.php');
 }
 
@@ -359,7 +404,7 @@ add_shortcode('one_time_payment', 'one_time_payment');
 function custom_registration_pay()
 {
     $grades = get_grades();
-    $programs = get_programs();
+    $programs = get_student_program();
     include(plugin_dir_path(__FILE__) . 'templates/custom-registration-pay.php');
 }
 
@@ -370,7 +415,7 @@ function form_scholarship_application()
     $countries = get_countries();
     $institutes = get_list_institutes_active();
     $grades = get_grades();
-    $programs = get_programs();
+    $programs = get_student_program();
     include(plugin_dir_path(__FILE__) . 'templates/scholarship-application.php');
 }
 
@@ -570,7 +615,7 @@ function change_billing_phone_checkout_field_value($order)
 {
 
     if ($_POST['aes_split_payment'] == 'on' && (!$_POST['aes_amount_split'] || $_POST['aes_amount_split'] == 0)) {
-        wc_add_notice(__('You must specify a split payment amount', 'woocommerce'), 'error');
+        wc_add_notice(__('You must specify a split payment amount', 'edusystem'), 'error');
         exit; // o exit; si deseas detener la ejecución del código
     }
 
@@ -636,30 +681,31 @@ function remove_my_account_links($menu_links)
     // Lógica para roles "parent" y "student"
     if (in_array('parent', $roles) || in_array('student', $roles)) {
 
+
+        $menu_links['student'] = __('Student Information', 'edusystem');
+
         if (MODE != 'UNI') {
-            // Agregar "Student Information"
-            $menu_links['student'] = __('Student Information', 'edusystem');
 
             // Agregar "Califications"
             $menu_links['califications'] = __('Califications', 'edusystem');
+        }
 
-            if (in_array('parent', $roles)) {
-                if (get_user_meta($user_id, 'status_register', true) == 1) {
-                    $menu_links['student-documents'] = __('Documents', 'edusystem');
-                }
+        if (in_array('parent', $roles)) {
+            if (get_user_meta($user_id, 'status_register', true) == 1) {
+                $menu_links['student-documents'] = __('Documents', 'edusystem');
             }
+        }
 
-            if (in_array('student', $roles)) {
-                $student_id = get_user_meta($user_id, 'student_id', true);
-                $student = get_student_detail($student_id);
-                if (get_user_meta($student->partner_id, 'status_register', true) == 1) {
-                    $menu_links['student-documents'] = __('Documents', 'edusystem');
-                }
+        if (in_array('student', $roles)) {
+            $student_id = get_user_meta($user_id, 'student_id', true);
+            $student = get_student_detail($student_id);
+            if (get_user_meta($student->partner_id, 'status_register', true) == 1) {
+                $menu_links['student-documents'] = __('Documents', 'edusystem');
             }
         }
     }
 
-    $menu_links['edit-account'] = __('Account', 'woocommerce');
+    $menu_links['edit-account'] = __('Account', 'edusystem');
 
     if (in_array('parent', $roles) || in_array('student', $roles)) {
         $menu_links['my-tickets'] = __('Support Tickets', 'edusystem');
@@ -773,7 +819,7 @@ function add_loginout_link($items, $args)
 
         $birthday = get_user_meta($current_user->ID, 'birth_date', true);
         $age = floor((time() - strtotime($birthday)) / 31556926);
-        if ($age >= 18) {
+        if ($age >= 18 && MODE != 'UNI') {
             $items .= '<li><a href="' . home_url() . '">' . __('New applicant', 'edusystem') . '</a></li>';
         }
 
@@ -790,11 +836,13 @@ function add_loginout_link($items, $args)
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/orders">' . __('Payments', 'edusystem') . '</a></li>';
             }
 
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
+
             if (MODE != 'UNI') {
-                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'edusystem') . '</a></li>';
-                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';
             }
+
+            $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';
 
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account', 'edusystem') . '</a></li>';
 
@@ -1512,18 +1560,18 @@ function get_student_files_for_api($student_id)
 
 function split_payment()
 {
-    $cart = WC()->cart;
+    // $cart = WC()->cart;
 
-    if (!$cart || $cart->is_empty()) {
-        // Carrito vacío
-        include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
-        return;
-    }
+    // if (!$cart || $cart->is_empty()) {
+    //     // Carrito vacío
+    //     include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
+    //     return;
+    // }
 
-    $total = $cart->total;
-    if ($total > 0) {
-        include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
-    }
+    // $total = $cart->total;
+    // if ($total > 0) {
+    //     include(plugin_dir_path(__FILE__) . 'templates/split-payment.php');
+    // }
 }
 add_action('woocommerce_review_order_before_payment', 'split_payment');
 add_action('woocommerce_pay_order_before_payment', 'split_payment');
@@ -1613,10 +1661,14 @@ function woocommerce_update_cart()
         if ($coupon == strtolower(get_option('offer_complete')) || $coupon == strtolower(get_option('offer_quote'))) {
             $max_date_timestamp = get_option('max_date_offer');
             if ($max_date_timestamp >= current_time('timestamp')) {
-                $woocommerce->cart->apply_coupon($coupon);
+                if (isset($coupon) && !empty($coupon)) {
+                    $woocommerce->cart->apply_coupon($coupon);
+                }
             }
         } else {
-            $woocommerce->cart->apply_coupon($coupon);
+            if (isset($coupon) && !empty($coupon)) {
+                $woocommerce->cart->apply_coupon($coupon);
+            }
         }
     }
 
@@ -1816,11 +1868,11 @@ function update_price_product_cart_quota_rule()
             WC()->cart->remove_coupon($offer_quote_coupon);
         }
 
-        if ( $quotas_quantity == 1 ) {
+        if ( $quotas_quantity == 1 && !empty($offer_complete_coupon)) {
             WC()->cart->apply_coupon($offer_complete_coupon);
         }
 
-        if ( $quotas_quantity > 1 ) {
+        if ( $quotas_quantity > 1 && !empty($offer_quote_coupon)) {
             WC()->cart->apply_coupon($offer_quote_coupon);
         }
     }
@@ -2094,7 +2146,7 @@ function custom_coupon_applied_notice($message)
     $applied_coupons = WC()->cart->get_applied_coupons();
     if (!empty($applied_coupons)) {
         $coupon_list = implode(', ', array_map('ucwords', $applied_coupons));
-        wc_add_notice(__($coupon_list . ' applied successfully', 'woocommerce'), 'success');
+        wc_add_notice($coupon_list . __(' applied successfully', 'edusystem'), 'success');
     }
 }
 add_action('woocommerce_applied_coupon', 'custom_coupon_applied_notice');
@@ -3534,11 +3586,37 @@ add_action('wp_ajax_nopriv_load_subprograms_by_program', 'load_subprograms_by_pr
 
 function load_subprograms_by_program_callback()
 {
-    $program_id = $_POST['program_id'];
-    $subprograms = get_subprogram_by_id_program($program_id);
-    $product_id = get_product_id_by_id_program($program_id);
+    $program_identificator = $_GET['program_id'];
+    $subprograms = get_subprogram_by_identificador_program($program_identificator);
+    $product_id = get_product_id_by_identificador_program($program_identificator);
+    $subprograms_as_array = array_values($subprograms);
 
-    wp_send_json_success(array('subprograms' => $subprograms, 'product_id' => $product_id));
+    wp_send_json_success(array('subprograms' => $subprograms_as_array, 'product_id' => $product_id));
+    exit;
+}
+
+add_action('wp_ajax_load_data_program', 'load_data_program_callback');
+add_action('wp_ajax_nopriv_load_data_program', 'load_data_program_callback');
+
+function load_data_program_callback()
+{
+    $program_identificator = $_GET['program_identificator'];
+    $careers = get_career_by_program($program_identificator);
+    $payment_plans = get_associated_all_plans_by_program_id($program_identificator);
+
+    wp_send_json_success(array('careers' => $careers, 'payment_plans' => $payment_plans));
+    exit;
+}
+
+add_action('wp_ajax_load_mentions_by_career', 'load_mentions_by_career_callback');
+add_action('wp_ajax_nopriv_load_mentions_by_career', 'load_mentions_by_career_callback');
+
+function load_mentions_by_career_callback()
+{
+    $career_identificator = $_GET['career_identificator'];
+    $mentions = get_mentions_by_career($career_identificator);
+
+    wp_send_json_success(array('mentions' => $mentions));
     exit;
 }
 
@@ -3552,11 +3630,4 @@ function load_grades_by_country_callback()
 
     wp_send_json_success(array('grades' => $grades));
     exit;
-}
-
-add_action('wp_ajax_nopriv_load_product_id_rule', 'load_product_id_rule');
-add_action('wp_ajax_load_product_id_rule', 'load_product_id_rule');
-function load_product_id_rule()
-{
-
 }
