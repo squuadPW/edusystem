@@ -1570,4 +1570,10 @@ a.toplevel_page_logo_based_menu {
   /* Esta es la propiedad clave: crea el scroll horizontal automático */
   overflow-x: auto;
   margin-top: 20px;
+}
+
+@media screen and (max-width: 782px) {
+  #tfoot-report-comissions {
+    display: none;
+  }
 }/*# sourceMappingURL=style.css.map */

@@ -553,7 +553,7 @@ function get_student_payments_table_data($start, $end)
         'tuition_amount' => 0,
         'total_amount' => 0,
         'alliance_fees' => [],
-        'institute_fee' => 0,
+        'institute_fee' => 0, // Total global para institute_fee
     ];
     
     // Contador para los pagos de matrícula por estudiante
@@ -582,7 +582,8 @@ function get_student_payments_table_data($start, $end)
                     'grade' => $payment->grade_name,
                     'country' => $payment->country,
                     'payment_date' => '', // Inicializa la fecha de pago
-                    'payment_type' => ''
+                    'payment_type' => '',
+                    'payment_method' => '', // Nuevo: Inicializa el método de pago
                 ],
                 'calculated_amounts' => [
                     'initial_fee_usd' => 0,
@@ -638,8 +639,16 @@ function get_student_payments_table_data($start, $end)
                 $global_calculated_amounts['institute_fee'] += (float) $payment->institute_fee;
             }
 
-            // Asigna la fecha de pago solo si el pago está completado
+            // Asigna la fecha de pago si el pago está completado
             $payments_data[$student_id]['student_info']['payment_date'] = $payment->date_payment;
+            
+            // Nuevo: Obtiene el método de pago desde la orden de WooCommerce
+            if (isset($payment->order_id) && function_exists('wc_get_order')) {
+                $order = wc_get_order($payment->order_id);
+                if ($order) {
+                    $payments_data[$student_id]['student_info']['payment_method'] = $order->get_payment_method_title();
+                }
+            }
         }
         
         // Revisa si el pago actual es un pago a crédito (cuota > 1)

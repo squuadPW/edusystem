@@ -1739,3 +1739,9 @@ a.toplevel_page_logo_based_menu {
 
     margin-top: 20px;
 }
+
+#tfoot-report-comissions {
+  @media screen and (max-width: 782px) {
+    display: none;
+  }
+}
