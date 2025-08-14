@@ -5,10 +5,50 @@ document.addEventListener("DOMContentLoaded", function () {
   let grades_default = [];
   const grade = document.getElementById("grade");
   const program = document.getElementById("program");
+  const career = document.getElementById("career");
+  const mention = document.getElementById("mention");
+  const plan = document.getElementById("plan");
   const not_institute = document.getElementById("institute_id");
   const not_institute_others = document.getElementById("institute_id_others");
   const productIdInput = document.getElementById("product_id_input");
-  const registerPspInput = document.getElementById("register_psp");
+  const programIdShortcode = document.getElementById("program_shortcode");
+  const careerIdShortcode = document.getElementById("career_shortcode");
+  const mentionIdShortcode = document.getElementById("mention_shortcode");
+  const planIdShortcode = document.getElementById("plan_shortcode");
+  const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirm_password");
+  const errorDiv = document.getElementById("password-error");
+
+  const mesAnio = document.getElementById('expected_graduation_date');
+
+  mesAnio.addEventListener('input', function(e) {
+    let valor = e.target.value;
+
+    // Eliminar cualquier caracter que no sea un número
+    valor = valor.replace(/\D/g, '');
+
+    // Limitar la longitud a 6 dígitos (2 para mes, 4 para año)
+    if (valor.length > 6) {
+        valor = valor.slice(0, 6);
+    }
+
+    // Formatear: agregar la barra después de los 2 primeros dígitos
+    if (valor.length > 2) {
+        let mes = valor.slice(0, 2);
+        let anio = valor.slice(2, 6);
+
+        // Validar que el mes no sea mayor a 12
+        if (parseInt(mes) > 12) {
+            // Si es mayor a 12, lo establecemos como 12
+            mes = '12';
+        }
+
+        valor = mes + '/' + anio;
+    }
+
+    // Actualizar el valor del input
+    e.target.value = valor;
+  });
 
   loadGradesDefault();
   function loadGradesDefault() {
@@ -46,6 +86,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (not_institute) {
     not_institute.addEventListener("change", (e) => {
+      document.getElementById("buttonsave").disabled = true;
+      grades_institute = [];
       const gradeSelect = document.querySelector('select[name="grade"]');
       gradeSelect.value = "";
 
@@ -54,8 +96,8 @@ document.addEventListener("DOMContentLoaded", function () {
         gradeSelect.remove(1);
       }
       // Hide grade select initially
-      document.getElementById("grade_select").style.display = "none";
-      document.getElementById("grade").required = false;
+      // document.getElementById("grade_select").style.display = "none";
+      // document.getElementById("grade").required = false;
 
       if (e.target.value == "other") {
         document.getElementById("name-institute-field").style.display = "block";
@@ -63,66 +105,20 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("institute_id").required = false;
         document.getElementById("institute_id_required").textContent = "";
 
-        // If 'other' is selected and subprograms exist, show grade select
-        if (subprograms_arr.length > 0) {
-          document.getElementById("grade_select").style.display = "block";
-          document.getElementById("grade").required = true;
+        // document.getElementById("grade_select").style.display = "block";
+        // document.getElementById("grade").required = true;
 
-          subprograms_arr.forEach((subprogram, index) => {
-            const option = document.createElement("option");
-            option.value = index + 1; // Use index + 1 as value, aligning with program change event
-
-            let optionText = "";
-
-            // New priority logic for optionText
-            if (grades_institute && grades_institute[index]) {
-              // Priority 1: Use grades_institute
-              const grade = grades_institute[index];
-              optionText = grade.description
-                ? `${grade.name} ${grade.description}`
-                : grade.name;
-            } else if (grades_country_arr && grades_country_arr[index]) {
-              // Priority 2: Use grades_country_arr
-              const grade = grades_country_arr[index];
-              // Assuming grades_country_arr elements also have name and description or are just strings
-              // If it's a string, use it directly. If an object, use name/description.
-              optionText =
-                typeof grade === "object" && grade !== null && grade.name
-                  ? grade.description
-                    ? `${grade.name} ${grade.description}`
-                    : grade.name
-                  : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-            } else if (grades_default && grades_default[index]) {
-              // Priority 3: Use grades_default
-              const grade = grades_default[index];
-              // Assuming grades_default elements also have name and description or are just strings
-              optionText =
-                typeof grade === "object" && grade !== null && grade.name
-                  ? grade.description
-                    ? `${grade.name} ${grade.description}`
-                    : grade.name
-                  : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-            } else {
-              // Fallback: If no specific grade is found, use the subprogram name
-              optionText = subprogram.name || "N/A";
-            }
-
-            option.textContent = optionText;
-            gradeSelect.appendChild(option);
-          });
-        }
+        subprograms_arr.forEach((subprogram, index) => {
+          const optionText = getOptionText(index, subprogram);
+          const option = createOption(optionText, index + 1);
+          gradeSelect.appendChild(option);
+        });
+        document.getElementById("buttonsave").disabled = false;
       } else {
         document.getElementById("name-institute-field").style.display = "none";
         document.getElementById("name_institute").required = false;
         document.getElementById("institute_id").required = true;
         document.getElementById("institute_id_required").textContent = "*";
-
-        // If a specific institute is selected, hide grade select (it will be re-populated by AJAX if needed)
-        if (subprograms_arr.length > 0) {
-          // This condition was previously leading to hiding it always if subprograms_arr.length > 0
-          document.getElementById("grade_select").style.display = "none";
-          document.getElementById("grade").required = false;
-        }
 
         // Proceed with AJAX call only if an institute is actually selected (not "other" or empty)
         if (e.target.value) {
@@ -145,75 +141,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
           XHR.onload = () => {
             if (XHR.status === 200 && XHR.response && XHR.response.data) {
-              grades_default = XHR.response.data.default_grades;
+              // grades_default = XHR.response.data.default_grades;
               grades_institute = XHR.response.data.institute_grades;
 
-              // Clear existing options before populating
-              while (gradeSelect.options.length > 1) {
-                gradeSelect.remove(1);
-              }
+              // document.getElementById("grade_select").style.display = "block";
+              // document.getElementById("grade").required = true;
 
-              // --- Start of the specific adjustment for not_institute ---
-              // Iterate over subprograms_arr and use grades array for text
-              if (subprograms_arr.length > 0) {
-                document.getElementById("grade_select").style.display = "block";
-                document.getElementById("grade").required = true;
+              subprograms_arr.forEach((subprogram, index) => {
+                const optionText = getOptionText(index, subprogram);
+                const option = createOption(optionText, index + 1);
+                gradeSelect.appendChild(option);
+              });
 
-                subprograms_arr.forEach((subprogram, index) => {
-                  const option = document.createElement("option");
-                  option.value = index + 1; // Use index + 1 as value, aligning with program change event
-
-                  let optionText = "";
-
-                  // New priority logic for optionText
-                  if (grades_institute && grades_institute[index]) {
-                    // Priority 1: Use grades_institute
-                    const grade = grades_institute[index];
-                    optionText = grade.description
-                      ? `${grade.name} ${grade.description}`
-                      : grade.name;
-                  } else if (grades_country_arr && grades_country_arr[index]) {
-                    // Priority 2: Use grades_country_arr
-                    const grade = grades_country_arr[index];
-                    // Assuming grades_country_arr elements also have name and description or are just strings
-                    // If it's a string, use it directly. If an object, use name/description.
-                    optionText =
-                      typeof grade === "object" && grade !== null && grade.name
-                        ? grade.description
-                          ? `${grade.name} ${grade.description}`
-                          : grade.name
-                        : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-                  // } else if (grades_default && grades_default[index]) {
-                  //   // Priority 3: Use grades_default
-                  //   const grade = grades_default[index];
-                  //   // Assuming grades_default elements also have name and description or are just strings
-                  //   optionText =
-                  //     typeof grade === "object" && grade !== null && grade.name
-                  //       ? grade.description
-                  //         ? `${grade.name} ${grade.description}`
-                  //         : grade.name
-                  //       : grade; // Fallback to using the grade directly if it's a simple string or doesn't have name/description
-                  } else {
-                    // Fallback: If no specific grade is found, use the subprogram name
-                    optionText = subprogram.name || "N/A";
-                  }
-
-                  option.textContent = optionText;
-                  gradeSelect.appendChild(option);
-                });
-              } else {
-                // If no subprograms are loaded, hide grade select
-                document.getElementById("grade_select").style.display = "none";
-                document.getElementById("grade").required = false;
-              }
-              // --- End of specific adjustment ---
-            } else {
-              // Handle error or empty grades response: clear and hide
-              while (gradeSelect.options.length > 1) {
-                gradeSelect.remove(1);
-              }
-              document.getElementById("grade_select").style.display = "none";
-              document.getElementById("grade").required = false;
+              document.getElementById("buttonsave").disabled = false;
             }
           };
 
@@ -221,83 +161,358 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     });
+
+    verifyInstitute();
   }
 
   if (program) {
-    program.addEventListener("change", (e) => {
-      document.getElementById("institute_id").value = "";
-      document.getElementById("institute-id-select").style.display = "none";
-      document.getElementById("name-institute-field").style.display = "none";
-      document.getElementById("grade_select").style.display = "none";
+    program.addEventListener("change", async (e) => {
+      document.getElementById("buttonsave").disabled = true;
+      shutdownFields(
+        ["grade_select", "plans_select", "mentions_select", "careers_select"],
+        ["grade", "plan", "mention", "career"]
+      );
 
-      const numberOfOptions =
-        document.getElementById("institute_id").options.length;
-
-      let programId;
-
-      if (
-        e instanceof CustomEvent &&
-        e.detail &&
-        e.detail.value !== undefined
-      ) {
-        programId = e.detail.value;
-      } else {
-        const selectedOption = e.target.selectedOptions[0];
-        programId = selectedOption.value;
-        programIdentificator = selectedOption.getAttribute("identificator");
+      // Limpiar y ocultar el select de planes de pago en cada cambio
+      const planElement = document.getElementById("plan");
+      const planSelectContainer = document.getElementById("plans_select");
+      if (planElement && planElement.tagName === "SELECT") {
+        while (planElement.options.length > 1) {
+          planElement.remove(1);
+        }
+        planSelectContainer.style.display = "none";
+        planElement.required = false;
       }
 
-      const XHR = new XMLHttpRequest();
-      XHR.open(
-        "POST",
-        `${ajax_object.ajax_url}?action=load_subprograms_by_program`,
-        true
-      );
-      XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      XHR.responseType = "json";
+      const programIdentificator = e.target.value;
+      const careerSelectContainer = document.getElementById("careers_select");
+      const careerElement = document.getElementById("career");
+
+      // Lógica para limpiar el select de carreras si es un <select>
+      if (careerElement && careerElement.tagName === "SELECT") {
+        while (careerElement.options.length > 1) {
+          careerElement.remove(1);
+        }
+        careerSelectContainer.style.display = "none";
+        careerElement.required = false;
+      }
+
+      if (!programIdentificator) {
+        return;
+      }
+
+      const isCareerSelect =
+        careerElement && careerElement.tagName === "SELECT";
+      const isCareerShortcodeValid =
+        careerIdShortcode && careerIdShortcode.value;
+      const isPlanSelect = planElement && planElement.tagName === "SELECT";
+      const isPlanShortcodeValid = planIdShortcode && planIdShortcode.value;
+
+      // Si el shortcode de la carrera existe y no es un select, no se hace nada.
+      // if (isCareerShortcodeValid && !isCareerSelect) {
+      //     return;
+      // }
+
+      // Si el shortcode del plan existe y no es un select, no se hace nada.
+      // if (
+      //   isPlanShortcodeValid &&
+      //   !isPlanSelect &&
+      //   isCareerShortcodeValid &&
+      //   !isCareerSelect
+      // ) {
+      //   return;
+      // }
 
       const params = new URLSearchParams({
-        action: "load_subprograms_by_program",
-        program_id: programId,
+        action: "load_data_program",
+        program_identificator: programIdentificator,
       });
 
-      XHR.onload = () => {
-        if (XHR.status === 200 && XHR.response && XHR.response.data) {
-          let subprograms = [];
-          const data = XHR.response.data.subprograms;
-          const product_id = XHR.response.data.product_id;
-
-          if (Array.isArray(data)) {
-            subprograms = data;
-          } else if (data) {
-            subprograms = Object.values(data);
+      try {
+        const response = await fetch(
+          `${ajax_object.ajax_url}?${params.toString()}`,
+          {
+            method: "POST",
           }
+        );
 
-          productIdInput.value = product_id || "";
-          subprograms_arr = subprograms;
+        if (!response.ok) {
+          throw new Error(formRegisterStrings.networkFailed);
+        }
 
-          // Quiere decir que solo existe un instituto, opciones: (Select an option, INSTITUTO, Other)
-          if (numberOfOptions == 3) {
-            document.getElementById("institute_id").required = false;
-            document.getElementById("institute-id-select").style.display =
-              "none";
-            document.getElementById("institute_id").selectedIndex = 1;
-            document
-              .getElementById("institute_id")
-              .dispatchEvent(new Event("change"));
-          } else {
-            document.getElementById("institute_id").required = true;
-            document.getElementById("institute-id-select").style.display =
-              "block";
+        const data = await response.json();
+        const careers = data.data.careers || [];
+        const paymentPlans = data.data.payment_plans || []; // Nuevo dato del backend
+
+        // --- Lógica para el select de Carreras ---
+        if (isCareerSelect) {
+          careerSelectContainer.style.display = "block";
+          careerElement.required = true;
+
+          careers.forEach((career) => {
+            const option = document.createElement("option");
+            option.value = career.identificator;
+            option.textContent = career.name;
+            careerElement.appendChild(option);
+          });
+
+          if (isCareerShortcodeValid) {
+            careerElement.value = careerIdShortcode.value;
           }
         }
-      };
 
-      XHR.send(params.toString());
+        // --- Lógica para el select de Planes de Pago ---
+        if (isPlanSelect) {
+          planSelectContainer.style.display = "block";
+          planElement.required = true;
+
+          paymentPlans.forEach((plan) => {
+            const option = document.createElement("option");
+            option.value = plan.identificator;
+            option.textContent = plan.name;
+            planElement.appendChild(option);
+          });
+
+          if (isPlanShortcodeValid) {
+            planElement.value = planIdShortcode.value;
+          }
+        }
+
+        document.getElementById("buttonsave").disabled = false;
+      } catch (error) {}
     });
 
-    if (program.selectedIndex === 1) {
+    if (
+      (program.value && program.value !== "") ||
+      (programIdShortcode && programIdShortcode.value)
+    ) {
       program.dispatchEvent(new Event("change"));
+    }
+  }
+
+  if (career) {
+    career.addEventListener("change", async (e) => {
+      document.getElementById("buttonsave").disabled = true;
+      shutdownFields(["mentions_select"], ["mention"]);
+
+      const careerId = e.target.value;
+      const mentionSelectContainer = document.getElementById("mentions_select");
+      const mentionElement = document.getElementById("mention");
+
+      // Limpiar el select de menciones si existe y es un <select>
+      if (mentionElement && mentionElement.tagName === "SELECT") {
+        while (mentionElement.options.length > 1) {
+          mentionElement.remove(1);
+        }
+        mentionSelectContainer.style.display = "none";
+        mentionElement.required = false;
+      }
+
+      if (!careerId) {
+        return;
+      }
+
+      const isMentionSelect =
+        mentionElement && mentionElement.tagName === "SELECT";
+      const isMentionShortcodeValid =
+        mentionIdShortcode && mentionIdShortcode.value;
+
+      // Si el shortcode de la mención existe y no es un select, no se hace nada.
+      if (isMentionShortcodeValid && !isMentionSelect) {
+        return;
+      }
+
+      // Si el shortcode de la mención no existe o es un select, procedemos a cargar.
+      const params = new URLSearchParams({
+        action: "load_mentions_by_career",
+        career_identificator: careerId,
+      });
+
+      try {
+        const response = await fetch(
+          `${ajax_object.ajax_url}?${params.toString()}`,
+          {
+            method: "POST",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(formRegisterStrings.networkFailed);
+        }
+
+        const data = await response.json();
+        const mentions = data.data.mentions || [];
+
+        if (isMentionSelect) {
+          if (mentions.length > 0) {
+            mentionSelectContainer.style.display = "block";
+            mentionElement.required = true;
+
+            mentions.forEach((mention) => {
+              const option = document.createElement("option");
+              option.value = mention.identificator;
+              option.textContent = mention.name;
+              mentionElement.appendChild(option);
+            });
+          } else {
+            mentionSelectContainer.style.display = "none";
+            mentionElement.required = false;
+          }
+
+          // Si hay un shortcode válido, seleccionamos la opción correspondiente
+          if (isMentionShortcodeValid) {
+            mentionElement.value = mentionIdShortcode.value;
+          }
+        }
+
+        document.getElementById("buttonsave").disabled = false;
+      } catch (error) {}
+    });
+
+    if (careerIdShortcode && careerIdShortcode.value) {
+      career.dispatchEvent(new Event("change"));
+    }
+  }
+
+  if (mention) {
+    mention.addEventListener("change", (e) => {
+      verifyInstitute();
+    });
+
+    if (mentionIdShortcode && mentionIdShortcode.value) {
+      mention.dispatchEvent(new Event("change"));
+    }
+  }
+
+  function verifyInstitute() {
+    const numberOfOptions =
+      document.getElementById("institute_id").options.length;
+    if (numberOfOptions == 3) {
+      document.getElementById("institute_id").required = false;
+      document.getElementById("institute-id-select").style.display = "none";
+      document.getElementById("institute_id").selectedIndex = 1;
+      document
+        .getElementById("institute_id")
+        .dispatchEvent(new Event("change"));
+    } else {
+      document.getElementById("institute_id").required = true;
+      document.getElementById("institute-id-select").style.display = "block";
+    }
+  }
+
+  // copiado de career
+  function createOption(text, value) {
+    const option = document.createElement("option");
+    option.textContent = text;
+    option.value = value;
+    return option;
+  }
+
+  /**
+   * Determina el texto de una opción de select basándose en la jerarquía de prioridades.
+   * @param {number} index El índice del elemento en los arrays de grados.
+   * @param {Object} subprogram El objeto subprograma actual.
+   * @returns {string} El texto final para la opción.
+   */
+  function getOptionText(index, subprogram) {
+    // Lógica de prioridad: grades_institute > grades_country_arr > grades_default
+    let gradeData = null;
+
+    if (grades_institute && grades_institute[index]) {
+      gradeData = grades_institute[index];
+    } else if (grades_country_arr && grades_country_arr[index]) {
+      gradeData = grades_country_arr[index];
+    }
+    // } else if (grades_default && grades_default[index]) {
+    //   gradeData = grades_default[index];
+    // }
+
+    // Formatear el texto de la opción si se encontró un grado.
+    if (gradeData) {
+      if (
+        typeof gradeData === "object" &&
+        gradeData !== null &&
+        gradeData.name
+      ) {
+        return gradeData.description
+          ? `${gradeData.name} ${gradeData.description}`
+          : gradeData.name;
+      } else {
+        // Si el dato es un string simple, usarlo directamente.
+        return gradeData;
+      }
+    }
+
+    // Fallback: Si no se encontró ningún grado, usar el nombre del subprograma.
+    return subprogram.name || "N/A";
+  }
+
+  if (plan) {
+    plan.addEventListener("change", async (e) => {
+      document.getElementById("buttonsave").disabled = true;
+      shutdownFields(["grade_select"], ["grade"]);
+
+      const gradeSelect = document.querySelector('select[name="grade"]');
+      const gradeSelectContainer = document.getElementById("grade_select");
+      const gradeInput = document.getElementById("grade");
+      const planId = e.target.value;
+
+      // Lógica para limpiar y salir temprano
+      gradeSelect.value = "";
+      while (gradeSelect.options.length > 1) {
+        gradeSelect.remove(1);
+      }
+
+      if (!planId) {
+        gradeSelectContainer.style.display = "none";
+        gradeInput.required = false;
+        return;
+      }
+
+      try {
+        const params = new URLSearchParams({
+          action: "load_subprograms_by_program",
+          program_id: planId,
+        });
+
+        const response = await fetch(
+          `${ajax_object.ajax_url}?${params.toString()}`,
+          {
+            method: "POST",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(formRegisterStrings.networkFailed);
+        }
+
+        const data = await response.json();
+        subprograms_arr = data.data.subprograms || [];
+        const useProductId = data.data.product_id || 0;
+
+        const shouldShowGradeSelect = subprograms_arr.length > 0;
+
+        if (shouldShowGradeSelect) {
+          gradeSelectContainer.style.display = "block";
+          gradeInput.required = true;
+
+          subprograms_arr.forEach((subprogram, index) => {
+            const optionText = getOptionText(index, subprogram);
+            const option = createOption(optionText, index + 1);
+            gradeSelect.appendChild(option);
+          });
+        } else {
+          gradeSelectContainer.style.display = "none";
+          gradeInput.required = false;
+          productIdInput.value = useProductId;
+        }
+
+        document.getElementById("buttonsave").disabled = false;
+      } catch (error) {}
+    });
+
+    if (planIdShortcode && planIdShortcode.value) {
+      plan.dispatchEvent(new Event("change"));
     }
   }
 
@@ -305,6 +520,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const instituteSelect = document.getElementById("institute_id");
   if (countrySelect && instituteSelect) {
     countrySelect.addEventListener("change", function (e) {
+      document.getElementById("buttonsave").disabled = true;
       const XHR = new XMLHttpRequest();
       XHR.open(
         "POST",
@@ -322,58 +538,66 @@ document.addEventListener("DOMContentLoaded", function () {
       XHR.onload = () => {
         if (XHR.status === 200 && XHR.response && XHR.response.data) {
           grades_country_arr = XHR.response.data.grades ?? [];
+
+          if (document.getElementById("institute_id")) {
+            document.getElementById("institute_id").value = "";
+          }
+          if (document.getElementById("name_institute")) {
+            document.getElementById("name_institute").value = "";
+          }
+          if (document.getElementById("name-institute-field")) {
+            document.getElementById("name-institute-field").style.display =
+              "none";
+          }
+          if (document.getElementById("name_institute")) {
+            document.getElementById("name_institute").required = false;
+          }
+          if (document.getElementById("institute_id")) {
+            document.getElementById("institute_id").required = true;
+          }
+          if (document.getElementById("institute_id_required")) {
+            document.getElementById("institute_id_required").textContent = "*";
+          }
+
+          grades_institute = [];
+          const instituteSelect = document.getElementById("institute_id");
+          const selectedCountry = countrySelect.value;
+          const options = instituteSelect.options;
+          for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            if (option.dataset.others == "0") {
+              if (
+                option.dataset.country === selectedCountry ||
+                option.value === ""
+              ) {
+                option.style.display = "block";
+              } else {
+                option.style.display = "none";
+              }
+            }
+          }
+
+          plan.dispatchEvent(new Event("change"));
+          verifyInstitute();
+
+          document.getElementById("buttonsave").disabled = false;
         }
       };
 
       XHR.send(params.toString());
-
-      if (document.getElementById("institute_id")) {
-        document.getElementById("institute_id").value = "";
-      }
-      if (document.getElementById("name_institute")) {
-        document.getElementById("name_institute").value = "";
-      }
-      if (document.getElementById("name-institute-field")) {
-        document.getElementById("name-institute-field").style.display = "none";
-      }
-      if (document.getElementById("name_institute")) {
-        document.getElementById("name_institute").required = false;
-      }
-      if (document.getElementById("institute_id")) {
-        document.getElementById("institute_id").required = true;
-      }
-      if (document.getElementById("institute_id_required")) {
-        document.getElementById("institute_id_required").textContent = "*";
-      }
-
-      const selectedCountry = countrySelect.value;
-      const options = instituteSelect.options;
-      for (let i = 0; i < options.length; i++) {
-        const option = options[i];
-        if (option.dataset.others == "0") {
-          if (
-            option.dataset.country === selectedCountry ||
-            option.value === ""
-          ) {
-            option.style.display = "block";
-          } else {
-            option.style.display = "none";
-          }
-        }
-      }
-
-      if (program.selectedIndex != 0) {
-        program.dispatchEvent(new Event("change"));
-      }
     });
   }
 
   if (grade) {
     grade.addEventListener("change", (e) => {
-      // Subtract 1 because option values are index + 1
-      const selectedIndex = parseInt(e.target.value, 10) - 1;
+      // Obtener el índice seleccionado directamente
+      const selectedIndex = grade.selectedIndex - 1;
+      if (selectedIndex < 0) {
+        return;
+      }
 
       if (productIdInput) {
+        // Usar el selectedIndex para acceder al array
         if (selectedIndex >= 0 && selectedIndex < subprograms_arr.length) {
           const selectedProgram = subprograms_arr[selectedIndex];
 
@@ -647,6 +871,47 @@ document.addEventListener("DOMContentLoaded", function () {
         modalContinueCheckout.style.display = "block";
       }
     }
+  }
+
+  function shutdownFields(elementsToHide, fieldsToClear) {
+    // Apaga y limpia los elementos de selección y sus campos de valor
+    elementsToHide.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.style.display = "none";
+      }
+    });
+
+    fieldsToClear.forEach((id) => {
+      const field = document.getElementById(id);
+      const hasValueShortcode = document.getElementById(`${id}_shortcode`);
+      const value = hasValueShortcode ? hasValueShortcode.value : "";
+      if (field) {
+        field.value = value;
+      }
+    });
+  }
+
+  function validatePasswords() {
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    errorDiv.textContent = "";
+
+    if (password.length > 0 && confirmPassword.length > 0) {
+      if (password !== confirmPassword) {
+        // Usamos el texto traducido que viene de WordPress
+        document.getElementById("buttonsave").disabled = true;
+        errorDiv.textContent = formRegisterStrings.passwordsDontMatch;
+      }
+    }
+  }
+
+  if (passwordInput) {
+    passwordInput.addEventListener("input", validatePasswords);
+  }
+  if (confirmPasswordInput) {
+    confirmPasswordInput.addEventListener("input", validatePasswords);
   }
 });
 
@@ -943,16 +1208,15 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
       } else if (action === "action=check_scholarship") {
         document.getElementById("scholarship_assigned").style.display = "block";
         if (XHR.response === "0") {
-          document.getElementById(
-            "scholarship_assigned"
-          ).innerText = `No scholarship assigned or already signed`;
+          document.getElementById("scholarship_assigned").innerText =
+            formRegisterStrings.noScholarship;
           document.getElementById("scholarship_assigned").style.color = "gray";
 
           changeFieldsDisabled(true);
         } else {
           document.getElementById(
             "scholarship_assigned"
-          ).innerHTML = `We have found that you have the following scholarship assigned to you: <strong>${XHR.response}</strong>`;
+          ).innerHTML = `${formRegisterStrings.scholarhip} <strong>${XHR.response}</strong>`;
           document.getElementById("scholarship_assigned").style.color = "green";
 
           changeFieldsDisabled(false);
@@ -963,310 +1227,322 @@ function sendAjax(action, value, input, second_value = null, scholarship = 0) {
 }
 
 if (document.getElementById("birth_date_student")) {
+  const today = new Date();
+  // Restar 20 años
+  const twentyYearsAgo = new Date(
+    today.getFullYear() - 20,
+    today.getMonth(),
+    today.getDate()
+  );
+
+  // Formatear la fecha en MM/DD/YYYY
+  const day = String(twentyYearsAgo.getDate()).padStart(2, "0");
+  const month = String(twentyYearsAgo.getMonth() + 1).padStart(2, "0"); // Se suma 1 porque los meses van de 0-11
+  const year = twentyYearsAgo.getFullYear();
+  const formattedDate = `${month}/${day}/${year}`;
+
+  setStudentBirthDate(formattedDate);
   document
     .getElementById("birth_date_student")
     .addEventListener("change", (e) => {
-      let max_age = parseInt(document.getElementById("max_age").value);
-      let limit_age = parseInt(document.getElementById("limit_age").value);
-      let date = e.target.value;
-      date = date.split("/");
+      setStudentBirthDate(e.target.value);
+    });
+}
 
-      const start = new Date(date[2], date[0] - 1, date[1]);
-      const today = new Date();
-      const diff = diff_years(today, start);
+function setStudentBirthDate(date) {
+  let max_age = parseInt(document.getElementById("max_age").value);
+  let limit_age = parseInt(document.getElementById("limit_age").value);
+  date = date.split("/");
 
-      if (diff > limit_age) {
-        alert(`The maximum age is ${limit_age} years old.`);
-        // Reset the input field
-        e.target.value = "";
-        return;
+  const start = new Date(date[2], date[0] - 1, date[1]);
+  const today = new Date();
+  const diff = diff_years(today, start);
+
+  if (diff > limit_age) {
+    alert(
+      `${formRegisterStrings.maxAge} ${limit_age} ${formRegisterStrings.yearsOld}`
+    );
+    // Reset the input field
+    e.target.value = "";
+    return;
+  }
+
+  if (diff >= max_age) {
+    var accessDataTitle = document.getElementById("access_data");
+    if (accessDataTitle) {
+      accessDataTitle.innerHTML = formRegisterStrings.titleAccessStudent;
+    }
+
+    if (dont_allow_adult && dont_allow_adult?.value == 1) {
+      if (dontBeAdult) {
+        dontBeAdult.style.display = "block";
       }
-
-      if (diff >= max_age) {
-        var accessDataTitle = document.getElementById("access_data");
-        if (accessDataTitle) {
-          accessDataTitle.innerHTML = "Platform access data of student";
-        }
-
-        if (dont_allow_adult && dont_allow_adult?.value == 1) {
-          if (dontBeAdult) {
-            dontBeAdult.style.display = "block";
-          }
-          buttonSave.disabled = true;
-        } else {
-          if (dontBeAdult) {
-            dontBeAdult.style.display = "none";
-          }
-          if (dont_allow_adult && dont_allow_adult?.value == 1) {
-            if (
-              existStudentEmail?.style.display === "none" &&
-              existStudentId?.style.display === "none" &&
-              sameEmailStudent?.style.display === "none" &&
-              dontBeAdult?.style.display === "none"
-            ) {
-              buttonSave.disabled = false;
-            }
-          } else {
-            if (
-              existParentEmail?.style.display === "none" &&
-              existStudentEmail?.style.display === "none" &&
-              existStudentId?.style.display === "none" &&
-              sameEmailParent?.style.display === "none" &&
-              sameEmailStudent?.style.display === "none"
-            ) {
-              buttonSave.disabled = false;
-            }
-          }
-
-          // Obtén el elemento div que contiene el input
-          const studentEmailDiv = document.getElementById("student-email");
-
-          if (studentEmailDiv) {
-            // Crea una copia del elemento div
-            const studentEmailDivClone = studentEmailDiv.cloneNode(true);
-            document.getElementById("student-email-access").innerHTML = "";
-            document.getElementById("student-email-detail").innerHTML = "";
-            document
-              .getElementById("student-email-access")
-              .appendChild(studentEmailDivClone);
-          }
-
-          var parentTitle = document.getElementById("parent-title");
-          if (parentTitle) {
-            parentTitle.style.display = "none";
-          }
-
-          var parentBirthDateField = document.getElementById(
-            "parent_birth_date_field"
-          );
-          if (parentBirthDateField) {
-            parentBirthDateField.style.display = "none";
-          }
-
-          var parentDocumentTypeField = document.getElementById(
-            "parent_document_type_field"
-          );
-          if (parentDocumentTypeField) {
-            parentDocumentTypeField.style.display = "none";
-          }
-
-          var parentIdDocumentField = document.getElementById(
-            "parent_id_document_field"
-          );
-          if (parentIdDocumentField) {
-            parentIdDocumentField.style.display = "none";
-          }
-
-          var parentNameField = document.getElementById("parent_name_field");
-          if (parentNameField) {
-            parentNameField.style.display = "none";
-          }
-
-          var parentLastNameField = document.getElementById(
-            "parent-lastname-field"
-          );
-          if (parentLastNameField) {
-            parentLastNameField.style.display = "none";
-          }
-
-          var parentPhoneField = document.getElementById("parent-phone-field");
-          if (parentPhoneField) {
-            parentPhoneField.style.display = "none";
-          }
-
-          var parentEmailField = document.getElementById("parent-email-field");
-          if (parentEmailField) {
-            parentEmailField.style.display = "none";
-          }
-
-          var parentGenderField = document.getElementById(
-            "parent-gender-field"
-          );
-          if (parentGenderField) {
-            parentGenderField.style.display = "none";
-          }
-
-          var parentDocumentType = document.getElementById(
-            "parent_document_type"
-          );
-          if (parentDocumentType) {
-            parentDocumentType.required = false;
-          }
-
-          var birthDateParent = document.getElementById("birth_date_parent");
-          if (birthDateParent) {
-            birthDateParent.required = false;
-          }
-
-          var parentIdDocument = document.getElementById("id_document_parent");
-          if (parentIdDocument) {
-            parentIdDocument.required = false;
-          }
-
-          var agentName = document.getElementById("agent_name");
-          if (agentName) {
-            agentName.required = false;
-          }
-
-          var agentLastName = document.getElementById("agent_last_name");
-          if (agentLastName) {
-            agentLastName.required = false;
-          }
-
-          var numberPartner = document.getElementById("number_partner");
-          if (numberPartner) {
-            numberPartner.required = false;
-          }
-
-          var emailPartner = document.getElementById("email_partner");
-          if (emailPartner) {
-            emailPartner.required = false;
-          }
-
-          var parentGenderField = document.getElementById("gender_parent");
-          if (parentGenderField) {
-            parentGenderField.required = false;
-          }
+      buttonSave.disabled = true;
+    } else {
+      if (dontBeAdult) {
+        dontBeAdult.style.display = "none";
+      }
+      if (dont_allow_adult && dont_allow_adult?.value == 1) {
+        if (
+          existStudentEmail?.style.display === "none" &&
+          existStudentId?.style.display === "none" &&
+          sameEmailStudent?.style.display === "none" &&
+          dontBeAdult?.style.display === "none"
+        ) {
+          buttonSave.disabled = false;
         }
       } else {
-        var accessDataTitle = document.getElementById("access_data");
-        if (accessDataTitle) {
-          accessDataTitle.innerHTML = "Platform access data of parent";
-        }
-
-        if (dontBeAdult) {
-          dontBeAdult.style.display = "none";
-        }
-        if (dont_allow_adult && dont_allow_adult?.value == 1) {
-          if (
-            existStudentEmail?.style.display === "none" &&
-            existStudentId?.style.display === "none" &&
-            sameEmailStudent?.style.display === "none" &&
-            dontBeAdult?.style.display === "none"
-          ) {
-            buttonSave.disabled = false;
-          }
-        } else {
-          if (
-            existParentEmail?.style.display === "none" &&
-            existStudentEmail?.style.display === "none" &&
-            existStudentId?.style.display === "none" &&
-            sameEmailParent?.style.display === "none" &&
-            sameEmailStudent?.style.display === "none"
-          ) {
-            buttonSave.disabled = false;
-          }
-        }
-
-        // Obtén el elemento div que contiene el input
-        const studentEmailDiv = document.getElementById("student-email");
-
-        if (studentEmailDiv) {
-          // Crea una copia del elemento div
-          const studentEmailDivClone = studentEmailDiv.cloneNode(true);
-          document.getElementById("student-email-access").innerHTML = "";
-          document.getElementById("student-email-detail").innerHTML = "";
-          document
-            .getElementById("student-email-detail")
-            .appendChild(studentEmailDivClone);
-        }
-
-        var parentTitle = document.getElementById("parent-title");
-        if (parentTitle) {
-          parentTitle.style.display = "block";
-        }
-
-        var parentBirthDateField = document.getElementById(
-          "parent_birth_date_field"
-        );
-        if (parentBirthDateField) {
-          parentBirthDateField.style.display = "block";
-        }
-
-        var parentDocumentTypeField = document.getElementById(
-          "parent_document_type_field"
-        );
-        if (parentDocumentTypeField) {
-          parentDocumentTypeField.style.display = "block";
-        }
-
-        var parentIdDocumentField = document.getElementById(
-          "parent_id_document_field"
-        );
-        if (parentIdDocumentField) {
-          parentIdDocumentField.style.display = "block";
-        }
-
-        var parentNameField = document.getElementById("parent_name_field");
-        if (parentNameField) {
-          parentNameField.style.display = "block";
-        }
-
-        var parentLastNameField = document.getElementById(
-          "parent-lastname-field"
-        );
-        if (parentLastNameField) {
-          parentLastNameField.style.display = "block";
-        }
-
-        var parentPhoneField = document.getElementById("parent-phone-field");
-        if (parentPhoneField) {
-          parentPhoneField.style.display = "block";
-        }
-
-        var parentGenderField = document.getElementById("parent-gender-field");
-        if (parentGenderField) {
-          parentGenderField.style.display = "block";
-        }
-
-        var parentEmailField = document.getElementById("parent-email-field");
-        if (parentEmailField) {
-          parentEmailField.style.display = "block";
-        }
-
-        var parentDocumentType = document.getElementById(
-          "parent_document_type"
-        );
-        if (parentDocumentType) {
-          parentDocumentType.required = true;
-        }
-
-        var birthDateParent = document.getElementById("birth_date_parent");
-        if (birthDateParent) {
-          birthDateParent.required = true;
-        }
-
-        var parentIdDocument = document.getElementById("id_document_parent");
-        if (parentIdDocument) {
-          parentIdDocument.required = true;
-        }
-
-        var agentName = document.getElementById("agent_name");
-        if (agentName) {
-          agentName.required = true;
-        }
-
-        var agentLastName = document.getElementById("agent_last_name");
-        if (agentLastName) {
-          agentLastName.required = true;
-        }
-
-        var numberPartner = document.getElementById("number_partner");
-        if (numberPartner) {
-          numberPartner.required = true;
-        }
-
-        var emailPartner = document.getElementById("email_partner");
-        if (emailPartner) {
-          emailPartner.required = true;
-        }
-
-        var parentGenderField = document.getElementById("gender_parent");
-        if (parentGenderField) {
-          parentGenderField.required = true;
+        if (
+          existParentEmail?.style.display === "none" &&
+          existStudentEmail?.style.display === "none" &&
+          existStudentId?.style.display === "none" &&
+          sameEmailParent?.style.display === "none" &&
+          sameEmailStudent?.style.display === "none"
+        ) {
+          buttonSave.disabled = false;
         }
       }
-    });
+
+      // Obtén el elemento div que contiene el input
+      const studentEmailDiv = document.getElementById("student-email");
+
+      if (studentEmailDiv) {
+        // Crea una copia del elemento div
+        const studentEmailDivClone = studentEmailDiv.cloneNode(true);
+        document.getElementById("student-email-access").innerHTML = "";
+        document.getElementById("student-email-detail").innerHTML = "";
+        document
+          .getElementById("student-email-access")
+          .appendChild(studentEmailDivClone);
+      }
+
+      var parentTitle = document.getElementById("parent-title");
+      if (parentTitle) {
+        parentTitle.style.display = "none";
+      }
+
+      var parentBirthDateField = document.getElementById(
+        "parent_birth_date_field"
+      );
+      if (parentBirthDateField) {
+        parentBirthDateField.style.display = "none";
+      }
+
+      var parentDocumentTypeField = document.getElementById(
+        "parent_document_type_field"
+      );
+      if (parentDocumentTypeField) {
+        parentDocumentTypeField.style.display = "none";
+      }
+
+      var parentIdDocumentField = document.getElementById(
+        "parent_id_document_field"
+      );
+      if (parentIdDocumentField) {
+        parentIdDocumentField.style.display = "none";
+      }
+
+      var parentNameField = document.getElementById("parent_name_field");
+      if (parentNameField) {
+        parentNameField.style.display = "none";
+      }
+
+      var parentLastNameField = document.getElementById(
+        "parent-lastname-field"
+      );
+      if (parentLastNameField) {
+        parentLastNameField.style.display = "none";
+      }
+
+      var parentPhoneField = document.getElementById("parent-phone-field");
+      if (parentPhoneField) {
+        parentPhoneField.style.display = "none";
+      }
+
+      var parentEmailField = document.getElementById("parent-email-field");
+      if (parentEmailField) {
+        parentEmailField.style.display = "none";
+      }
+
+      var parentGenderField = document.getElementById("parent-gender-field");
+      if (parentGenderField) {
+        parentGenderField.style.display = "none";
+      }
+
+      var parentDocumentType = document.getElementById("parent_document_type");
+      if (parentDocumentType) {
+        parentDocumentType.required = false;
+      }
+
+      var birthDateParent = document.getElementById("birth_date_parent");
+      if (birthDateParent) {
+        birthDateParent.required = false;
+      }
+
+      var parentIdDocument = document.getElementById("id_document_parent");
+      if (parentIdDocument) {
+        parentIdDocument.required = false;
+      }
+
+      var agentName = document.getElementById("agent_name");
+      if (agentName) {
+        agentName.required = false;
+      }
+
+      var agentLastName = document.getElementById("agent_last_name");
+      if (agentLastName) {
+        agentLastName.required = false;
+      }
+
+      var numberPartner = document.getElementById("number_partner");
+      if (numberPartner) {
+        numberPartner.required = false;
+      }
+
+      var emailPartner = document.getElementById("email_partner");
+      if (emailPartner) {
+        emailPartner.required = false;
+      }
+
+      var parentGenderField = document.getElementById("gender_parent");
+      if (parentGenderField) {
+        parentGenderField.required = false;
+      }
+    }
+  } else {
+    var accessDataTitle = document.getElementById("access_data");
+    if (accessDataTitle) {
+      accessDataTitle.innerHTML = formRegisterStrings.titleAccessParent;
+    }
+
+    if (dontBeAdult) {
+      dontBeAdult.style.display = "none";
+    }
+    if (dont_allow_adult && dont_allow_adult?.value == 1) {
+      if (
+        existStudentEmail?.style.display === "none" &&
+        existStudentId?.style.display === "none" &&
+        sameEmailStudent?.style.display === "none" &&
+        dontBeAdult?.style.display === "none"
+      ) {
+        buttonSave.disabled = false;
+      }
+    } else {
+      if (
+        existParentEmail?.style.display === "none" &&
+        existStudentEmail?.style.display === "none" &&
+        existStudentId?.style.display === "none" &&
+        sameEmailParent?.style.display === "none" &&
+        sameEmailStudent?.style.display === "none"
+      ) {
+        buttonSave.disabled = false;
+      }
+    }
+
+    // Obtén el elemento div que contiene el input
+    const studentEmailDiv = document.getElementById("student-email");
+
+    if (studentEmailDiv) {
+      // Crea una copia del elemento div
+      const studentEmailDivClone = studentEmailDiv.cloneNode(true);
+      document.getElementById("student-email-access").innerHTML = "";
+      document.getElementById("student-email-detail").innerHTML = "";
+      document
+        .getElementById("student-email-detail")
+        .appendChild(studentEmailDivClone);
+    }
+
+    var parentTitle = document.getElementById("parent-title");
+    if (parentTitle) {
+      parentTitle.style.display = "block";
+    }
+
+    var parentBirthDateField = document.getElementById(
+      "parent_birth_date_field"
+    );
+    if (parentBirthDateField) {
+      parentBirthDateField.style.display = "block";
+    }
+
+    var parentDocumentTypeField = document.getElementById(
+      "parent_document_type_field"
+    );
+    if (parentDocumentTypeField) {
+      parentDocumentTypeField.style.display = "block";
+    }
+
+    var parentIdDocumentField = document.getElementById(
+      "parent_id_document_field"
+    );
+    if (parentIdDocumentField) {
+      parentIdDocumentField.style.display = "block";
+    }
+
+    var parentNameField = document.getElementById("parent_name_field");
+    if (parentNameField) {
+      parentNameField.style.display = "block";
+    }
+
+    var parentLastNameField = document.getElementById("parent-lastname-field");
+    if (parentLastNameField) {
+      parentLastNameField.style.display = "block";
+    }
+
+    var parentPhoneField = document.getElementById("parent-phone-field");
+    if (parentPhoneField) {
+      parentPhoneField.style.display = "block";
+    }
+
+    var parentGenderField = document.getElementById("parent-gender-field");
+    if (parentGenderField) {
+      parentGenderField.style.display = "block";
+    }
+
+    var parentEmailField = document.getElementById("parent-email-field");
+    if (parentEmailField) {
+      parentEmailField.style.display = "block";
+    }
+
+    var parentDocumentType = document.getElementById("parent_document_type");
+    if (parentDocumentType) {
+      parentDocumentType.required = true;
+    }
+
+    var birthDateParent = document.getElementById("birth_date_parent");
+    if (birthDateParent) {
+      birthDateParent.required = true;
+    }
+
+    var parentIdDocument = document.getElementById("id_document_parent");
+    if (parentIdDocument) {
+      parentIdDocument.required = true;
+    }
+
+    var agentName = document.getElementById("agent_name");
+    if (agentName) {
+      agentName.required = true;
+    }
+
+    var agentLastName = document.getElementById("agent_last_name");
+    if (agentLastName) {
+      agentLastName.required = true;
+    }
+
+    var numberPartner = document.getElementById("number_partner");
+    if (numberPartner) {
+      numberPartner.required = true;
+    }
+
+    var emailPartner = document.getElementById("email_partner");
+    if (emailPartner) {
+      emailPartner.required = true;
+    }
+
+    var parentGenderField = document.getElementById("gender_parent");
+    if (parentGenderField) {
+      parentGenderField.required = true;
+    }
+  }
 }
 
 function diff_years(dt2, dt1) {
@@ -1342,7 +1618,16 @@ segmentButtons.forEach((button) => {
 customFlatpickr();
 function customFlatpickr() {
   let instances = flatpickr(".flatpickr", {
-    dateFormat: "m/d/Y",
+    locale: document.getElementById("site_lang")
+      ? document.getElementById("site_lang").value == "ES"
+        ? "es"
+        : "en"
+      : "en",
+    dateFormat: document.getElementById("site_lang")
+      ? document.getElementById("site_lang").value == "ES"
+        ? "d/m/Y"
+        : "m/d/Y"
+      : "m/d/Y",
     disableMobile: "true",
     onChange: function (selectedDates, dateStr, instance) {
       let id = instance.input.id;

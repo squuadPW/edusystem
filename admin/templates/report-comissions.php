@@ -1,10 +1,10 @@
 <h2 class="nav-tab-wrapper">
 	<a href="<?= admin_url('admin.php?page=report-comissions') ?>"
 		class="nav-tab <?= !isset($_GET['section_tab']) ? 'nav-tab-active' : ''; ?>"><?= __('Summary of commissions', 'edusystem'); ?></a>
-	<!-- <a href="<?= admin_url('admin.php?page=report-comissions&section_tab=college_allies_comissions') ?>"
+	<a href="<?= admin_url('admin.php?page=report-comissions&section_tab=college_allies_comissions') ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'college_allies_comissions') ? 'nav-tab-active' : ''; ?>"><?= __('College commissions & allies', 'edusystem'); ?></a>
 	<a href="<?= admin_url('admin.php?page=report-comissions&section_tab=new_registrations'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'new_registrations') ? 'nav-tab-active' : ''; ?>"><?= __('New registrations', 'edusystem'); ?></a> -->
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'new_registrations') ? 'nav-tab-active' : ''; ?>"><?= __('New registrations', 'edusystem'); ?></a>
 </h2>
 
 <div class="tabs-content">
@@ -84,18 +84,136 @@
 			</div>
 		</form>
 
-		<h3 class='wp-heading-line' style="margin-bottom: -20px;">
-			<?= __('Commissions payable to schools', 'edusystem') ?></h3>
-		<form action="" id="post-filter" method="get">
-			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-			<?php $list_comissions_institute->display() ?>
-		</form>
+		<?php if (!isset($_GET['section_tab'])) { ?>
+			<h3 class='wp-heading-line' style="margin-bottom: -20px;">
+				<?= __('Commissions payable to schools', 'edusystem') ?>
+			</h3>
+			<form action="" id="post-filter" method="get">
+				<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+				<?php $list_comissions_institute->display() ?>
+			</form>
 
-		<h3 class='wp-heading-line' style="margin-bottom: -20px;"><?= __('Allied Commissions', 'edusystem') ?></h3>
-		<form action="" id="post-filter" method="get">
-			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-			<?php $list_comissions_alliances->display() ?>
-		</form>
+			<h3 class='wp-heading-line' style="margin-bottom: -20px;"><?= __('Allied Commissions', 'edusystem') ?></h3>
+			<form action="" id="post-filter" method="get">
+				<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+				<?php $list_comissions_alliances->display() ?>
+			</form>
+		<?php } ?>
+
+		<?php if (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'college_allies_comissions') { ?>
+			<div class="wp-scroll-container">
+				<table class="wp-list-table widefat striped">
+					<thead>
+						<tr>
+							<th scope="col" id="program" class="manage-column column-title column-primary sortable asc">
+								<?= __('Program', 'edusystem') ?>
+							</th>
+							<th scope="col" id="institution" class="manage-column column-title sortable asc">
+								<?= __('Name of the educational institution', 'edusystem') ?>
+							</th>
+							<th scope="col" id="student_name" class="manage-column column-title sortable asc">
+								<?= __('Nombre del alumno', 'edusystem') ?>
+							</th>
+							<th scope="col" id="student_grade" class="manage-column column-title sortable asc">
+								<?= __('Grado del estudiante', 'edusystem') ?>
+							</th>
+							<th scope="col" id="territory" class="manage-column column-title sortable asc">
+								<?= __('Territory', 'edusystem') ?>
+							</th>
+							<th scope="col" id="partner" class="manage-column column-title sortable asc">
+								<?= __('Name of the partner/vendor', 'edusystem') ?>
+							</th>
+							<th scope="col" id="payment_type" class="manage-column column-title sortable asc">
+								<?= __('Payment type', 'edusystem') ?>
+							</th>
+							<th scope="col" id="initial_fee" class="manage-column column-title sortable asc">
+								<?= __('Initial fee USD', 'edusystem') ?>
+							</th>
+							<th scope="col" id="tuition_amount" class="manage-column column-title sortable asc">
+								<?= __('Tuition amount paid USD', 'edusystem') ?>
+							</th>
+							<th scope="col" id="total_amount" class="manage-column column-title sortable asc">
+								<?= __('Total amount paid USD', 'edusystem') ?>
+							</th>
+							<th scope="col" id="payment_date" class="manage-column column-title sortable asc">
+								<?= __('Payment date', 'edusystem') ?>
+							</th>
+							<th scope="col" id="income_account" class="manage-column column-title sortable asc">
+								<?= __('Income account', 'edusystem') ?>
+							</th>
+							<?php for ($i = 0; $i < 5; $i++) { ?>
+								<th scope="col" id="test<?= $i ?>" class="manage-column column-title sortable asc">
+									<?= __('test', 'edusystem') . $i ?>
+								</th>
+							<?php } ?>
+							<th scope="col" id="observations" class="manage-column column-title sortable asc">
+								<?= __('Administrative observations', 'edusystem') ?>
+							</th>
+						</tr>
+					</thead>
+					<tbody id="the-list">
+						<tr id="post-1"
+							class="iedit author-self level-0 post-1 type-post status-publish has-post-thumbnail hentry">
+							<td class="title column-title has-row-actions column-primary"
+								data-colname="<?= __('Program', 'edusystem') ?>">
+								...
+								<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
+							</td>
+							<td class="title column-title"
+								data-colname="<?= __('Name of the educational institution', 'edusystem') ?>">
+								...
+							</td>
+							<td class="title column-title" data-colname="<?= __('Nombre del alumno', 'edusystem') ?>">
+								...
+							</td>
+							<td class="title column-title" data-colname="<?= __('Grado del estudiante', 'edusystem') ?>">
+								...
+							</td>
+							<td class="title column-title" data-colname="<?= __('Territory', 'edusystem') ?>">
+								...
+							</td>
+							<td class="title column-title"
+								data-colname="<?= __('Name of the partner/vendor', 'edusystem') ?>">
+								...
+							</td>
+							<td class="title column-title" data-colname="<?= __('Payment type', 'edusystem') ?>">
+								...
+							</td>
+							<td class="title column-title" data-colname="<?= __('Initial fee USD', 'edusystem') ?>">
+								...
+							</td>
+							<td class="title column-title" data-colname="<?= __('Tuition amount paid USD', 'edusystem') ?>">
+								...
+							</td>
+							<td class="title column-title" data-colname="<?= __('Total amount paid USD', 'edusystem') ?>">
+								...
+							</td>
+							<td class="title column-title" data-colname="<?= __('Payment date', 'edusystem') ?>">
+								...
+							</td>
+							<td class="title column-title" data-colname="<?= __('Income account', 'edusystem') ?>">
+								...
+							</td>
+							<?php for ($i = 0; $i < 5; $i++) { ?>
+								<td class="title column-title" data-colname="<?= __('test', 'edusystem') . $i ?>">
+									...
+								</td>
+							<?php } ?>
+							<td class="title column-title"
+								data-colname="<?= __('Administrative observations', 'edusystem') ?>">
+								...
+							</td>
+						</tr>
+					</tbody>
+					<tfoot>
+					</tfoot>
+				</table>
+			</div>
+		<?php } ?>
+
+		<?php if (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'new_registrations') { ?>
+
+		<?php } ?>
 	</div>
 </div>
 <script>

@@ -1814,3 +1814,32 @@ a.toplevel_page_logo_based_menu {
 // .select2-container {
 //     z-index: 99999 !important;
 // }
+
+.career-item {
+    list-style: none;
+    margin-bottom: 15px; /* Espacio entre cada carrera */
+    padding-left: 0; /* Elimina la sangría de la lista */
+    text-align: left; /* Centra el contenido */
+}
+
+.career-name {
+    font-size: 1.2em; /* Hace el nombre más grande */
+    font-weight: bold;
+    margin: 0; /* Elimina márgenes por defecto */
+}
+
+.career-id {
+    display: block; /* Pone el identificador en una nueva línea */
+    font-size: 0.9em; /* Hace el identificador más pequeño */
+    color: #6c757d; /* Color gris suave */
+    margin-top: 5px; /* Espacio entre el nombre y el identificador */
+}
+
+/* Este código CSS se debe añadir en tu plugin o tema */
+.wp-scroll-container {
+    /* Define el ancho máximo del contenedor para que la tabla se desborde */
+    max-width: 100%;
+    
+    /* Esta es la propiedad clave: crea el scroll horizontal automático */
+    overflow-x: auto;
+}

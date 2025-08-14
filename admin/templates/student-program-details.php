@@ -10,7 +10,7 @@
     ?>
 
     <div style="display:flex;width:100%;">
-        <a class="button button-outline-primary" href="<?= admin_url("/admin.php?page=add_admin_form_student_program_content" ) ?? $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
+        <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder admin-add-offer container-programs" style="width: 70%">
@@ -47,7 +47,7 @@
                                         <br>
 
                                         <div>
-                                            <input type="text" name="identificator" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_program_identificator_exists_js(this)" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?> >
+                                            <input type="text" name="identificator" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_student_program_identificator_exists_js(this)" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?> >
                                             <span id="error-identificator" class="input-error" ></span>
                                         </div>
                                         
@@ -63,6 +63,22 @@
                                         <label for="description"><b><?= __('Description', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>
                                         <textarea style="width: 100%" name="description" id="description" rows="4" required><?= $program->description; ?></textarea>
+                                    </div>
+
+                                    <div style="font-weight:400;">
+                                        <label for="hc"><b><?= __('Associated payment plans', 'edusystem'); ?></b></label><br>
+                                        
+                                        <!-- Se agrega el atributo 'multiple' y se cambia el nombre a un array (associated_plans[]) -->
+                                        <select name="associated_plans[]" multiple style="min-height: 150px; width: 100%;" required>
+                                            <?php foreach ($payment_plans as $key => $plan) { ?>
+                                                <!-- La lógica de 'selected' ahora revisa si el identificador del plan está en el array $associated_plans_ids -->
+                                                <option 
+                                                    value="<?= $plan->identificator ?>" 
+                                                    <?= in_array($plan->identificator, $associated_plans_ids) ? 'selected' : ''; ?>>
+                                                    <?= $plan->name ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
                                     </div>
 
                                 </div>
@@ -83,6 +99,24 @@
                             <?php endif; ?>
                         </form>
                     </div>
+
+                    <?php if (isset($related_careers) && count($related_careers) > 0) { ?>
+                        <div class="inside">
+                            <h3 style="margin-top:20px;margin-bottom:20px;text-align:center; border-bottom: 1px solid #8080805c; padding-bottom: 10px;">
+                                <b><?= __('Related careers', 'edusystem'); ?></b>
+                            </h3>
+                            <div>
+                                <ul>
+                                    <?php foreach($related_careers as $key => $career) { ?>
+                                        <li class="career-item">
+                                            <h4 class="career-name"><?= $career->name; ?></h4>
+                                            <span class="career-id">ID: <?= $career->identificator ?></span>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                        </div>
+                    <?php } ?>
                 </div>
             </div>
         </div>

@@ -10,13 +10,13 @@ foreach ($student_payments as $student_id => $payments) {
         <thead>
             <tr>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-quota"><span
-                        class="nobr">Quota</span></th>
+                        class="nobr"><?= __('Quota', 'edusystem') ?></span></th>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                        class="nobr">Date</span></th>
+                        class="nobr"><?= __('Date', 'edusystem') ?></span></th>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-total"><span
-                        class="nobr">Total</span></th>
+                        class="nobr"><?= __('Total', 'edusystem') ?></span></th>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-action" style="text-align: end"><span
-                        class="nobr">Action</span></th>
+                        class="nobr"><?= __('Action', 'edusystem') ?></span></th>
             </tr>
         </thead>
         <tbody>
@@ -30,7 +30,7 @@ foreach ($student_payments as $student_id => $payments) {
                         <?= wc_price($payment->amount) ?></td>
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-action" data-title="Action" style="text-align: end">
                         <?php if($key == 0 && !$pending_orders) { ?>
-                            <button style="width: 70px;" type="button" class="button button-primary" id="generate-quote" data-id="<?= $student_id ?>" data-amount="<?= $payment->amount ?>">Pay</button>
+                            <button style="width: 70px;" type="button" class="button button-primary" id="generate-quote" data-id="<?= $student_id ?>" data-amount="<?= $payment->amount ?>"><?= __('Pay', 'edusystem') ?></button>
                         <?php } ?>
                     </td>
                 </tr>

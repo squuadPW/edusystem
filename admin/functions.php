@@ -298,7 +298,27 @@ function aes_scripts_admin()
         ]);
     }
 
-    if ((isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_student_program_content') && (isset($_GET['from']) && !empty($_GET['from']) && $_GET['from'] == 'mentions')) {
+    // Primero, definimos la condición principal: la página debe ser 'add_admin_form_student_program_content'
+    $is_student_program = (isset($_GET['page']) && $_GET['page'] == 'add_admin_form_student_program_content');
+
+    // Luego, definimos la condición para 'section_tab'
+    $is_programs_tab = (isset($_GET['from']) && $_GET['from'] == 'programs');
+    $is_empty_tab = (!isset($_GET['section_tab']) || empty($_GET['section_tab']));
+
+    // Combinamos todas las condiciones
+    if ($is_student_program && ($is_programs_tab || $is_empty_tab)) {
+        // Código a ejecutar si la condición se cumple
+        wp_enqueue_script('student-program', plugins_url('edusystem') . '/admin/assets/js/student-program.js', array('jquery'), $version, true);
+
+        wp_localize_script('student-program', 'ajax_object', [
+            'url_ajax' => admin_url('admin-ajax.php')
+        ]);
+    }
+
+    $is_mention_from = (isset($_GET['from']) && $_GET['from'] == 'mentions');
+    $is_mention_tab = (isset($_GET['section_tab']) && $_GET['section_tab'] == 'mentions');
+
+    if ($is_student_program && ($is_mention_from || $is_mention_tab)) {
         wp_enqueue_script('mention', plugins_url('edusystem') . '/admin/assets/js/mention.js', array('jquery'), $version, true);
 
         wp_localize_script('mention', 'ajax_object', [
@@ -306,7 +326,10 @@ function aes_scripts_admin()
         ]);
     }
 
-    if ((isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_student_program_content') && (isset($_GET['from']) && !empty($_GET['from']) && $_GET['from'] == 'careers')) {
+    $is_career_from = (isset($_GET['from']) && $_GET['from'] == 'careers');
+    $is_career_tab = (isset($_GET['section_tab']) && $_GET['section_tab'] == 'careers');
+
+    if ($is_student_program && ($is_career_from || $is_career_tab)) {
         wp_enqueue_script('career', plugins_url('edusystem') . '/admin/assets/js/career.js', array('jquery'), $version, true);
 
         wp_localize_script('career', 'ajax_object', [
