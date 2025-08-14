@@ -147,6 +147,10 @@ function show_report_comissions()
     $payments_data = $data['payments_data'];
     $alliances_headers = $data['alliances_headers'];
 
+    $data_new = get_new_student_payments_table_data($dates[0], $dates[1]);
+    $payments_data_new = $data_new['payments_data'];
+    $alliances_headers_new = $data_new['alliances_headers'];
+
     $list_comissions_institute = new TT_Summary_Comissions_Institute_List_Table;
     $list_comissions_institute->prepare_items();
 
@@ -502,6 +506,233 @@ function get_orders($start, $end)
     ];
 }
 
+function get_new_student_payments_table_data($start, $end)
+{
+    global $wpdb;
+
+    // Define las constantes globales
+    $FEE_INSCRIPTION = FEE_INSCRIPTION;
+    $STATUS_COMPLETED = 1;
+
+    // Define los nombres de las tablas
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+    $table_students = $wpdb->prefix . 'students';
+    $table_programs = $wpdb->prefix . 'programs';
+    $table_grades = $wpdb->prefix . 'grades';
+    $table_alliances = $wpdb->prefix . 'alliances';
+
+    // 1. Consulta los pagos y los une con la información del estudiante, programa, etc.
+    $sql = $wpdb->prepare(
+        "SELECT 
+            -- 1. Selecciona columnas explícitas en lugar de p.*
+            p.id AS payment_id, p.amount, p.payment_date, p.cuote, 
+            
+            -- Columnas de otras tablas
+            CONCAT_WS(' ', s.last_name, s.middle_last_name, s.name, s.middle_name) AS student_name_full,
+            pr.name AS program_name,
+            s.name_institute,
+            g.name AS grade_name,
+            s.country
+
+        FROM {$table_student_payments} AS p
+        
+        -- 2. Usa INNER JOIN si un pago SIEMPRE debe tener un estudiante
+        INNER JOIN {$table_students} AS s ON p.student_id = s.id
+        
+        -- LEFT JOIN se mantiene si un estudiante puede no tener programa o grado
+        LEFT JOIN {$table_programs} AS pr ON s.program_id = pr.identificator
+        LEFT JOIN {$table_grades} AS g ON s.grade_id = g.id
+        
+        WHERE p.status_id = %d
+        AND p.cuote = %d
+        -- 3. Usa un formato de fecha más preciso y eficiente
+        AND p.payment_date >= %s 
+        AND p.payment_date < %s
+        
+        ORDER BY s.last_name, s.middle_last_name, s.name, s.middle_name",
+        1, // status_id
+        1, // cuote
+        $start, // Ej: '2025-08-01'
+        $end // Ej: '2025-09-01' (el día DESPUÉS del final de tu rango)
+    );
+
+    $payments = $wpdb->get_results($sql);
+
+    // Inicializa los arrays para los resultados
+    $payments_data = []; // Datos agrupados por estudiante
+    $unique_alliance_ids = []; // IDs de alianzas únicos para la consulta de nombres
+    $global_calculated_amounts = [ // Totales globales
+        'fee_inscription' => 0,
+        'tuition_amount' => 0,
+        'total_amount' => 0,
+        'alliance_fees' => [],
+        'institute_fee' => 0, // Total global para institute_fee
+    ];
+
+    // Contador para los pagos de matrícula por estudiante
+    $tuition_payment_counts = [];
+
+    // Si no hay pagos, retorna la estructura vacía
+    if (empty($payments)) {
+        return [
+            'payments_data' => [],
+            'alliances_headers' => [],
+            'global_calculated_amounts' => $global_calculated_amounts
+        ];
+    }
+
+    // Antes de procesar los pagos, obtenemos todos los IDs de alianzas únicos
+    foreach ($payments as $payment) {
+        if (!empty($payment->alliances)) {
+            $alliances_data = json_decode($payment->alliances, true);
+            if (is_array($alliances_data)) {
+                foreach ($alliances_data as $alliance) {
+                    if (isset($alliance['id']) && !in_array($alliance['id'], $unique_alliance_ids)) {
+                        $unique_alliance_ids[] = $alliance['id'];
+                    }
+                }
+            }
+        }
+    }
+
+    // 2. Obtiene los nombres de las alianzas para los encabezados y para mapear IDs a nombres
+    $alliances_headers = [];
+    $alliances_name_map = [];
+    if (!empty($unique_alliance_ids)) {
+        $placeholders = implode(', ', array_fill(0, count($unique_alliance_ids), '%d'));
+        $sql_alliances = $wpdb->prepare(
+            "SELECT id, name FROM {$table_alliances} WHERE id IN ($placeholders)",
+            ...$unique_alliance_ids
+        );
+        $alliances_data_db = $wpdb->get_results($sql_alliances, ARRAY_A);
+        foreach ($alliances_data_db as $alliance) {
+            $alliances_headers[$alliance['id']] = $alliance['name'];
+            $alliances_name_map[$alliance['id']] = $alliance['name'];
+        }
+    }
+
+    // 3. Procesa los resultados y los agrupa en PHP
+    foreach ($payments as $payment) {
+        $student_id = $payment->student_id;
+
+        // Inicializa el array del estudiante si aún no existe
+        if (!isset($payments_data[$student_id])) {
+            $payments_data[$student_id] = [
+                'student_info' => [
+                    'student_name' => trim($payment->student_name_full),
+                    'program' => $payment->program_name,
+                    'institute_name' => $payment->name_institute,
+                    'grade' => $payment->grade_name,
+                    'country' => $payment->country,
+                    'payment_date' => '', // Inicializa la fecha de pago
+                    'payment_type' => '',
+                    'payment_method' => '', // Nuevo: Inicializa el método de pago
+                    'alliance_names' => '', // Nuevo: Inicializa los nombres de las alianzas
+                ],
+                'calculated_amounts' => [
+                    'initial_fee_usd' => 0,
+                    'tuition_amount_usd' => 0,
+                    'total_amount_usd' => 0,
+                    'alliance_fees' => [],
+                    'institute_fee' => 0, // Total por estudiante para institute_fee
+                ],
+                'payments' => [],
+                'has_credit_payment' => false // Nuevo flag para pagos a crédito
+            ];
+            // Inicializa el contador de pagos de matrícula para el nuevo estudiante
+            $tuition_payment_counts[$student_id] = 0;
+        }
+
+        $payments_data[$student_id]['payments'][] = $payment;
+
+        if (!empty($payment->alliances)) {
+            $alliances_data = json_decode($payment->alliances, true);
+            if (is_array($alliances_data)) {
+                $current_student_alliance_names = [];
+                foreach ($alliances_data as $alliance) {
+                    if (isset($alliance['id']) && isset($alliance['calculated_fee_amount'])) {
+                        // Agrega la comisión de la alianza al total del estudiante y al global
+                        $payments_data[$student_id]['calculated_amounts']['alliance_fees'][$alliance['id']] =
+                            ($payments_data[$student_id]['calculated_amounts']['alliance_fees'][$alliance['id']] ?? 0) + (float) $alliance['calculated_fee_amount'];
+
+                        $global_calculated_amounts['alliance_fees'][$alliance['id']] =
+                            ($global_calculated_amounts['alliance_fees'][$alliance['id']] ?? 0) + (float) $alliance['calculated_fee_amount'];
+
+                        // Nuevo: Agrega el nombre de la alianza al estudiante actual
+                        if (isset($alliances_name_map[$alliance['id']])) {
+                            $current_student_alliance_names[] = $alliances_name_map[$alliance['id']];
+                        }
+                    }
+                }
+                // Une los nombres de alianzas únicos con una coma
+                $payments_data[$student_id]['student_info']['alliance_names'] = implode(', ', array_unique($current_student_alliance_names));
+            }
+        }
+
+        if (isset($payment->product_id) && $payment->product_id == $FEE_INSCRIPTION) {
+            $payments_data[$student_id]['calculated_amounts']['initial_fee_usd'] += (float) $payment->amount;
+            $global_calculated_amounts['fee_inscription'] += (float) $payment->amount;
+        }
+
+        if (isset($payment->status_id) && $payment->status_id == $STATUS_COMPLETED) {
+            if ($payment->product_id != $FEE_INSCRIPTION) {
+                $payments_data[$student_id]['calculated_amounts']['tuition_amount_usd'] += (float) $payment->amount;
+                $global_calculated_amounts['tuition_amount'] += (float) $payment->amount;
+                // Incrementa el contador de pagos de matrícula
+                $tuition_payment_counts[$student_id]++;
+            }
+
+            // Agrega el `institute_fee` para los pagos completados
+            if (isset($payment->institute_fee)) {
+                $payments_data[$student_id]['calculated_amounts']['institute_fee'] += (float) $payment->institute_fee;
+                $global_calculated_amounts['institute_fee'] += (float) $payment->institute_fee;
+            }
+
+            // Asigna la fecha de pago si el pago está completado
+            $payments_data[$student_id]['student_info']['payment_date'] = $payment->date_payment;
+
+            // Obtiene el método de pago desde la orden de WooCommerce
+            if (isset($payment->order_id) && function_exists('wc_get_order')) {
+                $order = wc_get_order($payment->order_id);
+                if ($order) {
+                    $payments_data[$student_id]['student_info']['payment_method'] = $order->get_payment_method_title();
+                }
+            }
+        }
+
+        // Revisa si el pago actual es un pago a crédito (cuota > 1)
+        if (isset($payment->cuote) && $payment->cuote > 1) {
+            $payments_data[$student_id]['has_credit_payment'] = true;
+        }
+    }
+
+    // 4. Calcula los totales de los estudiantes y el tipo de pago una vez que todos los pagos han sido procesados.
+    foreach ($payments_data as $student_id => &$student_data) {
+        $student_data['calculated_amounts']['total_amount_usd'] =
+            $student_data['calculated_amounts']['initial_fee_usd'] +
+            $student_data['calculated_amounts']['tuition_amount_usd'];
+
+        // Suma el total global solo una vez por estudiante
+        $global_calculated_amounts['total_amount'] += $student_data['calculated_amounts']['total_amount_usd'];
+
+        // Determina el tipo de pago usando el nuevo flag
+        if ($student_data['has_credit_payment']) {
+            $student_data['student_info']['payment_type'] = __('Credit', 'edusystem');
+        } else if ($student_data['calculated_amounts']['initial_fee_usd'] > 0 && $student_data['calculated_amounts']['tuition_amount_usd'] == 0) {
+            $student_data['student_info']['payment_type'] = __('Initial fee only', 'edusystem');
+        } else {
+            $student_data['student_info']['payment_type'] = __('Complete', 'edusystem');
+        }
+    }
+
+
+    return [
+        'payments_data' => $payments_data,
+        'alliances_headers' => $alliances_headers,
+        'global_calculated_amounts' => $global_calculated_amounts,
+    ];
+}
+
 function get_student_payments_table_data($start, $end)
 {
     global $wpdb;
@@ -521,7 +752,7 @@ function get_student_payments_table_data($start, $end)
     $sql = $wpdb->prepare(
         "SELECT 
             p.*,
-            CONCAT_WS(' ', s.last_name, s.middle_last_name, s.name, s.middle_name) AS student_name_full,
+            TRIM(CONCAT(COALESCE(s.last_name, ''), ' ', COALESCE(s.middle_last_name, ''), ' ', COALESCE(s.name, ''), ' ', COALESCE(s.middle_name, ''))) AS student_name_full,
             pr.name AS program_name,
             s.name_institute,
             g.name AS grade_name,
@@ -724,7 +955,7 @@ function get_institute_payments_data($start, $end)
 
     // Consulta los pagos filtrando por fecha y solo para pagos completados
     $sql = $wpdb->prepare(
-        "SELECT 
+        "SELECT
             p.institute_fee,
             s.name_institute
         FROM {$table_student_payments} AS p
