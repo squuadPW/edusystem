@@ -140,29 +140,22 @@ function show_report_comissions()
         $date_array = explode(',', $date);
     }
 
-    if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
-        if ($_GET['section_tab'] == 'college_allies_comissions') {
-            $filter = $_POST['typeFilter'] ?? 'this-month';
-            $custom = $_POST['custom'] ?? false;
-            $dates = get_dates_search($filter, $custom);
-            $data = get_student_payments_table_data($dates[0], $dates[1]);
-            $payments_data = $data['payments_data'];
-            $alliances_headers = $data['alliances_headers'];
+    $filter = $_POST['typeFilter'] ?? 'this-month';
+    $custom = $_POST['custom'] ?? false;
+    $dates = get_dates_search($filter, $custom);
+    $data = get_student_payments_table_data($dates[0], $dates[1]);
+    $payments_data = $data['payments_data'];
+    $alliances_headers = $data['alliances_headers'];
 
-            include(plugin_dir_path(__FILE__) . 'templates/report-comissions.php');
-        } else if ($_GET['section_tab'] == 'new_registrations') {
-            $list_comissions = new TT_Non_Enrolled_List_Table;
-            $list_comissions->prepare_items();
-            include(plugin_dir_path(__FILE__) . 'templates/report-comissions.php');
-        }
-    } else {
-        $list_comissions_institute = new TT_Summary_Comissions_Institute_List_Table;
-        $list_comissions_institute->prepare_items();
+    $list_comissions_institute = new TT_Summary_Comissions_Institute_List_Table;
+    $list_comissions_institute->prepare_items();
 
-        $list_comissions_alliances = new TT_Summary_Comissions_Alliance_List_Table;
-        $list_comissions_alliances->prepare_items();
-        include(plugin_dir_path(__FILE__) . 'templates/report-comissions.php');
-    }
+    $list_comissions_alliances = new TT_Summary_Comissions_Alliance_List_Table;
+    $list_comissions_alliances->prepare_items();
+
+    $list_comissions = new TT_Non_Enrolled_List_Table;
+    $list_comissions->prepare_items();
+    include(plugin_dir_path(__FILE__) . 'templates/report-comissions.php');
 }
 
 function show_report_billing_ranking()
