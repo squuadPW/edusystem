@@ -121,6 +121,9 @@
 							<th scope="col" id="territory" class="manage-column column-title sortable asc">
 								<?= __('Territory', 'edusystem') ?>
 							</th>
+							<th scope="col" id="name_partnership" class="manage-column column-title sortable asc">
+								<?= __('Name of partnership/seller', 'edusystem') ?>
+							</th>
 							<th scope="col" id="payment_type" class="manage-column column-title sortable asc">
 								<?= __('Payment type', 'edusystem') ?>
 							</th>
@@ -171,6 +174,9 @@
 								<td class="title column-title" data-colname="<?= __('Territory', 'edusystem') ?>">
 									<?= esc_html($student_data['student_info']['country']) ?>
 								</td>
+								<td class="title column-title" data-colname="<?= __('Name of partnership/seller', 'edusystem') ?>">
+									<?= esc_html($student_data['student_info']['alliance_names']) ?>
+								</td>
 								<td class="title column-title" data-colname="<?= __('Payment type', 'edusystem') ?>">
 									<?= esc_html($student_data['student_info']['payment_type']) ?>
 								</td>
@@ -218,7 +224,7 @@
 					</tbody>
 					<tfoot id="tfoot-report-comissions">
 						<tr>
-							<th colspan="6" class="manage-column column-title text-right">
+							<th colspan="7" class="manage-column column-title text-right">
 								<strong><?= __('Total', 'edusystem') ?>:</strong>
 							</th>
 							<th class="manage-column column-title">
