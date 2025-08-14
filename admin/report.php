@@ -552,7 +552,8 @@ function get_student_payments_table_data($start, $end)
         'fee_inscription' => 0,
         'tuition_amount' => 0,
         'total_amount' => 0,
-        'alliance_fees' => []
+        'alliance_fees' => [],
+        'institute_fee' => 0, // Nuevo: Total global para institute_fee
     ];
     
     // Contador para los pagos de matrícula por estudiante
@@ -570,7 +571,7 @@ function get_student_payments_table_data($start, $end)
     // 2. Procesa los resultados y los agrupa en PHP
     foreach ($payments as $payment) {
         $student_id = $payment->student_id;
-
+        $date = $payment->status_id == $STATUS_COMPLETED ? $payment->date_payment : $date;
         // Inicializa el array del estudiante si aún no existe
         if (!isset($payments_data[$student_id])) {
             $payments_data[$student_id] = [
@@ -580,14 +581,15 @@ function get_student_payments_table_data($start, $end)
                     'institute_name' => $payment->name_institute,
                     'grade' => $payment->grade_name,
                     'country' => $payment->country,
-                    'payment_date' => $payment->created_at,
+                    'payment_date' => $date,
                     'payment_type' => ''
                 ],
                 'calculated_amounts' => [
                     'initial_fee_usd' => 0,
                     'tuition_amount_usd' => 0,
                     'total_amount_usd' => 0,
-                    'alliance_fees' => []
+                    'alliance_fees' => [],
+                    'institute_fee' => 0, // Nuevo: Total por estudiante para institute_fee
                 ],
                 'payments' => [],
                 'has_credit_payment' => false // Nuevo flag para pagos a crédito
@@ -629,7 +631,13 @@ function get_student_payments_table_data($start, $end)
             $tuition_payment_counts[$student_id]++;
         }
         
-        // **NUEVO:** Revisa si el pago actual es un pago a crédito (cuota > 1)
+        // Agrega el `institute_fee` para los pagos completados
+        if (isset($payment->status_id) && $payment->status_id == $STATUS_COMPLETED && isset($payment->institute_fee)) {
+            $payments_data[$student_id]['calculated_amounts']['institute_fee'] += (float) $payment->institute_fee;
+            $global_calculated_amounts['institute_fee'] += (float) $payment->institute_fee;
+        }
+        
+        // Revisa si el pago actual es un pago a crédito (cuota > 1)
         if (isset($payment->cuote) && $payment->cuote > 1) {
             $payments_data[$student_id]['has_credit_payment'] = true;
         }
@@ -644,7 +652,7 @@ function get_student_payments_table_data($start, $end)
         // Suma el total global solo una vez por estudiante
         $global_calculated_amounts['total_amount'] += $student_data['calculated_amounts']['total_amount_usd'];
 
-        // **NUEVO:** Determina el tipo de pago usando el nuevo flag
+        // Determina el tipo de pago usando el nuevo flag
         if ($student_data['has_credit_payment']) {
             $student_data['student_info']['payment_type'] = __('Credit', 'edusystem');
         } else if ($student_data['calculated_amounts']['initial_fee_usd'] > 0 && $student_data['calculated_amounts']['tuition_amount_usd'] == 0) {

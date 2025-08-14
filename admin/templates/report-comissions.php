@@ -133,6 +133,9 @@
 							<th scope="col" id="total_amount" class="manage-column column-title sortable asc">
 								<?= __('Total amount paid USD', 'edusystem') ?>
 							</th>
+							<th scope="col" id="institute_fee" class="manage-column column-title sortable asc">
+								<?= __('Institute comission amount', 'edusystem') ?>
+							</th>
 							<th scope="col" id="payment_date" class="manage-column column-title sortable asc">
 								<?= __('Payment date', 'edusystem') ?>
 							</th>
@@ -177,10 +180,12 @@
 								<td class="title column-title" data-colname="<?= __('Total amount paid USD', 'edusystem') ?>">
 									<?= number_format($student_data['calculated_amounts']['total_amount_usd'], 2) ?>
 								</td>
+								<td class="title column-title" data-colname="<?= __('Initial fee USD', 'edusystem') ?>">
+									<?= number_format($student_data['calculated_amounts']['institute_fee'], 2) ?>
+								</td>
 								<td class="title column-title" data-colname="<?= __('Payment date', 'edusystem') ?>">
 									<?= esc_html($student_data['student_info']['payment_date']) ?>
 								</td>
-
 								<?php foreach ($alliances_headers as $id => $name) { ?>
 									<td class="title column-title" data-colname="<?= esc_attr($name) ?>">
 										<?php
@@ -218,6 +223,9 @@
 							</th>
 							<th class="manage-column column-title">
 								<strong><?= number_format($data['global_calculated_amounts']['total_amount'], 2) ?></strong>
+							</th>
+							<th class="manage-column column-title">
+								<strong><?= number_format($data['global_calculated_amounts']['institute_fee'], 2) ?></strong>
 							</th>
 							<th class="manage-column column-title"></th>
 							<?php foreach ($alliances_headers as $id => $name) { ?>
