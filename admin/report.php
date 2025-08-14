@@ -546,8 +546,8 @@ function get_new_student_payments_table_data($start, $end)
         WHERE p.status_id = %d
         AND p.cuote = %d
         -- 3. Usa un formato de fecha más preciso y eficiente
-        AND p.payment_date >= %s 
-        AND p.payment_date < %s
+        AND p.date_payment >= %s 
+        AND p.date_payment < %s
         
         ORDER BY s.last_name, s.middle_last_name, s.name, s.middle_name",
         1, // status_id
