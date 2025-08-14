@@ -1413,6 +1413,42 @@ h2 {
   padding: 10px 20px !important;
 }
 
+.seccion-input {
+
+    .seccion-title {
+        color:#000;
+    }
+
+    .group-input {
+        margin: 0px 5px;
+    }
+
+    .space-offer {
+        margin-top: 0px;
+    }
+}
+
+.group-input {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.space-offer {
+    flex: 1;
+    font-weight:400;
+
+    @media ( max-width: 520px ) {
+        min-width: 100% !important;
+
+        &.active {
+			display: flex;
+			gap: 10px;
+			margin-bottom: 0px
+		}
+    }
+}
+
 .container-programs {
 
     .container-button {
@@ -1553,39 +1589,9 @@ h2 {
                     display: none;
                 }
 
-                .seccion-input {
-
-                    .seccion-title {
-                        color:#000;
-                    }
-
-                    .group-input {
-                        margin: 0px 5px;
-                    }
-
-                    .space-offer {
-                        margin-top: 0px;
-                    }
-                }
-
                 .group-input {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 10px;
 
                     .space-offer {
-                        flex: 1;
-                        font-weight:400;
-
-                        @media ( max-width: 520px ) {
-                            min-width: 100% !important;
-
-                            &.active {
-                                display: flex;
-                                gap: 10px;
-                                margin-bottom: 0px
-                            }
-                        }
 
                         &:has( input[type="checkbox"] ) {
                             max-width: max-content;
@@ -1619,27 +1625,9 @@ h2 {
 			border-bottom: 1px solid #8080805c;
 		}
 
-		.group-input {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 10px;
-		}
-
 		.space-offer {
-			display: flex;
+            display: flex;
 			flex-direction: column;
-			flex: 1;
-			font-weight:400;
-
-			@media ( max-width: 520px ) {
-				min-width: 100% !important;
-
-				&.active {
-					display: flex;
-					gap: 10px;
-					margin-bottom: 0px
-				}
-			}
 
 			&.active {
 				max-width: 100%;
@@ -1659,6 +1647,56 @@ h2 {
 		}
 	}
 }
+
+#period-cuts-container #cuts {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    padding: 10px 0px;
+
+    .container-button {
+        display:flex;
+        flex-direction:row;
+        justify-content: flex-end;
+        gap:10px;
+        margin-bottom: 10px;
+    }
+
+    .cut {
+        margin: 7px 0px;
+        border: 1px solid #8080805c;
+        border-radius: 5px;
+        padding: 5px 15px;
+        position: relative;
+
+        .id {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            padding: 0px 15px;
+            background-color: #ccc;
+            border-radius: 0px 0px 0px 5px;
+            font-size: 12px;
+        }
+
+        &#template-cut {
+            display: none;
+        }
+
+        .group-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            @media ( max-width: 520px ) {
+                gap: 0px;
+                flex-wrap: wrap;
+                flex-direction: column;
+            }
+        }
+    }
+}
+
 
 #toplevel_page_logo_based_menu {
     /* ESTILOS BASE PARA MÓVILES (O PANTALLAS PEQUEÑAS) */

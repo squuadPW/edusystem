@@ -322,6 +322,16 @@ function aes_scripts_admin()
         ]);
     }
 
+    if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_academic_periods_content') {
+        wp_enqueue_script(
+            'academic_periods',
+            plugins_url('edusystem') . '/admin/assets/js/academic_periods.js',
+            ['jquery'], // Asegura que jQuery y Select2 se carguen primero
+            $version,
+            true
+        );
+    }
+
 }
 
 add_action('admin_enqueue_scripts', 'aes_scripts_admin', 3);
