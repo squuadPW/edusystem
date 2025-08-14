@@ -107,7 +107,7 @@
 						<tr>
 							<th scope="col" id="student_name"
 								class="manage-column column-title column-primary sortable asc">
-								<?= __('Nombre del alumno', 'edusystem') ?>
+								<?= __('Student\'s name', 'edusystem') ?>
 							</th>
 							<th scope="col" id="program" class="manage-column column-title sortable asc">
 								<?= __('Program', 'edusystem') ?>
@@ -116,13 +116,10 @@
 								<?= __('Name of the educational institution', 'edusystem') ?>
 							</th>
 							<th scope="col" id="student_grade" class="manage-column column-title sortable asc">
-								<?= __('Grado del estudiante', 'edusystem') ?>
+								<?= __('Student grade', 'edusystem') ?>
 							</th>
 							<th scope="col" id="territory" class="manage-column column-title sortable asc">
 								<?= __('Territory', 'edusystem') ?>
-							</th>
-							<th scope="col" id="partner" class="manage-column column-title sortable asc">
-								<?= __('Name of the partner/vendor', 'edusystem') ?>
 							</th>
 							<th scope="col" id="payment_type" class="manage-column column-title sortable asc">
 								<?= __('Payment type', 'edusystem') ?>
@@ -139,11 +136,9 @@
 							<th scope="col" id="payment_date" class="manage-column column-title sortable asc">
 								<?= __('Payment date', 'edusystem') ?>
 							</th>
-							<th scope="col" id="income_account" class="manage-column column-title sortable asc">
-								<?= __('Income account', 'edusystem') ?>
-							</th>
 							<?php foreach ($alliances_headers as $id => $name) { ?>
-								<th scope="col" id="alliance_<?= $id ?>"><?= $name ?></th>
+								<th scope="col" id="alliance_<?= $id ?>"><?= __('Alliance commission amount /', 'edusystem') ?>
+									<?= $name ?></th>
 							<?php } ?>
 							<th scope="col" id="observations" class="manage-column column-title sortable asc">
 								<?= __('Administrative observations', 'edusystem') ?>
@@ -151,52 +146,45 @@
 						</tr>
 					</thead>
 					<tbody id="the-list">
-						<?php foreach ($payments_data as $payment) { ?>
+						<?php foreach ($payments_data as $student_data) { ?>
 							<tr>
-								<td class="title column-title" data-colname="<?= __('Nombre del alumno', 'edusystem') ?>">
-									<?= esc_html($payment->student_name) ?>
+								<td class="title column-title column-primary" data-colname="<?= __('Nombre del alumno', 'edusystem') ?>">
+									<?= esc_html($student_data['student_info']['student_name']) ?>
+									<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Program', 'edusystem') ?>">
-									<?= esc_html($payment->program) ?>
+									<?= esc_html($student_data['student_info']['program']) ?>
 								</td>
 								<td class="title column-title"
 									data-colname="<?= __('Name of the educational institution', 'edusystem') ?>">
-									<?= esc_html($payment->institute_name) ?>
+									<?= esc_html($student_data['student_info']['institute_name']) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Grado del estudiante', 'edusystem') ?>">
-									<?= esc_html($payment->grade) ?>
+									<?= esc_html($student_data['student_info']['grade']) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Territory', 'edusystem') ?>">
-									<?= esc_html($payment->country) ?>
-								</td>
-								<td class="title column-title"
-									data-colname="<?= __('Name of the partner/vendor', 'edusystem') ?>">
-									<?= esc_html($payment->partner) ?>
+									<?= esc_html($student_data['student_info']['country']) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Payment type', 'edusystem') ?>">
-									<?= esc_html($payment->payment_type) ?>
+									<?= esc_html($student_data['student_info']['payment_type']) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Initial fee USD', 'edusystem') ?>">
-									<?= number_format($payment->initial_fee_usd, 2) ?>
+									<?= number_format($student_data['calculated_amounts']['initial_fee_usd'], 2) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Tuition amount paid USD', 'edusystem') ?>">
-									<?= number_format($payment->tuition_amount_usd, 2) ?>
+									<?= number_format($student_data['calculated_amounts']['tuition_amount_usd'], 2) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Total amount paid USD', 'edusystem') ?>">
-									<?= number_format($payment->total_amount_usd, 2) ?>
+									<?= number_format($student_data['calculated_amounts']['total_amount_usd'], 2) ?>
 								</td>
 								<td class="title column-title" data-colname="<?= __('Payment date', 'edusystem') ?>">
-									<?= esc_html($payment->payment_date) ?>
-								</td>
-								<td class="title column-title" data-colname="<?= __('Income account', 'edusystem') ?>">
-									<?= esc_html($payment->income_account) ?>
+									<?= esc_html($student_data['student_info']['payment_date']) ?>
 								</td>
 
 								<?php foreach ($alliances_headers as $id => $name) { ?>
 									<td class="title column-title" data-colname="<?= esc_attr($name) ?>">
 										<?php
-										$fee_key = "alliance_" . $id;
-										$fee = isset($payment->alliances_fees->{$fee_key}) ? $payment->alliances_fees->{$fee_key} : 0;
+										$fee = $student_data['calculated_amounts']['alliance_fees'][$id] ?? 0;
 										echo number_format($fee, 2);
 										?>
 									</td>
@@ -204,14 +192,45 @@
 
 								<td class="title column-title"
 									data-colname="<?= __('Administrative observations', 'edusystem') ?>">
-									<?= esc_html($payment->observations) ?>
+									<?php
+									$observations_array = [];
+									foreach ($student_data['payments'] as $payment) {
+										$date = isset($payment->date_payment) && !empty($payment->date_payment) ? $payment->date_payment : $payment->date_next_payment;
+										$text = $payment->product_id == FEE_INSCRIPTION ? __('Registration fee') : ($payment->product_id == FEE_GRADUATION ? __('Graduation fee') : __('Quota', 'edusystem') . ' ' . esc_html($payment->cuote));
+										$observations_array[] = $text . ": " . wc_price($payment->amount) . " "  . __('on date', 'edusystem') . " "  . $date;
+									}
+									echo implode(', ', $observations_array);
+									?>
 								</td>
 							</tr>
 						<?php } ?>
 					</tbody>
 					<tfoot>
+						<tr>
+							<th colspan="6" class="manage-column column-title text-right">
+								<strong><?= __('Total', 'edusystem') ?>:</strong>
+							</th>
+							<th class="manage-column column-title">
+								<strong><?= number_format($data['global_calculated_amounts']['fee_inscription'], 2) ?></strong>
+							</th>
+							<th class="manage-column column-title">
+								<strong><?= number_format($data['global_calculated_amounts']['tuition_amount'], 2) ?></strong>
+							</th>
+							<th class="manage-column column-title">
+								<strong><?= number_format($data['global_calculated_amounts']['total_amount'], 2) ?></strong>
+							</th>
+							<th class="manage-column column-title"></th>
+							<?php foreach ($alliances_headers as $id => $name) { ?>
+								<th class="manage-column column-title">
+									<strong><?= number_format($data['global_calculated_amounts']['alliance_fees'][$id] ?? 0, 2) ?></strong>
+								</th>
+							<?php } ?>
+							<th class="manage-column column-title"></th>
+						</tr>
 					</tfoot>
 				</table>
+
+
 			</div>
 		<?php } ?>
 
