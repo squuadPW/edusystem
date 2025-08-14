@@ -524,36 +524,20 @@ function get_new_student_payments_table_data($start, $end)
     // 1. Consulta los pagos y los une con la información del estudiante, programa, etc.
     $sql = $wpdb->prepare(
         "SELECT 
-            -- 1. Selecciona columnas explícitas en lugar de p.*
-            p.id AS payment_id, p.amount, p.date_payment, p.cuote, 
-            
-            -- Columnas de otras tablas
-            CONCAT_WS(' ', s.last_name, s.middle_last_name, s.name, s.middle_name) AS student_name_full,
+            p.*,
+            TRIM(CONCAT(COALESCE(s.last_name, ''), ' ', COALESCE(s.middle_last_name, ''), ' ', COALESCE(s.name, ''), ' ', COALESCE(s.middle_name, ''))) AS student_name_full,
             pr.name AS program_name,
             s.name_institute,
             g.name AS grade_name,
             s.country
-
         FROM {$table_student_payments} AS p
-        
-        -- 2. Usa INNER JOIN si un pago SIEMPRE debe tener un estudiante
-        INNER JOIN {$table_students} AS s ON p.student_id = s.id
-        
-        -- LEFT JOIN se mantiene si un estudiante puede no tener programa o grado
+        JOIN {$table_students} AS s ON p.student_id = s.id
         LEFT JOIN {$table_programs} AS pr ON s.program_id = pr.identificator
         LEFT JOIN {$table_grades} AS g ON s.grade_id = g.id
-        
-        WHERE p.status_id = %d
-        AND p.cuote = %d
-        -- 3. Usa un formato de fecha más preciso y eficiente
-        AND p.date_payment >= %s 
-        AND p.date_payment < %s
-        
+        WHERE p.created_at BETWEEN %s AND %s
         ORDER BY s.last_name, s.middle_last_name, s.name, s.middle_name",
-        1, // status_id
-        1, // cuote
-        $start, // Ej: '2025-08-01'
-        $end // Ej: '2025-09-01' (el día DESPUÉS del final de tu rango)
+        $start,
+        $end
     );
 
     $payments = $wpdb->get_results($sql);
