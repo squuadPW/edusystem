@@ -553,7 +553,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // --- 2. Hoja 1: Resumen de Comisiones (Procesamiento funcional) ---
       const summaryTables = document.querySelectorAll(
-        ".wp-list-table:not(#table_comissions_allies)"
+        ".wp-list-table:not(#table_comissions_allies):not(#table_new_registration)"
       );
       const summaryHeaders = {
         schools: [
@@ -605,8 +605,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // --- 4. Hoja 3: Nuevas Registraciones (Vacía) ---
-      const ws_registration = XLSX.utils.aoa_to_sheet([]);
-      XLSX.utils.book_append_sheet(wb, ws_registration, "New registrations");
+      const newRegistrationsTable = document.getElementById("table_new_registration");
+      const newRegistrationsData = processHtmlTableToArray(newRegistrationsTable);
+      if (newRegistrationsData.length > 0) {
+        const ws_comissions = XLSX.utils.aoa_to_sheet(newRegistrationsData);
+        XLSX.utils.book_append_sheet(wb, ws_comissions, "New registrations");
+      }
 
       // --- 5. Exportar el Archivo ---
       XLSX.writeFile(wb, `${fileName}.xlsx`);
