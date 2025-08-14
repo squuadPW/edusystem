@@ -519,15 +519,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const cleanCellText = (cell) =>
         cell.textContent
           .replace(/Show more details|Mostrar más detalles/g, "")
-          .trim();
+          .trim(); // Función interna para procesar una fila y expandir los colspans
 
-      // Función interna para procesar una fila y expandir los colspans
       const processRow = (tr) => {
         const rowData = [];
         Array.from(tr.querySelectorAll("th, td")).forEach((cell) => {
           rowData.push(cleanCellText(cell)); // Agrega el contenido de la celda actual
-          const colspan = parseInt(cell.getAttribute("colspan"), 10) || 1;
-          // Si colspan > 1, agrega celdas vacías para rellenar el espacio
+          const colspan = parseInt(cell.getAttribute("colspan"), 10) || 1; // Si colspan > 1, agrega celdas vacías para rellenar el espacio
           for (let i = 1; i < colspan; i++) {
             rowData.push("");
           }
@@ -549,9 +547,8 @@ document.addEventListener("DOMContentLoaded", function () {
       // --- 1. Configuración y Creación del Libro ---
       const nameInput = document.querySelector("input[name=name_document]");
       const fileName = nameInput?.value || "Reporte de Comisiones";
-      const wb = XLSX.utils.book_new();
+      const wb = XLSX.utils.book_new(); // --- 2. Hoja 1: Resumen de Comisiones (Procesamiento funcional) ---
 
-      // --- 2. Hoja 1: Resumen de Comisiones (Procesamiento funcional) ---
       const summaryTables = document.querySelectorAll(
         ".wp-list-table:not(#table_comissions_allies):not(#table_new_registration)"
       );
@@ -578,12 +575,10 @@ document.addEventListener("DOMContentLoaded", function () {
                   .replace(/Show more details|Mostrar más detalles/g, "")
                   .trim()
               )
-            );
+            ); // Agrega las filas procesadas a nuestros datos acumulados
 
-          // Agrega las filas procesadas a nuestros datos acumulados
-          data.push(...tableBodyRows);
+          data.push(...tableBodyRows); // Si no es la última tabla, agrega los encabezados de la siguiente sección
 
-          // Si no es la última tabla, agrega los encabezados de la siguiente sección
           if (index < summaryTables.length - 1) {
             data.push(...summaryHeaders.allies);
           }
@@ -594,25 +589,40 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
       const ws_summary = XLSX.utils.aoa_to_sheet(summaryData);
-      XLSX.utils.book_append_sheet(wb, ws_summary, "Summary of commissions");
+      XLSX.utils.book_append_sheet(wb, ws_summary, "Summary of commissions"); // --- Definición de encabezados personalizados para las otras hojas ---
 
-      // --- 3. Hoja 2: Comisiones de Aliados (Usando la función reutilizable) ---
+      const alliesHeader = [
+        ["College and allied commissions"],
+      ];
+      const newRegistrationsHeader = [
+        ["New enrollments obtained"],
+      ]; // --- 3. Hoja 2: Comisiones de Aliados (Usando la función reutilizable) ---
+
       const alliesTable = document.getElementById("table_comissions_allies");
       const alliesData = processHtmlTableToArray(alliesTable);
       if (alliesData.length > 0) {
-        const ws_comissions = XLSX.utils.aoa_to_sheet(alliesData);
+        // Combina el encabezado personalizado con los datos de la tabla
+        const fullAlliesData = [...alliesHeader, ...alliesData];
+        const ws_comissions = XLSX.utils.aoa_to_sheet(fullAlliesData);
         XLSX.utils.book_append_sheet(wb, ws_comissions, "Commissions allies");
-      }
+      } // --- 4. Hoja 3: Nuevas Registraciones (Vacía) ---
 
-      // --- 4. Hoja 3: Nuevas Registraciones (Vacía) ---
-      const newRegistrationsTable = document.getElementById("table_new_registration");
-      const newRegistrationsData = processHtmlTableToArray(newRegistrationsTable);
+      const newRegistrationsTable = document.getElementById(
+        "table_new_registration"
+      );
+      const newRegistrationsData = processHtmlTableToArray(
+        newRegistrationsTable
+      );
       if (newRegistrationsData.length > 0) {
-        const ws_comissions = XLSX.utils.aoa_to_sheet(newRegistrationsData);
+        // Combina el encabezado personalizado con los datos de la tabla
+        const fullNewRegistrationsData = [
+          ...newRegistrationsHeader,
+          ...newRegistrationsData,
+        ];
+        const ws_comissions = XLSX.utils.aoa_to_sheet(fullNewRegistrationsData);
         XLSX.utils.book_append_sheet(wb, ws_comissions, "New registrations");
-      }
+      } // --- 5. Exportar el Archivo ---
 
-      // --- 5. Exportar el Archivo ---
       XLSX.writeFile(wb, `${fileName}.xlsx`);
     };
 
