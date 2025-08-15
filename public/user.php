@@ -136,6 +136,7 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
     if ( $all_student_data_set && $all_program_data_set ) {
 
         $student_id = insert_student($order); // Assuming this function exists and works
+
         insert_register_documents($student_id, sanitize_text_field(wp_unslash($program['initial_grade']))); // Assuming this function exists and works
 
         if (!$order->meta_exists('student_id')) {
@@ -161,7 +162,7 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
     set_institute_in_order($order, $program['institute_id'] ?? null );
 
     // Log the user in automatically
-
+    
     if( !is_admin() && ( is_checkout() /* || is_order_received_page() */ ) ) {
         wp_set_current_user($user_id);
         wp_set_auth_cookie($user_id, true);

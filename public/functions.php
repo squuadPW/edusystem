@@ -888,8 +888,8 @@ function status_changed_payment($order_id, $status_transition_from, $current_sta
         send_notification_staff_particular('New payment received for approval', 'There is a new payment waiting for approval, please login to the platform as soon as possible.', 3);
     }
 
-    $logger = wc_get_logger();
-    $logger->debug('status_changed_payment',['order_id'=>$order_id,'status_order' => $current_status]);
+    /* $logger = wc_get_logger();
+    $logger->debug('status_changed_payment',['order_id'=>$order_id,'status_order' => $current_status]); */
 
     if (!in_array($current_status, ['failed', 'pending'])) {
         status_order_not_completed($order, $order_id, $customer_id, $status_register);
@@ -953,8 +953,8 @@ function status_order_completed($order, $order_id, $customer_id)
  */
 function update_or_create_payment_record(WC_Order_Item_Product $item, int $student_id, int $order_id): void
 {   
-    $logger = wc_get_logger();
-    $logger->debug('update_or_create_payment_record',['order_id' => $order_id]);
+    /* $logger = wc_get_logger();
+    $logger->debug('update_or_create_payment_record',['order_id' => $order_id]); */
 
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
@@ -1166,8 +1166,8 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
  */
 function process_program_payments(WC_Order $order, int $order_id): void
 {   
-    $logger = wc_get_logger();
-    $logger->debug('process_program_payments',['order_id' => $order_id]);
+    /* $logger = wc_get_logger();
+    $logger->debug('process_program_payments',['order_id' => $order_id]); */
 
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
@@ -1223,7 +1223,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
             $student_id,
             $product_id
         ));
-        $logger->debug('existing_record_count', ['existing_record_count' => $existing_record_count]);
+
         // salta el producto si encuentra un registro previo
         if ($existing_record_count > 0) continue;
 
@@ -1395,7 +1395,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
                 'date_next_payment' => $next_payment_date,
             ];
 
-            $logger->debug('cuota_data', ['data' => $data]);
+            // $logger->debug('cuota_data', ['data' => $data]);
 
             $result = $wpdb->insert($table_student_payment, $data);
         }
