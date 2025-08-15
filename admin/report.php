@@ -1068,7 +1068,7 @@ function get_alliance_payments_data($start, $end)
     // 3. Obtiene los nombres de las alianzas
     $placeholders = implode(', ', array_fill(0, count($unique_alliance_ids), '%d'));
     $sql_alliances = $wpdb->prepare(
-        "SELECT id, name FROM {$table_alliances} WHERE id IN ($placeholders)",
+        "SELECT id, `name`, name_legal FROM {$table_alliances} WHERE id IN ($placeholders)",
         ...$unique_alliance_ids
     );
     $alliances_name_map = $wpdb->get_results($sql_alliances, OBJECT_K);
