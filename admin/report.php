@@ -587,7 +587,7 @@ function get_new_student_payments_table_data($start, $end)
     if (!empty($unique_alliance_ids)) {
         $placeholders = implode(', ', array_fill(0, count($unique_alliance_ids), '%d'));
         $sql_alliances = $wpdb->prepare(
-            "SELECT id, name FROM {$table_alliances} WHERE id IN ($placeholders)",
+            "SELECT id, name_legal, `name` FROM {$table_alliances} WHERE id IN ($placeholders)",
             ...$unique_alliance_ids
         );
         $alliances_data_db = $wpdb->get_results($sql_alliances, ARRAY_A);
@@ -804,7 +804,7 @@ function get_student_payments_table_data($start, $end)
     if (!empty($unique_alliance_ids)) {
         $placeholders = implode(', ', array_fill(0, count($unique_alliance_ids), '%d'));
         $sql_alliances = $wpdb->prepare(
-            "SELECT id, name FROM {$table_alliances} WHERE id IN ($placeholders)",
+            "SELECT id, name_legal, `name` FROM {$table_alliances} WHERE id IN ($placeholders)",
             ...$unique_alliance_ids
         );
         $alliances_data_db = $wpdb->get_results($sql_alliances, ARRAY_A);
