@@ -1592,23 +1592,23 @@ a.toplevel_page_logo_based_menu {
 }
 
 .color-header-table-orange .wp-list-table thead th {
-  background-color: #c55a11 !important; /* Un color oscuro para las cabeceras de las columnas */
+  background-color: #f1b388 !important; /* Un color oscuro para las cabeceras de las columnas */
   color: #fff; /* Texto blanco para mayor contraste */
   font-weight: bold;
 }
 .color-header-table-orange .wp-list-table tfoot th {
-  background-color: #c55a11 !important; /* Un color oscuro para las cabeceras de las columnas */
+  background-color: #f1b388 !important; /* Un color oscuro para las cabeceras de las columnas */
   color: #fff; /* Texto blanco para mayor contraste */
   font-weight: bold;
 }
 
 .color-header-table-yellow .wp-list-table thead th {
-  background-color: #bf9000 !important; /* Un color oscuro para las cabeceras de las columnas */
+  background-color: #ffebae !important; /* Un color oscuro para las cabeceras de las columnas */
   color: #fff; /* Texto blanco para mayor contraste */
   font-weight: bold;
 }
 .color-header-table-yellow .wp-list-table tfoot th {
-  background-color: #bf9000 !important; /* Un color oscuro para las cabeceras de las columnas */
+  background-color: #ffebae !important; /* Un color oscuro para las cabeceras de las columnas */
   color: #fff; /* Texto blanco para mayor contraste */
   font-weight: bold;
 }
