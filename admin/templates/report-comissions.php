@@ -86,21 +86,25 @@
 
 		<div style="display: <?= !isset($_GET['section_tab']) ? 'block' : 'none'; ?>;">
 			<h3 class='wp-heading-line' style="margin-bottom: -20px;">
-				<?= __('Commissions payable to schools', 'edusystem') ?>
+				<?= __('Institute Commissions', 'edusystem') ?>
 			</h3>
 			<form action="" id="post-filter" method="get">
 				<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-				<?php $list_comissions_institute->display() ?>
+				<div class="color-header-table-orange">
+					<?php $list_comissions_institute->display() ?>
+				</div>
 			</form>
 
 			<h3 class='wp-heading-line' style="margin-bottom: -20px;"><?= __('Allied Commissions', 'edusystem') ?></h3>
 			<form action="" id="post-filter" method="get">
 				<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-				<?php $list_comissions_alliances->display() ?>
+				<div class="color-header-table-yellow">
+					<?php $list_comissions_alliances->display() ?>
+				</div>
 			</form>
 		</div>
 
-		<div class="wp-scroll-container"
+		<div class="wp-scroll-container table-header-blue"
 			style="display: <?= isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'college_allies_comissions' ? 'block' : 'none'; ?>">
 			<table class="wp-list-table widefat striped" id="table_comissions_allies">
 				<thead>
@@ -183,13 +187,13 @@
 							<td class="title column-title" data-colname="<?= __('Payment type', 'edusystem') ?>">
 								<?= esc_html($student_data['student_info']['payment_type']) ?>
 							</td>
-							<td class="title column-title" data-colname="<?= __('Initial fee USD', 'edusystem') ?>">
+							<td class="title column-title" style="text-align: end;" data-colname="<?= __('Initial fee USD', 'edusystem') ?>">
 								<?= number_format($student_data['calculated_amounts']['initial_fee_usd'], 2) ?>
 							</td>
-							<td class="title column-title" data-colname="<?= __('Tuition amount paid USD', 'edusystem') ?>">
+							<td class="title column-title" style="text-align: end;" data-colname="<?= __('Tuition amount paid USD', 'edusystem') ?>">
 								<?= number_format($student_data['calculated_amounts']['tuition_amount_usd'], 2) ?>
 							</td>
-							<td class="title column-title" data-colname="<?= __('Total amount paid USD', 'edusystem') ?>">
+							<td class="title column-title" style="text-align: end;" data-colname="<?= __('Total amount paid USD', 'edusystem') ?>">
 								<?= number_format($student_data['calculated_amounts']['total_amount_usd'], 2) ?>
 							</td>
 							<td class="title column-title" data-colname="<?= __('Payment date', 'edusystem') ?>">
@@ -198,11 +202,11 @@
 							<td class="title column-title" data-colname="<?= __('Income account', 'edusystem') ?>">
 								<?= esc_html($student_data['student_info']['payment_method']) ?>
 							</td>
-							<td class="title column-title" data-colname="<?= __('Institute comission amount', 'edusystem') ?>">
+							<td class="title column-title" style="text-align: end;" data-colname="<?= __('Institute comission amount', 'edusystem') ?>">
 								<?= number_format($student_data['calculated_amounts']['institute_fee'], 2) ?>
 							</td>
 							<?php foreach ($alliances_headers as $id => $name) { ?>
-								<td class="title column-title" data-colname="<?= esc_attr($name) ?>">
+								<td class="title column-title" style="text-align: end;" data-colname="<?= esc_attr($name) ?>">
 									<?php
 									$fee = $student_data['calculated_amounts']['alliance_fees'][$id] ?? 0;
 									echo number_format($fee, 2);
@@ -211,7 +215,7 @@
 							<?php } ?>
 
 							<td class="title column-title"
-								data-colname="<?= __('Administrative observations', 'edusystem') ?>">
+								data-colname="<?= __('Administrative observations', 'edusystem') ?>" style="text-align: left !important;">
 								<?php
 								$observations_array = [];
 								foreach ($student_data['payments'] as $payment) {
@@ -230,22 +234,22 @@
 						<th colspan="7" class="manage-column column-title text-right">
 							<strong><?= __('Total', 'edusystem') ?>:</strong>
 						</th>
-						<th class="manage-column column-title">
+						<th class="manage-column column-title" style="text-align: end;">
 							<strong><?= number_format($data['global_calculated_amounts']['fee_inscription'], 2) ?></strong>
 						</th>
-						<th class="manage-column column-title">
+						<th class="manage-column column-title" style="text-align: end;">
 							<strong><?= number_format($data['global_calculated_amounts']['tuition_amount'], 2) ?></strong>
 						</th>
-						<th class="manage-column column-title">
+						<th class="manage-column column-title" style="text-align: end;">
 							<strong><?= number_format($data['global_calculated_amounts']['total_amount'], 2) ?></strong>
 						</th>
 						<th class="manage-column column-title"></th>
 						<th class="manage-column column-title"></th>
-						<th class="manage-column column-title">
+						<th class="manage-column column-title" style="text-align: end;">
 							<strong><?= number_format($data['global_calculated_amounts']['institute_fee'], 2) ?></strong>
 						</th>
 						<?php foreach ($alliances_headers as $id => $name) { ?>
-							<th class="manage-column column-title">
+							<th class="manage-column column-title" style="text-align: end;">
 								<strong><?= number_format($data['global_calculated_amounts']['alliance_fees'][$id] ?? 0, 2) ?></strong>
 							</th>
 						<?php } ?>
@@ -255,7 +259,7 @@
 			</table>
 		</div>
 
-		<div class="wp-scroll-container"
+		<div class="wp-scroll-container table-header-blue"
 			style="display: <?= isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'new_registrations' ? 'block' : 'none'; ?>">
 			<table class="wp-list-table widefat striped" id="table_new_registration">
 				<thead>
@@ -273,13 +277,13 @@
 						<th scope="col" id="territory" class="manage-column column-title sortable asc">
 							<?= __('Territory', 'edusystem') ?>
 						</th>
-						<th scope="col" id="initial_fee" class="manage-column column-title sortable asc">
+						<th scope="col" id="initial_fee" class="manage-column column-title sortable asc"  style="text-align: end;">
 							<?= __('Initial fee USD', 'edusystem') ?>
 						</th>
-						<th scope="col" id="tuition_amount" class="manage-column column-title sortable asc">
+						<th scope="col" id="tuition_amount" class="manage-column column-title sortable asc" style="text-align: end;">
 							<?= __('Tuition amount paid USD', 'edusystem') ?>
 						</th>
-						<th scope="col" id="total_amount" class="manage-column column-title sortable asc">
+						<th scope="col" id="total_amount" class="manage-column column-title sortable asc" style="text-align: end;">
 							<?= __('Total amount paid USD', 'edusystem') ?>
 						</th>
 						<th scope="col" id="payment_date" class="manage-column column-title sortable asc">
@@ -308,13 +312,13 @@
 							<td class="title column-title" data-colname="<?= __('Territory', 'edusystem') ?>">
 								<?= esc_html($student_data['student_info']['country']) ?>
 							</td>
-							<td class="title column-title" data-colname="<?= __('Initial fee USD', 'edusystem') ?>">
+							<td class="title column-title" data-colname="<?= __('Initial fee USD', 'edusystem') ?>" style="text-align: end;">
 								<?= number_format($student_data['calculated_amounts']['initial_fee_usd'], 2) ?>
 							</td>
-							<td class="title column-title" data-colname="<?= __('Tuition amount paid USD', 'edusystem') ?>">
+							<td class="title column-title" data-colname="<?= __('Tuition amount paid USD', 'edusystem') ?>" style="text-align: end;">
 								<?= number_format($student_data['calculated_amounts']['tuition_amount_usd'], 2) ?>
 							</td>
-							<td class="title column-title" data-colname="<?= __('Total amount paid USD', 'edusystem') ?>">
+							<td class="title column-title" data-colname="<?= __('Total amount paid USD', 'edusystem') ?>" style="text-align: end;">
 								<?= number_format($student_data['calculated_amounts']['total_amount_usd'], 2) ?>
 							</td>
 							<td class="title column-title" data-colname="<?= __('Payment date', 'edusystem') ?>">
@@ -331,13 +335,13 @@
 						<th colspan="4" class="manage-column column-title text-right">
 							<strong><?= __('Total', 'edusystem') ?>:</strong>
 						</th>
-						<th class="manage-column column-title">
+						<th class="manage-column column-title" style="text-align: end;">
 							<strong><?= number_format($data_new['global_calculated_amounts']['fee_inscription'], 2) ?></strong>
 						</th>
-						<th class="manage-column column-title">
+						<th class="manage-column column-title" style="text-align: end;">
 							<strong><?= number_format($data_new['global_calculated_amounts']['tuition_amount'], 2) ?></strong>
 						</th>
-						<th class="manage-column column-title">
+						<th class="manage-column column-title" style="text-align: end;">
 							<strong><?= number_format($data_new['global_calculated_amounts']['total_amount'], 2) ?></strong>
 						</th>
 						<th class="manage-column column-title"></th>

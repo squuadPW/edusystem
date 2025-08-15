@@ -1453,7 +1453,8 @@ h2 {
   overflow: hidden;
 }
 
-@media screen and (min-width: 783px) { /* Tablet y Escritorio */
+@media screen and (min-width: 783px) {
+  /* Tablet y Escritorio */
   #toplevel_page_logo_based_menu {
     margin: 5px !important; /* Ajusta para tablet */
     padding: 0px !important; /* Ajusta para tablet */
@@ -1461,7 +1462,8 @@ h2 {
     width: 70% !important; /* Ajusta para tablet */
   }
 }
-@media screen and (min-width: 992px) { /* Escritorio grande */
+@media screen and (min-width: 992px) {
+  /* Escritorio grande */
   #toplevel_page_logo_based_menu {
     margin: 10px !important; /* Ajusta para escritorio */
     padding: 10px !important; /* Ajusta para escritorio */
@@ -1572,8 +1574,120 @@ a.toplevel_page_logo_based_menu {
   margin-top: 20px;
 }
 
+.table-header-blue .wp-list-table thead th {
+  background-color: #002060 !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff !important; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+.table-header-blue .wp-list-table tfoot th {
+  background-color: #002060 !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff !important; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+
 @media screen and (max-width: 782px) {
   #tfoot-report-comissions {
     display: none;
   }
+}
+
+.color-header-table-orange .wp-list-table thead th {
+  background-color: #c55a11 !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+.color-header-table-orange .wp-list-table tfoot th {
+  background-color: #c55a11 !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+
+.color-header-table-yellow .wp-list-table thead th {
+  background-color: #bf9000 !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+.color-header-table-yellow .wp-list-table tfoot th {
+  background-color: #bf9000 !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+
+/* Estilos para las columnas de la tabla de comisiones de aliados */
+/*
+ * Sección 1: Ancho de las columnas con texto largo.
+ * Usamos 'max-width' para evitar que la tabla se expanda demasiado
+ * y 'word-wrap' para que el texto se ajuste.
+ */
+#table_comissions_allies #student_name,
+#table_comissions_allies .column-primary {
+  min-width: 180px;
+  word-wrap: break-word;
+}
+
+#table_comissions_allies #institution,
+#table_comissions_allies .column-institution {
+  min-width: 200px;
+  word-wrap: break-word;
+}
+
+#table_comissions_allies #name_partnership,
+#table_comissions_allies .column-name_partnership {
+  min-width: 180px;
+  word-wrap: break-word;
+}
+
+#table_comissions_allies #observations,
+#table_comissions_allies .column-observations {
+  min-width: 350px;
+  word-wrap: break-word;
+}
+
+#table_comissions_allies #program,
+#table_comissions_allies .column-program {
+  min-width: 120px;
+}
+
+#table_comissions_allies #student_grade,
+#table_comissions_allies .column-student_grade {
+  min-width: 80px;
+}
+
+#table_comissions_allies #territory,
+#table_comissions_allies .column-territory {
+  min-width: 100px;
+}
+
+#table_comissions_allies #payment_type,
+#table_comissions_allies .column-payment_type {
+  min-width: 120px;
+}
+
+#table_comissions_allies #income_account,
+#table_comissions_allies .column-income_account {
+  min-width: 120px;
+}
+
+#table_comissions_allies #payment_date,
+#table_comissions_allies .column-payment_date {
+  min-width: 110px;
+}
+
+#table_comissions_allies #initial_fee,
+#table_comissions_allies .column-initial_fee,
+#table_comissions_allies #tuition_amount,
+#table_comissions_allies .column-tuition_amount,
+#table_comissions_allies #total_amount,
+#table_comissions_allies .column-total_amount,
+#table_comissions_allies #institute_fee,
+#table_comissions_allies .column-institute_fee {
+  min-width: 100px;
+  text-align: right;
+}
+
+/* Selector corregido para las columnas de alianza */
+#table_comissions_allies thead [id^=alliance_],
+#table_comissions_allies tbody td:nth-child(n+14) {
+  min-width: 100px;
+  text-align: right;
 }/*# sourceMappingURL=style.css.map */
