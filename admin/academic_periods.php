@@ -117,44 +117,70 @@ function add_admin_form_academic_periods_content()
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id=' . $period_id));
             exit;
 
-        } else if ( $_GET['action'] == 'delete_subprogram' ) {
+        } else if ( $_GET['action'] == 'delete_period' ) {
 
-            $subprogram_id = $_POST['subprogram_id'];
+            $period_id = $_POST['period_id'];
+            $period_code = $_POST['period_code'];
 
             global $wpdb;
-            $table_students = $wpdb->prefix . 'students';
-            $students = $wpdb->get_var( $wpdb->prepare(
-                "SELECT COUNT(*) FROM $table_students WHERE program_id LIKE %s",
-                $subprogram_id
+            $student_period_inscriptions = $wpdb->get_var( $wpdb->prepare(
+                "SELECT COUNT(id) FROM `{$wpdb->prefix}student_period_inscriptions` WHERE code_period LIKE %s",
+                $period_code,
             ));
 
-            // Si no hay registros en table_y, proceder a eliminar
-            if ( $students == 0 ) {
+            // Si no hay registros en tabla, proceder a eliminar
+            if ( $student_period_inscriptions == 0 ) {
 
-                $separacion = strpos( $subprogram_id, '_' );
-                if ( $separacion !== false ) {
-                    $program_id = substr( $subprogram_id, 0, $separacion );
-                    $subprogram_indice = substr( $subprogram_id, $separacion + 1 );
+                // elimina los cortes
+                $deleted = $wpdb->delete(
+                    $wpdb->prefix."academic_periods_cut",
+                    ['code' => $period_code], 
+                    ['%s'] 
+                );
+
+                // eleimina el periodo
+                $deleted = $wpdb->delete(
+                    $wpdb->prefix."academic_periods",
+                    ['id' => $period_id], 
+                    ['%d'] 
+                );
+
+                if( $deleted ) {
+                    setcookie('message', __('The period has been successfully removed.', 'edusystem'), time() + 10, '/');
+                } else {
+                    setcookie('message-error', __('The period was not removed correctly.', 'edusystem'), time() + 10, '/');
                 }
 
-                $subprogram_data = get_subprogram_by_identificador_program( $program_id );
+            } else {
+                setcookie('message-error', __('The period contains enrolled students.', 'edusystem'), time() + 10, '/');
+            }
+        
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
+            exit;
 
-                // obtiene el id del producto a eliminar
-                $product_id = $subprogram_data[$subprogram_indice]['product_id'];
+        } else if ( $_GET['action'] == 'delete_cut' ) {
 
-                // elimina el producto
-                wp_delete_post($product_id, true);
+            $cut_id = $_POST['cut_id'];
+            $cut = $_POST['cut'];
+            $period_code = $_POST['period_code'];
 
-                // elemina el subprograma
-                unset( $subprogram_data[$subprogram_indice] );
+            global $wpdb;
+            $student_period_inscriptions = $wpdb->get_var( $wpdb->prepare(
+                "SELECT COUNT(id) FROM `{$wpdb->prefix}student_period_inscriptions` WHERE code_period LIKE %s AND cut_period LIKE %s",
+                $period_code,
+                $cut
+            ));
 
-                //guardar la subprogramas
-                $table_programs = $wpdb->prefix . 'programs';
-                $update = $wpdb->update($table_programs, [
-                    'subprogram' => json_encode($subprogram_data) ?? null,
-                ], ['identificator' => $program_id] );
+            // Si no hay registros en tabla, proceder a eliminar
+            if ( $student_period_inscriptions == 0 ) {
 
-                if( $update ) {
+                $deleted = $wpdb->delete(
+                    $wpdb->prefix."academic_periods_cut",
+                    ['id' => $cut_id], 
+                    ['%d'] 
+                );
+
+                if( $deleted ) {
                     setcookie('message', __('The cut has been successfully removed.', 'edusystem'), time() + 10, '/');
                 } else {
                     setcookie('message-error', __('The cut was not removed correctly.', 'edusystem'), time() + 10, '/');
@@ -171,6 +197,7 @@ function add_admin_form_academic_periods_content()
             $list_academic_periods = new TT_academic_period_all_List_Table;
             $list_academic_periods->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-academic-periods.php');
+            include(plugin_dir_path(__FILE__) . 'templates/modal-delete-period.php');
         }
     }
 }
@@ -213,7 +240,8 @@ class TT_academic_period_all_List_Table extends WP_List_Table
                         break;
                 }
             case 'view_details':
-                return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id=' . $item['academic_period_id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
+                $deleted = "<a class='button button-danger' data-period_id='{$item['academic_period_id']}' data-period_code='{$item['academic_period_code']}' onclick='modal_delete_period_js( this )' ><span class='dashicons dashicons-trash'></span></a>";
+                return "<a href='" . admin_url('/admin.php?page=add_admin_form_academic_periods_content&section_tab=period_details&period_id=' . $item['academic_period_id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>".$deleted;
             default:
                 return ucwords($item[$column_name]);
         }
@@ -356,3 +384,46 @@ function get_period_details_cuts($code)
     $cuts = $wpdb->get_results("SELECT * FROM {$table_periods_cuts} WHERE code = '{$code}' ORDER BY cut ASC");
     return $cuts;
 }
+
+/**
+ * Verifica si un codigo de un periodo ya existe en la base de datos.
+ * Esta función se utiliza para comprobar la disponibilidad de un codigo
+ * antes de que se realice una acción que dependa de su unicidad.
+ * 
+ * @return void
+ * 
+ * @throws WP_Error Si el codigo no es proporcionado o está vacío.
+ * 
+ * La función envía una respuesta JSON indicando si el codigo ya está en uso
+ * o si está disponible. La respuesta incluye un mensaje que puede ser utilizado
+ * para informar al usuario sobre el estado del identificador.
+ */
+add_action('wp_ajax_check_period_code_exists', 'check_period_code_exists');
+add_action('wp_ajax_nopriv_check_period_code_exists', 'check_period_code_exists');
+function check_period_code_exists() {
+   
+    if ( !isset($_POST['code']) || empty($_POST['code']) ) {
+        wp_send_json_error(__('code not provided','edusystem'));
+    }
+    
+    $code = sanitize_text_field($_POST['code']);
+    
+    global $wpdb;
+    $exists = $wpdb->get_var( $wpdb->prepare(
+        "SELECT id FROM `{$wpdb->prefix}academic_periods` WHERE code LIKE %s",
+        $code
+    ));
+
+    if( $exists ){
+        wp_send_json_success([
+            'exists' => true,
+            'message' => __('Code in use, please choose another.','edusystem'),
+        ]);
+    } else {
+        wp_send_json_success([
+            'exists' => false,
+            'message' => __('Code is not in use.','edusystem'),
+        ]);
+    } 
+}
+

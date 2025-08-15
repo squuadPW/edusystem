@@ -1,8 +1,8 @@
 <div class="wrap">
-    <?php if (isset($program) && !empty($program)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Program details', 'edusystem'); ?></h2>
+    <?php if (isset($period) && !empty($period)): ?>
+        <h2 style="margin-bottom:15px;"><?= __('Period details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Create program', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Create period', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php
@@ -47,6 +47,7 @@
                                             </label>
                                             <br>
                                             <input type="text" id="code" name="code" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_periods_code_exists_js(this)" value="<?= esc_attr(ucwords($period->code ?? '')); ?>" <?= $period->code ? 'readonly' : 'required' ?> >
+                                            <span id="error-period-code" class="input-error" style="display:none;" ><?=__('Code is already in use','edusystem')?></span>
                                         </div>
 
                                         <div class="space-offer">
@@ -131,7 +132,7 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
                                                         <br>
-                                                        <input type="text" name="cuts[<?= $i ?>][cut]" value="<?= $cut->cut ?? '' ?>" required >
+                                                        <input type="text" name="cuts[<?= $i ?>][cut]" value="<?= $cut->cut ?? '' ?>" readonly >
                                                     </div>
 
                                                     <div class="group-input">
@@ -167,7 +168,7 @@
 
                                                     <div class="container-button" >
 
-                                                        <button type="button" class="button button-secodary" data-cut_id="<?= "{$cut->id}" ?>" onclick="modal_delete_cut_js(this)" ><?=__('Delete', 'edusystem')?></button>
+                                                        <button type="button" class="button button-secodary" data-cut_id="<?= "{$cut->id}" ?>" data-cut="<?= "{$cut->cut}" ?>" data-period_code="<?= "{$cut->code}" ?>" onclick="modal_delete_cut_js(this)" ><?=__('Delete', 'edusystem')?></button>
 
                                                     </div>
 
@@ -187,7 +188,7 @@
                                                     <span class="text-danger">*</span>
                                                 </label>
                                                 <br>
-                                                <input type="text" name="cuts[][cut]" value="" disabled required >
+                                                <input type="text" name="cuts[][cut]" value="" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_cut_exists_js(this)" disabled required >
                                             </div>
 
                                             <div class="group-input">
@@ -238,7 +239,7 @@
                             </div>
                            
                             <div style="padding-top: 10px;margin-top: 10px;display:flex;flex-direction:row;justify-content:end;gap:5px;border-top: 1px solid #8080805c;">
-                                <button type="submit" class="button button-primary">
+                                <button type="submit" id="save-period" class="button button-primary">
                                     <?php 
                                         if ( $cuts ): 
                                             echo __('Saves changes', 'edusystem'); 

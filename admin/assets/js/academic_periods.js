@@ -1,3 +1,5 @@
+url_ajax = ajax_object.url_ajax;
+
 document.addEventListener('DOMContentLoaded', function() {
 
     /**
@@ -73,8 +75,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.modal-close').forEach( (close) => {
         close.addEventListener('click',(e) => {
 
-            modal_delete_program = document.getElementById('modalDeleteCut');
-            if( modal_delete_program ) modal_delete_program.style.display = "none";
+            modal_delete_cut = document.getElementById('modalDeleteCut');
+            if( modal_delete_cut ) modal_delete_cut.style.display = "none";
+
+            modal_delete_period = document.getElementById('modalDeletePeriod');
+            if( modal_delete_period ) modal_delete_period.style.display = "none";
 
         });
     });
@@ -88,7 +93,9 @@ document.addEventListener('DOMContentLoaded', function() {
  * y establece el identificador del subprograma en el campo de entrada del modal.
  * 
  * @param HTMLElement button Botón que activó el modal, que debe contener
- *                           el atributo 'data-subprogram_id' con el ID del subprograma.
+ *                           el atributo 'data-cut_id' con el ID del corte,
+ *                           'data-cut' con el codigo del corte y 
+ *                           'data-period_code' con el codigo del periodo. 
  * 
  * @return void No retorna ningún valor.
  */
@@ -96,9 +103,43 @@ function modal_delete_cut_js ( button ) {
 
     let modal_delete_cut = document.getElementById( 'modalDeleteCut' );
     if( modal_delete_cut ) {
-        id = button.getAttribute('data-cut_id');
-        modal_delete_cut.querySelector('#delete_cut_input').value = id;
+
+        cut_id = button.getAttribute('data-cut_id');
+        modal_delete_cut.querySelector('#delete_cut_id_input').value = cut_id;
+
+        cut = button.getAttribute('data-cut');
+        modal_delete_cut.querySelector('#delete_cut_input').value = cut;
+        
+        period_code = button.getAttribute('data-period_code');
+        modal_delete_cut.querySelector('#delete_period_code_input').value = period_code;
+
         modal_delete_cut.style.display = "block";
+    }
+}
+
+/**
+ * Abre el modal para eliminar un subprograma.
+ * Esta función se activa al hacer clic en un botón de eliminación
+ * y establece el identificador del subprograma en el campo de entrada del modal.
+ * 
+ * @param HTMLElement button Botón que activó el modal, que debe contener
+ *                           el atributo 'data-period_id' con el ID del periodo,
+ *                           'data-period_code' con el codigo del periodo.
+ * 
+ * @return void No retorna ningún valor.
+ */
+function modal_delete_period_js ( button ) {
+
+    let modal_delete_period = document.getElementById( 'modalDeletePeriod' );
+    if( modal_delete_period ) {
+
+        period_id = button.getAttribute('data-period_id');
+        modal_delete_period.querySelector('#delete_period_id_input').value = period_id;
+
+        period_code = button.getAttribute('data-period_code');
+        modal_delete_period.querySelector('#delete_period_code_input').value = period_code;
+
+        modal_delete_period.style.display = "block";
     }
 }
 
@@ -132,9 +173,67 @@ function validate_input(input, regex_pattern, convert_to_upper = false, max_leng
 }
 
 let timeout_id = null;
-let controller_validate_identificator
-function check_periods_identificator_exists_js( input ){
+let controller_validate_code
+function check_periods_code_exists_js( input ){
 
+    let error_period_code = document.getElementById('error-period-code');
+    error_period_code.innerHTML = "";
+
+    period_code = input.value.trim();
+
+    if ( timeout_id ) clearTimeout( timeout_id );
+
+    // Si ya hay un controlador en ejecución, lo abortamos
+    if ( controller_validate_code ) controller_validate_code.abort();
+
+    if ( period_code.length >= 3 ) {
+
+        // Creamos un nuevo AbortController
+        controller_validate_code = new AbortController();
+        const signal = controller_validate_code.signal;
+
+        timeout_id = setTimeout(function() {
+
+            const formData = new FormData();
+            formData.append('action', 'check_period_code_exists');
+            formData.append('code', period_code );
+            
+            fetch( 
+                url_ajax, {
+                method: 'POST',
+                body: formData,
+                signal
+            })
+            .then( res => res.json() )
+            .then( res => {
+   
+                error_period_code.innerHTML = "";
+                if ( res.success ){
+
+                    if ( res.data.exists ) {
+                        error_period_code.innerHTML = res.data.message;
+                        error_period_code.style.display = 'block'
+                        document.getElementById('save-period').disabled = true;
+
+                    } else {
+                        error_period_code.style.display = 'none'
+                        document.getElementById('save-period').disabled = false;
+                    }
+                }
+                    
+            })
+            .catch( err => {} ); 
+        
+        }, 0);    
+    }
+
+}
+
+
+let controller_validate_cut
+function check_cut_exists_js( input ){
+
+    console.log('paso corte');
     return
 
     let error_identificator = document.getElementById('error-identificator');

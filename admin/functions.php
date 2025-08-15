@@ -353,6 +353,10 @@ function aes_scripts_admin()
             $version,
             true
         );
+
+        wp_localize_script('academic_periods', 'ajax_object', [
+            'url_ajax' => admin_url('admin-ajax.php')
+        ]);
     }
 
 }
