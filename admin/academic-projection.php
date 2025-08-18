@@ -83,9 +83,10 @@ function add_admin_form_academic_projection_content()
             $academic_period = $_GET['academic_period'];
             $academic_period_cut = $_GET['academic_period_cut'];
             $subject_id = $_GET['subject_id'];
+            $section = $_GET['section'];
             $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$subject_id}");
             $teacher = null;
-            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$academic_period_cut}' AND (subject_id = {$subject_id} OR code_subject = '{$subject->code_subject}')");
+            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$academic_period_cut}' AND (subject_id = {$subject_id} OR code_subject = '{$subject->code_subject}') AND section = {$section}");
             if ((isset($academic_period) && !empty($academic_period)) && (isset($academic_period_cut) && !empty($academic_period_cut))) {
                 $added_student_ids = array(); // Array para rastrear IDs de estudiantes agregados
                 foreach ($inscriptions as $key => $inscription) {
@@ -683,6 +684,14 @@ function get_inscriptions_by_student_period($student_id, $code_period, $cut_peri
     return $inscriptions;
 }
 
+function get_inscriptions_by_student_subject($student_id, $code_period, $cut_period, $subject_id)
+{
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $inscriptions = $wpdb->get_row("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student_id} AND code_period = '{$code_period}' AND cut_period = '{$cut_period}' AND subject_id = {$subject_id}");
+    return $inscriptions;
+}
+
 function get_inscriptions_by_subject_period($subject_id, $code_subject, $code_period, $cut_period, $status)
 {
     global $wpdb;
@@ -777,7 +786,8 @@ function generate_enroll_student()
                     continue;
                 }
 
-                $offer = get_offer_filtered($projection_filtered->subject_id, $code, $cut);
+                $inscription = get_inscriptions_by_student_subject($projection->student_id, $code, $cut, $projection_filtered->subject_id);
+                $offer = get_offer_filtered($projection_filtered->subject_id, $code, $cut, $inscription->section);
                 if ($offer && isset($offer->moodle_course_id)) {
                     $enrollments = array_merge(
                         $enrollments,
