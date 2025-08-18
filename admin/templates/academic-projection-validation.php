@@ -22,7 +22,7 @@
             <div style="text-align: center;">
                 <label for="input_id"><b><?= __('Cut', 'edusystem'); ?></b></label><br>
                 <select name="academic_period_cut">
-                    <option value="">Select academic period cut</option>
+                    <option value="">__('Select academic period cut', 'edusystem')</option>
                     <option value="A">A</option>
                     <option value="B">B</option>
                     <option value="C">C</option>

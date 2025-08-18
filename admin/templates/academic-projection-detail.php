@@ -117,7 +117,7 @@ $roles = $current_user->roles;
                                                     <label for="input_id"><b><?= __('Cut', 'edusystem'); ?></b></label><br>
                                                     <select onchange="academic_period_changed(<?= $key ?>)"
                                                         name="academic_period_cut[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
-                                                        <option value="">Select academic period cut</option>
+                                                        <option value="">__('Select academic period cut', 'edusystem')</option>
                                                         <option <?= ($current_cut == 'A') ? 'class="current-period"' : ''; ?> value="A"
                                                             <?= ($projection_for->cut == 'A') ? 'selected' : ''; ?>>A</option>
                                                         <option <?= ($current_cut == 'B') ? 'class="current-period"' : ''; ?> value="B"
