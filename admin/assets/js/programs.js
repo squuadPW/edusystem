@@ -150,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * @return {void} No retorna ningún valor.
      */
     document.querySelectorAll('.modal-close').forEach( (close) => {
+    document.querySelectorAll('.modal-close').forEach( (close) => {
         close.addEventListener('click',(e) => {
 
             modal_delete_quota_rule = document.getElementById('modalDeleteQuotaRule');
@@ -310,6 +311,7 @@ function validate_input(input, regex_pattern, convert_to_upper = false, max_leng
 }
 
 function restrictInput(inputElement, blockedChars = [], message = '') {
+function restrictInput(inputElement, blockedChars = [], message = '') {
             // Prevenir entrada de caracteres no deseados
             inputElement.addEventListener('keydown', function(e) {
                 if (blockedChars.includes(e.key)) {
@@ -334,6 +336,7 @@ function restrictInput(inputElement, blockedChars = [], message = '') {
                     if (message) alert(message);
                 }
             });
+}
 }
 
 const numberInput = document.getElementById('numberInput');
