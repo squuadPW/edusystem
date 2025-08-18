@@ -1,6 +1,6 @@
 <h2 style="font-size:24px;text-align:center;"><?= __('Califications', 'edusystem'); ?></h2>
 
-<?php if($admin_virtual_access) { ?>
+<?php if ($admin_virtual_access) { ?>
     <section class="segment" style="margin-top: 20px">
         <div class="segment-button-history active" data-option="current"><?= __('Current', 'edusystem'); ?></div>
         <div class="segment-button-history" data-option="history"><?= __('History', 'edusystem'); ?></div>
@@ -15,7 +15,8 @@
                     class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
                     style="margin-top:20px;">
                     <caption style="text-align:start;">
-                        Califications of <?php echo $student['student']->name ?>         <?php echo $student['student']->last_name ?>
+                        <?= __('Califications of', 'edusystem') ?>         <?php echo $student['student']->name ?>
+                        <?php echo $student['student']->last_name ?>
                     </caption>
                     <thead>
                         <tr>
@@ -31,7 +32,7 @@
                         <?php if (!empty($student['formatted_assignments'])): ?>
                             <?php foreach ($student['formatted_assignments'] as $row): ?>
 
-                                <?php if(count($row['assignments']) > 0) { ?>
+                                <?php if (count($row['assignments']) > 0) { ?>
                                     <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order"
                                         style="background-color: blue !important">
                                         <td style="background-color: #f8f8f8;"
@@ -74,30 +75,31 @@
             <?php } ?>
         <?php else: ?>
             <div style="margin: 0 auto; text-align: center; padding: 18px;">
-                <span>Oops! it looks like you don't have any students logged into moodle yet. Please come back when you have
-                    access to moodle 👋</span>
+                <span><?= __('Oops! it looks like you don\'t have any students logged into moodle yet. Please come back when you have access to moodle', 'edusystem') ?>
+                    👋</span>
             </div>
         <?php endif; ?>
     </div>
     <div id="history" style="display: <?php echo $admin_virtual_access ? 'none' : 'block'; ?>">
-    <?php if (!empty($students_formatted_history)): ?>
+        <?php if (!empty($students_formatted_history)): ?>
             <?php foreach ($students_formatted_history as $key => $student) { ?>
                 <table
                     class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
                     style="margin-top:20px;">
                     <caption style="text-align:start;">
-                        Califications of <?php echo $student['student']->name ?>         <?php echo $student['student']->last_name ?>
+                        <?= __('Califications of', 'edusystem') ?>         <?php echo $student['student']->name ?>
+                        <?php echo $student['student']->last_name ?>
                     </caption>
                     <thead>
                         <tr>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span
-                                class="nobr"><?= __('Status', 'edusystem'); ?></span></th>
+                                    class="nobr"><?= __('Status', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span
                                     class="nobr"><?= __('Code', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                                     class="nobr"><?= __('Subject', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                                class="nobr"><?= __('Calification', 'edusystem'); ?></span></th>
+                                    class="nobr"><?= __('Calification', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                                     class="nobr"><?= __('Academic period', 'edusystem'); ?></span></th>
                         </tr>
@@ -111,23 +113,23 @@
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                         data-title="<?= __('Status', 'edusystem'); ?>">
                                         <?php
-                                            switch ($row['status_id']) {
-                                                case 0:
-                                                    echo '<div style="color: gray; font-weight: 600">'. strtoupper('To begin') . '</div>';
-                                                    break;
-                                                case 1:
-                                                    echo '<div style="color: blue; font-weight: 600">'. strtoupper('Active') . '</div>';
-                                                    break;
-                                                case 2:
-                                                    echo '<div style="color: red; font-weight: 600">'. strtoupper('Unsubscribed') . '</div>';
-                                                    break;
-                                                case 3:
-                                                    echo '<div style="color: green; font-weight: 600">'. strtoupper('Approved') . '</div>';
-                                                    break;
-                                                case 4:
-                                                    echo '<div style="color: red; font-weight: 600">'. strtoupper('Reproved') . '</div>';
-                                                    break;
-                                            }
+                                        switch ($row['status_id']) {
+                                            case 0:
+                                                echo '<div style="color: gray; font-weight: 600">' . strtoupper('To begin') . '</div>';
+                                                break;
+                                            case 1:
+                                                echo '<div style="color: blue; font-weight: 600">' . strtoupper('Active') . '</div>';
+                                                break;
+                                            case 2:
+                                                echo '<div style="color: red; font-weight: 600">' . strtoupper('Unsubscribed') . '</div>';
+                                                break;
+                                            case 3:
+                                                echo '<div style="color: green; font-weight: 600">' . strtoupper('Approved') . '</div>';
+                                                break;
+                                            case 4:
+                                                echo '<div style="color: red; font-weight: 600">' . strtoupper('Reproved') . '</div>';
+                                                break;
+                                        }
                                         ?>
                                     </td>
                                     </td>
@@ -155,7 +157,8 @@
             <?php } ?>
         <?php else: ?>
             <div style="margin: 0 auto; text-align: center; padding: 18px;">
-                <span>Oh you're new here! apparently you don't have any note history that we can provide you, as soon as we have it you'll see it here 😁</span>
+                <span><?= __('Oh you\'re new here! apparently you don\'t have any note history that we can provide you, as soon as we have it you\'ll see it here', 'edusystem') ?>
+                    😁</span>
             </div>
         <?php endif; ?>
     </div>

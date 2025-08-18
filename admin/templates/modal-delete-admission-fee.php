@@ -2,7 +2,7 @@
 	<div class='modal-content'>
 		<div class="modal-header">
 			<h3 style="font-size:20px;"><?= __('Delete Fee') ?></h3>
-			<span class="modal-close disabled"><span class="dashicons dashicons-no-alt"></span></span>
+			<span class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
 		</div>
 		<form method="post"
 			action="<?= admin_url('/admin.php?page=fees_content&action=delete_fee'); ?>">
@@ -10,6 +10,7 @@
 				<div class="display:flex">
 					<p><?= __('Do you want to delete this fee?', 'edusystem'); ?></p>
 					<input type="hidden" id="delete_fee_input" name="fee_id" value="">
+					<input type="hidden" id="delete_product_id_input" name="product_id" value="">
 				</div>
 			</div>
 			<div class="modal-footer">

@@ -1,4 +1,9 @@
 <div class="tabs-content">
+
+	<?php
+        include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+    ?>
+
 	<div class="wrap">
         <div style="text-align:start;">
 			<h1 class="wp-heading-line"><?= __('All Academic periods','edusystem'); ?></h1>

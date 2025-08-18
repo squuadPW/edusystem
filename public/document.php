@@ -55,6 +55,7 @@ add_action('woocommerce_account_student-documents_endpoint', function() {
         $students = get_student(get_current_user_id());
     }
     
+    $arr_photos_student = ['PHOTO OF STUDENT CARD', 'STUDENT\'S PHOTO', 'FOTO DEL ESTUDIANTE'];
     include(plugin_dir_path(__FILE__).'templates/documents.php');
 });
 
@@ -633,7 +634,7 @@ function save_documents()
 
 function view_pending_documents(){
     
-    if (MODE != 'UNI') {
+    // if (MODE != 'UNI') {
         global $current_user;
         $roles = $current_user->roles;
 
@@ -697,7 +698,7 @@ function view_pending_documents(){
         }else if(!in_array('parent',$roles) && in_array('student',$roles)){
             include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
         }
-    }
+    // }
 
 }
 
@@ -751,33 +752,57 @@ function get_help_info_document($document_id){
     $text = '';
 
     if ($document_id == 'CERTIFIED NOTES HIGH SCHOOL') {
-        $text = 'Provide an official transcript or report card certified by a school authority. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Provide an official transcript or report card certified by a school authority. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'HIGH SCHOOL DIPLOMA') {
-        $text = 'Ensure you provide an official copy issued by the school of your high school diploma. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Ensure you provide an official copy issued by the school of your high school diploma. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'ID OR CI OF THE PARENTS') {
-        $text = 'Please provide a clear and legible copy of the document. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Please provide a clear and legible copy of the document. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'ID STUDENTS') {
-        $text = 'Please ensure you provide a clear and legible copy of the identification document. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Please ensure you provide a clear and legible copy of the identification document. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'STUDENT\'S PHOTO') {
-        $text = "<div>Please provide a recent, clear, and high-quality photo of the student</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div> <div>The allowed file type is " . get_type_file_document($document_id) . "</div>";
+        $text = "<div>" . __('Please provide a recent, clear, and high-quality photo of the student', 'edusystem') . "</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div> <div>" . __('The allowed file type is ', 'edusystem') . get_type_file_document($document_id) . "</div>";
     } else if ($document_id == 'PROOF OF GRADE') {
-        $text = 'Please provide an official document that clearly indicates the student\'s name, the course or subject, and the corresponding grade achieved. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Please provide an official document that clearly indicates the student\'s name, the course or subject, and the corresponding grade achieved. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'PROOF OF STUDY') {
-        $text = 'Please provide an official document that verifies the student\'s enrollment status. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('Please provide an official document that verifies the student\'s enrollment status. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'VACCINATION CARD') {
-        $text = 'The card should clearly display the student\'s name, the type of vaccine received, the dates of vaccination, and any booster shots administered. The allowed file type is ' . get_type_file_document($document_id);
+        $text = __('The card should clearly display the student\'s name, the type of vaccine received, the dates of vaccination, and any booster shots administered. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'PHOTO') {
-        $text = 'teacher\'s profile picture, this will be visible to the public. The allowed file type is ' . get_type_file_document_teacher($document_id);
+        $text = __('Teacher\'s profile picture, this will be visible to the public. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
     } else if ($document_id == 'FORM 402') {
-        $text = 'FORM 402 is a document used in the U.S. immigration process, specifically related to the application for citizenship or naturalization. The allowed file type is ' . get_type_file_document_teacher($document_id);
+        $text = __('FORM 402 is a document used in the U.S. immigration process, specifically related to the application for citizenship or naturalization. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
     } else if ($document_id == 'DIGITAL COPY OF UNDERGRADUATE DEGREE') {
-        $text = 'Please provide a DIGITAL COPY OF YOUR UNIVERSITY DEGREE to validate your information and continue with the registration process. The allowed file type is ' . get_type_file_document_teacher($document_id);
+        $text = __('Please provide a DIGITAL COPY OF YOUR UNIVERSITY DEGREE to validate your information and continue with the registration process. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
     } else if ($document_id == 'DIGITAL COPY OF THE GRADUATE DEGREE') {
-        $text = 'Please provide DIGITAL COPY OF POSTGRADUATE DEGREE to validate your information and continue with the registration. The allowed file type is ' . get_type_file_document_teacher($document_id);
+        $text = __('Please provide DIGITAL COPY OF POSTGRADUATE DEGREE to validate your information and continue with the registration. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
     } else if ($document_id == 'CURRICULAR SUMMARY') {
-        $text = 'Please provide your CURRICULAR SUMMARY to validate your information and continue with the registration process. The allowed file type is ' . get_type_file_document_teacher($document_id);
+        $text = __('Please provide your CURRICULAR SUMMARY to validate your information and continue with the registration process. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
+    } else if ($document_id == 'ACTA O PARTIDA DE NACIMIENTO') {
+        $text = __('Official document that certifies the birth of a person. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'COPIA DE IDENTIFICACIÓN OFICIAL (DNI) O PASAPORTE') {
+        $text = __('Provide a clear and legible copy of your official identification document (DNI) or valid passport. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'CERTIFICADO DE BACHILLERATO O EQUIVALENTE EDUCACIÓN SECUNDARIA') {
+        $text = __('Attach the certificate that proves the completion of your high school or secondary education studies. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'TÍTULO Y/O CERTIFICADO CON NOTAS DE LOS ESTUDIOS FORMALES CURSADOS DEL ÁREA EN LA QUE SE QUIERE OBTENER EL TÍTULO PROFESIONAL') {
+        $text = __('Include your degree and/or certificate of formal studies, with the corresponding grades for the area in which you want to obtain the professional degree. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'CURRICULUM VITAE U HOJA DE VIDA CON SUS SOPORTES DOCUMENTALES') {
+        $text = __('Attach your curriculum vitae or resume, accompanied by the documents that support your experience and training. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'FOTO DEL ESTUDIANTE') {
+        $text = "<div>" . __('Please provide a recent, clear, and high-quality photo of the student.', 'edusystem') . "</div> <div><img src='https://img.freepik.com/vector-gratis/cara-hombre-estilo-plano_90220-2877.jpg' style='width: 100px; margin: auto; padding: 10px' /></div> <div>" . __('The allowed file type is ', 'edusystem') . get_type_file_document($document_id) . "</div>";
+    } else if ($document_id == 'CERTIFICACIÓN DEL DESEMPEÑO LABORAL (CONSTANCIAS DE TRABAJO, CERTIFICACIÓN DE EJECUCIONES REALIZADAS, QUE SE RELACIONES CON EL PROGRAMA A CURSAR)') {
+        $text = __('Include work certificates or certifications that prove job performance related to the program you wish to apply for. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'RECONOCIMIENTOS OBTENIDOS POR PARTICIPACIÓN EN CONGRESOS, EVENTOS Y/O JORNADAS') {
+        $text = __('Attach copies of awards or recognitions received for your participation in academic or professional congresses, events, or workshops. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'CERTIFICACIÓN DE DIPLOMADOS, CURSOS Y TALLERES') {
+        $text = __('Upload the certifications of the diplomas, courses, and workshops you have completed. This will help validate your continuous training. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'PREMIOS O RECONOCIMIENTOS RECIBIDOS') {
+        $text = __('Attach copies of any awards or recognitions you have received throughout your professional or academic career. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'ARTÍCULOS EN PUBLICACIONES CIENTÍFICAS O INDEXADAS, LIBROS O COLUMNAS ESCRITAS') {
+        $text = __('Provide a list of your publications and, if possible, attach a PDF or a link to articles in scientific publications, books, or columns you have written. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'ACTIVIDADES AUDIOVISUALES EJECUTADAS (PODCAST, TV, RADIO, ETC.)') {
+        $text = __('Provide evidence of the audiovisual activities in which you have participated, such as podcasts, TV appearances, or radio shows. This can be a link, a screenshot, or the document that certifies it. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     }
-
+    
     return $text;
 }
 

@@ -9,14 +9,13 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
 <?php if (!$student->moodle_password) { ?>
     <div class="text-center info-box">
         <h2 style="font-size:24px;text-align:center;"><?= __('Documents', 'edusystem'); ?></h2>
-        <p>To access the <a style="text-decoration: underline !important; color: #002fbd;"
-                href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student' ?>">virtual
-                classroom</a>, please ensure you complete the following steps:</p>
+        <p><?= __('To access the', 'edusystem'); ?> <a style="text-decoration: underline !important; color: #002fbd;"
+                href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student' ?>"><?= __('virtual classroom', 'edusystem') ?></a>,
+            <?= __('please ensure you complete the following steps', 'edusystem') ?>:</p>
         <ul class="info-list">
             <li>
                 <i class="fas fa-upload"></i>
-                Once your payment is approved, the option to upload all required documents is enabled in your registration
-                form.
+                <?= __('Once your payment is approved, the option to upload all required documents is enabled in your registration form.', 'edusystem'); ?>
             </li>
             <li>
         </ul>
@@ -53,7 +52,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                 class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
                 style="margin-top:20px;">
                 <caption style="text-align:start;">
-                    Documents of <?= $student->name . ' ' . $student->last_name; ?>
+                    <?= __('Documents of', 'edusystem'); ?> <?= $student->name . ' ' . $student->last_name; ?>
                 </caption>
                 <thead>
                     <tr>
@@ -72,7 +71,8 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                             <?php $document_name_complete = get_name_document($document->document_id); ?>
                             <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
-                                    data-title="<?= __('Document', 'edusystem'); ?>">
+                                    data-title="<?= __('Document', 'edusystem'); ?>" style="max-width: 250px;">
+
                                     <input type="hidden" name="<?= 'file_student_' . $student->id . '_id[]'; ?>"
                                         value="<?= $document->id; ?>">
                                     <?php if ($document->is_required): ?>
@@ -81,7 +81,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
 
                                     <?= $name; ?>
                                     <?php if ($document->max_date_upload): ?>
-                                        <span class="deadline">- DEADLINE: <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
+                                        <span class="deadline">- <?= __('DEADLINE', 'edusystem') ?>: <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
                                     <?php endif; ?>
 
                                     <span class="help-tooltip"
@@ -100,36 +100,35 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     $status = get_status_document($document->status);
                                     $style = '';
                                     switch ($status) {
-                                        case 'Sent':
-                                        case 'Processing':
+                                        case __('Sent', 'edusystem'):
+                                        case __('Processing', 'edusystem'):
                                             $style = 'color: blue';
                                             break;
-                                        case 'Declined':
-                                        case 'Waiting update':
-                                        case 'Expired':
+                                        case __('Declined', 'edusystem'):
+                                        case __('Waiting update', 'edusystem'):
+                                        case __('Expired', 'edusystem'):
                                             $style = 'color: red';
                                             break;
-                                        case 'Approved':
+                                        case __('Approved', 'edusystem'):
                                             $style = 'color: green';
                                             break;
                                     }
                                     ?>
-                                    <span style="<?= $style ?>"><?= $status == 'No sent' ? 'Pending' : $status ?></span>
+                                    <span style="<?= $style ?>"><?= $status == __('No sent', 'edusytem') ? __('Pending', 'edusystem') : $status ?></span>
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                     data-title="<?= __('Action', 'edusystem'); ?>">
                                     <?php if ($document->status == 0 || $document->status == 3 || $document->status == 4 || $document->status == 6) { ?>
                                         <div class="custom-file">
-                                            <input type="file" class="custom-file-input" <?= $document_name_complete == 'PHOTO OF STUDENT CARD' || $document_name_complete == 'STUDENT\'S PHOTO' ? 'id=student_photo' : '' ?>
+                                            <input type="file" class="custom-file-input" <?= in_array($document_name_complete, $arr_photos_student) ? 'id=student_photo' : '' ?>
                                                 name="<?= 'document_' . $document->id . '_student_id_' . $student->id; ?>"
                                                 accept="<?php echo get_type_file_document($document->document_id) ?>"
                                                 data-fileallowed="<?php echo get_type_file_document($document->document_id) ?>">
-                                            <span class="custom-file-label" <?= $document_name_complete == 'PHOTO OF STUDENT CARD' || $document_name_complete == 'STUDENT\'S PHOTO' ? 'id=student_photo_label_input' : '' ?>>Select
-                                                file</span>
+                                            <span class="custom-file-label" <?= in_array($document_name_complete, $arr_photos_student) ? 'id=student_photo_label_input' : '' ?>><?= __('Select file', 'edusystem') ?></span>
                                         </div>
                                     <?php } else { ?>
                                         <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" type="button"
-                                            class="button">View Document</a>
+                                            class="button"><?= __('View Document', 'edusystem') ?> </a>
                                     <?php } ?>
                                 </td>
                             </tr>
@@ -142,36 +141,38 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <?php $name = get_name_document($document->document_id); ?>
 
                                         <strong><?= $name; ?></strong>
-                                        <?php if ($document->max_date_upload): ?>
-                                                <span class="deadline">- DEADLINE: <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
-                                            <?php endif; ?>
+                                    <?php if ($document->max_date_upload): ?>
+                                            <span class="deadline">- <?= __('DEADLINE', 'edusystem') ?>:
+                                            <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
+                                    <?php endif; ?>
                                     </td>
-                                <?php
-                                $status = get_status_document($document->status);
-                                $style = '';
-                                switch ($status) {
-                                    case 'Sent':
-                                    case 'Processing':
-                                        $style = 'color: blue';
-                                        break;
-                                    case 'Declined':
-                                    case 'Expired':
-                                        $style = 'color: red';
-                                        break;
-                                    case 'Approved':
-                                        $style = 'color: green';
-                                        break;
-                                }
-                                ?>
+                                    <?php
+                                    $status = get_status_document($document->status);
+                                    $style = '';
+                                    switch ($status) {
+                                        case __('Sent', 'edusystem'):
+                                        case __('Processing', 'edusystem'):
+                                            $style = 'color: blue';
+                                            break;
+                                        case __('Declined', 'edusystem'):
+                                        case __('Waiting update', 'edusystem'):
+                                        case __('Expired', 'edusystem'):
+                                            $style = 'color: red';
+                                            break;
+                                        case __('Approved', 'edusystem'):
+                                            $style = 'color: green';
+                                            break;
+                                    }
+                                    ?>
 
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
                                         data-title="<?= __('Status', 'edusystem'); ?>">
-                                        <span style="<?= $style ?>"><?= $status == 'No sent' ? 'Pending' : $status ?></span>
+                                        <span style="<?= $style ?>"><?= $status ==  __('No sent', 'edusytem') ? __('Pending', 'edusystem') : $status ?></span>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                         data-title="<?= __('Action', 'edusystem'); ?>">
                                         <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" type="button"
-                                            class="button">View Document</a>
+                                            class="button"><?= __('View Document', 'edusystem') ?></a>
                                     </td>
                                 </tr>
                         <?php } ?>
@@ -185,7 +186,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                 id="send_real"><?= __('Send Documents', 'edusystem'); ?></button>
             <div id="progressButton">
                 <div id="progressBar"></div>
-                <div id="buttonText">Send Documents</div>
+                <div id="buttonText"><?= __('Send Documents', 'edusystem') ?></div>
             </div>
         </div>
     </form>

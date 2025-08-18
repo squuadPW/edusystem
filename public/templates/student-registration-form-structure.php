@@ -2,6 +2,9 @@
 if (is_user_logged_in()) {
     ?>
     <div class="title">
+        <?= $title ?>
+    </div>
+    <div class="title" style="font-size: 24px;">
         <?= __('Applicant', 'edusystem'); ?>
     </div>
 
@@ -30,6 +33,9 @@ if (is_user_logged_in()) {
 ?>
 <?php } else { ?>
     <div class="title">
+        <?= $title ?>
+    </div>
+    <div class="title" style="font-size: 24px;">
         <?= __('Applicant', 'edusystem'); ?>
     </div>
     <?php
