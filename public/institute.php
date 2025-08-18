@@ -16,7 +16,7 @@ function save_institute()
         if ($_POST['action'] == 'save_institute') {
             global $wpdb;
             $table_institutes = $wpdb->prefix . 'institutes';
-        
+
             // Definir campos requeridos y sus mensajes de error
             $required_fields = [
                 'name_institute' => __('Institute name is required', 'edusystem'),
@@ -32,7 +32,7 @@ function save_institute()
                 'number_rector_phone_hidden' => __('Rector phone is required', 'edusystem'),
                 'business_name' => __('Business name is required', 'edusystem')
             ];
-        
+
             // Validar campos requeridos
             $errors = [];
             foreach ($required_fields as $field => $message) {
@@ -40,22 +40,22 @@ function save_institute()
                     $errors[] = $message;
                 }
             }
-        
+
             // Validar formato de email
             if (!empty($_POST['current_email']) && !is_email($_POST['current_email'])) {
                 $errors[] = __('Invalid email format', 'edusystem');
             }
-        
+
             // Validar números telefónicos (ejemplo básico)
             $phone_pattern = '/^\+?[0-9]{7,15}$/';
             if (!empty($_POST['number_phone_hidden']) && !preg_match($phone_pattern, $_POST['number_phone_hidden'])) {
                 $errors[] = __('Invalid phone number format', 'edusystem');
             }
-        
+
             if (!empty($_POST['number_rector_phone_hidden']) && !preg_match($phone_pattern, $_POST['number_rector_phone_hidden'])) {
                 $errors[] = __('Invalid rector phone number format', 'edusystem');
             }
-        
+
             // Si hay errores, mostrarlos y abortar
             if (!empty($errors)) {
                 foreach ($errors as $error) {
@@ -63,7 +63,7 @@ function save_institute()
                 }
                 return;
             }
-        
+
             // Sanitizar y preparar datos
             $name = sanitize_text_field(strtoupper($_POST['name_institute']));
             $phone = sanitize_text_field($_POST['number_phone_hidden']);
@@ -80,25 +80,25 @@ function save_institute()
             $description = sanitize_textarea_field($_POST['description']);
             $business_name = sanitize_text_field($_POST['business_name']);
             $type_calendar = sanitize_text_field($_POST['type_calendar']);
-        
+
             // Verificar si el email ya existe en la tabla de institutos
             $existing_institute = $wpdb->get_var($wpdb->prepare(
                 "SELECT email FROM $table_institutes WHERE email = %s",
                 $email
             ));
-        
+
             if ($existing_institute) {
                 wc_add_notice(__('Email already registered for another institute', 'edusystem'), 'error');
                 return;
             }
-        
+
             // Verificar usuario existente
             $user = get_user_by('email', $email);
             if ($user) {
                 wc_add_notice(__('Existing email, please enter another email.', 'edusystem'), 'error');
                 return;
             }
-        
+
             // Insertar en la base de datos
             $result = $wpdb->insert($table_institutes, [
                 'name' => $name,
@@ -120,22 +120,22 @@ function save_institute()
                 'fee' => 5.0,
                 'created_at' => current_time('mysql', 1)
             ]);
-        
+
             // Manejar resultado de la inserción
             if ($result === false) {
                 wc_add_notice(__('Database error. Please try again.', 'edusystem'), 'error');
                 return;
             }
-        
+
             // Obtener ID del nuevo registro
             $institute_id = $wpdb->insert_id;
-        
+
             // Enviar email de confirmación
             $new_institute = WC()->mailer()->get_emails()['WC_Registered_Institution_Email'];
             if ($new_institute) {
                 $new_institute->trigger($institute_id);
             }
-        
+
             wc_add_notice(__('Registration sent. Wait for confirmation.', 'edusystem'), 'success');
         }
     }
@@ -208,7 +208,7 @@ function set_institute_in_order(WC_Order $order, ?int $id = null): void
 
     // 2. Obtener datos del instituto de forma segura.
     $table_institutes = $wpdb->prefix . 'institutes';
-    $institute_data   = $wpdb->get_row(
+    $institute_data = $wpdb->get_row(
         $wpdb->prepare(
             "SELECT id, fee FROM {$table_institutes} WHERE id = %d",
             $institute_id
@@ -240,7 +240,7 @@ function set_institute_in_order(WC_Order $order, ?int $id = null): void
     // 6. Calcular la tarifa final del instituto.
     $total_institute_fee = 0.0;
     // Solo calcular la tarifa si la orden no es una beca.
-    if (! (bool) $order->get_meta('is_scholarship')) {
+    if (!(bool) $order->get_meta('is_scholarship')) {
         $total_institute_fee = ($institute_fee_percentage * $total_for_fee_calculation) / 100;
     }
     $order->update_meta_data('institute_fee', $total_institute_fee);

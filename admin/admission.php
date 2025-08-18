@@ -1307,6 +1307,15 @@ function generate_documents_html($student_id, $document_id)
     $html = "";
 
     foreach ($documents as $document) {
+        $created_at_timestamp = strtotime($document->created_at);
+        $upload_at_timestamp = strtotime($document->upload_at);
+        $updated_at_timestamp = strtotime($document->updated_at);
+
+        // Convert the timestamp to the local system time with the desired format
+        $document->created_at = wp_date('m/d/Y H:i:s', $created_at_timestamp);
+        $document->upload_at = wp_date('m/d/Y H:i:s', $upload_at_timestamp);
+        $document->updated_at = wp_date('m/d/Y H:i:s', $updated_at_timestamp);
+
         if ($document->id == $document_id) {
             $html .= '<tr id="tr_document_' . $document->id . '">';
             $html .= '<td class="column-primary">' . get_name_document($document->document_id) .

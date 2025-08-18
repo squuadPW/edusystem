@@ -19,7 +19,7 @@
 				<label class="screen-reader-text"
 					for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
 				<select name="academic_period_cut">
-					<option value="">Select academic period cut</option>
+					<option value="">__('Select academic period cut', 'edusystem')</option>
 					<option value="A" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'A') ? 'selected' : '') : ''; ?>>A</option>
 					<option value="B" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'B') ? 'selected' : '') : ''; ?>>B</option>
 					<option value="C" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'C') ? 'selected' : '') : ''; ?>>C</option>
@@ -31,7 +31,7 @@
 				<label class="screen-reader-text"
 					for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
 				<select name="academic_period">
-					<option value="" selected>Select academic period to filter</option>
+					<option value="" selected>__('Select academic period to filter')</option>
 					<?php foreach ($periods as $key => $period) { ?>
 						<option value="<?php echo $period->code; ?>" <?= !empty($_GET['academic_period']) ? (($_GET['academic_period'] == $period->code) ? 'selected' : '') : ''; ?>>
 							<?php echo $period->name; ?>

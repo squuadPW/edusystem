@@ -40,7 +40,8 @@ function add_admin_form_academic_offers_content()
             $teacher_id = sanitize_text_field($_POST['teacher_id']);
             $max_students = sanitize_text_field($_POST['max_students']);
             $moodle_course_id = sanitize_text_field($_POST['moodle_course_id']);
-            $new_section = ($subject_id != $old_subject_id ? true : false);
+            $old_moodle_course_id = sanitize_text_field($_POST['old_moodle_course_id']);
+            $new_section = ($moodle_course_id != $old_moodle_course_id);
             $section = load_next_section($subject_id, $code_period, $cut_period, $offer_id, $new_section);
             $subject = get_subject_details($subject_id);
             $type = $subject->type;
@@ -118,7 +119,7 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
             case 'view_details':
                 $buttons = '';
                 $buttons .= "<a style='margin: 1px' href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&section_tab=offer_details&offer_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
-                $buttons .= "<a target='_blank' style='margin: 1px' href='" . admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollment_subject&academic_period=' . $item['academic_period']) . "&academic_period_cut=" . $item['academic_period_cut'] . "&subject_id=" . $item['subject_id'] . "' class='button button-success'>" . __('View Notes', 'edusystem') . "</a>";
+                $buttons .= "<a target='_blank' style='margin: 1px' href='" . admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollment_subject&academic_period=' . $item['academic_period']) . "&academic_period_cut=" . $item['academic_period_cut'] . "&subject_id=" . $item['subject_id'] . "&section=" . $item['section'] . "' class='button button-success'>" . __('View Notes', 'edusystem') . "</a>";
                 $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin: 1px' href='" . admin_url('/admin.php?page=add_admin_form_academic_offers_content&action=offer_delete&offer_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'edusystem') . "</a>";
                 return $buttons;
             default:
@@ -286,22 +287,22 @@ function get_academic_offer_details($offer_id)
     return $offer;
 }
 
-function get_offer_filtered($subject_id, $code, $cut)
+function get_offer_filtered($subject_id, $code, $cut, $section = 1)
 {
     global $wpdb;
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
 
-    $offer = $wpdb->get_row("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}'");
+    $offer = $wpdb->get_row("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}' AND section={$section}");
     return $offer;
 }
 
 
-function get_offer_filtered_all($subject_id, $code, $cut)
+function get_offer_filtered_all($subject_id, $code, $cut, $section = 1)
 {
     global $wpdb;
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
 
-    $offer = $wpdb->get_results("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}' ORDER BY section ASC");
+    $offer = $wpdb->get_results("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}' AND section={$section} ORDER BY section ASC");
     return $offer;
 }
 
@@ -432,16 +433,17 @@ function available_inscription_subject($student_id, $subject_id)
     return $available;
 }
 
-function load_next_section($subject_id, $code, $cut, $offer_id, $new_section)
-{
+function load_next_section($subject_id, $code, $cut, $offer_id, $new_section) {
     global $wpdb;
-    $all_offers = get_offer_filtered_all($subject_id, $code, $cut);
-    if ($offer_id) {
+
+    if ($offer_id && !$new_section) {
+        // Si es una oferta existente y no se requiere una nueva sección
         $offer = get_academic_offer_details($offer_id);
-        $section = $new_section ? (count($all_offers) + 1) : $offer->section;
-    } else {
-        $section = count($all_offers) + 1;
+        return $offer->section;
     }
 
-    return $section;
+    // Si es una oferta nueva o el moodle_course_id ha cambiado,
+    // calcula la siguiente sección disponible.
+    $all_offers = get_offer_filtered_all($subject_id, $code, $cut);
+    return count($all_offers) + 1;
 }

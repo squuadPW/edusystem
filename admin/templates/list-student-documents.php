@@ -23,7 +23,7 @@
 			<p class="search-box" style="margin-right: 10px">
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','edusystem').':'; ?></label>
 				<select name="academic_period_cut">
-					<option value="">Select academic period cut</option>
+					<option value="">__('Select academic period cut', 'edusystem')</option>
 					<option value="A" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'A') ? 'selected' : '') : ''; ?>>A</option>
 					<option value="B" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'B') ? 'selected' : '') : ''; ?>>B</option>
 					<option value="C" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'C') ? 'selected' : '') : ''; ?>>C</option>
@@ -34,7 +34,7 @@
 			<p class="search-box" style="margin-right: 10px">
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','edusystem').':'; ?></label>
 				<select name="academic_period">
-						<option value="" selected>Select academic period to filter</option>
+						<option value="" selected>__('Select academic period to filter')</option>
 					<?php foreach ($periods as $key => $period) { ?>
 						<option value="<?php echo $period->code; ?>" <?= !empty($_GET['academic_period']) ? (($_GET['academic_period'] == $period->code) ? 'selected' : '') : ''; ?>>
 							<?php echo $period->name; ?>
@@ -45,7 +45,7 @@
 			<p class="search-box" style="margin-right: 10px">
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Date','edusystem').':'; ?></label>
 				<select name="date_selected">
-						<option value="" selected>Select date range</option>
+						<option value="" selected>__('Select date range')</option>
 						<option value="1" <?= !empty($_GET['date_selected']) ? (($_GET['date_selected'] == 1) ? 'selected' : '') : ''; ?>>Last 15 days</option>
 						<option value="2" <?= !empty($_GET['date_selected']) ? (($_GET['date_selected'] == 2) ? 'selected' : '') : ''; ?>>Last 35 days</option>
 						<option value="3" <?= !empty($_GET['date_selected']) ? (($_GET['date_selected'] == 3) ? 'selected' : '') : ''; ?>>More than 35 days</option>

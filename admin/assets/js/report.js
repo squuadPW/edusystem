@@ -502,53 +502,130 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  export_excel_summary_comissions = document.getElementById(
+  const exportButton = document.getElementById(
     "export_excel_summary_comissions"
   );
-  if (export_excel_summary_comissions) {
-    export_excel_summary_comissions.addEventListener("click", () => {
-      // Selecciona la tabla por su ID
-      const tables = document.querySelectorAll(".wp-list-table");
-      const name = document.querySelector("input[name=name_document]").value;
-      const data_summary = [];
 
-      data_summary.push(["Commissions payable to schools"]);
-      data_summary.push(["Institute", "Amount USD"]);
+  if (exportButton) {
+    /**
+     * Procesa una tabla HTML (con thead, tbody, tfoot) y la convierte en un array de arrays (AOA),
+     * respetando el atributo 'colspan' para alinear los datos correctamente.
+     * @param {HTMLTableElement} tableElement - El elemento <table> a procesar.
+     * @returns {string[][]} Un array de arrays listo para SheetJS.
+     */
+    const processHtmlTableToArray = (tableElement) => {
+      if (!tableElement) return [];
 
-      tables.forEach((table, index) => {
-        for (let i = 1; i < table.rows.length - 1; i++) {
-          // <-- MODIFICACIÓN CLAVE AQUÍ: i = 1
-          const rowData = [];
-          const row = table.rows[i];
+      const cleanCellText = (cell) =>
+        cell.textContent
+          .replace(/Show more details|Mostrar más detalles/g, "")
+          .trim(); // Función interna para procesar una fila y expandir los colspans
 
-          for (let j = 0; j < row.cells.length; j++) {
-            let cellText = row.cells[j].textContent.trim();
-            cellText = cellText.replace(/Show more details/g, "");
-            rowData.push(cellText);
+      const processRow = (tr) => {
+        const rowData = [];
+        Array.from(tr.querySelectorAll("th, td")).forEach((cell) => {
+          rowData.push(cleanCellText(cell)); // Agrega el contenido de la celda actual
+          const colspan = parseInt(cell.getAttribute("colspan"), 10) || 1; // Si colspan > 1, agrega celdas vacías para rellenar el espacio
+          for (let i = 1; i < colspan; i++) {
+            rowData.push("");
+          }
+        });
+        return rowData;
+      };
+
+      const getRows = (selector) =>
+        Array.from(tableElement.querySelectorAll(selector));
+
+      const headerRows = getRows("thead tr").map(processRow);
+      const bodyRows = getRows("tbody tr").map(processRow);
+      const footerRows = getRows("tfoot tr").map(processRow);
+
+      return [...headerRows, ...bodyRows, ...footerRows];
+    };
+
+    const handleExportClick = () => {
+      // --- 1. Configuración y Creación del Libro ---
+      const nameInput = document.querySelector("input[name=name_document]");
+      const fileName = nameInput?.value || "Reporte de Comisiones";
+      const wb = XLSX.utils.book_new(); // --- 2. Hoja 1: Resumen de Comisiones (Procesamiento funcional) ---
+
+      const summaryTables = document.querySelectorAll(
+        ".wp-list-table:not(#table_comissions_allies):not(#table_new_registration)"
+      );
+      const summaryHeaders = {
+        schools: [
+          ["Commissions payable to schools"],
+          ["Institute", "Amount USD"],
+        ],
+        allies: [
+          [], // Fila vacía para separar
+          ["Allied comissions"],
+          ["Alliance", "Amount USD"],
+        ],
+      };
+
+      const summaryData = Array.from(summaryTables).reduce(
+        (data, table, index) => {
+          // Extrae las filas del cuerpo de la tabla, omitiendo la última (total)
+          const tableBodyRows = Array.from(table.rows)
+            .slice(1, -1) // Ignora cabecera y pie de tabla originales
+            .map((row) =>
+              Array.from(row.cells).map((cell) =>
+                cell.textContent
+                  .replace(/Show more details|Mostrar más detalles/g, "")
+                  .trim()
+              )
+            ); // Agrega las filas procesadas a nuestros datos acumulados
+
+          data.push(...tableBodyRows); // Si no es la última tabla, agrega los encabezados de la siguiente sección
+
+          if (index < summaryTables.length - 1) {
+            data.push(...summaryHeaders.allies);
           }
 
-          data_summary.push(rowData);
-        }
+          return data;
+        },
+        [...summaryHeaders.schools] // El valor inicial del acumulador son los encabezados de la primera sección
+      );
 
-        if (index + 1 < tables.length) {
-          data_summary.push([]);
-          data_summary.push(["Allied comissions"]);
-          data_summary.push(["Alliance", "Amount USD"]);
-        }
-      });
+      const ws_summary = XLSX.utils.aoa_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(wb, ws_summary, "Summary of commissions"); // --- Definición de encabezados personalizados para las otras hojas ---
 
-      const wb = XLSX.utils.book_new();
+      const alliesHeader = [
+        ["College and allied commissions"],
+      ];
+      const newRegistrationsHeader = [
+        ["New enrollments obtained"],
+      ]; // --- 3. Hoja 2: Comisiones de Aliados (Usando la función reutilizable) ---
 
-      const ws_summary = XLSX.utils.aoa_to_sheet(data_summary);
-      XLSX.utils.book_append_sheet(wb, ws_summary, "Summary of commissions");
+      const alliesTable = document.getElementById("table_comissions_allies");
+      const alliesData = processHtmlTableToArray(alliesTable);
+      if (alliesData.length > 0) {
+        // Combina el encabezado personalizado con los datos de la tabla
+        const fullAlliesData = [...alliesHeader, ...alliesData];
+        const ws_comissions = XLSX.utils.aoa_to_sheet(fullAlliesData);
+        XLSX.utils.book_append_sheet(wb, ws_comissions, "Commissions allies");
+      } // --- 4. Hoja 3: Nuevas Registraciones (Vacía) ---
 
-      const ws_comissions = XLSX.utils.aoa_to_sheet([]);
-      XLSX.utils.book_append_sheet(wb, ws_comissions, "College commissions & allies");
+      const newRegistrationsTable = document.getElementById(
+        "table_new_registration"
+      );
+      const newRegistrationsData = processHtmlTableToArray(
+        newRegistrationsTable
+      );
+      if (newRegistrationsData.length > 0) {
+        // Combina el encabezado personalizado con los datos de la tabla
+        const fullNewRegistrationsData = [
+          ...newRegistrationsHeader,
+          ...newRegistrationsData,
+        ];
+        const ws_comissions = XLSX.utils.aoa_to_sheet(fullNewRegistrationsData);
+        XLSX.utils.book_append_sheet(wb, ws_comissions, "New registrations");
+      } // --- 5. Exportar el Archivo ---
 
-      const ws_registration = XLSX.utils.aoa_to_sheet([]);
-      XLSX.utils.book_append_sheet(wb, ws_registration, "New registrations");
+      XLSX.writeFile(wb, `${fileName}.xlsx`);
+    };
 
-      XLSX.writeFile(wb, name);
-    });
+    exportButton.addEventListener("click", handleExportClick);
   }
 });

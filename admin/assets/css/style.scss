@@ -1414,55 +1414,53 @@ h2 {
 }
 
 .container-programs {
+  .container-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
 
-    .container-button {
-        display:flex;
-        flex-direction:row;
-        justify-content: flex-end;
-        gap:10px;
-        margin-bottom: 10px;
+  #subprograms-container {
+    .title {
+      margin-top: 20px;
+      margin-bottom: 0px;
+      text-align: center;
+      border-bottom: 1px solid #8080805c;
     }
 
-    #subprograms-container {
+    #subprograms {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      padding: 10px 0px;
 
-        .title {
-            margin-top:20px;
-            margin-bottom:0px;
-            text-align:center; 
-            border-bottom: 1px solid #8080805c;
+      .subprogram {
+        margin: 7px 0px;
+        border: 1px solid #8080805c;
+        border-radius: 5px;
+        padding: 5px 15px;
+        position: relative;
+
+        .id {
+          position: absolute;
+          right: 0px;
+          top: 0px;
+          padding: 0px 15px;
+          background-color: #ccc;
+          border-radius: 0px 0px 0px 5px;
+          font-size: 12px;
         }
 
-        #subprograms {
-            display: flex;
-            flex-direction: column;
-            flex-wrap: nowrap;
-            padding: 10px 0px;
+        &#template-subprogram {
+          display: none;
+        }
 
-            .subprogram {
-                margin: 7px 0px;
-                border: 1px solid #8080805c;
-                border-radius: 5px;
-                padding: 5px 15px;
-                position: relative;
-
-                .id {
-                    position: absolute;
-                    right: 0px;
-                    top: 0px;
-                    padding: 0px 15px;
-                    background-color: #ccc;
-                    border-radius: 0px 0px 0px 5px;
-                    font-size: 12px;
-                }
-
-                &#template-subprogram {
-                    display: none;
-                }
-
-                .group-input {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 10px;
+        .group-input {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
 
                     @media ( max-width: 520px ) {
                         gap: 0px;
@@ -1476,91 +1474,96 @@ h2 {
                         }
                     }
 
-                    .space-offer {
-                        flex: 1;
-                        font-weight:400;
+          @media (max-width: 520px) {
+            gap: 0px;
+            flex-wrap: wrap;
+            flex-direction: column;
 
-                        &.name {
-                            flex: 3;
-                        }
+            .active {
+              display: flex;
+              gap: 10px;
+              margin-bottom: 0px;
+            }
+          }
 
-                        &:has( input[type="checkbox"] ) {
-                            max-width: max-content;
+          .space-offer {
+            flex: 1;
+            font-weight: 400;
 
-                            input[type="checkbox"] {
-                                width: 10px;
-                            }
-                        }
-                        
-                    }
-                }
-
-                
+            &.name {
+              flex: 3;
             }
 
-        }
+            &:has(input[type="checkbox"]) {
+              max-width: max-content;
 
-        & > div {
-            margin: 0px 10px;
+              input[type="checkbox"] {
+                width: 10px;
+              }
+            }
+          }
         }
-        
+      }
     }
+
+    & > div {
+      margin: 0px 10px;
+    }
+  }
 }
 
 #quota-rules-programs {
+  .container-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
 
-    .container-button {
-        display:flex;
-        flex-direction:row;
-        justify-content: flex-end;
-        gap:10px;
-        margin-bottom: 10px;
+  .quotas_rules {
+    .title {
+      margin-top: 20px;
+      margin-bottom: 0px;
+      text-align: center;
+      border-bottom: 1px solid #8080805c;
     }
 
-    .quotas_rules {
+    #rules {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      padding: 10px 0px;
 
-        .title {
-            margin-top:20px;
-            margin-bottom:0px;
-            text-align:center; 
-            border-bottom: 1px solid #8080805c;
+      .rule {
+        margin: 7px 0px;
+        border: 1px solid #8080805c;
+        border-radius: 5px;
+        padding: 5px 15px;
+        position: relative;
+
+        .id {
+          position: absolute;
+          right: 0px;
+          top: 0px;
+          padding: 2px 15px;
+          background-color: #ccc;
+          border-radius: 0px 0px 0px 5px;
+          font-size: 12px;
         }
 
-        #rules {
-            display: flex;
-            flex-direction: column;
-            flex-wrap: nowrap;
-            padding: 10px 0px;
+        &#template-quota-rule {
+          display: none;
+        }
 
-            .rule {
-                margin: 7px 0px;
-                border: 1px solid #8080805c;
-                border-radius: 5px;
-                padding: 5px 15px;
-                position: relative;
+        .group-input {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
 
-                .id {
-                    position: absolute;
-                    right: 0px;
-                    top: 0px;
-                    padding: 2px 15px;
-                    background-color: #ccc;
-                    border-radius: 0px 0px 0px 5px;
-                    font-size: 12px;
-                }
-
-                &#template-quota-rule {
-                    display: none;
-                }
-
-                .group-input {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 10px;
-
-                    .space-offer {
-                        flex: 1;
-                        font-weight:400;
+          .space-offer {
+            flex: 1;
+            font-weight: 400;
 
                         @media ( max-width: 520px ) {
                             min-width: 100% !important;
@@ -1572,60 +1575,71 @@ h2 {
                             }
                         }
 
-                        &:has( input[type="checkbox"] ) {
-                            max-width: max-content;
+            @media (max-width: 520px) {
+              min-width: 100% !important;
 
-                            input[type="checkbox"] {
-                                width: 10px;
-                            }
-                        }
-
-                        .input-frequency {
-                            display: flex;
-                            gap: 10px;
-                        }
-                        
-                    }
-                }
+              &.active {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 0px;
+              }
             }
+
+            &:has(input[type="checkbox"]) {
+              max-width: max-content;
+
+              input[type="checkbox"] {
+                width: 10px;
+              }
+            }
+
+            .input-frequency {
+              display: flex;
+              gap: 10px;
+            }
+          }
         }
+      }
     }
+  }
 }
 
 #toplevel_page_logo_based_menu {
-    /* ESTILOS BASE PARA MÓVILES (O PANTALLAS PEQUEÑAS) */
-    background-image: var(--admin-logo-url);
-    background-repeat: no-repeat;
-    background-color: #ffffff;
-    background-position: center;
-    background-size: contain; 
-    border-radius: 10px; /* Radio por defecto para móviles */
-    margin: 10px !important; /* Margen para móviles */
-    width: 90% !important; /* Ancho para móviles */
-    padding: 0px !important; /* Podría ser un valor base para móviles */
-    min-height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+  /* ESTILOS BASE PARA MÓVILES (O PANTALLAS PEQUEÑAS) */
+  background-image: var(--admin-logo-url);
+  background-repeat: no-repeat;
+  background-color: #ffffff;
+  background-position: center;
+  background-size: contain;
+  border-radius: 10px; /* Radio por defecto para móviles */
+  margin: 10px !important; /* Margen para móviles */
+  width: 90% !important; /* Ancho para móviles */
+  padding: 0px !important; /* Podría ser un valor base para móviles */
+  min-height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
-@media screen and (min-width: 783px) { /* Tablet y Escritorio */
-    #toplevel_page_logo_based_menu {
-        margin: 5px !important; /* Ajusta para tablet */
-        padding: 0px !important; /* Ajusta para tablet */
-        border-radius: 6px; /* Ajusta para tablet */
-        width: 70% !important; /* Ajusta para tablet */
-    }
+@media screen and (min-width: 783px) {
+  /* Tablet y Escritorio */
+  #toplevel_page_logo_based_menu {
+    margin: 5px !important; /* Ajusta para tablet */
+    padding: 0px !important; /* Ajusta para tablet */
+    border-radius: 6px; /* Ajusta para tablet */
+    width: 70% !important; /* Ajusta para tablet */
+  }
 }
 
-@media screen and (min-width: 992px) { /* Escritorio grande */
-    #toplevel_page_logo_based_menu {
-        margin: 10px !important; /* Ajusta para escritorio */
-        padding: 10px !important; /* Ajusta para escritorio */
-        border-radius: 10px; /* Ajusta para escritorio */
-        width: auto !important; /* O un ancho fijo si lo necesitas en desktop */
-    }
+@media screen and (min-width: 992px) {
+  /* Escritorio grande */
+  #toplevel_page_logo_based_menu {
+    margin: 10px !important; /* Ajusta para escritorio */
+    padding: 10px !important; /* Ajusta para escritorio */
+    border-radius: 10px; /* Ajusta para escritorio */
+    width: auto !important; /* O un ancho fijo si lo necesitas en desktop */
+  }
 }
 
 /* Hide unnecessary menu items */
@@ -1638,18 +1652,17 @@ a.toplevel_page_logo_based_menu {
   padding: 10px !important;
 }
 
-
 // acomoda los botones de accion de los programas
 .view_details {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
 }
 
 // mensaje de error de los inputs
 .input-error {
-    color: red;
-    margin: 5px;
+  color: red;
+  margin: 5px;
 }
 
 /* Estilos generales para las secciones de carga de logos */
@@ -1736,4 +1749,156 @@ a.toplevel_page_logo_based_menu {
     
     /* Esta es la propiedad clave: crea el scroll horizontal automático */
     overflow-x: auto;
+}
+
+.career-item {
+  list-style: none;
+  margin-bottom: 15px; /* Espacio entre cada carrera */
+  padding-left: 0; /* Elimina la sangría de la lista */
+  text-align: left; /* Centra el contenido */
+}
+
+.career-name {
+  font-size: 1.2em; /* Hace el nombre más grande */
+  font-weight: bold;
+  margin: 0; /* Elimina márgenes por defecto */
+}
+
+.career-id {
+  display: block; /* Pone el identificador en una nueva línea */
+  font-size: 0.9em; /* Hace el identificador más pequeño */
+  color: #6c757d; /* Color gris suave */
+  margin-top: 5px; /* Espacio entre el nombre y el identificador */
+}
+
+/* Este código CSS se debe añadir en tu plugin o tema */
+.wp-scroll-container {
+  /* Define el ancho máximo del contenedor para que la tabla se desborde */
+  max-width: 100%;
+
+  /* Esta es la propiedad clave: crea el scroll horizontal automático */
+  overflow-x: auto;
+
+  margin-top: 20px;
+}
+
+.table-header-blue {
+  .wp-list-table thead th {
+    background-color: #002060 !important; /* Un color oscuro para las cabeceras de las columnas */
+    color: #fff !important; /* Texto blanco para mayor contraste */
+    font-weight: bold;
+  }
+
+  .wp-list-table tfoot th {
+    background-color: #002060 !important; /* Un color oscuro para las cabeceras de las columnas */
+    color: #fff !important; /* Texto blanco para mayor contraste */
+    font-weight: bold;
+  }
+}
+
+#tfoot-report-comissions {
+  @media screen and (max-width: 782px) {
+    display: none;
+  }
+}
+
+.color-header-table-orange {
+  .wp-list-table thead th {
+    background-color: #f1b388 !important; /* Un color oscuro para las cabeceras de las columnas */
+    color: #fff; /* Texto blanco para mayor contraste */
+    font-weight: bold;
+  }
+
+  .wp-list-table tfoot th {
+    background-color: #f1b388 !important; /* Un color oscuro para las cabeceras de las columnas */
+    color: #fff; /* Texto blanco para mayor contraste */
+    font-weight: bold;
+  }
+}
+
+.color-header-table-yellow {
+  .wp-list-table thead th {
+    background-color: #ffebae !important; /* Un color oscuro para las cabeceras de las columnas */
+    color: #fff; /* Texto blanco para mayor contraste */
+    font-weight: bold;
+  }
+
+  .wp-list-table tfoot th {
+    background-color: #ffebae !important; /* Un color oscuro para las cabeceras de las columnas */
+    color: #fff; /* Texto blanco para mayor contraste */
+    font-weight: bold;
+  }
+}
+
+/* Estilos para las columnas de la tabla de comisiones de aliados */
+
+/*
+ * Sección 1: Ancho de las columnas con texto largo.
+ * Usamos 'max-width' para evitar que la tabla se expanda demasiado
+ * y 'word-wrap' para que el texto se ajuste.
+ */
+#table_comissions_allies #student_name,
+#table_comissions_allies .column-primary {
+    min-width: 180px;
+    word-wrap: break-word;
+}
+#table_comissions_allies #institution,
+#table_comissions_allies .column-institution {
+    min-width: 200px;
+    word-wrap: break-word;
+}
+#table_comissions_allies #name_partnership,
+#table_comissions_allies .column-name_partnership {
+    min-width: 180px;
+    word-wrap: break-word;
+}
+#table_comissions_allies #observations,
+#table_comissions_allies .column-observations {
+    min-width: 350px;
+    word-wrap: break-word;
+}
+
+#table_comissions_allies #program,
+#table_comissions_allies .column-program {
+    min-width: 120px;
+}
+#table_comissions_allies #student_grade,
+#table_comissions_allies .column-student_grade {
+    min-width: 80px;
+}
+#table_comissions_allies #territory,
+#table_comissions_allies .column-territory {
+    min-width: 100px;
+}
+#table_comissions_allies #payment_type,
+#table_comissions_allies .column-payment_type {
+    min-width: 120px;
+}
+#table_comissions_allies #income_account,
+#table_comissions_allies .column-income_account {
+    min-width: 120px;
+}
+#table_comissions_allies #payment_date,
+#table_comissions_allies .column-payment_date {
+    min-width: 110px;
+}
+
+
+#table_comissions_allies #initial_fee,
+#table_comissions_allies .column-initial_fee,
+#table_comissions_allies #tuition_amount,
+#table_comissions_allies .column-tuition_amount,
+#table_comissions_allies #total_amount,
+#table_comissions_allies .column-total_amount,
+#table_comissions_allies #institute_fee,
+#table_comissions_allies .column-institute_fee {
+    min-width: 100px;
+    text-align: right;
+}
+
+/* Selector corregido para las columnas de alianza */
+#table_comissions_allies thead [id^="alliance_"],
+#table_comissions_allies tbody td:nth-child(n+14) {
+    min-width: 100px;
+    text-align: right;
 }

@@ -568,6 +568,16 @@ $url = wp_get_attachment_url($student->profile_picture);
             <tbody id="table-documents">
                 <?php if (!empty($documents)): ?>
                     <?php foreach ($documents as $document): ?>
+                        <?php
+                            $created_at_timestamp = strtotime($document->created_at);
+                            $upload_at_timestamp = strtotime($document->upload_at);
+                            $updated_at_timestamp = strtotime($document->updated_at);
+
+                            // Convert the timestamp to the local system time with the desired format
+                            $document->created_at = wp_date('m/d/Y H:i:s', $created_at_timestamp);
+                            $document->upload_at = wp_date('m/d/Y H:i:s', $upload_at_timestamp);
+                            $document->updated_at = wp_date('m/d/Y H:i:s', $updated_at_timestamp);
+                        ?>
                         <tr id="<?= 'tr_document_' . $document->id; ?>">
                             <td class="column-primary" data-colname="<?= __('Document', 'edusystem'); ?>">
                                 <?= get_name_document($document->document_id); ?>
