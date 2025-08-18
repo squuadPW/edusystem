@@ -674,6 +674,7 @@ function create_tables()
       nacionality TEXT NULL,
       country TEXT NULL,
       city TEXT NULL,
+      expected_graduation_date TEXT NULL,
       postal_code TEXT NULL,
       grade_id INT(11) NOT NULL,
       name_institute TEXT NOT NULL,
