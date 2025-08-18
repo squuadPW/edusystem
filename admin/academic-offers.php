@@ -40,7 +40,8 @@ function add_admin_form_academic_offers_content()
             $teacher_id = sanitize_text_field($_POST['teacher_id']);
             $max_students = sanitize_text_field($_POST['max_students']);
             $moodle_course_id = sanitize_text_field($_POST['moodle_course_id']);
-            $new_section = ($subject_id != $old_subject_id ? true : false);
+            $old_moodle_course_id = sanitize_text_field($_POST['old_moodle_course_id']);
+            $new_section = ($moodle_course_id != $old_moodle_course_id);
             $section = load_next_section($subject_id, $code_period, $cut_period, $offer_id, $new_section);
             $subject = get_subject_details($subject_id);
             $type = $subject->type;
@@ -296,12 +297,12 @@ function get_offer_filtered($subject_id, $code, $cut, $section = 1)
 }
 
 
-function get_offer_filtered_all($subject_id, $code, $cut)
+function get_offer_filtered_all($subject_id, $code, $cut, $section = 1)
 {
     global $wpdb;
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
 
-    $offer = $wpdb->get_results("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}' ORDER BY section ASC");
+    $offer = $wpdb->get_results("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}' AND section={$section} ORDER BY section ASC");
     return $offer;
 }
 
@@ -432,16 +433,17 @@ function available_inscription_subject($student_id, $subject_id)
     return $available;
 }
 
-function load_next_section($subject_id, $code, $cut, $offer_id, $new_section)
-{
+function load_next_section($subject_id, $code, $cut, $offer_id, $new_section) {
     global $wpdb;
-    $all_offers = get_offer_filtered_all($subject_id, $code, $cut);
-    if ($offer_id) {
+
+    if ($offer_id && !$new_section) {
+        // Si es una oferta existente y no se requiere una nueva sección
         $offer = get_academic_offer_details($offer_id);
-        $section = $new_section ? (count($all_offers) + 1) : $offer->section;
-    } else {
-        $section = count($all_offers) + 1;
+        return $offer->section;
     }
 
-    return $section;
+    // Si es una oferta nueva o el moodle_course_id ha cambiado,
+    // calcula la siguiente sección disponible.
+    $all_offers = get_offer_filtered_all($subject_id, $code, $cut);
+    return count($all_offers) + 1;
 }
