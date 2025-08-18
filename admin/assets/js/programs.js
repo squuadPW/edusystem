@@ -150,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
      * @return {void} No retorna ningún valor.
      */
     document.querySelectorAll('.modal-close').forEach( (close) => {
-    document.querySelectorAll('.modal-close').forEach( (close) => {
         close.addEventListener('click',(e) => {
 
             modal_delete_quota_rule = document.getElementById('modalDeleteQuotaRule');
