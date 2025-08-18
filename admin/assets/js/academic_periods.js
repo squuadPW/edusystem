@@ -173,7 +173,11 @@ function validate_input(input, regex_pattern, convert_to_upper = false, max_leng
 }
 
 let timeout_id = null;
-let controller_validate_code
+let 
+/**
+ * Valida si el código del periodo ya existe.
+ * @param {HTMLInputElement} input - El elemento input que contiene el código del periodo a validar.
+ */
 function check_periods_code_exists_js( input ){
 
     let error_period_code = document.getElementById('error-period-code');
@@ -212,7 +216,7 @@ function check_periods_code_exists_js( input ){
 
                     if ( res.data.exists ) {
                         error_period_code.innerHTML = res.data.message;
-                        error_period_code.style.display = 'block'
+                        error_period_code.style.display = 'block';
                         document.getElementById('save-period').disabled = true;
 
                     } else {
@@ -229,61 +233,59 @@ function check_periods_code_exists_js( input ){
 
 }
 
-
 let controller_validate_cut
+/**
+ * Valida si el corte ya existe en otros inputs.
+ * @param {HTMLInputElement} input - El elemento input que contiene el corte a validar.
+ */
 function check_cut_exists_js( input ){
 
-    console.log('paso corte');
-    return
+    document.getElementById('save-period').disabled = false;
 
-    let error_identificator = document.getElementById('error-identificator');
-    error_identificator.innerHTML = "";
+    //apaga los selectores de error
+    document.querySelectorAll(' .input-error').forEach(error => 
+        error.style.display = 'none'
+    );
 
-    identificator = input.value.trim();
+    let error_cut = input.parentElement.querySelector(' .input-error');
+
+    cut = input.value.trim();
 
     if ( timeout_id ) clearTimeout( timeout_id );
 
     // Si ya hay un controlador en ejecución, lo abortamos
-    if ( controller_validate_identificator ) controller_validate_identificator.abort();
+    if ( controller_validate_cut ) controller_validate_cut.abort();
 
-    if ( identificator.length >= 3 ) {
+    if ( cut.length >= 3 ) {
 
         // Creamos un nuevo AbortController
-        controller_validate_identificator = new AbortController();
-        const signal = controller_validate_identificator.signal;
+        controller_validate_cut = new AbortController();
+        const signal = controller_validate_cut.signal;
 
         timeout_id = setTimeout(function() {
 
-            const formData = new FormData();
-            formData.append('action', 'check_program_identificator_exists');
-            formData.append('identificator', identificator );
+            let in_use_cut = false;
 
-            fetch( 
-                url_ajax, {
-                method: 'POST',
-                body: formData,
-                signal
-            })
-            .then( res => res.json() )
-            .then( res => {
-   
-                error_identificator.innerHTML = "";
-                if ( res.success ){
-                    if ( res.data.exists ) {
-                        error_identificator.innerHTML = res.data.message;
-                        error_identificator.style.display = 'block'
-                        // document.getElementById('send-application').disabled = true;
+            // busca si hay otro input de valor cut con ese valor
+            const cuts = document.getElementById('cuts');
+            cuts.querySelectorAll('[name*="][cut]"]').forEach(elem => {
 
-                    } else if ( res.message === "" ) {
-                        error_identificator.style.display = 'none'
-                        // document.getElementById('send-application').disabled = false;
+                if( elem != input ){
+                    if( elem.value.trim() === cut ) { 
+                        in_use_cut = true; 
+                        return;
                     }
                 }
-                    
-            })
-            .catch( err => {} ); 
-        
-        }, 0);    
+
+            });
+
+            // activa o desactiva el botón de guardar
+            document.getElementById('save-period').disabled = in_use_cut;
+
+            // muestra o quita el mensaje de error
+            error_cut.style.display = in_use_cut ? 'block' : 'none';
+
+        }, 0);
     }
 
 }

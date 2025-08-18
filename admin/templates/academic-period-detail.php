@@ -46,7 +46,7 @@
                                                 <span class="text-danger">*</span>
                                             </label>
                                             <br>
-                                            <input type="text" id="code" name="code" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_periods_code_exists_js(this)" value="<?= esc_attr(ucwords($period->code ?? '')); ?>" <?= $period->code ? 'readonly' : 'required' ?> >
+                                            <input type="text" id="code" name="code" minlength="3" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_periods_code_exists_js(this)" value="<?= esc_attr(ucwords($period->code ?? '')); ?>" <?= $period->code ? 'readonly' : 'required' ?> >
                                             <span id="error-period-code" class="input-error" style="display:none;" ><?=__('Code is already in use','edusystem')?></span>
                                         </div>
 
@@ -188,7 +188,8 @@
                                                     <span class="text-danger">*</span>
                                                 </label>
                                                 <br>
-                                                <input type="text" name="cuts[][cut]" value="" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_cut_exists_js(this)" disabled required >
+                                                <input type="text" name="cuts[][cut]" value="" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_cut_exists_js(this)" minlength="3" disabled required >
+                                                <span class="input-error" style="display:none;" ><?=__('Cut is already in use','edusystem')?></span>
                                             </div>
 
                                             <div class="group-input">
