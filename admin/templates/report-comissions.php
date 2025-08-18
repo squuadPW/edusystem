@@ -2,10 +2,8 @@
 	<a href="<?= admin_url('admin.php?page=report-comissions') ?>"
 		class="nav-tab <?= !isset($_GET['section_tab']) ? 'nav-tab-active' : ''; ?>"><?= __('Summary of commissions', 'edusystem'); ?></a>
 	<a href="<?= admin_url('admin.php?page=report-comissions&section_tab=college_allies_comissions') ?>"
-	<a href="<?= admin_url('admin.php?page=report-comissions&section_tab=college_allies_comissions') ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'college_allies_comissions') ? 'nav-tab-active' : ''; ?>"><?= __('College commissions & allies', 'edusystem'); ?></a>
 	<a href="<?= admin_url('admin.php?page=report-comissions&section_tab=new_registrations'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'new_registrations') ? 'nav-tab-active' : ''; ?>"><?= __('New registrations', 'edusystem'); ?></a>
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'new_registrations') ? 'nav-tab-active' : ''; ?>"><?= __('New registrations', 'edusystem'); ?></a>
 </h2>
 
