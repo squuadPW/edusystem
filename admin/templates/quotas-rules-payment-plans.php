@@ -172,49 +172,6 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
                                                         <select name="rules[<?= $i ?>][start_charging]" style="max-width: 100%" required>
-                                                            <option value="" ><?= __('Select option', 'edusystem'); ?></option>
-                                                            <option value="register" <?= ($rule['start_charging'] == 'register') ? 'selected' : '' ?>><?= __('Registration', 'edusystem'); ?></option>
-                                                            <option value="academic_period" <?= ($rule['start_charging'] == 'academic_period') ? 'selected' : '' ?>><?= __('Academic period', 'edusystem'); ?></option>
-                                                        </select>
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="seccion-input" >
-
-                                                    <label class="seccion-title" >
-                                                        <b><?= __('Final payment', 'edusystem'); ?></b>
-                                                    </label>
-
-                                                    <div class="group-input" >
-
-                                                        <div class="space-offer">
-
-                                                            <label for="rules[<?= $i ?>][final_payment]">
-                                                                <b><?= __('Regular price', 'edusystem'); ?></b>
-                                                                <span class="text-danger">*</span>
-                                                            </label>
-                                                            <input type="number" name="rules[<?= $i ?>][final_payment]" value="<?= $rule['final_payment'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
-                                                        </div>
-
-                                                        <div class="space-offer">
-
-                                                            <label for="rules[<?= $i ?>][final_payment_sale]">
-                                                                <b><?= __('Sale price', 'edusystem'); ?></b>
-                                                                <span class="text-danger">*</span>
-                                                            </label>
-                                                            <input type="number" name="rules[<?= $i ?>][final_payment_sale]" value="<?= $rule['final_payment_sale'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
-                                                        </div>
-
-                                                    </div>
-
-                                                    <div class="space-offer">
-                                                        <label for="rules[<?= $i ?>][start_charging]" >
-                                                            <b><?= __('Start charging', 'edusystem'); ?></b>
-                                                            <span class="text-danger">*</span>
-                                                        </label>
-                                                        <select name="rules[<?= $i ?>][start_charging]" style="max-width: 100%" required>
-                                                            <option value="" ><?= __('Select option', 'edusystem'); ?></option>
                                                             <option value="register" <?= ($rule['start_charging'] == 'register') ? 'selected' : '' ?>><?= __('Registration', 'edusystem'); ?></option>
                                                             <option value="academic_period" <?= ($rule['start_charging'] == 'academic_period') ? 'selected' : '' ?>><?= __('Academic period', 'edusystem'); ?></option>
                                                         </select>
@@ -382,7 +339,7 @@
                                                     <b><?= __('Start charging', 'edusystem'); ?></b>
                                                     <span class="text-danger">*</span>
                                                 </label>
-                                                <select name="rules[][start_charging]" style="max-width: 100%" required>
+                                                <select name="rules[][start_charging]" style="max-width: 100%" disabled required>
                                                     <option value="" ><?= __('Select option', 'edusystem'); ?></option>
                                                     <option value="register" ><?= __('Registration', 'edusystem'); ?></option>
                                                     <option value="academic_period"><?= __('Academic period', 'edusystem'); ?></option>
