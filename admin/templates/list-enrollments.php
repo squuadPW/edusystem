@@ -31,7 +31,7 @@
 				<label class="screen-reader-text"
 					for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
 				<select name="academic_period">
-					<option value="" selected>Select academic period to filter</option>
+					<option value="" selected>__('Select academic period to filter')</option>
 					<?php foreach ($periods as $key => $period) { ?>
 						<option value="<?php echo $period->code; ?>" <?= !empty($_GET['academic_period']) ? (($_GET['academic_period'] == $period->code) ? 'selected' : '') : ''; ?>>
 							<?php echo $period->name; ?>

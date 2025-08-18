@@ -10,7 +10,7 @@
             <div style="text-align: center;">
                 <label for="input_id"><b><?= __('Period', 'edusystem'); ?></b></label><br>
                 <select name="academic_period">
-                    <option value="" selected>Select academic period to filter</option>
+                    <option value="" selected>__('Select academic period to filter')</option>
                     <?php foreach ($periods as $period) { ?>
                         <option value="<?php echo $period->code; ?>" <?= ($projection_for->code_period == $period->code) ? 'selected' : ''; ?>>
                             <?php echo $period->name; ?>

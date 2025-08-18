@@ -104,7 +104,7 @@ $roles = $current_user->roles;
                                                 <div style="flex: 1; padding: 5px;">
                                                     <label for="input_id"><b><?= __('Period', 'edusystem'); ?></b></label><br>
                                                     <select onchange="academic_period_changed(<?= $key ?>)" name="academic_period[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
-                                                        <option value="" selected>Select academic period to filter</option>
+                                                        <option value="" selected>__('Select academic period to filter')</option>
                                                         <?php foreach ($periods as $period) { ?>
                                                             <option <?= ($period->code == $current_period) ? 'class="current-period"' : ''; ?> value="<?php echo $period->code; ?>" <?= ($projection_for->code_period == $period->code) ? 'selected' : ''; ?>>
                                                                 <?php echo $period->name; ?>
