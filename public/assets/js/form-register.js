@@ -1631,12 +1631,12 @@ customFlatpickr();
 function customFlatpickr() {
   let instances = flatpickr(".flatpickr", {
     locale: document.getElementById("current_lang")
-      ? document.getElementById("current_lang").value == "es"
+      ? document.getElementById("current_lang").value == "es_ES"
         ? "es"
         : "en"
       : "en",
     dateFormat: document.getElementById("current_lang")
-      ? document.getElementById("current_lang").value == "en"
+      ? document.getElementById("current_lang").value == "en_EN"
         ? "d/m/Y"
         : "m/d/Y"
       : "m/d/Y",
