@@ -104,13 +104,14 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
     foreach ($meta_data_map as $key => $meta_key) {
         if (isset($paret[$key]) && !empty($paret[$key])) {
             if ($meta_key == 'locale') {
-                $locale = 'en_US';
-                switch ($paret[$meta_key]) {
-                    case 'en':
-                        $locale = 'en_US';
-                    case 'es':
-                        $locale = 'es_ES';
+                $locale = LANG;
+                $lang_code = $paret[$meta_key];
+                $supported_languages = ['en_EN', 'es_ES'];
+
+                if (isset($lang_code) && in_array($lang_code, $supported_languages)) {
+                    $locale = $lang_code;
                 }
+
                 update_user_meta($user_id, $meta_key, sanitize_text_field(wp_unslash($locale) ) );
             } else {
                 update_user_meta($user_id, $meta_key, sanitize_text_field(wp_unslash($paret[$key]) ) );

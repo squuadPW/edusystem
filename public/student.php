@@ -865,14 +865,15 @@ function update_metadata_student($student) {
     // 1. Obtener el objeto de usuario por email
     $user_student = get_user_by('email', $student['email']);
     if ($user_student) {
+        $locale = LANG;
         $user_id = $user_student->ID;
-        $locale = 'en_US';
-        switch ($student['locale']) {
-            case 'en':
-                $locale = 'en_US';
-            case 'es':
-                $locale = 'es_ES';
+        $lang_code = $student['locale'];
+        $supported_languages = ['en_EN', 'es_ES'];
+
+        if (isset($lang_code) && in_array($lang_code, $supported_languages)) {
+            $locale = $lang_code;
         }
+
         update_user_meta($user_id, 'locale', $locale);
     }
 }

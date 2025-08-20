@@ -3608,14 +3608,13 @@ function my_custom_locale_switcher($locale) {
     // Si la URL tiene el parámetro 'lang'
     if ( isset($_GET['lang']) || $_COOKIE['locale']) {
         $lang_code = sanitize_key($_GET['lang'] ?? $_COOKIE['locale']);
-        // Mapea los códigos de idioma cortos a los locales de WordPress
-        switch ($lang_code) {
-            case 'en':
-                return 'en_US';
-            case 'es':
-                return 'es_ES'; // Puedes usar 'es_AR', 'es_MX', etc. según tu necesidad
-            default:
-                return $locale; // Si el código no coincide, no hagas nada
+        $supported_languages = ['en_EN', 'es_ES'];
+
+        // Prioridad 1: Obtener el idioma de la URL ($_GET)
+        if (isset($lang_code) && in_array($lang_code, $supported_languages)) {
+            return $lang_code;
+        } else {
+            return $locale;
         }
     } else if( !is_admin() ) {
 
