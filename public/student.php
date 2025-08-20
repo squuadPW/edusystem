@@ -146,7 +146,7 @@ function save_student()
         $student_registration_hidden_payments = isset($_POST['hidden_payment_methods']) ? $_POST['hidden_payment_methods'] : false;
         $fixed_fee_inscription = isset($_POST['fixed_fee_inscription']) ? $_POST['fixed_fee_inscription'] : false;
         $expected_graduation_date = isset($_POST['expected_graduation_date']) ? $_POST['expected_graduation_date'] : null;
-        $locale = isset($_POST['locale']) ? $_POST['locale'] : null;
+        $locale = isset($_POST['current_lang']) ? $_POST['current_lang'] : null;
 
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
