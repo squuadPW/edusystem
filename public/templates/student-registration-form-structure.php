@@ -8,6 +8,9 @@ if (is_user_logged_in()) {
     $is_student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_students WHERE email = %s", $email));
 }
 
+// Obtiene el idioma de la URL, por defecto es 'es'
+$current_lang = isset($_GET['lang']) && in_array($_GET['lang'], ['en', 'es']) ? $_GET['lang'] : 'en';
+
 // Prepara la cadena de texto traducible para el JavaScript
 $tooltip_text = __('Please select the grade you are currently studying', 'edusystem');
 ?>
@@ -20,6 +23,16 @@ $tooltip_text = __('Please select the grade you are currently studying', 'edusys
 <div class="title" style="font-size: 24px;">
     <?= __('Applicant', 'edusystem'); ?>
 </div>
+
+<section class="segment lang-selector">
+    <a href="?lang=en" class="segment-button <?= ($current_lang === 'en') ? 'active' : ''; ?>" data-option="en">
+        <?= __('English', 'edusystem'); ?>
+    </a>
+    <a href="?lang=es" class="segment-button <?= ($current_lang === 'es') ? 'active' : ''; ?>" data-option="es">
+        <?= __('Spanish', 'edusystem'); ?>
+    </a>
+</section>
+
 <input type="hidden" id="grade_tooltip_content" value="<?= esc_attr($tooltip_text); ?>">
 
 <?php if (is_user_logged_in()) { ?>
