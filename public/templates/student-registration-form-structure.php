@@ -24,7 +24,7 @@ $tooltip_text = __('Please select the grade you are currently studying', 'edusys
     <?= __('Applicant', 'edusystem'); ?>
 </div>
 
-<section class="segment lang-selector">
+<section class="segment lang-selector" style="margin: auto">
     <a href="?lang=en" class="segment-button <?= ($current_lang === 'en') ? 'active' : ''; ?>" data-option="en">
         <?= __('English', 'edusystem'); ?>
     </a>
