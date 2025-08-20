@@ -30,7 +30,7 @@ $tooltip_text = __('Please select the grade you are currently studying', 'edusys
     <?php if (isset($is_student)) { ?>
         <?php include(plugin_dir_path(__FILE__) . 'form-register-others.php'); ?>
     <?php } else { ?>
-        <section class="segment">
+        <section class="segment" style="margin: auto">
             <div class="segment-button active" data-option="me"><?= __('Me', 'edusystem'); ?></div>
             <div class="segment-button" data-option="others"><?= __('Others', 'edusystem'); ?></div>
         </section>
