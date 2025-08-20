@@ -29,7 +29,6 @@
     <input type="hidden" name="career_shortcode" id="career_shortcode" value="<?= $career ?>">
     <input type="hidden" name="mention_shortcode" id="mention_shortcode" value="<?= $mention ?>">
     <input type="hidden" name="plan_shortcode" id="plan_shortcode" value="<?= $plan ?>">
-    <input type="hidden" name="site_lang" id="site_lang" value="<?= LANG ?>">
     <input type="hidden" id="product_id_input" name="product_id">
     <input type="hidden" name="current_lang" id="current_lang" value="<?= $current_lang ?>">
 
