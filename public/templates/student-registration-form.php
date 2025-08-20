@@ -322,10 +322,12 @@
             </select>
         </div>
 
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name_student"><?= __('Month and year of expected graduation from high school', 'edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata" name="expected_graduation_date" type="text" id="expected_graduation_date" placeholder="<?= __('MM/AAAA', 'edusystem') ?>" required>
-        </div>
+        <?php if($use_expected_graduation_date) { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="name_student"><?= __('Month and year of expected graduation from high school', 'edusystem'); ?><span class="required">*</span></label>
+                <input class="formdata" name="expected_graduation_date" type="text" id="expected_graduation_date" placeholder="<?= __('MM/AAAA', 'edusystem') ?>" required>
+            </div>
+        <?php } ?>
 
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <input type="checkbox" id="terms" name="terms" required>

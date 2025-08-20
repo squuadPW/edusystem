@@ -199,6 +199,7 @@ function form_asp_psp($atts)
             'plan' => '',
             'birth_date_position' => 'UP',
             'title' => '',
+            'use_expected_graduation_date' => false
         ),
         $atts,
         'form_asp_psp'
@@ -223,6 +224,7 @@ function form_asp_psp($atts)
     $plan = $atts['plan'];
     $birth_date_position = $atts['birth_date_position'];
     $title = $atts['title'];
+    $use_expected_graduation_date = $atts['use_expected_graduation_date'];
 
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
@@ -258,6 +260,7 @@ function student_registration_form($atts)
             'plan' => '',
             'birth_date_position' => 'UP',
             'title' => '',
+            'use_expected_graduation_date' => false
         ),
         $atts,
         'student_registration_form'
@@ -282,6 +285,7 @@ function student_registration_form($atts)
     $plan = $atts['plan'];
     $birth_date_position = $atts['birth_date_position'];
     $title = $atts['title'];
+    $use_expected_graduation_date = $atts['use_expected_graduation_date'];
     
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
