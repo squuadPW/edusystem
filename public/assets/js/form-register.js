@@ -386,18 +386,29 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function verifyInstitute() {
-    const numberOfOptions =
-      document.getElementById("institute_id").options.length;
-    if (numberOfOptions == 3) {
-      document.getElementById("institute_id").required = false;
-      document.getElementById("institute-id-select").style.display = "none";
-      document.getElementById("institute_id").selectedIndex = 1;
-      document
-        .getElementById("institute_id")
-        .dispatchEvent(new Event("change"));
+    const instituteSelect = document.getElementById("institute_id");
+    const instituteContainer = document.getElementById("institute-id-select");
+
+    // Primero, verificar que los elementos existan
+    if (!instituteSelect || !instituteContainer) {
+      console.error("No se encontraron los elementos necesarios en el DOM.");
+      return; // Sale de la función si los elementos no existen
+    }
+
+    const numberOfOptions = instituteSelect.options.length;
+
+    if (numberOfOptions === 3) {
+      instituteSelect.required = false;
+      instituteContainer.style.display = "none";
+      
+      // Verificar que el índice 1 sea válido antes de intentar acceder a él
+      if (instituteSelect.options.length > 1) {
+        instituteSelect.selectedIndex = 1;
+        instituteSelect.dispatchEvent(new Event("change"));
+      }
     } else {
-      document.getElementById("institute_id").required = true;
-      document.getElementById("institute-id-select").style.display = "block";
+      instituteSelect.required = true;
+      instituteContainer.style.display = "block";
     }
   }
 
