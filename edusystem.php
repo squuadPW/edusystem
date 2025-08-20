@@ -18,6 +18,12 @@ require plugin_dir_path(__FILE__) . 'public/functions.php';
 require plugin_dir_path(__FILE__) . 'admin/functions.php';
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
+add_action( 'plugins_loaded', 'update_language' );
+function update_language() {
+    // Cargar el dominio de texto para el plugin 'servi-on-site'
+    load_plugin_textdomain( 'edusystem', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+}
+
 function create_tables()
 {
   global $wpdb;
