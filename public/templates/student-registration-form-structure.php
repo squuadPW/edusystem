@@ -8,8 +8,20 @@ if (is_user_logged_in()) {
     $is_student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_students WHERE email = %s", $email));
 }
 
-// Obtiene el idioma de la URL, por defecto es 'es'
-$current_lang = isset($_GET['lang']) && in_array($_GET['lang'], ['en', 'es']) ? $_GET['lang'] : 'en';
+$supported_languages = ['en', 'es'];
+
+// Prioridad 1: Obtener el idioma de la URL ($_GET)
+if (isset($_GET['lang']) && in_array($_GET['lang'], $supported_languages)) {
+    $current_lang = $_GET['lang'];
+} 
+// Prioridad 2: Si no está en la URL, obtenerlo de la cookie ($_COOKIE)
+elseif (isset($_COOKIE['lang']) && in_array($_COOKIE['lang'], $supported_languages)) {
+    $current_lang = $_COOKIE['lang'];
+} 
+// Prioridad 3: Si no está en ninguna parte, usar el predeterminado
+else {
+    $current_lang = 'en';
+}
 
 // Prepara la cadena de texto traducible para el JavaScript
 $tooltip_text = __('Please select the grade you are currently studying', 'edusystem');

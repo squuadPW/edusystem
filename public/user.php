@@ -97,6 +97,7 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
         'birth_date'    => 'birth_date',
         'gender'        => 'gender',
         'ethnicity'     => 'ethnicity',
+        'locale'     => 'locale'
     ];
 
     $paret = $registration_data['parent'] ?? [];

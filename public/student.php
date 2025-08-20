@@ -45,7 +45,8 @@ function save_essential_data_order($order) {
             "ethnicity" => $_COOKIE['ethnicity'] ?? null,
             "email" => $_COOKIE['email_student'] ?? null,
             "phone" => $_COOKIE['phone_student'] ?? null,
-            "is_older" => $_COOKIE['is_older'] ?? null
+            "is_older" => $_COOKIE['is_older'] ?? null,
+            "locale" => $_COOKIE['locale'] ?? null
         ],
         "parent" => [
             "agent_name" => $_COOKIE['agent_name'] ?? null,
@@ -56,7 +57,8 @@ function save_essential_data_order($order) {
             "gender" => $_COOKIE['gender_parent'] ?? null,
             "ethnicity" => $_COOKIE['ethnicity_parent'] ?? null,
             "email" => $_COOKIE['email_partner'] ?? null,
-            "phone" => $_COOKIE['number_partner'] ?? null
+            "phone" => $_COOKIE['number_partner'] ?? null,
+            "locale" => $_COOKIE['locale'] ?? null
         ],
         "program" => [
             "program_id" => $_COOKIE['program_id'] ?? null,
@@ -144,7 +146,7 @@ function save_student()
         $student_registration_hidden_payments = isset($_POST['hidden_payment_methods']) ? $_POST['hidden_payment_methods'] : false;
         $fixed_fee_inscription = isset($_POST['fixed_fee_inscription']) ? $_POST['fixed_fee_inscription'] : false;
         $expected_graduation_date = isset($_POST['expected_graduation_date']) ? $_POST['expected_graduation_date'] : null;
-        $current_lang = isset($_POST['current_lang']) ? $_POST['current_lang'] : null;
+        $locale = isset($_POST['locale']) ? $_POST['locale'] : null;
 
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
@@ -195,7 +197,7 @@ function save_student()
         setcookie('student_registration_hidden_payments', $student_registration_hidden_payments, time() + 864000, '/');
         setcookie('fixed_fee_inscription', $fixed_fee_inscription, time() + 864000, '/');
         setcookie('expected_graduation_date', $expected_graduation_date, time() + 864000, '/');
-        setcookie('current_lang', $current_lang, time() + 864000, '/');
+        setcookie('locale', $locale, time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);
@@ -855,7 +857,19 @@ function insert_student($order)
 
     $student_id = $wpdb->insert_id;
     insert_register_program($student_id, $program);
+    update_metadata_student($student);
     return $student_id;
+}
+
+function update_metadata_student($student) {
+    // 1. Obtener el objeto de usuario por email
+    $user_student = get_user_by('email', $student['email']);
+
+    // 2. Verificar que el usuario existe para evitar errores
+    if ($user_student) {
+        $user_id = $user_student->ID;
+        update_user_meta($user_id, 'locale', $student['locale']);
+    }
 }
 
 function create_user_student($student_id)
