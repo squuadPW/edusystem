@@ -22,7 +22,7 @@ elseif (isset($_COOKIE['lang']) && in_array($_COOKIE['lang'], $supported_languag
 } 
 // Prioridad 3: Si no está en ninguna parte, usar el predeterminado
 else {
-    $current_lang = 'en';
+    $current_lang = LANG;
 }
 
 // Prepara la cadena de texto traducible para el JavaScript

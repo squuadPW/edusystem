@@ -1630,13 +1630,13 @@ segmentButtons.forEach((button) => {
 customFlatpickr();
 function customFlatpickr() {
   let instances = flatpickr(".flatpickr", {
-    locale: document.getElementById("site_lang")
-      ? document.getElementById("site_lang").value == "es"
+    locale: document.getElementById("current_lang")
+      ? document.getElementById("current_lang").value == "es"
         ? "es"
         : "en"
       : "en",
-    dateFormat: document.getElementById("site_lang")
-      ? document.getElementById("site_lang").value == "en"
+    dateFormat: document.getElementById("current_lang")
+      ? document.getElementById("current_lang").value == "en"
         ? "d/m/Y"
         : "m/d/Y"
       : "m/d/Y",
