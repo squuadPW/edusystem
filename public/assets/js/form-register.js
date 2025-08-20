@@ -20,35 +20,36 @@ document.addEventListener("DOMContentLoaded", function () {
   const errorDiv = document.getElementById("password-error");
 
   const mesAnio = document.getElementById('expected_graduation_date');
+  if (mesAnio) {
+    mesAnio.addEventListener('input', function(e) {
+      let valor = e.target.value;
 
-  mesAnio.addEventListener('input', function(e) {
-    let valor = e.target.value;
+      // Eliminar cualquier caracter que no sea un número
+      valor = valor.replace(/\D/g, '');
 
-    // Eliminar cualquier caracter que no sea un número
-    valor = valor.replace(/\D/g, '');
+      // Limitar la longitud a 6 dígitos (2 para mes, 4 para año)
+      if (valor.length > 6) {
+          valor = valor.slice(0, 6);
+      }
 
-    // Limitar la longitud a 6 dígitos (2 para mes, 4 para año)
-    if (valor.length > 6) {
-        valor = valor.slice(0, 6);
-    }
+      // Formatear: agregar la barra después de los 2 primeros dígitos
+      if (valor.length > 2) {
+          let mes = valor.slice(0, 2);
+          let anio = valor.slice(2, 6);
 
-    // Formatear: agregar la barra después de los 2 primeros dígitos
-    if (valor.length > 2) {
-        let mes = valor.slice(0, 2);
-        let anio = valor.slice(2, 6);
+          // Validar que el mes no sea mayor a 12
+          if (parseInt(mes) > 12) {
+              // Si es mayor a 12, lo establecemos como 12
+              mes = '12';
+          }
 
-        // Validar que el mes no sea mayor a 12
-        if (parseInt(mes) > 12) {
-            // Si es mayor a 12, lo establecemos como 12
-            mes = '12';
-        }
+          valor = mes + '/' + anio;
+      }
 
-        valor = mes + '/' + anio;
-    }
-
-    // Actualizar el valor del input
-    e.target.value = valor;
-  });
+      // Actualizar el valor del input
+      e.target.value = valor;
+    });
+  }
 
   loadGradesDefault();
   function loadGradesDefault() {
