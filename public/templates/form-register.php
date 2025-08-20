@@ -31,6 +31,7 @@
     <input type="hidden" name="plan_shortcode" id="plan_shortcode" value="<?= $plan ?>">
     <input type="hidden" name="site_lang" id="site_lang" value="<?= LANG ?>">
     <input type="hidden" id="product_id_input" name="product_id">
+    <input type="hidden" name="current_lang" id="current_lang" value="<?= $current_lang ?>">
 
     <!-- DATOS DEL ESTUDIANTE -->
     <div class="grid grid-cols-12 gap-4">
