@@ -3621,14 +3621,8 @@ function my_custom_locale_switcher($locale) {
 
         $user_id = get_current_user_id(); // Obtiene el ID del usuario actual
         $lang = get_user_meta($user_id, 'locale', true);
-        switch ($lang) {
-            case 'en':
-                return 'en_US';
-            case 'es':
-                return 'es_ES'; // Puedes usar 'es_AR', 'es_MX', etc. según tu necesidad
-            default:
-                return $locale; // Si el código no coincide, no hagas nada
-        }
+
+        return $lang;
     }
     return $locale;
 }

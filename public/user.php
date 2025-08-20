@@ -103,7 +103,18 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
     $paret = $registration_data['parent'] ?? [];
     foreach ($meta_data_map as $key => $meta_key) {
         if (isset($paret[$key]) && !empty($paret[$key])) {
-            update_user_meta($user_id, $meta_key, sanitize_text_field(wp_unslash($paret[$key]) ) );
+            if ($meta_key == 'locale') {
+                $locale = 'en_US';
+                switch ($paret[$meta_key]) {
+                    case 'en':
+                        $locale = 'en_US';
+                    case 'es':
+                        $locale = 'es_ES';
+                }
+                update_user_meta($user_id, $meta_key, sanitize_text_field(wp_unslash($locale) ) );
+            } else {
+                update_user_meta($user_id, $meta_key, sanitize_text_field(wp_unslash($paret[$key]) ) );
+            }
         }
     }
 

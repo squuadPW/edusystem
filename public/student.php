@@ -864,11 +864,16 @@ function insert_student($order)
 function update_metadata_student($student) {
     // 1. Obtener el objeto de usuario por email
     $user_student = get_user_by('email', $student['email']);
-
-    // 2. Verificar que el usuario existe para evitar errores
     if ($user_student) {
         $user_id = $user_student->ID;
-        update_user_meta($user_id, 'locale', $student['locale']);
+        $locale = 'en_US';
+        switch ($student['locale']) {
+            case 'en':
+                $locale = 'en_US';
+            case 'es':
+                $locale = 'es_ES';
+        }
+        update_user_meta($user_id, 'locale', $locale);
     }
 }
 
