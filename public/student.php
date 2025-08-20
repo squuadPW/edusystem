@@ -144,6 +144,7 @@ function save_student()
         $student_registration_hidden_payments = isset($_POST['hidden_payment_methods']) ? $_POST['hidden_payment_methods'] : false;
         $fixed_fee_inscription = isset($_POST['fixed_fee_inscription']) ? $_POST['fixed_fee_inscription'] : false;
         $expected_graduation_date = isset($_POST['expected_graduation_date']) ? $_POST['expected_graduation_date'] : null;
+        $current_lang = isset($_POST['current_lang']) ? $_POST['current_lang'] : null;
 
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
@@ -194,6 +195,7 @@ function save_student()
         setcookie('student_registration_hidden_payments', $student_registration_hidden_payments, time() + 864000, '/');
         setcookie('fixed_fee_inscription', $fixed_fee_inscription, time() + 864000, '/');
         setcookie('expected_graduation_date', $expected_graduation_date, time() + 864000, '/');
+        setcookie('current_lang', $current_lang, time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);

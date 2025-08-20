@@ -34,6 +34,7 @@ $tooltip_text = __('Please select the grade you are currently studying', 'edusys
 </section>
 
 <input type="hidden" id="grade_tooltip_content" value="<?= esc_attr($tooltip_text); ?>">
+<input type="hidden" id="current_lang" value="<?= $current_lang ?>">
 
 <?php if (is_user_logged_in()) { ?>
     <?php if (isset($is_student)) { ?>

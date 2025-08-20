@@ -3606,8 +3606,8 @@ function load_grades_by_country_callback()
 function my_custom_locale_switcher($locale) {
 
     // Si la URL tiene el parámetro 'lang'
-    if ( isset($_GET['lang']) ) {
-        $lang_code = sanitize_key($_GET['lang']);
+    if ( isset($_GET['lang']) || $_COOKIE['current_lang']) {
+        $lang_code = sanitize_key($_GET['lang'] ?? $_COOKIE['current_lang']);
         // Mapea los códigos de idioma cortos a los locales de WordPress
         switch ($lang_code) {
             case 'en':
