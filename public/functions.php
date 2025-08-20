@@ -286,7 +286,7 @@ function student_registration_form($atts)
     $birth_date_position = $atts['birth_date_position'];
     $title = $atts['title'];
     $use_expected_graduation_date = $atts['use_expected_graduation_date'];
-    
+
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
     $grades = get_grades();
@@ -875,7 +875,7 @@ function add_loginout_link($items, $args)
 }
 
 function status_changed_payment($order_id, $status_transition_from, $current_status, $that)
-{   
+{
 
     $order = wc_get_order($order_id);
     $customer_id = $order->get_customer_id();
@@ -893,12 +893,12 @@ function status_changed_payment($order_id, $status_transition_from, $current_sta
     }
 
     $logger = wc_get_logger();
-    $logger->debug('status_changed_payment',['order_id'=>$order_id,'status_order' => $current_status]);
+    $logger->debug('status_changed_payment', ['order_id' => $order_id, 'status_order' => $current_status]);
 
     if (!in_array($current_status, ['failed', 'pending'])) {
         status_order_not_completed($order, $order_id, $customer_id, $status_register);
     }
-    
+
     // Determinar qué función ejecutar
     if ($current_status === 'completed') {
         status_order_completed($order, $order_id, $customer_id);
@@ -956,9 +956,9 @@ function status_order_completed($order, $order_id, $customer_id)
  * @return void
  */
 function update_or_create_payment_record(WC_Order_Item_Product $item, int $student_id, int $order_id): void
-{   
+{
     $logger = wc_get_logger();
-    $logger->debug('update_or_create_payment_record',['order_id' => $order_id]);
+    $logger->debug('update_or_create_payment_record', ['order_id' => $order_id]);
 
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
@@ -1148,7 +1148,7 @@ function update_student_status_and_notify($student_id)
  * @param mixed    $status_register Estado de registro del usuario.
  */
 function status_order_not_completed($order, $order_id, $customer_id, $status_register)
-{   
+{
     // 1. Usa comparaciones estrictas y evita la globalización innecesaria.
     if ($status_register != 1) {
         update_user_meta($customer_id, 'status_register', 0);
@@ -1169,15 +1169,16 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
  * @return void
  */
 function process_program_payments(WC_Order $order, int $order_id): void
-{   
+{
     $logger = wc_get_logger();
-    $logger->debug('process_program_payments',['order_id' => $order_id]);
+    $logger->debug('process_program_payments', ['order_id' => $order_id]);
 
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
     $student_id = $order->get_meta('student_id');
 
-    if (empty($student_id)) return; // Salir si no hay ID de estudiante, ya que es un dato crítico.
+    if (empty($student_id))
+        return; // Salir si no hay ID de estudiante, ya que es un dato crítico.
 
     $student_data = get_student_detail($student_id);
 
@@ -1207,11 +1208,12 @@ function process_program_payments(WC_Order $order, int $order_id): void
     }
 
     $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca. 
-    
+
     foreach ($order->get_items() as $item_id => $item) {
         $product = $item->get_product();
 
-        if (!$product) continue;
+        if (!$product)
+            continue;
 
         // obtiene el id del producto, de la variacion si lo tiene y el id de la regla si lo tiene
         $product_id = $item->get_product_id();
@@ -1229,7 +1231,8 @@ function process_program_payments(WC_Order $order, int $order_id): void
         ));
         $logger->debug('existing_record_count', ['existing_record_count' => $existing_record_count]);
         // salta el producto si encuentra un registro previo
-        if ($existing_record_count > 0) continue;
+        if ($existing_record_count > 0)
+            continue;
 
         // --- Recalcular tarifas de alianzas para este producto específico ---
         $current_item_alliances_fees = [];
@@ -1282,9 +1285,11 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
                 $installments = $quotas_quantity_rule;
 
-                if ($initial_payment > 0) $installments++;
+                if ($initial_payment > 0)
+                    $installments++;
 
-                if ($final_payment > 0) $installments++;
+                if ($final_payment > 0)
+                    $installments++;
 
                 $discount_value = 0;
                 $applied_coupons = $order->get_used_coupons();
@@ -1325,7 +1330,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
                     $original_price = $quote_price;
                     if ($i == 0 && $initial_payment > 0) {
                         $original_price = $initial_payment;
-                    } else if ($i+1 == $installments && $final_payment > 0){
+                    } else if ($i + 1 == $installments && $final_payment > 0) {
                         $original_price = $final_payment;
                     }
 
@@ -1834,7 +1839,7 @@ function update_price_product_cart_quota_rule()
         // Get the coupon codes to potentially remove
         $offer_complete_coupon = get_option('offer_complete');
         $offer_quote_coupon = get_option('offer_quote');
-        
+
         // Remove 'offer_complete' coupon if it's applied
         if (WC()->cart->has_discount($offer_complete_coupon)) {
             WC()->cart->remove_coupon($offer_complete_coupon);
@@ -1845,11 +1850,11 @@ function update_price_product_cart_quota_rule()
             WC()->cart->remove_coupon($offer_quote_coupon);
         }
 
-        if ( $quotas_quantity == 1 && !empty($offer_complete_coupon)) {
+        if ($quotas_quantity == 1 && !empty($offer_complete_coupon)) {
             WC()->cart->apply_coupon($offer_complete_coupon);
         }
 
-        if ( $quotas_quantity > 1 && !empty($offer_quote_coupon)) {
+        if ($quotas_quantity > 1 && !empty($offer_quote_coupon)) {
             WC()->cart->apply_coupon($offer_quote_coupon);
         }
     }
@@ -1919,76 +1924,76 @@ function reload_payment_table()
 {
     ob_start();
     ?>
-        <?php
-        $value = $_POST['option'];
-        global $woocommerce;
-        $cart = $woocommerce->cart->get_cart();
-        $id = FEE_INSCRIPTION;
-        $filtered_products = array_filter($cart, function ($product) use ($id) {
-            return $product['product_id'] != $id;
-        });
+    <?php
+    $value = $_POST['option'];
+    global $woocommerce;
+    $cart = $woocommerce->cart->get_cart();
+    $id = FEE_INSCRIPTION;
+    $filtered_products = array_filter($cart, function ($product) use ($id) {
+        return $product['product_id'] != $id;
+    });
 
-        $cart_total = 0;
-        $product_id = null;
-        foreach ($filtered_products as $key => $product) {
-            $product_id = $product['product_id'];
-            $cart_total = $product['line_total'];
-            // $price = $product['line_total']; 
-        }
-        if (isset($product_id)) {
-            $product = wc_get_product($product_id);
-            if ($product->is_type('variable')) {
-                $variations = $product->get_available_variations();
-                $date = new DateTime();
-                $date = $date->format('Y-m-d');
-                foreach ($variations as $key => $variation) {
-                    if ($variation['attributes']['attribute_payments'] === $value) {
+    $cart_total = 0;
+    $product_id = null;
+    foreach ($filtered_products as $key => $product) {
+        $product_id = $product['product_id'];
+        $cart_total = $product['line_total'];
+        // $price = $product['line_total']; 
+    }
+    if (isset($product_id)) {
+        $product = wc_get_product($product_id);
+        if ($product->is_type('variable')) {
+            $variations = $product->get_available_variations();
+            $date = new DateTime();
+            $date = $date->format('Y-m-d');
+            foreach ($variations as $key => $variation) {
+                if ($variation['attributes']['attribute_payments'] === $value) {
+                    ?>
+                    <table class="payment-parts-table mt-5">
+                        <tr>
+                            <th class="payment-parts-table-header">Payment</th>
+                            <th class="payment-parts-table-header">Next date payment</th>
+                            <th class="payment-parts-table-header">Amount</th>
+                        </tr>
+                        <?php
+                        $date_calc = '';
+                        switch ($value) {
+                            case 'Annual':
+                                $date_calc = '+1 year';
+                                break;
+                            case 'Semiannual':
+                                $date_calc = '+6 months';
+                                break;
+                        }
+                        $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true);
+                        for ($i = 0; $i < $cuotes; $i++) {
+                            $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
+                            ?>
+                            <tr class="payment-parts-table-row">
+                                <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
+                                <td class="payment-parts-table-data">
+                                    <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?>
+                                </td>
+                                <td class="payment-parts-table-data"><?php echo wc_price($cart_total) ?></td>
+                            </tr>
+                            <?php
+                        }
                         ?>
-                                                                                                                                        <table class="payment-parts-table mt-5">
-                                                                                                                                            <tr>
-                                                                                                                                                <th class="payment-parts-table-header">Payment</th>
-                                                                                                                                                <th class="payment-parts-table-header">Next date payment</th>
-                                                                                                                                                <th class="payment-parts-table-header">Amount</th>
-                                                                                                                                            </tr>
-                                                                                                                                            <?php
-                                                                                                                                            $date_calc = '';
-                                                                                                                                            switch ($value) {
-                                                                                                                                                case 'Annual':
-                                                                                                                                                    $date_calc = '+1 year';
-                                                                                                                                                    break;
-                                                                                                                                                case 'Semiannual':
-                                                                                                                                                    $date_calc = '+6 months';
-                                                                                                                                                    break;
-                                                                                                                                            }
-                                                                                                                                            $cuotes = get_post_meta($variation['variation_id'], 'num_cuotes_text', true);
-                                                                                                                                            for ($i = 0; $i < $cuotes; $i++) {
-                                                                                                                                                $date = $i > 0 ? date('Y-m-d', strtotime($date_calc, strtotime($date))) : $date;
-                                                                                                                                                ?>
-                                                                                                                                                                                                <tr class="payment-parts-table-row">
-                                                                                                                                                                                                    <td class="payment-parts-table-data"><?php echo ($i + 1) ?></td>
-                                                                                                                                                                                                    <td class="payment-parts-table-data">
-                                                                                                                                                                                                        <?php echo ($i === 0 ? date('F d, Y') . ' (Current)' : date('F d, Y', strtotime($date))) ?>
-                                                                                                                                                                                                    </td>
-                                                                                                                                                                                                    <td class="payment-parts-table-data"><?php echo wc_price($cart_total) ?></td>
-                                                                                                                                                                                                </tr>
-                                                                                                                                                                                                <?php
-                                                                                                                                            }
-                                                                                                                                            ?>
-                                                                                                                                            <tr>
-                                                                                                                                                <th class="payment-parts-table-header text-end" colspan="3">Total</th>
-                                                                                                                                            </tr>
-                                                                                                                                            <tr class="payment-parts-table-row">
-                                                                                                                                                <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes)) ?></td>
-                                                                                                                                            </tr>
-                                                                                                                                        </table>
-                                                                                                                                        <?php
-                    }
+                        <tr>
+                            <th class="payment-parts-table-header text-end" colspan="3">Total</th>
+                        </tr>
+                        <tr class="payment-parts-table-row">
+                            <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes)) ?></td>
+                        </tr>
+                    </table>
+                    <?php
                 }
             }
         }
-        $html = ob_get_clean();
-        echo $html;
-        wp_die();
+    }
+    $html = ob_get_clean();
+    echo $html;
+    wp_die();
 }
 
 add_action('wp_ajax_nopriv_reload_button_schoolship', 'reload_button_schoolship');
@@ -2010,23 +2015,23 @@ function reload_button_schoolship()
     // Check if the 'name_institute' cookie is NOT set or is empty
     /* if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) { */
     ?>
-            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
-            <?php if ($has_scholarship): ?>
-                <button id="apply-scholarship-btn" type="button" disabled>
+    <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
+        <?php if ($has_scholarship): ?>
+            <button id="apply-scholarship-btn" type="button" disabled>
                 <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
-                </button>
-            <?php else: ?>
-                <button id="apply-scholarship-btn" type="button">
+            </button>
+        <?php else: ?>
+            <button id="apply-scholarship-btn" type="button">
                 <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
-                </button>
-            <?php endif; ?>
-            </div>
-        <?php
-        /* } */
+            </button>
+        <?php endif; ?>
+    </div>
+    <?php
+    /* } */
 
-        $html = ob_get_clean();
-        echo $html;
-        wp_die();
+    $html = ob_get_clean();
+    echo $html;
+    wp_die();
 }
 
 add_action('wp_ajax_nopriv_apply_scholarship', 'apply_scholarship');
@@ -2997,7 +3002,8 @@ function yaycommerce_refresh_checkout_on_payment_methods_change()
  *
  * @return void Envía una respuesta JSON con la tarifa calculada y el total pendiente/del carrito.
  */
-function loadFeesSplit() {
+function loadFeesSplit()
+{
     // Verificar si es una solicitud AJAX y si el nonce es válido para mayor seguridad.
     // Aunque no está en la función original, es una buena práctica para funciones AJAX.
     // if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
@@ -3007,24 +3013,24 @@ function loadFeesSplit() {
     //     wp_die( 'Security check failed.' );
     // }
 
-    $chosen_gateway = isset( $_POST['option'] ) ? sanitize_text_field( $_POST['option'] ) : '';
-    $payment_page   = isset( $_POST['payment_page'] ) ? (int) $_POST['payment_page'] : 0;
-    $fee            = 0;
-    $order          = null;
-    $cart           = WC()->cart;
+    $chosen_gateway = isset($_POST['option']) ? sanitize_text_field($_POST['option']) : '';
+    $payment_page = isset($_POST['payment_page']) ? (int) $_POST['payment_page'] : 0;
+    $fee = 0;
+    $order = null;
+    $cart = WC()->cart;
 
     // --- Manejo de Usuario y Pedido ---
-    if ( is_user_logged_in() ) {
+    if (is_user_logged_in()) {
         $current_user_id = get_current_user_id();
-        $orders = wc_get_orders( array(
-            'status'      => array('wc-split-payment', 'wc-pending'), // Array con múltiples estados.
+        $orders = wc_get_orders(array(
+            'status' => array('wc-split-payment', 'wc-pending'), // Array con múltiples estados.
             'customer_id' => $current_user_id,
-            'limit'       => 1,
-            'orderby'     => 'date',
-            'order'       => 'DESC', // Obtener el pedido más reciente si hay varios
-        ) );
+            'limit' => 1,
+            'orderby' => 'date',
+            'order' => 'DESC', // Obtener el pedido más reciente si hay varios
+        ));
 
-        if ( ! empty( $orders ) ) {
+        if (!empty($orders)) {
             $order = $orders[0];
         }
     } else {
@@ -3034,29 +3040,29 @@ function loadFeesSplit() {
     }
 
     // --- Lógica para omitir la aplicación de tarifas basada en la cookie ---
-    if ( isset( $_COOKIE['from_webinar'] ) && ! empty( $_COOKIE['from_webinar'] ) ) {
+    if (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) {
         // Si la cookie está presente y no vacía, no aplicamos ninguna tarifa.
-        wp_send_json( array(
-            'fee'     => (float) number_format( $fee, 2 ),
-            'pending' => $order ? (float) $order->get_meta( 'pending_payment' ) : ( $cart ? (float) $cart->get_total( false ) : 0 ),
-        ) );
+        wp_send_json(array(
+            'fee' => (float) number_format($fee, 2),
+            'pending' => $order ? (float) $order->get_meta('pending_payment') : ($cart ? (float) $cart->get_total(false) : 0),
+        ));
         return;
     }
 
     // --- Eliminación de tarifas existentes del pedido si aplica ---
     // Esto asegura que no se dupliquen las tarifas si la función se llama varias veces.
-    if ( $order ) {
+    if ($order) {
         $fees_to_remove = ['Bank Transfer Fee', 'Credit Card Fee', 'PayPal Fee'];
         $order_modified = false;
 
-        foreach ( $order->get_items( 'fee' ) as $item_id => $item_fee ) {
-            if ( in_array( $item_fee->get_name(), $fees_to_remove ) ) {
-                $order->remove_item( $item_id );
+        foreach ($order->get_items('fee') as $item_id => $item_fee) {
+            if (in_array($item_fee->get_name(), $fees_to_remove)) {
+                $order->remove_item($item_id);
                 $order_modified = true;
             }
         }
 
-        if ( $order_modified ) {
+        if ($order_modified) {
             $order->calculate_totals();
             $order->save();
         }
@@ -3064,13 +3070,13 @@ function loadFeesSplit() {
 
     // --- Determinación de la base para el cálculo de la tarifa ---
     $base_amount_for_fee = 0;
-    if ( $payment_page == 0 ) {
+    if ($payment_page == 0) {
         // Calculando para el carrito
         $base_amount_for_fee = $cart->get_subtotal() - $cart->get_cart_discount_total();
-    } elseif ( $order ) {
+    } elseif ($order) {
         // Calculando para un pedido existente (pago dividido)
-        $pending_payment = (float) $order->get_meta( 'pending_payment' );
-        if ( $pending_payment > 0 ) {
+        $pending_payment = (float) $order->get_meta('pending_payment');
+        if ($pending_payment > 0) {
             $base_amount_for_fee = $pending_payment;
         } else {
             // Si no hay 'pending_payment' o es 0, usamos el subtotal del pedido
@@ -3080,52 +3086,52 @@ function loadFeesSplit() {
 
     // --- Lógica de aplicación de tarifas basada en el gateway ---
     $fee_percentage = 0;
-    $fee_name       = '';
-    $is_fixed_fee   = false;
+    $fee_name = '';
+    $is_fixed_fee = false;
 
-    switch ( $chosen_gateway ) {
+    switch ($chosen_gateway) {
         case 'aes_payment':
-            $fee            = 35; // Cuota fija
-            $fee_name       = 'Bank Transfer Fee';
-            $is_fixed_fee   = true;
+            $fee = 35; // Cuota fija
+            $fee_name = 'Bank Transfer Fee';
+            $is_fixed_fee = true;
             break;
         case 'woo_squuad_stripe':
             $fee_percentage = 4.5;
-            $fee_name       = 'Credit Card Fee';
+            $fee_name = 'Credit Card Fee';
             break;
         case 'ppcp-gateway':
             $fee_percentage = 4.5;
-            $fee_name       = 'PayPal Fee';
+            $fee_name = 'PayPal Fee';
             break;
         default:
             // No se aplica ninguna tarifa si el gateway no es reconocido
             break;
     }
 
-    if ( $is_fixed_fee ) {
+    if ($is_fixed_fee) {
         // La tarifa ya está establecida en $fee para pagos fijos.
-    } elseif ( $fee_percentage > 0 && $base_amount_for_fee > 0 ) {
-        $fee = ( $base_amount_for_fee / 100 ) * $fee_percentage;
+    } elseif ($fee_percentage > 0 && $base_amount_for_fee > 0) {
+        $fee = ($base_amount_for_fee / 100) * $fee_percentage;
     }
 
     // --- Aplicación de la tarifa al carrito o al pedido ---
-    if ( $fee > 0 && ! empty( $fee_name ) ) {
-        if ( $payment_page == 0 ) {
+    if ($fee > 0 && !empty($fee_name)) {
+        if ($payment_page == 0) {
             // Aplicar al carrito de WooCommerce
-            $cart->add_fee( $fee_name, $fee );
-        } elseif ( $order ) {
+            $cart->add_fee($fee_name, $fee);
+        } elseif ($order) {
             // Aplicar al pedido si no es un pago dividido y la tarifa debe ser aplicada
             $split_payment_meta = $order->get_meta('split_payment');
             // La lógica original solo agregaba la tarifa si 'split_payment' != 1.
             // Asegúrate de que esta lógica sea la deseada.
-            if ( $split_payment_meta != 1 ) {
+            if ($split_payment_meta != 1) {
                 $item_fee_payment_method = new WC_Order_Item_Fee();
-                $item_fee_payment_method->set_name( $fee_name );
-                $item_fee_payment_method->set_amount( $fee );
-                $item_fee_payment_method->set_tax_class( '' );
-                $item_fee_payment_method->set_tax_status( 'none' );
-                $item_fee_payment_method->set_total( $fee ); // total debe ser igual a amount para tarifas sin impuestos
-                $order->add_item( $item_fee_payment_method );
+                $item_fee_payment_method->set_name($fee_name);
+                $item_fee_payment_method->set_amount($fee);
+                $item_fee_payment_method->set_tax_class('');
+                $item_fee_payment_method->set_tax_status('none');
+                $item_fee_payment_method->set_total($fee); // total debe ser igual a amount para tarifas sin impuestos
+                $order->add_item($item_fee_payment_method);
                 $order->calculate_totals();
                 $order->save();
             }
@@ -3134,19 +3140,19 @@ function loadFeesSplit() {
 
     // --- Respuesta JSON ---
     $pending_total = 0;
-    if ( $order ) {
-        $pending_total = (float) $order->get_meta( 'pending_payment' );
-        if ( $pending_total === 0.0 && $order->get_total() > 0 ) { // Si pending_payment es 0, usamos el total del pedido si no está vacío
+    if ($order) {
+        $pending_total = (float) $order->get_meta('pending_payment');
+        if ($pending_total === 0.0 && $order->get_total() > 0) { // Si pending_payment es 0, usamos el total del pedido si no está vacío
             $pending_total = (float) $order->get_total();
         }
-    } elseif ( $cart ) {
-        $pending_total = (float) $cart->get_total( false );
+    } elseif ($cart) {
+        $pending_total = (float) $cart->get_total(false);
     }
 
-    wp_send_json( array(
-        'fee'     => (float) number_format( $fee, 2 ),
+    wp_send_json(array(
+        'fee' => (float) number_format($fee, 2),
         'pending' => $pending_total,
-    ) );
+    ));
 }
 
 add_action('wp_ajax_nopriv_load_cart_for_split', 'loadFeesSplit');
@@ -3596,33 +3602,34 @@ function load_grades_by_country_callback()
     exit;
 }
 
-/**
- * Filtra el locale de WordPress para cambiar el idioma
- * basado en un parámetro de la URL.
- *
- * @param string $locale El locale actual de WordPress.
- * @return string El nuevo locale.
- */
-function my_custom_locale_switcher($locale) {
+function my_custom_locale_switcher($locale)
+{
+    if (isset($_GET['lang']) || isset($_COOKIE['locale'])) {
+        $lang_code = $_GET['lang'] ?? $_COOKIE['locale'];
+        $supported_languages = ['en_US', 'es_ES'];
 
-    // Si la URL tiene el parámetro 'lang'
-    if ( isset($_GET['lang']) || $_COOKIE['locale']) {
-        $lang_code = sanitize_key($_GET['lang'] ?? $_COOKIE['locale']);
-        $supported_languages = ['en_EN', 'es_ES'];
+        // Convertir la lista de idiomas y la entrada del usuario a minúsculas para la validación
+        $supported_lowercase = array_map('strtolower', $supported_languages);
+        $input_lowercase = strtolower($lang_code);
 
         // Prioridad 1: Obtener el idioma de la URL ($_GET)
-        if (isset($lang_code) && in_array($lang_code, $supported_languages)) {
-            return $lang_code;
+        if (in_array($input_lowercase, $supported_lowercase)) {
+            // Encontrar la clave original en el array de idiomas de soporte
+            $key = array_search($input_lowercase, $supported_lowercase);
+            return $supported_languages[$key];
         } else {
             return $locale;
         }
-    } else if( !is_admin() ) {
-
-        $user_id = get_current_user_id(); // Obtiene el ID del usuario actual
+    } else if (!is_admin()) {
+        // Obtiene el ID del usuario actual
+        $user_id = get_current_user_id();
         $lang = get_user_meta($user_id, 'locale', true);
 
-        return $lang;
+        if (!empty($lang)) {
+            return $lang;
+        }
     }
+
     return $locale;
 }
 add_filter('locale', 'my_custom_locale_switcher', 10, 1);
