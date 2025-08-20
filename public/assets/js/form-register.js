@@ -1251,8 +1251,8 @@ if (document.getElementById("birth_date_student")) {
 }
 
 function setStudentBirthDate(date) {
-  let max_age = parseInt(document.getElementById("max_age").value);
-  let limit_age = parseInt(document.getElementById("limit_age").value);
+  let max_age = document.getElementById("max_age") ? parseInt(document.getElementById("max_age").value) : 18;
+  let limit_age = document.getElementById("limit_age") ? parseInt(document.getElementById("limit_age").value) : 100;
   date = date.split("/");
 
   const start = new Date(date[2], date[0] - 1, date[1]);
