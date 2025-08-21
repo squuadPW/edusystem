@@ -1,37 +1,76 @@
 <div>
     <?php
+
     global $woocommerce;
-    $cart = $woocommerce->cart->get_cart();
+    $cart = $woocommerce->cart;
 
     // excluye los productos de fee
     $fee_inscription = FEE_INSCRIPTION;
     $fee_graduation = FEE_GRADUATION;
-    $filtered_products = array_filter($cart, function ($product) use ($fee_inscription, $fee_graduation) {
-        return ($product['product_id'] != $fee_inscription) || ($product['product_id'] != $fee_graduation);
-    });
+    $separate_program_fee = $_COOKIE['separate_program_fee'] ?? false;
 
     // obtiene los cupones
     $cupones = $woocommerce->cart->get_coupons();
 
-    $is_category = true;
-    foreach ($filtered_products as $key => $product) {
+    $product_id = null;
+    $program_data = [];
+    $cart_item_key_programa = null;
+    foreach( $cart->get_cart() as $cart_item_key => $item ) {
 
-        $is_category = has_term('programs', 'product_cat', (int) $product['product_id']);
+        $is_program = has_term('programs', 'product_cat', (int) $item['product_id']);
+        if ( $is_program ) {
 
-        if ($product['variation_id']) {
-            $product_id = $product['variation_id'];
-        } else {
-            $product_id = $product['product_id'];
+            $product_id = $item['product_id'];
+            $variation_id = $item['variation_id'];
+            
+            $coupons = [];
+            if (!empty($cupones)) {
+                $product = wc_get_product( $variation_id ?? $product_id);
+                if($product){
+                    foreach ($cupones as $codigo => $cupon) {
+                        if ($cupon->is_valid_for_product($product) && $cupon->get_discount_type() == 'percent') {
+                            $coupons[] = $cupon->get_id();
+                        }
+                    }
+                }
+            }
+
+            $program_data = [
+                'product_id' => $item['product_id'],
+                'variation_id' => $item['variation_id'],
+                'rule_id' => 0,
+                'coupons' => $coupons,
+            ];
+
+            $cart_item_key_programa = $cart_item_key;
+
+            $product_id = $item['variation_id'] ? $item['variation_id'] : $item['product_id'];
+
+        } else if( in_array($item['product_id'], [FEE_INSCRIPTION, FEE_GRADUATION]) ) {
+
+            if( isset($item['program_data'])  ){
+
+                $program_data = $item['program_data'];
+                $product_id = (int) $program_data['variation_id'] ? $program_data['variation_id'] : $program_data['product_id'];
+                
+            } else if( !empty($program_data) && $separate_program_fee ) {
+
+                $cart->cart_contents[$cart_item_key]['program_data'] = $program_data;
+
+                // Actualizar el carrito
+                $cart->set_session();
+
+                $cart->remove_cart_item($cart_item_key_programa);
+            }
         }
 
-        $product = wc_get_product($product_id);
-        break;
     }
+    
+    $product = wc_get_product($product_id);
 
     ?>
 
-    <?php if ($product && !isset($_COOKIE['is_scholarship']) && $is_category): ?>
-
+    <?php if ( $product && !isset($_COOKIE['is_scholarship']) ): ?>
 
         <!-- <div>
         <div class="back-select-payment">

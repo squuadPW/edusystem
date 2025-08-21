@@ -150,12 +150,11 @@ function payment_table(rule_data) {
         // acomoda el precio para que solo tome 2 decimales
         quote_price = parseFloat( parseFloat(quote_price).toFixed(2) );
 
-        const lang = document.documentElement.lang;
+        const lang = document.documentElement.lang || "en-US";
 
         const date_cell = document.createElement("td");
         date_cell.className = "payment-parts-table-data";
-        date_cell.textContent =
-        new Intl.DateTimeFormat(lang ?? "en-US", opcions_date).format(date) + (i === 0 ? " (Current)" : "");
+        date_cell.textContent = new Intl.DateTimeFormat( lang, opcions_date).format(date) + (i === 0 ? " (Current)" : "");
         row.appendChild(date_cell);
 
         const amount_cell = document.createElement("td");

@@ -1164,10 +1164,10 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
  * @param int      $order_id ID de la orden.
  * @return void
  */
-function process_program_payments(WC_Order $order, int $order_id): void
+/* function process_program_payments(WC_Order $order, int $order_id): void
 {   
-    /* $logger = wc_get_logger();
-    $logger->debug('process_program_payments',['order_id' => $order_id]); */
+    // $logger = wc_get_logger();
+    // $logger->debug('process_program_payments',['order_id' => $order_id]);
 
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
@@ -1368,7 +1368,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
             $current_item_institute_fee = 0.0;
 
             // Solo se calcula la tarifa del instituto si el instituto existe y no es un producto FEE o beca.
-            if ($institute && !$is_fee_product && !$is_scholarship) {
+            if ( $institute && !$is_fee_product && !$is_scholarship ) {
                 $institute_fee_percentage = (float) ($institute->fee ?? 0);
                 $current_item_institute_fee = ($institute_fee_percentage * (float) $item->get_total()) / 100;
             }
@@ -1401,7 +1401,502 @@ function process_program_payments(WC_Order $order, int $order_id): void
         }
 
     }
+} */
+
+/* function process_program_payments(WC_Order $order, int $order_id): void
+{   
+    global $wpdb;
+    $table_student_payment = $wpdb->prefix . 'student_payments';
+
+    // Obtener el ID del estudiante y si no lo encuentra, salir ya que es un dato crítico.
+    $student_id = $order->get_meta('student_id');
+    if ( empty($student_id) ) return; 
+
+    // obtiene la data del estudiante
+    $student_data = get_student_detail($student_id);
+
+    // Inicializacion de variables
+    $institute_id = null; // No hay un institute_id válido
+    $institute = null;
+    $alliances = []; // Array de alianzas vacío
+    $manager_user_id = 0;
+
+    // Validar si $student_data existe y tiene un institute_id
+    if ( $student_data && isset($student_data->institute_id) && !empty($student_data->institute_id) ) {
+
+        $institute_id = $student_data->institute_id;
+        $selected_manager_user_ids = get_managers_institute($institute_id);
+        $manager_user_id = isset($selected_manager_user_ids) ? $selected_manager_user_ids[0] : 0;
+
+        $institute = get_institute_details($institute_id);
+        if ( $institute ) {
+            // Obtener las alianzas del instituto si el instituto existe.
+            $alliances = get_alliances_from_institute( $institute_id);
+            if ( !is_array($alliances) ) $alliances = []; // Si get_alliances_from_institute devuelve null o no es un array, se inicializa como vacío.
+        }
+    }
+
+    $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca. 
+    
+    foreach ($order->get_items() as $item_id => $item) {
+
+        // Obtener el producto y verifica si existe
+        $product = $item->get_product();
+        if ( !$product ) continue;
+
+        // obtiene el id del producto y de la variacion si lo tiene
+        $product_id = $item->get_product_id();
+        $variation_id = $item->get_variation_id() ?? 0;
+
+        // Determinar si este producto es un FEE de inscripción o graduación.
+        // Asegúrate de que FEE_INSCRIPTION y FEE_GRADUATION estén definidos como constantes.
+        $is_fee_product = in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]);
+
+        // Evita la redundancia procesando solo si no existe un registro previo para este producto en esta orden.
+        $existing_record_count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d",
+            $student_id,
+            $product_id
+        ));
+        if ( $existing_record_count > 0 ) continue; // salta el producto si encuentra un registro previo
+
+        // --- Recalcular tarifas de alianzas para este producto específico ---
+        $current_item_alliances_fees = [];
+        if ( !empty($alliances) && is_array($alliances) ) {
+            foreach ( $alliances as $alliance ) {
+
+                $alliance_id = $alliance->id ?? null;
+                $alliance_data = ( $alliance_id ) ? get_alliance_detail( $alliance_id ) : null;
+                $alliance_fee_percentage = (float) $alliance->fee ?? ( $alliance_data->fee ?? 0 );
+
+                $total_alliance_fee = 0.0;
+                if ( !$is_fee_product && !$is_scholarship ) {
+                    $total_alliance_fee = ( $alliance_fee_percentage * (float) $item->get_total() ) / 100;
+                }
+
+                if ( $alliance_id ) {
+                    $current_item_alliances_fees[] = [
+                        'id' => $alliance_id,
+                        'fee_percentage' => $alliance_fee_percentage,
+                        'calculated_fee_amount' => $total_alliance_fee,
+                    ];
+                }
+            }
+        }
+
+        $current_item_alliances_json = json_encode( $current_item_alliances_fees );
+        if ( $current_item_alliances_json === false )
+            $current_item_alliances_json = json_encode([]);
+
+        $installments = 1;
+
+        // reglas de las quotas a aplicar
+        $rule_id = $item->get_meta('quota_rule_id');
+        if ($rule_id) {
+
+            $data_quota_rule = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM `{$wpdb->prefix}quota_rules` WHERE id = %d",
+                (int) $rule_id
+            ));
+
+            if ($data_quota_rule) {
+                
+                // precio inicial
+                $initial_payment_regular = (double) $data_quota_rule->initial_payment;
+                $initial_payment_sale = (double) $data_quota_rule->initial_payment_sale;
+                $initial_payment = (double) ( $initial_payment_sale > 0 ) ? $initial_payment_sale : $data_quota_rule->initial_payment;
+
+                // precio final
+                $final_payment_regular = (double) $data_quota_rule->final_payment;
+                $final_payment_sale = (double) $data_quota_rule->final_payment_sale;
+                $final_payment = (double) ( $final_payment_sale > 0 ) ? $final_payment_sale : $final_payment_regular;
+
+                //precio de la cuota
+                $quote_price_regular = (double) $data_quota_rule->quote_price;
+                $quote_price_sale = (double) $data_quota_rule->quote_price_sale;
+                $quote_price = (double) ( $quote_price_sale > 0 ) ? $quote_price_sale : $quote_price_regular;
+
+                $quotas_quantity_rule = (int) $data_quota_rule->quotas_quantity;
+                $frequency_value = $data_quota_rule->frequency_value;
+                $type_frequency = $data_quota_rule->type_frequency;
+
+                $total = (double) ($quotas_quantity_rule * $quote_price) + $initial_payment + $final_payment;
+
+                $discount_cuppon_value = 0;
+                $applied_coupons = $order->get_used_coupons();
+                if (!empty($applied_coupons)) {
+                    foreach ($applied_coupons as $coupon_code) {
+                        $coupon = new WC_Coupon($coupon_code);
+
+                        // Validar si el cupón es aplicable al producto y si es un descuento porcentual
+                        if ($coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent') {
+                            $discount_cuppon_value += (double) $coupon->get_amount();
+                        }
+                    }
+                }
+                
+                $total_amount_to_pay = $total - ( ($total * $discount_cuppon_value) / 100);
+                $total_original_amount = (double) ($quotas_quantity_rule * $quote_price_regular) + $initial_payment_regular + $final_payment_regular;
+                $total_discount_amount = $total_original_amount - $total_amount_to_pay;
+                
+                $installments = $quotas_quantity_rule;
+
+                if ($initial_payment > 0) $installments++;
+
+                if ($final_payment > 0) $installments++;
+            }
+
+        } else {
+
+            // --- Cálculos de precios ---
+            $original_price = (double) ( $item->get_subtotal() / $item->get_quantity() );
+            $amount = (double) ( $item->get_total() / $item->get_quantity() );
+            $total_amount_to_pay = $amount * $installments;
+            $total_original_amount = $original_price * $installments;
+            $total_discount_amount = $original_price - $amount;
+        }
+
+        // --- Lógica de fechas ---
+        $needs_next_payment = !$is_fee_product;
+        $start_date = new DateTime();
+        $payment_date_obj = clone $start_date;
+
+        for ( $i = 0; $i < $installments; $i++ ) {
+
+            $next_payment_date = null;
+            if ( $needs_next_payment ) {
+
+                if ( $data_quota_rule ) {
+
+                    $original_price = $quote_price; // monto a pagar sin descuento de cupon
+                    $original_price_regular = $quote_price_regular; // monto original a pagar sin descuento de cupon
+                    if ($i == 0 && $initial_payment > 0) {
+                        $original_price = $initial_payment;
+                        $original_price_regular = $initial_payment_regular;
+                    } else if ($i+1 == $installments && $final_payment > 0){
+                        $original_price = $final_payment;
+                        $original_price_regular = $final_payment_regular;
+                    }
+
+                    $amount = $original_price - (( $original_price * $discount_cuppon_value ) / 100);
+
+                    if ($i > 0 && $type_frequency) {
+                        switch ($type_frequency) {
+                            case 'day':
+                                $payment_date_obj->modify("+{$frequency_value} days");
+                                break;
+                            case 'month':
+                                $payment_date_obj->modify("+{$frequency_value} months");
+                                break;
+                            case 'year':
+                                $payment_date_obj->modify("+{$frequency_value} years");
+                                break;
+                        }
+                    }
+                }
+
+                $next_payment_date = $payment_date_obj->format('Y-m-d');
+            }
+
+            // Calcular el institute_fee para este item específico
+            $current_item_institute_fee = 0.0;
+
+            // Solo se calcula la tarifa del instituto si el instituto existe y no es un producto FEE o beca.
+            if ( $institute && !$is_fee_product && !$is_scholarship ) {
+                $institute_fee_percentage = (float) ($institute->fee ?? 0);
+                $current_item_institute_fee = ($institute_fee_percentage * (float) $item->get_total()) / 100;
+            }
+
+            $data = [
+                'status_id' => 0,
+                'student_id' => $student_id,
+                'order_id' => ($i + 1) == 1 ? $order_id : null,
+                'product_id' => $product_id,
+                'variation_id' => $variation_id,
+                'manager_id' => ($i + 1) == 1 ? $manager_user_id : null,
+                'institute_id' => ($i + 1) == 1 ? $institute_id : null,
+                'institute_fee' => ($i + 1) == 1 ? $current_item_institute_fee : 0,
+                'alliances' => ($i + 1) == 1 ? $current_item_alliances_json : null,
+                'amount' => $amount,
+                'original_amount_product' => $original_price_regular,
+                'total_amount' => $total_amount_to_pay,
+                'original_amount' => $total_original_amount,
+                'discount_amount' => $total_discount_amount,
+                'type_payment' => $installments > 1 ? 1 : 2,
+                'cuote' => ($i + 1),
+                'num_cuotes' => $installments,
+                'date_payment' => $i == 0 ? $start_date->format('Y-m-d') : null,
+                'date_next_payment' => $next_payment_date,
+            ];
+
+            // $logger->debug('cuota_data', ['data' => $data]);
+
+            $result = $wpdb->insert($table_student_payment, $data);
+        }
+
+    }
+} */
+
+function process_program_payments(WC_Order $order, int $order_id): void
+{   
+    global $wpdb;
+    $table_student_payment = $wpdb->prefix . 'student_payments';
+
+    // Obtener el ID del estudiante y si no lo encuentra, salir ya que es un dato crítico.
+    $student_id = $order->get_meta('student_id');
+    if ( empty($student_id) ) return; 
+   
+    foreach ($order->get_items() as $item_id => $item) {
+
+        proces_pago( $student_id, $order_id, $item_id );
+
+        $program_data = $order->get_meta('program_data', true) ?? [];
+        $program_data = json_decode($program_data, true);
+        if( $program_data ) {
+            proces_pago( $student_id, null, null, (int) $program_data['product_id'], (int) $program_data['variation_id'], (int) $program_data['rule_id'], $program_data['coupons'] );
+        }
+    }
 }
+
+function proces_pago ( $student_id, $order_id, $item_id, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [] )
+{
+
+    // si no viene el id del estudiante, salir ya que es un dato crítico.
+    if ( !$student_id ) return;
+
+    global $wpdb;
+    $table_student_payment = $wpdb->prefix . 'student_payments';
+
+    // Evita la redundancia procesando solo si no existe un registro previo
+    $existing_record_count = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d",
+        $student_id,
+        $product_id
+    ));
+    if ( $existing_record_count > 0 ) return;
+
+    // Inicializacion de variables necesarias para el registro
+    $manager_user_id = null;
+    $institute_id = null;
+    $current_item_institute_fee = 0.0;
+    $current_item_alliances_json = null;
+
+    // obtiene la orden si viene
+    $order = wc_get_order( $order_id ?? 0 );
+    if( $order ) {
+
+        $item = $order->get_item( $item_id ?? 0 );
+        if( $item ) return;
+
+        $product_id = $item->get_product_id();
+        $variation_id = $item->get_variation_id() ?? 0;
+
+        // obtiene la data del estudiante
+        $student_data = get_student_detail($student_id);
+
+        // Validar si $student_data existe y tiene un institute_id
+        $alliances = []; // Array de alianzas vacío
+        $institute = null;
+        if ( $student_data && isset($student_data->institute_id) && !empty($student_data->institute_id) ) {
+
+            $institute_id = $student_data->institute_id;
+            $selected_manager_user_ids = get_managers_institute($institute_id);
+            $manager_user_id = isset($selected_manager_user_ids) ? $selected_manager_user_ids[0] : 0;
+
+            $institute = get_institute_details($institute_id);
+            if ( $institute ) {
+                // Obtener las alianzas del instituto si el instituto existe.
+                $alliances = get_alliances_from_institute( $institute_id);
+                if ( !is_array($alliances) ) $alliances = []; // Si get_alliances_from_institute devuelve null o no es un array, se inicializa como vacío.
+            }
+        }
+
+        // Determinar si este producto es un FEE de inscripción o graduación.
+        // Asegúrate de que FEE_INSCRIPTION y FEE_GRADUATION estén definidos como constantes.
+        $is_fee_product = in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION]);
+        
+        $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca.
+
+        // Calcular el institute_fee
+        // Solo se calcula la tarifa del instituto si el instituto existe y no es un producto FEE o beca.
+        
+        if ( $institute && !$is_fee_product && !$is_scholarship ) {
+            $institute_fee_percentage = (float) ($institute->fee ?? 0);
+            $current_item_institute_fee = ( $institute_fee_percentage * (float) $item->get_total() ) / 100;
+        }
+        
+        // --- Recalcular tarifas de alianzas para este producto específico ---
+        $current_item_alliances_fees = [];
+        if ( !empty($alliances) && is_array($alliances) ) {
+            foreach ( $alliances as $alliance ) {
+
+                $alliance_id = $alliance->id ?? null;
+                $alliance_data = ( $alliance_id ) ? get_alliance_detail( $alliance_id ) : null;
+                $alliance_fee_percentage = (float) $alliance->fee ?? ( $alliance_data->fee ?? 0 );
+
+                $total_alliance_fee = 0.0;
+                if ( !$is_fee_product && !$is_scholarship ) {
+                    $total_alliance_fee = ( $alliance_fee_percentage * (float) $item->get_total() ) / 100;
+                }
+
+                if ( $alliance_id ) {
+                    $current_item_alliances_fees[] = [
+                        'id' => $alliance_id,
+                        'fee_percentage' => $alliance_fee_percentage,
+                        'calculated_fee_amount' => $total_alliance_fee,
+                    ];
+                }
+            }
+        }
+
+        $current_item_alliances_json = json_encode( $current_item_alliances_fees ) ?? json_encode([]);
+        
+        // --- Cálculos de precios ---
+        $amount = (double) ( $item->get_total() / $item->get_quantity() );
+        $original_price = (double) ( $item->get_subtotal() / $item->get_quantity() );
+        $total_amount_to_pay = $amount * $installments;
+        $total_original_amount = $original_price * $installments;
+
+        // obtiene el id de la regla si existe
+        $rule_id = $item->get_meta('quota_rule_id') ?? null;
+        $coupons = $item->get_meta('coupons', true) ?? [];
+    }
+
+    // Obtener el producto y verifica si existe
+    $product = wc_get_product( $variation_id ?? $product_id );
+    if( !$product ) return;
+
+    // obtiene el valor de descuento que venga por cuppon
+    $discount_cuppon_value = 0;
+    if (!empty($coupons) && is_array($coupons)) {
+        foreach ($coupons as $coupon_id) {
+            $coupon = new WC_Coupon($coupon_id);
+            // Validar si el cupón es aplicable al producto y si es un descuento porcentual
+            if ($coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent') {
+                $discount_cuppon_value += (double) $coupon->get_amount();
+            }
+        }
+    }
+
+    // --- Cálculos de precios si hay una regla ---
+    $installments = 1;
+    if ( $rule_id ) {
+
+        $data_quota_rule = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM `{$wpdb->prefix}quota_rules` WHERE id = %d",
+            (int) $rule_id
+        ));
+
+        if ($data_quota_rule) {
+                
+            // precio inicial
+            $initial_payment_regular = (double) $data_quota_rule->initial_payment;
+            $initial_payment_sale = (double) $data_quota_rule->initial_payment_sale;
+            $initial_payment = (double) ( $initial_payment_sale > 0 ) ? $initial_payment_sale : $data_quota_rule->initial_payment;
+
+            // precio final
+            $final_payment_regular = (double) $data_quota_rule->final_payment;
+            $final_payment_sale = (double) $data_quota_rule->final_payment_sale;
+            $final_payment = (double) ( $final_payment_sale > 0 ) ? $final_payment_sale : $final_payment_regular;
+
+            // precio de la cuota
+            $quote_price_regular = (double) $data_quota_rule->quote_price;
+            $quote_price_sale = (double) $data_quota_rule->quote_price_sale;
+            $quote_price = (double) ( $quote_price_sale > 0 ) ? $quote_price_sale : $quote_price_regular;
+            
+            $quotas_quantity_rule = (int) $data_quota_rule->quotas_quantity;
+            $frequency_value = $data_quota_rule->frequency_value;
+            $type_frequency = $data_quota_rule->type_frequency;
+
+            // total a pagar, si descuento de cupon
+            $total_pay = (double) ($quotas_quantity_rule * $quote_price) + $initial_payment + $final_payment;
+            $total_amount_to_pay = $total_pay - ( ($total_pay * $discount_cuppon_value) / 100);
+            $total_original_amount = (double) ($quotas_quantity_rule * $quote_price_regular) + $initial_payment_regular + $final_payment_regular;
+            
+            $installments = $quotas_quantity_rule;
+            if ($initial_payment > 0) $installments++;
+            if ($final_payment > 0) $installments++;
+        }
+
+    } else if( !$order ) {
+
+        // Cálculos de precios sin regla, toma el precio del producto
+        $amount = $product->get_price() - ( ( $product->get_price() * $discount_cuppon_value) / 100);
+        $original_price = $product->get_regular_price();
+        $total_amount_to_pay = $amount * $installments;
+        $total_original_amount = $original_price * $installments;
+    }
+
+    // monto del descuento total
+    $total_discount_amount = $total_original_amount - $total_amount_to_pay;
+
+    // --- Lógica de fechas ---
+    $needs_next_payment = !$is_fee_product;
+    $start_date = new DateTime();
+    $payment_date = clone $start_date;
+
+    for ( $i = 0; $i < $installments; $i++ ) {
+
+        $next_payment_date = null;
+        if ( $needs_next_payment && $rule_id ) {
+
+            $original_price_pay = $quote_price; // monto a pagar sin descuento de cupon
+            $original_price_regular = $quote_price_regular; // monto original a pagar sin descuento de cupon
+            if ( $i == 0 && $initial_payment > 0 ) {
+                $original_price_pay = $initial_payment;
+                $original_price_regular = $initial_payment_regular;
+            } else if ( ($i+1) == $installments && $final_payment > 0 ) {
+                $original_price_pay = $final_payment;
+                $original_price_regular = $final_payment_regular;
+            }
+            
+            // Calcular el monto a pagar con descuento de cupon
+            $amount = $original_price_pay - (( $original_price_pay * $discount_cuppon_value ) / 100);
+            $original_price = $original_price_regular;
+
+            // fechas de cuotas;
+            if ( $i > 0 && $type_frequency ) {
+                switch ($type_frequency) {
+                    case 'day':
+                        $payment_date->modify("+{$frequency_value} days");
+                        break;
+                    case 'month':
+                        $payment_date->modify("+{$frequency_value} months");
+                        break;
+                    case 'year':
+                        $payment_date->modify("+{$frequency_value} years");
+                        break;
+                }
+            }
+            $next_payment_date = $payment_date->format('Y-m-d');
+        }
+
+        $data = [
+            'status_id' => 0,
+            'student_id' => $student_id,
+            'order_id' => $i == 0 ? $order_id : null,
+            'product_id' => $product_id,
+            'variation_id' => $variation_id,
+            'manager_id' => $i == 0 ? $manager_user_id : null,
+            'institute_id' => $i == 0 ? $institute_id : null,
+            'institute_fee' => $i == 0 ? $current_item_institute_fee : 0,
+            'alliances' => $i == 0 ? $current_item_alliances_json : null,
+            'amount' => $amount,
+            'original_amount_product' => $original_price,
+            'total_amount' => $total_amount_to_pay,
+            'original_amount' => $total_original_amount,
+            'discount_amount' => $total_discount_amount,
+            'type_payment' => $installments > 1 ? 1 : 2,
+            'cuote' => ($i + 1),
+            'num_cuotes' => $installments,
+            'date_payment' => $i == 0 ? $start_date->format('Y-m-d') : null,
+            'date_next_payment' => $next_payment_date,
+        ];
+        $result = $wpdb->insert($table_student_payment, $data);
+    }
+
+}
+
 
 /**
  * Procesa la cuota de inscripción, crea usuarios y envía datos a sistemas externos.
@@ -1589,9 +2084,10 @@ add_action('wp_ajax_woocommerce_update_cart', 'woocommerce_update_cart');
 function woocommerce_update_cart()
 {
     global $woocommerce;
+
+    $cart = $woocommerce->cart;
     $coupon_code = '';
     $has_coupon = false;
-    $cart = $woocommerce->cart;
     $applied_coupons = $woocommerce->cart->get_applied_coupons();
     $products_id = [];
     if (count($applied_coupons) > 0) {
@@ -1600,7 +2096,7 @@ function woocommerce_update_cart()
     $applied_coupons = array_map('strtolower', $applied_coupons);
 
     $value = $_POST['option'];
-    foreach ($cart->get_cart() as $key => $product) {
+    foreach ( $cart->get_cart() as $key => $product ) {
         array_push($products_id, $product['product_id']);
     }
 
@@ -1658,6 +2154,7 @@ function woocommerce_update_cart()
 
     // Aplicar los cupones restantes en la matriz $applied_coupons
     foreach ($applied_coupons as $key => $coupon) {
+
         if ($coupon == strtolower(get_option('offer_complete')) || $coupon == strtolower(get_option('offer_quote'))) {
             $max_date_timestamp = get_option('max_date_offer');
             if ($max_date_timestamp >= current_time('timestamp')) {
@@ -1800,7 +2297,7 @@ function update_price_product_cart_quota_rule()
     $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
     $rule_id = isset($_POST['rule_id']) ? intval($_POST['rule_id']) : 0;
 
-    if ($product_id <= 0 || $rule_id <= 0) {
+    if ( $product_id <= 0 || $rule_id <= 0 ) {
         wp_send_json_error(__('Invalid data', 'edusystem'));
         exit;
     }
@@ -1899,16 +2396,20 @@ function update_price_product_cart_quota_rule()
             // Actualizar el artículo del carrito
             $cart->cart_contents[$cart_item_key] = $cart_item;
 
-            // Actualizar el carrito
-            WC()->cart->set_session();
+        } else if ( isset( $cart_item['program_data'] ) ) {
 
-            wp_send_json_success(__('Precio actualizado', 'edusystem'));
-            exit;
+            $program_data = $cart_item['program_data'];
+            $program_data['rule_id'] = $rule_id;
+
+            WC()->cart->cart_contents[$cart_item_key]['program_data'] = $program_data;
+            
         }
     }
 
-    // en caso de no encontrar el producto
-    wp_send_json_error(__('Product not found in cart', 'edusystem'));
+    // Actualizar el carrito
+    WC()->cart->set_session();
+
+    wp_send_json_success(__('Updated price', 'edusystem'));
     exit;
 }
 
@@ -1940,6 +2441,10 @@ function save_metadata_checkout_create_order_item($item, $cart_item_key, $values
 
     if ( isset( $values['custom_price_regular'] ) ) {
         $item->set_subtotal( $values['custom_price_regular'] );
+    }
+
+    if ( isset( $values['program_data'] ) ) {
+        $order->add_meta_data('program_data', json_encode($values['program_data']) );
     }
 
 }
@@ -2113,7 +2618,8 @@ function woocommerce_custom_price_to_cart_item($cart_object)
                 
                 // Establecer el precio regular
                 $value['data']->set_regular_price($value["custom_price_regular"]);
-            }
+
+            } 
         }
     }
 }
