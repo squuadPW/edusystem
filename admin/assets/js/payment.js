@@ -94,4 +94,7 @@ document.addEventListener('DOMContentLoaded',function(){
             document.getElementById('modalGenerateOrder').style.display = "none";
         });
     });
+
 });
+
+

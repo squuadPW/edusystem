@@ -95,12 +95,12 @@
                                                 <div class="group-input" >
 
                                                     <div class="space-offer">
-                                                        <label for="rules[<?= $i ?>][quantity]">
+                                                        <label for="rules[<?= $i ?>][quotas_quantity]">
                                                             <b><?= __('Quotas quantity ', 'edusystem'); ?></b>
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="number" name="rules[<?= $i ?>][quantity]" value="<?= $rule['quotas_quantity'] ?? 0 ?>" min="1" step="1" onkeydown="return !['.', '-', 'e'].includes(event.key)" required >
+                                                        <input type="number" name="rules[<?= $i ?>][quotas_quantity]" value="<?= $rule['quotas_quantity'] ?? 0 ?>" min="1" step="1" onkeydown="return !['.', '-', 'e'].includes(event.key)" required >
                                                     </div>
 
                                                     <div class="space-offer">
@@ -192,12 +192,12 @@
                                         <div class="group-input" >
 
                                             <div class="space-offer">
-                                                <label for="rules[][quantity]">
+                                                <label for="rules[][quotas_quantity]">
                                                     <b><?= __('Quotas quantity ', 'edusystem'); ?></b>
                                                     <span class="text-danger">*</span>
                                                 </label>
 
-                                                <input type="number" name="rules[][quantity]" value="0" step="1" min="0" onkeydown="return !['.', '-', 'e'].includes(event.key)" disabled required >
+                                                <input type="number" name="rules[][quotas_quantity]" value="0" step="1" min="0" onkeydown="return !['.', '-', 'e'].includes(event.key)" disabled required >
                                             </div>
 
                                             <div class="space-offer">

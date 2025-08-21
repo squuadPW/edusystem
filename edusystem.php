@@ -78,6 +78,7 @@ function create_tables()
   $table_mentions_by_career = $wpdb->prefix . 'mentions_by_career';
   $table_plans_by_program = $wpdb->prefix . 'plans_by_program';
   $table_student_program = $wpdb->prefix . 'student_program';
+  $table_fees = $wpdb->prefix . 'fees';
 
   // Para todas las tablas: Mueve la llamada a dbDelta() FUERA del if de existencia de tabla.
   // Esto asegura que dbDelta() siempre compare la estructura actual con la deseada
@@ -90,6 +91,21 @@ function create_tables()
       `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );
+
+    dbDelta(
+        "CREATE TABLE $table_fees (
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `is_active` tinyint(1) DEFAULT 1,
+            `name` TEXT NOT NULL,
+            `price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+            `product_id` INT(11) NULL DEFAULT NULL,
+            `description` TEXT DEFAULT NULL,
+            `programs` TEXT NOT NULL,
+            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        ) $charset_collate;"
+    );
 
   dbDelta(
     "CREATE TABLE " . $table_student_program . " (
@@ -241,19 +257,23 @@ function create_tables()
   // table_quota_rules
   dbDelta(
     "CREATE TABLE $table_quota_rules (
-              id INT(11) NOT NULL AUTO_INCREMENT,
-              is_active tinyint(1) DEFAULT 1,
+              `id` INT(11) NOT NULL AUTO_INCREMENT,
+              `is_active` tinyint(1) DEFAULT 1,
               `name` TEXT NOT NULL,
-              initial_payment DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-              final_payment DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-              quotas_quantity INT(11) NOT NULL DEFAULT 1,
-              quote_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-              program_id TEXT NOT NULL,
-              frequency_value INT NOT NULL,
-              type_frequency TEXT NOT NULL,
-              position INT NOT NULL DEFAULT 0,
-              created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-              updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              `program_id` TEXT NOT NULL,
+              `initial_payment` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `initial_payment_sale` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `final_payment` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `final_payment_sale` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `quote_price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `quote_price_sale` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+              `quotas_quantity` INT(11) NOT NULL DEFAULT 1,
+              `frequency_value` INT NOT NULL,
+              `type_frequency` TEXT NOT NULL,
+              `start_charging` TEXT DEFAULT,
+              `position` INT NOT NULL DEFAULT 0,
+              `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
               PRIMARY KEY (id)
           )$charset_collate;"
   );
@@ -1188,4 +1208,38 @@ function create_tables()
 
 register_activation_hook(__FILE__, 'create_tables');
 
-?>
+
+/**
+ * Filtra el locale de WordPress para cambiar el idioma
+ * basado en un parámetro de la URL.
+ *
+ * @param string $locale El locale actual de WordPress.
+ * @return string El nuevo locale.
+ */
+function my_custom_locale_switcher($locale) {
+
+    // Si la URL tiene el parámetro 'lang'
+    if ( isset($_GET['lang']) ) {
+        $lang_code = sanitize_key($_GET['lang']);
+        // Mapea los códigos de idioma cortos a los locales de WordPress
+        switch ($lang_code) {
+            case 'en':
+                return 'en_US';
+            case 'es':
+                return 'es_ES'; // Puedes usar 'es_AR', 'es_MX', etc. según tu necesidad
+            default:
+                return $locale; // Si el código no coincide, no hagas nada
+        }
+    } else if( !is_admin() ) {
+
+        $user_id = get_current_user_id(); // Obtiene el ID del usuario actual
+        $lang = get_user_meta($user_id, 'locale', true);
+
+        return $lang;
+    }
+    return $locale;
+}
+add_filter('locale', 'my_custom_locale_switcher', 10, 1);
+
+
+

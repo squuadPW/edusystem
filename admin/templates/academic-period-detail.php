@@ -1,12 +1,12 @@
 <div class="wrap">
     <?php if (isset($period) && !empty($period)): ?>
-        <h2><?= __('Period Details', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Period details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2><?= __('Add Period', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Create period', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php
-    include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+        include(plugin_dir_path(__FILE__) . 'cookie-message.php');
     ?>
 
     <div class="back-button-container">
@@ -14,329 +14,243 @@
             href="<?= admin_url('admin.php?page=add_admin_form_academic_periods_content'); ?>"><?= __('Back', 'edusystem'); ?></a>
     </div>
 
-    <div id="dashboard-widgets" class="metabox-holder">
+    <div id="dashboard-widgets" class="metabox-holder admin-add-offer " style="width: 70%">
         <div id="postbox-container-1" style="width:100% !important;">
             <div id="normal-sortables">
                 <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
                     <div class="inside">
+
                         <form method="post"
-                            action="<?= admin_url('admin.php?page=add_admin_form_academic_periods_content&action=save_period_details'); ?>">
+                            action="<?= admin_url('admin.php?page=add_admin_form_academic_periods_content&action=save_period_details');  ?>">
                             <div>
                                 <h3 class="form-section-title">
                                     <b><?= __('Period Information', 'edusystem'); ?></b>
                                 </h3>
-                                <div class="form-grid">
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <input type="hidden" name="period_id" id="period_id"
-                                                value="<?= $period->id; ?>">
+
+                                <div style="margin: 18px;">
+
+                                    <input type="hidden" id="period_id" name="period_id" value="<?= $period->id ?>">
+
+                                    <div style="font-weight:400; text-align: center; margin-bottom: 10px;">
+                                        <div>
+                                            <input type="checkbox" id="status_id" style="width: auto !important;" name="status_id" value="1" <?= ( isset($period) || $period->status_id == 0 ) ? '' : 'checked'; ?>>
                                             <label for="status_id"><b><?= __('Active', 'edusystem'); ?></b></label>
-                                            <input type="checkbox" name="status_id" id="status_id" value="1"
-                                                <?= ($period->status_id == 1) ? 'checked' : ''; ?>>
-                                        <?php else: ?>
-                                            <input type="hidden" name="period_id" id="period_id" value="">
-                                            <label for="status_id"><b><?= __('Active', 'edusystem'); ?></b></label>
-                                            <input type="checkbox" name="status_id" id="status_id" value="1" checked>
-                                        <?php endif; ?>
+                                        </div>
                                     </div>
+                                    
+                                    <div class="group-input">
+
+                                        <div class="space-offer">
+                                            <label for="code">
+                                                <b><?= __('Code', 'edusystem'); ?></b>
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <br>
+                                            <input type="text" id="code" name="code" minlength="3" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_periods_code_exists_js(this)" value="<?= esc_attr(ucwords($period->code ?? '')); ?>" <?= $period->code ? 'readonly' : 'required' ?> >
+                                            <span id="error-period-code" class="input-error" style="display:none;" ><?=__('Code is already in use','edusystem')?></span>
+                                        </div>
+
+                                        <div class="space-offer">
+                                            <label for="name">
+                                                <b><?= __('Name', 'edusystem'); ?></b>
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <br>
+                                            <input type="text" id="name" name="name" value="<?= esc_attr(ucwords($period->name ?? '')); ?>" >
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="group-input">
+
+                                        <div class="space-offer">
+                                            <label for="start_date">
+                                                <b><?= __('Start Date', 'edusystem'); ?></b>
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <br>
+                                            <input type="date" id="start_date" name="start_date" value="<?= $period->start_date ?? '' ?>" required >
+                                        </div>
+
+                                        <div class="space-offer">
+                                            <label for="end_date">
+                                                <b><?= __('End Date', 'edusystem'); ?></b>
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <br>
+                                            <input type="date" id="end_date" name="end_date" value="<?= $period->end_date ?? '' ?>" required>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="group-input">
+
+                                        <div class="space-offer">
+                                            <label for="name">
+                                                <b><?= __('Year', 'edusystem'); ?></b>
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <br>
+                                            <input type="number" id="year" name="year" value="<?= $period->year ?? '' ?>" required>
+                                        </div>
+
+                                        <div class="space-offer">
+                                            <label for="code_next">
+                                                <b><?= __('Next period code', 'edusystem'); ?></b>
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <br>
+                                            <input type="text" id="code_next" name="code_next" value="<?= $period->code_next ?? '' ?>" required>
+                                        </div>
+
+                                    </div>
+
                                 </div>
 
-                                <div class="form-grid">
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="code"><b><?= __('Period', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="text" name="code" id="code"
-                                                value="<?= esc_attr(ucwords($period->code)); ?>">
-                                            <input type="hidden" name="old_code" id="old_code"
-                                                value="<?= esc_attr($period->code); ?>">
-                                        <?php else: ?>
-                                            <label for="code"><b><?= __('Period', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" name="code" id="code" value="" required>
-                                            <input type="hidden" name="period_id" id="period_id" value="">
-                                            <input type="hidden" name="old_code" id="old_code" value="">
+                                <br>
+
+                                <div id="period-cuts-container" >
+                                    <h3 class="form-section-title" >
+                                        <b><?= __('Period cuts', 'edusystem'); ?></b>
+                                    </h3>
+                                    
+                                    <div id="cuts" data-cuts_count="<?= count( $cuts ?? [] ) ?? 0  ?>" >
+                                        
+                                        <?php if( $cuts ): ?>
+
+                                            <?php $i = 1; foreach ( $cuts AS $cut ) : ?>
+                                                
+                                                <div class="cut" >
+                                                    
+                                                    <input type="hidden" name="cuts[<?= $i ?>][id]" value="<?= $cut->id ?>" >
+
+                                                    <div class="id" ><?= $cut->id ?></div>
+
+                                                    <div class="space-offer">
+                                                        <label for="cuts[<?= $i ?>][cut]">
+                                                            <b><?= __('Name of the cut', 'edusystem'); ?></b>
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+                                                        <br>
+                                                        <input type="text" name="cuts[<?= $i ?>][cut]" value="<?= $cut->cut ?? '' ?>" readonly >
+                                                    </div>
+
+                                                    <div class="group-input">
+
+                                                        <div class="space-offer">
+                                                            <label for="cuts[<?= $i ?>][start_date]">
+                                                                <b><?= __('Start Date Cut', 'edusystem'); ?></b>
+                                                                <span class="text-danger">*</span>
+                                                            </label>
+                                                            <br>
+                                                            <input type="date" name="cuts[<?= $i ?>][start_date]" value="<?= $cut->start_date ?? '' ?>" required >
+                                                        </div>
+
+                                                        <div class="space-offer">
+                                                            <label for="cuts[<?= $i ?>][end_date]">
+                                                                <b><?= __('End Date Cut', 'edusystem'); ?></b>
+                                                                <span class="text-danger">*</span>
+                                                            </label>
+                                                            <br>
+                                                            <input type="date" name="cuts[<?= $i ?>][end_date]" value="<?= $cut->end_date ?? '' ?>" required>
+                                                        </div>
+
+                                                        <div class="space-offer">
+                                                            <label for="cuts[<?= $i ?>][max_date]">
+                                                                <b><?= __('Max Date Cut', 'edusystem'); ?></b>
+                                                                <span class="text-danger">*</span>
+                                                            </label>
+                                                            <br>
+                                                            <input type="date" name="cuts[<?= $i ?>][max_date]" value="<?= $cut->max_date ?? '' ?>" required>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="container-button" >
+
+                                                        <button type="button" class="button button-secodary" data-cut_id="<?= "{$cut->id}" ?>" data-cut="<?= "{$cut->cut}" ?>" data-period_code="<?= "{$cut->code}" ?>" onclick="modal_delete_cut_js(this)" ><?=__('Delete', 'edusystem')?></button>
+
+                                                    </div>
+
+                                                </div>
+
+                                            <?php $i ++; endforeach; ?>
+
                                         <?php endif; ?>
+
+                                        <div id="template-cut" class="cut"  >
+                                                    
+                                            <input type="hidden" name="cuts[][id]" disabled >
+
+                                            <div class="space-offer">
+                                                <label for="cuts[][cut]">
+                                                    <b><?= __('Name of the cut', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <br>
+                                                <input type="text" name="cuts[][cut]" value="" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_cut_exists_js(this)" minlength="3" disabled required >
+                                                <span class="input-error" style="display:none;" ><?=__('Cut is already in use','edusystem')?></span>
+                                            </div>
+
+                                            <div class="group-input">
+
+                                                <div class="space-offer">
+                                                    <label for="cuts[][start_date]">
+                                                        <b><?= __('Start Date Cut', 'edusystem'); ?></b>
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <br>
+                                                    <input type="date" name="cuts[][start_date]" disabled required >
+                                                </div>
+
+                                                <div class="space-offer">
+                                                    <label for="cuts[][end_date]">
+                                                        <b><?= __('End Date Cut', 'edusystem'); ?></b>
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <br>
+                                                    <input type="date" name="cuts[][end_date]" disabled required>
+                                                </div>
+
+                                                <div class="space-offer">
+                                                    <label for="cuts[][max_date]">
+                                                        <b><?= __('Max Date Cut', 'edusystem'); ?></b>
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <br>
+                                                    <input type="date" name="cuts][max_date]" disabled required>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="container-button" >
+                                                <button type="button" class="button button-secodary remove-rule-button" ><?=__('Delete', 'edusystem')?></button>
+                                            </div>  
+                                            
+                                        </div>
+
                                     </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="name"><b><?= __('Description', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="text" name="name" id="name"
-                                                value="<?= esc_attr(ucwords($period->name)); ?>">
-                                        <?php else: ?>
-                                            <label for="name"><b><?= __('Description', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" name="name" id="name" value="" required>
-                                        <?php endif; ?>
+                                    
+                                    <div >
+                                        <button id="add-cuts" type="button" class="button button-secondary" ><?=__('Add cuts', 'edusystem')?></button>
                                     </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="year"><b><?= __('Year', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="number" name="year" id="year"
-                                                value="<?= esc_attr($period->year); ?>">
-                                        <?php else: ?>
-                                            <label for="year"><b><?= __('Year', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="number" name="year" id="year" value="" required>
-                                        <?php endif; ?>
-                                    </div>
+
                                 </div>
 
-                                <div class="form-grid">
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="start_date"><b><?= __('Start Date', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="start_date" id="start_date"
-                                                value="<?= esc_attr($period->start_date); ?>">
-                                        <?php else: ?>
-                                            <label for="start_date"><b><?= __('Start Date', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="start_date" id="start_date" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="end_date"><b><?= __('End Date', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="end_date" id="end_date"
-                                                value="<?= esc_attr($period->end_date); ?>">
-                                        <?php else: ?>
-                                            <label for="end_date"><b><?= __('End Date', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="end_date" id="end_date" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-
-                                <h3 class="form-section-title">
-                                    <b><?= __('Start and end dates for period cuts', 'edusystem'); ?></b>
-                                </h3>
-                                <div class="form-grid"
-                                    style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="start_date_A"><b><?= __('Start Date Cut A', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="start_date_A" id="start_date_A"
-                                                value="<?= esc_attr($cuts[0]->start_date); ?>">
-                                        <?php else: ?>
-                                            <label
-                                                for="start_date_A"><b><?= __('Start Date Cut A', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="start_date_A" id="start_date_A" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="end_date_A"><b><?= __('End Date Cut A', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="end_date_A" id="end_date_A"
-                                                value="<?= esc_attr($cuts[0]->end_date); ?>">
-                                        <?php else: ?>
-                                            <label for="end_date_A"><b><?= __('End Date Cut A', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="end_date_A" id="end_date_A" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="max_date_A"><b><?= __('Max Date Cut A', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="max_date_A" id="max_date_A"
-                                                value="<?= esc_attr($cuts[0]->max_date); ?>">
-                                        <?php else: ?>
-                                            <label for="max_date_A"><b><?= __('Max Date Cut A', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="max_date_A" id="max_date_A" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div class="form-grid"
-                                    style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="start_date_B"><b><?= __('Start Date Cut B', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="start_date_B" id="start_date_B"
-                                                value="<?= esc_attr($cuts[1]->start_date); ?>">
-                                        <?php else: ?>
-                                            <label
-                                                for="start_date_B"><b><?= __('Start Date Cut B', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="start_date_B" id="start_date_B" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="end_date_B"><b><?= __('End Date Cut B', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="end_date_B" id="end_date_B"
-                                                value="<?= esc_attr($cuts[1]->end_date); ?>">
-                                        <?php else: ?>
-                                            <label for="end_date_B"><b><?= __('End Date Cut B', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="end_date_B" id="end_date_B" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="max_date_B"><b><?= __('Max Date Cut B', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="max_date_B" id="max_date_B"
-                                                value="<?= esc_attr($cuts[1]->max_date); ?>">
-                                        <?php else: ?>
-                                            <label for="max_date_B"><b><?= __('Max Date Cut B', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="max_date_B" id="max_date_B" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div class="form-grid"
-                                    style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="start_date_C"><b><?= __('Start Date Cut C', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="start_date_C" id="start_date_C"
-                                                value="<?= esc_attr($cuts[2]->start_date); ?>">
-                                        <?php else: ?>
-                                            <label
-                                                for="start_date_C"><b><?= __('Start Date Cut C', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="start_date_C" id="start_date_C" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="end_date_C"><b><?= __('End Date Cut C', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="end_date_C" id="end_date_C"
-                                                value="<?= esc_attr($cuts[2]->end_date); ?>">
-                                        <?php else: ?>
-                                            <label for="end_date_C"><b><?= __('End Date Cut C', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="end_date_C" id="end_date_C" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="max_date_C"><b><?= __('Max Date Cut C', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="max_date_C" id="max_date_C"
-                                                value="<?= esc_attr($cuts[2]->max_date); ?>">
-                                        <?php else: ?>
-                                            <label for="max_date_C"><b><?= __('Max Date Cut C', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="max_date_C" id="max_date_C" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div class="form-grid"
-                                    style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="start_date_D"><b><?= __('Start Date Cut D', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="start_date_D" id="start_date_D"
-                                                value="<?= esc_attr($cuts[3]->start_date); ?>">
-                                        <?php else: ?>
-                                            <label
-                                                for="start_date_D"><b><?= __('Start Date Cut D', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="start_date_D" id="start_date_D" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="end_date_D"><b><?= __('End Date Cut D', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="end_date_D" id="end_date_D"
-                                                value="<?= esc_attr($cuts[3]->end_date); ?>">
-                                        <?php else: ?>
-                                            <label for="end_date_D"><b><?= __('End Date Cut D', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="end_date_D" id="end_date_D" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="max_date_D"><b><?= __('Max Date Cut D', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="max_date_D" id="max_date_D"
-                                                value="<?= esc_attr($cuts[3]->max_date); ?>">
-                                        <?php else: ?>
-                                            <label for="max_date_D"><b><?= __('Max Date Cut D', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="max_date_D" id="max_date_D" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div class="form-grid"
-                                    style="border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137); padding-bottom: 20px;">
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="start_date_E"><b><?= __('Start Date Cut E', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="start_date_E" id="start_date_E"
-                                                value="<?= esc_attr($cuts[4]->start_date); ?>">
-                                        <?php else: ?>
-                                            <label
-                                                for="start_date_E"><b><?= __('Start Date Cut E', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="start_date_E" id="start_date_E" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="end_date_E"><b><?= __('End Date Cut E', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="end_date_E" id="end_date_E"
-                                                value="<?= esc_attr($cuts[4]->end_date); ?>">
-                                        <?php else: ?>
-                                            <label for="end_date_E"><b><?= __('End Date Cut E', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="end_date_E" id="end_date_E" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="max_date_E"><b><?= __('Max Date Cut E', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="date" name="max_date_E" id="max_date_E"
-                                                value="<?= esc_attr($cuts[4]->max_date); ?>">
-                                        <?php else: ?>
-                                            <label for="max_date_E"><b><?= __('Max Date Cut E', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" name="max_date_E" id="max_date_E" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-
-                                <h3 class="form-section-title">
-                                    <b><?= __('Next academic period', 'edusystem'); ?></b>
-                                </h3>
-                                <div class="form-grid">
-                                    <div class="form-field-custom">
-                                        <?php if (isset($period) && !empty($period)): ?>
-                                            <label
-                                                for="code_next"><b><?= __('Next period code', 'edusystem'); ?></b><?= ($period->status_id == 1) ? '<span class="text-danger">*</span>' : ''; ?></label>
-                                            <input type="text" name="code_next" id="code_next"
-                                                value="<?= esc_attr(ucwords($period->code_next)); ?>">
-                                        <?php else: ?>
-                                            <label for="code_next"><b><?= __('Next period code', 'edusystem'); ?></b><span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" name="code_next" id="code_next" value="" required>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div class="form-submit-container">
-                                    <input type="submit" name="submit" id="submit" class="button button-primary"
-                                        value="<?= __('Save Period', 'edusystem'); ?>">
-                                </div>
                             </div>
+                           
+                            <div style="padding-top: 10px;margin-top: 10px;display:flex;flex-direction:row;justify-content:end;gap:5px;border-top: 1px solid #8080805c;">
+                                <button type="submit" id="save-period" class="button button-primary">
+                                    <?php 
+                                        if ( $cuts ): 
+                                            echo __('Saves changes', 'edusystem'); 
+                                        else:
+                                            echo __('Add period', 'edusystem');
+                                        endif; 
+                                    ?>
+                                </button>
+                            </div>
+
                         </form>
                     </div>
                 </div>
@@ -344,3 +258,7 @@
         </div>
     </div>
 </div>
+
+<?php include(plugin_dir_path(__FILE__).'modal-delete-subprogram.php'); ?>
+
+

@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * 
      * @return {void} No retorna ningún valor.
      */
-    document.querySelectorAll('.modal-close').forEach((close) => {
+    document.querySelectorAll('.modal-close').forEach( (close) => {
         close.addEventListener('click',(e) => {
 
             modal_delete_quota_rule = document.getElementById('modalDeleteQuotaRule');
@@ -172,7 +172,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-// Función para actualizar las posiciones de las reglas
+
+//  no esta terminado necesita un remplazo
+function inputs_price_sale( input, id_input_regular ) {
+
+    console.log('paso');
+
+    const mensaje_error = input.parentElement.querySelector('.text-danger.price-alert'); // Selecciona el mensaje de error
+    console.log(mensaje_error);
+
+    input_regular = document.getElementById(id_input_regular);
+    if( !input_regular ) return;
+
+    const price_regular = parseFloat( input_regular.value );
+    const price_sale = parseFloat( input.value );
+    
+    // Ajusta el valor mínimo del input de "sale"
+    input.min = price_regular ?? 0;
+            
+    // Verificamos si ambos valores son números válidos
+    if ( isNaN(price_regular) || isNaN(price_sale) ) {
+        if( mensaje_error ) mensaje_error.style.display = 'none';
+        return;
+    }
+            
+    // Validamos la condición
+    if (  mensaje_error && ( price_sale < price_regular ) ) {
+        mensaje_error.style.display = 'block';
+    } else if( mensaje_error ) {
+        mensaje_error.style.display = 'none';
+    }
+
+}
+
+
+/**
+ * Actualiza las posiciones numéricas de todas las reglas en el contenedor #rules.
+ * Asigna a cada input de posición (name*="[position]") el índice actual del elemento en la lista.
+ */
 function update_positions_rule() {
     const rules = document.querySelectorAll(' #rules .rule');
     rules.forEach((rule, index) => {
@@ -182,7 +219,6 @@ function update_positions_rule() {
         }
     });
 }
-
 
 /**
  * Abre el modal para eliminar una regla de cuota.
@@ -273,7 +309,8 @@ function validate_input(input, regex_pattern, convert_to_upper = false, max_leng
     }
 }
 
-        function restrictInput(inputElement, blockedChars = [], message = '') {
+function restrictInput(inputElement, blockedChars = [], message = '') {
+function restrictInput(inputElement, blockedChars = [], message = '') {
             // Prevenir entrada de caracteres no deseados
             inputElement.addEventListener('keydown', function(e) {
                 if (blockedChars.includes(e.key)) {
@@ -298,14 +335,13 @@ function validate_input(input, regex_pattern, convert_to_upper = false, max_leng
                     if (message) alert(message);
                 }
             });
-        }
+}
+}
 
-        const numberInput = document.getElementById('numberInput');
-        if( numberInput ){
-            restrictInput(numberInput, ['-', 'e', 'E'], 'Por favor ingresa solo números positivos sin notación científica.');
-        }
-        
- 
+const numberInput = document.getElementById('numberInput');
+if( numberInput ){
+    restrictInput(numberInput, ['-', 'e', 'E'], 'Por favor ingresa solo números positivos sin notación científica.');
+} 
 
 let timeout_id = null;
 let controller_validate_identificator

@@ -422,7 +422,7 @@ function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $r
 
         setcookie('is_scholarship', 1, time() + 3600, '/');
     } else if ($from_webinar) {
-        $woocommerce->cart->apply_coupon('100% Registration fee');
+        $woocommerce->cart->apply_coupon(__('100% Registration fee','edusystem'));
         setcookie('from_webinar', 1, time() + 3600, '/', '/');
     }
 
@@ -807,7 +807,7 @@ function get_student_from_id($student_id)
 }
 
 function insert_student($order)
-{
+{   
     $customer_id = $order->get_customer_id();
     $registration_data = $order->meta_exists('registration_data') ?  json_decode( $order->get_meta('registration_data'), true ) : null;
     $student = $registration_data['student'];
@@ -835,9 +835,9 @@ function insert_student($order)
             'last_name' => $student['last_name'],
             'middle_last_name' => $student['middle_last_name'],
             'birth_date' => date_i18n('Y-m-d', strtotime($student['birth_date'])),
-            'grade_id' => $program['initial_grade'],
+            'grade_id' => (int) $program['initial_grade'],
             'name_institute' => strtoupper($program['name_institute']),
-            'institute_id' => $program['institute_id'],
+            'institute_id' => (int) $program['institute_id'],
             'postal_code' => $order->get_billing_postcode(),
             'gender' => $student['gender'],
             'program_id' => $program['program_id'],

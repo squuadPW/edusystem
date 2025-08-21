@@ -1,37 +1,76 @@
 <div>
     <?php
+
     global $woocommerce;
-    $cart = $woocommerce->cart->get_cart();
+    $cart = $woocommerce->cart;
 
     // excluye los productos de fee
     $fee_inscription = FEE_INSCRIPTION;
     $fee_graduation = FEE_GRADUATION;
-    $filtered_products = array_filter($cart, function ($product) use ($fee_inscription, $fee_graduation) {
-        return ($product['product_id'] != $fee_inscription) || ($product['product_id'] != $fee_graduation);
-    });
+    $separate_program_fee = $_COOKIE['separate_program_fee'] ?? false;
 
     // obtiene los cupones
     $cupones = $woocommerce->cart->get_coupons();
 
-    $is_category = true;
-    foreach ($filtered_products as $key => $product) {
+    $product_id = null;
+    $program_data = [];
+    $cart_item_key_programa = null;
+    foreach( $cart->get_cart() as $cart_item_key => $item ) {
 
-        $is_category = has_term('programs', 'product_cat', (int) $product['product_id']);
+        $is_program = has_term('programs', 'product_cat', (int) $item['product_id']);
+        if ( $is_program ) {
 
-        if ($product['variation_id']) {
-            $product_id = $product['variation_id'];
-        } else {
-            $product_id = $product['product_id'];
+            $product_id = $item['product_id'];
+            $variation_id = $item['variation_id'];
+            
+            $coupons = [];
+            if (!empty($cupones)) {
+                $product = wc_get_product( $variation_id ?? $product_id);
+                if($product){
+                    foreach ($cupones as $codigo => $cupon) {
+                        if ($cupon->is_valid_for_product($product) && $cupon->get_discount_type() == 'percent') {
+                            $coupons[] = $cupon->get_id();
+                        }
+                    }
+                }
+            }
+
+            $program_data = [
+                'product_id' => $item['product_id'],
+                'variation_id' => $item['variation_id'],
+                'rule_id' => 0,
+                'coupons' => $coupons,
+            ];
+
+            $cart_item_key_programa = $cart_item_key;
+
+            $product_id = $item['variation_id'] ? $item['variation_id'] : $item['product_id'];
+
+        } else if( in_array($item['product_id'], [FEE_INSCRIPTION, FEE_GRADUATION]) ) {
+
+            if( isset($item['program_data'])  ){
+
+                $program_data = $item['program_data'];
+                $product_id = (int) $program_data['variation_id'] ? $program_data['variation_id'] : $program_data['product_id'];
+                
+            } else if( !empty($program_data) && $separate_program_fee ) {
+
+                $cart->cart_contents[$cart_item_key]['program_data'] = $program_data;
+
+                // Actualizar el carrito
+                $cart->set_session();
+
+                $cart->remove_cart_item($cart_item_key_programa);
+            }
         }
 
-        $product = wc_get_product($product_id);
-        break;
     }
+    
+    $product = wc_get_product($product_id);
 
     ?>
 
-    <?php if ($product && !isset($_COOKIE['is_scholarship']) && $is_category): ?>
-
+    <?php if ( $product && !isset($_COOKIE['is_scholarship']) ): ?>
 
         <!-- <div>
         <div class="back-select-payment">
@@ -57,8 +96,8 @@
             <div>
                 <div style="margin-bottom: 10px !important; text-align: center">
                     <?php
-                    $product_fee = wc_get_product(FEE_INSCRIPTION ?? 0);
-                    $product_price = $product_fee->get_price() ?? 0;
+                        $product_fee = wc_get_product(FEE_INSCRIPTION ?? 0);
+                        $product_price = $product_fee->get_price() ?? 0;
                     ?>
                     <label class="fee-container">
                         <strong><?= __('Registration fee', 'edusystem') ?></strong>
@@ -80,27 +119,28 @@
         <?php } ?>
 
         <?php
-        $product_id = $product->get_id();
+            $product_id = $product->get_id();
         ?>
 
         <?php
-        global $wpdb;
-        $quotas_rules = $wpdb->get_results($wpdb->prepare(
-            "SELECT `qr`.*
-                FROM `{$wpdb->prefix}quota_rules` AS `qr`
-                INNER JOIN `{$wpdb->prefix}programs` AS `p` 
-                    ON (`qr`.program_id = `p`.identificator AND `p`.product_id = %1\$d) 
-                    OR `qr`.program_id = CONCAT(`p`.identificator, '_', 
-                        REGEXP_SUBSTR( JSON_UNQUOTE(JSON_SEARCH(`p`.subprogram, 'one', %1\$d, NULL, '$.*.product_id')),
-                            '[0-9]+'
-                        ))
-                ORDER BY position ASC",
-            $product_id
-        ));
+            global $wpdb;
+            $quotas_rules = $wpdb->get_results($wpdb->prepare(
+                "SELECT `qr`.*
+                    FROM `{$wpdb->prefix}quota_rules` AS `qr`
+                    INNER JOIN `{$wpdb->prefix}programs` AS `p` 
+                        ON (`qr`.program_id = `p`.identificator AND `p`.product_id = %1\$d) 
+                        OR `qr`.program_id = CONCAT(`p`.identificator, '_', 
+                            REGEXP_SUBSTR( JSON_UNQUOTE(JSON_SEARCH(`p`.subprogram, 'one', %1\$d, NULL, '$.*.product_id')),
+                                '[0-9]+'
+                            ))
+                    ORDER BY position ASC",
+                $product_id
+            ));
 
         ?>
 
         <?php if ($quotas_rules): ?>
+            
             <div>
                 <div class="radio-group text-center elements-quote-hidden">
                     <label class="m-5"><?= __('Program Payments', 'edusystem') ?></label>
@@ -108,16 +148,16 @@
                     <div class="radio-group options-quotas">
 
                         <?php
-                        $discount_value = 0;
-                        // valida el precio del progrma con los cupones
-                        if (!empty($cupones)) {
+                            $discount_value = 0;
+                            // valida el precio del programa con los cupones
+                            if (!empty($cupones)) {
 
-                            foreach ($cupones as $codigo => $cupon) {
-                                if ($cupon->is_valid_for_product($product) && $cupon->get_discount_type() == 'percent') {
-                                    $discount_value = $cupon->get_amount();
+                                foreach ($cupones as $codigo => $cupon) {
+                                    if ($cupon->is_valid_for_product($product) && $cupon->get_discount_type() == 'percent') {
+                                        $discount_value = $cupon->get_amount();
+                                    }
                                 }
                             }
-                        }
 
                         ?>
 
@@ -143,7 +183,9 @@
 
                 <div id="table-payment" data-product_id="<?= $product_id ?>"
                     data-text_table_headers="<?= htmlspecialchars(json_encode([__('Payment', 'edusystem'), __('Next date payment', 'edusystem'), __('Amount', 'edusystem')])) ?>"
-                    data-text_total="<?= __('Total', 'edusystem') ?>"> </div>
+                    data-text_total="<?= __('Total', 'edusystem') ?>">
+                </div>
+                
             </div>
         <?php endif ?>
 
