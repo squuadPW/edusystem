@@ -1438,6 +1438,8 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
 function process_payments ( $student_id, $order_id, $item_id, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [] )
 {       
+    /* $logger = wc_get_logger();
+    $logger->debug('process_payments',['order_id' => $order_id]); */
 
     // si no viene el id del estudiante, salir ya que es un dato crítico.
     if ( !$student_id ) return;
@@ -1540,9 +1542,8 @@ function process_payments ( $student_id, $order_id, $item_id, $product_id = null
         $rule_id = $item->get_meta('quota_rule_id') ?? null;
         $coupons = $item->get_meta('coupons', true) ?? [];
     }
-     
     // Obtener el producto y verifica si existe
-    $product = wc_get_product( $variation_id ?? $product_id );
+    $product = wc_get_product( ( $variation_id == 0 ) ? $product_id : $variation_id );
     if( !$product ) return;
 
     // obtiene el valor de descuento que venga por cuppon
