@@ -1656,18 +1656,18 @@ function process_program_payments(WC_Order $order, int $order_id): void
    
     foreach ($order->get_items() as $item_id => $item) {
 
-        proces_pago( $student_id, $order_id, $item_id );
+        process_payments( $student_id, $order_id, $item_id );
 
         $program_data = $order->get_meta('program_data', true) ?? [];
         $program_data = json_decode($program_data, true);
         if( $program_data ) {
-            proces_pago( $student_id, null, null, (int) $program_data['product_id'], (int) $program_data['variation_id'], (int) $program_data['rule_id'], $program_data['coupons'] );
+            process_payments( $student_id, null, null, (int) $program_data['product_id'], (int) $program_data['variation_id'], (int) $program_data['rule_id'], $program_data['coupons'] );
         }
     }
 }
 
-function proces_pago ( $student_id, $order_id, $item_id, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [] )
-{
+function process_payments ( $student_id, $order_id, $item_id, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [] )
+{       
 
     // si no viene el id del estudiante, salir ya que es un dato crítico.
     if ( !$student_id ) return;
@@ -1690,11 +1690,10 @@ function proces_pago ( $student_id, $order_id, $item_id, $product_id = null, $va
     $current_item_alliances_json = null;
 
     // obtiene la orden si viene
-    $order = wc_get_order( $order_id ?? 0 );
     if( $order ) {
 
         $item = $order->get_item( $item_id ?? 0 );
-        if( $item ) return;
+        if( !$item ) return;
 
         $product_id = $item->get_product_id();
         $variation_id = $item->get_variation_id() ?? 0;
@@ -1769,7 +1768,7 @@ function proces_pago ( $student_id, $order_id, $item_id, $product_id = null, $va
         $rule_id = $item->get_meta('quota_rule_id') ?? null;
         $coupons = $item->get_meta('coupons', true) ?? [];
     }
-
+     
     // Obtener el producto y verifica si existe
     $product = wc_get_product( $variation_id ?? $product_id );
     if( !$product ) return;
