@@ -1690,8 +1690,9 @@ function process_payments ( $student_id, $order_id, $item_id, $product_id = null
     $current_item_alliances_json = null;
 
     // obtiene la orden si viene
+    $order = wc_get_order( $order_id ?? 0 );
     if( $order ) {
-
+        
         $item = $order->get_item( $item_id ?? 0 );
         if( !$item ) return;
 
