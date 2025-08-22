@@ -269,7 +269,7 @@ function create_tables()
               `quotas_quantity` INT(11) NOT NULL DEFAULT 1,
               `frequency_value` INT NOT NULL,
               `type_frequency` TEXT NOT NULL,
-              `start_charging` TEXT DEFAULT,
+              `start_charging` TEXT DEFAULT '',
               `position` INT NOT NULL DEFAULT 0,
               `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
               `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
