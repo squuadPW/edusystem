@@ -21,8 +21,12 @@
 	// define('FEE_GRADUATION', '15'); // Product graduation fee
 
 	// portal.cel-edu.com
-	define('FEE_INSCRIPTION', '108'); // Product registration fee
-	define('FEE_GRADUATION', '109'); // Product graduation fee
+	// define('FEE_INSCRIPTION', '108'); // Product registration fee
+	// define('FEE_GRADUATION', '109'); // Product graduation fee
+
+	// portal.celanguage.us
+	define('FEE_INSCRIPTION', '90'); // Product registration fee
+	define('FEE_GRADUATION', '91'); // Product graduation fee
 
 	// GLOBAL
 	define('ROLES_OF_STAFF', array('owner', 'administrador', 'admision', 'admission', 'alliance', 'administration', 'allied', 'webinar-aliance', 'manager'));
