@@ -192,6 +192,8 @@ function add_admin_form_scholarships_content()
             $document_id = sanitize_text_field($_POST['document_id']);
             $document_type = sanitize_text_field($_POST['document_type']);
             $name = sanitize_text_field($_POST['name']);
+            $last_name = sanitize_text_field($_POST['last_name']);
+            $email = sanitize_email($_POST['email']);
             $scholarship_type = sanitize_text_field($_POST['scholarship_type']);
 
             // 1. Verificar si existen registros con el mismo document_id y document_type
@@ -221,6 +223,8 @@ function add_admin_form_scholarships_content()
                 $table_pre_scholarship,
                 array(
                     'name' => $name,
+                    'last_name' => $last_name,
+                    'email' => $email,
                     'document_id' => $document_id,
                     'document_type' => $document_type,
                     'scholarship_type' => $scholarship_type
@@ -773,6 +777,7 @@ class TT_pre_scholarship_all_List_Table extends WP_List_Table
             'document_type' => __('Type document', 'edusystem'),
             'document_id' => __('ID Document', 'edusystem'),
             'student' => __('Student', 'edusystem'),
+            'email' => __('Email', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
@@ -789,7 +794,8 @@ class TT_pre_scholarship_all_List_Table extends WP_List_Table
         foreach ($scholarships as $key => $scholarship) {
             $matter = get_scholarship_details(scholarship_id: $scholarship['scholarship_type']);
             $scholarships[$key]['scholarship'] = $matter->name;
-            $scholarships[$key]['student'] = $scholarship['name'];
+            $scholarships[$key]['student'] = $scholarship['name'].' '. $scholarship['last_name'];
+            $scholarships[$key]['email'] = $scholarship['email'];
         }
         return $scholarships;
     }

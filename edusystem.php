@@ -1058,9 +1058,11 @@ function create_tables()
   dbDelta(
     "CREATE TABLE " . $table_pre_scholarship . " (
       id INT(11) NOT NULL AUTO_INCREMENT,
-      document_type TEXT NOT NULL,
-      document_id TEXT NOT NULL,
+      document_type TEXT NULL,
+      document_id TEXT NULL,
       name TEXT NOT NULL,
+      last_name TEXT NOT NULL,
+      email TEXT NOT NULL,
       scholarship_type TEXT NOT NULL,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"

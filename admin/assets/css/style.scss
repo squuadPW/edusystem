@@ -1403,7 +1403,8 @@ h2 {
   pointer-events: none;
 }
 
-.group-inputs {
+.group-inputs,
+.group-input {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -1428,11 +1429,6 @@ h2 {
     }
 }
 
-.group-input {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 10px;
-}
 
 .space-offer {
     flex: 1;
@@ -1700,6 +1696,18 @@ h2 {
     }
 }
 
+#pre-scholarship-modal {
+    .form-group {
+        flex: auto;
+        
+        input,
+        select,
+        textarea {
+            width: 100%;
+            min-width: 100%;
+        }
+    }
+}
 
 #toplevel_page_logo_based_menu {
   /* ESTILOS BASE PARA MÓVILES (O PANTALLAS PEQUEÑAS) */
