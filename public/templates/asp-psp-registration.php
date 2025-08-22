@@ -8,9 +8,7 @@ if (is_user_logged_in()) {
     $is_student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_students WHERE email = %s", $email));
 }
 
-// Obtiene el idioma de la URL, por defecto es 'es'
-// Define los idiomas soportados para evitar valores incorrectos
-$supported_languages = ['en', 'es'];
+$supported_languages = ['en_EN', 'es_ES'];
 
 // Prioridad 1: Obtener el idioma de la URL ($_GET)
 if (isset($_GET['lang']) && in_array($_GET['lang'], $supported_languages)) {
@@ -53,10 +51,10 @@ $tooltip_text = __('Please select the grade you are currently studying', 'edusys
     <?php } ?>
 <?php } else { ?>
     <section class="segment lang-selector" style="margin: auto">
-        <a href="?lang=en" class="segment-button <?= ($current_lang === 'en') ? 'active' : ''; ?>" data-option="en">
+        <a href="?lang=en_EN" class="segment-button <?= ($current_lang === 'en_EN') ? 'active' : ''; ?>" data-option="en">
             <?= __('English', 'edusystem'); ?>
         </a>
-        <a href="?lang=es" class="segment-button <?= ($current_lang === 'es') ? 'active' : ''; ?>" data-option="es">
+        <a href="?lang=es_ES" class="segment-button <?= ($current_lang === 'es_ES') ? 'active' : ''; ?>" data-option="es">
             <?= __('Spanish', 'edusystem'); ?>
         </a>
     </section>
