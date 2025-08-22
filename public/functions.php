@@ -1692,11 +1692,12 @@ function process_payments ( $student_id, $order_id, $item_id, $product_id = null
     $institute_id = null;
     $current_item_institute_fee = 0.0;
     $current_item_alliances_json = null;
+    $installments = 1;
 
     // obtiene la orden si viene
     $order = wc_get_order( $order_id ?? 0 );
     if( $order ) {
-        
+
         $item = $order->get_item( $item_id ?? 0 );
         if( !$item ) return;
 
@@ -1791,7 +1792,6 @@ function process_payments ( $student_id, $order_id, $item_id, $product_id = null
     }
 
     // --- Cálculos de precios si hay una regla ---
-    $installments = 1;
     if ( $rule_id ) {
 
         $data_quota_rule = $wpdb->get_row($wpdb->prepare(
