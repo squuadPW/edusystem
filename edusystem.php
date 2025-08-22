@@ -900,7 +900,7 @@ function create_tables()
           'name' => 'PHOTO-ID OR PASSPORT',
           'type_file' => '.jpeg, .png, .jpg',
           'grade_id' => $grade->id,
-          'is_required' => 0,
+          'is_required' => 1,
           'id_requisito' => '',
           'created_at' => date('Y-m-d H:i:s')
         ]);
