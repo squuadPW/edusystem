@@ -888,7 +888,7 @@ function create_tables()
       foreach ($grades as $grade) {
 
         $wpdb->insert($table_documents, [
-          'name' => 'ACTA O PARTIDA DE NACIMIENTO',
+          'name' => 'GOVERNMENT-ISSUED PHOTO ID. (IDENTITY DOCUMENT OR PASSPORT OR DRIVER\'S LICENSE OR CEDULA OR DNI OR DIN)',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 1,
@@ -897,52 +897,16 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'COPIA DE IDENTIFICACIÓN OFICIAL (DNI) O PASAPORTE',
-          'type_file' => '.pdf',
-          'grade_id' => $grade->id,
-          'is_required' => 1,
-          'id_requisito' => '',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'CERTIFICADO DE BACHILLERATO O EQUIVALENTE EDUCACIÓN SECUNDARIA',
-          'type_file' => '.pdf',
-          'grade_id' => $grade->id,
-          'is_required' => 1,
-          'id_requisito' => '',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'TÍTULO Y/O CERTIFICADO CON NOTAS DE LOS ESTUDIOS FORMALES CURSADOS DEL ÁREA EN LA QUE SE QUIERE OBTENER EL TÍTULO PROFESIONAL',
-          'type_file' => '.pdf',
-          'grade_id' => $grade->id,
-          'is_required' => 1,
-          'id_requisito' => '',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'CURRICULUM VITAE U HOJA DE VIDA CON SUS SOPORTES DOCUMENTALES',
-          'type_file' => '.pdf',
-          'grade_id' => $grade->id,
-          'is_required' => 1,
-          'id_requisito' => '',
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-        $wpdb->insert($table_documents, [
-          'name' => 'FOTO DEL ESTUDIANTE',
+          'name' => 'PHOTO-ID OR PASSPORT',
           'type_file' => '.jpeg, .png, .jpg',
           'grade_id' => $grade->id,
-          'is_required' => 1,
+          'is_required' => 0,
           'id_requisito' => '',
           'created_at' => date('Y-m-d H:i:s')
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'CERTIFICACIÓN DEL DESEMPEÑO LABORAL (CONSTANCIAS DE TRABAJO, CERTIFICACIÓN DE EJECUCIONES REALIZADAS, QUE SE RELACIONES CON EL PROGRAMA A CURSAR)',
+          'name' => 'LAST DEGREE DIPLOMA OBTAINED. (NATIONAL OR FOREIGN)',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
@@ -951,7 +915,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'RECONOCIMIENTOS OBTENIDOS POR PARTICIPACIÓN EN CONGRESOS, EVENTOS Y/O JORNADAS',
+          'name' => 'REPORT OF GRADES OR OFFICIAL TRANSCRIPTS OF COURSES PASSED AT A HIGHER EDUCATION INSTITUTION (TSU OR BACHELOR\'S DEGREE)',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
@@ -960,7 +924,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'CERTIFICACIÓN DE DIPLOMADOS, CURSOS Y TALLERES',
+          'name' => 'OFFICIAL GED HIGH SCHOOL ORIGINAL TRANSCRIPTS',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
@@ -969,7 +933,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'PREMIOS O RECONOCIMIENTOS RECIBIDOS',
+          'name' => 'TRANSLATION OR EQUIVALENT HIGH SCHOOL OR GED BY RECOGNIZED INSTITUTION',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
@@ -978,7 +942,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'ARTÍCULOS EN PUBLICACIONES CIENTÍFICAS O INDEXADAS, LIBROS O COLUMNAS ESCRITAS',
+          'name' => 'CURRICULUM VITAE (PH D. ONLY)',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
@@ -987,7 +951,7 @@ function create_tables()
         ]);
 
         $wpdb->insert($table_documents, [
-          'name' => 'ACTIVIDADES AUDIOVISUALES EJECUTADAS (PODCAST, TV, RADIO, ETC.)',
+          'name' => 'THESIS IDEA TO DEVELOP (PH.D. ONLY)',
           'type_file' => '.pdf',
           'grade_id' => $grade->id,
           'is_required' => 0,
