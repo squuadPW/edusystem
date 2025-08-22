@@ -748,7 +748,7 @@ function get_name_document($document_id){
     return $document_id;
 }
 
-function get_help_info_document($document_id){
+function get_help_info_document($document_id) {
     $text = '';
 
     if ($document_id == 'CERTIFIED NOTES HIGH SCHOOL') {
@@ -777,22 +777,6 @@ function get_help_info_document($document_id){
         $text = __('Please provide DIGITAL COPY OF POSTGRADUATE DEGREE to validate your information and continue with the registration. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
     } else if ($document_id == 'CURRICULAR SUMMARY') {
         $text = __('Please provide your CURRICULAR SUMMARY to validate your information and continue with the registration process. The allowed file type is ', 'edusystem') . get_type_file_document_teacher($document_id);
-    } else if ($document_id == 'IDENTIFICACION GUBERNAMENTAL CON FOTO') {
-        $text = __('GOVERNMENT-ISSUED PHOTO ID. (IDENTITY DOCUMENT OR PASSPORT OR DRIVER\'S LICENSE OR CEDULA OR DNI OR DIN)', 'edusystem') . get_type_file_document($document_id);
-    } else if ($document_id == 'FOTO TIPO CARNET O PASAPORTE') {
-        $text = __('PHOTO-ID OR PASSPORT', 'edusystem') . get_type_file_document($document_id);
-    } else if ($document_id == 'ÚLTIMO DIPLOMA DE GRADO OBTENIDO') {
-        $text = __('LAST DEGREE DIPLOMA OBTAINED. (NATIONAL OR FOREIGN)', 'edusystem') . get_type_file_document($document_id);
-    } else if ($document_id == 'REPORTE DE CALIFICACIONES O NOTAS OFICIALES DE LOS CURSOS APROBADOS EN UNA INSTITUCIÓN DE EDUCACIÓN SUPERIOR TSU O LICENCIATURA') {
-        $text = __('REPORT OF GRADES OR OFFICIAL TRANSCRIPTS OF COURSES PASSED AT A HIGHER EDUCATION INSTITUTION (TSU OR BACHELOR\'S DEGREE).', 'edusystem') . get_type_file_document($document_id);
-    } else if ($document_id == 'TRANSCRIPCIONES OFICIALES GED ORIGINAL DE LA ESCUELA SECUNDARIA') {
-        $text = __('OFFICIAL GED HIGH SCHOOL ORIGINAL TRANSCRIPTS', 'edusystem') . get_type_file_document($document_id);
-    } else if ($document_id == 'TRADUCCIÓN O ESCUELA SECUNDARIA EQUIVALENTE O GED POR INSTITUCIÓN RECONOCIDA') {
-        $text = __('TRANSLATION OR EQUIVALENT HIGH SCHOOL OR GED BY RECOGNIZED INSTITUTION', 'edusystem') . get_type_file_document($document_id);
-    } else if ($document_id == 'CURRICULUM VITAE') {
-        $text = __('CURRICULUM VITAE (PH D. ONLY)', 'edusystem') . get_type_file_document($document_id);
-    } else if ($document_id == 'IDEA DE TESIS A DESARROLLAR') {
-        $text = __('THESIS IDEA TO DEVELOP (PH.D. ONLY)', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'ACTA O PARTIDA DE NACIMIENTO') {
         $text = __('Official document that certifies the birth of a person. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'COPIA DE IDENTIFICACIÓN OFICIAL (DNI) O PASAPORTE') {
@@ -817,6 +801,22 @@ function get_help_info_document($document_id){
         $text = __('Provide a list of your publications and, if possible, attach a PDF or a link to articles in scientific publications, books, or columns you have written. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     } else if ($document_id == 'ACTIVIDADES AUDIOVISUALES EJECUTADAS (PODCAST, TV, RADIO, ETC.)') {
         $text = __('Provide evidence of the audiovisual activities in which you have participated, such as podcasts, TV appearances, or radio shows. This can be a link, a screenshot, or the document that certifies it. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'GOVERNMENT-ISSUED PHOTO ID. (IDENTITY DOCUMENT OR PASSPORT OR DRIVER\'S LICENSE OR CEDULA OR DNI OR DIN)') {
+        $text = __('Please provide a government-issued photo identification, such as a passport or driver\'s license. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'PHOTO-ID OR PASSPORT') {
+        $text = __('Please provide a clear and legible copy of your photo identification or passport. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'LAST DEGREE DIPLOMA OBTAINED. (NATIONAL OR FOREIGN)') {
+        $text = __('Please provide a copy of your most recent degree diploma, whether obtained nationally or abroad. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'REPORT OF GRADES OR OFFICIAL TRANSCRIPTS OF COURSES PASSED AT A HIGHER EDUCATION INSTITUTION (TSU OR BACHELOR\'S DEGREE)') {
+        $text = __('Please provide an official report of grades or transcripts from your higher education institution. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'OFFICIAL GED HIGH SCHOOL ORIGINAL TRANSCRIPTS') {
+        $text = __('Please provide your official GED High School transcripts. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'TRANSLATION OR EQUIVALENT HIGH SCHOOL OR GED BY RECOGNIZED INSTITUTION') {
+        $text = __('Please provide a translation or equivalent document of your high school or GED diploma certified by a recognized institution. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'CURRICULUM VITAE (PH D. ONLY)') {
+        $text = __('Please provide your curriculum vitae. This document is required only for Ph.D. applications. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
+    } else if ($document_id == 'THESIS IDEA TO DEVELOP (PH.D. ONLY)') {
+        $text = __('Please provide a document outlining your thesis idea. This is required only for Ph.D. applications. The allowed file type is ', 'edusystem') . get_type_file_document($document_id);
     }
     
     return $text;
