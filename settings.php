@@ -20,6 +20,10 @@
 	// define('FEE_INSCRIPTION', '14'); // Product registration fee
 	// define('FEE_GRADUATION', '15'); // Product graduation fee
 
+	// portal.cel-edu.com
+	define('FEE_INSCRIPTION', '108'); // Product registration fee
+	define('FEE_GRADUATION', '109'); // Product graduation fee
+
 	// GLOBAL
 	define('ROLES_OF_STAFF', array('owner', 'administrador', 'admision', 'admission', 'alliance', 'administration', 'allied', 'webinar-aliance', 'manager'));
 	define('PROGRAM_ID', 'HSD-01'); // AES program for endpoint for laravel create user and move documents
