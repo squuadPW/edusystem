@@ -147,6 +147,7 @@ function save_student()
         $fixed_fee_inscription = isset($_POST['fixed_fee_inscription']) ? $_POST['fixed_fee_inscription'] : false;
         $expected_graduation_date = isset($_POST['expected_graduation_date']) ? $_POST['expected_graduation_date'] : null;
         $locale = isset($_POST['current_lang']) ? $_POST['current_lang'] : null;
+        $separate_program_fee = isset($_POST['separate_program_fee']) ? $_POST['separate_program_fee'] : null;
 
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
@@ -198,6 +199,7 @@ function save_student()
         setcookie('fixed_fee_inscription', $fixed_fee_inscription, time() + 864000, '/');
         setcookie('expected_graduation_date', $expected_graduation_date, time() + 864000, '/');
         setcookie('locale', $locale, time() + 864000, '/');
+        setcookie('separate_program_fee', $separate_program_fee, time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);

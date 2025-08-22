@@ -31,6 +31,7 @@
     <input type="hidden" name="plan_shortcode" id="plan_shortcode" value="<?= $plan ?>">
     <input type="hidden" id="product_id_input" name="product_id">
     <input type="hidden" name="current_lang" id="current_lang" value="<?= $current_lang ?>">
+    <input type="hidden" name="separate_program_fee" id="separate_program_fee" value="<?= $separate_program_fee ?? '' ?>">
 
     <!-- DATOS DEL ESTUDIANTE -->
     <div class="grid grid-cols-12 gap-4">
