@@ -2685,7 +2685,7 @@ function generate_quote_public_callback() {
     $order->set_shipping_address($shipping_address);
 
     // 🔥 CORREGIR METADATOS - student_id debe ser el ID del estudiante
-    $order->update_meta_data('cuote_payment', $payment_row->cuote);
+    $order->update_meta_data('cuote_payment', $payment_row->id);
     $order->update_meta_data('student_id', $payment_row->student_id); // Corregido aquí
     $order->update_meta_data('institute_id', $payment_row->institute_id);
 
