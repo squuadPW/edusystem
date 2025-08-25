@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 3.6.37
+Version: 3.6.42
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
@@ -269,7 +269,7 @@ function create_tables()
               `quotas_quantity` INT(11) NOT NULL DEFAULT 1,
               `frequency_value` INT NOT NULL,
               `type_frequency` TEXT NOT NULL,
-              `start_charging` TEXT DEFAULT,
+              `start_charging` TEXT DEFAULT '',
               `position` INT NOT NULL DEFAULT 0,
               `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
               `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

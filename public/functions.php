@@ -192,7 +192,7 @@ function form_asp_psp($atts)
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
-            'limit_age' => 21,
+            'limit_age' => 100,
             'program' => '',
             'career' => '',
             'mention' => '',
@@ -255,7 +255,7 @@ function student_registration_form($atts)
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
-            'limit_age' => 21,
+            'limit_age' => 100,
             'program' => '',
             'career' => '',
             'mention' => '',
@@ -3271,7 +3271,7 @@ function custom_content_after_orders()
     // Group payments by student_id and status_id
     $student_payments = [];
     foreach ($students as $key => $student) {
-        $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$student->id} AND status_id = 0 AND cuote != 1");
+        $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$student->id} AND status_id = 0");
         if (sizeof($payments) > 0) {
             $student_payments[$student->id] = $payments;
         }
