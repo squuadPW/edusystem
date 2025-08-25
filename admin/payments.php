@@ -2607,124 +2607,96 @@ add_action('wp_ajax_generate_quote_public', 'generate_quote_public_callback');
 
 function generate_quote_public_callback() {
     // 1. Input Validation and Sanitization
-    if (!isset($_POST['amount']) || !isset($_POST['student_id'])) {
+    if (!isset($_POST['payment_id'])) {
         wp_send_json_error(array('message' => 'Missing required parameters.'));
         die();
     }
 
-    $amount = floatval($_POST['amount']);
-    $student_id = intval($_POST['student_id']);
-
-    if ($amount <= 0) {
-        wp_send_json_error(array('message' => 'Invalid amount. Amount must be a positive number.'));
-        die();
-    }
-    if ($student_id <= 0) {
-        wp_send_json_error(array('message' => 'Invalid student ID.'));
-        die();
-    }
-
-    // Retrieve student details
-    $student = get_student_detail($student_id);
-    if (empty($student) || !isset($student->partner_id)) {
-        wp_send_json_error(array('message' => 'Student not found or partner ID missing.'));
-        die();
-    }
+    global $wpdb;
+    $payment_id = floatval($_POST['payment_id']);
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+    $payment_row = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE id={$payment_id}");
+    $student = get_student_detail($payment_row->student_id);
     $customer_id = $student->partner_id;
-    $institute_id = $student->institute_id;
 
-    // Retrieve the customer user object
-    $user_customer = get_user_by('id', $customer_id);
-    if (!$user_customer) {
-        wp_send_json_error(array('message' => 'Customer user not found.'));
-        die();
+    // Crear una nueva orden
+    $order = wc_create_order(array('customer_id' => $customer_id));
+
+    // Añadir productos a la orden
+    $product = wc_get_product($payment_row->variation_id);
+    if (!$product) {
+        $product = wc_get_product($payment_row->product_id);
     }
 
-    // Get the oldest order for the customer
-    $orders_customer = wc_get_orders(array(
-        'customer_id' => $customer_id,
-        'limit' => 1,
-        'orderby' => 'date',
-        'order' => 'ASC',
-        'return' => 'objects', // Ensure objects are returned
-    ));
-
-    if (empty($orders_customer)) {
-        wp_send_json_error(array('message' => 'No previous orders found for this customer.'));
-        die();
+    if ($product) {
+        $quantity = 1;
+        $product->set_price($payment_row->amount);
+        $order->add_product($product, $quantity);
     }
 
-    $old_order = $orders_customer[0];
-    $old_order_id = $old_order->get_id();
-    $old_order_items = $old_order->get_items();
-
-    if (empty($old_order_items)) {
-        wp_send_json_error(array('message' => 'Old order has no items. Cannot create new quote.'));
-        die();
+    // Obtener información del cliente existente
+    $customer = new WC_Customer($customer_id);
+    
+    // 🔥 CORREGIR OBTENCIÓN DE NOMBRES - Usar datos de usuario si no hay en billing
+    $first_name = $customer->get_billing_first_name();
+    $last_name = $customer->get_billing_last_name();
+    
+    // Si no hay nombre en billing, usar los datos base del usuario
+    if (empty($first_name)) {
+        $first_name = $customer->get_first_name();
     }
-
-    $first_old_item = reset($old_order_items);
-    $product_to_add = $first_old_item->get_product();
-
-    // Ensure the product exists
-    if (!$product_to_add) {
-        wp_send_json_error(array('message' => 'Product from old order item not found.'));
-        die();
+    if (empty($last_name)) {
+        $last_name = $customer->get_last_name();
     }
+    
+    // Si aún no hay nombre, usar valores por defecto
+    $first_name = !empty($first_name) ? $first_name : 'Nombre';
+    $last_name = !empty($last_name) ? $last_name : 'Apellido';
 
-    // Set the new price for the product on the fly (or create a new product if needed for a "quote")
-    // This directly modifies the product object's price for the new order.
-    $product_to_add->set_price($amount);
+    // Usar direcciones del cliente si existen, de lo contrario usar valores por defecto
+    $billing_address = array(
+        'first_name' => $first_name,
+        'last_name'  => $last_name,
+        'company'    => $customer->get_billing_company(),
+        'email'      => $customer->get_billing_email() ?: $customer->get_email(),
+        'phone'      => $customer->get_billing_phone(),
+        'address_1'  => $customer->get_billing_address_1(),
+        'address_2'  => $customer->get_billing_address_2(),
+        'city'       => $customer->get_billing_city(),
+        'state'      => $customer->get_billing_state(),
+        'postcode'   => $customer->get_billing_postcode(),
+        'country'    => $customer->get_billing_country()
+    );
 
-    // Create the new order
-    $new_order = wc_create_order([
-        'customer_id' => $customer_id,
-        'status' => 'pending-payment',
-    ]);
+    $shipping_address = array(
+        'first_name' => $customer->get_shipping_first_name() ?: $first_name,
+        'last_name'  => $customer->get_shipping_last_name() ?: $last_name,
+        'company'    => $customer->get_shipping_company(),
+        'address_1'  => $customer->get_shipping_address_1(),
+        'address_2'  => $customer->get_shipping_address_2(),
+        'city'       => $customer->get_shipping_city(),
+        'state'      => $customer->get_shipping_state(),
+        'postcode'   => $customer->get_shipping_postcode(),
+        'country'    => $customer->get_shipping_country()
+    );
 
-    if (is_wp_error($new_order)) {
-        wp_send_json_error(array('message' => 'Failed to create new order: ' . $new_order->get_error_message()));
-        die();
-    }
+    // Establecer direcciones
+    $order->set_billing_address($billing_address);
+    $order->set_shipping_address($shipping_address);
 
-    // Add product to the new order with the updated price
-    $new_order->add_product($product_to_add, $first_old_item->get_quantity());
+    // 🔥 CORREGIR METADATOS - student_id debe ser el ID del estudiante
+    $order->update_meta_data('cuote_payment', $payment_row->cuote);
+    $order->update_meta_data('student_id', $payment_row->student_id); // Corregido aquí
+    $order->update_meta_data('institute_id', $payment_row->institute_id);
 
-    // Copy meta data from the old order
-    // Fetch all meta data at once if possible or specific keys as needed.
-    // Assuming get_meta() is optimized to cache results.
-    $new_order->add_meta_data('old_order_primary', $old_order_id);
-    $new_order->add_meta_data('institute_id', $institute_id );
-    $new_order->add_meta_data('student_id', $student_id );
-    $new_order->add_meta_data('cuote_payment', 1);
-    $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin'); // Use update_meta_data as good practice
+    // Calcular totales (ahora con el monto personalizado)
+    $order->calculate_totals();
 
-    // Set billing address
-    $billing_address = $old_order->get_address('billing');
-    if (!empty($billing_address)) $new_order->set_address($billing_address, 'billing');
-
-    // Calculate totals and save the order
-    $new_order->calculate_totals();
-    $new_order->save();
-
-    // Set institute if available
-    if ($institute_id) set_institute_in_order( $new_order, $institute_id );
-
-    // Send email to the customer
-    $mailer = WC()->mailer();
-    $email_sender_user = $mailer->get_emails()['WC_Email_Sender_User_Email'] ?? null;
-
-    if ($email_sender_user) {
-        $email_sender_user->trigger(
-            $user_customer,
-            'You have pending payments',
-            'We invite you to log in to our platform as soon as possible so you can see your pending payments.'
-        );
-    }
-
+    // Guardar la orden
+    $order->save();
 
     // Generate checkout URL
-    $checkout_url = wc_get_checkout_url() . 'order-pay/' . $new_order->get_id() . '/?pay_for_order=true&key=' . $new_order->get_order_key();
+    $checkout_url = wc_get_checkout_url() . 'order-pay/' . $order->get_id() . '/?pay_for_order=true&key=' . $order->get_order_key();
 
     wp_send_json_success(array('url' => $checkout_url));
     die();

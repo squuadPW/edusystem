@@ -190,21 +190,14 @@ function get_alliances_from_institute($institute_id)
     return $alliances;
 }
 
-/**
- * Establece el instituto y calcula las tarifas asociadas en una orden de WooCommerce.
- *
- * @param WC_Order $order El objeto de la orden de WooCommerce.
- * @param int|null $id Opcional. El ID del instituto. Si no se proporciona, se toma de la cookie 'institute_id'.
- * @return void
- */
-function set_institute_in_order(WC_Order $order, ?int $id = null): void
+function set_institute_in_order($order, $id = null): void
 {
     global $wpdb;
 
     // 1. Obtener y validar el ID del instituto.
     $institute_id = $id ?? null;
 
-    if ( empty($institute_id) ) return;
+    if ( empty($institute_id) || !$id ) return;
 
     // 2. Obtener datos del instituto de forma segura.
     $table_institutes = $wpdb->prefix . 'institutes';

@@ -5,8 +5,7 @@ if (generate_quote) {
     document.getElementById("generate-quote").disabled = true;
     document.getElementById("generate-quote").innerText = "Loading...";
 
-    let student_id = generate_quote.getAttribute("data-id");
-    let amount = generate_quote.getAttribute("data-amount");
+    let payment_id = generate_quote.getAttribute("data-payment-id");
 
     const XHR = new XMLHttpRequest();
     XHR.open(
@@ -18,11 +17,14 @@ if (generate_quote) {
     XHR.responseType = "json";
 
     let params = `action=generate_quote_public`;
-    if (student_id) {
-      params += `&student_id=${student_id}`;
-    }
-    if (amount) {
-      params += `&amount=${amount}`;
+    // if (student_id) {
+    //   params += `&student_id=${student_id}`;
+    // }
+    // if (amount) {
+    //   params += `&amount=${amount}`;
+    // }
+    if (payment_id) {
+      params += `&payment_id=${payment_id}`;
     }
 
     XHR.send(params);

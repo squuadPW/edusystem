@@ -30,7 +30,7 @@ foreach ($student_payments as $student_id => $payments) {
                         <?= wc_price($payment->amount) ?></td>
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-action" data-title="Action" style="text-align: end">
                         <?php if($key == 0 && !$pending_orders) { ?>
-                            <button style="width: 70px;" type="button" class="button button-primary" id="generate-quote" data-id="<?= $student_id ?>" data-amount="<?= $payment->amount ?>"><?= __('Pay', 'edusystem') ?></button>
+                            <button style="width: 70px;" type="button" class="button button-primary" id="generate-quote" data-payment-id="<?= $payment->id ?>"><?= __('Pay', 'edusystem') ?></button>
                         <?php } ?>
                     </td>
                 </tr>

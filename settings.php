@@ -1,8 +1,8 @@
 <?php
 
 	// // portal.floridaglobal.university
-	// define('FEE_INSCRIPTION', '114'); // Product registration fee
-	// define('FEE_GRADUATION', '118'); // Product graduation fee
+	define('FEE_INSCRIPTION', '114'); // Product registration fee
+	define('FEE_GRADUATION', '118'); // Product graduation fee
 
 	// portal.utbp.edu.mx
 	// define('FEE_INSCRIPTION', '86'); // Product registration fee
@@ -25,8 +25,8 @@
 	// define('FEE_GRADUATION', '109'); // Product graduation fee
 
 	// portal.celanguage.us
-	define('FEE_INSCRIPTION', '90'); // Product registration fee
-	define('FEE_GRADUATION', '91'); // Product graduation fee
+	// define('FEE_INSCRIPTION', '90'); // Product registration fee
+	// define('FEE_GRADUATION', '91'); // Product graduation fee
 
 	// GLOBAL
 	define('ROLES_OF_STAFF', array('owner', 'administrador', 'admision', 'admission', 'alliance', 'administration', 'allied', 'webinar-aliance', 'manager'));
