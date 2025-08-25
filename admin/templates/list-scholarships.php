@@ -49,32 +49,50 @@
 						class="dashicons dashicons-no-alt"></span></span>
 			</div>
 			<div class="modal-body" style="padding:10px;">
-				<div class="form-group">
-					<label for="document_type">Document type</label><br>
-					<select name="document_type" style="width: 250px" required>
-						<option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-						<option value="passport"><?= __('Passport', 'edusystem'); ?></option>
-						<option value="identification_document"><?= __('Identification Document', 'edusystem'); ?></option>
-						<option value="ssn"><?= __('SSN', 'edusystem'); ?></option>
-					</select>
+
+				<div class="group-inputs" >
+					<div class="form-group">
+						<label for="document_type"><?= __('Document type', 'edusystem'); ?></label><br>
+						<select name="document_type">
+							<option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+							<option value="passport"><?= __('Passport', 'edusystem'); ?></option>
+							<option value="identification_document"><?= __('Identification Document', 'edusystem'); ?></option>
+							<option value="ssn"><?= __('SSN', 'edusystem'); ?></option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="document_id"><?= __('ID Document', 'edusystem'); ?></label><br>
+						<input type="text" name="document_id">
+					</div>
 				</div>
-				<div class="form-group">
-					<label for="document_id">ID Document</label><br>
-					<input type="text" name="document_id" style="width: 250px" required>
+
+				<div class="group-inputs" >
+					<div class="form-group">
+						<label for="name"><?= __('Name', 'edusystem'); ?></label><br>
+						<input type="text" name="name" required>
+					</div>
+					<div class="form-group">
+						<label for="last_name"><?= __('Last Name', 'edusystem'); ?></label><br>
+						<input type="text" name="last_name" required>
+					</div>
 				</div>
+
 				<div class="form-group">
-					<label for="name">Name</label><br>
-					<input type="text" name="name" style="width: 250px" required>
+					<label for="email"><?= __('Email', 'edusystem'); ?></label><br>
+					<input type="email" name="email" required>
 				</div>
+
 				<div class="form-group">
-					<label for="scholarship_type">Scholarship type</label><br>
-					<select name="scholarship_type" style="width: 250px" required>
+					<label for="scholarship_type"><?= __('Scholarship type', 'edusystem'); ?></label><br>
+					<select name="scholarship_type" required>
 						<?php foreach ($scholarships_availables as $key => $available) { ?>
 							<option value="<?= $available->id ?>" selected><?= $available->name ?></option>
 						<?php } ?>
 					</select>
 				</div>
+
 			</div>
+
 			<div class="modal-footer">
 				<button id="pre-scholarship-button" type="submit"
 					class="button button-outline-primary modal-close"><?= __('Save', 'edusystem'); ?></button>

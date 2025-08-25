@@ -1283,7 +1283,8 @@ h2 {
   pointer-events: none;
 }
 
-.group-inputs {
+.group-inputs,
+.group-input {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -1301,12 +1302,6 @@ h2 {
 }
 .seccion-input .space-offer {
   margin-top: 0px;
-}
-
-.group-input {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
 }
 
 .space-offer {
@@ -1529,6 +1524,16 @@ h2 {
     flex-wrap: wrap;
     flex-direction: column;
   }
+}
+
+#pre-scholarship-modal .form-group {
+  flex: auto;
+}
+#pre-scholarship-modal .form-group input,
+#pre-scholarship-modal .form-group select,
+#pre-scholarship-modal .form-group textarea {
+  width: 100%;
+  min-width: 100%;
 }
 
 #toplevel_page_logo_based_menu {

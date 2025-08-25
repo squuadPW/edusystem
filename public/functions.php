@@ -900,6 +900,8 @@ function status_changed_payment($order_id, $status_transition_from, $current_sta
     $logger->debug('status_changed_payment',['order_id'=>$order_id,'status_order' => $current_status]); */
 
     if (!in_array($current_status, ['failed', 'pending'])) {
+        $logger = wc_get_logger();
+        $logger->debug('antes de status_order_not_completed ');
         status_order_not_completed($order, $order_id, $customer_id, $status_register);
     }
 
@@ -1413,7 +1415,8 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
         }
 
     }
-} */
+} 
+ */
 
 function process_program_payments(WC_Order $order, int $order_id): void
 {   
@@ -1426,7 +1429,8 @@ function process_program_payments(WC_Order $order, int $order_id): void
    
     foreach ($order->get_items() as $item_id => $item) {
 
-        process_payments( $student_id, $order_id, $item_id );
+
+        process_payments( $student_id, $order, $item );
 
         $program_data = $order->get_meta('program_data', true) ?? [];
         $program_data = json_decode($program_data, true);
@@ -1436,13 +1440,23 @@ function process_program_payments(WC_Order $order, int $order_id): void
     }
 }
 
-function process_payments ( $student_id, $order_id, $item_id, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [] )
+function process_payments ( $student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [] )
 {       
     /* $logger = wc_get_logger();
     $logger->debug('process_payments',['order_id' => $order_id]); */
 
     // si no viene el id del estudiante, salir ya que es un dato crítico.
     if ( !$student_id ) return;
+
+    // obtiene los id de los productos en caso tal vengan por las ordenes
+    $order_id = null;
+    if( $order && $item ) {
+
+        $order_id = $order->get_id();
+
+        $product_id = $item->get_product_id();
+        $variation_id = $item->get_variation_id() ?? 0;
+    }
 
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
@@ -1463,14 +1477,7 @@ function process_payments ( $student_id, $order_id, $item_id, $product_id = null
     $installments = 1;
 
     // obtiene la orden si viene
-    $order = wc_get_order( $order_id ?? 0 );
     if( $order ) {
-
-        $item = $order->get_item( $item_id ?? 0 );
-        if( !$item ) return;
-
-        $product_id = $item->get_product_id();
-        $variation_id = $item->get_variation_id() ?? 0;
 
         // obtiene la data del estudiante
         $student_data = get_student_detail($student_id);
@@ -1542,6 +1549,7 @@ function process_payments ( $student_id, $order_id, $item_id, $product_id = null
         $rule_id = $item->get_meta('quota_rule_id') ?? null;
         $coupons = $item->get_meta('coupons', true) ?? [];
     }
+
     // Obtener el producto y verifica si existe
     $product = wc_get_product( ( $variation_id == 0 ) ? $product_id : $variation_id );
     if( !$product ) return;
