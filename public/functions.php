@@ -3195,7 +3195,7 @@ function custom_new_user_notification($send, $user)
     $content .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
     $content .= '<ul>';
     $content .= '<li>Website: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
-    $content .= '<li>Virtual classroom: <a href="https://portal.americanelite.school/" target="_blank">https://portal.americanelite.school/</a></li>';
+    $content .= '<li>Virtual classroom: <a href="https://portal.americanelite.school/my-account" target="_blank">https://portal.americanelite.school/my-account</a></li>';
     $content .= '<li>Contact us: <a href="https://support.americanelite.school" target="_blank">https://support.americanelite.school</a></li>';
     $content .= '</ul>';
     $content .= '<div>Best regards.</div>';
