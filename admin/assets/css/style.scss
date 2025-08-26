@@ -1612,6 +1612,33 @@ h2 {
     }
 }
 
+#select2-programas_select-results {
+
+    li:has(+ [role="group"]) {
+        margin-bottom: 0px;
+    }
+
+    [role="group"]{
+        position: relative;
+
+        li:first-of-type{
+            position: absolute;
+            top: 0px;
+            color: transparent;
+            background: #cacaca3d;
+            width: 80%;
+            border-radius: 0px 15px 15px 0px        
+        }
+
+        /* li{
+            margin-bottom: 0px;
+        } */
+        /* .select2-results__group {
+            display: none;
+        } */
+    }
+}
+
 #admission_fees {
 
 	.fees_body {

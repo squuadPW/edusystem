@@ -1454,6 +1454,27 @@ h2 {
   gap: 10px;
 }
 
+#select2-programas_select-results li:has(+ [role=group]) {
+  margin-bottom: 0px;
+}
+#select2-programas_select-results [role=group] {
+  position: relative;
+  /* li{
+      margin-bottom: 0px;
+  } */
+  /* .select2-results__group {
+      display: none;
+  } */
+}
+#select2-programas_select-results [role=group] li:first-of-type {
+  position: absolute;
+  top: 0px;
+  color: transparent;
+  background: rgba(202, 202, 202, 0.2392156863);
+  width: 80%;
+  border-radius: 0px 15px 15px 0px;
+}
+
 #admission_fees .fees_body {
   margin-bottom: 20px;
 }

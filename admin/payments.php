@@ -1079,7 +1079,8 @@ function add_admin_form_payments_content()
             $name = sanitize_text_field($_POST['name']);
             $price = floatval(sanitize_text_field($_POST['price']));
             $description = sanitize_text_field($_POST['description']);
-            $programs = array_map('intval', $_POST['programs'] ?? [] );
+            $programs = $_POST['programs'] ?? [];
+            $type_fee = $_POST['type_fee'];
 
             // verifica y crea en caso de necesitar una categoria llamada fees
             $category_id = 0;
@@ -1146,6 +1147,7 @@ function add_admin_form_payments_content()
                     'price' => $price,
                     'description' => $description,
                     'programs' => json_encode($programs),
+                    'type_fee' => $type_fee,
                 ], ['id' => $fee_id]);
 
             } else {
@@ -1157,6 +1159,7 @@ function add_admin_form_payments_content()
                     'product_id' => $product_id,
                     'description' => $description,
                     'programs' => json_encode($programs),
+                    'type_fee' => $type_fee,
                 ]);
 
                 $fee_id = $wpdb->insert_id;
