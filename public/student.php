@@ -821,9 +821,20 @@ function insert_student($order)
     $code = $load['code'];
     $cut = $load['cut'];
 
-    $birth_date = date_i18n('Y-m-d', strtotime($student['birth_date']));
+    $formats_to_try = ['d/m/Y', 'm/d/Y'];
+    $birth_date_obj = null;
+    foreach ($formats_to_try as $format) {
+        // Intenta crear el objeto DateTime con el formato actual
+        $birth_date_obj = DateTime::createFromFormat($format, $student['birth_date']);
+
+        // Si se crea el objeto correctamente, sal del bucle
+        if ($birth_date_obj !== false) {
+            break;
+        }
+    }
+
     $today = new DateTime();
-    $age = $today->diff(new DateTime($birth_date))->y;
+    $age = $today->diff($birth_date_obj)->y;
 
     $exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '{$student['email']}'");
     if (!$exist) {
