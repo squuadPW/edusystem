@@ -1282,18 +1282,18 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
                 
                 // precio inicial
                 $initial_payment_regular = (double) $data_quota_rule->initial_payment;
-                $initial_payment_sale = (double) $data_quota_rule->initial_payment_sale;
-                $initial_payment = (double) ( $initial_payment_sale > 0 ) ? $initial_payment_sale : $data_quota_rule->initial_payment;
+                $initial_payment_sale = $data_quota_rule->initial_payment_sale ?? null;
+                $initial_payment = (double) ( $initial_payment_sale != null ) ? $initial_payment_sale : $data_quota_rule->initial_payment;
 
                 // precio final
                 $final_payment_regular = (double) $data_quota_rule->final_payment;
-                $final_payment_sale = (double) $data_quota_rule->final_payment_sale;
-                $final_payment = (double) ( $final_payment_sale > 0 ) ? $final_payment_sale : $final_payment_regular;
+                $final_payment_sale = (double) $data_quota_rule->final_payment_sale ?? null;
+                $final_payment = (double) ( $final_payment_sale != null ) ? $final_payment_sale : $final_payment_regular;
 
                 //precio de la cuota
                 $quote_price_regular = (double) $data_quota_rule->quote_price;
-                $quote_price_sale = (double) $data_quota_rule->quote_price_sale;
-                $quote_price = (double) ( $quote_price_sale > 0 ) ? $quote_price_sale : $quote_price_regular;
+                $quote_price_sale = (double) $data_quota_rule->quote_price_sale ?? null;
+                $quote_price = (double) ( $quote_price_sale != null ) ? $quote_price_sale : $quote_price_regular;
 
                 $quotas_quantity_rule = (int) $data_quota_rule->quotas_quantity;
                 $frequency_value = $data_quota_rule->frequency_value;
@@ -1578,18 +1578,18 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
                 
             // precio inicial
             $initial_payment_regular = (double) $data_quota_rule->initial_payment;
-            $initial_payment_sale = (double) $data_quota_rule->initial_payment_sale;
-            $initial_payment = (double) ( $initial_payment_sale > 0 ) ? $initial_payment_sale : $data_quota_rule->initial_payment;
+            $initial_payment_sale = $data_quota_rule->initial_payment_sale ?? null;
+            $initial_payment = (double) ( $initial_payment_sale != null ) ? $initial_payment_sale : $data_quota_rule->initial_payment;
 
             // precio final
             $final_payment_regular = (double) $data_quota_rule->final_payment;
-            $final_payment_sale = (double) $data_quota_rule->final_payment_sale;
-            $final_payment = (double) ( $final_payment_sale > 0 ) ? $final_payment_sale : $final_payment_regular;
+            $final_payment_sale = $data_quota_rule->final_payment_sale ?? null;
+            $final_payment = (double) ( $final_payment_sale != null ) ? $final_payment_sale : $final_payment_regular;
 
             // precio de la cuota
             $quote_price_regular = (double) $data_quota_rule->quote_price;
-            $quote_price_sale = (double) $data_quota_rule->quote_price_sale;
-            $quote_price = (double) ( $quote_price_sale > 0 ) ? $quote_price_sale : $quote_price_regular;
+            $quote_price_sale = $data_quota_rule->quote_price_sale ?? null;
+            $quote_price = (double) ( $quote_price_sale != null ) ? $quote_price_sale : $quote_price_regular;
             
             $quotas_quantity_rule = (int) $data_quota_rule->quotas_quantity;
             $frequency_value = $data_quota_rule->frequency_value;
@@ -1657,6 +1657,8 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
             }
             $next_payment_date = $payment_date->format('Y-m-d');
         }
+
+        if( $amount == 0 ) continue;
 
         $data = [
             'status_id' => 0,
@@ -2110,12 +2112,12 @@ function update_price_product_cart_quota_rule()
     }
 
     $initial_payment_regular = $rule->initial_payment;
-    $initial_payment_sale = $rule->initial_payment_sale;
-    $initial_payment = ( $initial_payment_sale > 0 ) ? $initial_payment_sale : $initial_payment_regular;
+    $initial_payment_sale = $rule->initial_payment_sale ?? null;
+    $initial_payment = ( $initial_payment_sale != null ) ? $initial_payment_sale : $initial_payment_regular;
 
     $quote_price_regular = $rule->quote_price;
-    $quote_price_sale = $rule->quote_price_sale;
-    $quote_price = ( $quote_price_sale > 0 ) ? $quote_price_sale : $quote_price_regular;
+    $quote_price_sale = $rule->quote_price_sale ?? null;
+    $quote_price = ( $quote_price_sale != null ) ? $quote_price_sale : $quote_price_regular;
 
     // Get the quotas_quantity
     $quotas_quantity = $rule->quotas_quantity;

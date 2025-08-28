@@ -96,11 +96,21 @@ function payment_table(rule_data) {
     );
 
     quotas_quantity = rule_data.quotas_quantity;
-    initial_payment_sale = parseFloat(rule_data.initial_payment_sale);
-    initial_payment = ( initial_payment_sale != null ) ? initial_payment_sale : parseFloat(rule_data.initial_payment);
 
-    final_payment_sale = parseFloat(rule_data.final_payment_sale);
-    final_payment = ( final_payment_sale != null ) ? final_payment_sale : parseFloat(rule_data.final_payment);
+    initial_payment_sale = rule_data.initial_payment_sale ?? null;
+    initial_payment = ( initial_payment_sale != null ) ? initial_payment_sale : rule_data.initial_payment;
+    initial_payment = parseFloat(initial_payment);
+
+    final_payment_sale = rule_data.final_payment_sale ?? null;
+    final_payment = ( final_payment_sale != null ) ? final_payment_sale : rule_data.final_payment;
+    final_payment = parseFloat(final_payment);
+
+    quote_price_sale = rule_data.quote_price_sale ?? null;
+    quote_price = ( quote_price_sale != null ) ? quote_price_sale : rule_data.quote_price;
+    quote_price = parseFloat(quote_price);
+
+    type_frequency = rule_data.type_frequency;
+    frequency_value = parseInt(rule_data.frequency_value);
 
     if ( initial_payment > 0 ) quotas_quantity++;
     if ( final_payment > 0 ) quotas_quantity++;
@@ -108,18 +118,41 @@ function payment_table(rule_data) {
     if (discount_value > 0) {
         initial_payment = initial_payment - ( (initial_payment * discount_value) / 100 );
         final_payment = final_payment - ( (final_payment * discount_value) / 100 );
+        quote_price = quote_price - ( quote_price * discount_value) / 100;
     }
+
+    // si todos los valores son 0 no crea la tabla
+    if( initial_payment == 0 && final_payment == 0 && quote_price == 0 ) return;
 
     // Crear filas de datos
     total = 0;
     for (let i = 0; i < quotas_quantity; i++) {
-        type_frequency = rule_data.type_frequency;
-        frequency_value = parseInt(rule_data.frequency_value);
 
-        quote_price_sale = parseFloat(rule_data.quote_price_sale);
-        quote_price = ( quote_price_sale != null ) ? quote_price_sale : parseFloat(rule_data.quote_price);
+        price = 0;
 
-        if (discount_value > 0) quote_price = quote_price - ( quote_price * discount_value) / 100;
+        // Calcular la fecha del próximo pago
+        const date = new Date();
+        if (i > 0) {
+
+            price = ( i+1 == quotas_quantity && final_payment > 0 ) ? final_payment : quote_price;
+
+            frequency = i * frequency_value;
+            date.setFullYear(
+                date.getFullYear() + (type_frequency == "year" ? frequency : 0)
+            );
+            date.setMonth(
+                date.getMonth() + (type_frequency == "month" ? frequency : 0)
+            );
+            date.setDate(date.getDate() + (type_frequency == "day" ? frequency : 0));
+
+        } else {
+            if ( initial_payment > 0 ) price = initial_payment;
+        }
+
+        if( price == 0 ) continue; 
+
+        // acomoda el precio para que solo tome 2 decimales
+        price = parseFloat( parseFloat(price).toFixed(2) );
 
         const row = document.createElement("tr");
 
@@ -128,27 +161,6 @@ function payment_table(rule_data) {
         payment_cell.className = "payment-parts-table-data";
         payment_cell.textContent = (i + 1).toString();
         row.appendChild(payment_cell);
-
-        // Calcular la fecha del próximo pago
-        const date = new Date();
-        if (i > 0) {
-
-            if ( i+1 == quotas_quantity && final_payment > 0 ) quote_price = final_payment;
-
-                frequency = i * frequency_value;
-                date.setFullYear(
-                    date.getFullYear() + (type_frequency == "year" ? frequency : 0)
-                );
-                date.setMonth(
-                    date.getMonth() + (type_frequency == "month" ? frequency : 0)
-                );
-                date.setDate(date.getDate() + (type_frequency == "day" ? frequency : 0));
-        } else {
-            if (initial_payment > 0) quote_price = initial_payment;
-        }
-
-        // acomoda el precio para que solo tome 2 decimales
-        quote_price = parseFloat( parseFloat(quote_price).toFixed(2) );
 
         const lang = document.documentElement.lang || "en-US";
 
@@ -167,13 +179,13 @@ function payment_table(rule_data) {
             maximumFractionDigits: 2,
         });
 
-        amount_cell.textContent = usdFormatter.format( quote_price );
+        amount_cell.textContent = usdFormatter.format( price );
         row.appendChild(amount_cell);
 
         // Añadir fila a la tabla
         table.appendChild(row);
         
-        total += quote_price;
+        total += price;
     }
 
     // Fila de total
