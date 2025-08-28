@@ -1869,11 +1869,11 @@ a.toplevel_page_logo_based_menu {
   right: 0px;
   padding-bottom: 15px;
 }
-.edusof-page-admin .container-card-admin .card-content .vertical-section {
+.edusof-page-admin .container-card-admin .card-content .seccion-vertical {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+}
+.edusof-page-admin .container-card-admin .card-content .seccion-vertical > div {
+  flex: 1;
 }
 .edusof-page-admin .container-card-admin .card-content .seccion-card {
   display: flex;
@@ -1894,7 +1894,21 @@ a.toplevel_page_logo_based_menu {
   color: #333;
 }
 .edusof-page-admin .container-card-admin .card-content .container-right {
-  display: grid;
-  justify-items: center;
-  justify-content: end;
+  margin-right: 2px;
+}
+.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card {
+  justify-content: flex-end;
+}
+.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  justify-content: space-between;
+}
+.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p strong, .edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p span {
+  flex: 1.5;
+  text-align: end;
+}
+.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p span {
+  flex: 2;
 }/*# sourceMappingURL=style.css.map */

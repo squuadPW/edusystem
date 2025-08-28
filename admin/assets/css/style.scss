@@ -2068,11 +2068,12 @@ a.toplevel_page_logo_based_menu {
                 }
             }
 
-            .vertical-section {
+            .seccion-vertical {
                 display: flex;
-                gap: 20px;
-                flex-wrap: wrap;
-                justify-content: flex-start;
+
+                & > div {
+                    flex: 1;
+                }
             }
 
             .seccion-card {
@@ -2099,9 +2100,29 @@ a.toplevel_page_logo_based_menu {
             }
 
             .container-right {
-                display: grid;
-                justify-items: center;
-                justify-content: end;
+                margin-right: 2px;
+
+                .seccion-card {
+                    justify-content: flex-end;
+
+                    p {
+                        width: 100%;
+                        max-width: 350px;
+                        display: flex;
+                        justify-content: space-between;
+
+                        strong, span {
+                            flex: 1.5;
+                            text-align: end;
+                        }
+
+                        span {
+                            flex: 2;
+                        }
+
+                        
+                    }
+                }
             }
 
         }
