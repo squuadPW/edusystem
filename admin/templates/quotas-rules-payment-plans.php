@@ -95,7 +95,7 @@
                                                                 <b><?= __('Sale price', 'edusystem'); ?></b>
                                                                 <span class="text-danger">*</span>
                                                             </label>
-                                                            <input type="number" name="rules[<?= $i ?>][initial_payment_sale]" value="<?= $rule['initial_payment_sale'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
+                                                            <input type="number" name="rules[<?= $i ?>][initial_payment_sale]" value="<?= $rule['initial_payment_sale'] ?? '' ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)">
                                                             <span class="text-danger" style="display:none" ><?= __('The price has to be lower than the regular price','edusysteml') ?></span>
                                                         </div>
 
@@ -127,7 +127,7 @@
                                                                 <b><?= __('Sale price', 'edusystem'); ?></b>
                                                                 <span class="text-danger">*</span>
                                                             </label>
-                                                            <input type="number" name="rules[<?= $i ?>][quote_price_sale]" value="<?= $rule['quote_price_sale'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
+                                                            <input type="number" name="rules[<?= $i ?>][quote_price_sale]" value="<?= $rule['quote_price_sale'] ?? '' ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" >
                                                         </div>
 
                                                     </div>
@@ -202,7 +202,7 @@
                                                                 <b><?= __('Sale price', 'edusystem'); ?></b>
                                                                 <span class="text-danger">*</span>
                                                             </label>
-                                                            <input type="number" name="rules[<?= $i ?>][final_payment_sale]" value="<?= $rule['final_payment_sale'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required>
+                                                            <input type="number" name="rules[<?= $i ?>][final_payment_sale]" value="<?= $rule['final_payment_sale'] ?? '' ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)">
                                                         </div>
 
                                                     </div>
@@ -264,7 +264,7 @@
                                                         <b><?= __('Sale price', 'edusystem'); ?></b>
                                                         <span class="text-danger">*</span>
                                                     </label>
-                                                    <input type="number" name="rules[][initial_payment_sale]" value="0.00" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" disabled required>
+                                                    <input type="number" name="rules[][initial_payment_sale]" value="" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" disabled >
                                                 </div>
 
                                             </div>
@@ -295,7 +295,7 @@
                                                         <b><?= __('Sale price', 'edusystem'); ?></b>
                                                         <span class="text-danger">*</span>
                                                     </label>
-                                                    <input type="number" name="rules[][quote_price_sale]" value="0.00" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" disabled required>
+                                                    <input type="number" name="rules[][quote_price_sale]" value="" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" disabled>
                                                 </div>
 
                                             </div>
@@ -371,7 +371,7 @@
                                                         <b><?= __('Sale price', 'edusystem'); ?></b>
                                                         <span class="text-danger">*</span>
                                                     </label>
-                                                    <input type="number" name="rules[][final_payment_sale]" value="0.00" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" disabled required>
+                                                    <input type="number" name="rules[][final_payment_sale]" value="" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" disabled>
                                                 </div>
 
                                             </div>

@@ -877,17 +877,21 @@ function add_admin_form_payments_content()
                     $is_active = $rule['is_active'] ? true : false;
                     $name = $rule['name'];
                     $initial_payment = $rule['initial_payment'];
-                    $initial_payment_sale = $rule['initial_payment_sale'];
+                    $initial_payment_sale = $rule['initial_payment_sale'] ?? null;
                     $final_payment = $rule['final_payment'];
-                    $final_payment_sale = $rule['final_payment_sale'];
+                    $final_payment_sale = $rule['final_payment_sale'] ?? null;
                     $quote_price = $rule['quote_price'];
-                    $quote_price_sale = $rule['quote_price_sale'];
+                    $quote_price_sale = $rule['quote_price_sale'] ?? null;
                     $quotas_quantity = (int) $rule['quotas_quantity'];
                     $frequency_value = $rule['frequency_value'];
                     $type_frequency = $rule['type_frequency'];
                     $start_charging = $rule['start_charging'];
                     $position = $rule['position'] ?? 0;
                     
+                    // si los valores de descuento son vacios los convierte a null
+                    $initial_payment_sale = ( $initial_payment_sale == "" ) ? null : $initial_payment_sale;
+                    $final_payment_sale = ( $final_payment_sale == "" ) ? null : $final_payment_sale;
+                    $quote_price_sale = ( $quote_price_sale == "" ) ? null : $quote_price_sale;
 
                     // crea o actualiza el sub programa
                     if (!empty($rule_id)) {
