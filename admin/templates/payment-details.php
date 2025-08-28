@@ -143,7 +143,15 @@
                                                 <?= $item->get_name(); ?>
                                             </td>
                                             <td data-colname="<?= __('Total','edusystem'); ?>">
-                                                <?= wc_price($item->get_total()); ?>
+
+                                                <div>
+                                                    <?= wc_price($item->get_total()); ?>
+                                                </div>
+
+                                                <div>
+                                                    <!-- <input type="text" /> -->
+                                                </div>
+
                                             </td>
                                         </tr>
                                     <?php } ?>
