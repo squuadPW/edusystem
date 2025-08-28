@@ -267,14 +267,16 @@
 
                         <div class="container-right" >
 
-                            <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1): ?>
-                            
+                            <?php if( !in_array('institutes',$roles) && !in_array('alliance',$roles) ): ?>
                                 <div class="seccion-card">
                                     <p>
-                                        <strong><?=__('Total paid net','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('total_paid')); ?></span>
+                                        <strong><?=__('Payment Total','edusystem')?>:</strong>
+                                        <span><?= wc_price($order->get_total()) ?></span>
                                     </p>
                                 </div>
+                            <?php endif; ?> 
+
+                            <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1): ?>
 
                                 <div class="seccion-card">
                                     <p>
@@ -291,24 +293,6 @@
                                 </div>
                                 
                             <?php endif; ?>
-
-                            <?php if($order->get_meta('fee_order_pay') && $order->get_meta('fee_order_pay') > 0): ?>
-                                <div class="seccion-card">
-                                    <p>
-                                        <strong><?=__('Fee payment method','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('fee_order_pay')); ?></span>
-                                    </p>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if( !in_array('institutes',$roles) && !in_array('alliance',$roles) ): ?>
-                                <div class="seccion-card">
-                                    <p>
-                                        <strong><?=__('Payment Total','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_total()) ?></span>
-                                    </p>
-                                </div>
-                            <?php endif; ?> 
 
                             <?php if( in_array('institute',$roles) && $order->get_meta('institute_fee') ): ?>
 
@@ -344,6 +328,26 @@
                                         <span><?= wc_price($order->get_meta('alliance_fee')); ?></span>
                                     </p>
                                 </div>
+                            <?php endif; ?>
+
+                            <?php if(  !in_array('institutes',$roles) && !in_array('alliance',$roles) && $order->get_meta('fee_order_pay') && $order->get_meta('fee_order_pay') > 0): ?>
+                                <div class="seccion-card">
+                                    <p>
+                                        <strong><?=__('Fee payment method','edusystem')?>:</strong>
+                                        <span><?= wc_price($order->get_meta('fee_order_pay')); ?></span>
+                                    </p>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1): ?>
+                            
+                                <div class="seccion-card">
+                                    <p>
+                                        <strong><?=__('Total paid net','edusystem')?>:</strong>
+                                        <span><?= wc_price($order->get_meta('total_paid')); ?></span>
+                                    </p>
+                                </div>
+                                
                             <?php endif; ?>
                             
                         </div>
