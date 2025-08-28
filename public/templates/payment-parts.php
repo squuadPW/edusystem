@@ -5,9 +5,8 @@
     $cart = $woocommerce->cart;
 
     // excluye los productos de fee
-    $fee_inscription = FEE_INSCRIPTION;
-    $fee_graduation = FEE_GRADUATION;
     $separate_program_fee = $_COOKIE['separate_program_fee'] ?? false;
+    $fees = $_COOKIE['separate_program_fee'] ? json_decode($_COOKIE['separate_program_fee']) : [];
 
     // obtiene los cupones
     $cupones = $woocommerce->cart->get_coupons();
@@ -46,7 +45,7 @@
 
             $product_id = $item['variation_id'] ? $item['variation_id'] : $item['product_id'];
 
-        } else if( in_array($item['product_id'], [FEE_INSCRIPTION, FEE_GRADUATION]) ) {
+        } else if( in_array($item['product_id'], [$fees]) ) {
 
             if( isset($item['program_data'])  ){
 
@@ -72,12 +71,6 @@
 
     <?php if ( $product && !isset($_COOKIE['is_scholarship']) ): ?>
 
-        <!-- <div>
-        <div class="back-select-payment">
-            <a href="<?= the_permalink() . '?action=change_payment_method&time=' . date('H:i:s'); ?>"><span class='dashicons dashicons-arrow-left-alt dashiconaes'></span><?= __('Change payment method', 'edusystem'); ?></a>
-        </div>
-        </div> -->
-
         <?php
         $cookie_name = 'fixed_fee_inscription';
 
@@ -95,10 +88,6 @@
 
             <div>
                 <div style="margin-bottom: 10px !important; text-align: center">
-                    <?php
-                        $product_fee = wc_get_product(FEE_INSCRIPTION ?? 0);
-                        $product_price = $product_fee->get_price() ?? 0;
-                    ?>
                     <label class="fee-container">
                         <strong><?= __('Registration fee', 'edusystem') ?></strong>
                         <br>
@@ -136,7 +125,6 @@
                     ORDER BY position ASC",
                 $product_id
             ));
-
         ?>
 
         <?php if ($quotas_rules): ?>

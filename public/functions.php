@@ -2416,20 +2416,20 @@ function woocommerce_custom_price_to_cart_item($cart_object)
 add_filter('woocommerce_account_dashboard', 'fee_inscription_button', 2);
 function fee_inscription_button()
 {
-    // VERIFICAR FEE DE INSCRIPCION
-    global $wpdb;
-    $table_student_payments = $wpdb->prefix . 'student_payments';
-    $table_students = $wpdb->prefix . 'students';
-    $partner_id = get_current_user_id();
-    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
-    foreach ($students as $key => $student) {
-        $paid = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id = {$student->id} and product_id = " . FEE_INSCRIPTION);
-        if ($paid) {
-            unset($students[$key]);
-        }
-    }
-    // VERIFICAR FEE DE INSCRIPCION
-    include(plugin_dir_path(__FILE__) . 'templates/fee-inscription-payment.php');
+    // // VERIFICAR FEE DE INSCRIPCION
+    // global $wpdb;
+    // $table_student_payments = $wpdb->prefix . 'student_payments';
+    // $table_students = $wpdb->prefix . 'students';
+    // $partner_id = get_current_user_id();
+    // $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
+    // foreach ($students as $key => $student) {
+    //     $paid = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id = {$student->id} and product_id = " . FEE_INSCRIPTION);
+    //     if ($paid) {
+    //         unset($students[$key]);
+    //     }
+    // }
+    // // VERIFICAR FEE DE INSCRIPCION
+    // include(plugin_dir_path(__FILE__) . 'templates/fee-inscription-payment.php');
 }
 
 function custom_coupon_applied_notice($message)
