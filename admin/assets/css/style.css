@@ -1840,4 +1840,61 @@ a.toplevel_page_logo_based_menu {
 #table_comissions_allies tbody td:nth-child(n+14) {
   min-width: 100px;
   text-align: right;
+}
+
+.edusof-page-admin .container-card-admin {
+  padding: 10px;
+}
+.edusof-page-admin .container-card-admin .card-content {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+.edusof-page-admin .container-card-admin .card-content .title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+  font-weight: bold;
+}
+.edusof-page-admin .container-card-admin .card-content .card-content-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.edusof-page-admin .container-card-admin .card-content .card-content-header .container-button {
+  position: absolute;
+  right: 0px;
+  padding-bottom: 15px;
+}
+.edusof-page-admin .container-card-admin .card-content .vertical-section {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.edusof-page-admin .container-card-admin .card-content .seccion-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.edusof-page-admin .container-card-admin .card-content .seccion-card .seccion-icon {
+  color: #0073aa;
+  font-size: 24px;
+  margin-right: 15px;
+}
+.edusof-page-admin .container-card-admin .card-content .seccion-card p {
+  margin: 0;
+  font-size: 16px;
+  color: #555;
+}
+.edusof-page-admin .container-card-admin .card-content .seccion-card p strong {
+  color: #333;
+}
+.edusof-page-admin .container-card-admin .card-content .container-right {
+  display: grid;
+  justify-items: center;
+  justify-content: end;
 }/*# sourceMappingURL=style.css.map */
