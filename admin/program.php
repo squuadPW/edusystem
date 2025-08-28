@@ -657,7 +657,9 @@ function get_fees_associated_plan($identificator)
         '%"' . $wpdb->esc_like($identificator) . '"%'
     );
 
-    $fees = $wpdb->get_results($sql);
+    // Usa get_col para obtener una matriz de valores
+    $fees = $wpdb->get_col($sql); 
+    
     return $fees;
 }
 
