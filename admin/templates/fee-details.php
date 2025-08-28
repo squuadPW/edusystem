@@ -79,7 +79,9 @@
                                         <textarea name="description" ><?= $fee['description'] ?? '' ?></textarea>
                                     </div>
 
-                                    <div class="space-offer">
+                                    <div class="group-input" >
+
+                                        <div class="space-offer" style="flex: 2;">
 
                                             <label for="products">
                                                 <b><?= __('Programs', 'edusystem'); ?></b>
@@ -88,19 +90,51 @@
 
                                             <?php
                                                 global $wpdb;
-                                                $programs = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}student_program");
+                                                $payment_plans = $wpdb->get_results("SELECT identificator, name, subprogram FROM {$wpdb->prefix}programs");
                                             ?>
                                             
                                             <select name="programs[]" multiple required id="programas_select" >
-                                                <?php if( $programs ): ?>
-                                                    <?php foreach ($programs as $program): ?>
-                                                        <option value="<?= esc_attr($program->id)?>" <?= selected( in_array( $program->id, json_decode($fee['programs'], true) ?? [] ) ); ?>><?= esc_html($program->name) ?></option>
-                                                            <?= esc_html($program->name) ?>
-                                                        </option>
+                                                <?php if( $payment_plans ): ?>
+                                                    <?php foreach ($payment_plans as $payment_plan): ?>
+
+                                                        <optgroup label="<?= esc_attr($payment_plan->name) ?>">
+
+                                                            <option value="<?= esc_attr($payment_plan->identificator)?>" <?= selected( in_array( $payment_plan->identificator, json_decode($fee['programs'], true) ?? [] ) ); ?>><?= esc_html($payment_plan->name) ?></option>
+                                                                <?= esc_html($payment_plan->name) ?>
+                                                            </option>
+
+                                                            <?php $payment_subplans = json_decode($payment_plan->subprogram, true); ?>
+                                                            <?php if($payment_subplans): ?>
+                                                                <?php foreach ($payment_subplans as $payment_subplan_id => $payment_subplan): ?>
+                                                                    <option value="<?= esc_attr($payment_plan->identificator . '_' . $payment_subplan_id) ?>" <?= selected(in_array($payment_plan->identificator . '_' . $payment_subplan_id, json_decode($fee['programs'], true) ?? [])); ?>>
+                                                                        <?= esc_html($payment_subplan['name']) ?>
+                                                                    </option>
+                                                                <?php endforeach; ?>
+                                                            <?php endif; ?>
+                                                        </optgroup>
+
                                                     <?php endforeach ?>
                                                 <?php endif; ?>
                                             </select>
                                                         
+                                        </div>
+
+                                        <div class="space-offer" style="flex: 1;">
+
+                                            <label for="type_fee">
+                                                <b><?= __('Type', 'edusystem'); ?></b>
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            
+                                            <select name="type_fee" required >
+                                                <option value="" disabled <?= selected($fee['type_fee'], ''); ?>> <?= __('Select a type', 'edusystem'); ?> </option>
+                                                <option value="registration" <?= selected($fee['type_fee'], 'registration'); ?>> <?= __('Registration', 'edusystem'); ?> </option>
+                                                <option value="graduation" <?= selected($fee['type_fee'], 'graduation'); ?>> <?= __('Graduation', 'edusystem'); ?> </option>
+                                                <option value="others" <?= selected($fee['type_fee'], 'others'); ?>> <?= __('Others', 'edusystem'); ?> </option>
+                                            </select>
+                                                        
+                                        </div>
+
                                     </div>
 
                                 </div>
