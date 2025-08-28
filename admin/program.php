@@ -647,6 +647,19 @@ function get_mention_details($id)
     return $mention;
 }
 
+function get_fees_associated_plan($identificator)
+{
+    global $wpdb;
+    $table_admission_fees = $wpdb->prefix . 'admission_fees';
+
+    $sql = $wpdb->prepare(
+        "SELECT product_id FROM {$table_admission_fees} WHERE programs LIKE %s",
+        '%"' . $wpdb->esc_like($identificator) . '"%'
+    );
+
+    $fees = $wpdb->get_results($sql);
+    return $fees;
+}
 
 function get_program_details_by_identificator($identificator)
 {
