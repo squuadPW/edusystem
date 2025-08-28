@@ -1372,15 +1372,54 @@ function check_access_virtual($student_id)
 {
     global $wpdb;
 
-    $documents_student = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}student_documents WHERE is_required = 1 AND student_id = $student_id");
+    // Primer chequeo: verificación de documentos
+    $documents_student = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}student_documents WHERE is_required = 1 AND student_id = %d",
+            $student_id
+        )
+    );
+
     foreach ($documents_student as $document) {
         if ($document->status != 5) {
             return false;
         }
     }
 
-    $paid = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}student_payments WHERE student_id = $student_id AND product_id = " . FEE_INSCRIPTION);
-    return isset($paid);
+    // Segundo chequeo: verificación de pagos de registro
+    $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
+
+    $student_programs = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT plan_identificator FROM {$table_programs_by_student} WHERE student_id = %d",
+            $student_id
+        )
+    );
+
+    foreach ($student_programs as $program) {
+        // Obtiene todos los IDs de los productos de registro para cada plan.
+        $fees = get_fees_associated_plan($program->plan_identificator, 'registration');
+
+        // Itera sobre cada uno de los IDs de pago obtenidos.
+        foreach ($fees as $fee_product_id) {
+            // Verifica si el pago existe.
+            $is_paid = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND product_id = %d",
+                    $student_id,
+                    $fee_product_id
+                )
+            );
+
+            // Si un pago no se encuentra, devuelve false inmediatamente.
+            if ($is_paid == 0) {
+                return false;
+            }
+        }
+    }
+
+    // Si todas las verificaciones pasan, devuelve true.
+    return true;
 }
 
 function handle_virtual_classroom_access($student_id)

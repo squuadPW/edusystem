@@ -647,17 +647,23 @@ function get_mention_details($id)
     return $mention;
 }
 
-function get_fees_associated_plan($identificator)
+function get_fees_associated_plan($identificator, $type_fee = null)
 {
     global $wpdb;
     $table_admission_fees = $wpdb->prefix . 'admission_fees';
 
-    $sql = $wpdb->prepare(
-        "SELECT product_id FROM {$table_admission_fees} WHERE programs LIKE %s",
-        '%"' . $wpdb->esc_like($identificator) . '"%'
-    );
+    // Construye la base de la consulta SQL y los argumentos.
+    $sql = "SELECT product_id FROM {$table_admission_fees} WHERE programs LIKE %s";
+    $args = ['%"' . $wpdb->esc_like($identificator) . '"%'];
 
-    // Usa get_col para obtener una matriz de valores
+    // Agrega la condición de tipo si existe.
+    if ($type_fee !== null) {
+        $sql .= " AND type_fee = %s";
+        $args[] = $type_fee;
+    }
+
+    // Prepara y ejecuta la consulta.
+    $sql = $wpdb->prepare($sql, ...$args);
     $fees = $wpdb->get_col($sql); 
     
     return $fees;
