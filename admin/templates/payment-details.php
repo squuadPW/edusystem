@@ -152,7 +152,7 @@
                                                     <div class="total-price">
                                                         <?= wc_price($item->get_total()); ?>
 
-                                                        <?php if( $order->status === 'pending' ): ?>
+                                                        <?php if( $order->status == 'pending' || $order->status == 'on-hold' ): ?>
                                                             <a onclick="active_edit_price_item();" >
                                                                 <span class="dashicons dashicons-edit no-vertical seccion-icon" ></span>
                                                             </a>
@@ -325,21 +325,12 @@
                                 
                             <?php endif; ?>
 
-                            <?php if($order->get_meta('fee_order_pay') && $order->get_meta('fee_order_pay') > 0): ?>
-                                <div class="seccion-card">
-                                    <p>
-                                        <strong><?=__('Fee payment method','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('fee_order_pay')); ?></span>
-                                    </p>
-                                </div>
-                            <?php endif; ?>
-
                             <?php if( in_array('institute',$roles) && $order->get_meta('institute_fee') ): ?>
 
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Fee','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('institute_fee')); ?></span>
+                                        <span><?= wc_price( intval($order->get_meta('institute_fee') ?? 0) * -1 ); ?></span>
                                     </p>
                                 </div>
                                 
@@ -348,7 +339,7 @@
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Institute Fee','edusystem')?>:</strong>
-                                        <span><?=  wc_price($order->get_meta('institute_fee')); ?></span>
+                                        <span><?=  wc_price( intval($order->get_meta('institute_fee') ?? 0) * -1 ); ?></span>
                                     </p>
                                 </div>
 
@@ -365,7 +356,16 @@
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Alliance Fee','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('alliance_fee')); ?></span>
+                                        <span><?= wc_price( intval($order->get_meta('alliance_fee') ?? 0) * -1 ); ?></span>
+                                    </p>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if($order->get_meta('fee_order_pay') && $order->get_meta('fee_order_pay') > 0): ?>
+                                <div class="seccion-card">
+                                    <p>
+                                        <strong><?=__('Fee payment method','edusystem')?>:</strong>
+                                        <span><?= wc_price($order->get_meta('fee_order_pay') * -1); ?></span>
                                     </p>
                                 </div>
                             <?php endif; ?>
