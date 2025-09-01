@@ -129,46 +129,57 @@
 
                         <?php if(!in_array('institutes',$roles) && !in_array('alliance',$roles)): ?>
 
-                            <table id="table-products-payment" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" class="manage-column column-primary column-title"><?= __('Program','edusystem') ?></th>
-                                        <th scope="col" class="manage-column column-price"><?= __('Total','edusystem') ?></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach($order->get_items() as $item){ ?>
-                                        <tr class="item-product-payment" >
-                                            <td class="column-primary">
-                                                <?= $item->get_name(); ?>
-                                                <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
-                                            </td>
-                                            <td data-colname="<?= __('Total','edusystem'); ?>">
-                                                <div class="total-price">
-                                                    <?= wc_price($item->get_total()); ?>
-                                                    <a onclick="active_edit_price_item();" >
-                                                        <span class="dashicons dashicons-edit no-vertical seccion-icon" ></span>
-                                                    </a>
-                                                </div>
+                            <form method="POST" action="<?= admin_url('admin.php?page=add_admin_form_payments_content&action=update_price_items_order') ?>" >
 
-                                                <div class="inputs-price hidden" >
-                                                    <input type="number" class="input-text" name="item[<?= $item->get_id(); ?>][amount]" data-origin-price="<?= esc_attr($item->get_total() ); ?>" min="0" step="0.01" />
+                                <table id="table-products-payment" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="manage-column column-primary column-title"><?= __('Program','edusystem') ?></th>
+                                            <th scope="col" class="manage-column column-price"><?= __('Total','edusystem') ?></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <input type="hidden" name="order_id" value="<?= $order->get_id(); ?>" />
+
+                                        <?php foreach($order->get_items() as $item){ ?>
+                                            <tr class="item-product-payment" >
+                                                <td class="column-primary">
+                                                    <?= $item->get_name(); ?>
+                                                    <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
+                                                </td>
+                                                <td data-colname="<?= __('Total','edusystem'); ?>">
+                                                    <div class="total-price">
+                                                        <?= wc_price($item->get_total()); ?>
+
+                                                        <?php if( $order->status === 'pending' ): ?>
+                                                            <a onclick="active_edit_price_item();" >
+                                                                <span class="dashicons dashicons-edit no-vertical seccion-icon" ></span>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    </div>
+
+                                                    <div class="inputs-price hidden" >
+                                                        <input type="number" class="input-text" name="items[<?= $item->get_id(); ?>][amount]" data-origin-price="<?= esc_attr($item->get_total() ); ?>" min="0" step="0.01" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="2">
+                                                <div  class="actions hidden">
+                                                    <button type="button" class="button button-danger" onclick="desactive_edit_price_item();"><?= __('Cancelar','edusystem'); ?></button>
+                                                    <button type="submit" class="button button-primary" ><?= __('Recalculate','edusystem'); ?></button>
                                                 </div>
                                             </td>
                                         </tr>
-                                    <?php } ?>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="2">
-                                            <div  class="actions hidden">
-                                                <button type="button" class="button button-danger" onclick="desactive_edit_price_item();"><?= __('Cancelar','edusystem'); ?></button>
-                                                <button type="button" class="button button-primary" ><?= __('Recalculate','edusystem'); ?></button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                    </tfoot>
+                                </table>
+                            
+                            </form>
 
                             <br/>
                             
@@ -287,15 +298,17 @@
 
                         <div class="container-right" >
 
-                            <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1): ?>
-                            
+                            <?php if( !in_array('institutes',$roles) && !in_array('alliance',$roles) ): ?>
                                 <div class="seccion-card">
                                     <p>
-                                        <strong><?=__('Total paid net','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('total_paid')); ?></span>
+                                        <strong><?=__('Payment Total','edusystem')?>:</strong>
+                                        <span><?= wc_price($order->get_total()) ?></span>
                                     </p>
                                 </div>
+                            <?php endif; ?> 
 
+                            <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1): ?>
+                            
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Total paid gross','edusystem')?>:</strong>
@@ -320,15 +333,6 @@
                                     </p>
                                 </div>
                             <?php endif; ?>
-
-                            <?php if( !in_array('institutes',$roles) && !in_array('alliance',$roles) ): ?>
-                                <div class="seccion-card">
-                                    <p>
-                                        <strong><?=__('Payment Total','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_total()) ?></span>
-                                    </p>
-                                </div>
-                            <?php endif; ?> 
 
                             <?php if( in_array('institute',$roles) && $order->get_meta('institute_fee') ): ?>
 
@@ -365,7 +369,18 @@
                                     </p>
                                 </div>
                             <?php endif; ?>
+
+                            <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1): ?>
                             
+                                <div class="seccion-card">
+                                    <p>
+                                        <strong><?=__('Total paid net','edusystem')?>:</strong>
+                                        <span><?= wc_price($order->get_meta('total_paid')); ?></span>
+                                    </p>
+                                </div>
+
+                            <?php endif; ?>
+
                         </div>
 
                         <?php if( !array_intersect(['institutes', 'alliance', 'webinar-aliance'], $roles) ){?>

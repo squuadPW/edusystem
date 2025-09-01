@@ -1203,6 +1203,34 @@ function add_admin_form_payments_content()
             wp_redirect($_SERVER['HTTP_REFERER']);
             exit;
 
+        } else if ($_GET['action'] == 'update_price_items_order') {
+            
+            // Obtener datos POST
+            $order_id = isset( $_POST['order_id']) ? intval($_POST['order_id'] ) : 0;
+            $items = $_POST['items'] ?? [];
+           
+            $order = wc_get_order( $order_id );
+            if( $order ) {
+                foreach ( $order->get_items() as $item_id => $order_item ) {
+
+                    if (  isset( $items[ $item_id ] ) ) {
+                        $order_item->set_total( (float) $items[ $item_id ]['amount'] ?? $order_item->get_total() );
+                        $order_item->save();
+                    }
+                }
+
+                $order->calculate_totals();
+                $order->save();
+                
+                setcookie('message', __('Items updated successfully.', 'edusystem'), time() + 10, '/');
+                wp_redirect( "admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id={$order_id}" );
+            
+            } else {
+                setcookie('message-error', __('Items could not be updated.', 'edusystem'), time() + 10, '/');
+                wp_redirect( $_SERVER['HTTP_REFERER'] );
+            }
+            exit;
+
         }
     }
 

@@ -105,12 +105,16 @@ function active_edit_price_item () {
         container_acction.classList.remove('hidden');
     }
 
-
     document.querySelectorAll('.item-product-payment .total-price').forEach((elem) => {
         elem.classList.add('hidden');
     });
+
     document.querySelectorAll('.item-product-payment .inputs-price').forEach((elem) => {
-        elem.value = parseFloat( elem.getAttribute('data-origin-price') || 0 );
+
+        // pone por defecto el precio original
+        input = elem.querySelector('input');
+        if( input ) input.value = parseFloat( input.getAttribute('data-origin-price') ?? 0 );
+
         elem.classList.remove('hidden');
     });
 }

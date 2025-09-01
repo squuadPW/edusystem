@@ -1943,6 +1943,7 @@ a.toplevel_page_logo_based_menu {
 }
 .payment-details #table-products-payment .item-product-payment .total-price .dashicons {
   display: none;
+  cursor: pointer;
 }
 .payment-details #table-products-payment .item-product-payment .inputs-price.hidden {
   display: none;
