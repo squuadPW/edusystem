@@ -2060,6 +2060,7 @@ a.toplevel_page_logo_based_menu {
                 justify-content: center;
                 align-items: center;
                 position: relative;
+                flex-wrap: wrap;
 
                 .container-button {
                     position: absolute;
@@ -2070,6 +2071,7 @@ a.toplevel_page_logo_based_menu {
 
             .seccion-vertical {
                 display: flex;
+                flex-wrap: wrap;
 
                 & > div {
                     flex: 1;
@@ -2080,6 +2082,7 @@ a.toplevel_page_logo_based_menu {
                 display: flex;
                 align-items: center;
                 margin-bottom: 15px;
+                min-width: 170px;
 
                 .seccion-icon {
                     color: #0073aa; 
@@ -2118,6 +2121,10 @@ a.toplevel_page_logo_based_menu {
 
                         span {
                             flex: 2;
+
+                            @media ( max-width: 375px ) {
+                                flex: 1;
+                            }
                         }
 
                         
@@ -2129,4 +2136,93 @@ a.toplevel_page_logo_based_menu {
         
     }
 
+}
+
+.payment-details {
+
+    .title {
+        flex: 1;
+        width: 100%;
+    }
+
+    #table-products-payment {
+
+        tfoot {
+            
+            &:has( .actions.hidden ) {
+                display: none;
+            }
+
+            .actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+        }
+
+        .item-product-payment {
+
+            .total-price {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                &.hidden {
+                    display: none;
+                }
+
+                .dashicons {
+                    display: none;
+                }
+            }
+
+            .inputs-price {
+                
+                &.hidden {
+                    display: none;
+                }
+            }
+
+            &:hover .total-price .dashicons {
+                display: block;
+            }
+        }
+    }
+
+    @media ( max-width: 782px ) {
+
+        .title {
+            margin-top: 10px !important;
+        }
+
+        .container-button {
+            position: relative !important;
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        #table-products-payment {
+
+            .item-product-payment {
+
+                .total-price {
+                    justify-content: flex-end !important;
+                    gap: 10px;
+                }
+
+                .dashicons {
+                    display: block;
+                }
+            }
+
+            .inputs-price {
+                margin-top: 22px;
+            }
+
+            tfoot td {
+                display: block;
+            }
+        }
+    }
 }

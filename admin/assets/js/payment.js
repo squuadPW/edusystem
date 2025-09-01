@@ -95,6 +95,37 @@ document.addEventListener('DOMContentLoaded',function(){
         });
     });
 
+
 });
 
+function active_edit_price_item () {
 
+    container_acction = document.querySelector('#table-products-payment .actions');
+    if( container_acction ) {
+        container_acction.classList.remove('hidden');
+    }
+
+
+    document.querySelectorAll('.item-product-payment .total-price').forEach((elem) => {
+        elem.classList.add('hidden');
+    });
+    document.querySelectorAll('.item-product-payment .inputs-price').forEach((elem) => {
+        elem.value = parseFloat( elem.getAttribute('data-origin-price') || 0 );
+        elem.classList.remove('hidden');
+    });
+}
+
+function desactive_edit_price_item () {
+
+    container_acction = document.querySelector('#table-products-payment .actions');
+    if( container_acction ) {
+        container_acction.classList.add('hidden');
+    }
+
+    document.querySelectorAll('.item-product-payment .total-price').forEach((elem) => {
+        elem.classList.remove('hidden');
+    });
+    document.querySelectorAll('.item-product-payment .inputs-price').forEach((elem) => {
+        elem.classList.add('hidden');
+    });
+}

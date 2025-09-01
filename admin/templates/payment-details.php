@@ -4,10 +4,10 @@
     }
 </style>
 
-<div class="wrap edusof-page-admin">
+<div class="wrap edusof-page-admin payment-details">
     <h2 style="margin-bottom:15px;"><?= __('Payment details','edusystem'); ?></h2>
 
-    <div style="diplay:flex;width:100%;">
+    <div style="display:flex;width:100%;">
         <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
     <div id="notice-payment-completed" style="display:none;" class="notice notice-info"><p><?= __('Payment Completed','edusystem'); ?></p></div>
@@ -129,25 +129,45 @@
 
                         <?php if(!in_array('institutes',$roles) && !in_array('alliance',$roles)): ?>
 
-                            <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
+                            <table id="table-products-payment" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
                                 <thead>
                                     <tr>
                                         <th scope="col" class="manage-column column-primary column-title"><?= __('Program','edusystem') ?></th>
                                         <th scope="col" class="manage-column column-price"><?= __('Total','edusystem') ?></th>
                                     </tr>
                                 </thead>
-                                <tbody id="table-documents">
+                                <tbody>
                                     <?php foreach($order->get_items() as $item){ ?>
-                                        <tr>
+                                        <tr class="item-product-payment" >
                                             <td class="column-primary">
                                                 <?= $item->get_name(); ?>
+                                                <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                                             </td>
                                             <td data-colname="<?= __('Total','edusystem'); ?>">
-                                                <?= wc_price($item->get_total()); ?>
+                                                <div class="total-price">
+                                                    <?= wc_price($item->get_total()); ?>
+                                                    <a onclick="active_edit_price_item();" >
+                                                        <span class="dashicons dashicons-edit no-vertical seccion-icon" ></span>
+                                                    </a>
+                                                </div>
+
+                                                <div class="inputs-price hidden" >
+                                                    <input type="number" class="input-text" name="item[<?= $item->get_id(); ?>][amount]" data-origin-price="<?= esc_attr($item->get_total() ); ?>" min="0" step="0.01" />
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2">
+                                            <div  class="actions hidden">
+                                                <button type="button" class="button button-danger" onclick="desactive_edit_price_item();"><?= __('Cancelar','edusystem'); ?></button>
+                                                <button type="button" class="button button-primary" ><?= __('Recalculate','edusystem'); ?></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
                             </table>
 
                             <br/>
