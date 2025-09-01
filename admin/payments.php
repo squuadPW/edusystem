@@ -1454,7 +1454,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
         $args = [
             'limit' => $per_page,
             'offset' => $offset,
-            'status' => array('wc-pending', 'wc-processing', 'wc-on-hold'), // Orders with these statuses
+            'status' => array('wc-pending', 'wc-processing', 'wc-on-hold', 'split-payment'), // Orders with these statuses
             'orderby' => 'date',
             'order' => 'DESC',
         ];

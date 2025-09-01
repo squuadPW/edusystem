@@ -20,7 +20,7 @@ $email_template = '
     <p>Links:</p>
     <ul>
       <li>Website: <a href="https://americanelite.school/">https://americanelite.school/</a></li>
-      <li>Virtual classroom: <a href="https://portal.americanelite.school/">https://portal.americanelite.school/</a></li>
+      <li>Virtual classroom: <a href="https://portal.americanelite.school/my-account">https://portal.americanelite.school/my-account</a></li>
     </ul>
 
     <p>Enter here to create your password:</p>
