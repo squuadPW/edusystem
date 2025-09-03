@@ -33,7 +33,8 @@ $url = wp_get_attachment_url($student->profile_picture);
                 class="button button-outline-primary"
                 onclick="return confirm('Estas seguro de volver a generar proyeccion academica?');"><?= __('Re-generate projection', 'edusystem'); ?></a>
         <?php } ?>
-        <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_virtual_classroom&student_id=') . $student->id ?>"
+        <a style="margin-left: 5px;"
+            href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_virtual_classroom&student_id=') . $student->id ?>"
             class="button button-outline-primary"
             onclick="return confirm('Estas seguro de volver a crearle el aula virtual al estudiante de manera manual?');"><?= __('Virtual clasroom', 'edusystem'); ?></a>
         <button style="margin-left: 5px;" data-id="<?= $student->id; ?>" id="button-export-xlsx"
