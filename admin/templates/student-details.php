@@ -33,6 +33,9 @@ $url = wp_get_attachment_url($student->profile_picture);
                 class="button button-outline-primary"
                 onclick="return confirm('Estas seguro de volver a generar proyeccion academica?');"><?= __('Re-generate projection', 'edusystem'); ?></a>
         <?php } ?>
+        <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_virtual_classroom&student_id=') . $student->id ?>"
+            class="button button-outline-primary"
+            onclick="return confirm('Estas seguro de volver a crearle el aula virtual al estudiante de manera manual?');"><?= __('Virtual clasroom', 'edusystem'); ?></a>
         <button style="margin-left: 5px;" data-id="<?= $student->id; ?>" id="button-export-xlsx"
             class="button button-primary"><?= __('Export Excel', 'edusystem'); ?></button>
         <!-- <?php
@@ -385,154 +388,154 @@ $url = wp_get_attachment_url($student->profile_picture);
                                     </tr>
                                 </tbody>
                             </table>
-                            <?php if($user_student->ID != $partner->ID) { ?>
-                            <h3 style="margin-bottom:0px;text-align:center;">
-                                <b><?php _e('Parent Information', 'edusystem'); ?></b>
-                            </h3>
-                            <div>
-                                <?php
-                                global $current_user;
-                                $roles = $current_user->roles;
-                                if (in_array('administrator', $roles)) {
-                                    ?>
-                                    <p style="text-align: center">
-                                        <a href="<?php echo admin_url('user-edit.php?user_id=') . $partner->ID ?>"
-                                            target="_blank">
-                                            <button type="button" class="button button-success"
-                                                style="margin-left: 10px"><?= __('View user parent', 'edusystem'); ?></button>
-                                        </a>
-                                    </p>
-                                <?php } ?>
-                            </div>
-                            <table class="form-table table-customize" style="margin-top:0px;">
-                                <tbody>
-                                    <tr>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_document_type"><b><?php _e('Document Type', 'edusystem'); ?></b></label><br>
-                                            <select name="parent_document_type" id="parent_document_type"
-                                                value="<?php echo get_user_meta($partner->ID, 'type_document', true); ?>"
-                                                style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                                <option value="identification_document" <?= (get_user_meta($partner->ID, 'type_document', true) == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'edusystem'); ?>
-                                                </option>
-                                                <option value="passport" <?= (get_user_meta($partner->ID, 'type_document', true) == 'passport') ? 'selected' : ''; ?>>
-                                                    <?= __('Passport', 'edusystem'); ?>
-                                                </option>
-                                                <option value="ssn" <?= (get_user_meta($partner->ID, 'type_document', true) == 'ssn') ? 'selected' : ''; ?>><?= __('SNN', 'edusystem'); ?>
-                                                </option>
-                                            </select>
-                                        </td>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_id_document"><b><?php _e('ID Document', 'edusystem'); ?></b></label><br>
-                                            <input type="text" id="parent_id_document" name="parent_id_document"
-                                                value="<?php echo get_user_meta($partner->ID, 'id_document', true); ?>"
-                                                style="width:100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                            <input type="hidden" id="parent_id" name="parent_id"
-                                                value="<?= $student->partner_id; ?>" style="width:100%" required>
-                                        </td>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_username"><b><?php _e('Username', 'edusystem'); ?></b></label><br>
-                                            <input type="text" id="parent_username" name="parent_username"
-                                                value="<?php echo $partner->user_nicename; ?>" style="width:100%"
-                                                required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_first_name"><b><?php _e('First name', 'edusystem'); ?></b></label><br>
-                                            <input type="text" id="parent_first_name" name="parent_first_name"
-                                                value="<?php echo $partner->first_name; ?>" style="width:100%" required
-                                                <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                        </td>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_last_name"><b><?php _e('Last name', 'edusystem'); ?></b></label><br>
-                                            <input type="text" id="parent_last_name" name="parent_last_name"
-                                                value="<?php echo $partner->last_name; ?>" style="width:100%" required
-                                                <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                        </td>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_birth_date"><b><?php _e('Birth date', 'edusystem'); ?></b></label><br>
-                                            <input type="text" id="parent_birth_date" name="parent_birth_date"
-                                                value="<?php echo get_user_meta($partner->ID, 'birth_date', true); ?>"
-                                                style="width:100%; background-color: white;" class="birth_date" required
-                                                <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_gender"><b><?php _e('Gender', 'edusystem'); ?></b></label><br>
-                                            <select name="parent_gender" id="parent_gender"
-                                                value="<?php echo get_user_meta($partner->ID, 'gender', true); ?>"
-                                                style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                                <option value="male" <?= (get_user_meta($partner->ID, 'gender', true) == 'male') ? 'selected' : ''; ?>><?= __('Male', 'edusystem'); ?>
-                                                </option>
-                                                <option value="female" <?= (get_user_meta($partner->ID, 'gender', true) == 'female') ? 'selected' : ''; ?>>
-                                                    <?= __('Female', 'edusystem'); ?>
-                                                </option>
-                                            </select>
-                                        </td>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_country"><b><?php _e('Country', 'edusystem'); ?></b></label><br>
-                                            <select id="parent_country" name="parent_country"
-                                                value="<?php echo get_name_country(get_user_meta($partner->ID, 'billing_country', true)); ?>"
-                                                style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                                <?php foreach ($countries as $key => $country) { ?>
-                                                    <option value="<?= $key ?>"
-                                                        <?= (get_name_country(get_user_meta($partner->ID, 'billing_country', true) == $key)) ? 'selected' : ''; ?>><?= $country; ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </td>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_city"><b><?php _e('City', 'edusystem'); ?></b></label><br>
-                                            <input type="text" id="parent_city" name="parent_city"
-                                                value="<?php echo get_user_meta($partner->ID, 'billing_city', true) ?>"
-                                                style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_postal_code"><b><?php _e('Postal Code', 'edusystem'); ?></b></label><br>
-                                            <input type="text" id="parent_postal_code" name="parent_postal_code"
-                                                value="<?php echo get_user_meta($partner->ID, 'billing_postcode', true) ?>"
-                                                style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                        </td>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_email"><b><?php _e('Email', 'edusystem'); ?></b></label><br>
-                                            <input type="text" id="parent_email" name="parent_email"
-                                                value="<?php echo $partner->user_email ?>" style="width:100%;" required
-                                                <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                            <input type="hidden" id="parent_old_email" name="parent_old_email"
-                                                value="<?php echo $partner->user_email; ?>">
-                                        </td>
-                                        <td colspan="4">
-                                            <label
-                                                for="parent_phone"><b><?php _e('Phone', 'edusystem'); ?></b></label><br>
-                                            <input type="text" id="parent_phone" name="parent_phone"
-                                                value="<?php echo get_user_meta($partner->ID, 'billing_phone', true) ?>"
-                                                style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="12">
-                                            <label
-                                                for="parent_occupation"><b><?php _e('Occupation', 'edusystem'); ?></b></label><br>
-                                            <input type="text" id="parent_occupation" name="parent_occupation"
-                                                value="<?php echo get_user_meta($partner->ID, 'occupation', true) ?>"
-                                                style="width:100%;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <?php if ($user_student->ID != $partner->ID) { ?>
+                                <h3 style="margin-bottom:0px;text-align:center;">
+                                    <b><?php _e('Parent Information', 'edusystem'); ?></b>
+                                </h3>
+                                <div>
+                                    <?php
+                                    global $current_user;
+                                    $roles = $current_user->roles;
+                                    if (in_array('administrator', $roles)) {
+                                        ?>
+                                        <p style="text-align: center">
+                                            <a href="<?php echo admin_url('user-edit.php?user_id=') . $partner->ID ?>"
+                                                target="_blank">
+                                                <button type="button" class="button button-success"
+                                                    style="margin-left: 10px"><?= __('View user parent', 'edusystem'); ?></button>
+                                            </a>
+                                        </p>
+                                    <?php } ?>
+                                </div>
+                                <table class="form-table table-customize" style="margin-top:0px;">
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_document_type"><b><?php _e('Document Type', 'edusystem'); ?></b></label><br>
+                                                <select name="parent_document_type" id="parent_document_type"
+                                                    value="<?php echo get_user_meta($partner->ID, 'type_document', true); ?>"
+                                                    style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                    <option value="identification_document" <?= (get_user_meta($partner->ID, 'type_document', true) == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'edusystem'); ?>
+                                                    </option>
+                                                    <option value="passport" <?= (get_user_meta($partner->ID, 'type_document', true) == 'passport') ? 'selected' : ''; ?>>
+                                                        <?= __('Passport', 'edusystem'); ?>
+                                                    </option>
+                                                    <option value="ssn" <?= (get_user_meta($partner->ID, 'type_document', true) == 'ssn') ? 'selected' : ''; ?>><?= __('SNN', 'edusystem'); ?>
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_id_document"><b><?php _e('ID Document', 'edusystem'); ?></b></label><br>
+                                                <input type="text" id="parent_id_document" name="parent_id_document"
+                                                    value="<?php echo get_user_meta($partner->ID, 'id_document', true); ?>"
+                                                    style="width:100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                <input type="hidden" id="parent_id" name="parent_id"
+                                                    value="<?= $student->partner_id; ?>" style="width:100%" required>
+                                            </td>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_username"><b><?php _e('Username', 'edusystem'); ?></b></label><br>
+                                                <input type="text" id="parent_username" name="parent_username"
+                                                    value="<?php echo $partner->user_nicename; ?>" style="width:100%"
+                                                    required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_first_name"><b><?php _e('First name', 'edusystem'); ?></b></label><br>
+                                                <input type="text" id="parent_first_name" name="parent_first_name"
+                                                    value="<?php echo $partner->first_name; ?>" style="width:100%" required
+                                                    <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                            </td>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_last_name"><b><?php _e('Last name', 'edusystem'); ?></b></label><br>
+                                                <input type="text" id="parent_last_name" name="parent_last_name"
+                                                    value="<?php echo $partner->last_name; ?>" style="width:100%" required
+                                                    <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                            </td>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_birth_date"><b><?php _e('Birth date', 'edusystem'); ?></b></label><br>
+                                                <input type="text" id="parent_birth_date" name="parent_birth_date"
+                                                    value="<?php echo get_user_meta($partner->ID, 'birth_date', true); ?>"
+                                                    style="width:100%; background-color: white;" class="birth_date" required
+                                                    <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_gender"><b><?php _e('Gender', 'edusystem'); ?></b></label><br>
+                                                <select name="parent_gender" id="parent_gender"
+                                                    value="<?php echo get_user_meta($partner->ID, 'gender', true); ?>"
+                                                    style="width:100%" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                    <option value="male" <?= (get_user_meta($partner->ID, 'gender', true) == 'male') ? 'selected' : ''; ?>><?= __('Male', 'edusystem'); ?>
+                                                    </option>
+                                                    <option value="female" <?= (get_user_meta($partner->ID, 'gender', true) == 'female') ? 'selected' : ''; ?>>
+                                                        <?= __('Female', 'edusystem'); ?>
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_country"><b><?php _e('Country', 'edusystem'); ?></b></label><br>
+                                                <select id="parent_country" name="parent_country"
+                                                    value="<?php echo get_name_country(get_user_meta($partner->ID, 'billing_country', true)); ?>"
+                                                    style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                    <?php foreach ($countries as $key => $country) { ?>
+                                                        <option value="<?= $key ?>"
+                                                            <?= (get_name_country(get_user_meta($partner->ID, 'billing_country', true) == $key)) ? 'selected' : ''; ?>><?= $country; ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                            </td>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_city"><b><?php _e('City', 'edusystem'); ?></b></label><br>
+                                                <input type="text" id="parent_city" name="parent_city"
+                                                    value="<?php echo get_user_meta($partner->ID, 'billing_city', true) ?>"
+                                                    style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_postal_code"><b><?php _e('Postal Code', 'edusystem'); ?></b></label><br>
+                                                <input type="text" id="parent_postal_code" name="parent_postal_code"
+                                                    value="<?php echo get_user_meta($partner->ID, 'billing_postcode', true) ?>"
+                                                    style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                            </td>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_email"><b><?php _e('Email', 'edusystem'); ?></b></label><br>
+                                                <input type="text" id="parent_email" name="parent_email"
+                                                    value="<?php echo $partner->user_email ?>" style="width:100%;" required
+                                                    <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                <input type="hidden" id="parent_old_email" name="parent_old_email"
+                                                    value="<?php echo $partner->user_email; ?>">
+                                            </td>
+                                            <td colspan="4">
+                                                <label
+                                                    for="parent_phone"><b><?php _e('Phone', 'edusystem'); ?></b></label><br>
+                                                <input type="text" id="parent_phone" name="parent_phone"
+                                                    value="<?php echo get_user_meta($partner->ID, 'billing_phone', true) ?>"
+                                                    style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="12">
+                                                <label
+                                                    for="parent_occupation"><b><?php _e('Occupation', 'edusystem'); ?></b></label><br>
+                                                <input type="text" id="parent_occupation" name="parent_occupation"
+                                                    value="<?php echo get_user_meta($partner->ID, 'occupation', true) ?>"
+                                                    style="width:100%;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             <?php } ?>
                             <?php if (!in_array('institutes', $roles) && !current_user_can('only_read_admission_aes')): ?>
                                 <p style="text-align: end">
@@ -569,14 +572,14 @@ $url = wp_get_attachment_url($student->profile_picture);
                 <?php if (!empty($documents)): ?>
                     <?php foreach ($documents as $document): ?>
                         <?php
-                            $created_at_timestamp = strtotime($document->created_at);
-                            $upload_at_timestamp = strtotime($document->upload_at);
-                            $updated_at_timestamp = strtotime($document->updated_at);
+                        $created_at_timestamp = strtotime($document->created_at);
+                        $upload_at_timestamp = strtotime($document->upload_at);
+                        $updated_at_timestamp = strtotime($document->updated_at);
 
-                            // Convert the timestamp to the local system time with the desired format
-                            $document->created_at = wp_date('m/d/Y H:i:s', $created_at_timestamp);
-                            $document->upload_at = wp_date('m/d/Y H:i:s', $upload_at_timestamp);
-                            $document->updated_at = wp_date('m/d/Y H:i:s', $updated_at_timestamp);
+                        // Convert the timestamp to the local system time with the desired format
+                        $document->created_at = wp_date('m/d/Y H:i:s', $created_at_timestamp);
+                        $document->upload_at = wp_date('m/d/Y H:i:s', $upload_at_timestamp);
+                        $document->updated_at = wp_date('m/d/Y H:i:s', $updated_at_timestamp);
                         ?>
                         <tr id="<?= 'tr_document_' . $document->id; ?>">
                             <td class="column-primary" data-colname="<?= __('Document', 'edusystem'); ?>">
