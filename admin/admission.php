@@ -1088,7 +1088,6 @@ function update_status_documents()
 
         send_json_response($response);
     } catch (\Throwable $th) {
-        log_error($th);
         send_json_response(['error' => $th->getMessage()], 500);
     }
 }
@@ -1432,110 +1431,11 @@ function handle_virtual_classroom_access($student_id)
     update_status_student($student_id, 2);
     create_user_student($student_id);
 
-    if (MODE != 'UNI') {
-        $fields_to_send = prepare_fields_to_send($student);
-        $files_to_send = prepare_files_to_send($student_id);
-        create_user_laravel(array_merge($fields_to_send, ['files' => $files_to_send]));
+    if (has_action('portal_create_user_external')) {
+        do_action('portal_create_user_external', $student_id);
     }
 
-    $exist = is_search_student_by_email($student_id);
-    if (!$exist) {
-        $user_created_moodle = create_user_moodle($student_id);
-    } else {
-        $wpdb->update($wpdb->prefix . 'students', ['moodle_student_id' => $exist[0]['id']], ['id' => $student_id]);
-
-        if (!is_password_user_moodle($student_id)) {
-            $password = generate_password_user();
-            $wpdb->update($wpdb->prefix . 'students', ['moodle_password' => $password], ['id' => $student_id]);
-            change_password_user_moodle($student_id);
-        }
-    }
-}
-
-function prepare_fields_to_send($student)
-{
-    $type_document = [
-        'identification_document' => 1,
-        'passport' => 2,
-        'ssn' => 4,
-    ][$student->type_document] ?? 1;
-
-    $type_document_re = [
-        'identification_document' => 1,
-        'passport' => 2,
-        'ssn' => 4,
-    ][get_user_meta($student->partner_id, 'type_document', true)] ?? 1;
-
-    $gender = [
-        'male' => 'M',
-        'female' => 'F',
-    ][$student->gender] ?? 'M';
-
-    $gender_re = [
-        'male' => 'M',
-        'female' => 'F',
-    ][get_user_meta($student->partner_id, 'gender', true)] ?? 'M';
-
-    $grade = [
-        1 => 9,
-        2 => 10,
-        3 => 11,
-        4 => 12,
-    ][$student->grade_id] ?? 9;
-
-    $user_partner = get_user_by('id', $student->partner_id);
-
-    return [
-        'id_document' => $student->id_document,
-        'type_document' => $type_document,
-        'firstname' => $student->name . ' ' . $student->middle_name,
-        'lastname' => $student->last_name . ' ' . $student->middle_last_name,
-        'birth_date' => $student->birth_date,
-        'phone' => $student->phone,
-        'email' => $student->email,
-        'etnia' => $student->ethnicity,
-        'grade' => $grade,
-        'gender' => $gender,
-        'cod_period' => $student->academic_period,
-        'id_document_re' => get_user_meta($student->partner_id, 'id_document', true) ?: '000000',
-        'type_document_re' => $type_document_re,
-        'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
-        'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
-        'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
-        'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
-        'email_re' => $user_partner->user_email,
-        'gender_re' => $gender_re,
-        'cod_program' => PROGRAM_ID,
-        'cod_tip' => TYPE_PROGRAM,
-        'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
-        'country' => get_user_meta($student->partner_id, 'billing_country', true),
-        'city' => get_user_meta($student->partner_id, 'billing_city', true),
-        'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true) ?: '-',
-    ];
-}
-
-function prepare_files_to_send($student_id)
-{
-    global $wpdb;
-
-    $all_documents_student = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}student_documents WHERE student_id = $student_id");
-    $files_to_send = [];
-
-    foreach ($all_documents_student as $doc) {
-        if ($doc->attachment_id) {
-            $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
-            $attachment_path = get_attached_file($doc->attachment_id);
-
-            if ($attachment_path) {
-                $files_to_send[] = [
-                    'file' => curl_file_create($attachment_path, mime_content_type($attachment_path), basename($attachment_path)),
-                    'id_requisito' => $id_requisito
-                ];
-            }
-        }
-    }
-
-    return $files_to_send;
+    sync_student_with_moodle($student_id);
 }
 
 add_action('wp_ajax_nopriv_update_status_documents', 'update_status_documents');
