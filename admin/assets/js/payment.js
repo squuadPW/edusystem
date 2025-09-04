@@ -38,25 +38,6 @@ document.addEventListener('DOMContentLoaded',function(){
         });
     }
 
-    paid_more = document.querySelector('input[name=paid_more]');
-
-    if(paid_more){
-
-        paid_more.addEventListener('change',(e) => {
-            if (e.target.checked) {
-                document.getElementById('cuote-credit-select').style.display = "block";
-                document.getElementById('amount-credit-input').style.display = "block";
-                document.querySelector('input[name=amount_credit]').required = true;
-                document.querySelector('select[name=cuote_credit]').required = true;
-            } else {
-                document.getElementById('cuote-credit-select').style.display = "none";
-                document.getElementById('amount-credit-input').style.display = "none";
-                document.querySelector('input[name=amount_credit]').required = false;
-                document.querySelector('select[name=cuote_credit]').required = false;
-            }
-        });
-    }
-
     payment_selected = document.querySelector('select[name=payment_selected]');
 
     if(payment_selected){
@@ -95,6 +76,17 @@ document.addEventListener('DOMContentLoaded',function(){
         });
     });
 
+    cuote_credit = document.getElementById('cuote-credit');
+    new_coute_date = document.getElementById('new_coute_date');
+    if( cuote_credit && new_coute_date ) {
+        cuote_credit.addEventListener('change', function() {
+            if (this.value === 'new_cuote') {
+                new_coute_date.classList.remove('hidden');
+            } else {
+                new_coute_date.classList.add('hidden');
+            }
+        });
+    }
 
 });
 
@@ -117,6 +109,12 @@ function active_edit_price_item () {
 
         elem.classList.remove('hidden');
     });
+
+    // activa la seccion de botones
+    seccion_button = document.getElementById('button-acction-payment');
+    if( seccion_button ) {
+        seccion_button.classList.add('hidden');
+    }
 }
 
 function desactive_edit_price_item () {
@@ -129,7 +127,14 @@ function desactive_edit_price_item () {
     document.querySelectorAll('.item-product-payment .total-price').forEach((elem) => {
         elem.classList.remove('hidden');
     });
+
     document.querySelectorAll('.item-product-payment .inputs-price').forEach((elem) => {
         elem.classList.add('hidden');
     });
+
+    // desactiva la seccion de botones
+    seccion_button = document.getElementById('button-acction-payment');
+    if( seccion_button ) {
+        seccion_button.classList.remove('hidden');
+    }
 }

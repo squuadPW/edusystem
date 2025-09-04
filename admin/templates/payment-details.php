@@ -385,7 +385,7 @@
 
                         <?php if( !array_intersect(['institutes', 'alliance', 'webinar-aliance'], $roles) ){?>
                             
-                            <div style="margin-top:20px;display:flex;flex-direction:row;width:100%;justify-content:end;">
+                            <div id="button-acction-payment" style="margin-top:20px;display:flex;flex-direction:row;width:100%;justify-content:end;">
                                     
                                     <?php if($order->get_status() == 'on-hold'){ ?>
                                         <div style="margin-right: 10px">

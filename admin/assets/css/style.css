@@ -1921,6 +1921,9 @@ a.toplevel_page_logo_based_menu {
   }
 }
 
+.payment-details .hidden {
+  display: none !important;
+}
 .payment-details .title {
   flex: 1;
   width: 100%;
@@ -1974,4 +1977,14 @@ a.toplevel_page_logo_based_menu {
   .payment-details #table-products-payment tfoot td {
     display: block;
   }
+}
+
+#modalStatusPayment .amount_container {
+  display: flex;
+  flex-wrap: wrap;
+  -moz-column-gap: 20px;
+       column-gap: 20px;
+}
+#modalStatusPayment strong {
+  color: #000;
 }/*# sourceMappingURL=style.css.map */
