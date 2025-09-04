@@ -52,7 +52,15 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                 class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
                 style="margin-top:20px;">
                 <caption style="text-align:start;">
-                    <?= __('Documents of', 'edusystem'); ?> <?= $student->name . ' ' . $student->last_name; ?>
+                    <?php
+                        $user_name = $student->name . ' ' . $student->last_name;
+                        $translated_text = sprintf(
+                            /* translators: %s: User's name */
+                            __('%s\'s Documents', 'edusystem'),
+                            $user_name
+                        );
+                        echo $translated_text;
+                    ?>
                 </caption>
                 <thead>
                     <tr>
