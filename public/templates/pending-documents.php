@@ -11,7 +11,15 @@
                     <div class="document-container">
                         <div class="document-header">
                             <h4>
-                                <?= __('Pending Documents for', 'edusystem') . ' ' .  $student->name . ' ' . $student->last_name; ?>
+                                <?php
+                                    $user_name = $student->name . ' ' . $student->last_name;
+                                    $translated_text = sprintf(
+                                        /* translators: %s: User's name */
+                                        __('%s\'s Pending Documents', 'edusystem'),
+                                        $user_name
+                                    );
+                                    echo $translated_text;
+                                ?>
                             </h4>
                         </div>
                         

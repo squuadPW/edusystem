@@ -61,6 +61,15 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                         );
                         echo $translated_text;
                     ?>
+                    <?php
+                        $user_name = $student->name . ' ' . $student->last_name;
+                        $translated_text = sprintf(
+                            /* translators: %s: User's name */
+                            __('%s\'s Documents', 'edusystem'),
+                            $user_name
+                        );
+                        echo $translated_text;
+                    ?>
                 </caption>
                 <thead>
                     <tr>
