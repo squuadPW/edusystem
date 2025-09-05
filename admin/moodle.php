@@ -276,7 +276,7 @@ function courses_enroll_student($student_id, $courses = [])
     }
 }
 
-function enroll_student($enrollments = [], $errors_count = '')
+function enroll_student($enrollments = [])
 {
     try {
         global $wpdb;
@@ -297,7 +297,6 @@ function enroll_student($enrollments = [], $errors_count = '')
             }
         }
 
-        update_count_moodle_pending($errors_count);
         if (empty($all_responses)) {
             return [];
         } else {

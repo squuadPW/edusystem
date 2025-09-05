@@ -830,7 +830,8 @@ function generate_enroll_student()
 
         // Process enrollments
         if (!empty($enrollments)) {
-            enroll_student($enrollments, $errors_count);
+            enroll_student($enrollments);
+            update_count_moodle_pending($errors_count);
         }
 
         // Set error message if any
