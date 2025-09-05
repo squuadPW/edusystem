@@ -135,7 +135,8 @@
                                     <thead>
                                         <tr>
                                             <th scope="col" class="manage-column column-primary column-title"><?= __('Program','edusystem') ?></th>
-                                            <th scope="col" class="manage-column column-price"><?= __('Total','edusystem') ?></th>
+                                            <th scope="col" class="manage-column column-price"><?= __('Regular price','edusystem') ?></th>
+                                            <th scope="col" class="manage-column column-price"><?= __('Sale price','edusystem') ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -148,7 +149,10 @@
                                                     <?= $item->get_name(); ?>
                                                     <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                                                 </td>
-                                                <td data-colname="<?= __('Total','edusystem'); ?>">
+                                                <td data-colname="<?= __('Regular price','edusystem'); ?>">
+                                                    <?= wc_price($item->get_subtotal()); ?>
+                                                </td>
+                                                <td data-colname="<?= __('Sale priceTotal','edusystem'); ?>">
                                                     <div class="total-price">
                                                         <?= wc_price($item->get_total()); ?>
 
@@ -298,13 +302,50 @@
 
                         <div class="container-right" >
 
+
+
                             <?php if( !in_array('institutes',$roles) && !in_array('alliance',$roles) ): ?>
+
                                 <div class="seccion-card">
-                                    <p>
-                                        <strong><?=__('Payment Total','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_total()) ?></span>
+                                    <p> 
+                                        <strong><?=__('Items Subtotal','edusystem')?>:</strong>
+                                        <span><?= wc_price( $order->get_subtotal() - $order->get_discount_total() ?? 0 ) ?></span>
                                     </p>
                                 </div>
+
+                                <?php if( $order->get_discount_total() ): ?>
+                                    <div class="seccion-card">
+                                        <p> 
+                                            <strong><?=__('Discount','edusystem')?>:</strong>
+                                            <span><?= wc_price( $order->get_discount_total() * -1 ) ?></span>
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php 
+                                    $total_fees = 0;
+                                    foreach ( $order->get_fees() as $fee_item ) {
+                                        $total_fees += $fee_item->get_total();
+                                    } 
+                                ?>
+                                <?php if( $total_fees ): ?>
+                                    <div class="seccion-card">
+                                        <p> 
+                                            <strong><?=__('Fees','edusystem')?>:</strong>
+                                            <span><?= wc_price( $total_fees ) ?></span>
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="seccion-card">
+                                    <p> 
+                                        <strong><?=__('Order Total','edusystem')?>:</strong>
+                                        <span><?= wc_price( $order->get_total() ) ?></span>
+                                    </p>
+                                </div>
+                                
+                                <hr style="width: 50%; margin-left: auto; margin-right: 0;">
+
                             <?php endif; ?> 
 
                             <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1): ?>
