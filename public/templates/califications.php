@@ -15,7 +15,15 @@
                     class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
                     style="margin-top:20px;">
                     <caption style="text-align:start;">
-                        Califications of <?php echo $student['student']->name ?>         <?php echo $student['student']->last_name ?>
+                        <?php
+                            $user_name = $student['student']->name . ' ' . $student['student']->last_name;
+                            $translated_text = sprintf(
+                                /* translators: %s: User's name */
+                                __('%s\'s Califications', 'edusystem'),
+                                $user_name
+                            );
+                            echo $translated_text;
+                        ?>
                     </caption>
                     <thead>
                         <tr>
@@ -86,7 +94,15 @@
                     class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table"
                     style="margin-top:20px;">
                     <caption style="text-align:start;">
-                        Califications of <?php echo $student['student']->name ?>         <?php echo $student['student']->last_name ?>
+                        <?php
+                            $user_name = $student['student']->name . ' ' . $student['student']->last_name;
+                            $translated_text = sprintf(
+                                /* translators: %s: User's name */
+                                __('%s\'s Califications', 'edusystem'),
+                                $user_name
+                            );
+                            echo $translated_text;
+                        ?>
                     </caption>
                     <thead>
                         <tr>
