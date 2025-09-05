@@ -900,8 +900,6 @@ function status_changed_payment($order_id, $status_transition_from, $current_sta
     $logger->debug('status_changed_payment',['order_id'=>$order_id,'status_order' => $current_status]); */
 
     if (!in_array($current_status, ['failed', 'pending'])) {
-        $logger = wc_get_logger();
-        $logger->debug('antes de status_order_not_completed ');
         status_order_not_completed($order, $order_id, $customer_id, $status_register);
     }
 
@@ -1042,33 +1040,53 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
     // Incluye las nuevas columnas en la sentencia UPDATE
     $update_data = [
         'status_id' => 1,
-        'order_id' => $order_id,
+        'order_id' => (int) $order_id,
         'date_payment' => current_time('mysql', true), // Usar current_time para la fecha de pago
-        'institute_id' => $institute_id,         // ¡Nueva columna en UPDATE!
-        'institute_fee' => $current_item_institute_fee, // ¡Nueva columna en UPDATE!
+        'institute_id' => (int) $institute_id,         // ¡Nueva columna en UPDATE!
+        'institute_fee' => (double) $current_item_institute_fee, // ¡Nueva columna en UPDATE!
         'alliances' => $current_item_alliances_json,   // ¡Nueva columna en UPDATE!
-        'manager_id' => $manager_user_id
+        'manager_id' => (int) $manager_user_id
     ];
 
-    // No se puede usar LIMIT y ORDER BY directamente con $wpdb->update().
-    // Para actualizar solo la 'cuota' más baja, necesitamos seleccionarla primero.
-    $oldest_pending_payment = $wpdb->get_row($wpdb->prepare(
-        "SELECT id FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d AND status_id = 0 ORDER BY cuote ASC LIMIT 1",
-        $student_id,
-        $product_id
-    ));
+    // verifica si la orden tien un meta con el numero de cuota 
+    // y si la pose verifica que le pertenesca al usuario y a la 
+    $order = wc_get_order($order_id);
+    if ($order) $cuote_payment = $order->get_meta('cuote_payment', true); 
+    $oldest_pending_payment_id = 0;
+    
+    if( $cuote_payment ){
+
+        $oldest_pending_payment_id = $wpdb->get_var($wpdb->prepare(
+            "SELECT id FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d AND id = %d",
+            $student_id,
+            $product_id,
+            $cuote_payment
+        ));
+
+    }
+
+    if ( !$oldest_pending_payment_id ) {
+
+        // No se puede usar LIMIT y ORDER BY directamente con $wpdb->update().
+        // Para actualizar solo la 'cuota' más baja, necesitamos seleccionarla primero.
+        $oldest_pending_payment_id = $wpdb->get_var($wpdb->prepare(
+            "SELECT id FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d AND status_id = 0 ORDER BY cuote ASC LIMIT 1",
+            $student_id,
+            $product_id
+        ));
+    }
 
     $rows_updated = 0;
-    if ($oldest_pending_payment) {
+    if ( $oldest_pending_payment_id ) {
         $rows_updated = $wpdb->update(
             $table_student_payment,
             $update_data, // Datos a actualizar
-            ['id' => $oldest_pending_payment->id] // Cláusula WHERE específica para el ID encontrado
+            ['id' => $oldest_pending_payment_id] // Cláusula WHERE específica para el ID encontrado
         );
     }
 
     // 6. LÓGICA CLAVE: Si no se actualizó ninguna fila, es porque no había pagos pendientes. Se crea uno nuevo.
-    if ($rows_updated === 0) {
+    if ($rows_updated === 0 && false) {
         $total = $item->get_total(); // Precio final pagado por este artículo en esta orden.
         $original_price = (float) ($item->get_subtotal() / $item->get_quantity());
 
