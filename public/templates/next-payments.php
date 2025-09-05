@@ -18,7 +18,7 @@ foreach ($student_payments as $student_id => $payments) {
         <thead>
             <tr>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-quota"><span
-                        class="nobr">Quota</span></th>
+                        class="nobr">Installment</span></th>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                         class="nobr">Date</span></th>
                 <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-total"><span
