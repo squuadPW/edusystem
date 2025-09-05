@@ -3,7 +3,15 @@ foreach ($student_payments as $student_id => $payments) {
     $student = get_student_detail($student_id);
     ?>
     <h2 class="mb-4" style="font-size:24px;text-align:center;">
-        <?= __('Quotes for ', 'edusystem') . $student->name . ' ' . $student->last_name; ?>
+        <?php
+            $user_name = $student->name . ' ' . $student->last_name;
+            $translated_text = sprintf(
+                /* translators: %s: User's name */
+                __('%s\'s Installments', 'edusystem'),
+                $user_name
+            );
+            echo $translated_text;
+        ?>
     </h2>
     <table
         class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
