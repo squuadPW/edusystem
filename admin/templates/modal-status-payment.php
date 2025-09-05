@@ -15,35 +15,52 @@
 	$balance = $student_balance->balance ?? 0;
 
 	// obtiene el valor actual a pagar
-	if ($cuote_payment !== 0) {
+	if ($cuote_payment ) {
 
 		$amount = $wpdb->get_var( $wpdb->prepare(
 			"SELECT COALESCE( amount, 0) FROM {$table_student_payments} 
 			WHERE id = %d", 
 		$cuote_payment) );
 
+		$cuotes_ids[] = $cuote_payment; 
+
 	} else {
-		$cuote_payment = $wpdb->get_row( $wpdb->prepare(
-            "SELECT id, COALESCE( SUM(amount), 0) AS amount_pay FROM {$table_student_payments}
+		$cuote_payments = $wpdb->get_results( $wpdb->prepare(
+            "SELECT id, amount FROM {$table_student_payments}
              WHERE student_id = %d AND status_id = 0 AND cuote = (
                         SELECT MIN(cuote) 
                         FROM {$table_student_payments} 
                         WHERE student_id = %d AND status_id = 0
                     )
-                ORDER BY num_cuotes DESC
-                LIMIT 1;", 
-             $student_id,
-             $student_id) );
+                ORDER BY num_cuotes DESC", 
+            $student_id,
+            $student_id)
+		);
+
+		// Obtener un array con todos los IDs de la consulta
+		$cuotes_ids = array_map(function($item) {
+			return $item->id;
+		}, $cuote_payments);
 		
-		$amount = $cuote_payment->amount_pay;
-		$cuote_payment = $cuote_payment->id;
+		// obtiene el total
+		foreach ($cuote_payments as $payment) {
+			$amount += floatval($payment->amount);
+		}
+		$cuote_payment = $cuote_payments[0]->id;
 	}
 	
+	// Genera los marcadores de posición
+	$placeholders = implode(',', array_fill(0, count($cuotes_ids), '%d'));
 	$payments = $wpdb->get_results($wpdb->prepare(
-		"SELECT * FROM {$table_student_payments} WHERE student_id = %d AND status_id = 0 AND id != %d",
-		$student_id,
-		$cuote_payment
+    	"SELECT * FROM {$table_student_payments} WHERE student_id = %d AND status_id = 0 AND id NOT IN ($placeholders)",
+    	array_merge([$student_id], $cuotes_ids)
 	));
+
+	// obtiene el toltal de los item de la orden
+	$total_order_items = 0;
+	foreach ( $order->get_items() as $item ) {
+		$total_order_items += $item->get_total(); // subtotal sin impuestos
+	}
 
 ?>
 
@@ -65,7 +82,7 @@
 					
 					<div class="amount_container" >
 						<p><?= __('Amount to pay', 'edusystem') ?>: <strong><?= wc_price($amount) ?></strong> </p>
-						<p><?= __('Amount received', 'edusystem') ?>: <strong><?= wc_price( $order->get_total() ) ?></strong> </p>
+						<p><?= __('Amount received', 'edusystem') ?>: <strong><?= wc_price( $total_order_items ) ?></strong> </p>
 					</div>
 
 					<p id="message-modal-status-payment"></p>
@@ -100,8 +117,8 @@
 				<?php endif; ?>
 				
 				<?php
-					$more_amount = ( $balance > 0 || $order->get_total() > $amount ) && count($payments) > 0;
-					$less_amount = $order->get_total() < $amount; 
+					$more_amount = ( $balance > 0 || $total_order_items > $amount ) && count($payments) > 0;
+					$less_amount = $total_order_items < $amount; 
 				?>
 				<?php if ( $more_amount || $less_amount ) { ?>
 					<div>
@@ -111,11 +128,11 @@
 
 								<?php if( $more_amount ): ?>
 
-									<?php $amount_credit = ($balance > 0 ) ? $balance : wc_price($order->get_total() - $amount); ?>
+									<?php $amount_credit = ($balance > 0 ) ? $balance : wc_price($total_order_items - $amount); ?>
 									<?= sprintf(__('There is an amount of %s due to the student. The surplus will be credited to:', 'edusystem'), "<strong>" .  $amount_credit . "</strong>" ) ?>
 								
 								<?php elseif( $less_amount ): ?>
-									<?= sprintf(__('An amount below the required threshold has been detected; the outstanding amount of %s will be requested in:', 'edusystem'), "<strong>" . wc_price( $amount - $order->get_total()) . "</strong>" ) ?>
+									<?= sprintf(__('An amount below the required threshold has been detected; the outstanding amount of %s will be requested in:', 'edusystem'), "<strong>" . wc_price( $amount - $total_order_items) . "</strong>" ) ?>
 								
 								<?php endif; ?>
 							</label>

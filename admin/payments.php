@@ -117,22 +117,28 @@ function add_admin_form_payments_content()
                     }
 
                     if( $cuote_credit ){
+
+                        // obtiene el toltal de los item de la orden sin los fee bancarios
+                        $total_order_items = 0;
+                        foreach ( $order->get_items() as $item ) {
+                            $total_order_items += $item->get_total(); // subtotal sin impuestos
+                        }
                         
                         $table_student_payments = $wpdb->prefix . 'student_payments';
                         $student_id = $order->get_meta('student_id');
 
                         // obtiene la cuota a pagar
                         $cuote_payment_id = $order->get_meta('cuote_payment') ?? 0;
-                        if ($cuote_payment_id != 0) {
+                        if ( $cuote_payment_id) {
 
                             $cuote_payment = $wpdb->get_row( $wpdb->prepare(
-                                "SELECT id, amount, original_amount_product, COALESCE( amount, 0) AS amount_pay FROM {$table_student_payments} 
+                                "SELECT *, COALESCE( amount, 0) AS amount_pay FROM {$table_student_payments} 
                                 WHERE id = %d", 
                             $cuote_payment_id) );
 
                         } else {
                             $cuote_payment = $wpdb->get_row( $wpdb->prepare(
-                                "SELECT id, amount, original_amount_product, COALESCE( SUM(amount), 0) AS amount_pay FROM {$table_student_payments}
+                                "SELECT *, COALESCE( SUM(amount), 0) AS amount_pay FROM {$table_student_payments}
                                 WHERE student_id = %d AND status_id = 0 AND cuote = (
                                         SELECT MIN(cuote) 
                                         FROM {$table_student_payments} 
@@ -155,18 +161,23 @@ function add_admin_form_payments_content()
                         $balance_id = $student_balance->id ?? 0;
 
                         // guarda el monto de mas en el balance
-                        if( $status_order != 'completed' && $order->get_total() > $cuote_payment->amount_pay ) {
+                        if( $status_order != 'completed' && $total_order_items > $cuote_payment->amount_pay ) {
 
-                            $amount_credit = $order->get_total() - $cuote_payment->amount_pay;
+                            $amount_credit = $total_order_items - $cuote_payment->amount_pay;
+
+                            // nuevos valores de la cuota
+                            $new_amount = $total_order_items;
+
+                            $increased_portion = $amount_credit / $cuote_payment->amount;
+                            $new_original_amount_product = $cuote_payment->original_amount_product * (1 + $increased_portion);
 
                             // actualiza el monto de la original
                             $wpdb->update($table_student_payments, [
-                                'amount' => $cuote_payment->amount + $amount_credit,
-                                'original_amount_product' => $cuote_payment->original_amount_product + $amount_credit,
+                                'amount' => $new_amount,
+                                'original_amount_product' => $new_original_amount_product,
                             ], ['id' => $cuote_payment->id]);
 
                             $balance = $balance + $amount_credit;
-
                             if ( !$student_balance ) {
                                 $wpdb->insert(
                                     $wpdb->prefix . 'student_balance',
@@ -182,29 +193,158 @@ function add_admin_form_payments_content()
 
                             // registra la cantidad de mas que fue acreditada
                             $order->update_meta_data('amount_credit', $amount_credit);
+                        } elseif( $total_order_items < $cuote_payment->amount_pay ) {
+
+                            $less_amount = $cuote_payment->amount_pay - $total_order_items;
+
+                            // Nuevos montos 
+                            $new_amount = $total_order_items;
+                            
+                            $paid_portion = $less_amount / $cuote_payment->amount;
+                            $new_original_amount_product = $cuote_payment->original_amount_product * (1 - $paid_portion);
+
+                            // actualiza el monto de la original
+                            $wpdb->update($table_student_payments, [
+                                'amount' => $less_amount,
+                                'original_amount_product' => $new_original_amount_product,
+                            ], ['id' => $cuote_payment->id]);
+
+                            if( $cuote_credit == 'new_cuote' ){
+
+                                $increased_portion = $less_amount / $cuote_payment->amount;
+                                $new_original_amount_product = $cuote_payment->original_amount_product * $increased_portion;
+
+                                // obtiene la fecha del nuevo pago
+                                if (isset($_POST['new_coute_date']) && !empty($_POST['new_coute_date'])) {
+                                    $new_coute_date = new DateTime($_POST['new_coute_date']);
+                                } else {
+                                    $new_coute_date = new DateTime(); // fecha actual
+                                    $new_coute_date->modify('+1 week'); // suma una semana
+                                }
+
+                                // obtiene la ultima cuota del mismo producto para el nuevo registro
+                                $last_cuote_pay = $wpdb->get_row( $wpdb->prepare(
+                                    "SELECT cuote, num_cuotes FROM {$table_student_payments} 
+                                    WHERE student_id=%d AND product_id=%d AND variation_id=%d
+                                    ORDER BY cuote DESC
+                                    LIMIT 1;", 
+                                $cuote_payment->student_id,
+                                $cuote_payment->product_id,
+                                $cuote_payment->variation_id) );
+
+                                $wpdb->insert(
+                                    $table_student_payments,
+                                    [
+                                        'status_id' => 0,
+                                        'order_id' => null,
+                                        'student_id' => $cuote_payment->student_id,
+                                        'product_id' => $cuote_payment->product_id,
+                                        'variation_id' => $cuote_payment->variation_id,
+                                        'manager_id' => null,
+                                        'institute_id' => null,
+                                        'institute_fee' => 0,
+                                        'alliances' => null,
+                                        'amount' => $less_amount,
+                                        'original_amount_product' => $new_original_amount_product,
+                                        'total_amount' => $cuote_payment->total_amount,
+                                        'original_amount' => $cuote_payment->original_amount,
+                                        'discount_amount' => $cuote_payment->discount_amount,
+                                        'type_payment' => 1, 
+                                        'cuote' => $last_cuote_pay->cuote + 1,
+                                        'num_cuotes' => $last_cuote_pay->num_cuotes + 1,
+                                        'date_payment' => null,
+                                        'date_next_payment' => $new_coute_date->format('Y-m-d'),
+                                    ]
+                                );
+
+                                // Obtén todas las cuotas para ese estudiante, producto y variación ordenadas por fecha
+                                $payments = $wpdb->get_results( $wpdb->prepare(
+                                    "SELECT id, date_next_payment FROM {$table_student_payments} 
+                                    WHERE student_id = %d AND product_id = %d AND variation_id = %d
+                                    ORDER BY date_next_payment ASC, id ASC",
+                                    $cuote_payment->student_id,
+                                    $cuote_payment->product_id,
+                                    $cuote_payment->variation_id
+                                ));
+                                
+                                // Recorre y actualiza el campo cuote con el orden correcto
+                                $counter = 1;
+                                foreach ($payments as $payment) {
+                                    $wpdb->update(
+                                        $table_student_payments,
+                                        [
+                                            'cuote' => $counter,
+                                            'num_cuotes' => count($payments), // total de cuotas
+                                            'type_payment' => 1
+                                        ],
+                                        ['id' => $payment->id]
+                                    );
+                                    $counter++;
+                                }
+
+                            } else {
+
+                                $payment_row = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE id = {$cuote_credit}");
+                                
+                                // nuevos valores de la cuota
+                                $new_amount = $payment_row->amount + $less_amount;
+                                    
+                                $increased_portion = $less_amount / $payment_row->amount;
+                                $new_original_amount_product = $payment_row->original_amount_product * (1 + $increased_portion);
+
+                                $wpdb->update($table_student_payments, [
+                                    'amount' => $new_amount,
+                                    'original_amount_product' => $new_original_amount_product,
+                                ], ['id' => $payment_row->id]);
+                            
+                            }
                         }
 
                         $recargar = false;
                         if ( $balance > 0 ) {
                             
                             // nueva quota a pagar
-                            $payment_row = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE id = {$cuote_credit}");
+                            $payment_row = $wpdb->get_row("SELECT id, amount, original_amount_product, cuote  FROM {$table_student_payments} WHERE id = {$cuote_credit}");
                             if ( $balance < $payment_row->amount ) {
-                                
+
                                 $new_amount = $payment_row->amount - $balance;
-                                $new_original_amount_product = $payment_row->original_amount_product - $balance;
+                                
+                                // Nuevo monto original proporcional
+                                $paid_portion = $balance / $payment_row->amount;
+                                $new_original_amount_product = $payment_row->original_amount_product * (1 - $paid_portion);
 
                                 $wpdb->update($table_student_payments, [
                                     'amount' => $new_amount,
                                     'original_amount_product' => $new_original_amount_product,
-                                ], ['id' => $cuote_credit]);
+                                ], ['id' => $payment_row->id]);
 
                                 $balance = 0;
 
                             } elseif( $balance >= $payment_row->amount ) {
 
                                 $balance = $balance - $payment_row->amount;
-                                $wpdb->delete( $table_student_payments, array( 'id' => $cuote_credit ) ); 
+                                $wpdb->delete( $table_student_payments, array( 'id' => $payment_row->id ) ); 
+
+                                // actualiza el total de las cuotas si elimina una
+                                $wpdb->query( $wpdb->prepare(
+                                    "UPDATE {$table_student_payments} 
+                                    SET num_cuotes = num_cuotes - 1
+                                    WHERE student_id = %d AND product_id = %d AND variation_id = %d AND num_cuotes > 1",
+                                    $cuote_payment->student_id,
+                                    $cuote_payment->product_id,
+                                    $cuote_payment->variation_id
+                                ));
+
+                                // actualiza el numero de cuota si elimina una
+                                $wpdb->query( $wpdb->prepare(
+                                    "UPDATE {$table_student_payments} 
+                                    SET cuote = cuote - 1
+                                    WHERE student_id = %d AND product_id = %d AND variation_id = %d AND cuote > %d ",
+                                    $cuote_payment->student_id,
+                                    $cuote_payment->product_id,
+                                    $cuote_payment->variation_id,
+                                    $payment_row->cuote,
+                                ));
 
                                 $recargar = true;
                             }
@@ -224,6 +364,7 @@ function add_admin_form_payments_content()
                 } else {
                     wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
                 }
+
             } else {
                 // Cambiar a set_status() para disparar el hook
                 $order->set_status('cancelled');
