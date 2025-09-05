@@ -205,7 +205,7 @@ function add_admin_form_payments_content()
 
                             // actualiza el monto de la original
                             $wpdb->update($table_student_payments, [
-                                'amount' => $less_amount,
+                                'amount' => $new_amount,
                                 'original_amount_product' => $new_original_amount_product,
                             ], ['id' => $cuote_payment->id]);
 
@@ -221,16 +221,6 @@ function add_admin_form_payments_content()
                                     $new_coute_date = new DateTime(); // fecha actual
                                     $new_coute_date->modify('+1 week'); // suma una semana
                                 }
-
-                                // obtiene la ultima cuota del mismo producto para el nuevo registro
-                                $last_cuote_pay = $wpdb->get_row( $wpdb->prepare(
-                                    "SELECT cuote, num_cuotes FROM {$table_student_payments} 
-                                    WHERE student_id=%d AND product_id=%d AND variation_id=%d
-                                    ORDER BY cuote DESC
-                                    LIMIT 1;", 
-                                $cuote_payment->student_id,
-                                $cuote_payment->product_id,
-                                $cuote_payment->variation_id) );
 
                                 $wpdb->insert(
                                     $table_student_payments,
@@ -250,8 +240,8 @@ function add_admin_form_payments_content()
                                         'original_amount' => $cuote_payment->original_amount,
                                         'discount_amount' => $cuote_payment->discount_amount,
                                         'type_payment' => 1, 
-                                        'cuote' => $last_cuote_pay->cuote + 1,
-                                        'num_cuotes' => $last_cuote_pay->num_cuotes + 1,
+                                        'cuote' =>0,
+                                        'num_cuotes' => 0,
                                         'date_payment' => null,
                                         'date_next_payment' => $new_coute_date->format('Y-m-d'),
                                     ]
@@ -261,7 +251,7 @@ function add_admin_form_payments_content()
                                 $payments = $wpdb->get_results( $wpdb->prepare(
                                     "SELECT id, date_next_payment FROM {$table_student_payments} 
                                     WHERE student_id = %d AND product_id = %d AND variation_id = %d
-                                    ORDER BY date_next_payment ASC, id ASC",
+                                    ORDER BY date_next_payment ASC",
                                     $cuote_payment->student_id,
                                     $cuote_payment->product_id,
                                     $cuote_payment->variation_id
