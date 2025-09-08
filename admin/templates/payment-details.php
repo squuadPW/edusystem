@@ -363,6 +363,13 @@
                                         <span><?= wc_price($order->get_meta('pending_payment')); ?></span>
                                     </p>
                                 </div>
+
+                                <div class="seccion-card">
+                                    <p>
+                                        <strong><?=__('Total paid net','edusystem')?>:</strong>
+                                        <span><?= wc_price($order->get_meta('total_paid')); ?></span>
+                                    </p>
+                                </div>
                                 
                             <?php endif; ?>
 
@@ -409,17 +416,6 @@
                                         <span><?= wc_price($order->get_meta('fee_order_pay') * -1); ?></span>
                                     </p>
                                 </div>
-                            <?php endif; ?>
-
-                            <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1): ?>
-                            
-                                <div class="seccion-card">
-                                    <p>
-                                        <strong><?=__('Total paid net','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('total_paid')); ?></span>
-                                    </p>
-                                </div>
-
                             <?php endif; ?>
 
                         </div>
