@@ -302,14 +302,12 @@
 
                         <div class="container-right" >
 
-
-
                             <?php if( !in_array('institutes',$roles) && !in_array('alliance',$roles) ): ?>
 
                                 <div class="seccion-card">
                                     <p> 
                                         <strong><?=__('Items Subtotal','edusystem')?>:</strong>
-                                        <span><?= wc_price( $order->get_subtotal() - $order->get_discount_total() ?? 0 ) ?></span>
+                                        <span><?= wc_price( $order->get_subtotal() ) ?></span>
                                     </p>
                                 </div>
 
@@ -372,22 +370,24 @@
                                 </div>
                                 
                             <?php endif; ?>
-
-                            <?php if( in_array('institute',$roles) && $order->get_meta('institute_fee') ): ?>
+                            
+                            <?php $net_total = $order->get_total() ?>
+                            <?php if( $order->get_meta('institute_fee') ): ?>
 
                                 <div class="seccion-card">
                                     <p>
-                                        <strong><?=__('Fee','edusystem')?>:</strong>
-                                        <span><?= wc_price( intval($order->get_meta('institute_fee') ?? 0) * -1 ); ?></span>
-                                    </p>
-                                </div>
-                                
-                            <?php elseif( !in_array('alliance',$roles) && $order->get_meta('institute_fee') ): ?>
-                                    
-                                <div class="seccion-card">
-                                    <p>
-                                        <strong><?=__('Institute Fee','edusystem')?>:</strong>
-                                        <span><?=  wc_price( intval($order->get_meta('institute_fee') ?? 0) * -1 ); ?></span>
+                                        <?php
+                                            $institute_fee = intval($order->get_meta('institute_fee') ?? 0);
+                                            $net_total -= $institute_fee; 
+                                        ?>
+                                        <strong>
+                                            <?php if( in_array('institute',$roles) ) :?>
+                                                <?=__('Fee','edusystem')?>:
+                                            <?php elseif( !in_array('alliance',$roles) ): ?>
+                                                <?=__('Institute Fee','edusystem')?>:
+                                            <?php endif ?>
+                                        </strong>
+                                        <span><?= wc_price( $institute_fee * -1 ); ?></span>
                                     </p>
                                 </div>
 
@@ -402,9 +402,13 @@
                                 </div>
                             <?php elseif(!in_array('institutes',$roles) && $order->get_meta('institute_fee')): ?>
                                 <div class="seccion-card">
+                                    <?php
+                                        $alliance_fee = intval($order->get_meta('alliance_fee') ?? 0);
+                                        $net_total -= $alliance_fee; 
+                                    ?>
                                     <p>
                                         <strong><?=__('Alliance Fee','edusystem')?>:</strong>
-                                        <span><?= wc_price( intval($order->get_meta('alliance_fee') ?? 0) * -1 ); ?></span>
+                                        <span><?= wc_price( $alliance_fee * -1 ); ?></span>
                                     </p>
                                 </div>
                             <?php endif; ?>
@@ -417,6 +421,27 @@
                                     </p>
                                 </div>
                             <?php endif; ?>
+
+                            <?php if( !in_array('institutes',$roles) && !in_array('alliance',$roles) ): ?>
+
+                                <?php if( $total_fees ): ?>
+                                    <div class="seccion-card">
+                                        <p> 
+                                            <?php $net_total -= $total_fees; ?>
+                                            <strong><?=__('Fees','edusystem')?>:</strong>
+                                            <span><?= wc_price( $total_fees * -1 ) ?></span>
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="seccion-card">
+                                    <p> 
+                                        <strong><?=__('Net total','edusystem')?>:</strong>
+                                        <span><?= wc_price( $net_total ) ?></span>
+                                    </p>
+                                </div>
+
+                            <?php endif; ?> 
 
                         </div>
 
