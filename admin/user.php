@@ -64,6 +64,24 @@ function delete_data_student($user_id)
     $wpdb->query("DELETE FROM {$tables['scholarship_assigned']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['programs_by_student']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['students']} WHERE id IN ($ids)");
+    delete_woocommerce_orders($user_id);
+}
+
+// Nueva función para borrar órdenes de WooCommerce
+function delete_woocommerce_orders($user_id) {
+    // Obtener todas las órdenes asociadas con el ID de usuario
+    $customer_orders = wc_get_orders( [
+        'customer' => $user_id,
+        'limit' => -1,
+        'status' => 'any', // Obtener órdenes con cualquier estado
+    ] );
+
+    if ( ! empty( $customer_orders ) ) {
+        foreach ( $customer_orders as $order ) {
+            // Borra la orden de forma permanente
+            wp_delete_post( $order->get_id(), true );
+        }
+    }
 }
 
 add_action('delete_user', 'delete_data_student');
