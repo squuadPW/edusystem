@@ -116,9 +116,9 @@ function form_plugin_scripts()
     }
 
     if (str_contains(home_url($wp->request), 'orders')) {
-        wp_enqueue_script('next-payment', plugins_url('edusystem') . '/public/assets/js/next-payment.js', array('jquery'), $version, true);
+        wp_enqueue_script('next-payment', plugins_url('edusystem') . '/public/assets/js/next-payment.js', array('jquery'), $version, false);
         wp_localize_script('next-payment', 'ajax_object', [
-            'url' => admin_url('admin-ajax.php')
+            'ajax_url' => admin_url('admin-ajax.php')
         ]);
     }
 
