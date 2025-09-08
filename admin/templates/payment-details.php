@@ -215,7 +215,7 @@
 
                                     <?php $payments = json_decode($order->get_meta('split_method')); ?>
 
-                                    <?foreach ($payments as $key => $pay): ?>
+                                    <?php foreach ($payments as $key => $pay): ?>
                                         <tr>
                                             <td class="column-primary" data-colname="<?= __('Payment','edusystem'); ?>:">
                                                 <?= $key + 1 ?>
