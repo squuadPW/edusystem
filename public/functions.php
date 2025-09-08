@@ -1743,9 +1743,8 @@ function process_inscription_fee($order, $order_id)
     sync_student_with_moodle($student_id);
 
     // 12. Centraliza la obtención de datos para la API.
-    if (MODE != 'UNI') {
-        $api_data = prepare_data_for_laravel_api($student_id);
-        create_user_laravel($api_data);
+    if (has_action('portal_create_user_external')) {
+        do_action('portal_create_user_external', $student_id);
     }
 
     if ($order->get_meta('id_bitrix')) {
@@ -3590,7 +3589,7 @@ function custom_new_user_notification($send, $user)
     $content .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
     $content .= '<ul>';
     $content .= '<li>Website: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
-    $content .= '<li>Virtual classroom: <a href="https://portal.americanelite.school/" target="_blank">https://portal.americanelite.school/</a></li>';
+    $content .= '<li>Virtual classroom: <a href="https://portal.americanelite.school/my-account" target="_blank">https://portal.americanelite.school/my-account</a></li>';
     $content .= '<li>Contact us: <a href="https://support.americanelite.school" target="_blank">https://support.americanelite.school</a></li>';
     $content .= '</ul>';
     $content .= '<div>Best regards.</div>';

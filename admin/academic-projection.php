@@ -139,7 +139,23 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Successfully generated academic projections for the student.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
             exit;
-        } else if (isset($_GET['action']) && $_GET['action'] == 'generate_enrollments_moodle') {
+        } else if (isset($_GET['action']) && $_GET['action'] == 'generate_virtual_classroom') {
+            $student_id = $_GET['student_id'];
+            sync_student_with_moodle($student_id);
+
+            setcookie('message', __('Successfully generated virtual classroom for the student.', 'edusystem'), time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
+            exit;
+        }  else if (isset($_GET['action']) && $_GET['action'] == 'generate_admin') {
+            $student_id = $_GET['student_id'];
+            if (has_action('portal_create_user_external')) {
+                do_action('portal_create_user_external', $student_id);
+            }
+
+            setcookie('message', __('Successfully generated admin for the student.', 'edusystem'), time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
+            exit;
+        } if (isset($_GET['action']) && $_GET['action'] == 'generate_enrollments_moodle') {
             generate_enroll_student();
             setcookie('message', __('Students successfully enrolled in moodle.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
@@ -814,7 +830,8 @@ function generate_enroll_student()
 
         // Process enrollments
         if (!empty($enrollments)) {
-            enroll_student($enrollments, $errors_count);
+            enroll_student($enrollments);
+            update_count_moodle_pending($errors_count);
         }
 
         // Set error message if any

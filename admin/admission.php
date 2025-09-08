@@ -161,111 +161,9 @@ function add_admin_form_admission_content()
                     update_user_meta($user_parent->ID, 'id_document', $parent_id_document);
                 }
 
-                $type_document = '';
-                switch ($student_exist->type_document) {
-                    case 'identification_document':
-                        $type_document = 1;
-                        break;
-                    case 'passport':
-                        $type_document = 2;
-                        break;
-                    case 'ssn':
-                        $type_document = 4;
-                        break;
+                if (has_action('portal_update_user_external')) {
+                    do_action('portal_update_user_external', $id);
                 }
-
-                $type_document_re = '';
-                if (get_user_meta($user_parent->ID, 'type_document', true)) {
-                    switch (get_user_meta($user_parent->ID, 'type_document', true)) {
-                        case 'identification_document':
-                            $type_document_re = 1;
-                            break;
-                        case 'passport':
-                            $type_document_re = 2;
-                            break;
-                        case 'ssn':
-                            $type_document_re = 4;
-                            break;
-                    }
-                } else {
-                    $type_document_re = 1;
-                }
-
-
-                $gender = '';
-                switch ($student_exist->gender) {
-                    case 'male':
-                        $gender = 'M';
-                        break;
-                    case 'female':
-                        $gender = 'F';
-                        break;
-                }
-
-
-                $gender_re = '';
-                if (get_user_meta($user_parent->ID, 'gender', true)) {
-                    switch (get_user_meta($user_parent->ID, 'gender', true)) {
-                        case 'male':
-                            $gender_re = 'M';
-                            break;
-                        case 'female':
-                            $gender_re = 'F';
-                            break;
-                    }
-                } else {
-                    $gender_re = 'M';
-                }
-
-                $grade = '';
-                switch ($student_exist->grade_id) {
-                    case 1:
-                        $grade = 9;
-                        break;
-                    case 2:
-                        $grade = 10;
-                        break;
-                    case 3:
-                        $grade = 11;
-                        break;
-                    case 4:
-                        $grade = 12;
-                        break;
-                }
-
-                $data = array(
-                    // DATOS DEL ESTUDIANTE
-                    'id_document' => $id_document,
-                    'type_document' => $type_document,
-                    'firstname' => $first_name . ' ' . $middle_name,
-                    'lastname' => $last_name . ' ' . $middle_last_name,
-                    'birth_date' => $birth_date,
-                    'phone' => $phone,
-                    'email' => $email,
-                    'grade' => $grade,
-                    'gender' => $gender,
-                    'etnia' => $student_exist->ethnicity,
-
-                    // PADRE
-                    'id_document_re' => $parent_id_document,
-                    'type_document_re' => $type_document_re,
-                    'firstname_re' => $parent_first_name,
-                    'lastname_re' => $parent_last_name,
-                    'birth_date_re' => $parent_birth_date,
-                    'phone_re' => $parent_phone,
-                    'email_re' => $parent_email,
-                    'gender_re' => $parent_gender,
-
-                    'cod_program' => PROGRAM_ID,
-                    'cod_tip' => TYPE_PROGRAM,
-                    'cod_period' => $student_exist->academic_period,
-                    'address' => get_user_meta($user_parent->ID, 'billing_address_1', true),
-                    'country' => $parent_country,
-                    'city' => $parent_city,
-                    'postal_code' => $parent_postal_code,
-                );
-
-                update_user_laravel($data);
 
                 wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
                 exit;
@@ -1088,7 +986,6 @@ function update_status_documents()
 
         send_json_response($response);
     } catch (\Throwable $th) {
-        log_error($th);
         send_json_response(['error' => $th->getMessage()], 500);
     }
 }
@@ -1432,110 +1329,11 @@ function handle_virtual_classroom_access($student_id)
     update_status_student($student_id, 2);
     create_user_student($student_id);
 
-    if (MODE != 'UNI') {
-        $fields_to_send = prepare_fields_to_send($student);
-        $files_to_send = prepare_files_to_send($student_id);
-        create_user_laravel(array_merge($fields_to_send, ['files' => $files_to_send]));
+    if (has_action('portal_create_user_external')) {
+        do_action('portal_create_user_external', $student_id);
     }
 
-    $exist = is_search_student_by_email($student_id);
-    if (!$exist) {
-        $user_created_moodle = create_user_moodle($student_id);
-    } else {
-        $wpdb->update($wpdb->prefix . 'students', ['moodle_student_id' => $exist[0]['id']], ['id' => $student_id]);
-
-        if (!is_password_user_moodle($student_id)) {
-            $password = generate_password_user();
-            $wpdb->update($wpdb->prefix . 'students', ['moodle_password' => $password], ['id' => $student_id]);
-            change_password_user_moodle($student_id);
-        }
-    }
-}
-
-function prepare_fields_to_send($student)
-{
-    $type_document = [
-        'identification_document' => 1,
-        'passport' => 2,
-        'ssn' => 4,
-    ][$student->type_document] ?? 1;
-
-    $type_document_re = [
-        'identification_document' => 1,
-        'passport' => 2,
-        'ssn' => 4,
-    ][get_user_meta($student->partner_id, 'type_document', true)] ?? 1;
-
-    $gender = [
-        'male' => 'M',
-        'female' => 'F',
-    ][$student->gender] ?? 'M';
-
-    $gender_re = [
-        'male' => 'M',
-        'female' => 'F',
-    ][get_user_meta($student->partner_id, 'gender', true)] ?? 'M';
-
-    $grade = [
-        1 => 9,
-        2 => 10,
-        3 => 11,
-        4 => 12,
-    ][$student->grade_id] ?? 9;
-
-    $user_partner = get_user_by('id', $student->partner_id);
-
-    return [
-        'id_document' => $student->id_document,
-        'type_document' => $type_document,
-        'firstname' => $student->name . ' ' . $student->middle_name,
-        'lastname' => $student->last_name . ' ' . $student->middle_last_name,
-        'birth_date' => $student->birth_date,
-        'phone' => $student->phone,
-        'email' => $student->email,
-        'etnia' => $student->ethnicity,
-        'grade' => $grade,
-        'gender' => $gender,
-        'cod_period' => $student->academic_period,
-        'id_document_re' => get_user_meta($student->partner_id, 'id_document', true) ?: '000000',
-        'type_document_re' => $type_document_re,
-        'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
-        'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
-        'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
-        'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
-        'email_re' => $user_partner->user_email,
-        'gender_re' => $gender_re,
-        'cod_program' => PROGRAM_ID,
-        'cod_tip' => TYPE_PROGRAM,
-        'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
-        'country' => get_user_meta($student->partner_id, 'billing_country', true),
-        'city' => get_user_meta($student->partner_id, 'billing_city', true),
-        'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true) ?: '-',
-    ];
-}
-
-function prepare_files_to_send($student_id)
-{
-    global $wpdb;
-
-    $all_documents_student = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}student_documents WHERE student_id = $student_id");
-    $files_to_send = [];
-
-    foreach ($all_documents_student as $doc) {
-        if ($doc->attachment_id) {
-            $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
-            $attachment_path = get_attached_file($doc->attachment_id);
-
-            if ($attachment_path) {
-                $files_to_send[] = [
-                    'file' => curl_file_create($attachment_path, mime_content_type($attachment_path), basename($attachment_path)),
-                    'id_requisito' => $id_requisito
-                ];
-            }
-        }
-    }
-
-    return $files_to_send;
+    sync_student_with_moodle($student_id);
 }
 
 add_action('wp_ajax_nopriv_update_status_documents', 'update_status_documents');

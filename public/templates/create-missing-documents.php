@@ -46,8 +46,8 @@
                             </div>
 
                             <div style="margin-bottom: 20px;">
-                                The academic high school program will begin for the 2024-2025 academic year on August
-                                12, 2024. As it is
+                                The academic high school program will begin for the 2025-2026 academic year on August
+                                18, 2025. As it is
                                 the responsibility of the representative to submit the above-mentioned documents, by
                                 signing this
                                 letter, they acknowledge and accept their commitment to comply with all instructions

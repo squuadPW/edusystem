@@ -76,9 +76,8 @@
                 required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="middle_name_student"><?= __('Second name', 'edusystem'); ?><span
-                    class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off" required>
+            <label for="middle_name_student"><?= __('Second name', 'edusystem'); ?></label>
+            <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="lastname_student"><?= __('Last name', 'edusystem'); ?><span class="required">*</span></label>
@@ -86,9 +85,8 @@
                 id="lastname_student" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="middle_last_name_student"><?= __('Second last name', 'edusystem'); ?><span
-                    class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
+            <label for="middle_last_name_student"><?= __('Second last name', 'edusystem'); ?></label>
+            <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off">
         </div>
         <?php if ($birth_date_position == 'DOWN') { ?>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">

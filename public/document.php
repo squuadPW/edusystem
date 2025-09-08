@@ -186,7 +186,7 @@ function handle_post_processing($wpdb, $current_user, $tables, $student_id) {
 
     $access_virtual = check_virtual_access($required_docs);
     if ($access_virtual && check_payment_status($wpdb, $tables['payments'], $student_id)) {
-        handle_virtual_classroom($wpdb, $tables['students'], $student_id, $current_user);
+        handle_virtual_classroom($student_id, $current_user);
     }
 }
 
@@ -205,13 +205,9 @@ function check_payment_status($wpdb, $table, $student_id) {
     ));
 }
 
-function handle_virtual_classroom($wpdb, $table, $student_id, $current_user) {
-    $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $student_id));
-    
-    if (MODE != 'UNI') {
-        $user_data = prepare_user_data($student, $current_user);
-        $files_to_send = prepare_files_data($wpdb, $student_id);
-        create_user_laravel(array_merge($user_data, ['files' => $files_to_send]));
+function handle_virtual_classroom($student_id, $current_user) {
+    if (has_action('portal_create_user_external')) {
+        do_action('portal_create_user_external', $student_id);
     }
 
     update_status_student($student_id, 2);
@@ -220,7 +216,7 @@ function handle_virtual_classroom($wpdb, $table, $student_id, $current_user) {
         create_user_student($student_id);
     }
 
-    handle_moodle_integration($wpdb, $table, $student_id);
+    sync_student_with_moodle($student_id);
 }
 
 function prepare_user_data($student, $current_user) {
@@ -282,20 +278,6 @@ function prepare_files_data($wpdb, $student_id) {
         }
     }
     return $files;
-}
-
-function handle_moodle_integration($wpdb, $table, $student_id) {
-    $moodle_user = is_search_student_by_email($student_id);
-    
-    if (!$moodle_user) {
-        create_user_moodle($student_id);
-    } else {
-        $password = ensure_moodle_password($wpdb, $table, $student_id, $moodle_user);
-        $wpdb->update($table, [
-            'moodle_student_id' => $moodle_user[0]['id'],
-            'moodle_password' => $password
-        ], ['id' => $student_id]);
-    }
 }
 
 function ensure_moodle_password($wpdb, $table, $student_id, $moodle_user) {
@@ -422,206 +404,47 @@ function save_documents()
                 }
             }
 
-            // if (sizeof($missing_documents) > 0) {
-            //     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
-            //     $user_student = get_user_by('email', $student->email);
-            //     $user_signature = $wpdb->get_row("SELECT * FROM {$table_users_signatures} WHERE user_id = {$user_student->ID} AND document_id='MISSING DOCUMENTS'");
-            // } else {
-                $email_update_document = WC()->mailer()->get_emails()['WC_Update_Document_Email'];
-                $email_update_document->trigger($student_id);
+            $email_update_document = WC()->mailer()->get_emails()['WC_Update_Document_Email'];
+            $email_update_document->trigger($student_id);
 
-                $access_virtual = true;
+            $access_virtual = true;
 
-                $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
+            $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
 
-                if($documents_student){
-                    foreach($documents_student as $document){
-                        if($document->status != 5){
-                            $access_virtual = false;
-                        }
-                    }
-
-                    // VER  IFICAR FEE DE INSCRIPCION
-                    global $wpdb;
-                    $table_student_payment = $wpdb->prefix.'student_payments';
-                    $table_students = $wpdb->prefix.'students';
-                    $partner_id = get_current_user_id();
-                    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
-                    $student_id = $student->id;
-                    $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = ". FEE_INSCRIPTION);
-                    // VERIFICAR FEE DE INSCRIPCION
-
-                    //virtual classroom
-                    if($access_virtual && isset($paid)){
-                        $table_name = $wpdb->prefix . 'students'; // assuming the table name is "wp_students"
-                        $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
-                        $type_document = array(
-                            'identification_document' => 1,
-                            'passport' => 2,
-                            'ssn' => 4,
-                        )[$student->type_document];
-        
-                        $files_to_send = array();
-
-                        $type_document = '';
-                        switch ($student->type_document) {
-                            case 'identification_document':
-                                $type_document = 1;
-                                break;
-                            case 'passport':
-                                $type_document = 2;
-                                break;
-                            case 'ssn':
-                                $type_document = 4;
-                                break;
-                        }
-        
-                        $type_document_re = '';
-                        if (get_user_meta($student->partner_id, 'type_document', true)) {
-                            switch (get_user_meta($student->partner_id, 'type_document', true)) {
-                                case 'identification_document':
-                                    $type_document_re = 1;
-                                    break;
-                                case 'passport':
-                                    $type_document_re = 2;
-                                    break;
-                                case 'ssn':
-                                    $type_document_re = 4;
-                                    break;
-                            }
-                        } else {
-                            $type_document_re = 1;
-                        }
-        
-        
-                        $gender = '';
-                        switch ($student->gender) {
-                            case 'male':
-                                $gender = 'M';
-                                break;
-                            case 'female':
-                                $gender = 'F';
-                                break;
-                        }
-        
-        
-                        $gender_re = '';
-                        if (get_user_meta($student->partner_id, 'gender', true)) {
-                            switch (get_user_meta($student->partner_id, 'gender', true)) {
-                                case 'male':
-                                    $gender_re = 'M';
-                                    break;
-                                case 'female':
-                                    $gender_re = 'F';
-                                    break;
-                            }
-                        } else {
-                            $gender_re = 'M';
-                        }
-        
-                        $grade = '';
-                        switch ($student->grade_id) {
-                            case 1:
-                                $grade = 9;
-                                break;
-                            case 2:
-                                $grade = 10;
-                                break;
-                            case 3:
-                                $grade = 11;
-                                break;
-                            case 4:
-                                $grade = 12;
-                                break;
-                        }
-                        $user_partner = get_user_by('id', $student->partner_id);
-
-
-                        if (MODE != 'UNI') {
-                            $fields_to_send = array(
-                                // DATOS DEL ESTUDIANTE
-                                'id_document' => $student->id_document,
-                                'type_document' => $type_document,
-                                'firstname' => $student->name . ' ' . $student->middle_name,
-                                'lastname' => $student->last_name . ' ' . $student->middle_last_name,
-                                'birth_date' => $student->birth_date,
-                                'phone' => $student->phone,
-                                'email' => $student->email,
-                                'etnia' => $student->ethnicity,
-                                'grade' => $grade,
-                                'gender' => $gender,
-                                'cod_period' => $student->academic_period,
-            
-                                // PADRE
-                                'id_document_re' => get_user_meta($student->partner_id, 'id_document', true) ? get_user_meta($student->partner_id, 'id_document', true) : '000000',
-                                'type_document_re' => $type_document_re,
-                                'firstname_re' => get_user_meta($student->partner_id, 'first_name', true),
-                                'lastname_re' => get_user_meta($student->partner_id, 'last_name', true),
-                                'birth_date_re' => get_user_meta($student->partner_id, 'birth_date', true),
-                                'phone_re' => get_user_meta($student->partner_id, 'billing_phone', true),
-                                'email_re' => $user_partner->user_email,
-                                'gender_re' => $gender_re,
-            
-                                'cod_program' => PROGRAM_ID,
-                                'cod_tip' => TYPE_PROGRAM,
-                                'address' => get_user_meta($student->partner_id, 'billing_address_1', true),
-                                'country' => get_user_meta($student->partner_id, 'billing_country', true),
-                                'city' => get_user_meta($student->partner_id, 'billing_city', true),
-                                'postal_code' => get_user_meta($student->partner_id, 'billing_postcode', true) ? get_user_meta($student->partner_id, 'billing_postcode', true) : '-',
-                            );
-            
-                            $all_documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE student_id={$student_id}");
-                            $documents_to_send = [];
-                            foreach ($all_documents_student as $document) {
-                                if ($document->attachment_id) {
-                                    array_push($documents_to_send, $document);
-                                }
-                            }
-            
-                            foreach ($documents_to_send as $key => $doc) {
-                                $id_requisito = $wpdb->get_var($wpdb->prepare("SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s", $doc->document_id));
-                                $attachment_id = $doc->attachment_id;
-                                $attachment_path = get_attached_file($attachment_id);
-                                if ($attachment_path) {
-                                    $file_name = basename($attachment_path);
-                                    $file_type = mime_content_type($attachment_path);
-            
-                                    $files_to_send[] = array(
-                                        'file' => curl_file_create($attachment_path, $file_type, $file_name),
-                                        'id_requisito' => $id_requisito
-                                    );
-                                }
-                            }
-            
-                            create_user_laravel(array_merge($fields_to_send, array('files' => $files_to_send)));
-                        }
-        
-                        update_status_student($student_id, 2);
-
-                        if(in_array('parent',$roles) && !in_array('student',$roles)){
-                            create_user_student($student_id);
-                        }
-
-                        $exist = is_search_student_by_email($student_id);
-                    
-                        if(!$exist){
-                            create_user_moodle($student_id);
-                        }else{
-                            $wpdb->update($table_students,['moodle_student_id' => $exist[0]['id']],['id' => $student_id]);
-
-                            $is_exist_password = is_password_user_moodle($student_id);
-
-                            if(!$is_exist_password){
-                                
-                                $password = generate_password_user();
-                                $wpdb->update($table_students,['moodle_password' => $password],['id' => $student_id]);
-                                change_password_user_moodle($student_id);
-                            }
-                        }
+            if($documents_student){
+                foreach($documents_student as $document){
+                    if($document->status != 5){
+                        $access_virtual = false;
                     }
                 }
-            // }
 
+                // VER  IFICAR FEE DE INSCRIPCION
+                global $wpdb;
+                $table_student_payment = $wpdb->prefix.'student_payments';
+                $table_students = $wpdb->prefix.'students';
+                $partner_id = get_current_user_id();
+                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
+                $student_id = $student->id;
+                $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = ". FEE_INSCRIPTION);
+                // VERIFICAR FEE DE INSCRIPCION
+
+                //virtual classroom
+                if($access_virtual && isset($paid)){
+                    $table_name = $wpdb->prefix . 'students'; // assuming the table name is "wp_students"
+                    $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $student_id));
+
+                    update_status_student($student_id, 2);
+
+                    if(in_array('parent',$roles) && !in_array('student',$roles)){
+                        create_user_student($student_id);
+                    }
+
+                    if (has_action('portal_create_user_external')) {
+                        do_action('portal_create_user_external', $student_id);
+                    }
+                    sync_student_with_moodle($student_id);
+                }
+            }
         }
 
         
@@ -633,73 +456,69 @@ function save_documents()
 }
 
 function view_pending_documents(){
-    
-    // if (MODE != 'UNI') {
-        global $current_user;
-        $roles = $current_user->roles;
+    global $current_user;
+    $roles = $current_user->roles;
 
-        $student_status = get_user_meta($current_user->ID,'status_register',true);
+    $student_status = get_user_meta($current_user->ID,'status_register',true);
 
-        if(!in_array('parent',$roles) && in_array('student',$roles)){
-            $student_id = get_user_meta(get_current_user_id(),'student_id',true);
-            if($student_id){
-                $students = get_student_from_id($student_id);
-            }else{
-                $students = get_student(get_current_user_id());
-            }
-        }
-
-        if (in_array('parent',$roles) && in_array('student',$roles) || in_array('parent',$roles) && !in_array('student',$roles)) {
+    if(!in_array('parent',$roles) && in_array('student',$roles)){
+        $student_id = get_user_meta(get_current_user_id(),'student_id',true);
+        if($student_id){
+            $students = get_student_from_id($student_id);
+        }else{
             $students = get_student(get_current_user_id());
         }
+    }
 
-        $solvency_administrative = true;
+    if (in_array('parent',$roles) && in_array('student',$roles) || in_array('parent',$roles) && !in_array('student',$roles)) {
+        $students = get_student(get_current_user_id());
+    }
 
-        if(in_array('parent',$roles) && in_array('student',$roles)){
+    $solvency_administrative = true;
 
-            if($student_status == 1 || $student_status == '1'){
+    if(in_array('parent',$roles) && in_array('student',$roles)){
 
-                foreach($students as $student){
-                    $documents = get_documents($student->id);
+        if($student_status == 1 || $student_status == '1'){
 
-                    foreach($documents as $document){
+            foreach($students as $student){
+                $documents = get_documents($student->id);
 
-                        if($document->status != 5){
-                            $solvency_administrative = false;
-                        }
+                foreach($documents as $document){
+
+                    if($document->status != 5){
+                        $solvency_administrative = false;
                     }
                 }
-            
-                if(!$solvency_administrative){
-                    include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
-                }
             }
-
-        }else if(in_array('parent',$roles) && !in_array('student',$roles)){
-
-            if($student_status == 1 || $student_status == '1'){
-
-                foreach($students as $student){
-                    $documents = get_documents($student->id);
-
-                    foreach($documents as $document){
-
-                        if($document->status != 5){
-                            $solvency_administrative = false;
-                        }
-                    }
-                }
-            
-                if(!$solvency_administrative){
-                    include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
-                }
+        
+            if(!$solvency_administrative){
+                include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
             }
-
-        }else if(!in_array('parent',$roles) && in_array('student',$roles)){
-            include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
         }
-    // }
 
+    }else if(in_array('parent',$roles) && !in_array('student',$roles)){
+
+        if($student_status == 1 || $student_status == '1'){
+
+            foreach($students as $student){
+                $documents = get_documents($student->id);
+
+                foreach($documents as $document){
+
+                    if($document->status != 5){
+                        $solvency_administrative = false;
+                    }
+                }
+            }
+        
+            if(!$solvency_administrative){
+                include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+            }
+        }
+
+    }else if(!in_array('parent',$roles) && in_array('student',$roles)){
+        include(plugin_dir_path(__FILE__).'templates/pending-documents.php');
+    }
 }
 
 add_action('woocommerce_account_dashboard','view_pending_documents',3);
