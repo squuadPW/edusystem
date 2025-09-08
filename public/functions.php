@@ -2116,7 +2116,9 @@ function update_price_product_cart_quota_rule()
                 initial_payment_sale,
                 quote_price,
                 quote_price_sale,
-                quotas_quantity
+                quotas_quantity,
+                final_payment,
+                final_payment_sale
             FROM {$wpdb->prefix}quota_rules
             WHERE id = %d",
             $rule_id
@@ -2136,8 +2138,16 @@ function update_price_product_cart_quota_rule()
     $quote_price_sale = $rule->quote_price_sale ?? null;
     $quote_price = ( $quote_price_sale != null ) ? $quote_price_sale : $quote_price_regular;
 
+    $final_payment_regular = $rule->final_payment;
+    $final_payment_sale = $rule->final_payment_sale ?? null;
+    $final_payment = ( $final_payment_sale != null ) ? $final_payment_sale : $final_payment_regular;
+
     // Get the quotas_quantity
     $quotas_quantity = $rule->quotas_quantity;
+
+    $quotas = $quotas_quantity;
+    if( $initial_payment > 0 ) $quotas += 1;
+    if( $final_payment > 0 ) $quotas += 1;
 
     if ( $initial_payment > 0 ) {
         $price = $initial_payment;
@@ -2185,12 +2195,19 @@ function update_price_product_cart_quota_rule()
         // Verificar si el ID del producto o el ID de la variación coinciden
         if ($cart_item['product_id'] === $product_id || (isset($cart_item['variation_id']) && $cart_item['variation_id'] === $product_id)) {
 
-            // Establecer el precio de venta (descuento)
+            // Establecer el precio de venta 
             $cart_item['data']->set_price($price);
-            $cart_item['data']->set_sale_price($price);
-                
-            // Establecer el precio regular
-            $cart_item['data']->set_regular_price($price_regular);
+
+            if( $quotas == 1 || $quotas == 0 ) {
+                // Establecer el precio de venta (descuento)
+                $cart_item['data']->set_sale_price($price);
+
+                // Establecer el precio original
+                $cart_item['data']->set_regular_price($price_regular);
+            } 
+
+            // total de cuotas
+            $cart_item['total_quotas'] = $quotas; 
 
             // Almacenar el nuevo precio en el array del artículo del carrito
             $cart_item['custom_price_regular'] = $price_regular; // Aquí se almacena el nuevo precio_regular
@@ -2245,7 +2262,9 @@ function save_metadata_checkout_create_order_item($item, $cart_item_key, $values
         $item->add_meta_data('quota_rule_id', $values['quota_rule_id']);
     }
 
-    if ( isset( $values['custom_price_regular'] ) ) {
+    if ( isset( $values['custom_price_regular'] ) && isset( $values['total_quotas'] ) &&
+         ( $values['total_quotas'] == 0 || $values['total_quotas'] == 1 )  ) {
+
         $item->set_subtotal( $values['custom_price_regular'] );
     }
 
@@ -2417,13 +2436,18 @@ function woocommerce_custom_price_to_cart_item($cart_object)
     if (!WC()->session->__isset("reload_checkout")) {
         foreach ($cart_object->cart_contents as $key => $value) {
             if ( isset($value["custom_price"]) ) {
-                // Establecer el precio de venta (descuento)
+
+                // Establecer el precio de venta 
                 $value['data']->set_price($value["custom_price"]);
 
-                $value['data']->set_sale_price($value["custom_price"]);
-                
-                // Establecer el precio regular
-                $value['data']->set_regular_price($value["custom_price_regular"]);
+                if( $cart_item['total_quotas'] == 0 || $cart_item['total_quotas'] == 1 ) {
+                    // Establecer el precio de venta (descuento)
+                    $value['data']->set_sale_price($value["custom_price"]);
+
+                    // Establecer el precio original
+                    $value['data']->set_regular_price($value["custom_price_regular"]);
+
+                } 
 
             } 
         }

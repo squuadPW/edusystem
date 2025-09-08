@@ -115,7 +115,7 @@ function payment_table(rule_data) {
     if ( initial_payment > 0 ) quotas_quantity++;
     if ( final_payment > 0 ) quotas_quantity++;
 
-    if (discount_value > 0) {
+    if ( discount_value > 0 ) {
         initial_payment = initial_payment - ( (initial_payment * discount_value) / 100 );
         final_payment = final_payment - ( (final_payment * discount_value) / 100 );
         quote_price = quote_price - ( quote_price * discount_value) / 100;
@@ -132,7 +132,10 @@ function payment_table(rule_data) {
 
         // Calcular la fecha del próximo pago
         const date = new Date();
-        if (i > 0) {
+        if ( i == 1 && initial_payment > 0 ) {
+            price = initial_payment;
+
+        } else {
 
             price = ( i+1 == quotas_quantity && final_payment > 0 ) ? final_payment : quote_price;
 
@@ -145,10 +148,8 @@ function payment_table(rule_data) {
             );
             date.setDate(date.getDate() + (type_frequency == "day" ? frequency : 0));
 
-        } else {
-            if ( initial_payment > 0 ) price = initial_payment;
         }
-
+        
         if( price == 0 ) continue; 
 
         // acomoda el precio para que solo tome 2 decimales
