@@ -4,10 +4,10 @@
     }
 </style>
 
-<div class="wrap edusof-page-admin">
+<div class="wrap edusof-page-admin payment-details">
     <h2 style="margin-bottom:15px;"><?= __('Payment details','edusystem'); ?></h2>
 
-    <div style="diplay:flex;width:100%;">
+    <div style="display:flex;width:100%;">
         <a class="button button-outline-primary" href="<?= $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
     <div id="notice-payment-completed" style="display:none;" class="notice notice-info"><p><?= __('Payment Completed','edusystem'); ?></p></div>
@@ -129,34 +129,61 @@
 
                         <?php if(!in_array('institutes',$roles) && !in_array('alliance',$roles)): ?>
 
-                            <table id="table-products" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" class="manage-column column-primary column-title"><?= __('Program','edusystem') ?></th>
-                                        <th scope="col" class="manage-column column-price"><?= __('Total','edusystem') ?></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-documents">
-                                    <?php foreach($order->get_items() as $item){ ?>
+                            <form method="POST" action="<?= admin_url('admin.php?page=add_admin_form_payments_content&action=update_price_items_order') ?>" >
+
+                                <table id="table-products-payment" class="wp-list-table widefat fixed posts striped" style="margin-top:20px;">
+                                    <thead>
                                         <tr>
-                                            <td class="column-primary">
-                                                <?= $item->get_name(); ?>
-                                            </td>
-                                            <td data-colname="<?= __('Total','edusystem'); ?>">
+                                            <th scope="col" class="manage-column column-primary column-title"><?= __('Program','edusystem') ?></th>
+                                            <th scope="col" class="manage-column column-price"><?= __('Regular price','edusystem') ?></th>
+                                            <th scope="col" class="manage-column column-price"><?= __('Sale price','edusystem') ?></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
 
-                                                <div>
-                                                    <?= wc_price($item->get_total()); ?>
+                                        <input type="hidden" name="order_id" value="<?= $order->get_id(); ?>" />
+
+                                        <?php foreach($order->get_items() as $item){ ?>
+                                            <tr class="item-product-payment" >
+                                                <td class="column-primary">
+                                                    <?= $item->get_name(); ?>
+                                                    <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
+                                                </td>
+                                                <td data-colname="<?= __('Regular price','edusystem'); ?>">
+                                                    <?= wc_price($item->get_subtotal()); ?>
+                                                </td>
+                                                <td data-colname="<?= __('Sale priceTotal','edusystem'); ?>">
+                                                    <div class="total-price">
+                                                        <?= wc_price($item->get_total()); ?>
+
+                                                        <?php if( $order->status == 'pending' || $order->status == 'on-hold' ): ?>
+                                                            <a onclick="active_edit_price_item();" >
+                                                                <span class="dashicons dashicons-edit no-vertical seccion-icon" ></span>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    </div>
+
+                                                    <div class="inputs-price hidden" >
+                                                        <input type="number" class="input-text" name="items[<?= $item->get_id(); ?>][amount]" data-origin-price="<?= esc_attr($item->get_total() ); ?>" min="0" step="0.01" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="2">
+                                                <div  class="actions hidden">
+                                                    <button type="button" class="button button-danger" onclick="desactive_edit_price_item();"><?= __('Cancelar','edusystem'); ?></button>
+                                                    <button type="submit" class="button button-primary" ><?= __('Recalculate','edusystem'); ?></button>
                                                 </div>
-
-                                                <div>
-                                                    <!-- <input type="text" /> -->
-                                                </div>
-
                                             </td>
                                         </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
+                                    </tfoot>
+                                </table>
+                            
+                            </form>
 
                             <br/>
                             
@@ -275,17 +302,54 @@
 
                         <div class="container-right" >
 
+
+
                             <?php if( !in_array('institutes',$roles) && !in_array('alliance',$roles) ): ?>
+
                                 <div class="seccion-card">
-                                    <p>
-                                        <strong><?=__('Payment Total','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_total()) ?></span>
+                                    <p> 
+                                        <strong><?=__('Items Subtotal','edusystem')?>:</strong>
+                                        <span><?= wc_price( $order->get_subtotal() - $order->get_discount_total() ?? 0 ) ?></span>
                                     </p>
                                 </div>
+
+                                <?php if( $order->get_discount_total() ): ?>
+                                    <div class="seccion-card">
+                                        <p> 
+                                            <strong><?=__('Discount','edusystem')?>:</strong>
+                                            <span><?= wc_price( $order->get_discount_total() * -1 ) ?></span>
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php 
+                                    $total_fees = 0;
+                                    foreach ( $order->get_fees() as $fee_item ) {
+                                        $total_fees += $fee_item->get_total();
+                                    } 
+                                ?>
+                                <?php if( $total_fees ): ?>
+                                    <div class="seccion-card">
+                                        <p> 
+                                            <strong><?=__('Fees','edusystem')?>:</strong>
+                                            <span><?= wc_price( $total_fees ) ?></span>
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="seccion-card">
+                                    <p> 
+                                        <strong><?=__('Order Total','edusystem')?>:</strong>
+                                        <span><?= wc_price( $order->get_total() ) ?></span>
+                                    </p>
+                                </div>
+                                
+                                <hr style="width: 50%; margin-left: auto; margin-right: 0;">
+
                             <?php endif; ?> 
 
                             <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1): ?>
-
+                            
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Total paid gross','edusystem')?>:</strong>
@@ -299,6 +363,13 @@
                                         <span><?= wc_price($order->get_meta('pending_payment')); ?></span>
                                     </p>
                                 </div>
+
+                                <div class="seccion-card">
+                                    <p>
+                                        <strong><?=__('Total paid net','edusystem')?>:</strong>
+                                        <span><?= wc_price($order->get_meta('total_paid')); ?></span>
+                                    </p>
+                                </div>
                                 
                             <?php endif; ?>
 
@@ -307,7 +378,7 @@
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Fee','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('institute_fee')); ?></span>
+                                        <span><?= wc_price( intval($order->get_meta('institute_fee') ?? 0) * -1 ); ?></span>
                                     </p>
                                 </div>
                                 
@@ -316,7 +387,7 @@
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Institute Fee','edusystem')?>:</strong>
-                                        <span><?=  wc_price($order->get_meta('institute_fee')); ?></span>
+                                        <span><?=  wc_price( intval($order->get_meta('institute_fee') ?? 0) * -1 ); ?></span>
                                     </p>
                                 </div>
 
@@ -333,36 +404,25 @@
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Alliance Fee','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('alliance_fee')); ?></span>
+                                        <span><?= wc_price( intval($order->get_meta('alliance_fee') ?? 0) * -1 ); ?></span>
                                     </p>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if(  !in_array('institutes',$roles) && !in_array('alliance',$roles) && $order->get_meta('fee_order_pay') && $order->get_meta('fee_order_pay') > 0): ?>
+                            <?php if($order->get_meta('fee_order_pay') && $order->get_meta('fee_order_pay') > 0): ?>
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Fee payment method','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('fee_order_pay')); ?></span>
+                                        <span><?= wc_price($order->get_meta('fee_order_pay') * -1); ?></span>
                                     </p>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1): ?>
-                            
-                                <div class="seccion-card">
-                                    <p>
-                                        <strong><?=__('Total paid net','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('total_paid')); ?></span>
-                                    </p>
-                                </div>
-                                
-                            <?php endif; ?>
-                            
                         </div>
 
                         <?php if( !array_intersect(['institutes', 'alliance', 'webinar-aliance'], $roles) ){?>
                             
-                            <div style="margin-top:20px;display:flex;flex-direction:row;width:100%;justify-content:end;">
+                            <div id="button-acction-payment" style="margin-top:20px;display:flex;flex-direction:row;width:100%;justify-content:end;">
                                     
                                     <?php if($order->get_status() == 'on-hold'){ ?>
                                         <div style="margin-right: 10px">

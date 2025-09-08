@@ -1,90 +1,186 @@
-<?php global $wpdb ?>
+<?php 
 
-<div id='modalStatusPayment' class='modal' style='display:none'>
+	global $wpdb;
+	$table_student_payments = $wpdb->prefix . 'student_payments';
+
+	$amount = 0;
+	$student_id = $order->get_meta('student_id');
+	$cuote_payment = $order->get_meta('cuote_payment') ?? 0;
+
+	// obtiene el balance
+	$student_balance = $wpdb->get_row( $wpdb->prepare(
+        "SELECT id, balance FROM `{$wpdb->prefix}student_balance` WHERE student_id = %d",
+        $student_id
+    ));
+	$balance = $student_balance->balance ?? 0;
+
+	// obtiene el valor actual a pagar
+	if ($cuote_payment ) {
+
+		$amount = $wpdb->get_var( $wpdb->prepare(
+			"SELECT COALESCE( amount, 0) FROM {$table_student_payments} 
+			WHERE id = %d", 
+		$cuote_payment) );
+
+		$cuotes_ids[] = $cuote_payment; 
+
+	} else {
+		$cuote_payments = $wpdb->get_results( $wpdb->prepare(
+            "SELECT id, amount FROM {$table_student_payments}
+             WHERE student_id = %d AND status_id = 0 AND cuote = (
+                        SELECT MIN(cuote) 
+                        FROM {$table_student_payments} 
+                        WHERE student_id = %d AND status_id = 0
+                    )
+                ORDER BY num_cuotes DESC", 
+            $student_id,
+            $student_id)
+		);
+
+		// Obtener un array con todos los IDs de la consulta
+		$cuotes_ids = array_map(function($item) {
+			return $item->id;
+		}, $cuote_payments);
+		
+		// obtiene el total
+		foreach ($cuote_payments as $payment) {
+			$amount += floatval($payment->amount);
+		}
+		$cuote_payment = $cuote_payments[0]->id;
+	}
+	
+	// Genera los marcadores de posición
+	$placeholders = implode(',', array_fill(0, count($cuotes_ids), '%d'));
+	$payments = $wpdb->get_results($wpdb->prepare(
+    	"SELECT * FROM {$table_student_payments} WHERE student_id = %d AND status_id = 0 AND id NOT IN ($placeholders)",
+    	array_merge([$student_id], $cuotes_ids)
+	));
+
+	// obtiene el toltal de los item de la orden
+	$total_order_items = 0;
+	foreach ( $order->get_items() as $item ) {
+		$total_order_items += $item->get_total(); // subtotal sin impuestos
+	}
+
+?>
+
+
+<div id='modalStatusPayment' class='modal' style='<?= $balance > 0 ? "display:block" : "display:none" ?>'>
 	<div class='modal-content'>
 		<div class="modal-header">
 			<h3 style="font-size:20px;" id="title-modal-status-payment"></h3>
-			<span class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+
+			<?php if( $balance == 0 || ( $balance > 0 && count($payments) == 0 ) ): ?>
+				<span class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+			<?php endif; ?>
 		</div>
 		<form method="post"
 			action="<?= admin_url('admin.php?page=add_admin_form_payments_content&action=change_status_payment') ?>">
 			<div class="modal-body" style="margin: 10px; padding: 0px">
-				<p id="message-modal-status-payment"></p>
-				<?php
-				$filteredArray = [];
-				if ($payments) {
-					$filteredArray = array_filter($payments, function ($item) {
-						return $item->status == 'on-hold';
-					});
-					$filteredArray = array_values($filteredArray);
-				}
-				?>
-				<?php if ($split_payment && count($filteredArray) > 0) { ?>
-					<div>
-						<label for="payment_confirm">Choose a payment to confirm:</label><br>
-						<select name="payment_confirm" id="payment-confirm">
-							<?php foreach ($payments as $key => $pay) {
-								if ($pay->status == 'on-hold') { ?>
-									<option value="<?php echo $pay->id ?>">
-										<?php echo $pay->method ?>
-										<?php echo $pay->payment_method ? ' - ' . $pay->payment_method : '' ?>
-										<?php echo $pay->transaction_id ? '- (' . $pay->transaction_id . ')' : '' ?>
-									</option>
-								<?php }
-							}
-							?>
-						</select>
-					</div><br>
-				<?php }
 
-				$table_student_payments = $wpdb->prefix . 'student_payments';
-				$payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$order->get_meta('student_id')} AND status_id = 0");
-				array_shift($payments);
+				<?php if( $balance == 0 ): ?>
+					
+					<div class="amount_container" >
+						<p><?= __('Amount to pay', 'edusystem') ?>: <strong><?= wc_price($amount) ?></strong> </p>
+						<p><?= __('Amount received', 'edusystem') ?>: <strong><?= wc_price( $total_order_items ) ?></strong> </p>
+					</div>
+
+					<p id="message-modal-status-payment"></p>
+
+					<?php
+						$filteredArray = [];
+						if ( $payments ) {
+							$filteredArray = array_filter($payments, function ($item) {
+								return $item->status == 'on-hold';
+							});
+							$filteredArray = array_values($filteredArray);
+						}
+					?>
+					<?php if ($split_payment && count($filteredArray) > 0): ?>
+						<div>
+							<label for="payment_confirm"><?= __('Choose a payment to confirm:', 'edusystem') ?></label><br>
+							<select name="payment_confirm" id="payment-confirm">
+								<?php foreach ( $payments as $key => $pay ) {
+									if ($pay->status == 'on-hold') { ?>
+										<option value="<?php echo $pay->id ?>">
+											<?php echo $pay->method ?>
+											<?php echo $pay->payment_method ? ' - ' . $pay->payment_method : '' ?>
+											<?php echo $pay->transaction_id ? '- (' . $pay->transaction_id . ')' : '' ?>
+										</option>
+									<?php }
+								}
+								?>
+							</select>
+						</div><br>
+					<?php endif; ?>
+
+				<?php endif; ?>
+				
+				<?php
+					$more_amount = ( $balance > 0 || $total_order_items > $amount ) && count($payments) > 0;
+					$less_amount = $total_order_items < $amount; 
 				?>
-				<?php if (($order->get_meta('cuote_payment') && $order->get_meta('cuote_payment') == 1) && count($payments) > 0) { ?>
+				<?php if ( $more_amount || $less_amount ) { ?>
 					<div>
-						<p>It is possible that the client has paid more than the amount of the outstanding installment.
-							Therefore, the amount of the installment will be applied and the remaining amount will be
-							credited to the next installment.</p>
-						<div style="display: flex; align-items: center; margin-bottom: 10px">
-							<input type="checkbox" name="paid_more" id="paid-more" style="margin: 0 5px 0px 0px;">
-							<label for="paid_more">Yes, the client paid more than the quota.</label>
-						</div>
-						<div id="amount-credit-input" style="display: none; margin-bottom: 10px">
-							<label for="amount_credit">Amount paid:</label><br>
-							<input type="number" name="amount_credit" id="amount-credit">
-						</div>
-						<div id="cuote-credit-select" style="display: none">
-							<label for="cuote_credit">Select one installment to be paid the remaining amount:</label><br>
+
+						<div id="cuote-credit-select" >
+							<label for="cuote_credit">
+
+								<?php if( $more_amount ): ?>
+
+									<?php $amount_credit = ($balance > 0 ) ? $balance : wc_price($total_order_items - $amount); ?>
+									<?= sprintf(__('There is an amount of %s due to the student. The surplus will be credited to:', 'edusystem'), "<strong>" .  $amount_credit . "</strong>" ) ?>
+								
+								<?php elseif( $less_amount ): ?>
+									<?= sprintf(__('An amount below the required threshold has been detected; the outstanding amount of %s will be requested in:', 'edusystem'), "<strong>" . wc_price( $amount - $total_order_items) . "</strong>" ) ?>
+								
+								<?php endif; ?>
+							</label>
+							<br>
 							<select name="cuote_credit" id="cuote-credit" style="width: 100%">
+
 								<?php foreach ($payments as $key => $pay) { ?>
 									<option value="<?php echo $pay->id ?>">
-										Quota N° <?php echo $pay->cuote . ' - ' . wc_price($pay->amount) ?>
+										<?= __('Quota N°', 'edusystem') ?> <?php echo $pay->cuote . ' - ' . wc_price($pay->amount) ?>
 									</option>
 									<?php
 								}
 								?>
+
+								<?php if( $less_amount )?> <option value="new_cuote"> <?= __('New cuote','edusystem') ?> </option>
+								
 							</select>
 						</div>
-					</div><br>
+						
+						<?php if( $less_amount ): ?>
+							<br/>
+							
+							<div id="new_coute_date" class="hidden" >
+								<label><?= __('Date new cuote','edusystem') ?></label>
+								<br>
+								<input type="date" name="new_coute_date" >
+							</div>
+						<?php endif; ?>
+					</div>
+					
+					<br>
 				<?php } ?>
 
-				<?php
-				if ($order->get_status() == 'pending') { ?>
+				<?php if ( $balance == 0 && $order->get_status() == 'pending') { ?>
 					<?php
 
-					$payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
-					$filteredArray = [];
-					if ($payment_gateways) {
-						$filteredArray = array_filter($payment_gateways, function ($item) {
-							return $item->id != 'woo_squuad_stripe';
-						});
-						$filteredArray = array_values($filteredArray);
-					}
+						$payment_gateways = WC()->payment_gateways->get_available_payment_gateways();
+						$filteredArray = [];
+						if ($payment_gateways) {
+							$filteredArray = array_filter($payment_gateways, function ($item) {
+								return $item->id != 'woo_squuad_stripe';
+							});
+							$filteredArray = array_values($filteredArray);
+						}
 
 					?>
 					<div>
-						<label for="payment_selected">Select the payment method used:</label><br>
+						<label for="payment_selected"><?= __('Select the payment method used:', 'edusystem') ?></label><br>
 						<select name="payment_selected" id="payment_selected" style="width: 100%">
 							<?php foreach ($filteredArray as $key => $gateway) { ?>
 								<option value="<?= $gateway->id ?>">
@@ -96,28 +192,36 @@
 						</select>
 					</div>
 					<div id="other-payments" style="display: none;">
-						<label for="other_payments">Payment method used:</label><br>
+						<label for="other_payments"><?= __('Payment method used:', 'edusystem') ?></label><br>
 						<input type="text" name="other_payments"  style="width: 100%">
 					</div>
 					<div id="transaction-id">
-						<label for="transaction_id">Transaction ID:</label><br>
+						<label for="transaction_id"><?= __('Transaction ID:', 'edusystem') ?></label><br>
 						<input type="text" name="transaction_id"  style="width: 100%">
 					</div><br>
 				<?php } ?>
 
+				
 				<div class="display:flex">
-					<div>
-						<label for="description">You can add a description about the payment <strong><span
-									id="text-modal-status-payment"></span></strong> if you
-							wish</label>
-						<textarea style="width: 100%" name="description" value=""></textarea>
-					</div>
-					<input type="hidden" id="order_id" name="order_id" value="">
+					<?php if( $balance == 0 ): ?>
+						<div>
+							<label for="description">
+								<?= __('You can add a description about the payment', 'edusystem') ?>
+								<strong> <span id="text-modal-status-payment"></span> </strong>
+								<?= __('if you wish', 'edusystem') ?>
+							</label>
+							<textarea style="width: 100%" name="description" value=""></textarea>
+						</div>
+
+					<?php endif; ?>
+
+					<input type="hidden" id="order_id" name="order_id" value="<?= $order->get_id(); ?>">
 					<input type="hidden" id="status_id" name="status_id" value="completed">
 					<input type="hidden" id="split_payment" name="split_payment"
 						value="<?= $order->get_meta('split_payment') ?>">
 				</div>
-				<?php if ($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) { ?>
+
+				<?php if ( $balance == 0 && $order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) { ?>
 					<div
 						style="padding: 10px 10px;background-color: #2271b1;border-radius: 10px;margin: 10px 0px;color: white;">
 						<p>If you want to finalize the order, because it is a payment agreement and no more payments are
@@ -129,10 +233,15 @@
 						</div>
 					</div>
 				<?php } ?>
+
 			</div>
 			<div class="modal-footer">
 				<button type="submit" class="button button-primary"><?= __('Yes', 'edusystem'); ?></button>
-				<button type="button" class="button button-outline-primary modal-close"><?= __('No', 'edusystem'); ?></button>
+
+				<?php if( $balance == 0 ): ?>
+					<button type="button" class="button button-outline-primary modal-close"><?= __('No', 'edusystem'); ?></button>
+				<?php endif; ?>
+
 			</div>
 		</form>
 	</div>

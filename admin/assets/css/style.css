@@ -1863,6 +1863,7 @@ a.toplevel_page_logo_based_menu {
   justify-content: center;
   align-items: center;
   position: relative;
+  flex-wrap: wrap;
 }
 .edusof-page-admin .container-card-admin .card-content .card-content-header .container-button {
   position: absolute;
@@ -1871,6 +1872,7 @@ a.toplevel_page_logo_based_menu {
 }
 .edusof-page-admin .container-card-admin .card-content .seccion-vertical {
   display: flex;
+  flex-wrap: wrap;
 }
 .edusof-page-admin .container-card-admin .card-content .seccion-vertical > div {
   flex: 1;
@@ -1879,6 +1881,7 @@ a.toplevel_page_logo_based_menu {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
+  min-width: 170px;
 }
 .edusof-page-admin .container-card-admin .card-content .seccion-card .seccion-icon {
   color: #0073aa;
@@ -1911,4 +1914,77 @@ a.toplevel_page_logo_based_menu {
 }
 .edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p span {
   flex: 2;
+}
+@media (max-width: 375px) {
+  .edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p span {
+    flex: 1;
+  }
+}
+
+.payment-details .hidden {
+  display: none !important;
+}
+.payment-details .title {
+  flex: 1;
+  width: 100%;
+}
+.payment-details #table-products-payment tfoot:has(.actions.hidden) {
+  display: none;
+}
+.payment-details #table-products-payment tfoot .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.payment-details #table-products-payment .item-product-payment .total-price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.payment-details #table-products-payment .item-product-payment .total-price.hidden {
+  display: none;
+}
+.payment-details #table-products-payment .item-product-payment .total-price .dashicons {
+  display: none;
+  cursor: pointer;
+}
+.payment-details #table-products-payment .item-product-payment .inputs-price.hidden {
+  display: none;
+}
+.payment-details #table-products-payment .item-product-payment:hover .total-price .dashicons {
+  display: block;
+}
+@media (max-width: 782px) {
+  .payment-details .title {
+    margin-top: 10px !important;
+  }
+  .payment-details .container-button {
+    position: relative !important;
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+  }
+  .payment-details #table-products-payment .item-product-payment .total-price {
+    justify-content: flex-end !important;
+    gap: 10px;
+  }
+  .payment-details #table-products-payment .item-product-payment .dashicons {
+    display: block;
+  }
+  .payment-details #table-products-payment .inputs-price {
+    margin-top: 22px;
+  }
+  .payment-details #table-products-payment tfoot td {
+    display: block;
+  }
+}
+
+#modalStatusPayment .amount_container {
+  display: flex;
+  flex-wrap: wrap;
+  -moz-column-gap: 20px;
+       column-gap: 20px;
+}
+#modalStatusPayment strong {
+  color: #000;
 }/*# sourceMappingURL=style.css.map */
