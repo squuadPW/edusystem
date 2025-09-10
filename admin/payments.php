@@ -2863,20 +2863,20 @@ function generate_quote_public_callback() {
 
     // Añadir productos a la orden
     $product = wc_get_product($payment_row->variation_id);
+    
     if (!$product) {
         $product = wc_get_product($payment_row->product_id);
     }
 
     if ($product) {
         $quantity = 1;
-        $product->set_price($payment_row->amount);
 
-        if( $payment_row->num_cuotes == 1 ) {
-            $product->set_price($payment_row->amount);
-            $product->set_regular_price($payment_row->original_amount_product);
-        }
+        $arg['total'] = $payment_row->amount;
+
+        // si es un solo pago entonces agrega el precio original
+        if( $payment_row->num_cuotes == 1 ) $arg['subtotal'] = $payment_row->original_amount_product;
         
-        $order->add_product($product, $quantity);
+        $order->add_product($product, $quantity, $arg );
     }
 
     // Obtener información del cliente existente

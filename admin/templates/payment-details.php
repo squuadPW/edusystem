@@ -113,17 +113,19 @@
                         <div class="card-content-header" >
 
                             <h2 class="title"><?= __('Items','edusystem'); ?></h2>
-
+                            
+                            <?php if(!in_array('institutes',$roles) && !in_array('alliance',$roles)): ?>
                             <div class="container-button" >
                                 <?php
                                     $student = get_student_detail_partner($order->get_customer_id());
                                 ?>
-
+    
                                 <a href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=') . $student->email ?>"
                                     class="button button-outline-primary">
                                     <?= __('Manage payments', 'edusystem'); ?>
                                 </a>
                             </div>
+                            <?php endif; ?>
                             
                         </div>
 
