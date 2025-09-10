@@ -154,7 +154,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('previous-form');
 
-    wp_register_script('functions-theme', plugins_url('edusystem') . '/public/assets/js/functions-theme.js', array('jquery'), $version, true);
+    wp_register_script('functions-theme', plugins_url('edusystem') . '/public/assets/js/functions-theme.js', array('jquery'), $version, flase);
     wp_localize_script(
         'functions-theme',
         'ajax_object',
