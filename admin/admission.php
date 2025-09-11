@@ -1419,6 +1419,10 @@ function generate_document()
         $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, get_name_program_student($student->id), 1, $student, $emission_date);
     }
 
+    if ($document->paper_format == 'custom') {
+        $document->paper_format = [(float)$document->width_size, (float)$document->height_size];
+    }
+
     wp_send_json(array('url' => $url['url'], 'image_url' => $url['image_url'], 'html' => $document->content, 'header' => $document->header, 'footer' => $document->footer, 'document' => $document));
     die();
 }
