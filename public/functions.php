@@ -28,6 +28,7 @@ function form_plugin_scripts()
     wp_enqueue_script('flatpickr-js-es', plugins_url('edusystem') . '/public/assets/js/flatpickr-es.js');
     wp_enqueue_script('masker-js', plugins_url('edusystem') . '/public/assets/js/vanilla-masker.min.js');
     wp_enqueue_script('intel-js', plugins_url('edusystem') . '/public/assets/js/intlTelInput.min.js');
+    wp_enqueue_script('signature-pad', plugins_url('edusystem') . '/public/assets/js/signature_pad.umd.min.js');
     wp_enqueue_script('form-register', plugins_url('edusystem') . '/public/assets/js/form-register.js', array('jquery', 'flatpickr-js', 'flatpickr-js-es'));
     wp_enqueue_script('int-tel', plugins_url('edusystem') . '/public/assets/js/int-tel.js');
 
