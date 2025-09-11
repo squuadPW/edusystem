@@ -548,6 +548,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let marginHeaderDocument = 0;
   let marginFooterDocument = 0;
   let orientation = 'portrait';
+  let widthDocument = '210mm';
+  let heightDocument = '287mm';
   let margin = [0, 0];
   let document_certificate_button = document.getElementById('documentcertificate-button');
   if (document_certificate_button) {
@@ -628,6 +630,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = this.response.html;
             orientation = this.response.document.orientation;
+            widthDocument = this.response.document.width_size;
+            heightDocument = this.response.document.height_size;
 
             const imgElement = tempDiv.querySelector('img');
             if (imgElement) {
@@ -681,19 +685,25 @@ document.addEventListener("DOMContentLoaded", function () {
               qrCode.append(document.getElementById("qrcode"));
             }
 
-            if (orientation != 'portrait') {
-              document.querySelector('.modal-document-export').style.minWidth = '287mm';
-              document.querySelector('.modal-document-export').style.minHeight = '210mm';
+            // if (orientation != 'portrait') {
+            //   document.querySelector('.modal-document-export').style.minWidth = heightDocument;
+            //   document.querySelector('.modal-document-export').style.minHeight = widthDocument;
 
-              document.getElementById('content-pdf').style.minWidth = '287mm';
-              document.getElementById('content-pdf').style.minHeight = '210mm';
-            } else {
-              document.querySelector('.modal-document-export').style.minWidth = '210mm';
-              // document.querySelector('.modal-document-export').style.minHeight = '287mm';
+            //   document.getElementById('content-pdf').style.minWidth = heightDocument;
+            //   document.getElementById('content-pdf').style.minHeight = widthDocument;
+            // } else {
+            //   document.querySelector('.modal-document-export').style.minWidth = widthDocument;
+            //   // document.querySelector('.modal-document-export').style.minHeight = heightDocument;
 
-              document.getElementById('content-pdf').style.minWidth = '210mm';
-              // document.getElementById('content-pdf').style.minHeight = '287mm';
-            }
+            //   document.getElementById('content-pdf').style.minWidth = widthDocument;
+            //   // document.getElementById('content-pdf').style.minHeight = heightDocument;
+            // }
+
+            document.querySelector('.modal-document-export').style.minWidth = heightDocument;
+            document.querySelector('.modal-document-export').style.minHeight = widthDocument;
+
+            document.getElementById('content-pdf').style.minWidth = heightDocument;
+            document.getElementById('content-pdf').style.minHeight = widthDocument;
 
             document.querySelector('.modal-document-export').style.padding = '0';
 
