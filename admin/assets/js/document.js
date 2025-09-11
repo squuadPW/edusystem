@@ -548,6 +548,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let marginHeaderDocument = 0;
   let marginFooterDocument = 0;
   let orientation = 'portrait';
+  let paper_format = 'a4';
   let widthDocument = '210mm';
   let heightDocument = '287mm';
   let margin = [0, 0];
@@ -629,9 +630,10 @@ document.addEventListener("DOMContentLoaded", function () {
             let processedHtml = this.response.html;
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = this.response.html;
-            orientation = this.response.document.orientation;
-            widthDocument = this.response.document.width_size;
-            heightDocument = this.response.document.height_size;
+            orientation = this.response.document.orientation.toLowerCase();
+            paper_format = this.response.document.paper_format.toLowerCase();
+            widthDocument = this.response.document.width_size.toLowerCase();
+            heightDocument = this.response.document.height_size.toLowerCase();
 
             const imgElement = tempDiv.querySelector('img');
             if (imgElement) {
@@ -699,11 +701,11 @@ document.addEventListener("DOMContentLoaded", function () {
             //   // document.getElementById('content-pdf').style.minHeight = heightDocument;
             // }
 
-            document.querySelector('.modal-document-export').style.minWidth = heightDocument;
-            document.querySelector('.modal-document-export').style.minHeight = widthDocument;
+            document.querySelector('.modal-document-export').style.minWidth = widthDocument;
+            document.querySelector('.modal-document-export').style.minHeight = heightDocument;
 
-            document.getElementById('content-pdf').style.minWidth = heightDocument;
-            document.getElementById('content-pdf').style.minHeight = widthDocument;
+            document.getElementById('content-pdf').style.minWidth = widthDocument;
+            document.getElementById('content-pdf').style.minHeight = heightDocument;
 
             document.querySelector('.modal-document-export').style.padding = '0';
 
@@ -730,7 +732,7 @@ document.addEventListener("DOMContentLoaded", function () {
               image: { type: "jpeg", quality: 1 },
               jsPDF: { 
                   unit: "mm", 
-                  format: "a4", 
+                  format: paper_format, 
                   orientation: orientation
               },
               html2canvas: { 
