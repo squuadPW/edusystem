@@ -685,19 +685,25 @@ document.addEventListener("DOMContentLoaded", function () {
               qrCode.append(document.getElementById("qrcode"));
             }
 
-            if (orientation != 'portrait') {
-              document.querySelector('.modal-document-export').style.minWidth = heightDocument;
-              document.querySelector('.modal-document-export').style.minHeight = widthDocument;
+            // if (orientation != 'portrait') {
+            //   document.querySelector('.modal-document-export').style.minWidth = heightDocument;
+            //   document.querySelector('.modal-document-export').style.minHeight = widthDocument;
 
-              document.getElementById('content-pdf').style.minWidth = heightDocument;
-              document.getElementById('content-pdf').style.minHeight = widthDocument;
-            } else {
-              document.querySelector('.modal-document-export').style.minWidth = widthDocument;
-              // document.querySelector('.modal-document-export').style.minHeight = heightDocument;
+            //   document.getElementById('content-pdf').style.minWidth = heightDocument;
+            //   document.getElementById('content-pdf').style.minHeight = widthDocument;
+            // } else {
+            //   document.querySelector('.modal-document-export').style.minWidth = widthDocument;
+            //   // document.querySelector('.modal-document-export').style.minHeight = heightDocument;
 
-              document.getElementById('content-pdf').style.minWidth = widthDocument;
-              // document.getElementById('content-pdf').style.minHeight = heightDocument;
-            }
+            //   document.getElementById('content-pdf').style.minWidth = widthDocument;
+            //   // document.getElementById('content-pdf').style.minHeight = heightDocument;
+            // }
+
+            document.querySelector('.modal-document-export').style.minWidth = heightDocument;
+            document.querySelector('.modal-document-export').style.minHeight = widthDocument;
+
+            document.getElementById('content-pdf').style.minWidth = heightDocument;
+            document.getElementById('content-pdf').style.minHeight = widthDocument;
 
             document.querySelector('.modal-document-export').style.padding = '0';
 
