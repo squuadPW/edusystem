@@ -2877,11 +2877,11 @@ function verificar_acciones_mi_cuenta_optimizado()
     // Caso 2: El usuario ya tiene un registro de estudiante.
     if ($student) {
         // Limpia un metadato que parece ser temporal.
-        update_user_meta($user_id, 'pay_application_password', 0);
+        // update_user_meta($user_id, 'pay_application_password', 0);
 
         // Separamos la lógica en funciones más claras.
-        _mi_cuenta_handle_split_payments($user_id);
-        _mi_cuenta_determine_modal_action($student, $roles, $user_id);
+        load_split_payment_dashboard($user_id);
+        load_modal_action_dashboard($student, $roles, $user_id);
     }
 }
 
@@ -2889,7 +2889,7 @@ function verificar_acciones_mi_cuenta_optimizado()
  * Función auxiliar para manejar órdenes con pago dividido.
  * @param int $user_id
  */
-function _mi_cuenta_handle_split_payments($user_id)
+function load_split_payment_dashboard($user_id)
 {
     $pending_orders = wc_get_orders(['status' => 'split-payment', 'customer_id' => $user_id, 'limit' => 1]);
 
@@ -2936,13 +2936,7 @@ function _mi_cuenta_handle_split_payments($user_id)
     }
 }
 
-/**
- * Función auxiliar para determinar qué modal mostrar al usuario.
- * @param object $student
- * @param array $roles
- * @param int $current_user_id
- */
-function _mi_cuenta_determine_modal_action($student, $roles, $current_user_id)
+function load_modal_action_dashboard($student, $roles, $curret_user_id)
 {
     global $wpdb;
 
@@ -2959,37 +2953,39 @@ function _mi_cuenta_determine_modal_action($student, $roles, $current_user_id)
     }
 
     // 5. CONSULTAS SEGURAS Y EFICIENTES
-    if (MODE != 'UNI') {
-        $table_user_signatures = $wpdb->prefix . 'users_signatures';
-        $student_user = in_array('student', $roles, true) ? get_user_by('id', $current_user_id) : get_user_by('email', $student->email);
-        $parent_user_id = $student->partner_id;
+    // if (MODE != 'UNI') {
+    //     $table_user_signatures = $wpdb->prefix . 'users_signatures';
+    //     $student_user = in_array('student', $roles, true) ? get_user_by('id', $current_user_id) : get_user_by('email', $student->email);
+    //     $parent_user_id = $student->partner_id;
 
-        // Verificar firmas
-        $parent_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $parent_user_id));
-        $student_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $student_user->ID));
+    //     // Verificar firmas
+    //     $parent_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $parent_user_id));
+    //     $student_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $student_user->ID));
 
-        // Verificar si el documento de inscripción fue creado
-        $document_was_created = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_documents WHERE student_id = %d AND document_id = 'ENROLLMENT'", $student->id));
+    //     // Verificar si el documento de inscripción fue creado
+    //     $document_was_created = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_documents WHERE student_id = %d AND document_id = 'ENROLLMENT'", $student->id));
 
-        // Verificar pagos pendientes
-        $has_pending_payments = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW()", $student->id));
+    //     // Verificar pagos pendientes
+    //     $has_pending_payments = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW()", $student->id));
 
-        // 6. CONDICIONALES LEGIBLES
-        $all_signatures_missing = !$parent_enrollment_sig || !$student_enrollment_sig;
+    //     // 6. CONDICIONALES LEGIBLES
+    //     $all_signatures_missing = !$parent_enrollment_sig || !$student_enrollment_sig;
 
-        if ($document_was_created && $all_signatures_missing && !$has_pending_payments) {
-            add_action('wp_footer', 'modal_enrollment_student');
-            return;
-        }
+    //     if ($document_was_created && $all_signatures_missing && !$has_pending_payments) {
+    //         add_action('wp_footer', 'modal_enrollment_student');
+    //         return;
+    //     }
 
-        $parent_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $parent_user_id));
-        $student_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $student_user->ID));
-        $all_missing_sigs_done = !$parent_missing_sig || !$student_missing_sig;
+    //     $parent_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $parent_user_id));
+    //     $student_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $student_user->ID));
+    //     $all_missing_sigs_done = !$parent_missing_sig || !$student_missing_sig;
 
-        if ($document_was_created && !$all_signatures_missing && $all_missing_sigs_done && !$has_pending_payments) {
-            add_action('wp_footer', 'modal_missing_student');
-        }
-    }
+    //     if ($document_was_created && !$all_signatures_missing && $all_missing_sigs_done && !$has_pending_payments) {
+    //         add_action('wp_footer', 'modal_missing_student');
+    //     }
+    // }
+
+    add_action('wp_footer', 'modal_document_automatic');
 }
 function modal_take_elective()
 {
@@ -3145,6 +3141,69 @@ function modal_enrollment_student()
         'today' => date('Y-m-d'),
     ];
     include plugin_dir_path(__FILE__) . 'templates/create-enrollment.php';
+}
+
+function modal_document_automatic()
+{
+    // // Imprime el contenido del archivo modal-reset-password.php
+    // global $wpdb, $current_user;
+    // $roles = $current_user->roles;
+    // $show_parent_info = 1;
+    
+    // if (in_array('student', $roles)) {
+    //     $table_students = $wpdb->prefix . 'students';
+    //     $table_student_payments = $wpdb->prefix . 'student_payments';
+    //     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+    //     $payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY id DESC");
+    //     $partner_id = $student->partner_id;
+    //     $student_id = $current_user->ID;
+    //     $institute_id = $student->institute_id;
+    //     $age = floor((strtotime($student->created_at) - strtotime($student->birth_date)) / 31536000); // 31536000 es el número de segundos en un año
+    //     if ($age >= 18) {
+    //         $show_parent_info = 0;
+    //     }
+    // } else if (in_array('parent', $roles)) {
+    //     $table_students = $wpdb->prefix . 'students';
+    //     $table_student_payments = $wpdb->prefix . 'student_payments';
+    //     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+    //     $user_student = get_user_by('email', $student->email);
+    //     $payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY id DESC");
+    //     $student_id = $user_student->ID;
+    //     $partner_id = $current_user->ID;
+    //     $institute_id = $student->institute_id;
+    // }
+
+    // $institute = $institute_id ? get_institute_details($institute_id) : null;
+    // $institute_name = $student->name_institute;
+    // $user_partner = get_user_by('id', $student->partner_id);
+
+    // $user = [
+    //     'student_full_name' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
+    //     'student_signature' => $student->name . ' ' . $student->last_name,
+    //     'student_created_at' => date('Y-m-d', strtotime($student->created_at)),
+    //     'student_grade' => $student->grade_id,
+    //     'student_payment' => $payment->type_payment,
+    //     'student_birth_date' => $student->birth_date,
+    //     'student_gender' => ucfirst($student->gender),
+    //     'student_address' => get_user_meta($partner_id, 'billing_address_1', true),
+    //     'student_country' => get_user_meta($partner_id, 'billing_country', true),
+    //     'student_phone' => $student->phone,
+    //     'parent_cell' => get_user_meta($partner_id, 'billing_phone', true),
+    //     'parent_identification' => get_user_meta($partner_id, 'id_document', true),
+    //     'student_identification' => $student->id_document,
+    //     'parent_full_name' => get_user_meta($student->partner_id, 'first_name', true) . ' ' . get_user_meta($student->partner_id, 'last_name', true),
+    //     'parent_email' => $user_partner->user_email,
+    //     'student_email' => $student->email,
+    //     'today' => date('Y-m-d'),
+    // ];
+    // include plugin_dir_path(__FILE__) . 'templates/create-enrollment.php';
+
+    $automatic_documents = apply_filters('load_automatic_documents', []);
+    foreach ($automatic_documents as $key => $document) {
+        $html = $document->header . $document->content . $document->footer;
+    }
+
+    include plugin_dir_path(__FILE__) . 'templates/create-document-automatic.php';
 }
 
 function modal_create_password()

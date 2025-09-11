@@ -9,7 +9,7 @@
             <span id="close-modal-enrollment" style="float: right; cursor: pointer"><span
                     class='dashicons dashicons-no-alt'></span></span>
             <div class="modal-body" id="content-pdf">
-
+                <?php echo $html ?>
             </div>
             <div class="modal-footer" style="text-align: center; display: block">
                 <button type="button" class="submit button-create-enrollment" id="saveSignatures">Save</button>
