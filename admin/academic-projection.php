@@ -1401,7 +1401,7 @@ function table_notes_period_html($inscriptions)
 
     // Inicio de la plantilla HTML usando Heredoc para mejor legibilidad
     $html = <<<HTML
-<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;">
+<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;" id="tablenotcustom">
     <thead>
         <tr>
             <th scope="col" class="manage-column">Subject - Code</th>
@@ -1474,7 +1474,7 @@ function table_notes_summary_html($projection)
 
     // Usar la sintaxis de Heredoc para una plantilla HTML más limpia y segura
     $html = <<<HTML
-<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
+<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;' id="tablenotcustom">
     <tbody>
         <tr><td colspan='12'>Total Quality Points: %s</td></tr>
         <tr><td colspan='12'>Earned CH: %s</td></tr>
