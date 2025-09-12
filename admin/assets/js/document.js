@@ -718,65 +718,65 @@ document.addEventListener("DOMContentLoaded", function () {
               margin: margin,
               filename: 'document.pdf',
               image: { type: "jpeg", quality: 1 },
-              jsPDF: { 
-                  unit: unit, 
-                  format: paper_format, 
+              jsPDF: {
+                  unit: unit,
+                  format: paper_format,
                   orientation: orientation,
                   hotfixes: ["px_scaling"]
               },
-              html2canvas: { 
+              html2canvas: {
                   scale: 3,
                   useCORS: true
               },
               pagebreak: { after: ".pagebreak" },
           };
-  
+
           // Generar el PDF
           const pdf = await html2pdf().set(opt).from(element).toPdf().get('pdf');
-  
+
           if (orientation == 'portrait') {
-            const pageCount = pdf.internal.getNumberOfPages();
+              const pageCount = pdf.internal.getNumberOfPages();
 
-            // Capturar el contenido del header
-            const headerElement = document.getElementById("header-document");
-            let imgDataHeader = '';
-            let canvasHeader = null;
-            if (headerElement) {
-              canvasHeader = await html2canvas(headerElement, { scale: 2 });
-              imgDataHeader = canvasHeader.toDataURL("image/jpeg");
-            }
-    
-            // Capturar el contenido del footer
-            const footerElement = document.getElementById("footer-document");
-            let imgData = '';
-            let canvas = null;
-            if (footerElement) {
-              canvas = await html2canvas(footerElement, { scale: 2 });
-              imgData = canvas.toDataURL("image/jpeg");
-            }
+              // Capturar el contenido del header
+              const headerElement = document.getElementById("header-document");
+              let imgDataHeader = '';
+              let canvasHeader = null;
+              if (headerElement) {
+                  canvasHeader = await html2canvas(headerElement, { scale: 2 });
+                  imgDataHeader = canvasHeader.toDataURL("image/jpeg");
+              }
 
-            // Agregar el footer manualmente
-            for (let i = 1; i <= pageCount; i++) {
-                pdf.setPage(i);
-                const imgWidth = pdf.internal.pageSize.width; // Ancho de la imagen igual al ancho de la página
+              // Capturar el contenido del footer
+              const footerElement = document.getElementById("footer-document");
+              let imgData = '';
+              let canvas = null;
+              if (footerElement) {
+                  canvas = await html2canvas(footerElement, { scale: 2 });
+                  imgData = canvas.toDataURL("image/jpeg");
+              }
 
-                // Header
-                if (headerElement) {
-                  const imgHeightHeader = (canvasHeader.height * imgWidth) / canvasHeader.width; // Mantener la proporción
-                  pdf.addImage(imgDataHeader, 'JPEG', 0, 0, imgWidth, imgHeightHeader);
-                }
+              // Agregar el footer manualmente
+              for (let i = 1; i <= pageCount; i++) {
+                  pdf.setPage(i);
+                  const imgWidth = pdf.internal.pageSize.width; // Ancho de la imagen igual al ancho de la página
 
-                // Footer
-                if (footerElement) {
-                  const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantener la proporción
-                  const y = pdf.internal.pageSize.height - imgHeight; // Posición Y para que esté en la parte inferior
-                  pdf.addImage(imgData, 'JPEG', 0, y, imgWidth, imgHeight);
-                }
-            }
+                  // Header
+                  if (headerElement) {
+                      const imgHeightHeader = (canvasHeader.height * imgWidth) / canvasHeader.width; // Mantener la proporción
+                      pdf.addImage(imgDataHeader, 'JPEG', 0, 0, imgWidth, imgHeightHeader);
+                  }
+
+                  // Footer
+                  if (footerElement) {
+                      const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantener la proporción
+                      const y = pdf.internal.pageSize.height - imgHeight; // Posición Y para que esté en la parte inferior
+                      pdf.addImage(imgData, 'JPEG', 0, y, imgWidth, imgHeight);
+                  }
+              }
           }
-  
-          // Guardar el PDF
-          pdf.save('document.pdf'); // No se usa .then() aquí
+
+          // Guardar el PDF una sola vez
+          pdf.save('document.pdf');
           download_grades.disabled = false; // Habilitar el botón nuevamente
       });
   }
