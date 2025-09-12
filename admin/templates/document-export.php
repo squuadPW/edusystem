@@ -6,13 +6,12 @@
 
 <div id="modal-grades" class="modal" style="overflow: auto; padding: 0 !important">
     <div class="modal-content modal-document-export">
-        <span id="close-modal-grades" style="float: right; cursor: pointer"><span
-                class='dashicons dashicons-no-alt'></span></span>
-        <div class="modal-body" id="content-pdf" style="padding: 0 !important; margin: 0 !important; padding-bottom: 30px !important;">
+        <div class="modal-body" id="content-pdf" style="padding: 0 !important; margin: 0 !important;">
 
         </div>
         <div class="modal-footer" style="text-align: center; display: block">
-            <button type="button" class="button button-primary" id="download-grades">Download</button>
+            <button type="button" class="button button-danger" id="close-modal-grades"><?= __('Close', 'edusystem') ?></button>
+            <button type="button" class="button button-primary" id="download-grades"><?= __('Download', 'edusystem') ?></button>
         </div>
     </div>
 </div>
