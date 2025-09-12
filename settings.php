@@ -34,7 +34,7 @@
 	define('TYPE_PROGRAM', '0'); // AES type of program for endpoint for laravel create user and move documents
 	define('URL_LARAVEL_PPADMIN', 'https://admin-fgu.edusof.com/'); 
 	define('ROLE_ID_STUDENT_MOODLE', 5); // Role ID moodle student
-	define('VERSIONS_JS', '2.2.40'); // Versions JS
+	define('VERSIONS_JS', '2.2.41'); // Versions JS
 	define('MODE', 'SCHOOL');
 	define('LANG', 'en_EN');
 ?>

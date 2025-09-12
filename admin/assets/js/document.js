@@ -587,17 +587,22 @@ document.addEventListener("DOMContentLoaded", function () {
         if (this.readyState == 4 && XHR.status === 200) {
           (async () => {
             const modal_body = document.getElementById("content-pdf");
+            
+            // Eliminar elementos existentes antes de cualquier inserción
+            const existingHeader = document.getElementById("header-document");
+            if (existingHeader) {
+              existingHeader.remove();
+            }
+            const existingFooter = document.getElementById("footer-document");
+            if (existingFooter) {
+              existingFooter.remove();
+            }
+
             if (
               modal_body &&
               this.response.header &&
               this.response.header != ""
             ) {
-              // Eliminar header existente si ya está presente
-              const existingHeader = document.getElementById("header-document");
-              if (existingHeader) {
-                existingHeader.remove();
-              }
-
               // Crear y agregar nuevo header
               const headerElement = document.createElement("div");
               headerElement.id = "header-document";
@@ -676,12 +681,6 @@ document.addEventListener("DOMContentLoaded", function () {
               this.response.footer &&
               this.response.footer != ""
             ) {
-              // Eliminar footer existente si ya está presente
-              const existingFooter = document.getElementById("footer-document");
-              if (existingFooter) {
-                existingFooter.remove();
-              }
-
               // Crear y agregar nuevo footer
               const footerElement = document.createElement("div");
               footerElement.id = "footer-document";
