@@ -1257,7 +1257,7 @@ function new_table_notes_html($student_id, $projection)
     $html_rows = implode('', $rows);
 
     $html = <<<HTML
-        <table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
+        <table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;' id="tablenotcustom">
             <thead>
                 <tr>
                     <th style='width: 70px !important;'>Semester / Academic Year</th>
