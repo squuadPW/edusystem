@@ -105,6 +105,9 @@ $url = wp_get_attachment_url($student->profile_picture);
             </form>
         <?php } ?>
     <?php endif; ?>
+    <?php
+        do_action('extras_student', $user_student);
+    ?>
     <form id="student-form" method="post"
         action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=save_users_details'); ?>">
         <div id="dashboard-widgets" class="metabox-holder">
