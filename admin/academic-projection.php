@@ -1212,6 +1212,70 @@ function table_notes_html($student_id, $projection)
     return $html;
 }
 
+function new_table_notes_html($student_id, $projection)
+{
+    $is_certified_approved = get_status_approved('CERTIFIED NOTES HIGH SCHOOL', $student_id);
+    $projections = json_decode($projection->projection, false);
+
+    if (empty($projections)) {
+        return '';
+    }
+
+    $rows = [];
+    foreach ($projections as $item) {
+        $subject = get_subject_details($item->subject_id);
+        $is_equivalence = ($subject->type === 'equivalence');
+
+        // Determinar valores de forma clara y sin duplicación de lógica
+        $period_name = $is_equivalence 
+            ? ($is_certified_approved ? 'Transfer Credit Evaluated' : '-') 
+            : (get_period_details_code($item->code_period)->name ?? '-');
+
+        $status = $is_equivalence ? ($is_certified_approved ? 'ATT' : '-') : 'T';
+
+        $note_grade = $is_equivalence ? ($is_certified_approved ? 'A' : '-') : get_literal_note($item->calification);
+
+        $note_gpa = $is_equivalence ? ($is_certified_approved ? '*' : '-') : get_calc_note($item->calification);
+
+        $course_title = $item->code_subject . ' - ' . $item->subject;
+        if (isset($item->is_elective) && $item->is_elective) {
+            $course_title .= ' (ELECTIVE)';
+        }
+
+        // Construir la fila
+        $rows[] = <<<ROW
+            <tr>
+                <td>{$period_name}</td>
+                <td>{$course_title}</td>
+                <td>{$status}</td>
+                <td>{$note_grade}</td>
+                <td>{$note_gpa}</td>
+            </tr>
+        ROW;
+    }
+
+    $html_rows = implode('', $rows);
+
+    $html = <<<HTML
+        <table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
+            <thead>
+                <tr>
+                    <th style='width: 70px !important;'>Semester / Academic Year</th>
+                    <th>Course Code and Title</th>
+                    <th style='width: 40px !important;'>Status</th>
+                    <th style='width: 40px !important;'>Grade</th>
+                    <th style='width: 40px !important;'>GPA</th>
+                </tr>
+            </thead>
+            <tbody>
+                {$html_rows}
+            </tbody>
+        </table>
+    HTML;
+
+    return $html;
+}
+
 function table_inscriptions_html($inscriptions)
 {
     $html = '<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;">';

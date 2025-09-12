@@ -1169,6 +1169,12 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
             },
             'wrap' => false,
         ],
+        'new_table_notes' => [
+            'value' => function () use ($student) {
+                return new_table_notes_html($student->id, get_projection_by_student($student->id));
+            },
+            'wrap' => false,
+        ],
         'table_notes_summary' => [
             'value' => function () use ($student) {
                 return table_notes_summary_html(get_projection_by_student($student->id));
