@@ -146,7 +146,8 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Successfully generated virtual classroom for the student.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
             exit;
-        } if (isset($_GET['action']) && $_GET['action'] == 'generate_enrollments_moodle') {
+        }
+        if (isset($_GET['action']) && $_GET['action'] == 'generate_enrollments_moodle') {
             generate_enroll_student();
             setcookie('message', __('Students successfully enrolled in moodle.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
@@ -1147,64 +1148,94 @@ function update_count_moodle_pending($count_fixed = '')
 
 function table_notes_html($student_id, $projection)
 {
-    $html = '';
+    // Usar la sintaxis de Heredoc para un HTML más limpio y legible
+    $html = <<<HTML
+<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;' id="tablenotcustom">
+    <thead>
+        <tr>
+            <th style='width: 70px !important;'>CODE</th>
+            <th>COURSE</th>
+            <th style='width: 40px !important;'>CH</th>
+            <th style='width: 40px !important;'>0-100</th>
+            <th style='width: 40px !important;'>0-4</th>
+            <th style='width: 150px !important;'>PERIOD</th>
+        </tr>
+    </thead>
+    <tbody>
+HTML;
 
-    $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
-                <thead>
-                    <tr>
-                        <th style='width: 70px !important;'>CODE</th>
-                        <th>COURSE</th>
-                        <th style='width: 40px !important;'>CH</th>
-                        <th style='width: 40px !important;'>0-100</th>
-                        <th style='width: 40px !important;'>0-4</th>
-                        <th style='width: 150px !important;'>PERIOD</th>
-                    </tr>
-                </thead>
-                <tbody>";
+    // Decodificar la proyección una sola vez
+    $projections = json_decode($projection->projection);
+    if (empty($projections)) {
+        return $html . "</tbody></table>";
+    }
 
-    // Procesar cada proyección
-    foreach (json_decode($projection->projection) as $key => $projection_for) {
-        $download_grades = get_status_approved('CERTIFIED NOTES HIGH SCHOOL', $student_id);
-        $subject = get_subject_details($projection_for->subject_id);
-        $period_name = '';
-        $period = get_period_details_code($projection_for->code_period);
-        if ($period)
-            $period_name = $period->name;
+    // Cargar datos de manera eficiente antes del bucle para evitar consultas repetitivas
+    $is_approved = get_status_approved('CERTIFIED NOTES HIGH SCHOOL', $student_id);
 
-        // Construir fila
-        $html .= "<tr>
-                    <td>" . $projection_for->code_subject . "</td>
-                    <td>" . $projection_for->subject;
+    // Mapear los detalles de los sujetos y períodos para evitar consultas repetidas dentro del bucle
+    $subject_details_map = [];
+    $period_details_map = [];
 
-        // Electivo
-        $html .= (isset($projection_for->is_elective) && $projection_for->is_elective ? '(ELECTIVE)' : '') . "</td>";
-
-        // CH
-        $html .= "<td>";
-        if ($subject->type != 'equivalence') {
-            $html .= $projection_for->hc;
-        } else {
-            $html .= $download_grades ? 'TR' : '-';
+    foreach ($projections as $item) {
+        $subject_id = $item->subject_id;
+        if (!isset($subject_details_map[$subject_id])) {
+            $subject_details_map[$subject_id] = get_subject_details($subject_id);
         }
-        $html .= "</td>";
 
-        // Nota 0-100
-        $html .= "<td>";
+        $period_code = $item->code_period;
+        if (!isset($period_details_map[$period_code])) {
+            $period_details_map[$period_code] = get_period_details_code($period_code);
+        }
+    }
+
+    // Generar las filas de la tabla
+    foreach ($projections as $projection_for) {
+        $subject = $subject_details_map[$projection_for->subject_id];
+        $period = $period_details_map[$projection_for->code_period];
+        $period_name = $period ? $period->name : '-';
+        $is_equivalence = ($subject && $subject->type == 'equivalence');
+        $tr_or_dash = $is_approved ? 'TR' : '-';
+
+        $ch_value = '';
+        if (!$is_equivalence) {
+            $ch_value = $projection_for->hc;
+        } else {
+            $ch_value = $tr_or_dash;
+        }
+
+        $note_100_value = '';
         if (isset($projection_for->calification) && !empty($projection_for->calification)) {
-            $html .= $projection_for->calification;
+            $note_100_value = $projection_for->calification;
         } else {
-            $html .= ($subject->type != 'equivalence') ? '-' : ($download_grades ? 'TR' : '-');
+            $note_100_value = !$is_equivalence ? '-' : $tr_or_dash;
         }
-        $html .= "</td>";
 
-        // Nota 0-4
-        $html .= "<td>";
-        $html .= ($subject->type != 'equivalence') ? get_calc_note($projection_for->calification) : ($download_grades ? 'TR' : '-');
-        $html .= "</td>";
+        $note_4_value = '';
+        if (!$is_equivalence) {
+            $note_4_value = get_calc_note($projection_for->calification);
+        } else {
+            $note_4_value = $tr_or_dash;
+        }
 
-        // Periodo
-        $html .= "<td>" . (!empty($period_name) ? $period_name : '-') . "</td>
-                </tr>";
+        // Usar sprintf() para una inyección de variables más segura y clara
+        $html .= sprintf(
+            '<tr>
+                <td>%s</td>
+                <td>%s%s</td>
+                <td>%s</td>
+                <td>%s</td>
+                <td>%s</td>
+                <td>%s</td>
+            </tr>',
+            esc_html($projection_for->code_subject),
+            esc_html($projection_for->subject),
+            (isset($projection_for->is_elective) && $projection_for->is_elective ? ' (ELECTIVE)' : ''),
+            esc_html($ch_value),
+            esc_html($note_100_value),
+            esc_html($note_4_value),
+            esc_html($period_name)
+        );
     }
 
     $html .= "</tbody></table>";
@@ -1227,8 +1258,8 @@ function new_table_notes_html($student_id, $projection)
         $is_equivalence = ($subject->type === 'equivalence');
 
         // Determinar valores de forma clara y sin duplicación de lógica
-        $period_name = $is_equivalence 
-            ? ($is_certified_approved ? 'Transfer Credit Evaluated' : '-') 
+        $period_name = $is_equivalence
+            ? ($is_certified_approved ? 'Transfer Credit Evaluated' : '-')
             : (get_period_details_code($item->code_period)->name ?? '-');
 
         $status = $is_equivalence ? ($is_certified_approved ? 'ATT' : '-') : 'T';
@@ -1278,145 +1309,187 @@ function new_table_notes_html($student_id, $projection)
 
 function table_inscriptions_html($inscriptions)
 {
-    $html = '<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;">';
+    // Mapeo de estados para reutilizar la lógica
+    $status_map = [
+        0 => ['color' => 'gray', 'label' => __('To begin', 'edusystem')],
+        1 => ['color' => 'blue', 'label' => __('Active', 'edusystem')],
+        2 => ['color' => 'red', 'label' => __('Unsubscribed', 'edusystem')],
+        3 => ['color' => 'green', 'label' => __('Approved', 'edusystem')],
+        4 => ['color' => 'red', 'label' => __('Reproved', 'edusystem')],
+    ];
 
-    // Encabezados de tabla
-    $html .= '<thead>
-                <tr>
-                    <th scope="col" class="manage-column" style="width: 90px;">' . __('Status', 'edusystem') . '</th>
-                    <th scope="col" class="manage-column">' . __('Subject - Code', 'edusystem') . '</th>
-                    <th scope="col" class="manage-column" style="width: 80px;">' . __('Period - cut', 'edusystem') . '</th>
-                    <th scope="col" class="manage-column" style="width: 80px;">' . __('Calification', 'edusystem') . '</th>
-                </tr>
-              </thead>
-              <tbody>';
+    // Pre-carga de detalles de materias para evitar consultas repetidas
+    $subject_details_cache = [];
+    $processed_inscriptions = [];
 
     foreach ($inscriptions as $inscription) {
-        $subject = get_subject_details_code($inscription->code_subject);
-        $name_subject = $subject ? ($subject->name . ' - ' . $subject->code_subject) : 'N/A';
-
-        // Manejo del estado
-        $status_html = '';
-        switch ($inscription->status_id) {
-            case 0:
-                $status_html = '<div style="color: gray; font-weight: 600">' . strtoupper(__('To begin', 'edusystem')) . '</div>';
-                break;
-            case 1:
-                $status_html = '<div style="color: blue; font-weight: 600">' . strtoupper(__('Active', 'edusystem')) . '</div>';
-                break;
-            case 2:
-                $status_html = '<div style="color: red; font-weight: 600">' . strtoupper(__('Unsubscribed', 'edusystem')) . '</div>';
-                break;
-            case 3:
-                $status_html = '<div style="color: green; font-weight: 600">' . strtoupper(__('Approved', 'edusystem')) . '</div>';
-                break;
-            case 4:
-                $status_html = '<div style="color: red; font-weight: 600">' . strtoupper(__('Reproved', 'edusystem')) . '</div>';
-                break;
+        $code_subject = $inscription->code_subject;
+        if (!isset($subject_details_cache[$code_subject])) {
+            $subject_details_cache[$code_subject] = get_subject_details_code($code_subject);
         }
-
-        // Manejo de calificación
-        $calification = isset($inscription->calification)
-            ? number_format((float) $inscription->calification, 2)
-            : __('N/A', 'edusystem');
-
-        // Construir fila
-        $html .= '<tr>
-                    <td>' . $status_html . '</td>
-                    <td>' . esc_html($name_subject) . '</td>
-                    <td>' . esc_html($inscription->code_period . ' - ' . $inscription->cut_period) . '</td>
-                    <td>' . esc_html($calification) . '</td>
-                  </tr>';
+        $processed_inscriptions[] = $inscription;
     }
 
-    $html .= '</tbody></table>';
+    // Inicio de la plantilla HTML usando Heredoc para mejor legibilidad
+    $html = <<<HTML
+<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;" id="tablenotcustom">
+    <thead>
+        <tr>
+            <th scope="col" class="manage-column" style="width: 90px;">Status</th>
+            <th scope="col" class="manage-column">Subject - Code</th>
+            <th scope="col" class="manage-column" style="width: 80px;">Period - cut</th>
+            <th scope="col" class="manage-column" style="width: 80px;">Calification</th>
+        </tr>
+    </thead>
+    <tbody>
+HTML;
+
+    foreach ($processed_inscriptions as $inscription) {
+        $subject = $subject_details_cache[$inscription->code_subject];
+        $name_subject = $subject ? "{$subject->name} - {$subject->code_subject}" : 'N/A';
+
+        $status_info = $status_map[$inscription->status_id] ?? ['color' => 'black', 'label' => 'N/A'];
+
+        $calification = isset($inscription->calification) && is_numeric($inscription->calification)
+            ? number_format((float) $inscription->calification, 2)
+            : 'N/A';
+
+        // Usar sprintf para construir la fila, sanando los datos
+        $html .= sprintf(
+            '<tr>
+                <td><div style="color: %s; font-weight: 600">%s</div></td>
+                <td>%s</td>
+                <td>%s - %s</td>
+                <td>%s</td>
+            </tr>',
+            esc_attr($status_info['color']),
+            strtoupper(esc_html($status_info['label'])),
+            esc_html($name_subject),
+            esc_html($inscription->code_period),
+            esc_html($inscription->cut_period),
+            esc_html($calification)
+        );
+    }
+
+    $html .= <<<HTML
+    </tbody>
+</table>
+HTML;
+
     return $html;
 }
 
 function table_notes_period_html($inscriptions)
 {
-    $html = '<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;">';
+    // Mapeo de estados para reutilizar la lógica y evitar el switch
+    $status_map = [
+        0 => ['color' => 'gray', 'label' => __('To begin', 'edusystem')],
+        1 => ['color' => 'blue', 'label' => __('Active', 'edusystem')],
+        2 => ['color' => 'red', 'label' => __('Unsubscribed', 'edusystem')],
+        3 => ['color' => 'green', 'label' => __('Approved', 'edusystem')],
+        4 => ['color' => 'red', 'label' => __('Reproved', 'edusystem')],
+    ];
 
-    // Encabezados de tabla
-    $html .= '<thead>
-                <tr>
-                    <th scope="col" class="manage-column">' . __('Subject - Code', 'edusystem') . '</th>
-                    <th scope="col" class="manage-column">' . __('Calification', 'edusystem') . '</th>
-                    <th scope="col" class="manage-column">' . __('Status', 'edusystem') . '</th>
-                </tr>
-              </thead>
-              <tbody>';
-
+    // Pre-carga de detalles de materias para evitar consultas repetidas
+    $subject_details_cache = [];
     foreach ($inscriptions as $inscription) {
-        $subject = get_subject_details_code($inscription->code_subject);
-        $name_subject = $subject ? ($subject->name . ' - ' . $subject->code_subject) : 'N/A';
-
-        // Manejo del estado
-        $status_html = '';
-        switch ($inscription->status_id) {
-            case 0:
-                $status_html = '<div style="color: gray; font-weight: 600">' . strtoupper(__('To begin', 'edusystem')) . '</div>';
-                break;
-            case 1:
-                $status_html = '<div style="color: blue; font-weight: 600">' . strtoupper(__('Active', 'edusystem')) . '</div>';
-                break;
-            case 2:
-                $status_html = '<div style="color: red; font-weight: 600">' . strtoupper(__('Unsubscribed', 'edusystem')) . '</div>';
-                break;
-            case 3:
-                $status_html = '<div style="color: green; font-weight: 600">' . strtoupper(__('Approved', 'edusystem')) . '</div>';
-                break;
-            case 4:
-                $status_html = '<div style="color: red; font-weight: 600">' . strtoupper(__('Reproved', 'edusystem')) . '</div>';
-                break;
+        $code_subject = $inscription->code_subject;
+        if (!isset($subject_details_cache[$code_subject])) {
+            $subject_details_cache[$code_subject] = get_subject_details_code($code_subject);
         }
-
-        // Manejo de calificación
-        $calification = isset($inscription->calification)
-            ? number_format((float) $inscription->calification, 2)
-            : __('N/A', 'edusystem');
-
-        // Construir fila
-        $html .= '<tr>
-                    <td>' . esc_html($name_subject) . '</td>
-                    <td>' . esc_html($calification) . '</td>
-                    <td>' . $status_html . '</td>
-                  </tr>';
     }
 
-    $html .= '</tbody></table>';
+    // Inicio de la plantilla HTML usando Heredoc para mejor legibilidad
+    $html = <<<HTML
+<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;">
+    <thead>
+        <tr>
+            <th scope="col" class="manage-column">Subject - Code</th>
+            <th scope="col" class="manage-column">Calification</th>
+            <th scope="col" class="manage-column">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+HTML;
+
+    foreach ($inscriptions as $inscription) {
+        $subject = $subject_details_cache[$inscription->code_subject];
+        $name_subject = $subject ? "{$subject->name} - {$subject->code_subject}" : 'N/A';
+
+        $status_info = $status_map[$inscription->status_id] ?? ['color' => 'black', 'label' => 'N/A'];
+
+        $calification = isset($inscription->calification) && is_numeric($inscription->calification)
+            ? number_format((float) $inscription->calification, 2)
+            : 'N/A';
+
+        // Usar sprintf para construir la fila, sanando los datos
+        $html .= sprintf(
+            '<tr>
+                <td>%s</td>
+                <td>%s</td>
+                <td><div style="color: %s; font-weight: 600">%s</div></td>
+            </tr>',
+            esc_html($name_subject),
+            esc_html($calification),
+            esc_attr($status_info['color']),
+            strtoupper(esc_html($status_info['label']))
+        );
+    }
+
+    $html .= <<<HTML
+    </tbody>
+</table>
+HTML;
+
     return $html;
 }
 
 function table_notes_summary_html($projection)
 {
-    $sum_quality = 0;
+    $sum_quality = 0.0;
     $earned_ch = 0;
-    $total_quality = 0;
-    $gpa = 0;
+    $total_completed_courses = 0;
 
-    foreach (json_decode($projection->projection) as $key => $projection_for) {
+    // Decodificar la proyección una sola vez y manejar un posible error
+    $projections_data = json_decode($projection->projection);
+    if (empty($projections_data)) {
+        return '<p>' . __('No data to show.', 'edusystem') . '</p>';
+    }
+
+    foreach ($projections_data as $projection_for) {
         $earned_ch += (int) $projection_for->hc;
 
-        if ($projection_for->is_completed && (int) $projection_for->calification) {
-            $total_quality++;
-            $sum_quality += get_calc_note((int) $projection_for->calification);
+        // Validar que la calificación sea un valor numérico y el curso esté completado
+        if (
+            isset($projection_for->is_completed) && $projection_for->is_completed &&
+            isset($projection_for->calification) && is_numeric($projection_for->calification)
+        ) {
+            $total_completed_courses++;
+            $sum_quality += get_calc_note((float) $projection_for->calification);
         }
     }
 
-    // Calcular GPA solo si hay materias completadas
-    $gpa = ($total_quality > 0) ? round($sum_quality / $total_quality, 2) : 0;
+    // Calcular el GPA de forma segura
+    $gpa = ($total_completed_courses > 0) ? round($sum_quality / $total_completed_courses, 2) : 0;
 
-    $html = '';
-    $html .= "<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
-                <tbody>
-                    <tr><td colspan='12'>Total Quality Points: " . $sum_quality . "</td></tr>
-                    <tr><td colspan='12'>Earned CH: " . $earned_ch . "</td></tr>
-                    <tr><td colspan='12'>GPA: " . $gpa . "</td></tr>
-                </tbody>
-            </table>";
+    // Usar la sintaxis de Heredoc para una plantilla HTML más limpia y segura
+    $html = <<<HTML
+<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;'>
+    <tbody>
+        <tr><td colspan='12'>Total Quality Points: %s</td></tr>
+        <tr><td colspan='12'>Earned CH: %s</td></tr>
+        <tr><td colspan='12'>GPA: %s</td></tr>
+    </tbody>
+</table>
+HTML;
 
-    return $html;
+    // Sanear y formatear los datos antes de inyectarlos en el HTML
+    return sprintf(
+        $html,
+        esc_html($sum_quality),
+        esc_html($earned_ch),
+        esc_html($gpa)
+    );
 }
 
 function get_academic_ready($student_id)
