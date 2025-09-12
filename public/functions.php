@@ -2985,7 +2985,7 @@ function load_modal_action_dashboard($student, $roles, $curret_user_id)
     //     }
     // }
 
-    add_action('wp_footer', 'modal_document_automatic');
+    // add_action('wp_footer', 'modal_document_automatic');
 }
 function modal_take_elective()
 {
