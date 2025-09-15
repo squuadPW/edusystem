@@ -272,7 +272,7 @@ function add_admin_form_admission_content()
                 $partner = get_userdata($student->partner_id);
                 $table_users = $wpdb->prefix . 'users';
                 $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
-                $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} WHERE code = {$student->academic_period} ORDER BY created_at ASC");
+                $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} WHERE code = '{$student->academic_period}' ORDER BY created_at ASC");
                 $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $student->email . "'");
                 include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
             }
@@ -1538,7 +1538,7 @@ function load_cuts_period()
     global $wpdb;
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
     $period = $_POST['period'];
-    $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} WHERE code = {$period} ORDER BY created_at ASC");
+    $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} WHERE code = '{$period}' ORDER BY created_at ASC");
     wp_send_json($periods_cuts);
     die();
 }
