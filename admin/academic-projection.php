@@ -1150,7 +1150,7 @@ function table_notes_html($student_id, $projection)
 {
     // Usar la sintaxis de Heredoc para un HTML más limpio y legible
     $html = <<<HTML
-<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;' id="tablenotcustom">
+<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7;' id="tablenotcustom">
     <thead>
         <tr>
             <th style='width: 70px;'>CODE</th>
@@ -1288,7 +1288,7 @@ function new_table_notes_html($student_id, $projection)
     $html_rows = implode('', $rows);
 
     $html = <<<HTML
-        <table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;' id="tablenotcustom">
+        <table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7;' id="tablenotcustom">
             <thead>
                 <tr>
                     <th style='width: 70px;'>Semester / Academic Year</th>
@@ -1332,7 +1332,7 @@ function table_inscriptions_html($inscriptions)
 
     // Inicio de la plantilla HTML usando Heredoc para mejor legibilidad
     $html = <<<HTML
-<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;" id="tablenotcustom">
+<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7;" id="tablenotcustom">
     <thead>
         <tr>
             <th scope="col" class="manage-column" style="width: 90px;">Status</th>
@@ -1401,7 +1401,7 @@ function table_notes_period_html($inscriptions)
 
     // Inicio de la plantilla HTML usando Heredoc para mejor legibilidad
     $html = <<<HTML
-<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7 !important;" id="tablenotcustom">
+<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7;" id="tablenotcustom">
     <thead>
         <tr>
             <th scope="col" class="manage-column">Subject - Code</th>
@@ -1474,7 +1474,7 @@ function table_notes_summary_html($projection)
 
     // Usar la sintaxis de Heredoc para una plantilla HTML más limpia y segura
     $html = <<<HTML
-<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7 !important;' id="tablenotcustom">
+<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7;' id="tablenotcustom">
     <tbody>
         <tr><td colspan='12'>Total Quality Points: %s</td></tr>
         <tr><td colspan='12'>Earned CH: %s</td></tr>
