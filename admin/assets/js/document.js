@@ -587,7 +587,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (this.readyState == 4 && XHR.status === 200) {
           (async () => {
             const modal_body = document.getElementById("content-pdf");
-            
+
             // Eliminar elementos existentes antes de cualquier inserción
             const existingHeader = document.getElementById("header-document");
             if (existingHeader) {
@@ -848,6 +848,59 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => {
         window.scrollTo(0, 0);
       }, 100);
+    });
+  }
+
+  let selectorAcademicPeriod = document.querySelector(
+    "select[name=academic_period]"
+  );
+  let selectorCuts = document.querySelector("select[name=academic_period_cut]");
+
+  // Obtenemos el valor inicial desde el atributo de datos
+  const initialCut = selectorCuts.dataset.initialCut;
+
+  if (selectorAcademicPeriod && selectorCuts) {
+    selectorAcademicPeriod.addEventListener("change", function (e) {
+      console.log(e.target.value);
+      const XHR = new XMLHttpRequest();
+      XHR.open("POST", get_approved_by.url, true);
+      XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      XHR.responseType = "json";
+      XHR.send("action=load_cuts_period&period=" + e.target.value);
+      XHR.onload = function () {
+        if (this.readyState == "4" && XHR.status === 200) {
+          let cuts = this.response;
+
+          // Limpia el select de cortes
+          selectorCuts.innerHTML = "";
+
+          // Agrega la opción por defecto 'Out of term' y la marca como seleccionada si corresponde
+          let defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.text = "Out of term";
+          // Lógica de selección para la opción por defecto
+          if (
+            initialCut === "nocut" ||
+            initialCut === "out" ||
+            initialCut === ""
+          ) {
+            defaultOption.selected = true;
+          }
+          selectorCuts.appendChild(defaultOption);
+
+          // Agrega las nuevas opciones y las marca si coinciden
+          cuts.forEach((cut) => {
+            let option = document.createElement("option");
+            option.value = cut.cut;
+            option.text = cut.cut;
+            // Lógica para seleccionar automáticamente
+            if (option.value === initialCut) {
+              option.selected = true;
+            }
+            selectorCuts.appendChild(option);
+          });
+        }
+      };
     });
   }
 });

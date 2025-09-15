@@ -106,7 +106,7 @@ $url = wp_get_attachment_url($student->profile_picture);
         <?php } ?>
     <?php endif; ?>
     <?php
-        do_action('extras_student', $user_student);
+    do_action('extras_student', $user_student);
     ?>
     <form id="student-form" method="post"
         action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=save_users_details'); ?>">
@@ -183,19 +183,13 @@ $url = wp_get_attachment_url($student->profile_picture);
                                                 for="academic_period_cut"><b><?php _e('Student\'s entry cut', 'edusystem'); ?></b></label><br>
                                             <select name="academic_period_cut" required
                                                 style="width: 100%; <?= ($student->initial_cut == 'noperiod' || $student->initial_cut == 'out') ? 'background-color: red; color: white;' : '' ?>"
-                                                <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>
+                                                data-initial-cut="<?= htmlspecialchars($student->initial_cut) ?>">
                                                 <option value="" <?= $student->initial_cut == 'nocut' || $student->initial_cut == 'out' ? 'selected' : '' ?>>Out of term
                                                 </option>
-                                                <option value="A" <?= $student->initial_cut == 'A' ? 'selected' : '' ?>>A
-                                                </option>
-                                                <option value="B" <?= $student->initial_cut == 'B' ? 'selected' : '' ?>>B
-                                                </option>
-                                                <option value="C" <?= $student->initial_cut == 'C' ? 'selected' : '' ?>>C
-                                                </option>
-                                                <option value="D" <?= $student->initial_cut == 'D' ? 'selected' : '' ?>>D
-                                                </option>
-                                                <option value="E" <?= $student->initial_cut == 'E' ? 'selected' : '' ?>>E
-                                                </option>
+                                                <?php foreach ($periods_cuts as $key => $cut) { ?>
+                                                    <option value="<?= $cut->cut ?>" <?= $student->initial_cut == $cut->cut ? 'selected' : '' ?>><?= $cut->cut ?></option>
+                                                <?php } ?>
                                             </select>
                                         </th>
                                     </tr>

@@ -257,6 +257,8 @@ function add_admin_form_admission_content()
             } else if ($_GET['section_tab'] == 'student_details') {
                 $table_grades = $wpdb->prefix . 'grades';
                 $table_institutes = $wpdb->prefix . 'institutes';
+                $table_academic_periods = $wpdb->prefix . 'academic_periods';
+                $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
                 $roles = $current_user->roles;
                 $documents = get_documents($_GET['student_id']);
                 $fee_payment_ready = get_payments($_GET['student_id'], FEE_INSCRIPTION);
@@ -269,8 +271,8 @@ function add_admin_form_admission_content()
                 $users_signatures_certificates = function_exists('get_users_signatures_certificates') ? get_users_signatures_certificates() : [];
                 $partner = get_userdata($student->partner_id);
                 $table_users = $wpdb->prefix . 'users';
-                $table_academic_periods = $wpdb->prefix . 'academic_periods';
                 $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+                $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} WHERE code = {$student->academic_period} ORDER BY created_at ASC");
                 $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $student->email . "'");
                 include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
             }
@@ -1530,3 +1532,16 @@ function get_data_student()
 
 add_action('wp_ajax_nopriv_get_student_details', 'get_data_student');
 add_action('wp_ajax_get_student_details', 'get_data_student');
+
+function load_cuts_period()
+{
+    global $wpdb;
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+    $period = $_POST['period'];
+    $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} WHERE code = {$period} ORDER BY created_at ASC");
+    wp_send_json($periods_cuts);
+    die();
+}
+
+add_action('wp_ajax_nopriv_load_cuts_period', 'load_cuts_period');
+add_action('wp_ajax_load_cuts_period', 'load_cuts_period');
