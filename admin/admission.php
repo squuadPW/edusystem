@@ -1585,3 +1585,14 @@ function get_fee_product_id($student_id, $type) {
 
     return false;
 }
+
+function get_fee_product_id_program($student_programs, $type) {
+    foreach ($student_programs as $program) {
+        $fees = get_fees_associated_plan($program, $type);
+        foreach ($fees as $fee_product_id) {
+            return $fee_product_id;
+        }
+    }
+
+    return false;
+}

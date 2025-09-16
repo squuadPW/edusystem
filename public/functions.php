@@ -1732,54 +1732,66 @@ function woocommerce_update_cart()
     die();
 }
 
-add_action('wp_ajax_nopriv_fee_update', 'fee_update');
-add_action('wp_ajax_fee_update', 'fee_update');
+function fee_update_optimized() {
+    // Verificar si la solicitud es una llamada AJAX de WordPress.
+    if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+        wp_send_json_error( 'Acceso no autorizado' );
+        return;
+    }
 
-function fee_update()
-{
-    global $woocommerce;
-    $value = $_POST['option'];
-    $id = FEE_INSCRIPTION;
+    // Usar la clase WC()->cart para acceder al carrito de forma segura.
+    $cart = WC()->cart;
 
-    if ($value == 'true') {
-        $woocommerce->cart->add_to_cart($id, 1);
-        $is_complete = returnIsComplete();
+    // Sanitizar y validar los datos de entrada.
+    $value = isset( $_POST['option'] ) ? sanitize_text_field( $_POST['option'] ) : '';
+    $plan_id = isset( $_COOKIE['plan_id'] ) ? sanitize_text_field( $_COOKIE['plan_id'] ) : 0;
 
-        if ($is_complete) {
-            if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
-                if (!empty(get_option('offer_complete'))) {
-                    $woocommerce->cart->apply_coupon(get_option('offer_complete'));
-                }
-            }
-        } else {
-            if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
-                if (!empty(get_option('offer_quote'))) {
-                    $woocommerce->cart->apply_coupon(get_option('offer_quote'));
-                }
-            }
+    // Verificar que los datos necesarios estén presentes.
+    if ( empty( $value ) || empty( $plan_id ) ) {
+        wp_send_json_error( 'Faltan datos en la solicitud.' );
+        return;
+    }
+
+    // Obtener el ID del producto de forma segura.
+    $product_id_registration = get_fee_product_id_program( [ $plan_id ], 'registration' );
+
+    if ( ! $product_id_registration ) {
+        wp_send_json_error( 'No se pudo obtener el ID del producto.' );
+        return;
+    }
+
+    // Lógica para añadir o remover el producto y los cupones.
+    $is_complete = returnIsComplete();
+    $offer_coupon = $is_complete ? get_option( 'offer_complete' ) : get_option( 'offer_quote' );
+    $from_webinar = isset( $_COOKIE['from_webinar'] ) && ! empty( $_COOKIE['from_webinar'] );
+
+    if ( $value === 'true' ) {
+        $cart->add_to_cart( $product_id_registration, 1 );
+
+        if ( ! $from_webinar && ! empty( $offer_coupon ) ) {
+            $cart->apply_coupon( $offer_coupon );
+        }
+    } else {
+        $cart_item_key = $cart->find_product_in_cart( $cart->generate_cart_id( $product_id_registration ) );
+
+        if ( $cart_item_key ) {
+            $cart->remove_cart_item( $cart_item_key );
         }
 
-    } else {
-        $woocommerce->cart->remove_cart_item($woocommerce->cart->generate_cart_id($id));
-        $is_complete = returnIsComplete();
-
-        if ($is_complete) {
-            if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
-                if (!empty(get_option('offer_complete'))) {
-                    $woocommerce->cart->remove_coupon(get_option('offer_complete'));
-                }
-            }
-        } else {
-            if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
-                if (!empty(get_option('offer_quote'))) {
-                    $woocommerce->cart->remove_coupon(get_option('offer_quote'));
-                }
-            }
+        if ( ! $from_webinar && ! empty( $offer_coupon ) ) {
+            $cart->remove_coupon( $offer_coupon );
         }
     }
 
-    $woocommerce->cart->calculate_totals();
+    // Recalcular los totales del carrito.
+    $cart->calculate_totals();
+
+    // Enviar una respuesta exitosa.
+    wp_send_json_success( 'Carrito actualizado correctamente.' );
 }
+
+add_action( 'wp_ajax_nopriv_fee_update', 'fee_update_optimized' );
+add_action( 'wp_ajax_fee_update', 'fee_update_optimized' );
 
 function returnIsComplete()
 {
