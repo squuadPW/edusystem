@@ -2432,25 +2432,19 @@ function apply_scholarship()
 }
 
 add_action('woocommerce_before_calculate_totals', 'woocommerce_custom_price_to_cart_item', 99);
-function woocommerce_custom_price_to_cart_item($cart_object)
-{
+function woocommerce_custom_price_to_cart_item($cart_object) {
     if (!WC()->session->__isset("reload_checkout")) {
         foreach ($cart_object->cart_contents as $key => $value) {
-            if ( isset($value["custom_price"]) ) {
-
-                // Establecer el precio de venta 
+            if (isset($value["custom_price"])) {
+                // Establece el precio de venta (descuento)
                 $value['data']->set_price($value["custom_price"]);
-
-                if( $cart_item['total_quotas'] == 0 || $cart_item['total_quotas'] == 1 ) {
-                    // Establecer el precio de venta (descuento)
-                    $value['data']->set_sale_price($value["custom_price"]);
-
-                    // Establecer el precio original
+                $value['data']->set_sale_price($value["custom_price"]);
+                
+                // Comprueba si el precio original existe y lo establece
+                if (isset($value["custom_price_regular"])) {
                     $value['data']->set_regular_price($value["custom_price_regular"]);
-
-                } 
-
-            } 
+                }
+            }
         }
     }
 }
@@ -2985,7 +2979,7 @@ function load_modal_action_dashboard($student, $roles, $curret_user_id)
     //     }
     // }
 
-    // add_action('wp_footer', 'modal_document_automatic');
+    add_action('wp_footer', 'modal_document_automatic');
 }
 function modal_take_elective()
 {
@@ -3203,7 +3197,9 @@ function modal_document_automatic()
         $html = $document->header . $document->content . $document->footer;
     }
 
-    include plugin_dir_path(__FILE__) . 'templates/create-document-automatic.php';
+    if (count($automatic_documents) > 0) {
+        include plugin_dir_path(__FILE__) . 'templates/create-document-automatic.php';
+    }
 }
 
 function modal_create_password()
