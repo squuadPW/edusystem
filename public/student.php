@@ -388,7 +388,6 @@ function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $r
     $woocommerce->cart->empty_cart();
 
     $woocommerce->cart->add_to_cart($product_id, 1);
-    // $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
     foreach ($fees as $key => $fee) {
         $woocommerce->cart->add_to_cart($fee, 1);
     }
@@ -1065,7 +1064,7 @@ function get_payments($student_id, $product_id = false)
         $payments = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id={$student_id} AND product_id={$product_id}");
         return $payments;
     } else {
-        $products = ['FEE_INSCRIPTION', 'FEE_GRADUATION'];
+        $products = [get_fee_product_id($student_id, 'registration'), get_fee_product_id($student_id, 'graduation')];
         $products_list = "'" . implode("','", $products) . "'";
         $payments = $wpdb->get_row(
             "SELECT * FROM {$table_student_payments}
@@ -1356,8 +1355,8 @@ function set_max_date_student($student_id)
     $table_student_payments = $wpdb->prefix . 'student_payments';
 
     // Define los IDs de productos a excluir
-    $fee_inscription_id = FEE_INSCRIPTION; // Asegúrate de que FEE_INSCRIPTION esté definido globalmente o como constante
-    $fee_graduation_id = FEE_GRADUATION;   // Asegúrate de que FEE_GRADUATION esté definido globalmente o como constante
+    $fee_inscription_id = get_fee_product_id($student_id, 'registration'); // Asegúrate de que FEE_INSCRIPTION esté definido globalmente o como constante
+    $fee_graduation_id = get_fee_product_id($student_id, 'graduation');   // Asegúrate de que FEE_GRADUATION esté definido globalmente o como constante
 
     // Se busca el próximo pago pendiente (status_id = 0, date_payment IS NULL)
     // Excluyendo los product_id de inscripción y graduación

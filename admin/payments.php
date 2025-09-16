@@ -402,7 +402,10 @@ function add_admin_form_payments_content()
                         throw new Exception('Invalid student data');
                     }
 
-                    $product_id = FEE_INSCRIPTION;
+                    $product_id = get_fee_product_id($student->id, 'registration');
+                    if (!$product_id) {
+                        return;
+                    }
                     $customer_id = $student->partner_id;
                     $institute_id = $student->institute_id;
 
@@ -499,7 +502,10 @@ function add_admin_form_payments_content()
                         throw new Exception('Invalid student data');
                     }
 
-                    $product_id = FEE_GRADUATION;
+                    $product_id = get_fee_product_id($student->id, 'graduation');
+                    if (!$product_id) {
+                        return;
+                    }
                     $customer_id = $student->partner_id;
                     $institute_id = $student->institute_id;
 

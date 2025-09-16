@@ -50,31 +50,26 @@ function fee_inscription_payment() {
         exit;
     }
 
-    // 5. Definición de constantes (si no están ya definidas globalmente)
-    // Asumo que FEE_INSCRIPTION y FEE_GRADUATION son constantes definidas en otro lugar.
-    // Si no lo están, podrías definirlas aquí o pasarlas como argumentos si es posible.
-    $fee_inscription  = defined( 'FEE_INSCRIPTION' ) ? FEE_INSCRIPTION : 0; // Asegura un valor por defecto
-    $fee_graduation   = defined( 'FEE_GRADUATION' ) ? FEE_GRADUATION : 0;   // Asegura un valor por defecto
+    $product_id_registration = get_fee_product_id($fee_student_id, 'registration');
 
     // Si las constantes no tienen un valor válido, salimos.
-    if ( $fee_inscription <= 0 || $fee_graduation <= 0 ) {
+    if ( $product_id_registration <= 0 ) {
         wp_redirect( home_url() );
         exit;
     }
 
     // 6. Manipulación del carrito de WooCommerce
     $woocommerce->cart->empty_cart();
-    $woocommerce->cart->add_to_cart( $fee_inscription, 1 );
+    $woocommerce->cart->add_to_cart( $product_id_registration, 1 );
 
     // 7. Consulta a la base de datos de forma segura
     $table_student_payments = $wpdb->prefix . 'student_payments';
 
     // Usar prepare para consultas SQL seguras (evita inyección SQL)
     $payment = $wpdb->get_row( $wpdb->prepare(
-        "SELECT type_payment FROM {$table_student_payments} WHERE student_id = %d AND product_id NOT IN (%d, %d)",
+        "SELECT type_payment FROM {$table_student_payments} WHERE student_id = %d AND product_id NOT IN (%d)",
         $fee_student_id,
-        $fee_inscription,
-        $fee_graduation
+        $product_id_registration
     ) );
 
     // Verificar si se encontró un resultado y acceder a 'type_payment' de forma segura

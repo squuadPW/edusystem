@@ -98,122 +98,6 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 						style="margin: 10px">Change student</button>
 				</div>
 
-				<!-- <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
-					<thead>
-						<tr>
-							<th scope="col" class="manage-column column-payments-log-header">
-								<?= __('Payments', 'edusystem'); ?>
-							</th>
-							<th style="text-align: end">
-								<?php
-								$payments_status = [
-									'registration' => get_payments($student_id, FEE_INSCRIPTION),
-									'graduation' => get_payments($student_id, FEE_GRADUATION),
-									'pending' => get_payments($student_id)
-								];
-
-								$buttons = [
-									['condition' => !$payments_status['registration'], 'name' => 'generate_fee_registration', 'label' => 'Generate fee registration'],
-									['condition' => !$payments_status['graduation'], 'name' => 'generate_fee_graduation', 'label' => 'Generate fee graduation'],
-									['condition' => $payments_status['pending'] == 2, 'name' => '', 'label' => 'Generate next quota order', 'class' => 'button-success']
-								];
-
-								foreach ($buttons as $button) {
-									if ($button['condition']) { ?>
-										<button type="submit" class="button <?= $button['class'] ?? 'button-secondary' ?>"
-											style="margin: 4px" onclick="return confirm('Are you sure?');"
-											name="<?= $button['name'] ?>" value="1">
-											<?= $button['label'] ?>
-										</button>
-									<?php }
-								} ?>
-
-								<input type="hidden" id="amount" name="amount" value="<?= $order_amount ?>" required>
-								<input type="hidden" id="product_id" name="product_id"
-									value="<?= $order_variation_id ?: $order_product_id ?>" required>
-							</th>
-						</tr>
-						<tr>
-							<th scope="col" class="manage-column column-primary column-payment-header">
-								<?= __('Payment', 'edusystem'); ?>
-							</th>
-							<th scope="col" class="manage-column column-expected-header">
-								<?= __('Expected payment date', 'edusystem'); ?>
-							</th>
-							<th scope="col" class="manage-column column-date-payment-header">
-								<?= __('Date of payment made', 'edusystem'); ?>
-							</th>
-							<th scope="col" class="manage-column column-amount-header">
-								<?= __('Amount', 'edusystem'); ?>
-							</th>
-							<th scope="col" class="manage-column column-status-header">
-								<?= __('Status', 'edusystem'); ?>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php foreach ($payments as $payment) { ?>
-							<tr>
-								<td class="column-primary" data-colname="<?= __('Payment', 'edusystem'); ?>">
-									<div style="display: flex; align-items: center; gap: 10px;">
-										<?php if ($payment->status_id == 0) { ?>
-											<button type="submit" class="button button-danger" name="delete_quote"
-												value="<?= $payment->id ?>" onclick="return confirm('Are you sure?');">
-												<span class='dashicons dashicons-trash'></span>
-											</button>
-										<?php } ?>
-
-										<?php
-										$product = wc_get_product($payment->variation_id ?: $payment->product_id);
-										$name_product = $product->get_name();
-										?>
-										<span>#<?= $payment->cuote ?> - <?= $name_product ?></span>
-									</div>
-									<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
-								</td>
-								<td data-colname="<?= __('Expected payment date', 'edusystem'); ?>">
-									<?= $payment->status_id == 1
-										? date('m/d/Y', strtotime(in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment))
-										: '<input type="date" name="date_payment[]" class="date_payment" value="' . ($payment->product_id == FEE_INSCRIPTION || $payment->product_id == FEE_GRADUATION ? $payment->date_payment : $payment->date_next_payment) . '" />';
-									?>
-								</td>
-								<td data-colname="<?= __('Date of payment made', 'edusystem'); ?>">
-									<?= $payment->status_id == 1 ? date('m/d/Y', strtotime($payment->date_payment)) : 'N/A'; ?>
-								</td>
-								<td data-colname="<?= __('Amount', 'edusystem'); ?>">
-									<?= $payment->status_id == 1
-										? wc_price($payment->amount) . '<input type="hidden" name="amount_payment[]" class="amount_payment" value="' . $payment->amount . '" />'
-										: '<input type="number" step="0.01" name="amount_payment[]" class="amount_payment" value="' . $payment->amount . '" />';
-									?>
-								</td>
-								<td data-colname="<?= __('Status', 'edusystem'); ?>">
-									<?= $payment->status_id == 1
-										? '<a target="_blank" href="' . admin_url('admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $payment->order_id) . '"><span style="color: green">View payment</span></a>'
-										: '<span style="color: gray">To pay</span>';
-									?>
-								</td>
-							</tr>
-						<?php } ?>
-					</tbody>
-					<tfoot>
-						<tr>
-							<th>Payments</th>
-							<th style="text-align: end">
-								<div class="payment-actions">
-									<div class="payment-description">
-										<textarea name="description_payment_log" id="description_payment_log"
-											placeholder="Description" style="width: 100%"></textarea>
-									</div>
-									<div>
-										<button type="submit" class="button button-success" name="save_changes" value="1"
-											onclick="return confirm('Are you sure?');">Save changes</button>
-									</div>
-								</div>
-							</th>
-						</tr>
-					</tfoot>
-				</table> -->
-
 				<div class="table-controls-header">
 					<h2 class="section-title"><?= __('Student Payments Overview', 'edusystem'); ?></h2>
 
@@ -221,9 +105,9 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 						<?php
 						// Tu lógica PHP para definir los botones
 						$payments_status = [
-							'registration' => get_payments($student_id, FEE_INSCRIPTION),
-							'graduation' => get_payments($student_id, FEE_GRADUATION),
-							'pending' => get_payments($student_id)
+							'registration' => get_fee_paid($student->id, 'registration'),
+							'graduation' => get_fee_paid($student->id, 'graduation'),
+							'pending' => get_payments($student->id)
 						];
 
 						$buttons = [
@@ -289,14 +173,17 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 								</td>
 								<td data-colname="<?= __('Expected payment date', 'edusystem'); ?>">
 									<?php
+									$product_id_registration = get_fee_product_id($student->id, 'registration');
+									$product_id_graduation = get_fee_product_id($student->id, 'graduation');
+
 									if ($payment->status_id == 1) {
 										// Muestra la fecha formateada y un input hidden con el mismo valor
-										$display_date = date('m/d/Y', strtotime(in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment));
+										$display_date = date('m/d/Y', strtotime(in_array($payment->product_id, [$product_id_registration, $product_id_graduation]) ? $payment->date_payment : $payment->date_next_payment));
 										echo $display_date;
-										echo '<input type="hidden" name="date_payment[]" value="' . date('Y-m-d', strtotime(in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment)) . '" />';
+										echo '<input type="hidden" name="date_payment[]" value="' . date('Y-m-d', strtotime(in_array($payment->product_id, [$product_id_registration, $product_id_graduation]) ? $payment->date_payment : $payment->date_next_payment)) . '" />';
 									} else {
 										// Muestra el input de tipo fecha editable
-										echo '<input type="date" name="date_payment[]" class="date_payment" value="' . date('Y-m-d', strtotime($payment->product_id == FEE_INSCRIPTION || $payment->product_id == FEE_GRADUATION ? $payment->date_payment : $payment->date_next_payment)) . '" />';
+										echo '<input type="date" name="date_payment[]" class="date_payment" value="' . date('Y-m-d', strtotime($payment->product_id == $product_id_registration || $payment->product_id == $product_id_graduation ? $payment->date_payment : $payment->date_next_payment)) . '" />';
 									}
 									?>
 								</td>

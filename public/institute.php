@@ -222,10 +222,7 @@ function set_institute_in_order($order, $id = null): void
     $total_for_fee_calculation = 0.0;
     foreach ($order->get_items() as $item) {
         $product_id = $item->get_product_id();
-        // Asegúrate de que FEE_INSCRIPTION y FEE_GRADUATION estén definidos como constantes
-        // o reemplaza con los IDs de producto reales si no lo son.
         if (!in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION])) {
-            // Usamos get_total() del item, que ya considera la cantidad y el precio.
             $total_for_fee_calculation += (float) $item->get_total();
         }
     }

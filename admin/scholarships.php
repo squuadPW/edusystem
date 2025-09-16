@@ -120,7 +120,10 @@ function add_admin_form_scholarships_content()
 
                 // CREAMOS REGISTRO EN TABLA STUDENT_PAYMENTS
                 if ($fee_inscription == 1) {
-                    $product_id = FEE_INSCRIPTION;
+                    $product_id = get_fee_product_id($student->id, 'registration');
+                    if (!$product_id) {
+                        return;
+                    }
                     $product = wc_get_product($product_id);
                     $amount = $product->get_price();
 

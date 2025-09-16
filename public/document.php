@@ -198,10 +198,12 @@ function check_virtual_access($documents) {
 }
 
 function check_payment_status($wpdb, $table, $student_id) {
+    $product_id_registration = get_fee_product_id($student_id, 'registration');
+    
     return $wpdb->get_row($wpdb->prepare(
         "SELECT * FROM {$table} WHERE student_id = %d AND product_id = %d",
         $student_id, 
-        FEE_INSCRIPTION
+        $product_id_registration
     ));
 }
 
@@ -425,7 +427,8 @@ function save_documents()
                 $partner_id = get_current_user_id();
                 $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
                 $student_id = $student->id;
-                $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = ". FEE_INSCRIPTION);
+                $product_id_registration = get_fee_product_id($student_id, 'registration');
+                $paid = $wpdb->get_row("SELECT * FROM {$table_student_payment} WHERE student_id={$student_id} and product_id = ". $product_id_registration);
                 // VERIFICAR FEE DE INSCRIPCION
 
                 //virtual classroom
