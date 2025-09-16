@@ -837,18 +837,18 @@ function insert_student($order)
 
     $today = new DateTime();
     $age = $today->diff($birth_date_obj)->y;
-
-    $exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '{$student['email']}'");
+    $email = trim($student['email']);
+    $exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '{$email}'");
     if (!$exist) {
         $wpdb->insert($table_students, [
-            'name' => $student['name'],
+            'name' => trim($student['name']),
             'type_document' => $student['type_document'],
             'id_document' => $student['id_document'],
             'academic_period' => $code,
             'initial_cut' => $cut,
-            'middle_name' => $student['middle_name'],
-            'last_name' => $student['last_name'],
-            'middle_last_name' => $student['middle_last_name'],
+            'middle_name' => trim($student['middle_name']),
+            'last_name' => trim($student['last_name']),
+            'middle_last_name' => trim($student['middle_last_name']),
             'birth_date' => date_i18n('Y-m-d', strtotime($student['birth_date'])),
             'grade_id' => (int) $program['initial_grade'],
             'name_institute' => strtoupper($program['name_institute']),
@@ -859,7 +859,7 @@ function insert_student($order)
             'expected_graduation_date' => $program['expected_graduation_date'],
             'partner_id' => $customer_id,
             'phone' => $student['phone'],
-            'email' => $student['email'],
+            'email' => $email,
             'status_id' => 0,
             'set_password' => ($age >= 18 ? 1 : 0),
             'country' => $order->get_billing_country(),
