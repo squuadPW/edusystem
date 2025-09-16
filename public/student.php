@@ -368,7 +368,8 @@ function save_student()
         WC()->cart->empty_cart();
 
         // Agregar nuevo producto
-        WC()->cart->add_to_cart(FEE_GRADUATION, 1);
+        $fee_graduation_id = get_fee_product_id($student->id, 'graduation');
+        WC()->cart->add_to_cart($fee_graduation_id, 1);
 
         // Redireccionar a checkout
         wp_redirect(wc_get_checkout_url());
@@ -1355,8 +1356,8 @@ function set_max_date_student($student_id)
     $table_student_payments = $wpdb->prefix . 'student_payments';
 
     // Define los IDs de productos a excluir
-    $fee_inscription_id = get_fee_product_id($student_id, 'registration'); // Asegúrate de que FEE_INSCRIPTION esté definido globalmente o como constante
-    $fee_graduation_id = get_fee_product_id($student_id, 'graduation');   // Asegúrate de que FEE_GRADUATION esté definido globalmente o como constante
+    $fee_inscription_id = get_fee_product_id($student_id, 'registration');
+    $fee_graduation_id = get_fee_product_id($student_id, 'graduation');
 
     // Se busca el próximo pago pendiente (status_id = 0, date_payment IS NULL)
     // Excluyendo los product_id de inscripción y graduación
