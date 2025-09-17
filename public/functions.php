@@ -2223,11 +2223,11 @@ function fee_inscription_button()
     $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id = {$partner_id}");
     foreach ($students as $key => $student) {
         $product_id_registration = get_fee_product_id($student->id, 'registration');
-        $paid = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id = {$student->id} and product_id = " . $product_id_registration);
-        if ($paid) {
+        if (!$product_id_registration) {
             unset($students[$key]);
         }
     }
+
     // VERIFICAR FEE DE INSCRIPCION
     include(plugin_dir_path(__FILE__) . 'templates/fee-inscription-payment.php');
 }

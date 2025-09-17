@@ -53,7 +53,7 @@ function fee_inscription_payment() {
     $product_id_registration = get_fee_product_id($fee_student_id, 'registration');
 
     // Si las constantes no tienen un valor válido, salimos.
-    if ( $product_id_registration <= 0 ) {
+    if (!$product_id_registration) {
         wp_redirect( home_url() );
         exit;
     }

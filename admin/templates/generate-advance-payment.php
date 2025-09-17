@@ -111,9 +111,9 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 						];
 
 						$buttons = [
-							['condition' => !$payments_status['registration'], 'name' => 'generate_fee_registration', 'label' => 'Generate fee registration'],
-							['condition' => !$payments_status['graduation'], 'name' => 'generate_fee_graduation', 'label' => 'Generate fee graduation'],
-							['condition' => $payments_status['pending'] == 2, 'name' => '', 'label' => 'Generate next quota order', 'class' => 'button-success']
+							['condition' => !$payments_status['registration'], 'name' => 'generate_fee_registration', 'label' => 'Generate registration fee order'],
+							['condition' => !$payments_status['graduation'], 'name' => 'generate_fee_graduation', 'label' => 'Generate graduation fee order'],
+							['condition' => $payments_status['pending'] == 2, 'name' => '', 'label' => 'Generate next installment order', 'class' => 'button-success']
 						];
 
 						foreach ($buttons as $button) {

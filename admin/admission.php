@@ -1553,6 +1553,7 @@ function get_fee_paid($student_id, $type) {
 function get_fee_product_id($student_id, $type) {
     global $wpdb;
     $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
+    $table_student_payments = $wpdb->prefix . 'student_payments';
 
     $student_programs = $wpdb->get_results(
         $wpdb->prepare(
@@ -1570,7 +1571,7 @@ function get_fee_product_id($student_id, $type) {
             // Verifica si el pago existe.
             $is_paid = $wpdb->get_var(
                 $wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND product_id = %d",
+                    "SELECT COUNT(*) FROM {$table_student_payments} WHERE student_id = %d AND product_id = %d",
                     $student_id,
                     $fee_product_id
                 )

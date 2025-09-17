@@ -653,7 +653,7 @@ function get_fees_associated_plan($identificator, $type_fee = null)
     $table_admission_fees = $wpdb->prefix . 'admission_fees';
 
     // Construye la base de la consulta SQL y los argumentos.
-    $sql = "SELECT product_id FROM {$table_admission_fees} WHERE programs LIKE %s";
+    $sql = "SELECT product_id FROM {$table_admission_fees} WHERE is_active = 1 AND programs LIKE %s";
     $args = ['%"' . $wpdb->esc_like($identificator) . '"%'];
 
     // Agrega la condición de tipo si existe.
