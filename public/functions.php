@@ -2047,7 +2047,9 @@ function reload_payment_table()
     $value = $_POST['option'];
     global $woocommerce;
     $cart = $woocommerce->cart->get_cart();
-    $id = FEE_INSCRIPTION;
+    $plan_id = isset( $_COOKIE['plan_id'] ) ? sanitize_text_field( $_COOKIE['plan_id'] ) : 0;
+    $product_id_registration = get_fee_product_id_program( [ $plan_id ], 'registration' );
+    $id = $product_id_registration;
     $filtered_products = array_filter($cart, function ($product) use ($id) {
         return $product['product_id'] != $id;
     });
@@ -2070,9 +2072,9 @@ function reload_payment_table()
                     ?>
                     <table class="payment-parts-table mt-5">
                         <tr>
-                            <th class="payment-parts-table-header">Payment</th>
-                            <th class="payment-parts-table-header">Next date payment</th>
-                            <th class="payment-parts-table-header">Amount</th>
+                            <th class="payment-parts-table-header"><?= __('Payment', 'edusystem') ?></th>
+                            <th class="payment-parts-table-header"><?= __('Next date payment', 'edusystem') ?></th>
+                            <th class="payment-parts-table-header"><?= __('Amount', 'edusystem') ?></th>
                         </tr>
                         <?php
                         $date_calc = '';
@@ -2099,7 +2101,7 @@ function reload_payment_table()
                         }
                         ?>
                         <tr>
-                            <th class="payment-parts-table-header text-end" colspan="3">Total</th>
+                            <th class="payment-parts-table-header text-end" colspan="3"><?= __('Total', 'edusystem') ?></th>
                         </tr>
                         <tr class="payment-parts-table-row">
                             <td class="payment-parts-table-data text-end" colspan="3"><?php echo wc_price(($cart_total * $cuotes)) ?></td>
