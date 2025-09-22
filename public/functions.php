@@ -2266,7 +2266,7 @@ function redirect_after_login($redirect_to, $user)
     $roles = $user->roles;
     // Redirigir a home_url() si tiene AL MENOS UNO de estos roles
     if (in_array('student', $roles) || in_array('parent', $roles) || in_array('teacher', $roles)) {
-        return home_url('my-account'); // Usuarios no-admin
+        return wc_get_account_endpoint_url(); // Usuarios no-admin
     } else {
         return admin_url(); // Administradores/editores/otros roles
     }
@@ -2276,7 +2276,7 @@ add_filter('woocommerce_login_redirect', 'redirect_after_login', 999, 2);
 
 function custom_logout_redirect($redirect_to, $request, $user)
 {
-    $redirect_to = home_url('my-account/'); // Redirect to My Account page
+    $redirect_to = wc_get_account_endpoint_url(); // Redirect to My Account page
     return $redirect_to;
 }
 add_filter('logout_redirect', 'custom_logout_redirect', 10, 3);

@@ -65,7 +65,7 @@
 <?php } ?>
 
 <?php if (count($orders) > 0 && (in_array('student', $roles) || in_array('parent', $roles))) { ?>
-	<a href="<?php echo home_url('my-account/orders') ?>">
+	<a href="<?php echo wc_get_account_endpoint_url( 'orders' ); ?>">
 		<div class="text-center info-box"
 			style="margin: 20px 0px; background-color: #ff0000c2; color: white; font-weight: bold; font-size: 18px; -webkit-box-shadow: 0px 0px 10px 0px rgba(255, 0, 0, 1); -moz-box-shadow: 0px 0px 10px 0px rgba(255, 0, 0, 1); box-shadow: 0px 0px 10px 0px rgb(255 0 0 / 75%); border: 0px;">
 			<?= __('You have pending payments', 'edusystem') ?>
