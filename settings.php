@@ -7,4 +7,5 @@
 	define('VERSIONS_JS', '2.2.41'); // Versions JS
 	define('MODE', 'UNI');
 	define('LANG', 'en_EN');
+	define('DISABLE_REDIRECT', true); // Disable redirect to my-account page
 ?>

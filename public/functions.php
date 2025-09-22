@@ -2264,22 +2264,58 @@ function redirect_after_login($redirect_to, $user)
     }
 
     $roles = $user->roles;
-    // Redirigir a home_url() si tiene AL MENOS UNO de estos roles
-    if (in_array('student', $roles) || in_array('parent', $roles) || in_array('teacher', $roles)) {
-        return wc_get_account_endpoint_url(); // Usuarios no-admin
+    // Si está definida DISABLE_REDIRECT y es true, agregar los extras
+    if (defined('DISABLE_REDIRECT') && DISABLE_REDIRECT) {
+        if (
+            in_array('student', $roles)
+            || in_array('parent', $roles)
+            || in_array('teacher', $roles)
+            || in_array('institutes', $roles)
+            || in_array('alliance', $roles)
+        ) {
+            return wc_get_account_endpoint_url(); // Usuarios no-admin
+        } else {
+            return admin_url(); // Administradores/editores/otros roles
+        }
     } else {
-        return admin_url(); // Administradores/editores/otros roles
+        if (
+            in_array('student', $roles)
+            || in_array('parent', $roles)
+            || in_array('teacher', $roles)
+        ) {
+            return wc_get_account_endpoint_url(); // Usuarios no-admin
+        } else {
+            return admin_url(); // Administradores/editores/otros roles
+        }
     }
 }
 
 add_filter('woocommerce_login_redirect', 'redirect_after_login', 999, 2);
 
-function custom_logout_redirect($redirect_to, $request, $user)
-{
-    $redirect_to = wc_get_account_endpoint_url(); // Redirect to My Account page
+/**
+ * Redirecciona al usuario a la página "Mi cuenta" al cerrar sesión.
+ *
+ * @param string $redirect_to URL a la que se redirige por defecto.
+ * @param string $requested_redirect_to URL de redirección solicitada.
+ * @return string La nueva URL de redirección.
+ */
+function custom_logout_redirect_to_my_account( $redirect_to, $requested_redirect_to ) {
+    // Si el usuario no estaba en la página "Mi cuenta" antes de cerrar sesión,
+    // puedes asegurarte de que la redirección solo ocurra en ese caso.
+    // O puedes simplemente forzar la redirección a la página "Mi cuenta".
+    
+    // Obtener la URL de la página "Mi cuenta" de WooCommerce.
+    // Usamos wc_get_page_permalink() para que sea compatible con traducciones.
+    $my_account_page_url = wc_get_page_permalink( 'myaccount' );
+    
+    if ( $my_account_page_url ) {
+        return $my_account_page_url;
+    }
+    
+    // Si no se pudo obtener la URL de "Mi cuenta", devolvemos la URL por defecto
     return $redirect_to;
 }
-add_filter('logout_redirect', 'custom_logout_redirect', 10, 3);
+add_filter( 'logout_redirect', 'custom_logout_redirect_to_my_account', 10, 2 );
 
 function custom_cart_item_name($item_name, $cart_item, $cart_item_key)
 {
@@ -3673,10 +3709,27 @@ function redirect_admins_from_my_account_to_admin()
             global $current_user;
             $roles = $current_user->roles;
 
-            // Redirigir al panel de administración
-            if (!in_array('student', $roles) && !in_array('parent', $roles) && !in_array('teacher', $roles)) {
-                wp_redirect(admin_url());
-                exit();
+            // Si está definido DISABLE_REDIRECT y es true, agregar los extras
+            if (defined('DISABLE_REDIRECT') && DISABLE_REDIRECT) {
+                if (
+                    !in_array('student', $roles)
+                    && !in_array('parent', $roles)
+                    && !in_array('teacher', $roles)
+                    && !in_array('institutes', $roles)
+                    && !in_array('alliance', $roles)
+                ) {
+                    wp_redirect(admin_url());
+                    exit();
+                }
+            } else {
+                if (
+                    !in_array('student', $roles)
+                    && !in_array('parent', $roles)
+                    && !in_array('teacher', $roles)
+                ) {
+                    wp_redirect(admin_url());
+                    exit();
+                }
             }
         }
     }
