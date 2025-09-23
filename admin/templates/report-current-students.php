@@ -56,6 +56,10 @@
 					$heading_text = __('Graduated students', 'edusystem');
 					$name_document = __('Graduated students.xlsx', 'edusystem');
 					break;
+				case 'retired':
+					$heading_text = __('Retired students', 'edusystem');
+					$name_document = __('Retired students.xlsx', 'edusystem');
+					break;
 				case 'scholarships':
 					$heading_text = __('Scholarship students', 'edusystem');
 					$name_document = __('Scholarship students.xlsx', 'edusystem');
@@ -73,21 +77,21 @@
 			action="<?= admin_url('admin.php?page=report-students') . ($_GET['section_tab'] ? '&section_tab=' . $_GET['section_tab'] : ''); ?>">
 			<div style="width:100%;text-align:right;padding-top:10px;">
 				<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
-					<select name="academic_period" id="academic_period">
-						<option value="" selected="selected"><?= __('Select an academic period', 'edusystem'); ?></option>
+					<select name="academic_period" required style="width: 100%;">
+						<option value="" selected>Select an academic period</option>
 						<?php foreach ($periods as $key => $period) { ?>
-							<option value="<?php echo $period->code; ?>" <?= ($_POST['academic_period'] == $period->code) ? 'selected' : ''; ?>>
-								<?php echo $period->name; ?>
+							<option value="<?= $period->code ?>"
+								<?= $_POST['academic_period'] == $period->code ? 'selected' : '' ?>>
+								<?= $period->name ?>
 							</option>
 						<?php } ?>
 					</select>
-					<select name="academic_period_cut" id="academic_period_cut">
-						<option value=""><?= __('Select academic period cut', 'edusystem') ?></option>
-						<option value="A" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'A') ? 'selected' : '') : ''; ?>>A</option>
-						<option value="B" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'B') ? 'selected' : '') : ''; ?>>B</option>
-						<option value="C" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'C') ? 'selected' : '') : ''; ?>>C</option>
-						<option value="D" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'D') ? 'selected' : '') : ''; ?>>D</option>
-						<option value="E" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'E') ? 'selected' : '') : ''; ?>>E</option>
+					<select name="academic_period_cut" required
+						style="width: 100%;">
+						<option value="" selected>Select a term</option>
+						<?php foreach ($periods_cuts as $key => $cut) { ?>
+							<option value="<?= $cut->cut ?>" <?= $_POST['academic_period_cut'] == $cut->cut ? 'selected' : '' ?>><?= $cut->cut ?></option>
+						<?php } ?>
 					</select>
 				<?php } ?>
 				<input type="search" id="search-box-id-search-input" name="s"

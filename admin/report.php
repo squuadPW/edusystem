@@ -81,6 +81,7 @@ function show_report_current_students()
 {
     global $current_user, $wpdb;
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
     $table_grades = $wpdb->prefix . 'grades';
     $total_count_current = (int) get_students_current_count();
     $total_count_active = (int) get_students_active_count();
@@ -90,6 +91,8 @@ function show_report_current_students()
     $total_count_graduated = (int) get_students_graduated_count();
     $total_count_retired = (int) get_students_retired_count();
     $total_count_scholarships = (int) get_students_scholarships_count();
+    $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+    $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut}  ORDER BY created_at ASC");
     $load = load_current_cut();
     $academic_period = $load['code'];
     $cut = $load['cut'];

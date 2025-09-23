@@ -669,6 +669,28 @@ function get_fees_associated_plan($identificator, $type_fee = null)
     return $fees;
 }
 
+function get_fees_associated_plan_complete($identificator, $type_fee = null)
+{
+    global $wpdb;
+    $table_admission_fees = $wpdb->prefix . 'admission_fees';
+
+    // Construye la base de la consulta SQL y los argumentos.
+    $sql = "SELECT * FROM {$table_admission_fees} WHERE is_active = 1 AND programs LIKE %s";
+    $args = ['%"' . $wpdb->esc_like($identificator) . '"%'];
+
+    // Agrega la condición de tipo si existe.
+    if ($type_fee !== null) {
+        $sql .= " AND type_fee = %s";
+        $args[] = $type_fee;
+    }
+
+    // Prepara y ejecuta la consulta.
+    $sql = $wpdb->prepare($sql, ...$args);
+    $fees = $wpdb->get_results($sql); 
+    
+    return $fees;
+}
+
 function get_program_details_by_identificator($identificator)
 {
     global $wpdb;

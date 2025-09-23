@@ -126,7 +126,7 @@ function save_student()
         $career = isset($_POST['career']) ? $_POST['career'] : null;
         $mention = isset($_POST['mention']) ? $_POST['mention'] : null;
         $plan = isset($_POST['plan']) ? $_POST['plan'] : null;
-        $fees = get_fees_associated_plan($plan);
+        $fees = get_fees_associated_plan_complete($plan);
 
         // $program = get_identificator_by_id_program($program_id);
         $grade = isset($_POST['grade']) && !empty($_POST['grade']) ? $_POST['grade'] : 4;
@@ -390,7 +390,10 @@ function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $r
 
     $woocommerce->cart->add_to_cart($product_id, 1);
     foreach ($fees as $key => $fee) {
-        $woocommerce->cart->add_to_cart($fee, 1);
+
+        if ($fee->type_fee == 'registration') {
+            $woocommerce->cart->add_to_cart($fee->product_id, 1);
+        }
     }
 
     if (isset($coupon_code) && !empty($coupon_code)) {
