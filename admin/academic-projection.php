@@ -141,7 +141,7 @@ function add_admin_form_academic_projection_content()
             exit;
         }  else if (isset($_GET['action']) && $_GET['action'] == 'withdraw_student') {
             $student_id = $_GET['student_id'];
-            update_status_student($student_id, 4);
+            update_status_student($student_id, 6);
 
             setcookie('message', __('Student successfully withdrawn.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);

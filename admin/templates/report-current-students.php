@@ -17,6 +17,9 @@
 	<a href="<?= admin_url('admin.php?page=report-students&section_tab=graduated'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'graduated') ? 'nav-tab-active' : ''; ?>"><?= __('Graduated', 'edusystem'); ?>
 		(<strong><?= $total_count_graduated ?></strong>)</a>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=retired'); ?>"
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'retired') ? 'nav-tab-active' : ''; ?>"><?= __('Retired', 'edusystem'); ?>
+		(<strong><?= $total_count_retired ?></strong>)</a>
 	<a href="<?= admin_url('admin.php?page=report-students&section_tab=scholarships'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'scholarships') ? 'nav-tab-active' : ''; ?>"><?= __('Scholarships', 'edusystem'); ?>
 		(<strong><?= $total_count_scholarships ?></strong>)</a>
