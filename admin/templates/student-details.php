@@ -31,23 +31,26 @@ $url = wp_get_attachment_url($student->profile_picture);
         <?php if (current_user_can('can_regenerate_projection')) { ?>
             <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projection_student&student_id=') . $student->id . '&projection_id=' . $projection->id ?>"
                 class="button button-outline-primary"
-                onclick="return confirm('Estas seguro de volver a generar proyeccion academica?');"><?= __('Re-generate projection', 'edusystem'); ?></a>
+                onclick="return confirm(<?= __('Are you sure you want to regenerate academic projections?', 'edusystem') ?>);"><?= __('Re-generate projection', 'edusystem'); ?></a>
         <?php } ?>
+        <a style="margin-left: 5px;" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=withdraw_student&student_id=') . $student->id . '&projection_id=' . $projection->id ?>"
+            class="button button-outline-primary"
+            onclick="return confirm(<?= __('Are you sure you want to expel the student?', 'edusystem') ?>);"><?= sprintf(__('Withdraw student from %s', 'edusystem'), get_bloginfo('name')); ?></a>
         <a style="margin-left: 5px;"
             href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_virtual_classroom&student_id=') . $student->id ?>"
             class="button button-outline-primary"
-            onclick="return confirm('Estas seguro de volver a crearle el aula virtual al estudiante de manera manual?');"><?= __('Virtual clasroom', 'edusystem'); ?></a>
+            onclick="return confirm(<?= __('Are you sure you want to create a virtual classroom for this student?', 'edusystem') ?>);"><?= __('Virtual classroom', 'edusystem'); ?></a>
         <a style="margin-left: 5px;"
             href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_admin&student_id=') . $student->id ?>"
             class="button button-outline-primary"
-            onclick="return confirm('Estas seguro de mandar el estudiante al admin de manera manual?');"><?= __('Admin', 'edusystem'); ?></a>
+            onclick="return confirm(<?= __('Are you sure you want to send this student to the admin manually?', 'edusystem') ?>);"><?= __('Admin', 'edusystem'); ?></a>
         <button style="margin-left: 5px;" data-id="<?= $student->id; ?>" id="button-export-xlsx"
             class="button button-primary"><?= __('Export Excel', 'edusystem'); ?></button>
         <!-- <?php
-        global $current_user;
-        $roles = $current_user->roles;
-        if (in_array('administrator', $roles)) {
-            ?>
+                global $current_user;
+                $roles = $current_user->roles;
+                if (in_array('administrator', $roles)) {
+                ?>
             <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>" target="_blank">
                 <button class="button button-success" style="margin-left: 10px"><?= __('View user', 'edusystem'); ?></button>
             </a>
@@ -157,7 +160,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                                             <select name="grade" autocomplete="off" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <?php foreach ($grades as $grade): ?>
                                                     <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>>
-                                                        <?= $grade->name; ?>     <?= $grade->description; ?>
+                                                        <?= $grade->name; ?> <?= $grade->description; ?>
                                                     </option>
                                                 <?php endforeach; ?>
                                             </select>
@@ -237,7 +240,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                                 global $current_user;
                                 $roles = $current_user->roles;
                                 if (in_array('administrator', $roles)) {
-                                    ?>
+                                ?>
                                     <p style="text-align: center">
                                         <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>"
                                             target="_blank">
@@ -399,7 +402,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                                     global $current_user;
                                     $roles = $current_user->roles;
                                     if (in_array('administrator', $roles)) {
-                                        ?>
+                                    ?>
                                         <p style="text-align: center">
                                             <a href="<?php echo admin_url('user-edit.php?user_id=') . $partner->ID ?>"
                                                 target="_blank">
@@ -854,8 +857,8 @@ $url = wp_get_attachment_url($student->profile_picture);
                         <option value="" selected>Assigns an user</option>
                         <?php foreach ($users_signatures_certificates as $user) {
                             $user_loaded = get_user_by('id', $user->user_id);
-                            ?>
-                            <option value="<?= $user->id ?>"><?= $user_loaded->first_name ?>         <?= $user_loaded->last_name ?>
+                        ?>
+                            <option value="<?= $user->id ?>"><?= $user_loaded->first_name ?> <?= $user_loaded->last_name ?>
                                 (<?= $user->charge ?>)</option>
                         <?php } ?>
                     </select>

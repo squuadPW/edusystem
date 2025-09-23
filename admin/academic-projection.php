@@ -139,6 +139,13 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Successfully generated academic projections for the student.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
             exit;
+        }  else if (isset($_GET['action']) && $_GET['action'] == 'withdraw_student') {
+            $student_id = $_GET['student_id'];
+            update_status_student($student_id, 4);
+
+            setcookie('message', __('Student successfully withdrawn.', 'edusystem'), time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
+            exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'generate_virtual_classroom') {
             $student_id = $_GET['student_id'];
             sync_student_with_moodle($student_id);
