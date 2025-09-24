@@ -103,7 +103,7 @@
 	</form>
 </div>
 
-<div id='assign-scholarship-modal' class='modal' style='display:none'>
+<div id='assign-scholarship-modal' class='modal' style='display:none; z-index: 1000 !important;'>
 	<form id="assign-scholarship-form" method="post"
 		action="<?= admin_url('admin.php?page=add_admin_form_scholarships_content&action=assign_scholarship'); ?>">
 		<div class='modal-content' style="width: 70%;">
@@ -121,8 +121,9 @@
 				<div class="form-group">
 					<label for="scholarship_type">Scholarship type</label><br>
 					<select name="scholarship_type" style="width: 250px" required>
+						<option value="" selected>Select an scholarship</option>
 						<?php foreach ($scholarships_availables as $key => $available) { ?>
-							<option value="<?= $available->id ?>" selected><?= $available->name ?></option>
+							<option value="<?= $available->id ?>"><?= $available->name ?></option>
 						<?php } ?>
 					</select>
 				</div>
