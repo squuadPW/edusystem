@@ -344,44 +344,6 @@ function add_admin_form_available_scholarships_content()
             $is_active = isset($_POST['is_active']) ? ($_POST['is_active'] == 'on' ? 1 : 0) : 0;
             $coupons = [];
 
-            // if ($fee_registration) {
-            //     $available_coupons = obtener_cupones_porcentuales_producto([FEE_INSCRIPTION], $percent_registration);
-            //     foreach ($available_coupons as $key => $coupon) {
-            //         array_push($coupons, $coupon);
-            //     }
-
-            //     if (count($available_coupons) == 0) {
-            //         $coupon_code = 'Discount registration fee ' . $percent_registration . '%';
-            //         $coupon = new WC_Coupon();
-            //         $coupon->set_code($coupon_code);
-            //         $coupon->set_discount_type('percent');
-            //         $coupon->set_amount($percent_registration);
-            //         $coupon->set_product_ids(array(FEE_INSCRIPTION));
-            //         $coupon->save();
-            //         array_push($coupons, $coupon_code);
-            //     }
-            // }
-
-            // if ($program) {
-            //     $product_ids = get_all_woocommerce_product_ids(true);
-            //     $product_ids = array_diff($product_ids, [FEE_INSCRIPTION]);
-            //     $available_coupons = obtener_cupones_porcentuales_producto($product_ids, $percent_program);
-            //     foreach ($available_coupons as $key => $coupon) {
-            //         array_push($coupons, $coupon);
-            //     }
-
-            //     if (count($available_coupons) == 0) {
-            //         $coupon_code = 'Discount program ' . $percent_program . '%';
-            //         $coupon = new WC_Coupon();
-            //         $coupon->set_code($coupon_code);
-            //         $coupon->set_discount_type('percent');
-            //         $coupon->set_amount($percent_program);
-            //         $coupon->set_product_ids($product_ids);
-            //         $coupon->save();
-            //         array_push($coupons, $coupon_code);
-            //     }
-            // }
-
             if (isset($scholarship_id) && !empty($scholarship_id)) {
                 $wpdb->update($table_scholarships_availables, [
                     'name' => $name,

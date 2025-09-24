@@ -62,6 +62,7 @@ function create_tables()
   $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
   $table_pensum = $wpdb->prefix . 'pensum';
   $table_feed = $wpdb->prefix . 'feed';
+  $table_dynamic_links = $wpdb->prefix . 'dynamic_links';
   $table_templates_email = $wpdb->prefix . 'templates_email';
   $table_programs = $wpdb->prefix . 'programs';
   $table_quota_rules = $wpdb->prefix . 'quota_rules';
@@ -313,6 +314,23 @@ function create_tables()
       attach_id_mobile INT(11) NULL,
       link TEXT NOT NULL,
       `max_date` DATE NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id))$charset_collate;"
+  );
+
+  // table_feed
+  dbDelta(
+    "CREATE TABLE " . $table_dynamic_links . " (
+      id INT(11) NOT NULL AUTO_INCREMENT,
+      link TEXT NOT NULL,
+      type_document TEXT NOT NULL,
+      id_document TEXT NOT NULL,
+      name TEXT NOT NULL,
+      last_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      program_identificator TEXT NOT NULL,
+      payment_plan_identificator TEXT NULL,
+      transfer_cr BOOLEAN NOT NULL DEFAULT 0,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );
