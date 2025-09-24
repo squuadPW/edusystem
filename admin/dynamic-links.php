@@ -31,7 +31,7 @@ function add_admin_form_dynamic_link_content()
             $email = sanitize_text_field($_POST['email']);
             $program_identificator = sanitize_text_field($_POST['program_identificator']);
             $payment_plan_identificator = sanitize_text_field($_POST['payment_plan_identificator']);
-            $transfer_cr = sanitize_text_field($_POST['transfer_cr']);
+            $transfer_cr = $_POST['transfer_cr'];
             // Generar un token corto aleatorio para el link
             $link = substr(bin2hex(random_bytes(6)), 0, 10);
 

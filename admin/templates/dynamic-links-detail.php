@@ -35,15 +35,15 @@
                                         <label for="type_document"><b><?= __('Type document', 'edusystem'); ?></b><span class="required">*</span></label>
                                         <select name="type_document" autocomplete="off" required>
                                             <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                                            <option value="passport"><?= __('Passport', 'edusystem'); ?></option>
-                                            <option value="identification_document"><?= __('Identification Document', 'edusystem'); ?></option>
-                                            <option value="ssn"><?= __('SSN', 'edusystem'); ?></option>
+                                            <option value="passport" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->type_document == 'passport') ? 'selected' : ''; ?>><?= __('Passport', 'edusystem'); ?></option>
+                                            <option value="identification_document" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->type_document == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'edusystem'); ?></option>
+                                            <option value="ssn" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->type_document == 'ssn') ? 'selected' : ''; ?>><?= __('SSN', 'edusystem'); ?></option>
                                         </select>
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="id_document"><b><?= __('ID document', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
-                                        <input type="text" ame="id_document"
+                                        <input type="text" name="id_document"
                                             value="<?= $dynamic_link->id_document; ?>" required>
                                     </div>
 
@@ -107,7 +107,7 @@
                             <?php else: ?>
                                 <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                     <button type="submit"
-                                        class="button button-primary"><?= __('Add banner', 'edusystem'); ?></button>
+                                        class="button button-primary"><?= __('Add dynamic link', 'edusystem'); ?></button>
                                 </div>
                             <?php endif; ?>
                         </form>
