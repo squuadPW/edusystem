@@ -264,6 +264,9 @@ function create_tables()
       id INT(11) NOT NULL AUTO_INCREMENT,
       student_id INT(11) NOT NULL,
       scholarship_id INT(11) NOT NULL,
+      status_id INT(11) NOT NULL,
+      termination_date TIMESTAMP NULL,
+      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );
