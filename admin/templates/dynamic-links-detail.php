@@ -93,7 +93,7 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <input style="width: auto !important;" type="checkbox" name="transfer_cr" value="<?= $dynamic_link->transfer_cr; ?>" required>
+                                        <input style="width: auto !important;" type="checkbox" name="transfer_cr" value="<?= $dynamic_link->transfer_cr; ?>">
                                         <label for="transfer_cr"><b><?= __('Transfer CR', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
                                     </div>
                                 </div>
