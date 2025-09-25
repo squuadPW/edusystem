@@ -2,14 +2,17 @@
 
 function add_admin_form_dynamic_link_content()
 {
-
+    global $wpdb;
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         $payment_plans = get_payment_plans();
         $programs = get_student_program();
+        $dynamic_links_email_log = array();
 
         if ($_GET['section_tab'] == 'dynamic_link_details') {
+            $table_dynamic_links_email_log = $wpdb->prefix . 'dynamic_links_email_log';
             $dynamic_link_id = $_GET['dynamic_link_id'];
             $dynamic_link = get_dynamic_link_detail($dynamic_link_id);
+            $dynamic_links_email_log = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_dynamic_links_email_log} WHERE dynamic_link_id=%d ORDER BY id DESC", $dynamic_link_id));
             include(plugin_dir_path(__FILE__) . 'templates/dynamic-links-detail.php');
         }
 
@@ -31,11 +34,14 @@ function add_admin_form_dynamic_link_content()
             $email = sanitize_text_field($_POST['email']);
             $program_identificator = sanitize_text_field($_POST['program_identificator']);
             $payment_plan_identificator = sanitize_text_field($_POST['payment_plan_identificator']);
-            $transfer_cr = $_POST['transfer_cr'];
+            $save_and_send_email = sanitize_text_field($_POST['save_and_send_email']);
+            $transfer_cr = $_POST['transfer_cr'] ?? 0;
+
             // Generar un token corto aleatorio para el link
             $link = substr(bin2hex(random_bytes(6)), 0, 10);
 
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
+
             if (isset($dynamic_link_id) && !empty($dynamic_link_id)) {
                 $wpdb->update($table, [
                     'link' => $link,
@@ -61,7 +67,16 @@ function add_admin_form_dynamic_link_content()
                     'payment_plan_identificator' => $payment_plan_identificator,
                     'transfer_cr' => $transfer_cr
                 ]);
-                wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content'));
+                $dynamic_link_id = $wpdb->insert_id;
+                wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=') . $dynamic_link_id);
+            }
+
+            if ($save_and_send_email == '1') {
+                $table_dynamic_links_email_log = $wpdb->prefix . 'dynamic_links_email_log';
+                $wpdb->insert($table_dynamic_links_email_log, [
+                    'dynamic_link_id' => $dynamic_link_id,
+                    'email' => $email,
+                ]);
             }
 
             exit;
@@ -111,6 +126,8 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
             case 'view_details':
                 $buttons = "<a href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
                 $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&action=delete_dynamic_link&dynamic_link_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'edusystem') . "</a>";
+                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&action=send_email&dynamic_link_id=' . $item['id']) . "' class='button button-success'>" . __('Send Email', 'edusystem') . "</a>";
+                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&action=copy_link&dynamic_link_id=' . $item['id']) . "' class='button button-secondary'>" . __('Copy Link', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return ucwords($item[$column_name]);
@@ -181,7 +198,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                     'id' => $dynamic_links_val['id'],
                     'program' => $program->name,
                     'student' => $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'],
-                    'transfer_credits' => $dynamic_links_val['transfer_credits'],
+                    'transfer_credits' => $dynamic_links_val['transfer_cr'] == 1 ? __('Yes', 'edusystem') : __('No', 'edusystem'),
                     'payment_plan' => $payment_plan->name,
                     'created_at' => $dynamic_links_val['created_at']
                 ]);

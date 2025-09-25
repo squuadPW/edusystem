@@ -61,7 +61,7 @@
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="email"><b><?= __('Email', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
-                                        <input type="text" name="email"
+                                        <input type="email" name="email"
                                             value="<?= $dynamic_link->email; ?>" required>
                                     </div>
                                 </div>
@@ -93,28 +93,63 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <input style="width: auto !important;" type="checkbox" name="transfer_cr" value="<?= $dynamic_link->transfer_cr; ?>">
+                                        <input type="checkbox" id="transfer_cr" style="width: auto !important;" name="transfer_cr" value="1" <?= (isset($dynamic_link) && $dynamic_link->transfer_cr == 1) ? 'checked' : ''; ?>>
                                         <label for="transfer_cr"><b><?= __('Transfer CR', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
                                     </div>
                                 </div>
                             </div>
 
-                            <?php if (isset($dynamic_link) && !empty($dynamic_link)): ?>
-                                <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
-                                    <button type="submit"
-                                        class="button button-primary"><?= __('Saves changes', 'edusystem'); ?></button>
-                                </div>
-                            <?php else: ?>
-                                <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
-                                    <button type="submit"
-                                        class="button button-primary"><?= __('Add dynamic link', 'edusystem'); ?></button>
-                                </div>
-                            <?php endif; ?>
+                            <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
+                                <button onclick='return confirm("Are you sure?");' type="submit"
+                                    class="button button-success" name="save_and_send_email" value="1"><?= __('Save and send email', 'edusystem'); ?></button>
+                                <button type="submit"
+                                    class="button button-primary" name="just_save" value="1"><?= __('Just save', 'edusystem'); ?></button>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <?php if (isset($dynamic_link)) : ?>
+        <div id="dashboard-widgets" class="metabox-holder admin-add-offer">
+            <div id="postbox-container-1" style="width:100% !important;">
+                <div id="normal-sortables">
+                    <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
+                        <div class="inside">
+                            <h3 style="margin-top:20px; text-align:center; border-bottom: 1px solid #8080805c;">
+                                <b><?= __('Email Send History', 'edusystem'); ?></b>
+                            </h3>
+                            <?php if (!empty($dynamic_links_email_log) && is_array($dynamic_links_email_log)): ?>
+                                <div style="overflow-x:auto; margin-top: 15px;">
+                                    <table class="wp-list-table widefat fixed striped" style="width:100%;">
+                                        <thead>
+                                            <tr>
+                                                <th><?= __('Date', 'edusystem'); ?></th>
+                                                <th><?= __('Email', 'edusystem'); ?></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($dynamic_links_email_log as $log): ?>
+                                                <tr>
+                                                    <td><?= esc_html(isset($log->created_at) ? $log->created_at : ''); ?></td>
+                                                    <td><?= esc_html(isset($log->email) ? $log->email : ''); ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php else: ?>
+                                <p style="text-align:center; margin-top:15px;">
+                                    <?= __('No email send records found.', 'edusystem'); ?>
+                                </p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
 
 </div>

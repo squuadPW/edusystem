@@ -63,6 +63,7 @@ function create_tables()
   $table_pensum = $wpdb->prefix . 'pensum';
   $table_feed = $wpdb->prefix . 'feed';
   $table_dynamic_links = $wpdb->prefix . 'dynamic_links';
+  $table_dynamic_links_email_log = $wpdb->prefix . 'dynamic_links_email_log';
   $table_templates_email = $wpdb->prefix . 'templates_email';
   $table_programs = $wpdb->prefix . 'programs';
   $table_quota_rules = $wpdb->prefix . 'quota_rules';
@@ -318,7 +319,7 @@ function create_tables()
       PRIMARY KEY (id))$charset_collate;"
   );
 
-  // table_feed
+  // table_dynamic_links
   dbDelta(
     "CREATE TABLE " . $table_dynamic_links . " (
       id INT(11) NOT NULL AUTO_INCREMENT,
@@ -331,6 +332,16 @@ function create_tables()
       program_identificator TEXT NOT NULL,
       payment_plan_identificator TEXT NULL,
       transfer_cr BOOLEAN NOT NULL DEFAULT 0,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id))$charset_collate;"
+  );
+
+  // table_dynamic_links_email_log
+  dbDelta(
+    "CREATE TABLE " . $table_dynamic_links_email_log . " (
+      id INT(11) NOT NULL AUTO_INCREMENT,
+      dynamic_link_id INT(11) NOT NULL,
+      email TEXT NOT NULL,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );
