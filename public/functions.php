@@ -2702,10 +2702,10 @@ function verificar_acciones_mi_cuenta_optimizado()
     // --- Flujo Lógico Principal ---
 
     // Caso 1: El usuario no tiene un registro de estudiante y necesita llenar información inicial.
-    if (!$student && !get_user_meta($user_id, 'pay_application_password', true) && (in_array('student', $roles) || in_array('parent', $roles))) {
-        add_action('wp_footer', 'modal_fill_info');
-        return; // Termina la ejecución aquí.
-    }
+    // if (!$student && !get_user_meta($user_id, 'pay_application_password', true) && (in_array('student', $roles) || in_array('parent', $roles))) {
+    //     add_action('wp_footer', 'modal_fill_info');
+    //     return; // Termina la ejecución aquí.
+    // }
 
     // Caso 2: El usuario ya tiene un registro de estudiante.
     if ($student) {

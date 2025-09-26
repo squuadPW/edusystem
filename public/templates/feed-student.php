@@ -86,7 +86,7 @@
 	</a>
 <?php } ?>
 
-<?php if (get_user_meta($current_user->ID, 'pay_application_password', true) == '1') { ?>
+<!-- <?php if (get_user_meta($current_user->ID, 'pay_application_password', true) == '1') { ?>
 	<div class="text-center info-box" style="margin: 10px 0px; background-color: #ffff0045;">
 		<p>
 			<?= __("We're excited to have you join our community! As we prepare for your on boarding process, we want to remind you to schedule your meeting with our team to complete your registration", 'edusystem') ?>
@@ -102,7 +102,7 @@
 		</div>
 		</p>
 	</div>
-<?php } ?>
+<?php } ?> -->
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
