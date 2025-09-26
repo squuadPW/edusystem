@@ -657,72 +657,125 @@ function change_billing_phone_checkout_field_value($order)
 
 add_action('woocommerce_checkout_create_order', 'change_billing_phone_checkout_field_value', 10);
 
-add_filter('woocommerce_account_menu_items', 'remove_my_account_links');
+add_filter('woocommerce_account_menu_items', 'optimize_my_account_menu_links', 99);
 
-function remove_my_account_links($menu_links)
+/**
+ * Optimiza y personaliza los enlaces del menú "Mi Cuenta" de WooCommerce.
+ *
+ * @param array $menu_links Array de enlaces del menú por defecto.
+ * @return array Array de enlaces del menú personalizados.
+ */
+function optimize_my_account_menu_links(array $menu_links): array
 {
-    global $current_user;
-    $roles = $current_user->roles;
+    // Obtener información del usuario actual
+    $current_user = wp_get_current_user();
+    $roles = (array) $current_user->roles;
     $user_id = $current_user->ID;
 
-    // Definir el orden base del menú
-    $menu_links = [
-        'dashboard' => __('Dashboard', 'edusystem'),
+    // --- 1. Definir el orden base y limpiar los enlaces por defecto ---
+
+    // El filtro se ejecuta DESPUÉS de que WooCommerce define el menú por defecto.
+    // Es más limpio modificar el array existente que redefinirlo completamente,
+    // a menos que se quiera eliminar ABSOLUTAMENTE todo lo de WooCommerce (lo cual no parece ser el caso).
+
+    // 1.1. Mantener 'dashboard' como el primer elemento y reordenar lo que ya está.
+    // Esto asegura que cualquier otro plugin que use el filtro también pueda funcionar.
+    $new_menu_links = [
+        'dashboard' => $menu_links['dashboard'] ?? __('Dashboard', 'edusystem'),
     ];
 
-    // Eliminar enlaces no deseados
+    // 1.2. Enlaces por defecto a eliminar
     unset($menu_links['downloads']);
     unset($menu_links['edit-address']);
     unset($menu_links['payment-methods']);
-    unset($menu_links['customer-logout']);
+    unset($menu_links['customer-logout']); // El cierre de sesión se suele agregar al final después de la lógica personalizada.
 
-    // Agregar "Payments" para el rol "parent"
-    if (in_array('parent', $roles)) {
-        $menu_links['orders'] = __('Payments', 'edusystem');
+    // 1.3. Eliminar los que ya no necesitamos del array original
+    // para solo trabajar con los que quedan y evitar la redefinición.
+    foreach (['downloads', 'edit-address', 'payment-methods'] as $key) {
+        unset($menu_links[$key]);
     }
 
-    // Agregar "Documents" para el rol "teacher"
-    if (in_array('teacher', $roles)) {
-        $menu_links['teacher-documents'] = __('Documents', 'edusystem');
-        $menu_links['teacher-courses'] = __('My courses', 'edusystem');
+    // --- 2. Lógica de roles y personalización ---
+
+    $is_parent = in_array('parent', $roles);
+    $is_student = in_array('student', $roles);
+    $is_parent_or_student = $is_parent || $is_student;
+    $is_teacher = in_array('teacher', $roles);
+    $is_disabled_redirect_on = get_option('disabled_redirect') === 'on';
+    $is_uni_mode = defined('MODE') && MODE === 'UNI';
+
+    // A. Lógica de Pagos / Órdenes
+    if ($is_disabled_redirect_on) {
+        $new_menu_links['orders'] = __('Payments', 'edusystem');
+        $new_menu_links['my-tickets'] = __('Support Tickets', 'edusystem');
+    } elseif ($is_parent) {
+        // 'orders' se agrega SOLO si 'disabled_redirect' NO está activado y el rol es 'parent'
+        $new_menu_links['orders'] = __('Payments', 'edusystem');
     }
 
-    // Lógica para roles "parent" y "student"
-    if (in_array('parent', $roles) || in_array('student', $roles)) {
+    // B. Lógica de Profesor
+    if ($is_teacher) {
+        $new_menu_links['teacher-documents'] = __('Documents', 'edusystem');
+        $new_menu_links['teacher-courses'] = __('My courses', 'edusystem');
+    }
 
+    // C. Lógica de Padre/Estudiante
+    if ($is_parent_or_student) {
+        $new_menu_links['student'] = __('Student Information', 'edusystem');
 
-        $menu_links['student'] = __('Student Information', 'edusystem');
-
-        if (MODE != 'UNI') {
-
-            // Agregar "Califications"
-            $menu_links['califications'] = __('Califications', 'edusystem');
+        if (!$is_uni_mode) {
+            $new_menu_links['califications'] = __('Califications', 'edusystem');
         }
 
-        if (in_array('parent', $roles)) {
-            if (get_user_meta($user_id, 'status_register', true) == 1) {
-                $menu_links['student-documents'] = __('Documents', 'edusystem');
-            }
+        // D. Lógica de Documentos (Padre/Estudiante)
+        $has_registered_status = false;
+
+        if ($is_parent) {
+            $has_registered_status = get_user_meta($user_id, 'status_register', true) == 1;
         }
 
-        if (in_array('student', $roles)) {
+        if ($is_student && !$has_registered_status) {
             $student_id = get_user_meta($user_id, 'student_id', true);
-            $student = get_student_detail($student_id);
-            if (get_user_meta($student->partner_id, 'status_register', true) == 1) {
-                $menu_links['student-documents'] = __('Documents', 'edusystem');
+            // Asumiendo que get_student_detail devuelve un objeto con la propiedad partner_id
+            $student = $student_id ? get_student_detail($student_id) : null;
+            if ($student && isset($student->partner_id)) {
+                $has_registered_status = get_user_meta($student->partner_id, 'status_register', true) == 1;
             }
+        }
+
+        if ($has_registered_status) {
+            $new_menu_links['student-documents'] = __('Documents', 'edusystem');
+        }
+
+        // E. Lógica de Tickets y Solicitudes
+        // Se mueven aquí para agrupar toda la lógica de 'parent/student'
+        if (!$is_disabled_redirect_on) { // Solo si no se agregaron ya en la sección A
+            $new_menu_links['my-tickets'] = __('Support Tickets', 'edusystem');
+        }
+
+        if (!$is_uni_mode) {
+            $new_menu_links['my-requests'] = __('Requests', 'edusystem');
         }
     }
 
-    $menu_links['edit-account'] = __('Account', 'edusystem');
+    // --- 3. Agregar el enlace de Cuenta y Cierre de Sesión al final ---
 
-    if (in_array('parent', $roles) || in_array('student', $roles)) {
-        $menu_links['my-tickets'] = __('Support Tickets', 'edusystem');
+    // Mantenemos 'edit-account' si existe, o lo agregamos
+    $new_menu_links['edit-account'] = $menu_links['edit-account'] ?? __('Account', 'edusystem');
 
-        if (MODE != 'UNI') {
-            $menu_links['my-requests'] = __('Requests', 'edusystem');
-        }
+    // Mantenemos 'customer-logout' si existe, o lo agregamos
+    $new_menu_links['customer-logout'] = $menu_links['customer-logout'] ?? __('Logout', 'woocommerce');
 
+
+    // Unir los enlaces modificados con el array original (por si acaso otros plugins agregaron algo)
+    $menu_links = array_merge($new_menu_links, $menu_links);
+
+    // Asegurar que el cierre de sesión esté al final
+    if (isset($menu_links['customer-logout'])) {
+        $logout_label = $menu_links['customer-logout'];
+        unset($menu_links['customer-logout']);
+        $menu_links['customer-logout'] = $logout_label;
     }
 
     return $menu_links;
