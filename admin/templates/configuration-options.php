@@ -129,8 +129,8 @@
             <label for="show-table-subjects-coursing"><?= __('Show table subjects coursing'); ?></label>
           </div>
           <div class="form-group" style="padding: 10px">
-            <input type="checkbox" id="show-table-subjects-coursing" name="disabled_redirect" <?php echo get_option('disabled_redirect') == 'on' ? 'checked' : '' ?>>
-            <label for="show-table-subjects-coursing"><?= __('Disable redirection for institutes and alliances to the administrator'); ?></label>
+            <input type="checkbox" id="disabled-redirect" name="disabled_redirect" <?php echo get_option('disabled_redirect') == 'on' ? 'checked' : '' ?>>
+            <label for="disabled-redirect"><?= __('Disable redirection for institutes and alliances to the administrator'); ?></label>
           </div>
         </div>
         <div id="by_moodle" style="display: none">
