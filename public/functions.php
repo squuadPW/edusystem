@@ -2264,8 +2264,7 @@ function redirect_after_login($redirect_to, $user)
     }
 
     $roles = $user->roles;
-    // Si está definida DISABLE_REDIRECT y es true, agregar los extras
-    if (defined('DISABLE_REDIRECT') && DISABLE_REDIRECT) {
+    if (get_option('disabled_redirect') && get_option('disabled_redirect') == 'on') {
         if (
             in_array('student', $roles)
             || in_array('parent', $roles)
@@ -3709,8 +3708,7 @@ function redirect_admins_from_my_account_to_admin()
             global $current_user;
             $roles = $current_user->roles;
 
-            // Si está definido DISABLE_REDIRECT y es true, agregar los extras
-            if (defined('DISABLE_REDIRECT') && DISABLE_REDIRECT) {
+            if (get_option('disabled_redirect') && get_option('disabled_redirect') == 'on') {
                 if (
                     !in_array('student', $roles)
                     && !in_array('parent', $roles)

@@ -290,7 +290,7 @@ add_action('after_setup_theme', 'remove_admin_bar');
 function redirect_alliance_and_institute()
 {
 
-    if (defined('DISABLE_REDIRECT') && DISABLE_REDIRECT) {
+    if (get_option('disabled_redirect') && get_option('disabled_redirect') == 'on') {
         return;
     }
 
@@ -315,7 +315,7 @@ add_action('template_redirect', 'redirect_alliance_and_institute');
 function admin_redirects()
 {
 
-    if (defined('DISABLE_REDIRECT') && DISABLE_REDIRECT) {
+    if (get_option('disabled_redirect') && get_option('disabled_redirect') == 'on') {
         return;
     }
 
