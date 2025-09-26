@@ -2587,6 +2587,7 @@ class TT_All_Payment_Plans_List_Table extends WP_List_Table
         $columns = array(
             // 'program' => __('Program', 'edusystem'),
             'name' => __('Name', 'edusystem'),
+            'identificator' => __('Identificator', 'edusystem'),
             'status' => __('Status', 'edusystem'),
             'price' => __('Price', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
@@ -2620,6 +2621,7 @@ class TT_All_Payment_Plans_List_Table extends WP_List_Table
                     // 'program' => $program->name ?? 'N/A',
                     'status' => $pensum['is_active'] ? 'Active' : 'Inactive',
                     'name' => $pensum['name'],
+                    'identificator' => $pensum['identificator'],
                     'price' => $pensum['total_price'],
                     'description' => $pensum['description'],
                     'created_at' => $pensum['created_at'],
