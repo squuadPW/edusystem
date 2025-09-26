@@ -1280,7 +1280,6 @@ function view_access_classroom()
     global $current_user, $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $roles = $current_user->roles;
-    $url = URL_LARAVEL_PPADMIN;
     $student_access = false;
     $error_access = false;
 
