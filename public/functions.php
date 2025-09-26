@@ -2273,7 +2273,7 @@ function redirect_after_login($redirect_to, $user)
             || in_array('institutes', $roles)
             || in_array('alliance', $roles)
         ) {
-            return wc_get_account_endpoint_url(); // Usuarios no-admin
+            return wc_get_page_permalink('myaccount'); // Usuarios no-admin
         } else {
             return admin_url(); // Administradores/editores/otros roles
         }
@@ -2283,7 +2283,7 @@ function redirect_after_login($redirect_to, $user)
             || in_array('parent', $roles)
             || in_array('teacher', $roles)
         ) {
-            return wc_get_account_endpoint_url(); // Usuarios no-admin
+            return wc_get_page_permalink('myaccount'); // Usuarios no-admin
         } else {
             return admin_url(); // Administradores/editores/otros roles
         }
