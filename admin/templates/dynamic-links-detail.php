@@ -93,16 +93,29 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="payment_plan_identificator"><b><?= __('Manager', 'edusystem'); ?></b><span class="required">*</span></label>
-                                        <select name="manager_id" autocomplete="off" required>
-                                            <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                                            <?php foreach ($managers as $manager): ?>
-                                                <option value="<?= esc_attr($manager->ID) ?>"
-                                                    <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->manager_id == $manager->ID) ? 'selected' : ''; ?>>
-                                                    <?= esc_html($manager->first_name) ?> <?= esc_html($manager->last_name) ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
+                                        <?php
+                                        // Asume que $current_user está disponible y tiene los roles cargados
+                                        if (function_exists('wp_get_current_user')) {
+                                            $current_user = wp_get_current_user();
+                                            $is_manager = in_array('manager', (array) $current_user->roles);
+                                        } else {
+                                            $is_manager = false;
+                                        }
+                                        ?>
+                                        <?php if (!$is_manager): ?>
+                                            <label for="payment_plan_identificator"><b><?= __('Manager', 'edusystem'); ?></b><span class="required">*</span></label>
+                                            <select name="manager_id" autocomplete="off" required>
+                                                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                                                <?php foreach ($managers as $manager): ?>
+                                                    <option value="<?= esc_attr($manager->ID) ?>"
+                                                        <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->manager_id == $manager->ID) ? 'selected' : ''; ?>>
+                                                        <?= esc_html($manager->first_name) ?> <?= esc_html($manager->last_name) ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        <?php else: ?>
+                                            <input type="hidden" name="manager_id" value="<?= esc_attr($current_user->ID); ?>">
+                                        <?php endif; ?>
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
