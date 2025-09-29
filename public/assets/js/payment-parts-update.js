@@ -126,12 +126,12 @@ function payment_table(rule_data) {
 
     // Crear filas de datos
     total = 0;
-    for (let i = 0; i < quotas_quantity; i++) {
+    // Calcular la fecha del próximo pago
+    const date = new Date();
+    for ( let i = 0; i < quotas_quantity; i++ ) {
 
         price = 0;
 
-        // Calcular la fecha del próximo pago
-        const date = new Date();
         if ( i == 1 && initial_payment > 0 ) {
             price = initial_payment;
 
@@ -139,6 +139,10 @@ function payment_table(rule_data) {
 
             price = ( i+1 == quotas_quantity && final_payment > 0 ) ? final_payment : quote_price;
 
+        }
+
+        if( i > 0 ){
+            
             frequency = i * frequency_value;
             date.setFullYear(
                 date.getFullYear() + (type_frequency == "year" ? frequency : 0)
@@ -147,7 +151,6 @@ function payment_table(rule_data) {
                 date.getMonth() + (type_frequency == "month" ? frequency : 0)
             );
             date.setDate(date.getDate() + (type_frequency == "day" ? frequency : 0));
-
         }
         
         if( price == 0 ) continue; 
