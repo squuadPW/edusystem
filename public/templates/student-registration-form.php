@@ -122,7 +122,7 @@
                 <option value="female"><?= __('Female', 'edusystem'); ?></option>
             </select>
         </div>
-        <?php if($use_ethnicity) { ?>
+        <?php if($use_ethnicity != 'false') { ?>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="etnia"><?= __('Ethnicity', 'edusystem'); ?><span class="required">*</span></label>
                 <select class="form-control" id="etnia" required name="etnia">
