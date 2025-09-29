@@ -93,6 +93,7 @@ function add_admin_form_dynamic_link_content()
                 $wpdb->insert($table_dynamic_links_email_log, [
                     'dynamic_link_id' => $dynamic_link_id,
                     'email' => $email,
+                    'created_by' => $created_by,
                 ]);
             }
 
@@ -100,8 +101,10 @@ function add_admin_form_dynamic_link_content()
         } else if ($_GET['action'] == 'delete_dynamic_link') {
             global $wpdb;
             $table = $wpdb->prefix . 'dynamic_links';
+            $table_dynamic_links_email_log = $wpdb->prefix . 'dynamic_links_email_log';
             $dynamic_link_id = $_GET['dynamic_link_id'];
             $wpdb->delete($table, ['id' => $dynamic_link_id]);
+            $wpdb->delete($table_dynamic_links_email_log, ['dynamic_link_id' => $dynamic_link_id]);
 
             setcookie('message', __('Dynamic link deleted.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content'));
@@ -115,7 +118,9 @@ function add_admin_form_dynamic_link_content()
             $name = $dynamic_link_data->name;
             $last_name = $dynamic_link_data->last_name;
             $email = $dynamic_link_data->email;
-            
+            $current_user = wp_get_current_user();
+            $created_by = $current_user->ID;
+
             $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
             $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
             $html .= '<p>' . __('We are pleased to inform you that a dynamic link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
@@ -129,6 +134,7 @@ function add_admin_form_dynamic_link_content()
             $wpdb->insert($table_dynamic_links_email_log, [
                 'dynamic_link_id' => $dynamic_link_id,
                 'email' => $email,
+                'created_by' => $created_by
             ]);
 
             setcookie('message', __('Dynamic link send to email.', 'edusystem'), time() + 10, '/');
@@ -198,8 +204,9 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
         $columns = array(
             'program' => __('Program', 'edusystem'),
             'student' => __('Student', 'edusystem'),
-            'transfer_credits' => __('Transfer Credits', 'edusystem'),
             'payment_plan' => __('Scholarship', 'edusystem'),
+            'transfer_credits' => __('Transfer Credits', 'edusystem'),
+            'created_by' => __('Created by', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
@@ -241,6 +248,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
             foreach ($dynamic_links as $dynamic_links_val) {
                 $payment_plan = get_program_details_by_identificator($dynamic_links_val['payment_plan_identificator']);
                 $program = get_student_program_details_by_identificator($dynamic_links_val['program_identificator']);
+                $created_by_user = get_user_by('id', $dynamic_links_val['created_by']);
                 array_push($dynamic_links_array, [
                     'id' => $dynamic_links_val['id'],
                     'program' => $program->name,
@@ -248,6 +256,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                     'transfer_credits' => $dynamic_links_val['transfer_cr'] == 1 ? __('Yes', 'edusystem') : __('No', 'edusystem'),
                     'payment_plan' => $payment_plan->name,
                     'link' => $dynamic_links_val['link'],
+                    'created_by' => $created_by_user->first_name . ' ' . $created_by_user->last_name,
                     'created_at' => $dynamic_links_val['created_at']
                 ]);
             }

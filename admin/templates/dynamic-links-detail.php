@@ -154,13 +154,18 @@
                                             <tr>
                                                 <th><?= __('Date', 'edusystem'); ?></th>
                                                 <th><?= __('Email', 'edusystem'); ?></th>
+                                                <th><?= __('Send by', 'edusystem'); ?></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php foreach ($dynamic_links_email_log as $log): ?>
+                                                <?php
+                                                    $send_by_user = get_user_by('id', $log->created_by);
+                                                ?>
                                                 <tr>
                                                     <td><?= esc_html(isset($log->created_at) ? $log->created_at : ''); ?></td>
                                                     <td><?= esc_html(isset($log->email) ? $log->email : ''); ?></td>
+                                                    <td><?= esc_html($send_by_user ? $send_by_user->first_name . ' ' . $send_by_user->last_name : ''); ?></td>
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>

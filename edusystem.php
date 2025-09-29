@@ -344,6 +344,7 @@ function create_tables()
       id INT(11) NOT NULL AUTO_INCREMENT,
       dynamic_link_id INT(11) NOT NULL,
       email TEXT NOT NULL,
+      created_by INT(11) NULL,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );
