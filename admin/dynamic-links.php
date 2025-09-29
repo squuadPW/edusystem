@@ -230,15 +230,53 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
         if (isset($_GET['s']) && !empty($_GET['s'])) {
             $search = $wpdb->esc_like($_GET['s']);
             $like = "%{$search}%";
-            $query_search = "WHERE (`name` LIKE %s OR `last_name` LIKE %s OR `email` LIKE %s OR `id_document` LIKE %s)";
+            $query_search = "(`name` LIKE %s OR `last_name` LIKE %s OR `email` LIKE %s OR `id_document` LIKE %s)";
             $query_args = [$like, $like, $like, $like];
         }
 
+        // Filtrado por rol
+        $current_user = wp_get_current_user();
+        $roles = (array) $current_user->roles;
+        $is_manager = in_array('manager', $roles);
+        $is_admin = in_array('administrator', $roles);
         $table = $wpdb->prefix . 'dynamic_links';
+
+        $where = [];
+        $args = [];
         if (!empty($query_search)) {
-            $sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM {$table} {$query_search} ORDER BY id DESC LIMIT %d OFFSET %d", array_merge($query_args, [$per_page, $offset]));
+            $where[] = $query_search;
+            $args = $query_args;
+        }
+
+        if (!$is_admin) {
+            if ($is_manager) {
+                // Manager: ve los que creó y los asignados a él
+                $where[] = "(created_by = %d OR manager_id = %d)";
+                $args[] = $current_user->ID;
+                $args[] = $current_user->ID;
+            } else {
+                // Otros roles: ve los que creó y los de su manager
+                $manager_user_id = get_user_meta($current_user->ID, 'manager_user_id', true);
+                if (!empty($manager_user_id)) {
+                    $where[] = "(created_by = %d OR manager_id = %d)";
+                    $args[] = $current_user->ID;
+                    $args[] = $manager_user_id;
+                } else {
+                    $where[] = "created_by = %d";
+                    $args[] = $current_user->ID;
+                }
+            }
+        }
+
+        $where_sql = '';
+        if (!empty($where)) {
+            $where_sql = 'WHERE ' . implode(' AND ', $where);
+        }
+
+        if (!empty($args)) {
+            $sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM {$table} {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d", array_merge($args, [$per_page, $offset]));
         } else {
-            $sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM {$table} ORDER BY id DESC LIMIT %d OFFSET %d", $per_page, $offset);
+            $sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM {$table} {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d", $per_page, $offset);
         }
         $dynamic_links = $wpdb->get_results($sql, "ARRAY_A");
 
