@@ -33,11 +33,6 @@ $url = wp_get_attachment_url($student->profile_picture);
                 class="button button-outline-primary"
                 onclick="return confirm('<?= __('Are you sure you want to regenerate academic projections?', 'edusystem') ?>');"><?= __('Re-generate projection', 'edusystem'); ?></a>
         <?php } ?>
-        <?php if ($student->status_id < 6) { ?>
-            <a style="margin-left: 5px;" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=withdraw_student&student_id=') . $student->id ?>"
-            class="button button-outline-primary"
-            onclick="return confirm('<?= __('Are you sure you want to expel the student?', 'edusystem') ?>');"><?= sprintf(__('Withdraw student from %s', 'edusystem'), get_bloginfo('name')); ?></a>
-        <?php } ?>
         <a style="margin-left: 5px;"
             href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_virtual_classroom&student_id=') . $student->id ?>"
             class="button button-outline-primary"
@@ -875,6 +870,13 @@ $url = wp_get_attachment_url($student->profile_picture);
         </div>
     </div>
     <?php include(plugin_dir_path(__FILE__) . 'document-export.php'); ?>
+    <?php if ($student->status_id < 6 && current_user_can('withdraw_student')) { ?>
+        <div style="text-align: center; margin: 12px">
+            <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=withdraw_student&student_id=') . $student->id ?>"
+            class="button button-danger"
+            onclick="return confirm('<?= __('Are you sure you want to expel the student?', 'edusystem') ?>');"><?= sprintf(__('Withdraw student from %s', 'edusystem'), get_bloginfo('name')); ?></a>
+        </div>
+    <?php } ?>
 <?php } ?>
 
 <script>
