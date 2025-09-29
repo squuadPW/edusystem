@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 3.6.95
+Version: 3.6.96
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
@@ -333,6 +333,7 @@ function create_tables()
       payment_plan_identificator TEXT NULL,
       transfer_cr BOOLEAN NOT NULL DEFAULT 0,
       manager_id INT(11) NULL,
+      created_by INT(11) NULL,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );

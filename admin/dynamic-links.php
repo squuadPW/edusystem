@@ -37,6 +37,8 @@ function add_admin_form_dynamic_link_content()
             $payment_plan_identificator = sanitize_text_field($_POST['payment_plan_identificator']);
             $save_and_send_email = sanitize_text_field($_POST['save_and_send_email']);
             $manager_id = $_POST['manager_id'];
+            $current_user = wp_get_current_user();
+            $created_by = $current_user->ID;
             $transfer_cr = $_POST['transfer_cr'] ?? 0;
 
             // Generar un token corto aleatorio para el link
@@ -56,6 +58,7 @@ function add_admin_form_dynamic_link_content()
                     'payment_plan_identificator' => $payment_plan_identificator,
                     'transfer_cr' => $transfer_cr,
                     'manager_id' => $manager_id,
+                    'created_by' => $created_by,
                 ], ['id' => $dynamic_link_id]);
                 wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=') . $dynamic_link_id);
             } else {
@@ -69,7 +72,8 @@ function add_admin_form_dynamic_link_content()
                     'program_identificator' => $program_identificator,
                     'payment_plan_identificator' => $payment_plan_identificator,
                     'transfer_cr' => $transfer_cr,
-                    'manager_id' => $manager_id
+                    'manager_id' => $manager_id,
+                    'created_by' => $created_by,
                 ]);
                 $dynamic_link_id = $wpdb->insert_id;
                 wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=') . $dynamic_link_id);
