@@ -99,7 +99,7 @@ function add_admin_form_dynamic_link_content()
                 $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
                 $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
                 $html .= '<p>' . __('We are pleased to inform you that a dynamic link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
-                $html .= '<p><a href="' . site_url('/dynamic-link?token=' . $link) . '">' . site_url('/dynamic-link?token=' . $link) . '</a></p>';
+                $html .= '<p><a href="' . site_url('/registration-link?token=' . $link) . '">' . site_url('/registration-link?token=' . $link) . '</a></p>';
                 $html .= '<p>' . __('If you have any questions or need assistance, please do not hesitate to contact us. We are here to help you with whatever you need.', 'edusystem') . '</p>';
                 $html .= '<p>' . __('Best regards,', 'edusystem') . '</p>';
                 $html .= '<p>' . sprintf(__('%s Team', 'edusystem'), get_bloginfo('name')) . '</p>';
@@ -178,7 +178,7 @@ function add_admin_form_dynamic_link_content()
                             $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
                             $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
                             $html .= '<p>' . __('We are pleased to inform you that a dynamic link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
-                            $html .= '<p><a href="' . site_url('/dynamic-link?token=' . $link) . '">' . site_url('/dynamic-link?token=' . $link) . '</a></p>';
+                            $html .= '<p><a href="' . site_url('/registration-link?token=' . $link) . '">' . site_url('/registration-link?token=' . $link) . '</a></p>';
                             $html .= '<p>' . __('If you have any questions or need assistance, please do not hesitate to contact us. We are here to help you with whatever you need.', 'edusystem') . '</p>';
                             $html .= '<p>' . __('Best regards,', 'edusystem') . '</p>';
                             $html .= '<p>' . sprintf(__('%s Team', 'edusystem'), get_bloginfo('name')) . '</p>';
@@ -231,7 +231,7 @@ function add_admin_form_dynamic_link_content()
             $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
             $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
             $html .= '<p>' . __('We are pleased to inform you that a dynamic link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
-            $html .= '<p><a href="' . site_url('/dynamic-link?token=' . $link) . '">' . site_url('/dynamic-link?token=' . $link) . '</a></p>';
+            $html .= '<p><a href="' . site_url('/registration-link?token=' . $link) . '">' . site_url('/registration-link?token=' . $link) . '</a></p>';
             $html .= '<p>' . __('If you have any questions or need assistance, please do not hesitate to contact us. We are here to help you with whatever you need.', 'edusystem') . '</p>';
             $html .= '<p>' . __('Best regards,', 'edusystem') . '</p>';
             $html .= '<p>' . sprintf(__('%s Team', 'edusystem'), get_bloginfo('name')) . '</p>';
@@ -286,7 +286,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                 $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&action=send_email&dynamic_link_id=' . $item['id']) . "' class='button button-success'>" . __('Send Email', 'edusystem') . "</a>";
                 // Copiar link al portapapeles usando JS (usando el campo 'link' como token)
                 $dynamic_link_token = isset($item['link']) ? $item['link'] : '';
-                $dynamic_link_url = site_url('/dynamic-link?token=' . $dynamic_link_token);
+                $dynamic_link_url = site_url('/registration-link?token=' . $dynamic_link_token);
                 $buttons .= "<a href='javascript:void(0);' onclick=\"copyToClipboard('{$dynamic_link_url}', this)\" style='margin-left: 4px' class='button button-secondary'>" . __('Copy Link', 'edusystem') . "</a>";
                 return $buttons;
             default:
