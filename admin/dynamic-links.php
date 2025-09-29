@@ -106,6 +106,34 @@ function add_admin_form_dynamic_link_content()
             setcookie('message', __('Dynamic link deleted.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content'));
             exit;
+        } else if ($_GET['action'] == 'send_email') {
+            global $wpdb;
+            $table = $wpdb->prefix . 'dynamic_links';
+            $dynamic_link_id = $_GET['dynamic_link_id'];
+            $dynamic_link_data = get_dynamic_link_detail($dynamic_link_id);
+            $link = $dynamic_link_data->link;
+            $name = $dynamic_link_data->name;
+            $last_name = $dynamic_link_data->last_name;
+            $email = $dynamic_link_data->email;
+            
+            $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
+            $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
+            $html .= '<p>' . __('We are pleased to inform you that a dynamic link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
+            $html .= '<p><a href="' . site_url('/dynamic-link?token=' . $link) . '">' . site_url('/dynamic-link?token=' . $link) . '</a></p>';
+            $html .= '<p>' . __('If you have any questions or need assistance, please do not hesitate to contact us. We are here to help you with whatever you need.', 'edusystem') . '</p>';
+            $html .= '<p>' . __('Best regards,', 'edusystem') . '</p>';
+            $html .= '<p>' . sprintf(__('%s Team', 'edusystem'), get_bloginfo('name')) . '</p>';
+            $sender_email->trigger($email, 'Link', $html);
+
+            $table_dynamic_links_email_log = $wpdb->prefix . 'dynamic_links_email_log';
+            $wpdb->insert($table_dynamic_links_email_log, [
+                'dynamic_link_id' => $dynamic_link_id,
+                'email' => $email,
+            ]);
+
+            setcookie('message', __('Dynamic link send to email.', 'edusystem'), time() + 10, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content'));
+            exit;
         } else {
             $list_dynamic_links = new TT_Dynamic_all_List_Table;
             $list_dynamic_links->prepare_items();

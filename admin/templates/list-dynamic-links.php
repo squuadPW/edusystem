@@ -7,6 +7,11 @@
 			<a href="<?= admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=add_dynamic_link'); ?>" class="button button-outline-primary"><?= __('Add Dynamic Link', 'edusystem'); ?></a>
 		</div>
 	</div>
+
+	<?php
+    	include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+    ?>
+
 	<form action="" id="post-filter" method="get">
 		<p class="search-box">
 			<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
