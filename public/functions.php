@@ -176,135 +176,228 @@ function removed_hooks()
 
 add_action('init', 'removed_hooks');
 
-function form_asp_psp($atts)
+/**
+ * Shortcode handler for displaying the student registration form.
+ *
+ * This optimized function reduces code duplication, improves security by sanitizing inputs,
+ * follows WordPress best practices by returning output instead of echoing, and uses
+ * guard clauses for cleaner logic.
+ *
+ * @param array $atts Shortcode attributes.
+ * @return string The HTML output for the form.
+ */
+function form_asp_psp_optimized($atts)
 {
-    // Define los atributos por defecto
+    // 1. Define los atributos por defecto de forma segura.
     $atts = shortcode_atts(
         array(
-            'connected_account' => '',
-            'coupon_code' => '',
-            'flywire_portal_code' => 'FGY',
-            'manager_user_id' => '',
-            'zelle_account' => '',
-            'bank_transfer_account' => '',
-            'register_psp' => false,
-            'hidden_payment_methods' => '',
-            'fixed_fee_inscription' => false,
-            'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
-            'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
-            'max_age' => 18,
-            'limit_age' => 100,
-            'program' => '',
-            'career' => '',
-            'mention' => '',
-            'plan' => '',
-            'birth_date_position' => 'UP',
-            'title' => '',
+            'connected_account'          => '',
+            'coupon_code'                => '',
+            'flywire_portal_code'        => 'FGY',
+            'manager_user_id'            => '',
+            'zelle_account'              => '',
+            'bank_transfer_account'      => '',
+            'register_psp'               => false,
+            'hidden_payment_methods'     => '',
+            'fixed_fee_inscription'      => false,
+            'styles_shortcode'           => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'styles_title_shortcode'     => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'max_age'                    => 18,
+            'limit_age'                  => 100,
+            'program'                    => '',
+            'career'                     => '',
+            'mention'                    => '',
+            'plan'                       => '',
+            'birth_date_position'        => 'UP',
+            'title'                      => '',
             'use_expected_graduation_date' => false,
-            'separate_program_fee' => false
+            'separate_program_fee'       => false,
+            'dynamic_link'               => false
         ),
         $atts,
         'form_asp_psp'
     );
 
-    $connected_account = $atts['connected_account'];
-    $coupon_code = $atts['coupon_code'];
-    $flywire_portal_code = $atts['flywire_portal_code'];
-    $manager_user_id = $atts['manager_user_id'];
-    $zelle_account = $atts['zelle_account'];
-    $register_psp = $atts['register_psp'];
-    $bank_transfer_account = $atts['bank_transfer_account'];
-    $hidden_payment_methods = $atts['hidden_payment_methods'];
-    $styles_shortcode = $atts['styles_shortcode'];
-    $styles_title_shortcode = $atts['styles_title_shortcode'];
-    $fixed_fee_inscription = $atts['fixed_fee_inscription'];
-    $max_age = $atts['max_age'];
-    $limit_age = $atts['limit_age'];
-    $program = $atts['program'];
-    $career = $atts['career'];
-    $mention = $atts['mention'];
-    $plan = $atts['plan'];
-    $birth_date_position = $atts['birth_date_position'];
-    $title = $atts['title'];
-    $use_expected_graduation_date = $atts['use_expected_graduation_date'];
-    $separate_program_fee = $atts['separate_program_fee'];
+    // 2. Convierte los atributos en variables locales de forma segura y concisa.
+    extract($atts, EXTR_SKIP);
 
+    // 3. Inicia el buffer de salida para capturar todo el HTML.
+    ob_start();
+
+    // 4. Lógica de "Dynamic Link" con validaciones y salidas tempranas (Guard Clauses).
+    if ($dynamic_link) {
+        // Valida que el token exista y no esté vacío.
+        if (empty($_GET['token'])) {
+            $error_message = __('Error: Dynamic link token is missing.', 'edusystem');
+            if (function_exists('wc_print_notice')) {
+                wc_print_notice($error_message, 'error');
+            } else {
+                echo '<p style="color:red; text-align:center;">' . esc_html($error_message) . '</p>';
+            }
+            return ob_get_clean(); // Termina la ejecución y devuelve el buffer.
+        }
+
+        // Sanitiza el token antes de usarlo.
+        $token = sanitize_text_field($_GET['token']);
+        $dynamic_link_data = get_dynamic_link_detail_by_link($token);
+
+        if (!$dynamic_link_data) {
+            $error_message = __('Error: Dynamic link token is invalid or expired.', 'edusystem');
+            if (function_exists('wc_print_notice')) {
+                wc_print_notice($error_message, 'error');
+            } else {
+                echo '<p style="color:red; text-align:center;">' . esc_html($error_message) . '</p>';
+            }
+            return ob_get_clean(); // Termina la ejecución.
+        }
+
+        // Si el token es válido, sobrescribe las variables necesarias.
+        $program         = $dynamic_link_data->program_identificator;
+        $plan            = $dynamic_link_data->payment_plan_identificator;
+        $manager_user_id = $dynamic_link_data->manager_user_id;
+    }
+
+    // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del dynamic link).
     $countries = get_countries();
+    // $manager_user_id ya está actualizado si venía de un dynamic link.
     $institutes = get_list_institutes_active($manager_user_id);
-    $grades = get_grades();
-    $programs = get_student_program();
-    add_action('wp_footer', 'modal_continue_checkout');
-    include(plugin_dir_path(__FILE__) . 'templates/asp-psp-registration.php');
+    $grades     = get_grades();
+    $programs   = get_student_program();
+    $careers    = [];
+    $mentions   = [];
+
+    // Añade la acción al footer.
+    // Considerar añadir una verificación para no agregarlo múltiples veces si el shortcode se usa más de una vez.
+    if (!has_action('wp_footer', 'modal_continue_checkout')) {
+        add_action('wp_footer', 'modal_continue_checkout');
+    }
+
+    // 6. Incluye la plantilla que genera el HTML.
+    // Todas las variables ($program, $plan, etc.) están disponibles en este scope.
+    $template_path = plugin_dir_path(__FILE__) . 'templates/student-registration-form-structure.php';
+    if (file_exists($template_path)) {
+        include($template_path);
+    } else {
+        // Manejo de error si la plantilla no existe.
+        echo '<p style="color:red; text-align:center;">' . __('Form template not found.', 'edusystem') . '</p>';
+    }
+
+    // 7. Devuelve el contenido del buffer y lo limpia.
+    return ob_get_clean();
 }
+add_shortcode('form_asp_psp', 'form_asp_psp_optimized');
 
-add_shortcode('form_asp_psp', 'form_asp_psp');
 
-function student_registration_form($atts)
+/**
+ * Shortcode handler for displaying the student registration form.
+ *
+ * This optimized function reduces code duplication, improves security by sanitizing inputs,
+ * follows WordPress best practices by returning output instead of echoing, and uses
+ * guard clauses for cleaner logic.
+ *
+ * @param array $atts Shortcode attributes.
+ * @return string The HTML output for the form.
+ */
+function student_registration_form_optimized($atts)
 {
-    // Define los atributos por defecto
+    // 1. Define los atributos por defecto de forma segura.
     $atts = shortcode_atts(
         array(
-            'connected_account' => '',
-            'coupon_code' => '',
-            'flywire_portal_code' => 'FGY',
-            'manager_user_id' => '',
-            'zelle_account' => '',
-            'bank_transfer_account' => '',
-            'register_psp' => false,
-            'hidden_payment_methods' => '',
-            'fixed_fee_inscription' => false,
-            'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
-            'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
-            'max_age' => 18,
-            'limit_age' => 100,
-            'program' => '',
-            'career' => '',
-            'mention' => '',
-            'plan' => '',
-            'birth_date_position' => 'UP',
-            'title' => '',
+            'connected_account'          => '',
+            'coupon_code'                => '',
+            'flywire_portal_code'        => 'FGY',
+            'manager_user_id'            => '',
+            'zelle_account'              => '',
+            'bank_transfer_account'      => '',
+            'register_psp'               => false,
+            'hidden_payment_methods'     => '',
+            'fixed_fee_inscription'      => false,
+            'styles_shortcode'           => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'styles_title_shortcode'     => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'max_age'                    => 18,
+            'limit_age'                  => 100,
+            'program'                    => '',
+            'career'                     => '',
+            'mention'                    => '',
+            'plan'                       => '',
+            'birth_date_position'        => 'UP',
+            'title'                      => '',
             'use_expected_graduation_date' => false,
-            'separate_program_fee' => false
+            'separate_program_fee'       => false,
+            'dynamic_link'               => false
         ),
         $atts,
         'student_registration_form'
     );
 
-    $connected_account = $atts['connected_account'];
-    $coupon_code = $atts['coupon_code'];
-    $flywire_portal_code = $atts['flywire_portal_code'];
-    $manager_user_id = $atts['manager_user_id'];
-    $zelle_account = $atts['zelle_account'];
-    $register_psp = $atts['register_psp'];
-    $bank_transfer_account = $atts['bank_transfer_account'];
-    $hidden_payment_methods = $atts['hidden_payment_methods'];
-    $styles_shortcode = $atts['styles_shortcode'];
-    $styles_title_shortcode = $atts['styles_title_shortcode'];
-    $fixed_fee_inscription = $atts['fixed_fee_inscription'];
-    $max_age = $atts['max_age'];
-    $limit_age = $atts['limit_age'];
-    $program = $atts['program'];
-    $career = $atts['career'];
-    $mention = $atts['mention'];
-    $plan = $atts['plan'];
-    $birth_date_position = $atts['birth_date_position'];
-    $title = $atts['title'];
-    $use_expected_graduation_date = $atts['use_expected_graduation_date'];
-    $separate_program_fee = $atts['separate_program_fee'];
+    // 2. Convierte los atributos en variables locales de forma segura y concisa.
+    extract($atts, EXTR_SKIP);
 
+    // 3. Inicia el buffer de salida para capturar todo el HTML.
+    ob_start();
+
+    // 4. Lógica de "Dynamic Link" con validaciones y salidas tempranas (Guard Clauses).
+    if ($dynamic_link) {
+        // Valida que el token exista y no esté vacío.
+        if (empty($_GET['token'])) {
+            $error_message = __('Error: Dynamic link token is missing.', 'edusystem');
+            if (function_exists('wc_print_notice')) {
+                wc_print_notice($error_message, 'error');
+            } else {
+                echo '<p style="color:red; text-align:center;">' . esc_html($error_message) . '</p>';
+            }
+            return ob_get_clean(); // Termina la ejecución y devuelve el buffer.
+        }
+
+        // Sanitiza el token antes de usarlo.
+        $token = sanitize_text_field($_GET['token']);
+        $dynamic_link_data = get_dynamic_link_detail_by_link($token);
+
+        if (!$dynamic_link_data) {
+            $error_message = __('Error: Dynamic link token is invalid or expired.', 'edusystem');
+            if (function_exists('wc_print_notice')) {
+                wc_print_notice($error_message, 'error');
+            } else {
+                echo '<p style="color:red; text-align:center;">' . esc_html($error_message) . '</p>';
+            }
+            return ob_get_clean(); // Termina la ejecución.
+        }
+
+        // Si el token es válido, sobrescribe las variables necesarias.
+        $program         = $dynamic_link_data->program_identificator;
+        $plan            = $dynamic_link_data->payment_plan_identificator;
+        $manager_user_id = $dynamic_link_data->manager_user_id;
+    }
+
+    // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del dynamic link).
     $countries = get_countries();
+    // $manager_user_id ya está actualizado si venía de un dynamic link.
     $institutes = get_list_institutes_active($manager_user_id);
-    $grades = get_grades();
-    $programs = get_student_program();
-    $careers = [];
-    $mentions = [];
+    $grades     = get_grades();
+    $programs   = get_student_program();
+    $careers    = [];
+    $mentions   = [];
 
-    add_action('wp_footer', 'modal_continue_checkout');
-    include(plugin_dir_path(__FILE__) . 'templates/student-registration-form-structure.php');
+    // Añade la acción al footer.
+    // Considerar añadir una verificación para no agregarlo múltiples veces si el shortcode se usa más de una vez.
+    if (!has_action('wp_footer', 'modal_continue_checkout')) {
+        add_action('wp_footer', 'modal_continue_checkout');
+    }
+
+    // 6. Incluye la plantilla que genera el HTML.
+    // Todas las variables ($program, $plan, etc.) están disponibles en este scope.
+    $template_path = plugin_dir_path(__FILE__) . 'templates/student-registration-form-structure.php';
+    if (file_exists($template_path)) {
+        include($template_path);
+    } else {
+        // Manejo de error si la plantilla no existe.
+        echo '<p style="color:red; text-align:center;">' . __('Form template not found.', 'edusystem') . '</p>';
+    }
+
+    // 7. Devuelve el contenido del buffer y lo limpia.
+    return ob_get_clean();
 }
-
-add_shortcode('student_registration_form', 'student_registration_form');
-
+add_shortcode('student_registration_form', 'student_registration_form_optimized');
 
 add_filter('woocommerce_available_payment_gateways', 'hide_payment_gateways_from_cookie');
 

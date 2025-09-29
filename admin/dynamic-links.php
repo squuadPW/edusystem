@@ -125,7 +125,6 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
 
     function column_default($item, $column_name)
     {
-
         global $current_user;
         switch ($column_name) {
             case 'img_desktop':
@@ -136,7 +135,10 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                 $buttons = "<a href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
                 $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&action=delete_dynamic_link&dynamic_link_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'edusystem') . "</a>";
                 $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&action=send_email&dynamic_link_id=' . $item['id']) . "' class='button button-success'>" . __('Send Email', 'edusystem') . "</a>";
-                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&action=copy_link&dynamic_link_id=' . $item['id']) . "' class='button button-secondary'>" . __('Copy Link', 'edusystem') . "</a>";
+                // Copiar link al portapapeles usando JS (usando el campo 'link' como token)
+                $dynamic_link_token = isset($item['link']) ? $item['link'] : '';
+                $dynamic_link_url = site_url('/dynamic-link?token=' . $dynamic_link_token);
+                $buttons .= "<a href='javascript:void(0);' onclick=\"copyToClipboard('{$dynamic_link_url}', this)\" style='margin-left: 4px' class='button button-secondary'>" . __('Copy Link', 'edusystem') . "</a>";
                 return $buttons;
             default:
                 return ucwords($item[$column_name]);
@@ -209,6 +211,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                     'student' => $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'],
                     'transfer_credits' => $dynamic_links_val['transfer_cr'] == 1 ? __('Yes', 'edusystem') : __('No', 'edusystem'),
                     'payment_plan' => $payment_plan->name,
+                    'link' => $dynamic_links_val['link'],
                     'created_at' => $dynamic_links_val['created_at']
                 ]);
             }
@@ -278,8 +281,47 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
 function get_dynamic_link_detail($dynamic_link_id)
 {
     global $wpdb;
-    $table = $wpdb->prefix . 'dynamic_links';
 
+    $table = $wpdb->prefix . 'dynamic_links';
     $data = $wpdb->get_row("SELECT * FROM {$table} WHERE id={$dynamic_link_id}");
     return $data;
+}
+
+function get_dynamic_link_detail_by_link($dynamic_link)
+{
+    global $wpdb;
+
+    $table = $wpdb->prefix . 'dynamic_links';
+    $data = $wpdb->get_row("SELECT * FROM {$table} WHERE link='{$dynamic_link}'");
+    return $data;
+}
+
+// Agregar función JS para copiar al portapapeles solo en la página de dynamic links
+if (!function_exists('edusystem_dynamic_links_copy_js')) {
+    function edusystem_dynamic_links_copy_js() {
+        if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_dynamic_link_content') {
+            ?>
+            <script>
+            function copyToClipboard(text, el) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        el.innerText = 'Copied!';
+                        setTimeout(function(){ el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
+                    });
+                } else {
+                    var tempInput = document.createElement('input');
+                    tempInput.value = text;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    el.innerText = 'Copied!';
+                    setTimeout(function(){ el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
+                }
+            }
+            </script>
+            <?php
+        }
+    }
+    add_action('admin_footer', 'edusystem_dynamic_links_copy_js');
 }
