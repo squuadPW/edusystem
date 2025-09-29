@@ -332,6 +332,7 @@ function create_tables()
       program_identificator TEXT NOT NULL,
       payment_plan_identificator TEXT NULL,
       transfer_cr BOOLEAN NOT NULL DEFAULT 0,
+      manager_id INT(11) NULL,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );

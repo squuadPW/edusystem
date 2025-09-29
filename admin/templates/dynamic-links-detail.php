@@ -93,6 +93,19 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
+                                        <label for="payment_plan_identificator"><b><?= __('Manager', 'edusystem'); ?></b><span class="required">*</span></label>
+                                        <select name="manager_id" autocomplete="off" required>
+                                            <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                                            <?php foreach ($managers as $manager): ?>
+                                                <option value="<?= esc_attr($manager->ID) ?>"
+                                                    <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->manager_id == $manager->ID) ? 'selected' : ''; ?>>
+                                                    <?= esc_html($manager->first_name) ?> <?= esc_html($manager->last_name) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
+                                    <div style="font-weight:400;" class="space-offer">
                                         <input type="checkbox" id="transfer_cr" style="width: auto !important;" name="transfer_cr" value="1" <?= (isset($dynamic_link) && $dynamic_link->transfer_cr == 1) ? 'checked' : ''; ?>>
                                         <label for="transfer_cr"><b><?= __('Transfer CR', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
                                     </div>

@@ -6,6 +6,7 @@ function add_admin_form_dynamic_link_content()
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         $payment_plans = get_payment_plans();
         $programs = get_student_program();
+        $managers = get_users_managers();
         $dynamic_links_email_log = array();
 
         if ($_GET['section_tab'] == 'dynamic_link_details') {
@@ -35,6 +36,7 @@ function add_admin_form_dynamic_link_content()
             $program_identificator = sanitize_text_field($_POST['program_identificator']);
             $payment_plan_identificator = sanitize_text_field($_POST['payment_plan_identificator']);
             $save_and_send_email = sanitize_text_field($_POST['save_and_send_email']);
+            $manager_id = $_POST['manager_id'];
             $transfer_cr = $_POST['transfer_cr'] ?? 0;
 
             // Generar un token corto aleatorio para el link
@@ -52,7 +54,8 @@ function add_admin_form_dynamic_link_content()
                     'email' => $email,
                     'program_identificator' => $program_identificator,
                     'payment_plan_identificator' => $payment_plan_identificator,
-                    'transfer_cr' => $transfer_cr
+                    'transfer_cr' => $transfer_cr,
+                    'manager_id' => $manager_id,
                 ], ['id' => $dynamic_link_id]);
                 wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=') . $dynamic_link_id);
             } else {
@@ -65,7 +68,8 @@ function add_admin_form_dynamic_link_content()
                     'email' => $email,
                     'program_identificator' => $program_identificator,
                     'payment_plan_identificator' => $payment_plan_identificator,
-                    'transfer_cr' => $transfer_cr
+                    'transfer_cr' => $transfer_cr,
+                    'manager_id' => $manager_id
                 ]);
                 $dynamic_link_id = $wpdb->insert_id;
                 wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=') . $dynamic_link_id);

@@ -261,7 +261,7 @@ function form_asp_psp_optimized($atts)
         $plan            = $dynamic_link_data->payment_plan_identificator;
         $program         = $dynamic_link_data->program_identificator;
         $plan            = $dynamic_link_data->payment_plan_identificator;
-        $manager_user_id = $dynamic_link_data->manager_user_id;
+        $manager_user_id = $dynamic_link_data->manager_id;
     }
 
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del dynamic link).
@@ -378,7 +378,7 @@ function student_registration_form_optimized($atts)
         $email           = $dynamic_link_data->email;
         $program         = $dynamic_link_data->program_identificator;
         $plan            = $dynamic_link_data->payment_plan_identificator;
-        $manager_user_id = $dynamic_link_data->manager_user_id;
+        $manager_user_id = $dynamic_link_data->manager_id;
     }
 
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del dynamic link).
