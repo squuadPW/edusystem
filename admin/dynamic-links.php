@@ -305,10 +305,10 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                 $created_by_user = get_user_by('id', $dynamic_links_val['created_by']);
                 array_push($dynamic_links_array, [
                     'id' => $dynamic_links_val['id'],
-                    'program' => $program->name,
+                    'program' => $program->name . ' (' . $program->identificator . ')',
                     'student' => $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'],
                     'transfer_credits' => $dynamic_links_val['transfer_cr'] == 1 ? __('Yes', 'edusystem') : __('No', 'edusystem'),
-                    'payment_plan' => $payment_plan->name,
+                    'payment_plan' => $payment_plan->name . ' (' . $payment_plan->identificator . ')',
                     'link' => $dynamic_links_val['link'],
                     'created_by' => $created_by_user->first_name . ' ' . $created_by_user->last_name,
                     'created_at' => $dynamic_links_val['created_at']
