@@ -252,6 +252,13 @@ function form_asp_psp_optimized($atts)
         }
 
         // Si el token es válido, sobrescribe las variables necesarias.
+        $type_document   = $dynamic_link_data->type_document;
+        $id_document     = $dynamic_link_data->id_document;
+        $name            = $dynamic_link_data->name;
+        $last_name       = $dynamic_link_data->last_name;
+        $email           = $dynamic_link_data->email;
+        $program         = $dynamic_link_data->program_identificator;
+        $plan            = $dynamic_link_data->payment_plan_identificator;
         $program         = $dynamic_link_data->program_identificator;
         $plan            = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_user_id;
@@ -364,6 +371,11 @@ function student_registration_form_optimized($atts)
         }
 
         // Si el token es válido, sobrescribe las variables necesarias.
+        $type_document   = $dynamic_link_data->type_document;
+        $id_document     = $dynamic_link_data->id_document;
+        $name            = $dynamic_link_data->name;
+        $last_name       = $dynamic_link_data->last_name;
+        $email           = $dynamic_link_data->email;
         $program         = $dynamic_link_data->program_identificator;
         $plan            = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_user_id;
@@ -371,7 +383,6 @@ function student_registration_form_optimized($atts)
 
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del dynamic link).
     $countries = get_countries();
-    // $manager_user_id ya está actualizado si venía de un dynamic link.
     $institutes = get_list_institutes_active($manager_user_id);
     $grades     = get_grades();
     $programs   = get_student_program();
