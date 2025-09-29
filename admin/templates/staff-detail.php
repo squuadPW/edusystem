@@ -138,7 +138,7 @@
                                                 ?>
                                                 <label for="input_id"><b><?= __('Manager', 'edusystem'); ?></b></label><br>
                                                     <select name="manager_user_id" style="width: 100%">
-                                                        <option value="">Select an option</option>
+                                                        <option value=""><?= __('Select an option', 'edusystem'); ?></option>
                                                         <?php foreach ($managers as $manager): ?>
                                                             <option value="<?= esc_attr($manager->ID) ?>" 
                                                                 <?= $manager->ID == $manager_user_id ? 'selected' : ''; ?>>
@@ -149,7 +149,7 @@
                                             <?php else: ?>
                                                 <label for="input_id"><b><?= __('Managers', 'edusystem'); ?></b></label><br>
                                                     <select name="manager_user_id" style="width: 100%">
-                                                        <option value="">Select an option</option>
+                                                        <option value=""><?= __('Select an option', 'edusystem'); ?></option>
                                                         <?php foreach ($managers as $manager): ?>
                                                             <option value="<?= esc_attr($manager->ID) ?>" >
                                                                 <?= esc_html($manager->first_name) ?> <?= esc_html($manager->last_name) ?>
