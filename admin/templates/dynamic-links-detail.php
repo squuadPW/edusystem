@@ -87,7 +87,7 @@
                                         <select name="payment_plan_identificator" autocomplete="off" required>
                                             <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                                             <?php foreach ($payment_plans as $payment_plan): ?>
-                                                <option value="<?= $payment_plan->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->payment_plan_identificator == $payment_plan->identificator) ? 'selected' : ''; ?>><?= $payment_plan->name; ?></option>
+                                                <option value="<?= $payment_plan->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->payment_plan_identificator == $payment_plan->identificator) ? 'selected' : ''; ?>><?= $payment_plan->name; ?> (<?= $payment_plan->identificator; ?>)</option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>

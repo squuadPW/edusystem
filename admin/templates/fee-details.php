@@ -100,7 +100,7 @@
                                                         <optgroup label="<?= esc_attr($payment_plan->name) ?>">
 
                                                             <option value="<?= esc_attr($payment_plan->identificator)?>" <?= selected( in_array( $payment_plan->identificator, json_decode($fee['programs'], true) ?? [] ) ); ?>><?= esc_html($payment_plan->name) ?></option>
-                                                                <?= esc_html($payment_plan->name) ?>
+                                                                <?= esc_html($payment_plan->name) ?> (<?= esc_attr($payment_plan->identificator)?>)
                                                             </option>
 
                                                             <?php $payment_subplans = json_decode($payment_plan->subprogram, true); ?>
