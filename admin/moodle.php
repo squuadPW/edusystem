@@ -404,6 +404,15 @@ function sync_student_with_moodle($student_id)
         return false;
     }
 
+    // 3. revisamos si completo el formulario (FGU)
+    if (has_action('portal_create_user_external')) {
+        $user_student = get_user_by('email', $student_data->email);
+        $meta_value = get_user_meta($user_student->ID, 'complete_data_success', true);
+        if (!$meta_value) {
+            return false;
+        }
+    }
+
     try {
         $MoodleRest = new MoodleRest($moodle_url . 'webservice/rest/server.php', $moodle_token);
 

@@ -323,14 +323,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-
   var modalCloseElementsChangeDeadline = document.querySelectorAll(
     "#change-deadline-exit-icon, #change-deadline-exit-button"
   );
   if (modalCloseElementsChangeDeadline) {
     modalCloseElementsChangeDeadline.forEach(function (element) {
       element.addEventListener("click", function () {
-        document.getElementById('date_input_container').style.display = 'block';
+        document.getElementById("date_input_container").style.display = "block";
         document.getElementById("change-deadline-form").reset();
         document.getElementById("change-deadline-modal").style.display = "none";
       });
@@ -343,7 +342,8 @@ document.addEventListener("DOMContentLoaded", function () {
   if (modalCloseElementsCertificateDocument) {
     modalCloseElementsCertificateDocument.forEach(function (element) {
       element.addEventListener("click", function () {
-        document.getElementById("documentcertificate-modal").style.display = "none";
+        document.getElementById("documentcertificate-modal").style.display =
+          "none";
         restoreButtonsCertificates(false);
       });
     });
@@ -516,7 +516,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-
   const buttons_certificate = document.querySelectorAll(
     ".download-document-certificate"
   );
@@ -525,13 +524,14 @@ document.addEventListener("DOMContentLoaded", function () {
       restoreButtonsCertificates(true);
 
       let signature_required = this.dataset.signaturerequired;
-      document.querySelector("input[name=document_certificate_id]").value = this.dataset.documentcertificate;
-    
+      document.querySelector("input[name=document_certificate_id]").value =
+        this.dataset.documentcertificate;
+
       if (signature_required == 1) {
         const modal = document.getElementById("documentcertificate-modal");
         modal.style.display = "block";
       } else {
-        document.getElementById('documentcertificate-button').click();
+        document.getElementById("documentcertificate-button").click();
       }
     });
   });
@@ -547,48 +547,79 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let marginHeaderDocument = 0;
   let marginFooterDocument = 0;
-  let orientation = 'portrait';
+  let orientation = "portrait";
+  let unit = "mm";
+  let paper_format = "a4";
+  let widthDocument = `${210}${unit}`;
+  let heightDocument = `${297}${unit}`;
   let margin = [0, 0];
-  let document_certificate_button = document.getElementById('documentcertificate-button');
+  let document_certificate_button = document.getElementById(
+    "documentcertificate-button"
+  );
   if (document_certificate_button) {
     document_certificate_button.addEventListener("click", function () {
-      let document_certificate_id = document.querySelector("input[name=document_certificate_id]").value;
-      let user_signature_id = document.querySelector("select[name=user_signature_id]").value;
-      let student_id = document.querySelector("input[name=student_document_certificate_id]").value;
-      
+      let document_certificate_id = document.querySelector(
+        "input[name=document_certificate_id]"
+      ).value;
+      let user_signature_id = document.querySelector(
+        "select[name=user_signature_id]"
+      ).value;
+      let student_id = document.querySelector(
+        "input[name=student_document_certificate_id]"
+      ).value;
+
       const XHR = new XMLHttpRequest();
       XHR.open("POST", generate_document.url, true);
       XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       XHR.responseType = "json";
       XHR.send(
-        "action=" + generate_document.action + "&document_certificate_id=" + document_certificate_id + "&user_signature_id=" + user_signature_id + "&student_id=" + student_id
+        "action=" +
+          generate_document.action +
+          "&document_certificate_id=" +
+          document_certificate_id +
+          "&user_signature_id=" +
+          user_signature_id +
+          "&student_id=" +
+          student_id
       );
-  
+
       XHR.onload = function () {
         if (this.readyState == 4 && XHR.status === 200) {
           (async () => {
             const modal_body = document.getElementById("content-pdf");
-            if (modal_body && (this.response.header && this.response.header != '')) {
-              // Eliminar header existente si ya está presente
-              const existingHeader = document.getElementById('header-document');
-              if (existingHeader) {
-                  existingHeader.remove();
-              }
-          
+
+            // Eliminar elementos existentes antes de cualquier inserción
+            const existingHeader = document.getElementById("header-document");
+            if (existingHeader) {
+              existingHeader.remove();
+            }
+            const existingFooter = document.getElementById("footer-document");
+            if (existingFooter) {
+              existingFooter.remove();
+            }
+
+            if (
+              modal_body &&
+              this.response.header &&
+              this.response.header != ""
+            ) {
               // Crear y agregar nuevo header
-              const headerElement = document.createElement('div');
-              headerElement.id = 'header-document';
+              const headerElement = document.createElement("div");
+              headerElement.id = "header-document";
               headerElement.innerHTML = this.response.header;
               modal_body.parentNode.insertBefore(headerElement, modal_body);
-              
+
               // Forzar reflow y luego calcular altura
               setTimeout(() => {
-                const headerCalculated = document.getElementById('header-document');
+                const headerCalculated =
+                  document.getElementById("header-document");
                 void headerCalculated.offsetHeight; // Esto fuerza un reflow
-                marginHeaderDocument = Math.round(((headerCalculated.offsetHeight + 10) * 0.264583333));
+                marginHeaderDocument = Math.round(
+                  (headerCalculated.offsetHeight + 10) * 0.264583333
+                );
               }, 1000);
-          }
-            
+            }
+
             // Función simplificada sin CORS
             const convertToBase64 = async (url) => {
               try {
@@ -600,11 +631,11 @@ document.addEventListener("DOMContentLoaded", function () {
                   img.onerror = reject;
                   img.src = url;
                 });
-                
-                const canvas = document.createElement('canvas');
+
+                const canvas = document.createElement("canvas");
                 canvas.width = img.width;
                 canvas.height = img.height;
-                const ctx = canvas.getContext('2d');
+                const ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0);
                 return canvas.toDataURL();
               } catch (error) {
@@ -623,46 +654,55 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
               }
             };
-  
-            let processedHtml = this.response.html;
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = this.response.html;
-            orientation = this.response.document.orientation;
 
-            const imgElement = tempDiv.querySelector('img');
+            let processedHtml = this.response.html;
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = this.response.html;
+            orientation = this.response.document.orientation.toLowerCase();
+            unit = this.response.document.unit.toLowerCase();
+            paper_format = Array.isArray(this.response.document.paper_format)
+              ? this.response.document.paper_format
+              : this.response.document.paper_format.toLowerCase();
+            widthDocument = `${this.response.document.width_size}${this.response.document.unit}`;
+            heightDocument = `${this.response.document.height_size}${this.response.document.unit}`;
+
+            const imgElement = tempDiv.querySelector("img");
             if (imgElement) {
               try {
                 imgElement.src = await convertToBase64(imgElement.src);
                 processedHtml = tempDiv.innerHTML;
-              } catch (error) {
-              }
+              } catch (error) {}
             }
-  
+
             modal_body.innerHTML = processedHtml;
 
-            if (modal_body && (this.response.footer && this.response.footer != '')) {
-              // Eliminar footer existente si ya está presente
-              const existingFooter = document.getElementById('footer-document');
-              if (existingFooter) {
-                  existingFooter.remove();
-              }
-          
+            if (
+              modal_body &&
+              this.response.footer &&
+              this.response.footer != ""
+            ) {
               // Crear y agregar nuevo footer
-              const footerElement = document.createElement('div');
-              footerElement.id = 'footer-document';
+              const footerElement = document.createElement("div");
+              footerElement.id = "footer-document";
               footerElement.innerHTML = this.response.footer;
               modal_body.after(footerElement);
-              
+
               // Forzar reflow y luego calcular altura
               setTimeout(() => {
-                const footerCalculated = document.getElementById('footer-document');
+                const footerCalculated =
+                  document.getElementById("footer-document");
                 void footerCalculated.offsetHeight; // Esto fuerza un reflow
-                marginFooterDocument = Math.round(((footerCalculated.offsetHeight + 10) * 0.264583333));
+                marginFooterDocument = Math.round(
+                  (footerCalculated.offsetHeight + 10) * 0.264583333
+                );
               }, 1000);
-          }
+            }
 
             setTimeout(() => {
-              margin = this.response.document.margin_required == 1 ? [marginHeaderDocument, 0, marginFooterDocument, 0] : margin;
+              margin =
+                this.response.document.margin_required == 1
+                  ? [marginHeaderDocument, 0, marginFooterDocument, 0]
+                  : margin;
             }, 1500);
 
             if (document.getElementById("qrcode") && this.response.url) {
@@ -674,35 +714,33 @@ document.addEventListener("DOMContentLoaded", function () {
                 dotsOptions: { color: "#000000" },
                 backgroundOptions: { color: "#ffffff" },
                 imageOptions: {
-                  crossOrigin: "anonymous"
-                }
+                  crossOrigin: "anonymous",
+                },
               });
-              
+
               qrCode.append(document.getElementById("qrcode"));
             }
 
-            if (orientation != 'portrait') {
-              document.querySelector('.modal-document-export').style.minWidth = '287mm';
-              document.querySelector('.modal-document-export').style.minHeight = '210mm';
+            document.querySelector(".modal-document-export").style.minWidth =
+              widthDocument;
+            document.querySelector(".modal-document-export").style.minHeight =
+              heightDocument;
 
-              document.getElementById('content-pdf').style.minWidth = '287mm';
-              document.getElementById('content-pdf').style.minHeight = '210mm';
-            } else {
-              document.querySelector('.modal-document-export').style.minWidth = '210mm';
-              // document.querySelector('.modal-document-export').style.minHeight = '287mm';
+            document.getElementById("content-pdf").style.minWidth =
+              widthDocument;
+            document.getElementById("content-pdf").style.minHeight =
+              heightDocument;
 
-              document.getElementById('content-pdf').style.minWidth = '210mm';
-              // document.getElementById('content-pdf').style.minHeight = '287mm';
-            }
-
-            document.querySelector('.modal-document-export').style.padding = '0';
+            document.querySelector(".modal-document-export").style.padding =
+              "0";
 
             let modal = document.getElementById("modal-grades");
             modal.style.display = "block";
             document.body.classList.add("modal-open");
-            
+
             setTimeout(() => window.scrollTo(0, 0), 100);
-            document.getElementById("documentcertificate-modal").style.display = "none";
+            document.getElementById("documentcertificate-modal").style.display =
+              "none";
           })();
         }
       };
@@ -711,95 +749,159 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let download_grades = document.getElementById("download-grades");
   if (download_grades) {
-      download_grades.addEventListener("click", async (e) => {
-          download_grades.disabled = true;
-          var element = document.getElementById("content-pdf");
-          var opt = {
-              margin: margin,
-              filename: 'document.pdf',
-              image: { type: "jpeg", quality: 1 },
-              jsPDF: { 
-                  unit: "mm", 
-                  format: "a4", 
-                  orientation: orientation
-              },
-              html2canvas: { 
-                  scale: 3,
-                  useCORS: true
-              },
-              pagebreak: { after: ".pagebreak" },
-          };
-  
-          // Generar el PDF
-          const pdf = await html2pdf().set(opt).from(element).toPdf().get('pdf');
-  
-          if (orientation == 'portrait') {
-            const pageCount = pdf.internal.getNumberOfPages();
+    download_grades.addEventListener("click", async (e) => {
+      download_grades.disabled = true;
+      var element = document.getElementById("content-pdf");
+      var opt = {
+        margin: margin,
+        filename: "document.pdf",
+        image: { type: "jpeg", quality: 1 },
+        jsPDF: {
+          unit: unit,
+          format: paper_format,
+          orientation: orientation,
+          hotfixes: ["px_scaling"],
+        },
+        html2canvas: {
+          scale: 3,
+          useCORS: true,
+        },
+        pagebreak: { after: ".pagebreak" },
+      };
 
-            // Capturar el contenido del header
-            const headerElement = document.getElementById("header-document");
-            let imgDataHeader = '';
-            let canvasHeader = null;
-            if (headerElement) {
-              canvasHeader = await html2canvas(headerElement, { scale: 2 });
-              imgDataHeader = canvasHeader.toDataURL("image/jpeg");
-            }
-    
-            // Capturar el contenido del footer
-            const footerElement = document.getElementById("footer-document");
-            let imgData = '';
-            let canvas = null;
-            if (footerElement) {
-              canvas = await html2canvas(footerElement, { scale: 2 });
-              imgData = canvas.toDataURL("image/jpeg");
-            }
+      // Generar el PDF
+      const pdf = await html2pdf().set(opt).from(element).toPdf().get("pdf");
 
-            // Agregar el footer manualmente
-            for (let i = 1; i <= pageCount; i++) {
-                pdf.setPage(i);
-                const imgWidth = pdf.internal.pageSize.width; // Ancho de la imagen igual al ancho de la página
+      if (orientation == "portrait") {
+        const pageCount = pdf.internal.getNumberOfPages();
 
-                // Header
-                if (headerElement) {
-                  const imgHeightHeader = (canvasHeader.height * imgWidth) / canvasHeader.width; // Mantener la proporción
-                  pdf.addImage(imgDataHeader, 'JPEG', 0, 0, imgWidth, imgHeightHeader);
-                }
+        // Capturar el contenido del header
+        const headerElement = document.getElementById("header-document");
+        let imgDataHeader = "";
+        let canvasHeader = null;
+        if (headerElement) {
+          canvasHeader = await html2canvas(headerElement, { scale: 2 });
+          imgDataHeader = canvasHeader.toDataURL("image/jpeg");
+        }
 
-                // Footer
-                if (footerElement) {
-                  const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantener la proporción
-                  const y = pdf.internal.pageSize.height - imgHeight; // Posición Y para que esté en la parte inferior
-                  pdf.addImage(imgData, 'JPEG', 0, y, imgWidth, imgHeight);
-                }
-            }
+        // Capturar el contenido del footer
+        const footerElement = document.getElementById("footer-document");
+        let imgData = "";
+        let canvas = null;
+        if (footerElement) {
+          canvas = await html2canvas(footerElement, { scale: 2 });
+          imgData = canvas.toDataURL("image/jpeg");
+        }
+
+        // Agregar el footer manualmente
+        for (let i = 1; i <= pageCount; i++) {
+          pdf.setPage(i);
+          const imgWidth = pdf.internal.pageSize.width; // Ancho de la imagen igual al ancho de la página
+
+          // Header
+          if (headerElement) {
+            const imgHeightHeader =
+              (canvasHeader.height * imgWidth) / canvasHeader.width; // Mantener la proporción
+            pdf.addImage(
+              imgDataHeader,
+              "JPEG",
+              0,
+              0,
+              imgWidth,
+              imgHeightHeader
+            );
           }
-  
-          // Guardar el PDF
-          pdf.save('document.pdf'); // No se usa .then() aquí
-          download_grades.disabled = false; // Habilitar el botón nuevamente
-      });
+
+          // Footer
+          if (footerElement) {
+            const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantener la proporción
+            const y = pdf.internal.pageSize.height - imgHeight; // Posición Y para que esté en la parte inferior
+            pdf.addImage(imgData, "JPEG", 0, y, imgWidth, imgHeight);
+          }
+        }
+      }
+
+      // Guardar el PDF una sola vez
+      pdf.save("document.pdf");
+      download_grades.disabled = false; // Habilitar el botón nuevamente
+    });
   }
 
   let close_modal_grades = document.getElementById("close-modal-grades");
   if (close_modal_grades) {
-      close_modal_grades.addEventListener("click", async (e) => {
-        document.getElementById('modal-grades').style.display = 'none';
-        document.body.classList.remove("modal-open");
+    close_modal_grades.addEventListener("click", async (e) => {
+      document.getElementById("modal-grades").style.display = "none";
+      document.body.classList.remove("modal-open");
 
-        const input = document.querySelector("input[name='document_certificate_id']");
-        const select = document.querySelector("select[name='user_signature_id']");
-        const qrcode = document.getElementById("qrcode");
-        
-        if (input) input.value = '';
-        if (select) select.value = '';
-        if (qrcode) qrcode.innerHTML = '';
+      const input = document.querySelector(
+        "input[name='document_certificate_id']"
+      );
+      const select = document.querySelector("select[name='user_signature_id']");
+      const qrcode = document.getElementById("qrcode");
 
-        restoreButtonsCertificates(false);
+      if (input) input.value = "";
+      if (select) select.value = "";
+      if (qrcode) qrcode.innerHTML = "";
 
-        setTimeout(() => {
-          window.scrollTo(0, 0);
-        }, 100);
-      });
+      restoreButtonsCertificates(false);
+
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 100);
+    });
+  }
+
+  let selectorAcademicPeriod = document.querySelector(
+    "select[name=academic_period]"
+  );
+  let selectorCuts = document.querySelector("select[name=academic_period_cut]");
+
+  // Obtenemos el valor inicial desde el atributo de datos
+  const initialCut = selectorCuts.dataset.initialCut;
+
+  if (selectorAcademicPeriod && selectorCuts) {
+    selectorAcademicPeriod.addEventListener("change", function (e) {
+      console.log(e.target.value);
+      const XHR = new XMLHttpRequest();
+      XHR.open("POST", get_approved_by.url, true);
+      XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      XHR.responseType = "json";
+      XHR.send("action=load_cuts_period&period=" + e.target.value);
+      XHR.onload = function () {
+        if (this.readyState == "4" && XHR.status === 200) {
+          let cuts = this.response;
+
+          // Limpia el select de cortes
+          selectorCuts.innerHTML = "";
+
+          // Agrega la opción por defecto 'Out of term' y la marca como seleccionada si corresponde
+          let defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.text = "Out of term";
+          // Lógica de selección para la opción por defecto
+          if (
+            initialCut === "nocut" ||
+            initialCut === "out" ||
+            initialCut === ""
+          ) {
+            defaultOption.selected = true;
+          }
+          selectorCuts.appendChild(defaultOption);
+
+          // Agrega las nuevas opciones y las marca si coinciden
+          cuts.forEach((cut) => {
+            let option = document.createElement("option");
+            option.value = cut.cut;
+            option.text = cut.cut;
+            // Lógica para seleccionar automáticamente
+            if (option.value === initialCut) {
+              option.selected = true;
+            }
+            selectorCuts.appendChild(option);
+          });
+        }
+      };
+    });
   }
 });
 
@@ -845,11 +947,14 @@ function uploadDocument(doc) {
 }
 
 function changeDeadline(doc) {
-  document.querySelector("input[name=document_change_deadline_id]").value = doc.id;
-  document.querySelector("input[name=document_change_deadline_date]").value = doc.max_date_upload;
+  document.querySelector("input[name=document_change_deadline_id]").value =
+    doc.id;
+  document.querySelector("input[name=document_change_deadline_date]").value =
+    doc.max_date_upload;
   document.querySelector("input[name=document_change_deadline_name]").value =
     doc.document_id;
-  document.getElementById("document_change_deadline_text").innerHTML = doc.document_id;
+  document.getElementById("document_change_deadline_text").innerHTML =
+    doc.document_id;
 
   const modal = document.getElementById("change-deadline-modal");
   modal.style.display = "block";
@@ -857,18 +962,18 @@ function changeDeadline(doc) {
 
 function toggleDateInput() {
   // Obtiene referencias a los elementos del DOM
-  var checkbox = document.getElementById('allow_empty_date');
-  var dateContainer = document.getElementById('date_input_container');
-  var dateInput = document.getElementById('document_change_deadline_date');
-  
+  var checkbox = document.getElementById("allow_empty_date");
+  var dateContainer = document.getElementById("date_input_container");
+  var dateInput = document.getElementById("document_change_deadline_date");
+
   if (checkbox.checked) {
-      // Si el checkbox está marcado:
-      dateContainer.style.display = 'none';  // Oculta el contenedor del input de fecha
-      dateInput.removeAttribute('required');  // Quita el atributo required
-      dateInput.value = '';  // Limpia el valor del input
+    // Si el checkbox está marcado:
+    dateContainer.style.display = "none"; // Oculta el contenedor del input de fecha
+    dateInput.removeAttribute("required"); // Quita el atributo required
+    dateInput.value = ""; // Limpia el valor del input
   } else {
-      // Si el checkbox está desmarcado:
-      dateContainer.style.display = 'block';  // Muestra el contenedor del input de fecha
-      dateInput.setAttribute('required', 'required');  // Agrega el atributo required
+    // Si el checkbox está desmarcado:
+    dateContainer.style.display = "block"; // Muestra el contenedor del input de fecha
+    dateInput.setAttribute("required", "required"); // Agrega el atributo required
   }
 }

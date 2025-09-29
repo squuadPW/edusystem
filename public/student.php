@@ -126,7 +126,7 @@ function save_student()
         $career = isset($_POST['career']) ? $_POST['career'] : null;
         $mention = isset($_POST['mention']) ? $_POST['mention'] : null;
         $plan = isset($_POST['plan']) ? $_POST['plan'] : null;
-        $fees = get_fees_associated_plan($plan);
+        $fees = get_fees_associated_plan_complete($plan);
 
         // $program = get_identificator_by_id_program($program_id);
         $grade = isset($_POST['grade']) && !empty($_POST['grade']) ? $_POST['grade'] : 4;
@@ -368,7 +368,8 @@ function save_student()
         WC()->cart->empty_cart();
 
         // Agregar nuevo producto
-        WC()->cart->add_to_cart(FEE_GRADUATION, 1);
+        $fee_graduation_id = get_fee_product_id($student->id, 'graduation');
+        WC()->cart->add_to_cart($fee_graduation_id, 1);
 
         // Redireccionar a checkout
         wp_redirect(wc_get_checkout_url());
@@ -388,9 +389,11 @@ function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $r
     $woocommerce->cart->empty_cart();
 
     $woocommerce->cart->add_to_cart($product_id, 1);
-    // $woocommerce->cart->add_to_cart(FEE_INSCRIPTION, 1);
     foreach ($fees as $key => $fee) {
-        $woocommerce->cart->add_to_cart($fee, 1);
+
+        if ($fee->type_fee == 'registration') {
+            $woocommerce->cart->add_to_cart($fee->product_id, 1);
+        }
     }
 
     if (isset($coupon_code) && !empty($coupon_code)) {
@@ -838,18 +841,18 @@ function insert_student($order)
 
     $today = new DateTime();
     $age = $today->diff($birth_date_obj)->y;
-
-    $exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '{$student['email']}'");
+    $email = trim($student['email']);
+    $exist = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email = '{$email}'");
     if (!$exist) {
         $wpdb->insert($table_students, [
-            'name' => $student['name'],
+            'name' => trim($student['name']),
             'type_document' => $student['type_document'],
             'id_document' => $student['id_document'],
             'academic_period' => $code,
             'initial_cut' => $cut,
-            'middle_name' => $student['middle_name'],
-            'last_name' => $student['last_name'],
-            'middle_last_name' => $student['middle_last_name'],
+            'middle_name' => trim($student['middle_name']),
+            'last_name' => trim($student['last_name']),
+            'middle_last_name' => trim($student['middle_last_name']),
             'birth_date' => date_i18n('Y-m-d', strtotime($student['birth_date'])),
             'grade_id' => (int) $program['initial_grade'],
             'name_institute' => strtoupper($program['name_institute']),
@@ -860,7 +863,7 @@ function insert_student($order)
             'expected_graduation_date' => $program['expected_graduation_date'],
             'partner_id' => $customer_id,
             'phone' => $student['phone'],
-            'email' => $student['email'],
+            'email' => $email,
             'status_id' => 0,
             'set_password' => ($age >= 18 ? 1 : 0),
             'country' => $order->get_billing_country(),
@@ -1065,7 +1068,7 @@ function get_payments($student_id, $product_id = false)
         $payments = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id={$student_id} AND product_id={$product_id}");
         return $payments;
     } else {
-        $products = ['FEE_INSCRIPTION', 'FEE_GRADUATION'];
+        $products = [get_fee_product_id($student_id, 'registration'), get_fee_product_id($student_id, 'graduation')];
         $products_list = "'" . implode("','", $products) . "'";
         $payments = $wpdb->get_row(
             "SELECT * FROM {$table_student_payments}
@@ -1277,7 +1280,6 @@ function view_access_classroom()
     global $current_user, $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $roles = $current_user->roles;
-    $url = URL_LARAVEL_PPADMIN;
     $student_access = false;
     $error_access = false;
 
@@ -1356,8 +1358,8 @@ function set_max_date_student($student_id)
     $table_student_payments = $wpdb->prefix . 'student_payments';
 
     // Define los IDs de productos a excluir
-    $fee_inscription_id = FEE_INSCRIPTION; // Asegúrate de que FEE_INSCRIPTION esté definido globalmente o como constante
-    $fee_graduation_id = FEE_GRADUATION;   // Asegúrate de que FEE_GRADUATION esté definido globalmente o como constante
+    $fee_inscription_id = get_fee_product_id($student_id, 'registration');
+    $fee_graduation_id = get_fee_product_id($student_id, 'graduation');
 
     // Se busca el próximo pago pendiente (status_id = 0, date_payment IS NULL)
     // Excluyendo los product_id de inscripción y graduación

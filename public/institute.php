@@ -196,8 +196,13 @@ function set_institute_in_order($order, $id = null): void
 
     // 1. Obtener y validar el ID del instituto.
     $institute_id = $id ?? null;
-
     if ( empty($institute_id) || !$id ) return;
+
+    $student_id = $order->get_meta('student_id') ?? null;
+    if ( empty($student_id) || !$student_id ) return;
+
+    $product_id_registration = get_fee_product_id($student_id, 'registration');
+    $product_id_graduation = get_fee_product_id($student_id, 'graduation');
 
     // 2. Obtener datos del instituto de forma segura.
     $table_institutes = $wpdb->prefix . 'institutes';
@@ -222,10 +227,7 @@ function set_institute_in_order($order, $id = null): void
     $total_for_fee_calculation = 0.0;
     foreach ($order->get_items() as $item) {
         $product_id = $item->get_product_id();
-        // Asegúrate de que FEE_INSCRIPTION y FEE_GRADUATION estén definidos como constantes
-        // o reemplaza con los IDs de producto reales si no lo son.
-        if (!in_array($product_id, [FEE_INSCRIPTION, FEE_GRADUATION])) {
-            // Usamos get_total() del item, que ya considera la cantidad y el precio.
+        if (!in_array($product_id, [$product_id_registration, $product_id_graduation])) {
             $total_for_fee_calculation += (float) $item->get_total();
         }
     }

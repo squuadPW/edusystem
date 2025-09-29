@@ -82,7 +82,7 @@
 								</td>
 								<td colspan="2" style="text-align: center;">
 									<?=
-										date('m/d/Y', strtotime(in_array($payment->product_id, [FEE_INSCRIPTION, FEE_GRADUATION]) ? $payment->date_payment : $payment->date_next_payment))
+										date('m/d/Y', strtotime(in_array($payment->product_id, [$product_id_registration, $product_id_graduation]) ? $payment->date_payment : $payment->date_next_payment))
 										?>
 								</td>
 								<td colspan="2" style="text-align: center;">

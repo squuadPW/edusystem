@@ -174,6 +174,11 @@
                     <label for="can_regenerate_projection" <?= !in_array('can_regenerate_projection', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Can regenerate projection', 'edusystem'); ?></label>
                 </div>
                 <div class="capability-item indented">
+                    <input <?= !in_array('withdraw_student', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="withdraw_student" id="withdraw_student" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['withdraw_student'])) ? 'checked' : ''; ?>>
+                    <label for="withdraw_student" <?= !in_array('withdraw_student', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Can withdraw student', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
                     <input <?= !in_array('manager_school_subjects_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_school_subjects_aes" id="manager_school_subjects_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_school_subjects_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_school_subjects_aes" <?= !in_array('manager_school_subjects_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('School subjects', 'edusystem'); ?></label>
@@ -182,6 +187,11 @@
                     <input <?= !in_array('manager_feed', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_feed" id="manager_feed" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_feed'])) ? 'checked' : ''; ?>>
                     <label for="manager_feed" <?= !in_array('manager_feed', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Student banners', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_dynamic_links', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_dynamic_links" id="manager_dynamic_links" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_dynamic_links'])) ? 'checked' : ''; ?>>
+                    <label for="manager_dynamic_links" <?= !in_array('manager_dynamic_links', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Dynamic link generator', 'edusystem'); ?></label>
                 </div>
             </div>
 

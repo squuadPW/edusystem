@@ -23,6 +23,7 @@ function add_admin_form_configuration_options_content()
             $show_modal_electives = sanitize_text_field($_POST['show_modal_electives']) ?? get_option('show_modal_electives');
             $show_equivalence_projection = sanitize_text_field($_POST['show_equivalence_projection']) ?? get_option('show_equivalence_projection');
             $show_table_subjects_coursing = sanitize_text_field($_POST['show_table_subjects_coursing']) ?? get_option('show_table_subjects_coursing');
+            $disabled_redirect = sanitize_text_field($_POST['disabled_redirect']) ?? get_option('disabled_redirect');
             update_option('payment_due', $payment_due);
             update_option('proof_due', $proof_due);
             update_option('virtual_access', $virtual_access);
@@ -32,6 +33,7 @@ function add_admin_form_configuration_options_content()
             update_option('show_modal_electives', $show_modal_electives);
             update_option('show_equivalence_projection', $show_equivalence_projection);
             update_option('show_table_subjects_coursing', $show_table_subjects_coursing);
+            update_option('disabled_redirect', $disabled_redirect);
 
             // moodle
             $moodle_url = sanitize_text_field($_POST['moodle_url']) ?? get_option('moodle_url');

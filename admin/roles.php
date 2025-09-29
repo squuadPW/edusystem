@@ -290,6 +290,10 @@ add_action('after_setup_theme', 'remove_admin_bar');
 function redirect_alliance_and_institute()
 {
 
+    if (get_option('disabled_redirect') && get_option('disabled_redirect') == 'on') {
+        return;
+    }
+
     global $current_user;
     $roles = $current_user->roles;
 
@@ -304,14 +308,16 @@ function redirect_alliance_and_institute()
             }
         }
     }
-
-
 }
 
 add_action('template_redirect', 'redirect_alliance_and_institute');
 
 function admin_redirects()
 {
+
+    if (get_option('disabled_redirect') && get_option('disabled_redirect') == 'on') {
+        return;
+    }
 
     global $pagenow, $current_user;
     $user_roles = $current_user->roles;

@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 3.6.60
+Version: 3.7.01
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
@@ -62,6 +62,8 @@ function create_tables()
   $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
   $table_pensum = $wpdb->prefix . 'pensum';
   $table_feed = $wpdb->prefix . 'feed';
+  $table_dynamic_links = $wpdb->prefix . 'dynamic_links';
+  $table_dynamic_links_email_log = $wpdb->prefix . 'dynamic_links_email_log';
   $table_templates_email = $wpdb->prefix . 'templates_email';
   $table_programs = $wpdb->prefix . 'programs';
   $table_quota_rules = $wpdb->prefix . 'quota_rules';
@@ -264,6 +266,9 @@ function create_tables()
       id INT(11) NOT NULL AUTO_INCREMENT,
       student_id INT(11) NOT NULL,
       scholarship_id INT(11) NOT NULL,
+      status_id INT(11) NOT NULL,
+      termination_date TIMESTAMP NULL,
+      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );
@@ -310,6 +315,36 @@ function create_tables()
       attach_id_mobile INT(11) NULL,
       link TEXT NOT NULL,
       `max_date` DATE NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id))$charset_collate;"
+  );
+
+  // table_dynamic_links
+  dbDelta(
+    "CREATE TABLE " . $table_dynamic_links . " (
+      id INT(11) NOT NULL AUTO_INCREMENT,
+      link TEXT NOT NULL,
+      type_document TEXT NOT NULL,
+      id_document TEXT NOT NULL,
+      name TEXT NOT NULL,
+      last_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      program_identificator TEXT NOT NULL,
+      payment_plan_identificator TEXT NULL,
+      transfer_cr BOOLEAN NOT NULL DEFAULT 0,
+      manager_id INT(11) NULL,
+      created_by INT(11) NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id))$charset_collate;"
+  );
+
+  // table_dynamic_links_email_log
+  dbDelta(
+    "CREATE TABLE " . $table_dynamic_links_email_log . " (
+      id INT(11) NOT NULL AUTO_INCREMENT,
+      dynamic_link_id INT(11) NOT NULL,
+      email TEXT NOT NULL,
+      created_by INT(11) NULL,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );

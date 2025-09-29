@@ -257,11 +257,13 @@ function add_admin_form_admission_content()
             } else if ($_GET['section_tab'] == 'student_details') {
                 $table_grades = $wpdb->prefix . 'grades';
                 $table_institutes = $wpdb->prefix . 'institutes';
+                $table_academic_periods = $wpdb->prefix . 'academic_periods';
+                $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
                 $roles = $current_user->roles;
                 $documents = get_documents($_GET['student_id']);
-                $fee_payment_ready = get_payments($_GET['student_id'], FEE_INSCRIPTION);
+                $fee_payment_ready = get_fee_paid($_GET['student_id'], 'registration');
                 $product_ready = get_payments($_GET['student_id']);
-                $fee_graduation_ready = get_payments($_GET['student_id'], product_id: FEE_GRADUATION);
+                $fee_graduation_ready = get_fee_paid($_GET['student_id'], 'graduation');
                 $documents_ready = get_documents_ready($_GET['student_id']);
                 $academic_ready = get_academic_ready($_GET['student_id']);
                 $student = get_student_detail($_GET['student_id']);
@@ -269,8 +271,8 @@ function add_admin_form_admission_content()
                 $users_signatures_certificates = function_exists('get_users_signatures_certificates') ? get_users_signatures_certificates() : [];
                 $partner = get_userdata($student->partner_id);
                 $table_users = $wpdb->prefix . 'users';
-                $table_academic_periods = $wpdb->prefix . 'academic_periods';
                 $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+                $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} WHERE code = '{$student->academic_period}' ORDER BY created_at ASC");
                 $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $student->email . "'");
                 include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
             }
@@ -1284,39 +1286,7 @@ function check_access_virtual($student_id)
     }
 
     // Segundo chequeo: verificación de pagos de registro
-    $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
-
-    $student_programs = $wpdb->get_results(
-        $wpdb->prepare(
-            "SELECT plan_identificator FROM {$table_programs_by_student} WHERE student_id = %d",
-            $student_id
-        )
-    );
-
-    foreach ($student_programs as $program) {
-        // Obtiene todos los IDs de los productos de registro para cada plan.
-        $fees = get_fees_associated_plan($program->plan_identificator, 'registration');
-
-        // Itera sobre cada uno de los IDs de pago obtenidos.
-        foreach ($fees as $fee_product_id) {
-            // Verifica si el pago existe.
-            $is_paid = $wpdb->get_var(
-                $wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND product_id = %d",
-                    $student_id,
-                    $fee_product_id
-                )
-            );
-
-            // Si un pago no se encuentra, devuelve false inmediatamente.
-            if ($is_paid == 0) {
-                return false;
-            }
-        }
-    }
-
-    // Si todas las verificaciones pasan, devuelve true.
-    return true;
+    return get_fee_paid($student_id, 'registration');
 }
 
 function handle_virtual_classroom_access($student_id)
@@ -1417,6 +1387,10 @@ function generate_document()
     $url = ['url' => '', 'image_url' => ''];
     if ($create_certificate_qr) {
         $url = apply_filters('create_certificate_edusystem', 'certificate', $document->title, get_name_program_student($student->id), 1, $student, $emission_date);
+    }
+
+    if ($document->paper_format == 'custom') {
+        $document->paper_format = [(float)$document->width_size, (float)$document->height_size];
     }
 
     wp_send_json(array('url' => $url['url'], 'image_url' => $url['image_url'], 'html' => $document->content, 'header' => $document->header, 'footer' => $document->footer, 'document' => $document));
@@ -1526,3 +1500,100 @@ function get_data_student()
 
 add_action('wp_ajax_nopriv_get_student_details', 'get_data_student');
 add_action('wp_ajax_get_student_details', 'get_data_student');
+
+function load_cuts_period()
+{
+    global $wpdb;
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+    $period = $_POST['period'];
+    $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} WHERE code = '{$period}' ORDER BY created_at ASC");
+    wp_send_json($periods_cuts);
+    die();
+}
+
+add_action('wp_ajax_nopriv_load_cuts_period', 'load_cuts_period');
+add_action('wp_ajax_load_cuts_period', 'load_cuts_period');
+
+function get_fee_paid($student_id, $type) {
+    global $wpdb;
+    $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
+
+    $student_programs = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT plan_identificator FROM {$table_programs_by_student} WHERE student_id = %d",
+            $student_id
+        )
+    );
+
+    foreach ($student_programs as $program) {
+        // Obtiene todos los IDs de los productos de registro para cada plan.
+        $fees = get_fees_associated_plan($program->plan_identificator, $type);
+
+        // Itera sobre cada uno de los IDs de pago obtenidos.
+        foreach ($fees as $fee_product_id) {
+            // Verifica si el pago existe.
+            $is_paid = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND product_id = %d",
+                    $student_id,
+                    $fee_product_id
+                )
+            );
+
+            // Si un pago no se encuentra, devuelve false inmediatamente.
+            if ($is_paid == 0) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+function get_fee_product_id($student_id, $type) {
+    global $wpdb;
+    $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+
+    $student_programs = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT plan_identificator FROM {$table_programs_by_student} WHERE student_id = %d",
+            $student_id
+        )
+    );
+
+    foreach ($student_programs as $program) {
+        // Obtiene todos los IDs de los productos de registro para cada plan.
+        $fees = get_fees_associated_plan($program->plan_identificator, $type);
+
+        // Itera sobre cada uno de los IDs de pago obtenidos.
+        foreach ($fees as $fee_product_id) {
+            // Verifica si el pago existe.
+            $is_paid = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$table_student_payments} WHERE student_id = %d AND product_id = %d",
+                    $student_id,
+                    $fee_product_id
+                )
+            );
+
+            // Si un pago no se encuentra, devuelve el producto inmediatamente.
+            if ($is_paid == 0) {
+                return $fee_product_id;
+            }
+        }
+    }
+
+    return false;
+}
+
+function get_fee_product_id_program($student_programs, $type) {
+    foreach ($student_programs as $program) {
+        $fees = get_fees_associated_plan($program, $type);
+        foreach ($fees as $fee_product_id) {
+            return $fee_product_id;
+        }
+    }
+
+    return false;
+}

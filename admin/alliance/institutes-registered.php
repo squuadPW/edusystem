@@ -26,6 +26,9 @@ function list_admin_institutes_partner_registered_content()
             $student = get_student_detail($_GET['student_id']);
             $institute = get_institute_details($_GET['institute_id']);
             $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id='{$_GET['student_id']}' ORDER BY cuote ASC");
+            $product_id_registration = get_fee_product_id($student->id, 'registration');
+            $product_id_graduation = get_fee_product_id($student->id, 'graduation');
+
             include(plugin_dir_path(__FILE__) . '../templates/institute-students-payments-alliance.php');
         } else if ($_GET['action'] == 'add_institute') {
             $countries = get_countries();

@@ -56,15 +56,15 @@
             <label for="document_type"><?= __('Type document', 'edusystem'); ?><span class="required">*</span></label>
             <select name="document_type" autocomplete="off" oninput="sendAjaxIdDocument(); validateIDs(false)" required>
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                <option value="passport"><?= __('Passport', 'edusystem'); ?></option>
-                <option value="identification_document"><?= __('Identification Document', 'edusystem'); ?></option>
-                <option value="ssn"><?= __('SSN', 'edusystem'); ?></option>
+                <option value="passport" <?= (isset($type_document) && $type_document == 'passport') ? 'selected' : '' ?>><?= __('Passport', 'edusystem'); ?></option>
+                <option value="identification_document" <?= (isset($type_document) && $type_document == 'identification_document') ? 'selected' : '' ?>><?= __('Identification Document', 'edusystem'); ?></option>
+                <option value="ssn" <?= (isset($type_document) && $type_document == 'ssn') ? 'selected' : '' ?>><?= __('SSN', 'edusystem'); ?></option>
             </select>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="id_document"><?= __('ID document', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" autocomplete="off" type="text" id="id_document" name="id_document"
-                oninput="sendAjaxIdDocument(); validateIDs(false)" required>
+                oninput="sendAjaxIdDocument(); validateIDs(false)" required value="<?= $id_document ?? '' ?>">
             <span id="exisstudentid"
                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'edusystem'); ?></span>
             <span class="sameids"
@@ -73,7 +73,7 @@
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name_student"><?= __('Name', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" id="name_student"
-                required>
+                required value="<?= $name ?? '' ?>">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="middle_name_student"><?= __('Second name', 'edusystem'); ?></label>
@@ -82,7 +82,7 @@
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="lastname_student"><?= __('Last name', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off"
-                id="lastname_student" required>
+                id="lastname_student" required value="<?= $last_name ?? '' ?>">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="middle_last_name_student"><?= __('Second last name', 'edusystem'); ?></label>
@@ -107,7 +107,7 @@
                 <label for="email_student"><?= __('Email address', 'edusystem'); ?><span
                         class="required">*</span></label>
                 <input class="formdata" type="email" name="email_student" autocomplete="off"
-                    oninput="sendAjaxStudentEmailDocument()" required>
+                    oninput="sendAjaxStudentEmailDocument()" required value="<?= $email ?? '' ?>">
                 <span id="existstudentemail"
                     style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'edusystem'); ?></span>
                 <span id="sameemailstudent"

@@ -33,7 +33,7 @@
 
                                     <div style="font-weight:400; text-align: center; margin-bottom: 10px;">
                                         <div>
-                                            <input type="checkbox" id="status_id" style="width: auto !important;" name="status_id" value="1" <?= ( isset($period) || $period->status_id == 0 ) ? '' : 'checked'; ?>>
+                                            <input type="checkbox" id="status_id" style="width: auto !important;" name="status_id" value="1" <?= ( isset($period) && $period->status_id == 1 ) ? 'checked' : ''; ?>>
                                             <label for="status_id"><b><?= __('Active', 'edusystem'); ?></b></label>
                                         </div>
                                     </div>
