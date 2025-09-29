@@ -50,14 +50,17 @@ $tooltip_text = __('Please select the grade you are currently studying', 'edusys
         <?php include(plugin_dir_path(__FILE__) . 'form-register-others-not-student.php'); ?>
     <?php } ?>
 <?php } else { ?>
-    <section class="segment lang-selector" style="margin: auto">
-        <a href="?lang=en_EN" class="segment-button <?= ($current_lang === 'en_EN') ? 'active' : ''; ?>" data-option="en">
-            <?= __('English', 'edusystem'); ?>
-        </a>
-        <a href="?lang=es_ES" class="segment-button <?= ($current_lang === 'es_ES') ? 'active' : ''; ?>" data-option="es">
-            <?= __('Spanish', 'edusystem'); ?>
-        </a>
-    </section>
+    <?php $disable_switch_language = get_option('disable_switch_language'); ?>
+    <?php if ($disable_switch_language !== 'on') { ?>
+        <section class="segment lang-selector" style="margin: auto">
+            <a href="?lang=en_EN" class="segment-button <?= ($current_lang === 'en_EN') ? 'active' : ''; ?>" data-option="en">
+                <?= __('English', 'edusystem'); ?>
+            </a>
+            <a href="?lang=es_ES" class="segment-button <?= ($current_lang === 'es_ES') ? 'active' : ''; ?>" data-option="es">
+                <?= __('Spanish', 'edusystem'); ?>
+            </a>
+        </section>
+    <?php } ?>
 
     <?php include(plugin_dir_path(__FILE__) . 'student-registration-form.php'); ?>
 <?php } ?>

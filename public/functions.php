@@ -212,7 +212,8 @@ function form_asp_psp_optimized($atts)
             'title'                      => '',
             'use_expected_graduation_date' => false,
             'separate_program_fee'       => false,
-            'dynamic_link'               => false
+            'dynamic_link'               => false,
+            'use_ethnicity'               => true,
         ),
         $atts,
         'form_asp_psp'
@@ -331,7 +332,8 @@ function student_registration_form_optimized($atts)
             'title'                      => '',
             'use_expected_graduation_date' => false,
             'separate_program_fee'       => false,
-            'dynamic_link'               => false
+            'dynamic_link'               => false,
+            'use_ethnicity'               => true
         ),
         $atts,
         'student_registration_form'

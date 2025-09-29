@@ -122,18 +122,20 @@
                 <option value="female"><?= __('Female', 'edusystem'); ?></option>
             </select>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="etnia"><?= __('Ethnicity', 'edusystem'); ?><span class="required">*</span></label>
-            <select class="form-control" id="etnia" required name="etnia">
-                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                <option value="1"><?= __('African American', 'edusystem'); ?></option>
-                <option value="2"><?= __('Asian', 'edusystem'); ?></option>
-                <option value="3"><?= __('Caucasian', 'edusystem'); ?></option>
-                <option value="4"><?= __('Hispanic', 'edusystem'); ?></option>
-                <option value="5"><?= __('Native American', 'edusystem'); ?></option>
-                <option value="7"><?= __('Choose Not To Respond', 'edusystem'); ?></option>
-            </select>
-        </div>
+        <?php if($use_ethnicity) { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="etnia"><?= __('Ethnicity', 'edusystem'); ?><span class="required">*</span></label>
+                <select class="form-control" id="etnia" required name="etnia">
+                    <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                    <option value="1"><?= __('African American', 'edusystem'); ?></option>
+                    <option value="2"><?= __('Asian', 'edusystem'); ?></option>
+                    <option value="3"><?= __('Caucasian', 'edusystem'); ?></option>
+                    <option value="4"><?= __('Hispanic', 'edusystem'); ?></option>
+                    <option value="5"><?= __('Native American', 'edusystem'); ?></option>
+                    <option value="7"><?= __('Choose Not To Respond', 'edusystem'); ?></option>
+                </select>
+            </div>
+        <?php } ?>
 
         <!-- DATOS DEL PADRE -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title"

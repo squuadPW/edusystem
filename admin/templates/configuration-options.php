@@ -132,6 +132,10 @@
             <input type="checkbox" id="disabled-redirect" name="disabled_redirect" <?php echo get_option('disabled_redirect') == 'on' ? 'checked' : '' ?>>
             <label for="disabled-redirect"><?= __('Disable redirection for institutes and alliances to the administrator'); ?></label>
           </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="disabled-switch-language" name="disable_switch_language" <?php echo get_option('disable_switch_language') == 'on' ? 'checked' : '' ?>>
+            <label for="disabled-switch-language"><?= __('Disable switch language'); ?></label>
+          </div>
         </div>
         <div id="by_moodle" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
