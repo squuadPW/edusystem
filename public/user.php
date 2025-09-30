@@ -104,7 +104,7 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
     foreach ($meta_data_map as $key => $meta_key) {
         if (isset($paret[$key]) && !empty($paret[$key])) {
             if ($meta_key == 'locale') {
-                $locale = LANG;
+                $locale = get_option('default_lang_site');
                 $lang_code = $paret[$meta_key];
                 $supported_languages = ['en_EN', 'es_ES'];
 

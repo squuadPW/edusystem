@@ -100,6 +100,13 @@
               <?= __('Update max date upload at', 'edusystem'); ?>
             </a>
           </div>
+          <div class="form-group" style="padding: 0px 10px 10px 10px;">
+            <label
+              for="default-lang-site"><?= __('Default site language'); ?></label>
+            <br>
+            <input type="text" id="default-lang-site" name="default_lang_site"
+              value="<?php echo get_option('default_lang_site') ?>" required>
+          </div>
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="virtual-access" name="virtual_access" <?php echo get_option('virtual_access') == 'on' ? 'checked' : '' ?>>
             <label for="virtual-access"><?= __('Show button for virtual classroom'); ?></label>
