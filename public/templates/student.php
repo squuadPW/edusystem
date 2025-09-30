@@ -4,6 +4,7 @@ global $wpdb, $current_user;
 $roles = $current_user->roles;
 $table_students = $wpdb->prefix . 'students';
 $student_logged = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}' OR partner_id={$current_user->ID}");
+$hide_grade_student = get_option('hide_grade_student');
 
 $students = [];
 if (in_array('student', $roles)) {
@@ -58,8 +59,10 @@ if (in_array('student', $roles)) {
         <tr>
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span
                     class="nobr"><?= __('Full Name', 'edusystem'); ?></span></th>
-            <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                    class="nobr"><?= __('Grade', 'edusystem'); ?></span></th>
+            <?php if ($hide_grade_student !== 'on') { ?>
+                <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
+                        class="nobr"><?= __('Grade', 'edusystem'); ?></span></th>
+            <?php } ?>
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                     class="nobr"><?= __('Program(s)', 'edusystem'); ?></span></th>
             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
@@ -76,10 +79,12 @@ if (in_array('student', $roles)) {
                         data-title="<?= __('Full Name', 'edusystem'); ?>">
                         <?= $row->name . ' ' . $row->last_name; ?>
                     </td>
-                    <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
-                        data-title="<?= __('Grade', 'edusystem'); ?>">
-                        <?= $grade = get_name_grade($row->grade_id); ?>
-                    </td>
+                    <?php if ($hide_grade_student !== 'on') { ?>
+                        <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
+                            data-title="<?= __('Grade', 'edusystem'); ?>">
+                            <?= $grade = get_name_grade($row->grade_id); ?>
+                        </td>
+                    <?php } ?>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                         data-title="<?= __('Program', 'edusystem') ?>">
                         <?= $program = get_name_program_student($row->id); ?>

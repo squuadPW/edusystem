@@ -1,6 +1,7 @@
 <?php
 global $current_user;
 $roles = $current_user->roles;
+$hide_grade_student = get_option('hide_grade_student');
 
 $countries = get_countries();
 $institutes = get_list_institutes_active();
@@ -152,16 +153,18 @@ $url = wp_get_attachment_url($student->profile_picture);
                                         </p>
                                     </tr>
                                     <tr>
-                                        <th scope="row" style="font-weight:400; text-align: center">
-                                            <label for="grade"><b><?php _e('Grade', 'edusystem'); ?></b></label><br>
-                                            <select name="grade" autocomplete="off" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                                <?php foreach ($grades as $grade): ?>
-                                                    <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>>
-                                                        <?= $grade->name; ?> <?= $grade->description; ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </th>
+                                        <?php if ($hide_grade_student !== 'on') { ?>
+                                            <th scope="row" style="font-weight:400; text-align: center">
+                                                <label for="grade"><b><?php _e('Grade', 'edusystem'); ?></b></label><br>
+                                                <select name="grade" autocomplete="off" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                    <?php foreach ($grades as $grade): ?>
+                                                        <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>>
+                                                            <?= $grade->name; ?> <?= $grade->description; ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </th>
+                                        <?php } ?>
                                         <th scope="row" style="font-weight:400; text-align: center">
                                             <label
                                                 for="academic_period"><b><?php _e('School Year', 'edusystem'); ?></b></label><br>

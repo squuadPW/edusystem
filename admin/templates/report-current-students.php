@@ -1,27 +1,27 @@
 <h2 class="nav-tab-wrapper">
 	<a href="<?= admin_url('admin.php?page=report-students') ?>"
-		class="nav-tab <?= !isset($_GET['section_tab']) ? 'nav-tab-active' : ''; ?>"><?= __('Active students', 'edusystem'); ?>
+		class="nav-tab <?= !isset($_GET['section_tab']) ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Active students', 'edusystem'); ?>
 		(<strong><?= $total_count_active ?></strong>)</a>
 	<a href="<?= admin_url('admin.php?page=report-students&section_tab=current') ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'current') ? 'nav-tab-active' : ''; ?>"><?= __('Students studying', 'edusystem'); ?>
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'current') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Students studying', 'edusystem'); ?>
 		(<strong><?= $total_count_current ?></strong>)</a>
 	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending_electives'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending_electives') ? 'nav-tab-active' : ''; ?>"><?= __('Pending electives', 'edusystem'); ?>
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending_electives') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Pending electives', 'edusystem'); ?>
 		(<strong><?= $total_count_pending_electives ?></strong>)</a>
 	<a href="<?= admin_url('admin.php?page=report-students&section_tab=non-enrolled'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'non-enrolled') ? 'nav-tab-active' : ''; ?>"><?= __('Non-enrolled students', 'edusystem'); ?>
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'non-enrolled') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Non-enrolled students', 'edusystem'); ?>
 		(<strong><?= $total_count_non_enrolled ?></strong>)</a>
 	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending-graduation'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending-graduation') ? 'nav-tab-active' : ''; ?>"><?= __('Pending graduation', 'edusystem'); ?>
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending-graduation') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Pending graduation', 'edusystem'); ?>
 		(<strong><?= $total_count_pending_graduation ?></strong>)</a>
 	<a href="<?= admin_url('admin.php?page=report-students&section_tab=graduated'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'graduated') ? 'nav-tab-active' : ''; ?>"><?= __('Graduated', 'edusystem'); ?>
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'graduated') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Graduated', 'edusystem'); ?>
 		(<strong><?= $total_count_graduated ?></strong>)</a>
 	<a href="<?= admin_url('admin.php?page=report-students&section_tab=retired'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'retired') ? 'nav-tab-active' : ''; ?>"><?= __('Retired', 'edusystem'); ?>
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'retired') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Retired', 'edusystem'); ?>
 		(<strong><?= $total_count_retired ?></strong>)</a>
 	<a href="<?= admin_url('admin.php?page=report-students&section_tab=scholarships'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'scholarships') ? 'nav-tab-active' : ''; ?>"><?= __('Scholarships', 'edusystem'); ?>
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'scholarships') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Scholarships', 'edusystem'); ?>
 		(<strong><?= $total_count_scholarships ?></strong>)</a>
 </h2>
 

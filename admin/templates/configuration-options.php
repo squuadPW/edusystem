@@ -136,6 +136,10 @@
             <input type="checkbox" id="disabled-switch-language" name="disable_switch_language" <?php echo get_option('disable_switch_language') == 'on' ? 'checked' : '' ?>>
             <label for="disabled-switch-language"><?= __('Disable switch language'); ?></label>
           </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="hide-grade-student" name="hide_grade_student" <?php echo get_option('hide_grade_student') == 'on' ? 'checked' : '' ?>>
+            <label for="hide-grade-student"><?= __('Hide grade student'); ?></label>
+          </div>
         </div>
         <div id="by_moodle" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">

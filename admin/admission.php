@@ -340,7 +340,13 @@ class TT_document_review_List_Table extends WP_List_Table
                 }
 
             case 'grade':
-                $grade = get_name_grade($item['grade_id']) . ' (' . $item['academic_period'] . ' - ' . $item['initial_cut'] . ')';
+                $hide_grade_student = get_option('hide_grade_student');
+                if ($hide_grade_student !== 'on') {
+                    $grade = get_name_grade($item['grade_id']) . ' (' . $item['academic_period'] . ' - ' . $item['initial_cut'] . ')';
+                } else {
+                    $grade = $item['academic_period'] . ' - ' . $item['initial_cut'];
+                }
+                
                 return $grade;
             case 'pending_documents':
                 return $item['count_pending_documents'];
@@ -677,7 +683,12 @@ class TT_all_student_List_Table extends WP_List_Table
                 $program = get_name_program_student($item['id']);
                 return $program;
             case 'grade':
-                $grade = get_name_grade($item['grade_id']);
+                $hide_grade_student = get_option('hide_grade_student');
+                if ($hide_grade_student !== 'on') {
+                    $grade = get_name_grade($item['grade_id']);
+                } else {
+                    $grade = '';
+                }
                 return $grade;
             case 'moodle_active':
                 return $item['moodle_active'];
