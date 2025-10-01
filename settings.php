@@ -4,5 +4,4 @@
 	define('TYPE_PROGRAM', '0'); // AES type of program for endpoint for laravel create user and move documents
 	define('ROLE_ID_STUDENT_MOODLE', 5); // Role ID moodle student
 	define('VERSIONS_JS', '2.2.43'); // Versions JS
-	define('MODE', 'UNI');
 ?>

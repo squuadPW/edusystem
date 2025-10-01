@@ -107,6 +107,17 @@
             <input type="text" id="default-lang-site" name="default_lang_site"
               value="<?php echo get_option('default_lang_site') ?>" required>
           </div>
+          <div class="form-group" style="padding: 0px 10px 10px 10px;">
+            <label for="offer_complete"><?= __('Site mode', 'edusystem'); ?></label> <br>
+            <select name="site_mode" class="js-example-basic" style="width: 100%;">
+              <option value="UNI" <?= get_option('site_mode') == 'UNI' ? 'selected' : ''; ?>>
+                <?= __('University', 'edusystem'); ?>
+              </option>
+              <option value="SCHOOL" <?= get_option('site_mode') == 'SCHOOL' ? 'selected' : ''; ?>>
+                <?= __('School', 'edusystem'); ?>
+              </option>
+            </select>
+          </div>
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="virtual-access" name="virtual_access" <?php echo get_option('virtual_access') == 'on' ? 'checked' : '' ?>>
             <label for="virtual-access"><?= __('Show button for virtual classroom'); ?></label>

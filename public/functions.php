@@ -797,7 +797,7 @@ function optimize_my_account_menu_links(array $menu_links): array
     $is_parent_or_student = $is_parent || $is_student;
     $is_teacher = in_array('teacher', $roles);
     $is_disabled_redirect_on = get_option('disabled_redirect') === 'on';
-    $is_uni_mode = defined('MODE') && MODE === 'UNI';
+    $is_uni_mode = get_option('site_mode') === 'UNI';
 
     // A. Payments / Orders Logic
     if ($is_disabled_redirect_on || $is_parent) {
