@@ -84,6 +84,7 @@ function save_institute()
             }
 
             // --- Sanitización y preparación de datos ---
+            // Asignar level y type_calendar a 1 si es modo alianza
             $fields = [
                 'name' => strtoupper($_POST['name_institute']),
                 'phone' => $_POST['number_phone_hidden'],
@@ -92,14 +93,14 @@ function save_institute()
                 'state' => $_POST['state'],
                 'city' => strtolower($_POST['city']),
                 'address' => $_POST['address'],
-                'level_id' => $_POST['level'],
+                'level_id' => $is_alliance ? 1 : $_POST['level'],
                 'name_rector' => strtolower($_POST['rector_name']),
                 'lastname_rector' => strtolower($_POST['rector_lastname']),
                 'phone_rector' => $_POST['number_rector_phone_hidden'],
                 'reference' => $_POST['reference'],
                 'description' => $_POST['description'],
                 'business_name' => $_POST['business_name'],
-                'type_calendar' => $_POST['type_calendar'],
+                'type_calendar' => $is_alliance ? 1 : $_POST['type_calendar'],
                 'alliance_mode' => $_POST['alliance_mode']
             ];
 
@@ -118,7 +119,8 @@ function save_institute()
             $fields['reference'] = sanitize_textarea_field($fields['reference']);
             $fields['description'] = sanitize_textarea_field($fields['description']);
             $fields['business_name'] = sanitize_text_field($fields['business_name']);
-            $fields['type_calendar'] = sanitize_text_field($fields['type_calendar']);
+            // Si es modo alianza, type_calendar ya es 1 (int), si no, sanitizar
+            $fields['type_calendar'] = $is_alliance ? 1 : sanitize_text_field($fields['type_calendar']);
             $fields['alliance_mode'] = sanitize_text_field($fields['alliance_mode']);
 
             // Verificar si el email ya existe en la tabla de institutos

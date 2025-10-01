@@ -19,6 +19,33 @@
                 <label for="phone"><?= __('School or Institution Phone','edusystem'); ?><span class="required">*</span></label>
                 <input class="formdata" type="tel" id="number_phone" name="number_phone" required>
             </div>
+        <?php } else { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="rector_name">
+                    <?php if ($alliance_mode !== false) {
+                        echo __('Name','edusystem');
+                    } else {
+                        echo __('Rector\'s name','edusystem');
+                    } ?>
+                    <span class="required">*</span>
+                </label>
+                <input class="formdata" type="text" name="rector_name" required>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="rector_lastname">
+                    <?php if ($alliance_mode !== false) {
+                        echo __('Last name','edusystem');
+                    } else {
+                        echo __('Rector\'s last name','edusystem');
+                    } ?>
+                    <span class="required">*</span>
+                </label>
+                <input class="formdata" type="text" name="rector_lastname" required>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="rector_phone"><?= __('Phone','edusystem'); ?><span class="required">*</span></label>
+                <input class="formdata number_phone" type="tel" id="rector_phone" name="rector_phone" required>
+            </div>
         <?php } ?>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="email">
@@ -39,13 +66,15 @@
             <?php } ?>
             </select>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="type_calendar"><?= __('Type calendar','edusystem'); ?><span class="required">*</span></label>
-            <select name="type_calendar">
-                <option value="1"><?= get_type_calendar(1); ?></option> 
-                <option value="2"><?= get_type_calendar(2); ?></option> 
-            </select>
-        </div>
+        <?php if (!$alliance_mode) { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="type_calendar"><?= __('Type calendar','edusystem'); ?><span class="required">*</span></label>
+                <select name="type_calendar">
+                    <option value="1"><?= get_type_calendar(1); ?></option> 
+                    <option value="2"><?= get_type_calendar(2); ?></option> 
+                </select>
+            </div>
+        <?php } ?>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="state"><?= __('State','edusystem'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="state" required>
@@ -58,48 +87,52 @@
             <label for="address"><?= __('Address'); ?><span class="required">*</span></label>
             <input class="formdata" type="text" name="address" required>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="level"><?= __('Educational level','edusystem'); ?></label>
-            <select name="level">
-                <option value="1"><?= __('Primary','edusystem'); ?></option>
-                <option value="2" ><?= __('High School','edusystem'); ?></option>
-            </select>
-        </div>
+        <?php if (!$alliance_mode) { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="level"><?= __('Educational level','edusystem'); ?></label>
+                <select name="level">
+                    <option value="1"><?= __('Primary','edusystem'); ?></option>
+                    <option value="2" ><?= __('High School','edusystem'); ?></option>
+                </select>
+            </div>
+        <?php } ?>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name"><?= __('Description','edusystem'); ?><span class="required">*</span></label>
             <textarea class="formdata" style="resize: none" type="text" name="description" required></textarea>
         </div>
 
         <!-- Section -->
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
-            <div class="subtitle text-align-center"><?= __('Contact','edusystem'); ?></div>
+        <?php if (!$alliance_mode) { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
+                <div class="subtitle text-align-center"><?= __('Contact','edusystem'); ?></div>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="rector_name">
+                    <?php if ($alliance_mode !== false) {
+                        echo __('Name','edusystem');
+                    } else {
+                        echo __('Rector\'s name','edusystem');
+                    } ?>
+                    <span class="required">*</span>
+                </label>
+                <input class="formdata" type="text" name="rector_name" required>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="rector_lastname">
+                    <?php if ($alliance_mode !== false) {
+                        echo __('Last name','edusystem');
+                    } else {
+                        echo __('Rector\'s last name','edusystem');
+                    } ?>
+                    <span class="required">*</span>
+                </label>
+                <input class="formdata" type="text" name="rector_lastname" required>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="rector_phone"><?= __('Phone','edusystem'); ?><span class="required">*</span></label>
+                <input class="formdata number_phone" type="tel" id="rector_phone" name="rector_phone" required>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="rector_name">
-                <?php if ($alliance_mode !== false) {
-                    echo __('Name','edusystem');
-                } else {
-                    echo __('Rector\'s name','edusystem');
-                } ?>
-                <span class="required">*</span>
-            </label>
-            <input class="formdata" type="text" name="rector_name" required>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="rector_lastname">
-                <?php if ($alliance_mode !== false) {
-                    echo __('Last name','edusystem');
-                } else {
-                    echo __('Rector\'s last name','edusystem');
-                } ?>
-                <span class="required">*</span>
-            </label>
-            <input class="formdata" type="text" name="rector_lastname" required>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="rector_phone"><?= __('Phone','edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata number_phone" type="tel" id="rector_phone" name="rector_phone" required>
-        </div>
+        <?php } ?>
 
         <!-- Section -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10">
