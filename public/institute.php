@@ -39,7 +39,6 @@ function save_institute()
                 'state' => __('State is required', 'edusystem'),
                 'city' => __('City is required', 'edusystem'),
                 'address' => __('Address is required', 'edusystem'),
-                'level' => __('Education level is required', 'edusystem'),
                 'rector_name' => __('Rector name is required', 'edusystem'),
                 'rector_lastname' => __('Rector lastname is required', 'edusystem'),
                 'number_rector_phone_hidden' => __('Rector phone is required', 'edusystem')
@@ -49,6 +48,7 @@ function save_institute()
                 $required_fields['name_institute'] = __('Institute name is required', 'edusystem');
                 $required_fields['number_phone_hidden'] = __('Phone number is required', 'edusystem');
                 $required_fields['business_name'] = __('Business name is required', 'edusystem');
+                $required_fields['level'] = __('Education level is required', 'edusystem');
             }
 
             $errors = [];
