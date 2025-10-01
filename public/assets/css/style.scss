@@ -1491,5 +1491,10 @@ body.modal-open {
   
 }
 
+/* Storefront: Deshabilitar el clic en el logo solo para usuarios logueados */
+body.logged-in .custom-logo-link {
+    pointer-events: none;
+    cursor: default; /* Muestra el cursor normal, no la mano */
+}
 
 
