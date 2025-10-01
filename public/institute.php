@@ -1,7 +1,17 @@
 <?php
 
-function form_register_agreement()
+function form_register_agreement($atts)
 {
+    $atts = shortcode_atts(
+        array(
+            'title' => __('Institution Registration','edusystem'),
+            'alliance_mode' => false
+        ),
+        $atts,
+        'form_register_agreement'
+    );
+
+    extract($atts, EXTR_SKIP);
     $countries = get_countries();
     include(plugin_dir_path(__FILE__) . 'templates/register-agreement.php');
 }
@@ -17,10 +27,13 @@ function save_institute()
             global $wpdb;
             $table_institutes = $wpdb->prefix . 'institutes';
 
-            // Definir campos requeridos y sus mensajes de error
+            // --- Validación de campos requeridos y formatos ---
+
+            $alliance_mode_val = isset($_POST['alliance_mode']) ? $_POST['alliance_mode'] : '';
+            $is_alliance = ($alliance_mode_val === 'true');
+
+            // Campos requeridos comunes
             $required_fields = [
-                'name_institute' => __('Institute name is required', 'edusystem'),
-                'number_phone_hidden' => __('Phone number is required', 'edusystem'),
                 'current_email' => __('Email is required', 'edusystem'),
                 'country' => __('Country is required', 'edusystem'),
                 'state' => __('State is required', 'edusystem'),
@@ -29,11 +42,15 @@ function save_institute()
                 'level' => __('Education level is required', 'edusystem'),
                 'rector_name' => __('Rector name is required', 'edusystem'),
                 'rector_lastname' => __('Rector lastname is required', 'edusystem'),
-                'number_rector_phone_hidden' => __('Rector phone is required', 'edusystem'),
-                'business_name' => __('Business name is required', 'edusystem')
+                'number_rector_phone_hidden' => __('Rector phone is required', 'edusystem')
             ];
+            // Solo requerir estos campos si NO es modo alianza
+            if (!$is_alliance) {
+                $required_fields['name_institute'] = __('Institute name is required', 'edusystem');
+                $required_fields['number_phone_hidden'] = __('Phone number is required', 'edusystem');
+                $required_fields['business_name'] = __('Business name is required', 'edusystem');
+            }
 
-            // Validar campos requeridos
             $errors = [];
             foreach ($required_fields as $field => $message) {
                 if (empty($_POST[$field])) {
@@ -46,17 +63,19 @@ function save_institute()
                 $errors[] = __('Invalid email format', 'edusystem');
             }
 
-            // Validar números telefónicos (ejemplo básico)
+            // Validar números telefónicos
             $phone_pattern = '/^\+?[0-9]{7,15}$/';
-            if (!empty($_POST['number_phone_hidden']) && !preg_match($phone_pattern, $_POST['number_phone_hidden'])) {
-                $errors[] = __('Invalid phone number format', 'edusystem');
+            $phones_to_check = [];
+            if (!$is_alliance) {
+                $phones_to_check['number_phone_hidden'] = __('Invalid phone number format', 'edusystem');
+            }
+            $phones_to_check['number_rector_phone_hidden'] = __('Invalid rector phone number format', 'edusystem');
+            foreach ($phones_to_check as $field => $msg) {
+                if (!empty($_POST[$field]) && !preg_match($phone_pattern, $_POST[$field])) {
+                    $errors[] = $msg;
+                }
             }
 
-            if (!empty($_POST['number_rector_phone_hidden']) && !preg_match($phone_pattern, $_POST['number_rector_phone_hidden'])) {
-                $errors[] = __('Invalid rector phone number format', 'edusystem');
-            }
-
-            // Si hay errores, mostrarlos y abortar
             if (!empty($errors)) {
                 foreach ($errors as $error) {
                     wc_add_notice($error, 'error');
@@ -64,73 +83,99 @@ function save_institute()
                 return;
             }
 
-            // Sanitizar y preparar datos
-            $name = sanitize_text_field(strtoupper($_POST['name_institute']));
-            $phone = sanitize_text_field($_POST['number_phone_hidden']);
-            $email = sanitize_email($_POST['current_email']);
-            $country = sanitize_text_field($_POST['country']);
-            $state = sanitize_text_field($_POST['state']);
-            $city = sanitize_text_field(strtolower($_POST['city']));
-            $address = sanitize_textarea_field($_POST['address']);
-            $level = intval($_POST['level']);
-            $rector_name = sanitize_text_field(strtolower($_POST['rector_name']));
-            $rector_lastname = sanitize_text_field(strtolower($_POST['rector_lastname']));
-            $rector_phone = sanitize_text_field($_POST['number_rector_phone_hidden']);
-            $reference = sanitize_textarea_field($_POST['reference']);
-            $description = sanitize_textarea_field($_POST['description']);
-            $business_name = sanitize_text_field($_POST['business_name']);
-            $type_calendar = sanitize_text_field($_POST['type_calendar']);
+            // --- Sanitización y preparación de datos ---
+            $fields = [
+                'name' => strtoupper($_POST['name_institute']),
+                'phone' => $_POST['number_phone_hidden'],
+                'email' => $_POST['current_email'],
+                'country' => $_POST['country'],
+                'state' => $_POST['state'],
+                'city' => strtolower($_POST['city']),
+                'address' => $_POST['address'],
+                'level_id' => $_POST['level'],
+                'name_rector' => strtolower($_POST['rector_name']),
+                'lastname_rector' => strtolower($_POST['rector_lastname']),
+                'phone_rector' => $_POST['number_rector_phone_hidden'],
+                'reference' => $_POST['reference'],
+                'description' => $_POST['description'],
+                'business_name' => $_POST['business_name'],
+                'type_calendar' => $_POST['type_calendar'],
+                'alliance_mode' => $_POST['alliance_mode']
+            ];
+
+            // Sanitizar
+            $fields['name'] = sanitize_text_field($fields['name']);
+            $fields['phone'] = sanitize_text_field($fields['phone']);
+            $fields['email'] = sanitize_email($fields['email']);
+            $fields['country'] = sanitize_text_field($fields['country']);
+            $fields['state'] = sanitize_text_field($fields['state']);
+            $fields['city'] = sanitize_text_field($fields['city']);
+            $fields['address'] = sanitize_textarea_field($fields['address']);
+            $fields['level_id'] = intval($fields['level_id']);
+            $fields['name_rector'] = sanitize_text_field($fields['name_rector']);
+            $fields['lastname_rector'] = sanitize_text_field($fields['lastname_rector']);
+            $fields['phone_rector'] = sanitize_text_field($fields['phone_rector']);
+            $fields['reference'] = sanitize_textarea_field($fields['reference']);
+            $fields['description'] = sanitize_textarea_field($fields['description']);
+            $fields['business_name'] = sanitize_text_field($fields['business_name']);
+            $fields['type_calendar'] = sanitize_text_field($fields['type_calendar']);
+            $fields['alliance_mode'] = sanitize_text_field($fields['alliance_mode']);
 
             // Verificar si el email ya existe en la tabla de institutos
             $existing_institute = $wpdb->get_var($wpdb->prepare(
                 "SELECT email FROM $table_institutes WHERE email = %s",
-                $email
+                $fields['email']
             ));
-
             if ($existing_institute) {
                 wc_add_notice(__('Email already registered for another institute', 'edusystem'), 'error');
                 return;
             }
 
             // Verificar usuario existente
-            $user = get_user_by('email', $email);
+            $user = get_user_by('email', $fields['email']);
             if ($user) {
                 wc_add_notice(__('Existing email, please enter another email.', 'edusystem'), 'error');
                 return;
             }
 
-            // Insertar en la base de datos
-            $result = $wpdb->insert($table_institutes, [
-                'name' => $name,
-                'phone' => $phone,
-                'email' => $email,
-                'country' => $country,
-                'state' => $state,
-                'city' => $city,
-                'address' => $address,
-                'level_id' => $level,
-                'type_calendar' => $type_calendar,
-                'name_rector' => $rector_name,
-                'lastname_rector' => $rector_lastname,
-                'phone_rector' => $rector_phone,
-                'reference' => $reference,
-                'description' => $description,
-                'business_name' => $business_name,
+            // --- Preparar datos para inserción ---
+            $data = [
+                'name' => $fields['name'],
+                'phone' => $fields['phone'],
+                'email' => $fields['email'],
+                'country' => $fields['country'],
+                'state' => $fields['state'],
+                'city' => $fields['city'],
+                'address' => $fields['address'],
+                'level_id' => $fields['level_id'],
+                'type_calendar' => $fields['type_calendar'],
+                'name_rector' => $fields['name_rector'],
+                'lastname_rector' => $fields['lastname_rector'],
+                'phone_rector' => $fields['phone_rector'],
+                'reference' => $fields['reference'],
+                'description' => $fields['description'],
                 'status' => 0,
                 'fee' => 5.0,
                 'created_at' => current_time('mysql', 1)
-            ]);
+            ];
 
-            // Manejar resultado de la inserción
+            if ($fields['alliance_mode'] === 'true') {
+                $data['name'] = $fields['name_rector'] . ' ' . $fields['lastname_rector'];
+                $data['phone'] = $fields['phone_rector'];
+                $data['business_name'] = $fields['name_rector'] . ' ' . $fields['lastname_rector'];
+            } else {
+                $data['business_name'] = $fields['business_name'];
+            }
+
+            $result = $wpdb->insert($table_institutes, $data);
+
             if ($result === false) {
                 wc_add_notice(__('Database error. Please try again.', 'edusystem'), 'error');
                 return;
             }
 
-            // Obtener ID del nuevo registro
             $institute_id = $wpdb->insert_id;
 
-            // Enviar email de confirmación
             $new_institute = WC()->mailer()->get_emails()['WC_Registered_Institution_Email'];
             if ($new_institute) {
                 $new_institute->trigger($institute_id);

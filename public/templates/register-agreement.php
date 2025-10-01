@@ -1,24 +1,34 @@
 <div class="title">
-    <?= __('Institution Registration','edusystem'); ?>
+    <?= $title; ?>
 </div>
 <form method="POST" action="<?= the_permalink(); ?>">
     <div class="grid grid-cols-12 gap-4">
         <!-- Section -->
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+        <input type="hidden" name="action" value="save_institute">
+        <input type="hidden" name="alliance_mode" value="<?= $alliance_mode; ?>">
+        <?php if (!$alliance_mode) { ?>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
             <label for="name"><?= __('Name of School or Institution','edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata" type="text" name="name_institute" required>
-            <input type="hidden" name="action" value="save_institute">
-        </div>
+                <input class="formdata" type="text" name="name_institute" required>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="name"><?= __('Business name','edusystem'); ?><span class="required">*</span></label>
+                <input class="formdata" type="text" name="business_name" required>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="phone"><?= __('School or Institution Phone','edusystem'); ?><span class="required">*</span></label>
+                <input class="formdata" type="tel" id="number_phone" name="number_phone" required>
+            </div>
+        <?php } ?>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Business name','edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata" type="text" name="business_name" required>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="phone"><?= __('School or Institution Phone','edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata" type="tel" id="number_phone" name="number_phone" required>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="email"><?= __('School or Institution Mail','edusystem'); ?><span class="required">*</span></label>
+            <label for="email">
+                <?php if ($alliance_mode !== false) {
+                    echo __('Mail','edusystem');
+                } else {
+                    echo __('School or Institution Mail','edusystem');
+                } ?>
+                <span class="required">*</span>
+            </label>
             <input class="formdata" type="email" name="current_email" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -65,11 +75,25 @@
             <div class="subtitle text-align-center"><?= __('Contact','edusystem'); ?></div>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="rector_name"><?= __('Rector\'s name','edusystem'); ?><span class="required">*</span></label>
+            <label for="rector_name">
+                <?php if ($alliance_mode !== false) {
+                    echo __('Name','edusystem');
+                } else {
+                    echo __('Rector\'s name','edusystem');
+                } ?>
+                <span class="required">*</span>
+            </label>
             <input class="formdata" type="text" name="rector_name" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="rector_lastname"><?= __('Rector\'s last name','edusystem'); ?><span class="required">*</span></label>
+            <label for="rector_lastname">
+                <?php if ($alliance_mode !== false) {
+                    echo __('Last name','edusystem');
+                } else {
+                    echo __('Rector\'s last name','edusystem');
+                } ?>
+                <span class="required">*</span>
+            </label>
             <input class="formdata" type="text" name="rector_lastname" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
