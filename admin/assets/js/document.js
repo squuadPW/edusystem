@@ -505,16 +505,18 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   let institute_id = document.getElementById("institute_id");
-  institute_id.addEventListener("change", function (e) {
-    document.querySelector("input[name=name_institute]").value = "";
-    if (e.target.value == "other") {
-      document.getElementById("institute_down").style.display = "contents";
-      document.querySelector("input[name=name_institute]").required = true;
-    } else {
-      document.getElementById("institute_down").style.display = "none";
-      document.querySelector("input[name=name_institute]").required = false;
-    }
-  });
+  if (institute_id) {
+    institute_id.addEventListener("change", function (e) {
+      document.querySelector("input[name=name_institute]").value = "";
+      if (e.target.value == "other") {
+        document.getElementById("institute_down").style.display = "contents";
+        document.querySelector("input[name=name_institute]").required = true;
+      } else {
+        document.getElementById("institute_down").style.display = "none";
+        document.querySelector("input[name=name_institute]").required = false;
+      }
+    });
+  }
 
   const buttons_certificate = document.querySelectorAll(
     ".download-document-certificate"
@@ -858,6 +860,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Obtenemos el valor inicial desde el atributo de datos
   const initialCut = selectorCuts.dataset.initialCut;
+  const textoption = selectorCuts.dataset.textoption;
 
   if (selectorAcademicPeriod && selectorCuts) {
     selectorAcademicPeriod.addEventListener("change", function (e) {
@@ -877,7 +880,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Agrega la opción por defecto 'Out of term' y la marca como seleccionada si corresponde
           let defaultOption = document.createElement("option");
           defaultOption.value = "";
-          defaultOption.text = "Out of term";
+          defaultOption.text = textoption ?? "Out of term";
           // Lógica de selección para la opción por defecto
           if (
             initialCut === "nocut" ||

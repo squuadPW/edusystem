@@ -251,6 +251,7 @@ function add_admin_form_admission_content()
             if ($_GET['section_tab'] == 'all_students') {
                 $table_academic_periods = $wpdb->prefix . 'academic_periods';
                 $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+                $periods_cuts = [];
                 $list_students = new TT_all_student_List_Table;
                 $list_students->prepare_items();
                 include(plugin_dir_path(__FILE__) . 'templates/list-student-documents.php');

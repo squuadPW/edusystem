@@ -171,8 +171,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                                             <select name="academic_period" required
                                                 style="width: 100%; <?= ($student->academic_period == 'noperiod' || $student->academic_period == 'out') ? 'background-color: red; color: white;' : '' ?>"
                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                                <option value="" <?= ($student->academic_period == 'noperiod' || $student->academic_period == 'out') ? 'selected' : '' ?>>Out of school
-                                                    year</option>
+                                                <option value="" <?= ($student->academic_period == 'noperiod' || $student->academic_period == 'out') ? 'selected' : '' ?>><?= __('Out of school year', 'edusystem') ?></option>
                                                 <?php foreach ($periods as $key => $period) { ?>
                                                     <option value="<?= $period->code ?>"
                                                         <?= $student->academic_period == $period->code ? 'selected' : '' ?>>
@@ -188,8 +187,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                                                 style="width: 100%; <?= ($student->initial_cut == 'noperiod' || $student->initial_cut == 'out') ? 'background-color: red; color: white;' : '' ?>"
                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>
                                                 data-initial-cut="<?= htmlspecialchars($student->initial_cut) ?>">
-                                                <option value="" <?= $student->initial_cut == 'nocut' || $student->initial_cut == 'out' ? 'selected' : '' ?>>Out of term
-                                                </option>
+                                                <option value="" <?= $student->initial_cut == 'nocut' || $student->initial_cut == 'out' ? 'selected' : '' ?>><?= __('Out of term', 'edusystem') ?></option>
                                                 <?php foreach ($periods_cuts as $key => $cut) { ?>
                                                     <option value="<?= $cut->cut ?>" <?= $student->initial_cut == $cut->cut ? 'selected' : '' ?>><?= $cut->cut ?></option>
                                                 <?php } ?>
