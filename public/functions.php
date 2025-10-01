@@ -958,6 +958,7 @@ function add_loginout_link($items, $args)
     if (is_user_logged_in()) {
 
         global $current_user, $wpdb;
+        $site_mode = get_option('site_mode');
         $table_users_notices = $wpdb->prefix . 'users_notices';
         $notices = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_users_notices} WHERE `read` = %d AND user_id = %d ORDER BY created_at DESC", 0, $current_user->ID));
         if (sizeof($notices) > 0) {
@@ -974,7 +975,7 @@ function add_loginout_link($items, $args)
 
         $birthday = get_user_meta($current_user->ID, 'birth_date', true);
         $age = floor((time() - strtotime($birthday)) / 31556926);
-        if ($age >= 18 && MODE != 'UNI') {
+        if ($age >= 18 && $site_mode != 'UNI') {
             $items .= '<li><a href="' . home_url() . '">' . __('New applicant', 'edusystem') . '</a></li>';
         }
 
@@ -993,7 +994,7 @@ function add_loginout_link($items, $args)
 
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
 
-            if (MODE != 'UNI') {
+            if ($site_mode != 'UNI') {
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'edusystem') . '</a></li>';
             }
 
@@ -1001,7 +1002,7 @@ function add_loginout_link($items, $args)
 
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/edit-account">' . __('Account', 'edusystem') . '</a></li>';
 
-            if (MODE != 'UNI') {
+            if ($site_mode != 'UNI') {
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-tickets">' . __('Support tickets', 'edusystem') . '</a></li>';
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/my-requests">' . __('Requests', 'edusystem') . '</a></li>';
             }
