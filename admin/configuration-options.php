@@ -27,6 +27,7 @@ function add_admin_form_configuration_options_content()
             $disable_switch_language = sanitize_text_field($_POST['disable_switch_language']) ?? get_option('disable_switch_language');
             $hide_grade_student = sanitize_text_field($_POST['hide_grade_student']) ?? get_option('hide_grade_student');
             $default_lang_site = sanitize_text_field($_POST['default_lang_site']) ?? get_option('default_lang_site');
+            $site_mode = sanitize_text_field($_POST['site_mode']) ?? get_option('site_mode');
             update_option('payment_due', $payment_due);
             update_option('proof_due', $proof_due);
             update_option('virtual_access', $virtual_access);
@@ -40,6 +41,7 @@ function add_admin_form_configuration_options_content()
             update_option('disable_switch_language', $disable_switch_language);
             update_option('hide_grade_student', $hide_grade_student);
             update_option('default_lang_site', $default_lang_site);
+            update_option('site_mode', $site_mode);
 
             // moodle
             $moodle_url = sanitize_text_field($_POST['moodle_url']) ?? get_option('moodle_url');
