@@ -10,6 +10,9 @@ License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain:  edusystem
 */
 
+// funciones de comisiones
+include_once( plugin_dir_path(__FILE__).'payment_method_fees/payment_method_fees.php' );
+
 if (!class_exists('WP_List_Table')) {
   require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }

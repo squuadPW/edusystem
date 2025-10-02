@@ -1,0 +1,44 @@
+.PMF_page_commissions .commission-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  box-sizing: border-box;
+}
+.PMF_page_commissions .commission-table {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 15px;
+}
+.PMF_page_commissions .commission-table thead th {
+  font-size: 16px;
+  font-weight: 600;
+}
+.PMF_page_commissions .commission-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.PMF_page_commissions .commission-info strong {
+  font-size: 15px;
+}
+.PMF_page_commissions .commission-info small {
+  font-size: 13px;
+  color: #555;
+}
+.PMF_page_commissions .commission-input label {
+  font-size: 14px;
+  font-weight: 500;
+}
+@media (min-width: 768px) {
+  .PMF_page_commissions .commission-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .PMF_page_commissions .commission-row .commission-info {
+    flex: 1;
+  }
+  .PMF_page_commissions .commission-row .commission-input {
+    width: 200px;
+    flex-shrink: 0;
+  }
+}/*# sourceMappingURL=styles.css.map */
