@@ -184,6 +184,18 @@ function save_institute()
             }
 
             wc_add_notice(__('Registration sent. Wait for confirmation.', 'edusystem'), 'success');
+            if (get_option('auto_approve_institute') == 'on') {
+                $wpdb->update($table_institutes, [
+                    'status' => 1,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ], ['id' => $institute_id]);
+
+                $email_approved_institute = WC()->mailer()->get_emails()['WC_Approved_Institution_Email'];
+                $email_approved_institute->trigger($institute_id);
+
+                $data_institute = $wpdb->get_row("SELECT * FROM {$table_institutes} WHERE id={$institute_id}");
+                create_user_institute($data_institute);
+            }
         }
     }
 }

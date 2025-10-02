@@ -160,7 +160,15 @@
           </div>
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="hide-grades-names" name="hide_grades_names" <?php echo get_option('hide_grades_names') == 'on' ? 'checked' : '' ?>>
-            <label for="hide-grades-names"><?= __('Hide grades names'); ?></label>
+            <label for="hide-grades-names"><?= __('Hide grades names for institutes'); ?></label>
+          </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="hide-contact-section-email" name="hide_contact_section_email" <?php echo get_option('hide_contact_section_email') == 'on' ? 'checked' : '' ?>>
+            <label for="hide-contact-section-email"><?= __('Hide contact section email'); ?></label>
+          </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="auto-approve-institute" name="auto_approve_institute" <?php echo get_option('auto_approve_institute') == 'on' ? 'checked' : '' ?>>
+            <label for="auto-approve-institute"><?= __('Auto approve institute'); ?></label>
           </div>
         </div>
         <div id="by_moodle" style="display: none">

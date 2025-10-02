@@ -3580,20 +3580,26 @@ function custom_new_user_notification($send, $user)
     $user_student = get_user_by('email', $user->user_email);
     wp_set_password($password, $user_student->ID);
 
+    $site_name = get_bloginfo('name');
+    $site_url = get_site_url();
+    $login_url = wp_login_url();
+    $support_url = $site_url . '/support';
     $content = '';
-    $content .= '<div>Welcome ' . $user_student->first_name . ' ' . $user_student->last_name . ' to the American Elite School platform, we have assigned you a password that you can use to log in and change it immediately.</div><br>';
+    $content .= '<div>Welcome ' . $user_student->first_name . ' ' . $user_student->last_name . ' to the ' . $site_name . ' platform, we have assigned you a password that you can use to log in and change it immediately.</div><br>';
     $content .= '<div>Access information</div>';
     $content .= '<ul>';
     $content .= '<li><strong>Email</strong>: ' . $user->user_email . '</li>';
     $content .= '<li><strong>Password</strong>: ' . $password . '</li>';
     $content .= '</ul>';
-    $content .= '<div style="text-align: center"><a href="https://portal.americanelite.school/my-account" target="_blank"><button style="border: 0; background: none; border-color: #43454b; cursor: pointer; text-decoration: none; font-weight: 600; text-shadow: none; display: inline-block; -webkit-appearance: none; padding: 5px 20px !important; text-align: center; background-color: #002fbd !important; border-radius: 20px; color: white !important; font-size: 18px; cursor: pointer !important">My Account</button></a></div><br>';
+    $content .= '<div style="text-align: center"><a href="' . $login_url . '" target="_blank"><button style="border: 0; background: none; border-color: #43454b; cursor: pointer; text-decoration: none; font-weight: 600; text-shadow: none; display: inline-block; -webkit-appearance: none; padding: 5px 20px !important; text-align: center; background-color: #002fbd !important; border-radius: 20px; color: white !important; font-size: 18px; cursor: pointer !important">My Account</button></a></div><br>';
     $content .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
-    $content .= '<ul>';
-    $content .= '<li>Website: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
-    $content .= '<li>Virtual classroom: <a href="https://portal.americanelite.school/my-account" target="_blank">https://portal.americanelite.school/my-account</a></li>';
-    $content .= '<li>Contact us: <a href="https://support.americanelite.school" target="_blank">https://support.americanelite.school</a></li>';
-    $content .= '</ul>';
+    if (get_option('hide_contact_section_email') != 'on') {
+        $content .= '<ul>';
+        $content .= '<li>Website: <a href="' . $site_url . '" target="_blank">' . $site_url . '</a></li>';
+        $content .= '<li>Virtual classroom: <a href="' . $login_url . '" target="_blank">' . $login_url . '</a></li>';
+        $content .= '<li>Contact us: <a href="' . $support_url . '" target="_blank">' . $support_url . '</a></li>';
+        $content .= '</ul>';
+    }
     $content .= '<div>Best regards.</div>';
 
     $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
