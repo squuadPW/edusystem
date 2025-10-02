@@ -158,6 +158,10 @@
             <input type="checkbox" id="hide-grade-student" name="hide_grade_student" <?php echo get_option('hide_grade_student') == 'on' ? 'checked' : '' ?>>
             <label for="hide-grade-student"><?= __('Hide grade student'); ?></label>
           </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="hide-grades-names" name="hide_grades_names" <?php echo get_option('hide_grades_names') == 'on' ? 'checked' : '' ?>>
+            <label for="hide-grades-names"><?= __('Hide grades names'); ?></label>
+          </div>
         </div>
         <div id="by_moodle" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">

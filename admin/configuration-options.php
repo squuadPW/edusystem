@@ -26,6 +26,7 @@ function add_admin_form_configuration_options_content()
             $disabled_redirect = sanitize_text_field($_POST['disabled_redirect']) ?? get_option('disabled_redirect');
             $disable_switch_language = sanitize_text_field($_POST['disable_switch_language']) ?? get_option('disable_switch_language');
             $hide_grade_student = sanitize_text_field($_POST['hide_grade_student']) ?? get_option('hide_grade_student');
+            $hide_grades_names = sanitize_text_field($_POST['hide_grades_names']) ?? get_option('hide_grades_names');
             $default_lang_site = sanitize_text_field($_POST['default_lang_site']) ?? get_option('default_lang_site');
             $site_mode = sanitize_text_field($_POST['site_mode']) ?? get_option('site_mode');
             update_option('payment_due', $payment_due);
@@ -40,6 +41,7 @@ function add_admin_form_configuration_options_content()
             update_option('disabled_redirect', $disabled_redirect);
             update_option('disable_switch_language', $disable_switch_language);
             update_option('hide_grade_student', $hide_grade_student);
+            update_option('hide_grades_names', $hide_grades_names);
             update_option('default_lang_site', $default_lang_site);
             update_option('site_mode', $site_mode);
 

@@ -207,60 +207,65 @@
                                             <?php endif; ?>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td style="font-weight:400; width: 25%;">
-                                            <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label
-                                                    for="input_id"><b><?= __('Lower text', 'edusystem'); ?></b><br>
-                                                <input type="text" name="lower_text"
-                                                    value="<?= ucwords($institute->lower_text); ?>"
-                                                    <?= ($institute->status == 0) ? 'readonly' : '' ?>>
-                                            <?php else: ?>
-                                                <label for="input_id"><b><?= __('Lower text', 'edusystem'); ?></b><span
-                                                        class="text-danger">*</span></label><br>
-                                                <input type="text" name="lower_text" value="">
-                                            <?php endif; ?>
-                                        </td>
-                                        <td style="font-weight:400; width: 25%;">
-                                            <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label
-                                                    for="input_id"><b><?= __('Middle text', 'edusystem'); ?></b><br>
-                                                <input type="text" name="middle_text"
-                                                    value="<?= ucwords($institute->middle_text); ?>"
-                                                    <?= ($institute->status == 0) ? 'readonly' : '' ?>>
-                                            <?php else: ?>
-                                                <label for="input_id"><b><?= __('Middle text', 'edusystem'); ?></b><span
-                                                        class="text-danger">*</span></label><br>
-                                                <input type="text" name="middle_text" value="" >
-                                            <?php endif; ?>
-                                        </td>
-                                        <td style="font-weight:400; width: 25%;">
-                                            <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label
-                                                    for="input_id"><b><?= __('Upper text', 'edusystem'); ?></b><br>
-                                                <input type="text" name="upper_text"
-                                                    value="<?= ucwords($institute->upper_text); ?>"
-                                                    <?= ($institute->status == 0) ? 'readonly' : '' ?>>
-                                            <?php else: ?>
-                                                <label for="input_id"><b><?= __('Upper text', 'edusystem'); ?></b><span
-                                                        class="text-danger">*</span></label><br>
-                                                <input type="text" name="upper_text" value="" >
-                                            <?php endif; ?>
-                                        </td>
-                                        <td style="font-weight:400; width: 25%;">
-                                            <?php if (isset($institute) && !empty($institute)): ?>
-                                                <label
-                                                    for="input_id"><b><?= __('Graduated text', 'edusystem'); ?></b><br>
-                                                <input type="text" name="graduated_text"
-                                                    value="<?= ucwords($institute->graduated_text); ?>"
-                                                    <?= ($institute->status == 0) ? 'readonly' : '' ?>>
-                                            <?php else: ?>
-                                                <label for="input_id"><b><?= __('Graduated text', 'edusystem'); ?></b><span
-                                                        class="text-danger">*</span></label><br>
-                                                <input type="text" name="graduated_text" value="" >
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
+                                    <?php 
+                                        $hide_grades_names = get_option('hide_grades_names');
+                                        if ($hide_grades_names !== 'on') {
+                                    ?>
+                                        <tr>
+                                            <td style="font-weight:400; width: 25%;">
+                                                <?php if (isset($institute) && !empty($institute)): ?>
+                                                    <label
+                                                        for="input_id"><b><?= __('Lower text', 'edusystem'); ?></b><br>
+                                                    <input type="text" name="lower_text"
+                                                        value="<?= ucwords($institute->lower_text); ?>"
+                                                        <?= ($institute->status == 0) ? 'readonly' : '' ?>>
+                                                <?php else: ?>
+                                                    <label for="input_id"><b><?= __('Lower text', 'edusystem'); ?></b><span
+                                                            class="text-danger">*</span></label><br>
+                                                    <input type="text" name="lower_text" value="">
+                                                <?php endif; ?>
+                                            </td>
+                                            <td style="font-weight:400; width: 25%;">
+                                                <?php if (isset($institute) && !empty($institute)): ?>
+                                                    <label
+                                                        for="input_id"><b><?= __('Middle text', 'edusystem'); ?></b><br>
+                                                    <input type="text" name="middle_text"
+                                                        value="<?= ucwords($institute->middle_text); ?>"
+                                                        <?= ($institute->status == 0) ? 'readonly' : '' ?>>
+                                                <?php else: ?>
+                                                    <label for="input_id"><b><?= __('Middle text', 'edusystem'); ?></b><span
+                                                            class="text-danger">*</span></label><br>
+                                                    <input type="text" name="middle_text" value="" >
+                                                <?php endif; ?>
+                                            </td>
+                                            <td style="font-weight:400; width: 25%;">
+                                                <?php if (isset($institute) && !empty($institute)): ?>
+                                                    <label
+                                                        for="input_id"><b><?= __('Upper text', 'edusystem'); ?></b><br>
+                                                    <input type="text" name="upper_text"
+                                                        value="<?= ucwords($institute->upper_text); ?>"
+                                                        <?= ($institute->status == 0) ? 'readonly' : '' ?>>
+                                                <?php else: ?>
+                                                    <label for="input_id"><b><?= __('Upper text', 'edusystem'); ?></b><span
+                                                            class="text-danger">*</span></label><br>
+                                                    <input type="text" name="upper_text" value="" >
+                                                <?php endif; ?>
+                                            </td>
+                                            <td style="font-weight:400; width: 25%;">
+                                                <?php if (isset($institute) && !empty($institute)): ?>
+                                                    <label
+                                                        for="input_id"><b><?= __('Graduated text', 'edusystem'); ?></b><br>
+                                                    <input type="text" name="graduated_text"
+                                                        value="<?= ucwords($institute->graduated_text); ?>"
+                                                        <?= ($institute->status == 0) ? 'readonly' : '' ?>>
+                                                <?php else: ?>
+                                                    <label for="input_id"><b><?= __('Graduated text', 'edusystem'); ?></b><span
+                                                            class="text-danger">*</span></label><br>
+                                                    <input type="text" name="graduated_text" value="" >
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
                                 </tbody>
                             </table>
                             <table class="form-table" style="margin-top:0px;">
