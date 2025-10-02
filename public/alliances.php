@@ -1,6 +1,17 @@
 <?php
 
-function form_alliance_registration(){
+function form_alliance_registration($atts){
+    $atts = shortcode_atts(
+        array(
+            'title' => __('Alliance Registration','edusystem'),
+            'ambassador_mode' => false
+        ),
+        $atts,
+        'form_register_agreement'
+    );
+
+    extract($atts, EXTR_SKIP);
+
     $countries = get_countries();
     include(plugin_dir_path(__FILE__).'templates/alliance-registration.php');
 }

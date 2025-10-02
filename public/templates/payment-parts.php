@@ -3,6 +3,7 @@
 
     global $woocommerce;
     $cart = $woocommerce->cart;
+    $site_mode = get_option('site_mode');
 
     // excluye los productos de fee
     $separate_program_fee = $_COOKIE['separate_program_fee'] ?? false;
@@ -100,7 +101,7 @@
             </div>
         <?php endif ?>
 
-        <?php if (MODE != 'UNI') { ?>
+        <?php if ($site_mode != 'UNI') { ?>
             <div class="text-center elements-quote-hidden" style="padding: 18px 0px;">
                 <label><?= __('Apply to get the discount', 'edusystem') ?></label>
                 <div id="button-schoolship"></div>

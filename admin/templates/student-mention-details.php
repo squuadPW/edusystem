@@ -45,7 +45,7 @@
                                         <select name="career_identificator" required>
                                             <option value="" selected>Select a career</option>
                                             <?php foreach ($careers as $key => $career) { ?>
-                                                <option value="<?= $career->identificator ?>" <?= ($mention->career_identificator == $career->identificator) ? 'selected' : ''; ?>><?= $career->name ?></option>
+                                                <option value="<?= $career->identificator ?>" <?= ($mention->career_identificator == $career->identificator) ? 'selected' : ''; ?>><?= $career->name ?> (<?= $career->identificator ?>)</option>
                                             <?php } ?>
                                         </select>
                                     </div>

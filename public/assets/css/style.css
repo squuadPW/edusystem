@@ -1411,4 +1411,10 @@ body.modal-open {
   align-items: center;
   margin-top: 20px;
   border-top: 1px solid rgba(0, 0, 0, 0.1254901961);
+}
+
+/* Storefront: Deshabilitar el clic en el logo solo para usuarios logueados */
+body.logged-in .custom-logo-link {
+  pointer-events: none;
+  cursor: default; /* Muestra el cursor normal, no la mano */
 }/*# sourceMappingURL=style.css.map */

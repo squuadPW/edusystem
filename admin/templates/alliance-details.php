@@ -202,7 +202,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;">
+                            <!-- <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;">
                                 <b><?= __('Manager\'s information', 'edusystem'); ?></b>
                             </h3>
                             <table class="form-table table-customize" style="margin-top:0px;">
@@ -236,7 +236,7 @@
                                         </th>
                                     </tr>
                                 </tbody>
-                            </table>
+                            </table> -->
                             <?php if(in_array('owner', $roles) || in_array('administrator', $roles)) { ?>
                                 <h3 style="margin-top:20px;margin-bottom:0px;text-align:center;">
                                     <b><?= __('Manager\'s information', 'edusystem'); ?></b>

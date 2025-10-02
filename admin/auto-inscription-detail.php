@@ -24,7 +24,7 @@
                                         <label
                                             for="academic_period"><?= __('School year in which students entered', 'edusystem'); ?></label><br>
                                         <select name="academic_period" style="width: 100%">
-                                            <option value="">Select an option</option>
+                                            <option value=""><?= __('Select an option', 'edusystem'); ?></option>
                                             <?php foreach ($periods as $key => $period): ?>
                                                 <option value="<?php echo $period->code; ?>"><?php echo $period->name; ?>
                                                 </option>
@@ -35,7 +35,7 @@
                                         <label
                                             for="academic_period"><?= __('Period in which students entered', 'edusystem'); ?></label><br>
                                         <select name="academic_period_cut" style="width: 100%">
-                                            <option value="">Select an option</option>
+                                            <option value=""><?= __('Select an option', 'edusystem'); ?></option>
                                             <option value="A">A</option>
                                             <option value="B">B</option>
                                             <option value="C">C</option>

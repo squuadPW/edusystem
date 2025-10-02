@@ -20,7 +20,7 @@
                             <label for="type"><?= __('Type', 'edusystem'); ?><span class="required">*</span></label>
                             
                             <select id="type-document" class="form-control" name="type_id" autocomplete="off" required >
-                                <option value="" data-price='<?= wc_price(0) ?>' class="text-uppercase">Select an option</option>
+                                <option value="" data-price='<?= wc_price(0) ?>' class="text-uppercase"><?= __('Select an option', 'edusystem'); ?></option>
                                 <?php foreach ($types as $type) { ?>
                                     <option value="<?= $type->id ?>" data-product_id="<?= $type->product_id ?>" data-price='<?= wc_price( $type->price ) ?>' class="text-uppercase"><?= $type->type ?></option>
                                 <?php } ?>

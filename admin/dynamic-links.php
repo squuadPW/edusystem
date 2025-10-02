@@ -99,7 +99,7 @@ function add_admin_form_dynamic_link_content()
                 $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
                 $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
                 $html .= '<p>' . __('We are pleased to inform you that a dynamic link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
-                $html .= '<p><a href="' . site_url('/dynamic-link?token=' . $link) . '">' . site_url('/dynamic-link?token=' . $link) . '</a></p>';
+                $html .= '<p><a href="' . site_url('/registration-link?token=' . $link) . '">' . site_url('/registration-link?token=' . $link) . '</a></p>';
                 $html .= '<p>' . __('If you have any questions or need assistance, please do not hesitate to contact us. We are here to help you with whatever you need.', 'edusystem') . '</p>';
                 $html .= '<p>' . __('Best regards,', 'edusystem') . '</p>';
                 $html .= '<p>' . sprintf(__('%s Team', 'edusystem'), get_bloginfo('name')) . '</p>';
@@ -114,6 +114,97 @@ function add_admin_form_dynamic_link_content()
             }
 
             exit;
+        } else if ($_GET['action'] == 'upload_document') {
+            global $wpdb;
+
+            if (isset($_FILES['document_upload_file']) && !empty($_FILES['document_upload_file'])) {
+                $file_temp = $_FILES['document_upload_file'];
+                if (($handle = fopen($file_temp['tmp_name'], 'r')) !== false) {
+                    // Detectar delimitador automáticamente (coma o punto y coma)
+                    $first_line = fgets($handle);
+                    rewind($handle);
+                    $delimiter = ',';
+                    if (substr_count($first_line, ';') > substr_count($first_line, ',')) {
+                        $delimiter = ';';
+                    }
+                    $header = fgetcsv($handle, 0, $delimiter);
+                    // Esperados: type_document, id_document, name, last_name, email, program_identificator, payment_plan_identificator, transfer_cr, send_email
+                    $expected = ['type_document', 'id_document', 'name', 'last_name', 'email', 'program_identificator', 'payment_plan_identificator', 'transfer_cr', 'send_email'];
+                    $header_map = array_flip($header);
+
+                    $missing = array_diff($expected, $header);
+                    if (!empty($missing)) {
+                        setcookie('message', __('CSV missing columns: ', 'edusystem') . implode(', ', $missing), time() + 10, '/');
+                        wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content'));
+                        exit;
+                    }
+                    $current_user = wp_get_current_user();
+                    $created_by = $current_user->ID;
+                    $manager_user_id = get_user_meta($created_by, 'manager_user_id', true);
+                    $manager_id = !empty($manager_user_id) ? $manager_user_id : 0;
+                    $table = $wpdb->prefix . 'dynamic_links';
+                    $table_dynamic_links_email_log = $wpdb->prefix . 'dynamic_links_email_log';
+                    $count_inserted = 0;
+                    while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+                        // Limpiar y mapear valores
+                        foreach ($header_map as $col => $idx) {
+                            $row[$idx] = isset($row[$idx]) ? trim($row[$idx]) : '';
+                        }
+                        $type_document = sanitize_text_field($row[$header_map['type_document']]);
+                        $id_document = sanitize_text_field($row[$header_map['id_document']]);
+                        $name = sanitize_text_field($row[$header_map['name']]);
+                        $last_name = sanitize_text_field($row[$header_map['last_name']]);
+                        $email = sanitize_text_field($row[$header_map['email']]);
+                        $program_identificator = sanitize_text_field($row[$header_map['program_identificator']]);
+                        $payment_plan_identificator = sanitize_text_field($row[$header_map['payment_plan_identificator']]);
+                        $transfer_cr = isset($row[$header_map['transfer_cr']]) ? intval($row[$header_map['transfer_cr']]) : 0;
+                        $send_email = isset($row[$header_map['send_email']]) ? $row[$header_map['send_email']] : '0';
+                        $link = substr(bin2hex(random_bytes(6)), 0, 10);
+                        $wpdb->insert($table, [
+                            'link' => $link,
+                            'type_document' => $type_document,
+                            'id_document' => $id_document,
+                            'name' => $name,
+                            'last_name' => $last_name,
+                            'email' => $email,
+                            'program_identificator' => $program_identificator,
+                            'payment_plan_identificator' => $payment_plan_identificator,
+                            'transfer_cr' => $transfer_cr,
+                            'manager_id' => $manager_id,
+                            'created_by' => $created_by,
+                        ]);
+                        $dynamic_link_id = $wpdb->insert_id;
+                        if ($send_email == '1') {
+                            $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
+                            $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
+                            $html .= '<p>' . __('We are pleased to inform you that a dynamic link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
+                            $html .= '<p><a href="' . site_url('/registration-link?token=' . $link) . '">' . site_url('/registration-link?token=' . $link) . '</a></p>';
+                            $html .= '<p>' . __('If you have any questions or need assistance, please do not hesitate to contact us. We are here to help you with whatever you need.', 'edusystem') . '</p>';
+                            $html .= '<p>' . __('Best regards,', 'edusystem') . '</p>';
+                            $html .= '<p>' . sprintf(__('%s Team', 'edusystem'), get_bloginfo('name')) . '</p>';
+                            $sender_email->trigger($email, 'Link', $html);
+                            $wpdb->insert($table_dynamic_links_email_log, [
+                                'dynamic_link_id' => $dynamic_link_id,
+                                'email' => $email,
+                                'created_by' => $created_by,
+                            ]);
+                        }
+                        $count_inserted++;
+                    }
+                    fclose($handle);
+                    setcookie('message', sprintf(__('CSV processed. %d records inserted.', 'edusystem'), $count_inserted), time() + 10, '/');
+                    wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content'));
+                    exit;
+                } else {
+                    setcookie('message', __('Could not open CSV file.', 'edusystem'), time() + 10, '/');
+                    wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content'));
+                    exit;
+                }
+            } else {
+                setcookie('message', __('No file uploaded.', 'edusystem'), time() + 10, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content'));
+                exit;
+            }
         } else if ($_GET['action'] == 'delete_dynamic_link') {
             global $wpdb;
             $table = $wpdb->prefix . 'dynamic_links';
@@ -140,7 +231,7 @@ function add_admin_form_dynamic_link_content()
             $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
             $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
             $html .= '<p>' . __('We are pleased to inform you that a dynamic link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
-            $html .= '<p><a href="' . site_url('/dynamic-link?token=' . $link) . '">' . site_url('/dynamic-link?token=' . $link) . '</a></p>';
+            $html .= '<p><a href="' . site_url('/registration-link?token=' . $link) . '">' . site_url('/registration-link?token=' . $link) . '</a></p>';
             $html .= '<p>' . __('If you have any questions or need assistance, please do not hesitate to contact us. We are here to help you with whatever you need.', 'edusystem') . '</p>';
             $html .= '<p>' . __('Best regards,', 'edusystem') . '</p>';
             $html .= '<p>' . sprintf(__('%s Team', 'edusystem'), get_bloginfo('name')) . '</p>';
@@ -195,7 +286,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                 $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&action=send_email&dynamic_link_id=' . $item['id']) . "' class='button button-success'>" . __('Send Email', 'edusystem') . "</a>";
                 // Copiar link al portapapeles usando JS (usando el campo 'link' como token)
                 $dynamic_link_token = isset($item['link']) ? $item['link'] : '';
-                $dynamic_link_url = site_url('/dynamic-link?token=' . $dynamic_link_token);
+                $dynamic_link_url = site_url('/registration-link?token=' . $dynamic_link_token);
                 $buttons .= "<a href='javascript:void(0);' onclick=\"copyToClipboard('{$dynamic_link_url}', this)\" style='margin-left: 4px' class='button button-secondary'>" . __('Copy Link', 'edusystem') . "</a>";
                 return $buttons;
             default:
@@ -305,10 +396,10 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                 $created_by_user = get_user_by('id', $dynamic_links_val['created_by']);
                 array_push($dynamic_links_array, [
                     'id' => $dynamic_links_val['id'],
-                    'program' => $program->name,
+                    'program' => $program->name . ' (' . $program->identificator . ')',
                     'student' => $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'],
                     'transfer_credits' => $dynamic_links_val['transfer_cr'] == 1 ? __('Yes', 'edusystem') : __('No', 'edusystem'),
-                    'payment_plan' => $payment_plan->name,
+                    'payment_plan' => $payment_plan->name . ' (' . $payment_plan->identificator . ')',
                     'link' => $dynamic_links_val['link'],
                     'created_by' => $created_by_user->first_name . ' ' . $created_by_user->last_name,
                     'created_at' => $dynamic_links_val['created_at']

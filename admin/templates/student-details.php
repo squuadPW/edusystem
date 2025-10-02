@@ -1,6 +1,7 @@
 <?php
 global $current_user;
 $roles = $current_user->roles;
+$hide_grade_student = get_option('hide_grade_student');
 
 $countries = get_countries();
 $institutes = get_list_institutes_active();
@@ -152,24 +153,25 @@ $url = wp_get_attachment_url($student->profile_picture);
                                         </p>
                                     </tr>
                                     <tr>
-                                        <th scope="row" style="font-weight:400; text-align: center">
-                                            <label for="grade"><b><?php _e('Grade', 'edusystem'); ?></b></label><br>
-                                            <select name="grade" autocomplete="off" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                                <?php foreach ($grades as $grade): ?>
-                                                    <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>>
-                                                        <?= $grade->name; ?> <?= $grade->description; ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </th>
+                                        <?php if ($hide_grade_student !== 'on') { ?>
+                                            <th scope="row" style="font-weight:400; text-align: center">
+                                                <label for="grade"><b><?php _e('Grade', 'edusystem'); ?></b></label><br>
+                                                <select name="grade" autocomplete="off" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                    <?php foreach ($grades as $grade): ?>
+                                                        <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>>
+                                                            <?= $grade->name; ?> <?= $grade->description; ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </th>
+                                        <?php } ?>
                                         <th scope="row" style="font-weight:400; text-align: center">
                                             <label
                                                 for="academic_period"><b><?php _e('School Year', 'edusystem'); ?></b></label><br>
                                             <select name="academic_period" required
                                                 style="width: 100%; <?= ($student->academic_period == 'noperiod' || $student->academic_period == 'out') ? 'background-color: red; color: white;' : '' ?>"
                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                                <option value="" <?= ($student->academic_period == 'noperiod' || $student->academic_period == 'out') ? 'selected' : '' ?>>Out of school
-                                                    year</option>
+                                                <option value="" <?= ($student->academic_period == 'noperiod' || $student->academic_period == 'out') ? 'selected' : '' ?>><?= __('Out of school year', 'edusystem') ?></option>
                                                 <?php foreach ($periods as $key => $period) { ?>
                                                     <option value="<?= $period->code ?>"
                                                         <?= $student->academic_period == $period->code ? 'selected' : '' ?>>
@@ -185,8 +187,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                                                 style="width: 100%; <?= ($student->initial_cut == 'noperiod' || $student->initial_cut == 'out') ? 'background-color: red; color: white;' : '' ?>"
                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>
                                                 data-initial-cut="<?= htmlspecialchars($student->initial_cut) ?>">
-                                                <option value="" <?= $student->initial_cut == 'nocut' || $student->initial_cut == 'out' ? 'selected' : '' ?>>Out of term
-                                                </option>
+                                                <option value="" <?= $student->initial_cut == 'nocut' || $student->initial_cut == 'out' ? 'selected' : '' ?>><?= __('Out of term', 'edusystem') ?></option>
                                                 <?php foreach ($periods_cuts as $key => $cut) { ?>
                                                     <option value="<?= $cut->cut ?>" <?= $student->initial_cut == $cut->cut ? 'selected' : '' ?>><?= $cut->cut ?></option>
                                                 <?php } ?>

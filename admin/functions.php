@@ -151,6 +151,10 @@ function aes_scripts_admin()
         wp_enqueue_script('send-notification', plugins_url('edusystem') . '/admin/assets/js/send-notification.js', array('jquery'), $version, true);
     }
 
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_dynamic_link_content') {
+        wp_enqueue_script('dynamic-links', plugins_url('edusystem') . '/admin/assets/js/dynamic-links.js', array('jquery'), $version, true);
+    }
+
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_custom_input_content') {
         wp_enqueue_script('custom-inputs', plugins_url('edusystem') . '/admin/assets/js/custom-inputs.js', array('jquery'), $version, true);
     }

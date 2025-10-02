@@ -1,5 +1,5 @@
 <div class="title">
-    <?= __('Alliance Registration','edusystem'); ?>
+    <?= $title; ?>
 </div>
 <form method="POST" action="<?= the_permalink(); ?>">
     <div class="grid grid-cols-12 gap-4">

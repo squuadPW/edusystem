@@ -77,7 +77,7 @@
                                         <select name="program_identificator" autocomplete="off" required>
                                             <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                                             <?php foreach ($programs as $program): ?>
-                                                <option value="<?= $program->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->program_identificator == $program->identificator) ? 'selected' : ''; ?>><?= $program->name; ?></option>
+                                                <option value="<?= $program->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->program_identificator == $program->identificator) ? 'selected' : ''; ?>><?= $program->name; ?> (<?= $program->identificator; ?>)</option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>

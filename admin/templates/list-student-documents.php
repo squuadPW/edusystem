@@ -22,13 +22,11 @@
 			</p>
 			<p class="search-box" style="margin-right: 10px">
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','edusystem').':'; ?></label>
-				<select name="academic_period_cut">
-					<option value=""><?= __('Select academic period cut', 'edusystem') ?></option>
-					<option value="A" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'A') ? 'selected' : '') : ''; ?>>A</option>
-					<option value="B" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'B') ? 'selected' : '') : ''; ?>>B</option>
-					<option value="C" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'C') ? 'selected' : '') : ''; ?>>C</option>
-					<option value="D" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'D') ? 'selected' : '') : ''; ?>>D</option>
-					<option value="E" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'E') ? 'selected' : '') : ''; ?>>E</option>
+				<select name="academic_period_cut" data-textoption="Select term to filter">
+					<option value="" selected><?= __('Select term to filter', 'edusystem') ?></option>
+					<?php foreach ($periods_cuts as $key => $cut) { ?>
+						<option value="<?= $cut->code ?>" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == $cut->code) ? 'selected' : '') : ''; ?>><?= $cut->cut ?></option>
+					<?php } ?>
 				</select>
 			</p>
 			<p class="search-box" style="margin-right: 10px">

@@ -100,6 +100,24 @@
               <?= __('Update max date upload at', 'edusystem'); ?>
             </a>
           </div>
+          <div class="form-group" style="padding: 0px 10px 10px 10px;">
+            <label
+              for="default-lang-site"><?= __('Default site language'); ?></label>
+            <br>
+            <input type="text" id="default-lang-site" name="default_lang_site"
+              value="<?php echo get_option('default_lang_site') ?>" required>
+          </div>
+          <div class="form-group" style="padding: 0px 10px 10px 10px;">
+            <label for="offer_complete"><?= __('Site mode', 'edusystem'); ?></label> <br>
+            <select name="site_mode" class="js-example-basic" style="width: 100%;">
+              <option value="UNI" <?= get_option('site_mode') == 'UNI' ? 'selected' : ''; ?>>
+                <?= __('University', 'edusystem'); ?>
+              </option>
+              <option value="SCHOOL" <?= get_option('site_mode') == 'SCHOOL' ? 'selected' : ''; ?>>
+                <?= __('School', 'edusystem'); ?>
+              </option>
+            </select>
+          </div>
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="virtual-access" name="virtual_access" <?php echo get_option('virtual_access') == 'on' ? 'checked' : '' ?>>
             <label for="virtual-access"><?= __('Show button for virtual classroom'); ?></label>
@@ -131,6 +149,18 @@
           <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="disabled-redirect" name="disabled_redirect" <?php echo get_option('disabled_redirect') == 'on' ? 'checked' : '' ?>>
             <label for="disabled-redirect"><?= __('Disable redirection for institutes and alliances to the administrator'); ?></label>
+          </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="disabled-switch-language" name="disable_switch_language" <?php echo get_option('disable_switch_language') == 'on' ? 'checked' : '' ?>>
+            <label for="disabled-switch-language"><?= __('Disable switch language'); ?></label>
+          </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="hide-grade-student" name="hide_grade_student" <?php echo get_option('hide_grade_student') == 'on' ? 'checked' : '' ?>>
+            <label for="hide-grade-student"><?= __('Hide grade student'); ?></label>
+          </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="hide-grades-names" name="hide_grades_names" <?php echo get_option('hide_grades_names') == 'on' ? 'checked' : '' ?>>
+            <label for="hide-grades-names"><?= __('Hide grades names'); ?></label>
           </div>
         </div>
         <div id="by_moodle" style="display: none">
