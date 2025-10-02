@@ -3592,8 +3592,8 @@ function custom_new_user_notification($send, $user)
     $content .= '<li><strong>Password</strong>: ' . $password . '</li>';
     $content .= '</ul>';
     $content .= '<div style="text-align: center"><a href="' . $login_url . '" target="_blank"><button style="border: 0; background: none; border-color: #43454b; cursor: pointer; text-decoration: none; font-weight: 600; text-shadow: none; display: inline-block; -webkit-appearance: none; padding: 5px 20px !important; text-align: center; background-color: #002fbd !important; border-radius: 20px; color: white !important; font-size: 18px; cursor: pointer !important">My Account</button></a></div><br>';
-    $content .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
     if (get_option('hide_contact_section_email') != 'on') {
+        $content .= '<div> Additionally, we would like to remind you of the relevant links and contacts: </div>';
         $content .= '<ul>';
         $content .= '<li>Website: <a href="' . $site_url . '" target="_blank">' . $site_url . '</a></li>';
         $content .= '<li>Virtual classroom: <a href="' . $login_url . '" target="_blank">' . $login_url . '</a></li>';
