@@ -1026,10 +1026,15 @@ function add_loginout_link($items, $args)
     return $items;
 }
 
-function status_changed_payment($order_id, $status_transition_from, $current_status, $that)
+function status_changed_payment( $order_id, $old_status, $current_status, $order )
 {
 
-    $order = wc_get_order($order_id);
+    
+    $order = get_main_order_split_payment_method( $order );
+    if ( !$order ) return;
+
+    $order_id = $order->get_id();
+    
     $customer_id = $order->get_customer_id();
     $status_register = get_user_meta($customer_id, 'status_register', true);
 
@@ -1047,12 +1052,12 @@ function status_changed_payment($order_id, $status_transition_from, $current_sta
     /* $logger = wc_get_logger();
     $logger->debug('status_changed_payment',['order_id'=>$order_id,'status_order' => $current_status]); */
 
-    if (!in_array($current_status, ['failed', 'pending'])) {
+    if (!in_array($order->get_status(), ['failed', 'pending'])) {
         status_order_not_completed($order, $order_id, $customer_id, $status_register);
     }
 
     // Determinar qué función ejecutar
-    if ($current_status === 'completed') {
+    if ($order->get_status() === 'completed') {
         status_order_completed($order, $order_id, $customer_id);
         clear_all_cookies(); // se completa la orden, borramos todo
     }

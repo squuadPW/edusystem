@@ -26,6 +26,10 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
         return;
     }
 
+    // si es un split payment method, obtener el pedido principal
+    $order = get_main_order_split_payment_method( $order );
+    if ( !$order ) return; // si es un split y el pedido principal no existe, no hacer nada
+
     $registration_data = $order->meta_exists('registration_data') ?  json_decode( $order->get_meta('registration_data'), true ) : null;
 
     $email = $order->get_billing_email();

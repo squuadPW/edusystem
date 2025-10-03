@@ -1228,5 +1228,32 @@ register_activation_hook(__FILE__, 'create_tables');
 
 
 
+// obtiene la orden principal si viene un split payment method
+function get_main_order_split_payment_method( $order ) {
+
+    if ( ! $order ) return false;
+    
+    $order_main_id = false;
+
+    // Verifica si la sesión de WooCommerce está disponible
+    if ( function_exists( 'WC' ) && WC()->session ) {
+        $order_main_id = WC()->session->get('split_payment_order_main') ?? false;
+    }
+
+    // Si no hay metadato, revisar la sesión
+    if ( ! $order_main_id ) $order_main_id = $order->get_meta( 'split_payment_main_order' ) ?? false;
+
+    if ( $order_main_id ) {
+
+        $order_main = wc_get_order( intval( $order_main_id ) );
+        if ( ! $order_main ) return false;
+
+        return $order_main;
+
+    }
+
+    return $order;
+}
+
 
 
