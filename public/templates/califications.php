@@ -1,4 +1,4 @@
-<h2 style="font-size:24px;text-align:center;"><?= __('Califications', 'edusystem'); ?></h2>
+<h2 style="font-size:24px;text-align:center;"><?= __('Grades', 'edusystem'); ?></h2>
 
 <?php if($admin_virtual_access) { ?>
     <section class="segment" style="margin-top: 20px">

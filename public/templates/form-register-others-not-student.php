@@ -32,19 +32,19 @@
                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This ID is already associated with a user', 'edusystem'); ?></span>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="name"><?= __('First name', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Second name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="lastname"><?= __('Middle name', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Last name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="lastname"><?= __('First surname', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Second last name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="lastname"><?= __('Second surname', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
