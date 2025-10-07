@@ -24,7 +24,19 @@ function PMF_payment_method_fees_page() {
 
     if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['commissions']) ) {
 
-        update_option('payment_method_commissions', array_map('floatval', $_POST['commissions']) );
+        $payment_method_commissions = [];
+
+        foreach ( $_POST['commissions'] as $method => $data ) {
+            $type = isset($data['type']) ? $data['type'] : 'percentage';
+            $value = isset($data['value']) ? floatval($data['value']) : 0;
+
+            $payment_method_commissions[$method] = [
+                'type'  => $type,
+                'value' => $value
+            ];
+        }
+
+        update_option('payment_method_commissions', $payment_method_commissions );
 
         ?>
             <div class="notice notice-success is-dismissible">
@@ -59,7 +71,15 @@ function PMF_payment_method_fees_page() {
 
                             <?php foreach ( $gateways as $gateway_id => $gateway ) : ?>
 
-                                <?php $value = isset($commissions[$gateway_id]) ? $commissions[$gateway_id] : 0 ?>
+                                <?php 
+                                    
+                                    $type = 'percentage';
+                                    $value = 0;
+                                    if ( isset( $commissions[$gateway_id] ) ) {
+                                        $type = $commissions[$gateway_id]['type'];
+                                        $value = $commissions[$gateway_id]['value'];
+                                    }
+                                ?>
                             
                                 <tr>
                                     <td>
@@ -71,8 +91,16 @@ function PMF_payment_method_fees_page() {
                                             </div>
 
                                             <div class='commission-input'>
-                                                <label><?= __('Commission (%)','payment-method-fees'); ?></label>
-                                                <input type='number' step='0.01' min='0' name='commissions[<?= $gateway_id ?>]' value='<?= $value ?>' />
+                                                <label><?= __('Commission Type','payment-method-fees'); ?></label>
+                                                <select name='commissions[<?= $gateway_id ?>][type]'>
+                                                    <option value='percentage' <?= $type === 'percentage' ? 'selected' : '' ?>><?= __('Percentage','payment-method-fees'); ?></option>
+                                                    <option value='fixed' <?= $type === 'fixed' ? 'selected' : '' ?>><?= __('Fixed Amount','payment-method-fees'); ?></option>
+                                                </select>
+                                            </div>
+
+                                            <div class='commission-input'>
+                                                <label><?= __('Commission','payment-method-fees'); ?></label>
+                                                <input type='number' step='0.01' min='0' name='commissions[<?= $gateway_id ?>][value]' value='<?= $value ?>' />
                                             </div>
                                         </div>
                                     </td>
@@ -90,6 +118,149 @@ function PMF_payment_method_fees_page() {
 
     <?php
 }
+
+// añadir fee al carrito
+add_action( 'woocommerce_cart_calculate_fees', 'PMF_add_payment_method_fee_to_cart', 20, 1 );
+function PMF_add_payment_method_fee_to_cart( $cart ) {
+
+    if ( is_admin() && ! defined( 'DOING_AJAX' ) ) return;
+
+    $chosen_payment_method = WC()->session->get( 'chosen_payment_method' );
+    $gateway = WC()->payment_gateways->payment_gateways()[ $chosen_payment_method ];
+
+    // obtiene el titulo del fee actual
+    $gateway_title = $gateway ? $gateway->get_title() : ucfirst( $chosen_payment_method );
+    // $fee_name = __( 'Payment method fee', 'payment-method-fees' ) . " ({$gateway_title})";
+    $fee_name = $gateway_title." ".__( 'Fee', 'payment-method-fees' );
+
+    // Elimina solo el fee del método de pago anterior
+    foreach ( $cart->fees as $key => $fee ) {
+        if ( strpos( $fee->name, 'Payment method fee' ) == $fee_name) {
+            unset( $cart->fees[ $key ] );
+        }
+    }
+
+    // elimina el meta
+    WC()->session->__unset( 'pmf_fee_data' );
+
+    // si no esta en el checkout no hace nada
+    if ( ! is_checkout() ) return;
+
+    $commissions = get_option( 'payment_method_commissions', [] );
+    $data = isset( $commissions[ $chosen_payment_method ] ) ? $commissions[ $chosen_payment_method ] : null;
+
+    if ( $data && $cart->get_total() > 0 ) {
+
+        $type = $data['type'];
+        $value = floatval($data['value']);
+
+        $subtotal = $cart->get_subtotal();
+        $shipping_total = $cart->get_shipping_total();
+
+        $fee_amount = $type === 'percentage'
+            ? ( $subtotal + $shipping_total ) * ( $value / 100 )
+            : $value;
+
+
+        $cart->add_fee( $fee_name, $fee_amount, false );
+
+        WC()->session->set( 'pmf_fee_data', [
+            'method'     => $chosen_payment_method,
+            'type'       => $type,
+            'value'      => $value,
+            'amount'     => $fee_amount,
+            'title'      => $fee_name
+        ] );
+    }
+}
+
+// añadir meta al item fee en la orden
+add_action( 'woocommerce_checkout_create_order_fee_item', 'PMF_add_meta_to_fee_item', 10, 3 );
+function PMF_add_meta_to_fee_item( $item, $fee_key, $order ) {
+    $fee_data = WC()->session->get( 'pmf_fee_data' );
+
+    if ( empty( $fee_data ) ) return;
+
+    // Verifica que este fee sea el del método de pago
+    if ( $item->get_name() === $fee_data['title'] ) {
+        $item->add_meta_data( '_payment_method_fee', $fee_data['amount'], true );
+    }
+}
+
+// trae el fee del metodo de pago
+add_action('wp_ajax_nopriv_PMF_payment_method_fee', 'PMF_payment_method_fee');
+add_action('wp_ajax_PMF_payment_method_fee', 'PMF_payment_method_fee');
+function PMF_payment_method_fee() {
+
+    $chosen_gateway = isset($_POST['payment_method']) ? sanitize_text_field($_POST['payment_method']) : '';
+    
+    // Obtiene las comisiones configuradas
+    $commissions = get_option('payment_method_commissions', []);
+
+    // Verifica si existe configuración para el método seleccionado
+    $fee_data = isset($commissions[$chosen_gateway]) ? $commissions[$chosen_gateway] : ['type' => 'percentage', 'value' => 0.00];
+
+    // Normaliza el valor
+    $fee_value = floatval($fee_data['value']);
+    $fee_type  = $fee_data['type'];
+
+    wp_send_json(array(
+        'payment_methods' => $chosen_gateway,
+        'type' => $fee_type,
+        'value' => $fee_value,
+    ));
+}
+
+
+//
+/* add_action( 'woocommerce_checkout_create_order', 'PMF_add_payment_method_fees', 10, 2 );
+function PMF_add_payment_method_fees( $order, $data ) {
+
+    $payment_method = $data['payment_method'];
+    $commissions = get_option('payment_method_commissions', []);
+    $percentage = isset($commissions[$payment_method]) ? floatval($commissions[$payment_method]) : 0;
+
+    if ( $percentage > 0 ) {
+
+        $fee = ( $order->get_subtotal() + $order->get_shipping_total() ) * ($percentage / 100);
+        $gateway_title = WC()->payment_gateways->payment_gateways()[$payment_method]->get_title();
+
+        $fee_item = new WC_Order_Item_Fee();
+        $fee_item->set_name( __('Payment method fee','payment-method-fees')." ({$gateway_title})" );
+        $fee_item->set_amount( $fee );
+        $fee_item->set_total( $fee );
+        $fee_item->add_meta_data( '_payment_method_fee', $fee, true );
+
+        $order->add_item( $fee_item );
+    }
+} */
+
+/* add_action( 'woocommerce_checkout_order_processed', 'PMF_add_payment_method_fees', 1000, 3 );
+function PMF_add_payment_method_fees( $order_id, $posted_data, $order ) {
+
+    $payment_method = $order->get_payment_method();
+    $commissions = get_option('payment_method_commissions', []);
+    $percentage = isset($commissions[$payment_method]) ? floatval($commissions[$payment_method]) : 0;
+
+    if ( $percentage > 0 ) {
+
+        $fee = ( $order->get_subtotal() + $order->get_shipping_total() ) * ($percentage / 100);
+        $gateway_title = WC()->payment_gateways->payment_gateways()[$payment_method]->get_title();
+
+        $fee_item = new WC_Order_Item_Fee();
+        $fee_item->set_name( __('Payment method fee','payment-method-fees')." ({$gateway_title})" );
+        $fee_item->set_amount( $fee );
+        $fee_item->set_total( $fee );
+        $fee_item->add_meta_data( '_payment_method_fee', $fee, true );
+
+        $order->add_item( $fee_item );
+
+        $order->calculate_totals();
+        $order->save();
+    }
+} */
+
+
 
 /* add_action('woocommerce_cart_calculate_fees', 'PMF_add_payment_method_fees');
 function PMF_add_payment_method_fees(WC_Cart $cart) {
@@ -130,57 +301,4 @@ function PMF_custom_message_after_total() {
         echo '</tr>';
     }
 } */
-
-
-// 
-add_action( 'woocommerce_checkout_create_order', 'PMF_add_payment_method_fees', 10, 2 );
-function PMF_add_payment_method_fees( $order, $data ) {
-
-    $payment_method = $data['payment_method'];
-    $commissions = get_option('payment_method_commissions', []);
-    $percentage = isset($commissions[$payment_method]) ? floatval($commissions[$payment_method]) : 0;
-
-    if ( $percentage > 0 ) {
-
-        $fee = ( $order->get_subtotal() + $order->get_shipping_total() ) * ($percentage / 100);
-        $gateway_title = WC()->payment_gateways->payment_gateways()[$payment_method]->get_title();
-
-        $fee_item = new WC_Order_Item_Fee();
-        $fee_item->set_name( __('Payment method fee','payment-method-fees')." ({$gateway_title})" );
-        $fee_item->set_amount( $fee );
-        $fee_item->set_total( $fee );
-        $fee_item->add_meta_data( '_payment_method_fee', $fee, true );
-
-        $order->add_item( $fee_item );
-    }
-}
-
-/* add_action( 'woocommerce_checkout_order_processed', 'PMF_add_payment_method_fees', 1000, 3 );
-function PMF_add_payment_method_fees( $order_id, $posted_data, $order ) {
-
-    $payment_method = $order->get_payment_method();
-    $commissions = get_option('payment_method_commissions', []);
-    $percentage = isset($commissions[$payment_method]) ? floatval($commissions[$payment_method]) : 0;
-
-    if ( $percentage > 0 ) {
-
-        $fee = ( $order->get_subtotal() + $order->get_shipping_total() ) * ($percentage / 100);
-        $gateway_title = WC()->payment_gateways->payment_gateways()[$payment_method]->get_title();
-
-        $fee_item = new WC_Order_Item_Fee();
-        $fee_item->set_name( __('Payment method fee','payment-method-fees')." ({$gateway_title})" );
-        $fee_item->set_amount( $fee );
-        $fee_item->set_total( $fee );
-        $fee_item->add_meta_data( '_payment_method_fee', $fee, true );
-
-        $order->add_item( $fee_item );
-
-        $order->calculate_totals();
-        $order->save();
-    }
-} */
-
-
-
-
 

@@ -28,6 +28,13 @@
   font-size: 14px;
   font-weight: 500;
 }
+.PMF_page_commissions .commission-input input, .PMF_page_commissions .commission-input select {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
 @media (min-width: 768px) {
   .PMF_page_commissions .commission-row {
     flex-direction: row;
