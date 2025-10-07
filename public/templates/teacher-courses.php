@@ -81,7 +81,7 @@
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-students"><span
                                 class="nobr"><?= __('Students', 'edusystem'); ?></span></th>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-prom-califications">
-                            <span class="nobr"><?= __('Prom califications', 'edusystem'); ?></span></th>
+                            <span class="nobr"><?= __('Prom grades', 'edusystem'); ?></span></th>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-section"><span
                                 class="nobr"><?= __('Section', 'edusystem'); ?></span></th>
                         <th class="woocommerce-orders-table__header woocommerce-orders-table__header-term"><span
@@ -112,7 +112,7 @@
                                 <?= strtoupper($row->count_students) ?>
                             </td>
                             <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-prom-califications"
-                                data-title="<?= __('Prom califications', 'edusystem'); ?>">
+                                data-title="<?= __('Prom grades', 'edusystem'); ?>">
                                 <?= strtoupper($row->prom_calification) ?>
                             </td>
                             <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-section"
