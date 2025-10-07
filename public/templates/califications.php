@@ -19,7 +19,7 @@
                             $user_name = $student['student']->name . ' ' . $student['student']->last_name;
                             $translated_text = sprintf(
                                 /* translators: %s: User's name */
-                                __('%s\'s Califications', 'edusystem'),
+                                __('%s\'s Grades', 'edusystem'),
                                 $user_name
                             );
                             echo $translated_text;
@@ -98,7 +98,7 @@
                             $user_name = $student['student']->name . ' ' . $student['student']->last_name;
                             $translated_text = sprintf(
                                 /* translators: %s: User's name */
-                                __('%s\'s Califications', 'edusystem'),
+                                __('%s\'s Grades', 'edusystem'),
                                 $user_name
                             );
                             echo $translated_text;
