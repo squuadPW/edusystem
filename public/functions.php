@@ -815,9 +815,14 @@ function optimize_my_account_menu_links(array $menu_links): array
     if ($is_parent_or_student) {
         $new_menu_links['student'] = __('Student Information', 'edusystem');
 
+<<<<<<< HEAD
         if (!$is_uni_mode) {
             $new_menu_links['califications'] = __('Califications', 'edusystem');
         }
+=======
+            // Agregar "Califications"
+            $menu_links['califications'] = __('Grades', 'edusystem');
+>>>>>>> main
 
         // D. Documents Logic (Parent/Student)
         $has_registered_status = false;
@@ -992,10 +997,17 @@ function add_loginout_link($items, $args)
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/orders">' . __('Payments', 'edusystem') . '</a></li>';
             }
 
+<<<<<<< HEAD
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
 
             if ($site_mode != 'UNI') {
                 $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'edusystem') . '</a></li>';
+=======
+            if (MODE != 'UNI') {
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Grades', 'edusystem') . '</a></li>';
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';
+>>>>>>> main
             }
 
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';
