@@ -54,7 +54,7 @@ DNI,87654321,Ana,García,ana.garcia@email.com,PROG002,PLAN002,0,0
 						<li><b>type_document</b>: <?= __('Document type (e.g., DNI, Passport)', 'edusystem'); ?></li>
 						<li><b>id_document</b>: <?= __('Document number', 'edusystem'); ?></li>
 						<li><b>name</b>: <?= __('First name', 'edusystem'); ?></li>
-						<li><b>last_name</b>: <?= __('Last name', 'edusystem'); ?></li>
+						<li><b>last_name</b>: <?= __('First surname', 'edusystem'); ?></li>
 						<li><b>email</b>: <?= __('Email address', 'edusystem'); ?></li>
 						<li><b>program_identificator</b>: <?= __('Program code/identifier', 'edusystem'); ?></li>
 						<li><b>payment_plan_identificator</b>: <?= __('Payment plan code/identifier', 'edusystem'); ?></li>

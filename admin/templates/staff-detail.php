@@ -74,13 +74,13 @@
                                         </td>
                                         <td style="font-weight:400;">
                                             <?php if (isset($staff) && !empty($staff)): ?>
-                                                <label for="input_id"><b><?= __('Last name', 'edusystem'); ?></b><span
+                                                <label for="input_id"><b><?= __('First surname', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="last_name"
                                                     value="<?= get_user_meta($staff->ID, 'last_name', true); ?>">
 
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Last name', 'edusystem'); ?></b><span
+                                                <label for="input_id"><b><?= __('First surname', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="last_name" value="" required>
 

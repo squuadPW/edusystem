@@ -48,13 +48,13 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="name"><b><?= __('Name', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        <label for="name"><b><?= __('First name', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
                                         <input type="text" name="name"
                                             value="<?= $dynamic_link->name; ?>" required>
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="last_name"><b><?= __('Last name', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        <label for="last_name"><b><?= __('First surname', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
                                         <input type="text" name="last_name"
                                             value="<?= $dynamic_link->last_name; ?>" required>
                                     </div>
