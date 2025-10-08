@@ -278,7 +278,6 @@ function PMF_update_payment_method_fee( $order) {
 }
 
 
-
 //
 /* add_action( 'woocommerce_checkout_create_order', 'PMF_add_payment_method_fees', 10, 2 );
 function PMF_add_payment_method_fees( $order, $data ) {

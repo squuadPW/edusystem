@@ -3332,32 +3332,10 @@ function custom_content_after_orders()
     include(plugin_dir_path(__FILE__) . 'templates/next-payments.php');
 }
 
-add_action('woocommerce_cart_calculate_fees', 'yaycommerce_add_checkout_fee_for_gateway');
-function yaycommerce_add_checkout_fee_for_gateway()
-{
-    if (!isset($_COOKIE['from_webinar']) || empty($_COOKIE['from_webinar'])) {
-        $chosen_gateway = WC()->session->get('chosen_payment_method');
-        if ($chosen_gateway == 'aes_payment') {
-            WC()->cart->add_fee('Bank Transfer Fee', 35);
-        }
+/*  aqui estaba el codigo de los fees de los metodos de pago, tenia la validacion
+    de que si el usuario venia del webinar no se le aplicaran  
+*/
 
-        if ($chosen_gateway == 'woo_squuad_stripe') {
-            $stripe_fee_percentage = 4.5; // 4.5% fee
-            $cart_subtotal = WC()->cart->get_subtotal();
-            $discount = WC()->cart->get_cart_discount_total();
-            $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
-            WC()->cart->add_fee('Credit Card Fee', $stripe_fee_amount);
-        }
-
-        if ($chosen_gateway == 'ppcp-gateway') {
-            $stripe_fee_percentage = 4.5; // 4.5% fee
-            $cart_subtotal = WC()->cart->get_subtotal();
-            $discount = WC()->cart->get_cart_discount_total();
-            $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
-            WC()->cart->add_fee('PayPal Fee', $stripe_fee_amount);
-        }
-    }
-}
 add_action('woocommerce_after_checkout_form', 'yaycommerce_refresh_checkout_on_payment_methods_change');
 function yaycommerce_refresh_checkout_on_payment_methods_change()
 {
