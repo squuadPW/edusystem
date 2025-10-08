@@ -134,10 +134,16 @@ function PMF_add_payment_method_fee_to_cart( $cart ) {
     $fee_name = $gateway_title." ".__( 'Fee', 'payment-method-fees' );
 
     // Elimina solo el fee del método de pago anterior
-    foreach ( $cart->fees as $key => $fee ) {
-        if ( strpos( $fee->name, 'Payment method fee' ) == $fee_name) {
-            unset( $cart->fees[ $key ] );
+    $pmf_fee_data = WC()->session->get( 'pmf_fee_data' );
+    if ( $pmf_fee_data ) {
+        foreach ( $cart->fees as $key => $fee ) {
+            // Verifica si el nombre del fee coincide con el almacenado en la sesión
+            if ( $fee->name === $pmf_fee_data['title'] ) {
+                unset( $cart->fees[ $key ] );
+            }
         }
+        // elimina el meta
+        WC()->session->__unset( 'pmf_fee_data' );
     }
 
     // elimina el meta
@@ -161,16 +167,18 @@ function PMF_add_payment_method_fee_to_cart( $cart ) {
             ? ( $subtotal + $shipping_total ) * ( $value / 100 )
             : $value;
 
+        if( $fee_amount > 0 ){
+            
+            $cart->add_fee( $fee_name, $fee_amount, false );
 
-        $cart->add_fee( $fee_name, $fee_amount, false );
-
-        WC()->session->set( 'pmf_fee_data', [
-            'method'     => $chosen_payment_method,
-            'type'       => $type,
-            'value'      => $value,
-            'amount'     => $fee_amount,
-            'title'      => $fee_name
-        ] );
+            WC()->session->set( 'pmf_fee_data', [
+                'method'     => $chosen_payment_method,
+                'type'       => $type,
+                'value'      => $value,
+                'amount'     => $fee_amount,
+                'title'      => $fee_name
+            ] );
+        }
     }
 }
 
@@ -210,6 +218,65 @@ function PMF_payment_method_fee() {
         'value' => $fee_value,
     ));
 }
+
+// actualiza el fee de metodo de pago en la orden por el total de la orden
+add_action('PMF_update_payment_method_fee', 'PMF_update_payment_method_fee', 10, 1);
+function PMF_update_payment_method_fee( $order) {
+
+    $payment_method = $order->get_payment_method();
+
+    // Obtiene el nombre del fee actual
+    $gateway = WC()->payment_gateways->payment_gateways()[ $payment_method ] ?? null;
+    $gateway_title = $gateway ? $gateway->get_title() : ucfirst( $payment_method );
+    $fee_name = $gateway_title . ' ' . __( 'Fee', 'payment-method-fees' );
+
+    $commissions = get_option( 'payment_method_commissions', [] );
+    $data = $commissions[ $payment_method ] ?? null;
+
+    if ( ! $data ) return;
+
+    $type = $data['type'];
+    $value = floatval( $data['value'] );
+
+    $total = $order->get_total();
+
+    $fee_amount = $type === 'percentage'
+        ? ( $total ) * ( $value / 100 )
+        : $value;
+
+    // Elimina o actualiza el fee si ya existe
+    $fee_found = false;
+    foreach ( $order->get_items('fee') as $fee_item_id => $fee_item ) {
+        if ( $fee_item->get_name() === $fee_name ) {
+            if ( $fee_amount <= 0 ) {
+                $order->remove_item( $fee_item_id );
+            } else {
+                $fee_item->set_amount( $fee_amount );
+                $fee_item->set_total( $fee_amount );
+                $fee_item->update_meta_data( '_payment_method_fee', $fee_amount );
+                $order->add_item( $fee_item ); // Asegura que se re-agregue
+            }
+            $fee_found = true;
+            break;
+        }
+    }
+
+    // Si no se encontró el fee, lo crea
+    if ( !$fee_found && $fee_amount > 0 ) {
+
+        $item = new WC_Order_Item_Fee();
+        $item->set_name( $fee_name );
+        $item->set_amount( $fee_amount );
+        $item->set_total( $fee_amount );
+        $item->add_meta_data( '_payment_method_fee', $fee_amount, true );
+        $order->add_item( $item );
+    }
+
+    // Recalcula totales y guarda
+    $order->calculate_totals();
+    $order->save();
+}
+
 
 
 //
