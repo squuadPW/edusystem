@@ -1028,11 +1028,6 @@ function add_loginout_link($items, $args)
 
 function status_changed_payment( $order_id, $old_status, $current_status, $order )
 {
-
-    
-    $order = get_main_order_split_payment_method( $order );
-    if ( !$order ) return;
-
     $order_id = $order->get_id();
     
     $customer_id = $order->get_customer_id();

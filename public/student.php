@@ -3,10 +3,6 @@
 add_action('woocommerce_checkout_order_created', 'save_essential_data_order', 8, 1);
 function save_essential_data_order($order) {
 
-    // si es un split payment method, obtener el pedido principal
-    $order = get_main_order_split_payment_method( $order );
-    if ( !$order ) return;
-
     /* // Verificar si algún producto es de la categoría "programs"
     $has_program = false;
     foreach ($order->get_items() as $item) {
