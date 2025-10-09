@@ -3798,7 +3798,7 @@ function send_notification_user($user_id, $description, $importance, $type)
 }
 
 /**
- * Verifica si un usuario tiene órdenes con estado "pending-payment".
+ * Verifica si un usuario tiene órdenes con estado "pending", "on-hold" y "split-payment".
  *
  * @param int $user_id (opcional) ID del usuario. Si no se proporciona, usa el usuario actual.
  * @return bool
@@ -3817,7 +3817,7 @@ function customer_pending_orders($user_id = null)
     // Argumentos para buscar órdenes del cliente.
     $args = array(
         'customer_id' => $user_id,
-        'status' => array('pending', 'on-hold'),
+        'status' => array('pending', 'on-hold', 'split-payment'), // Estados que indican "pending-payment"
         'limit' => 1, // Solo necesitamos saber si existe al menos 1 orden.
         'return' => 'ids', // Es más eficiente obtener solo los IDs.
     );
