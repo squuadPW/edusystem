@@ -486,6 +486,15 @@ function get_dynamic_link_detail_by_link($dynamic_link)
     return $data;
 }
 
+function get_hidden_payment_methods_by_plan($payment_plan_identificator)
+{
+    global $wpdb;
+
+    $table_hidden_payment_methods_by_plan = $wpdb->prefix . 'hidden_payment_methods_by_plan';
+    $data = $wpdb->get_row("SELECT * FROM {$table_hidden_payment_methods_by_plan} WHERE payment_plan_identificator='{$payment_plan_identificator}'");
+    return $data;
+}
+
 // Agregar función JS para copiar al portapapeles solo en la página de dynamic links
 if (!function_exists('edusystem_dynamic_links_copy_js')) {
     function edusystem_dynamic_links_copy_js() {
