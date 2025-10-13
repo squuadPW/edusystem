@@ -490,9 +490,75 @@ function get_hidden_payment_methods_by_plan($payment_plan_identificator)
 {
     global $wpdb;
 
-    $table_hidden_payment_methods_by_plan = $wpdb->prefix . 'hidden_payment_methods_by_plan';
-    $data = $wpdb->get_row("SELECT * FROM {$table_hidden_payment_methods_by_plan} WHERE payment_plan_identificator='{$payment_plan_identificator}'");
-    return $data;
+    // Obtener las filas existentes para el plan
+    $payment_methods_by_plan = $wpdb->prefix . 'payment_methods_by_plan';
+    $rows = $wpdb->get_results($wpdb->prepare("SELECT payment_method_identificator FROM {$payment_methods_by_plan} WHERE payment_plan_identificator=%s", $payment_plan_identificator));
+
+    // Construir un set de identificadores existentes
+    $existing = [];
+    $connected_account = ''; // stripe
+    $flywire_portal_code = ''; // stripe
+    $zelle_account = ''; // stripe
+    $bank_transfer_account = ''; // stripe
+    if ($rows) {
+        foreach ($rows as $r) {
+            if (isset($r->payment_method_identificator)) {
+                $existing[$r->payment_method_identificator] = true;
+                switch ($r->payment_method_identificator) {
+                    case 'woo_squuad_stripe':
+                        $connected_account = $r->account_identificator;
+                        break;
+                    case 'flywire':
+                        $flywire_portal_code = $r->account_identificator;
+                        break;
+                    case 'zelle_payment':
+                        $zelle_account = $r->account_identificator;
+                        break;
+                    case 'aes_payment':
+                        $bank_transfer_account = $r->account_identificator;
+                        break;
+                }
+            }
+        }
+    }
+
+    // Intentar obtener todos los métodos de pago de WooCommerce
+    $missing = [];
+    if (function_exists('WC')) {
+        try {
+            $gateways = WC()->payment_gateways()->payment_gateways();
+            if (is_array($gateways)) {
+                foreach ($gateways as $gateway_id => $gateway_obj) {
+                    // $gateway_id es el identificador del gateway
+                    if (!isset($existing[$gateway_id])) {
+                        $missing[] = $gateway_id;
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            // En caso de error, devolver vacío
+            return [];
+        }
+    } else {
+        // Si WooCommerce no está disponible, devolver vacío
+        return [];
+    }
+
+    // Preparar CSV de identificadores (por ejemplo: "paypal,stripe")
+    $missing_csv = '';
+    if (!empty($missing)) {
+        $missing_csv = implode(',', $missing);
+    }
+
+    // Devolver un array asociativo con compatibilidad hacia atrás
+    return array(
+        'hidden_methods' => $missing, // array de identificadores
+        'hidden_methods_csv' => $missing_csv, // CSV para compatibilidad con templates existentes
+        'connected_account' => $connected_account,
+        'flywire_portal_code' => $flywire_portal_code,
+        'zelle_account' => $zelle_account,
+        'bank_transfer_account' => $bank_transfer_account,
+    );
 }
 
 // Agregar función JS para copiar al portapapeles solo en la página de dynamic links

@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 3.7.14
+Version: 3.7.15
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
@@ -78,7 +78,7 @@ function create_tables()
   $table_careers_by_program = $wpdb->prefix . 'careers_by_program';
   $table_mentions_by_career = $wpdb->prefix . 'mentions_by_career';
   $table_plans_by_program = $wpdb->prefix . 'plans_by_program';
-  $table_hidden_payment_methods_by_plan = $wpdb->prefix . 'hidden_payment_methods_by_plan';
+  $payment_methods_by_plan = $wpdb->prefix . 'payment_methods_by_plan';
   $table_student_program = $wpdb->prefix . 'student_program';
   $table_admission_fees = $wpdb->prefix . 'admission_fees';
   $table_student_balance = $wpdb->prefix . 'student_balance';
@@ -109,10 +109,11 @@ function create_tables()
   );
 
   dbDelta(
-    "CREATE TABLE " . $table_hidden_payment_methods_by_plan . " (
+    "CREATE TABLE " . $payment_methods_by_plan . " (
       `id` INT(11) NOT NULL AUTO_INCREMENT,
       `payment_plan_identificator` TEXT NOT NULL,
-      `hidden_payment_methods` TEXT NOT NULL,
+      `payment_method_identificator` TEXT NOT NULL,
+      `account_identificator` TEXT NULL,
       `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );

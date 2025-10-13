@@ -381,8 +381,14 @@ function student_registration_form_optimized($atts)
         $program         = $dynamic_link_data->program_identificator;
         $plan            = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
-        $hpm_plan = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
-        $hidden_payment_methods = $hpm_plan ? $hpm_plan->hidden_payment_methods : '';
+        $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
+        // La función siempre retorna un array asociativo. Mapeamos valores directamente.
+        $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
+        // Exponer cuentas específicas para su posible uso en la plantilla
+        $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
+        $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
+        $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
+        $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
     }
 
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del dynamic link).
