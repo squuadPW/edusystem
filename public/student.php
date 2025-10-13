@@ -607,6 +607,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
                     array_push($formatted_assignments_history, [
                         $key => $subject->name,
                         'code_subject' => $subject->code_subject,
+                        'subject' => $subject->name,
                         'code_period' => $inscription->code_period,
                         'cut' => $inscription->cut_period,
                         'hc' => $subject->hc,

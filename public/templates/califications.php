@@ -157,7 +157,7 @@
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                                         data-title="<?= __('Grade', 'edusystem') ?>">
-                                        <strong><?= strtoupper($row['Grade']) ?></strong>
+                                        <strong><?= strtoupper($row['calification']) ?></strong>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                                         data-title="<?= __('Academic period', 'edusystem') ?>">
