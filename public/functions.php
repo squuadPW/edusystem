@@ -389,8 +389,8 @@ function student_registration_form_optimized($atts)
         $program         = $dynamic_link_data->program_identificator;
         $plan            = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
-        $separate_program_fee = $dynamic_link_data->fee_payment_completed == 1 ? true : false;
-        $fixed_fee_inscription = $dynamic_link_data->fee_payment_completed == 1 ? true : false;
+        $separate_program_fee = $dynamic_link_data->fee_payment_completed == 1 ? 'true' : false;
+        $fixed_fee_inscription = $dynamic_link_data->fee_payment_completed == 1 ? 'true' : false;
         $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
         // La función siempre retorna un array asociativo. Mapeamos valores directamente.
         $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
