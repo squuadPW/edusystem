@@ -4,7 +4,7 @@ function add_admin_form_dynamic_link_content()
 {
     global $wpdb;
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
-        $payment_plans = get_payment_plans();
+        $payment_plans = [];
         $programs = get_student_program();
         $current_user = wp_get_current_user();
         $roles = (array) $current_user->roles;
@@ -29,6 +29,16 @@ function add_admin_form_dynamic_link_content()
             $table_dynamic_links_email_log = $wpdb->prefix . 'dynamic_links_email_log';
             $dynamic_link_id = $_GET['dynamic_link_id'];
             $dynamic_link = get_dynamic_link_detail($dynamic_link_id);
+            if ($dynamic_link) {
+                $table_programs = $wpdb->prefix . 'programs';
+                $associateds = get_associated_plans_by_program_id($dynamic_link->program_identificator);
+                foreach ($associateds as $key => $plan) {
+                    $plan = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$plan}'");
+                    if ($plan) {
+                        $payment_plans[] = $plan;
+                    }
+                }
+            }
             $dynamic_links_email_log = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_dynamic_links_email_log} WHERE dynamic_link_id=%d ORDER BY id DESC", $dynamic_link_id));
             include(plugin_dir_path(__FILE__) . 'templates/dynamic-links-detail.php');
         }
@@ -56,6 +66,7 @@ function add_admin_form_dynamic_link_content()
             $current_user = wp_get_current_user();
             $created_by = $current_user->ID;
             $transfer_cr = $_POST['transfer_cr'] ?? 0;
+            $fee_payment_completed = $_POST['fee_payment_completed'] ?? 0;
 
             // Generar un token corto aleatorio para el link
             $link = substr(bin2hex(random_bytes(6)), 0, 10);
@@ -73,6 +84,7 @@ function add_admin_form_dynamic_link_content()
                     'program_identificator' => $program_identificator,
                     'payment_plan_identificator' => $payment_plan_identificator,
                     'transfer_cr' => $transfer_cr,
+                    'fee_payment_completed' => $fee_payment_completed,
                     'manager_id' => $manager_id,
                     'created_by' => $created_by,
                 ], ['id' => $dynamic_link_id]);
@@ -88,6 +100,7 @@ function add_admin_form_dynamic_link_content()
                     'program_identificator' => $program_identificator,
                     'payment_plan_identificator' => $payment_plan_identificator,
                     'transfer_cr' => $transfer_cr,
+                    'fee_payment_completed' => $fee_payment_completed,
                     'manager_id' => $manager_id,
                     'created_by' => $created_by,
                 ]);

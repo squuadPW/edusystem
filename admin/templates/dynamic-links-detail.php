@@ -74,20 +74,20 @@
                                 <div style="margin: 18px;">
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="program_identificator"><b><?= __('Program', 'edusystem'); ?></b><span class="required">*</span></label>
-                                        <select name="program_identificator" autocomplete="off" required>
+                                        <select name="program_identificator" id="program-identificator" autocomplete="off" required>
                                             <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                                             <?php foreach ($programs as $program): ?>
-                                                <option value="<?= $program->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->program_identificator == $program->identificator) ? 'selected' : ''; ?>><?= $program->name; ?> (<?= $program->identificator; ?>)</option>
+                                                <option value="<?= $program->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->program_identificator == $program->identificator) ? 'selected' : ''; ?>><?= $program->name; ?> (<?= $program->description; ?>)</option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
 
-                                    <div style="font-weight:400;" class="space-offer">
+                                    <div style="font-weight:400; <?= empty($payment_plans) ? 'display: none;' : ''; ?>" class="space-offer" id="scholarship-element">
                                         <label for="payment_plan_identificator"><b><?= __('Scholarship', 'edusystem'); ?></b><span class="required">*</span></label>
-                                        <select name="payment_plan_identificator" autocomplete="off" required>
+                                        <select name="payment_plan_identificator" id="payment-plan-identificator" autocomplete="off" required>
                                             <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                                             <?php foreach ($payment_plans as $payment_plan): ?>
-                                                <option value="<?= $payment_plan->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->payment_plan_identificator == $payment_plan->identificator) ? 'selected' : ''; ?>><?= $payment_plan->name; ?> (<?= $payment_plan->identificator; ?>)</option>
+                                                <option value="<?= $payment_plan->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->payment_plan_identificator == $payment_plan->identificator) ? 'selected' : ''; ?>><?= $payment_plan->name; ?> (<?= $payment_plan->description; ?>)</option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
@@ -119,8 +119,8 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <input type="checkbox" id="transfer_cr" style="width: auto !important;" name="transfer_cr" value="1" <?= (isset($dynamic_link) && $dynamic_link->transfer_cr == 1) ? 'checked' : ''; ?>>
-                                        <label for="transfer_cr"><b><?= __('Transfer CR', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        <input type="checkbox" id="fee_payment_completed" style="width: auto !important;" name="fee_payment_completed" value="1" <?= (isset($dynamic_link) && $dynamic_link->fee_payment_completed == 1) ? 'checked' : ''; ?>>
+                                        <label for="fee_payment_completed"><b><?= __('Payment Fee Complete', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
                                     </div>
                                 </div>
                             </div>
