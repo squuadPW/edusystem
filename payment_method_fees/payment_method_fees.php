@@ -121,41 +121,30 @@ function PMF_payment_method_fees_page() {
 
 // añadir fee al carrito
 add_action( 'woocommerce_cart_calculate_fees', 'PMF_add_payment_method_fee_to_cart', 20, 1 );
-function PMF_add_payment_method_fee_to_cart( $cart ) {
+function PMF_add_payment_method_fee_to_cart( $cart = null ) {
 
     if ( is_admin() && ! defined( 'DOING_AJAX' ) ) return;
 
-    $chosen_payment_method = WC()->session->get( 'chosen_payment_method' );
-    $gateway = WC()->payment_gateways->payment_gateways()[ $chosen_payment_method ];
-
-    // obtiene el titulo del fee actual
-    $gateway_title = $gateway ? $gateway->get_title() : ucfirst( $chosen_payment_method );
-    // $fee_name = __( 'Payment method fee', 'payment-method-fees' ) . " ({$gateway_title})";
-    $fee_name = $gateway_title." ".__( 'Fee', 'payment-method-fees' );
+    if( $cart === null ) $cart = WC()->cart;
 
     // Elimina solo el fee del método de pago anterior
-    $pmf_fee_data = WC()->session->get( 'pmf_fee_data' );
-    if ( $pmf_fee_data ) {
-        foreach ( $cart->fees as $key => $fee ) {
-            // Verifica si el nombre del fee coincide con el almacenado en la sesión
-            if ( $fee->name === $pmf_fee_data['title'] ) {
-                unset( $cart->fees[ $key ] );
-            }
-        }
-        // elimina el meta
-        WC()->session->__unset( 'pmf_fee_data' );
-    }
-
-    // elimina el meta
-    WC()->session->__unset( 'pmf_fee_data' );
+    PMF_remove_payment_method_fee_from_cart( $cart );
 
     // si no esta en el checkout no hace nada
-    if ( ! is_checkout() ) return;
-
+    if ( ! is_checkout() || ( isset( $_COOKIE['PMF_payment_fee_disabled'] ) && $_COOKIE['PMF_payment_fee_disabled'] == true ) ) return;
+    
+    $chosen_payment_method = WC()->session->get( 'chosen_payment_method' );
     $commissions = get_option( 'payment_method_commissions', [] );
     $data = isset( $commissions[ $chosen_payment_method ] ) ? $commissions[ $chosen_payment_method ] : null;
 
     if ( $data && $cart->get_total() > 0 ) {
+
+        $gateway = WC()->payment_gateways->payment_gateways()[ $chosen_payment_method ];
+
+        // obtiene el titulo del fee actual
+        $gateway_title = $gateway ? $gateway->get_title() : ucfirst( $chosen_payment_method );
+        // $fee_name = __( 'Payment method fee', 'payment-method-fees' ) . " ({$gateway_title})";
+        $fee_name = $gateway_title." ".__( 'Fee', 'payment-method-fees' );
 
         $type = $data['type'];
         $value = floatval($data['value']);
@@ -179,6 +168,25 @@ function PMF_add_payment_method_fee_to_cart( $cart ) {
                 'title'      => $fee_name
             ] );
         }
+    }
+}
+
+// remover fee del carrito
+function PMF_remove_payment_method_fee_from_cart( $cart = null ) {
+    if ( is_admin() && ! defined( 'DOING_AJAX' ) ) return;
+
+    if( $cart === null ) $cart = WC()->cart;
+
+    $pmf_fee_data = WC()->session->get( 'pmf_fee_data' );
+    if ( $pmf_fee_data ) {
+        foreach ( $cart->fees as $key => $fee ) {
+            // Verifica si el nombre del fee coincide con el almacenado en la sesión
+            if ( $fee->name === $pmf_fee_data['title'] ) {
+                unset( $cart->fees[ $key ] );
+            }
+        }
+        // elimina el meta
+        WC()->session->__unset( 'pmf_fee_data' );
     }
 }
 
