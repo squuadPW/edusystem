@@ -214,6 +214,7 @@ function form_asp_psp_optimized($atts)
             'separate_program_fee'       => false,
             'dynamic_link'               => false,
             'use_ethnicity'               => true,
+            'fee_payment_completed'       => false
         ),
         $atts,
         'form_asp_psp'
@@ -261,7 +262,8 @@ function form_asp_psp_optimized($atts)
         $program         = $dynamic_link_data->program_identificator;
         $plan            = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
-        $separate_program_fee = $dynamic_link_data->fee_payment_completed == 1 ? true : false;
+        $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
+        // $separate_program_fee = $dynamic_link_data->fee_payment_completed == 1 ? true : false;
         $fixed_fee_inscription = $dynamic_link_data->fee_payment_completed == 1 ? true : false;
         $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
         // La función siempre retorna un array asociativo. Mapeamos valores directamente.
@@ -341,7 +343,8 @@ function student_registration_form_optimized($atts)
             'use_expected_graduation_date' => false,
             'separate_program_fee'       => false,
             'dynamic_link'               => false,
-            'use_ethnicity'               => true
+            'use_ethnicity'               => true,
+            'fee_payment_completed'    => false,
         ),
         $atts,
         'student_registration_form'
@@ -389,7 +392,8 @@ function student_registration_form_optimized($atts)
         $program         = $dynamic_link_data->program_identificator;
         $plan            = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
-        $separate_program_fee = $dynamic_link_data->fee_payment_completed == 1 ? 'true' : false;
+        $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
+        // $separate_program_fee = $dynamic_link_data->fee_payment_completed == 1 ? 'true' : false;
         $fixed_fee_inscription = $dynamic_link_data->fee_payment_completed == 1 ? 'true' : false;
         $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
         // La función siempre retorna un array asociativo. Mapeamos valores directamente.

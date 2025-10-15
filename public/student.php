@@ -147,6 +147,7 @@ function save_student()
         $expected_graduation_date = isset($_POST['expected_graduation_date']) ? $_POST['expected_graduation_date'] : null;
         $locale = isset($_POST['current_lang']) ? $_POST['current_lang'] : null;
         $separate_program_fee = isset($_POST['separate_program_fee']) ? $_POST['separate_program_fee'] : null;
+        $fee_payment_completed = isset($_POST['fee_payment_completed']) ? $_POST['fee_payment_completed'] : null;
 
         if (!$crm_id) {
             if (get_option('crm_token') && get_option('crm_url') && $email_partner) {
@@ -199,6 +200,7 @@ function save_student()
         setcookie('expected_graduation_date', $expected_graduation_date, time() + 864000, '/');
         setcookie('locale', $locale, time() + 864000, '/');
         setcookie('separate_program_fee', $separate_program_fee, time() + 864000, '/');
+        setcookie('fee_payment_completed', $fee_payment_completed, time() + 864000, '/');
         setcookie('fees', json_encode($fees), time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {
@@ -233,7 +235,7 @@ function save_student()
                     setcookie('gender_parent', $gender, time() + 864000, '/');
                 }
 
-                redirect_to_checkout($from_webinar, $is_scholarship ? $id_document : false, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees);
+                redirect_to_checkout($from_webinar, $is_scholarship ? $id_document : false, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed);
                 // wp_redirect(home_url('/select-payment'));
                 break;
 
@@ -299,7 +301,7 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees);
+                redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed);
                 // wp_redirect(home_url('/select-payment'));
                 break;
 
@@ -315,7 +317,7 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees);
+                redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed);
                 // wp_redirect(home_url('/select-payment'));
                 break;
         }
@@ -355,7 +357,7 @@ function save_student()
         setcookie('billing_postcode', ucwords($billing_postcode), time() + 864000, '/');
 
         // Redirigir al checkout
-        redirect_to_checkout(false, false, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees);
+        redirect_to_checkout(false, false, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed);
     }
 
     if (isset($_GET['action']) && $_GET['action'] === 'pay_graduation_fee') {
@@ -383,16 +385,17 @@ function save_student()
     }
 }
 
-function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $return_url = false, $product_id = false, $coupon_code = false, $fixed_fee_inscription = false, $fees = [])
+function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $return_url = false, $product_id = false, $coupon_code = false, $fixed_fee_inscription = false, $fees = [], $fee_payment_completed = null)
 {
     global $woocommerce;
     $woocommerce->cart->empty_cart();
 
     $woocommerce->cart->add_to_cart($product_id, 1);
-    foreach ($fees as $key => $fee) {
-
-        if ($fee->type_fee == 'registration') {
-            $woocommerce->cart->add_to_cart($fee->product_id, 1);
+    if (!$fee_payment_completed) {
+        foreach ($fees as $key => $fee) {
+            if ($fee->type_fee == 'registration') {
+                $woocommerce->cart->add_to_cart($fee->product_id, 1);
+            }
         }
     }
 

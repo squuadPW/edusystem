@@ -23,6 +23,8 @@
         value="<?= $bank_transfer_account ?? '' ?>">
     <input type="hidden" name="fixed_fee_inscription" id="fixed_fee_inscription"
         value="<?= $fixed_fee_inscription ?? '' ?>">
+    <input type="hidden" name="fee_payment_completed" id="fee_payment_completed"
+        value="<?= $fee_payment_completed ?? '' ?>">
     <input type="hidden" name="max_age" id="max_age" value="<?= $max_age ?>">
     <input type="hidden" name="limit_age" id="limit_age" value="<?= $limit_age ?>">
     <input type="hidden" name="program_shortcode" id="program_shortcode" value="<?= $program ?>">
