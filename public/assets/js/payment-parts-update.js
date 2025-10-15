@@ -132,7 +132,7 @@ function payment_table(rule_data) {
 
         price = 0;
 
-        if ( i == 1 && initial_payment > 0 ) {
+        if ( i == 0 && initial_payment > 0 ) {
             price = initial_payment;
 
         } else {
