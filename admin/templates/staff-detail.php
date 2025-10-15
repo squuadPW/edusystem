@@ -2,7 +2,7 @@
     <h2 class="staff-title"><?= __('Staff Details', 'edusystem'); ?></h2>
 
     <?php if(isset($_COOKIE['message']) && !empty($_COOKIE['message'])){ ?>
-        <div class="notice notice-success is-dismissible"><p><?= $_COOKIE['message']; ?></p></div>
+        <div class="notice notice-success is-dismiksssible"><p><?= $_COOKIE['message']; ?></p></div>
         <?php setcookie('message','',time(),'/'); ?>
     <?php } ?>
     <?php if(isset($_COOKIE['message-error']) && !empty($_COOKIE['message-error'])){ ?>
@@ -74,13 +74,13 @@
                                         </td>
                                         <td style="font-weight:400;">
                                             <?php if (isset($staff) && !empty($staff)): ?>
-                                                <label for="input_id"><b><?= __('Last name', 'edusystem'); ?></b><span
+                                                <label for="input_id"><b><?= __('First surname', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="last_name"
                                                     value="<?= get_user_meta($staff->ID, 'last_name', true); ?>">
 
                                             <?php else: ?>
-                                                <label for="input_id"><b><?= __('Last name', 'edusystem'); ?></b><span
+                                                <label for="input_id"><b><?= __('First surname', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <input type="text" name="last_name" value="" required>
 

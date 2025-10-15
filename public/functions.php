@@ -214,6 +214,7 @@ function form_asp_psp_optimized($atts)
             'separate_program_fee'       => false,
             'dynamic_link'               => false,
             'use_ethnicity'               => true,
+            'fee_payment_completed'       => false
         ),
         $atts,
         'form_asp_psp'
@@ -260,9 +261,18 @@ function form_asp_psp_optimized($atts)
         $email           = $dynamic_link_data->email;
         $program         = $dynamic_link_data->program_identificator;
         $plan            = $dynamic_link_data->payment_plan_identificator;
-        $program         = $dynamic_link_data->program_identificator;
-        $plan            = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
+        $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
+        // $separate_program_fee = $dynamic_link_data->fee_payment_completed == 1 ? true : false;
+        $fixed_fee_inscription = $dynamic_link_data->fee_payment_completed == 1 ? true : false;
+        $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
+        // La función siempre retorna un array asociativo. Mapeamos valores directamente.
+        $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
+        // Exponer cuentas específicas para su posible uso en la plantilla
+        $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
+        $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
+        $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
+        $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
     }
 
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del dynamic link).
@@ -333,7 +343,8 @@ function student_registration_form_optimized($atts)
             'use_expected_graduation_date' => false,
             'separate_program_fee'       => false,
             'dynamic_link'               => false,
-            'use_ethnicity'               => true
+            'use_ethnicity'               => true,
+            'fee_payment_completed'    => false,
         ),
         $atts,
         'student_registration_form'
@@ -381,6 +392,17 @@ function student_registration_form_optimized($atts)
         $program         = $dynamic_link_data->program_identificator;
         $plan            = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
+        $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
+        // $separate_program_fee = $dynamic_link_data->fee_payment_completed == 1 ? 'true' : false;
+        $fixed_fee_inscription = $dynamic_link_data->fee_payment_completed == 1 ? 'true' : false;
+        $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
+        // La función siempre retorna un array asociativo. Mapeamos valores directamente.
+        $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
+        // Exponer cuentas específicas para su posible uso en la plantilla
+        $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
+        $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
+        $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
+        $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
     }
 
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del dynamic link).
@@ -815,9 +837,8 @@ function optimize_my_account_menu_links(array $menu_links): array
     if ($is_parent_or_student) {
         $new_menu_links['student'] = __('Student Information', 'edusystem');
 
-        if (!$is_uni_mode) {
-            $new_menu_links['califications'] = __('Califications', 'edusystem');
-        }
+            // Agregar "Califications"
+            $menu_links['califications'] = __('Grades', 'edusystem');
 
         // D. Documents Logic (Parent/Student)
         $has_registered_status = false;
@@ -995,7 +1016,7 @@ function add_loginout_link($items, $args)
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student">' . __('Student information', 'edusystem') . '</a></li>';
 
             if ($site_mode != 'UNI') {
-                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Califications', 'edusystem') . '</a></li>';
+                $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/califications">' . __('Grades', 'edusystem') . '</a></li>';
             }
 
             $items .= '<li><a href="' . get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents">' . __('Documents', 'edusystem') . '</a></li>';

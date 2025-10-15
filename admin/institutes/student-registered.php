@@ -74,7 +74,7 @@ class TT_all_Student_Institutes_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'name' => __('Name', 'edusystem'),
+            'name' => __('First name', 'edusystem'),
             'email' => __('Email', 'edusystem'),
             'grade' => __('Grade', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),

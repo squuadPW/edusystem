@@ -23,6 +23,8 @@
         value="<?= $bank_transfer_account ?? '' ?>">
     <input type="hidden" name="fixed_fee_inscription" id="fixed_fee_inscription"
         value="<?= $fixed_fee_inscription ?? '' ?>">
+    <input type="hidden" name="fee_payment_completed" id="fee_payment_completed"
+        value="<?= $fee_payment_completed ?? '' ?>">
     <input type="hidden" name="max_age" id="max_age" value="<?= $max_age ?>">
     <input type="hidden" name="limit_age" id="limit_age" value="<?= $limit_age ?>">
     <input type="hidden" name="program_shortcode" id="program_shortcode" value="<?= $program ?>">
@@ -71,21 +73,21 @@
                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same ID as the student', 'edusystem'); ?></span>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name_student"><?= __('Name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="name_student"><?= __('First name', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" id="name_student"
                 required value="<?= $name ?? '' ?>">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="middle_name_student"><?= __('Second name', 'edusystem'); ?></label>
+            <label for="middle_name_student"><?= __('Middle name', 'edusystem'); ?></label>
             <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname_student"><?= __('Last name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="lastname_student"><?= __('First surname', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off"
                 id="lastname_student" required value="<?= $last_name ?? '' ?>">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="middle_last_name_student"><?= __('Second last name', 'edusystem'); ?></label>
+            <label for="middle_last_name_student"><?= __('Second surname', 'edusystem'); ?></label>
             <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off">
         </div>
         <?php if ($birth_date_position == 'DOWN') { ?>
@@ -169,12 +171,12 @@
                 style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same ID as the student', 'edusystem'); ?></span>
         </div>
         <div id="parent_name_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="agent_name"><?= __('Name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="agent_name"><?= __('First name', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="agent_name" autocomplete="off" id="agent_name"
                 required>
         </div>
         <div id="parent-lastname-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="agent_last_name"><?= __('Last name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="agent_last_name"><?= __('First surname', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="agent_last_name" autocomplete="off"
                 id="agent_last_name" required>
         </div>

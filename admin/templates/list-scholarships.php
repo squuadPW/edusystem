@@ -68,11 +68,11 @@
 
 				<div class="group-inputs" >
 					<div class="form-group">
-						<label for="name"><?= __('Name', 'edusystem'); ?></label><br>
+						<label for="name"><?= __('First name', 'edusystem'); ?></label><br>
 						<input type="text" name="name" required>
 					</div>
 					<div class="form-group">
-						<label for="last_name"><?= __('Last Name', 'edusystem'); ?></label><br>
+						<label for="last_name"><?= __('First surname', 'edusystem'); ?></label><br>
 						<input type="text" name="last_name" required>
 					</div>
 				</div>

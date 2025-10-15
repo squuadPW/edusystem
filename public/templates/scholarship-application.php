@@ -36,19 +36,19 @@
             value="1">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="name"><?= __('Name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="name"><?= __('First name', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Second name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="lastname"><?= __('Middle name', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="middle_name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Last name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="lastname"><?= __('First surname', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="lastname_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="lastname"><?= __('Second last name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="lastname"><?= __('Second surname', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" required>
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -112,12 +112,12 @@
                 name="id_document_parent" required>
         </div>
         <div id="parent_name_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="agent_name"><?= __('Name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="agent_name"><?= __('First name', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="agent_name" autocomplete="off" id="agent_name"
                 required>
         </div>
         <div id="parent-lastname-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="agent_name"><?= __('Last name', 'edusystem'); ?><span class="required">*</span></label>
+            <label for="agent_name"><?= __('First surname', 'edusystem'); ?><span class="required">*</span></label>
             <input class="formdata capitalize" type="text" name="agent_last_name" autocomplete="off"
                 id="agent_last_name" required>
         </div>

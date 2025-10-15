@@ -153,6 +153,10 @@ function aes_scripts_admin()
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_dynamic_link_content') {
         wp_enqueue_script('dynamic-links', plugins_url('edusystem') . '/admin/assets/js/dynamic-links.js', array('jquery'), $version, true);
+        wp_localize_script('dynamic-links', 'wp_ajax', [
+            'url' => admin_url('admin-ajax.php'),
+            'action' => 'get_payments_plans_by_program'
+        ]);
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_custom_input_content') {
@@ -929,6 +933,32 @@ function admin_notice($message, $type = 'success')
     </div>
     <?php
 }
+
+function get_payments_plans_by_program()
+{
+    $program_id = isset($_POST['program_id']) ? sanitize_text_field(wp_unslash($_POST['program_id'])) : '';
+
+    if (empty($program_id)) {
+        wp_send_json_error(['message' => 'program_id is required']);
+    }
+
+    global $wpdb;
+    $table_programs = $wpdb->prefix . 'programs';
+    $payment_plans = [];
+    $associateds = get_associated_plans_by_program_id($program_id);
+    foreach ($associateds as $key => $plan) {
+        $plan = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$plan}'");
+        if ($plan) {
+            $payment_plans[] = $plan;
+        }
+    }
+
+    wp_send_json_success(['plans' => $payment_plans]);
+}
+
+add_action('wp_ajax_get_payments_plans_by_program', 'get_payments_plans_by_program');
+add_action('wp_ajax_nopriv_get_payments_plans_by_program', 'get_payments_plans_by_program');
+
 
 function get_states_by_country()
 {

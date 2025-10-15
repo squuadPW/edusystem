@@ -163,7 +163,7 @@ class TT_enrollments_all_List_Table extends WP_List_Table
             'full_name' => __('Student', 'edusystem'),
             'subject_code' => __('Subject - Code of subject', 'edusystem'),
             'period_cut' => __('Period - Cut', 'edusystem'),
-            'calification' => __('Calification', 'edusystem'),
+            'calification' => __('Grade', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
 

@@ -1,4 +1,4 @@
-<h2 style="font-size:24px;text-align:center;"><?= __('Califications', 'edusystem'); ?></h2>
+<h2 style="font-size:24px;text-align:center;"><?= __('Grades', 'edusystem'); ?></h2>
 
 <?php if ($admin_virtual_access) { ?>
     <section class="segment" style="margin-top: 20px">
@@ -19,7 +19,7 @@
                             $user_name = $student['student']->name . ' ' . $student['student']->last_name;
                             $translated_text = sprintf(
                                 /* translators: %s: User's name */
-                                __('%s\'s Califications', 'edusystem'),
+                                __('%s\'s Grades', 'edusystem'),
                                 $user_name
                             );
                             echo $translated_text;
@@ -32,7 +32,7 @@
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                                     class="nobr"><?= __('Assignment', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                                    class="nobr"><?= __('Calification', 'edusystem'); ?></span></th>
+                                    class="nobr"><?= __('Grade', 'edusystem'); ?></span></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,7 +53,7 @@
                                         </td>
                                         <td style="background-color: #f8f8f8;"
                                             class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                            data-title="<?= __('Calification', 'edusystem') ?>">
+                                            data-title="<?= __('Grade', 'edusystem') ?>">
                                         </td>
                                     </tr>
                                 <?php } ?>
@@ -70,7 +70,7 @@
                                             <?= $assignment['name'] ?>
                                         </td>
                                         <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                            data-title="<?= __('Calification', 'edusystem') ?>">
+                                            data-title="<?= __('Grade', 'edusystem') ?>">
                                             <?= $assignment['grade'] ?> / <?= $assignment['max_grade'] ?>
                                         </td>
                                     </tr>
@@ -98,7 +98,7 @@
                             $user_name = $student['student']->name . ' ' . $student['student']->last_name;
                             $translated_text = sprintf(
                                 /* translators: %s: User's name */
-                                __('%s\'s Califications', 'edusystem'),
+                                __('%s\'s Grades', 'edusystem'),
                                 $user_name
                             );
                             echo $translated_text;
@@ -113,7 +113,7 @@
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                                     class="nobr"><?= __('Subject', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
-                                    class="nobr"><?= __('Calification', 'edusystem'); ?></span></th>
+                                class="nobr"><?= __('Grade', 'edusystem'); ?></span></th>
                             <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span
                                     class="nobr"><?= __('Academic period', 'edusystem'); ?></span></th>
                         </tr>
@@ -156,7 +156,7 @@
                                         <?= strtoupper($row['subject']) ?>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
-                                        data-title="<?= __('Calification', 'edusystem') ?>">
+                                        data-title="<?= __('Grade', 'edusystem') ?>">
                                         <strong><?= strtoupper($row['calification']) ?></strong>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
