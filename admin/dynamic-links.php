@@ -14,7 +14,7 @@ function add_admin_form_dynamic_link_content()
             $manager_user_id = get_user_meta($current_user->ID, 'manager_user_id', true);
             if (!empty($manager_user_id)) {
                 $all_managers = get_users_managers();
-                $managers = array_filter($all_managers, function($m) use ($manager_user_id) {
+                $managers = array_filter($all_managers, function ($m) use ($manager_user_id) {
                     return $m->ID == $manager_user_id;
                 });
             } else {
@@ -53,29 +53,35 @@ function add_admin_form_dynamic_link_content()
             global $wpdb;
 
             $table = $wpdb->prefix . 'dynamic_links';
-            $dynamic_link_id = $_POST['dynamic_link_id'];
+            $dynamic_link_id = $_POST['dynamic_link_id'] ?? null; // Usar ?? para evitar notices
             $type_document = sanitize_text_field($_POST['type_document']);
             $id_document = sanitize_text_field($_POST['id_document']);
             $name = sanitize_text_field($_POST['name']);
             $last_name = sanitize_text_field($_POST['last_name']);
-            $email = sanitize_text_field($_POST['email']);
+            $email = sanitize_email($_POST['email']); // Mejor usar sanitize_email
             $program_identificator = sanitize_text_field($_POST['program_identificator']);
             $payment_plan_identificator = sanitize_text_field($_POST['payment_plan_identificator']);
             $save_and_send_email = sanitize_text_field($_POST['save_and_send_email']);
-            $manager_id = $_POST['manager_id'];
+            $manager_id = intval($_POST['manager_id']); // Sanitizar como entero
             $current_user = wp_get_current_user();
             $created_by = $current_user->ID;
             $transfer_cr = $_POST['transfer_cr'] ?? 0;
             $fee_payment_completed = $_POST['fee_payment_completed'] ?? 0;
 
-            // Generar un token corto aleatorio para el link
-            $link = substr(bin2hex(random_bytes(6)), 0, 10);
+            // << CAMBIO 1: Declaramos la variable $link aquí, pero no le asignamos valor aún.
+            $link = '';
 
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
 
+            // Si existe un ID, estamos ACTUALIZANDO
             if (isset($dynamic_link_id) && !empty($dynamic_link_id)) {
+
+                // << CAMBIO 2: Recuperamos el link existente de la BD.
+                // Esto es importante por si se necesita enviar el email con el link original.
+                $link = $wpdb->get_var($wpdb->prepare("SELECT link FROM $table WHERE id = %d", $dynamic_link_id));
+
+                // << CAMBIO 3: Eliminamos 'link' => $link del array, para no sobreescribirlo.
                 $wpdb->update($table, [
-                    'link' => $link,
                     'type_document' => $type_document,
                     'id_document' => $id_document,
                     'name' => $name,
@@ -88,10 +94,17 @@ function add_admin_form_dynamic_link_content()
                     'manager_id' => $manager_id,
                     'created_by' => $created_by,
                 ], ['id' => $dynamic_link_id]);
+
                 wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=') . $dynamic_link_id);
+
+                // Si no existe ID, estamos CREANDO un nuevo registro
             } else {
+
+                // << CAMBIO 4: Generamos el link SÓLO al crear un nuevo registro.
+                $link = substr(bin2hex(random_bytes(6)), 0, 10);
+
                 $wpdb->insert($table, [
-                    'link' => $link,
+                    'link' => $link, // Aquí sí lo insertamos
                     'type_document' => $type_document,
                     'id_document' => $id_document,
                     'name' => $name,
@@ -104,10 +117,13 @@ function add_admin_form_dynamic_link_content()
                     'manager_id' => $manager_id,
                     'created_by' => $created_by,
                 ]);
+
                 $dynamic_link_id = $wpdb->insert_id;
                 wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=') . $dynamic_link_id);
             }
 
+            // El resto del código para enviar el email funciona igual,
+            // ya que la variable $link tendrá el valor correcto (el antiguo si se actualiza, o el nuevo si se crea).
             if ($save_and_send_email == '1') {
                 $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
                 $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
@@ -552,7 +568,7 @@ function get_hidden_payment_methods_by_plan(string $payment_plan_identificator):
     $missing_gateways = array_diff_key($all_gateways, $plan_methods);
     $hidden_methods = array_keys($missing_gateways);
     $hidden_methods_csv = implode(',', $hidden_methods);
-    
+
     // 6. Extraer las cuentas de forma más flexible, sin un 'switch' rígido.
     // Se define un mapa para que sea fácil de extender en el futuro.
     $account_map = [
@@ -575,7 +591,7 @@ function get_hidden_payment_methods_by_plan(string $payment_plan_identificator):
             $accounts[$account_key] = $method_data->account_identificator;
         }
     }
-    
+
     // 7. Devolver el resultado combinado.
     return array_merge([
         'hidden_methods' => $hidden_methods,
@@ -585,27 +601,28 @@ function get_hidden_payment_methods_by_plan(string $payment_plan_identificator):
 
 // Agregar función JS para copiar al portapapeles solo en la página de dynamic links
 if (!function_exists('edusystem_dynamic_links_copy_js')) {
-    function edusystem_dynamic_links_copy_js() {
+    function edusystem_dynamic_links_copy_js()
+    {
         if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_dynamic_link_content') {
             ?>
             <script>
-            function copyToClipboard(text, el) {
-                if (navigator.clipboard) {
-                    navigator.clipboard.writeText(text).then(function() {
+                function copyToClipboard(text, el) {
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(text).then(function () {
+                            el.innerText = 'Copied!';
+                            setTimeout(function () { el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
+                        });
+                    } else {
+                        var tempInput = document.createElement('input');
+                        tempInput.value = text;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
                         el.innerText = 'Copied!';
-                        setTimeout(function(){ el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
-                    });
-                } else {
-                    var tempInput = document.createElement('input');
-                    tempInput.value = text;
-                    document.body.appendChild(tempInput);
-                    tempInput.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(tempInput);
-                    el.innerText = 'Copied!';
-                    setTimeout(function(){ el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
+                        setTimeout(function () { el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
+                    }
                 }
-            }
             </script>
             <?php
         }
