@@ -519,7 +519,7 @@ function get_dynamic_link_detail_by_link($dynamic_link)
  * @param string $payment_plan_identificator El identificador del plan de pago.
  * @return array Un array con los métodos ocultos y las cuentas conectadas.
  */
-function get_hidden_payment_methods_by_plan(string $payment_plan_identificator): array
+function get_hidden_payment_methods_by_plan(string $payment_plan_identificator, $fee_payment_completed = false): array
 {
     global $wpdb;
 
@@ -538,10 +538,16 @@ function get_hidden_payment_methods_by_plan(string $payment_plan_identificator):
 
     // 2. Obtener solo las columnas necesarias de la base de datos.
     $table_name = $wpdb->prefix . 'payment_methods_by_plan';
+    
+    // El valor booleano se convierte a entero (0 o 1) para la base de datos.
+    $fee_completed_int = (int) $fee_payment_completed; 
+    
     $plan_methods_raw = $wpdb->get_results(
         $wpdb->prepare(
-            "SELECT payment_method_identificator, account_identificator FROM {$table_name} WHERE payment_plan_identificator = %s",
-            $payment_plan_identificator
+            // CONSULTA MODIFICADA: Agrega la condición para fee_payment_complete
+            "SELECT payment_method_identificator, account_identificator FROM {$table_name} WHERE payment_plan_identificator = %s AND fee_payment_complete = %d",
+            $payment_plan_identificator,
+            $fee_completed_int // Nuevo parámetro agregado
         )
     );
 

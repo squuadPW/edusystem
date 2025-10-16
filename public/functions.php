@@ -263,7 +263,8 @@ function form_asp_psp_optimized($atts)
         $plan            = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
-        $fixed_fee_inscription = $dynamic_link_data->fee_payment_completed == 1 ? 'true' : false;
+        $separate_program_fee = $dynamic_link_data->fee_payment_completed == 0 ? 'true' : false;
+        $fixed_fee_inscription = 'true';
         
         $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
         $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
@@ -390,9 +391,10 @@ function student_registration_form_optimized($atts)
         $plan            = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
-        $fixed_fee_inscription = $dynamic_link_data->fee_payment_completed == 1 ? 'true' : false;
+        $separate_program_fee = $dynamic_link_data->fee_payment_completed == 0 ? 'true' : false;
+        $fixed_fee_inscription = 'true';
 
-        $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
+        $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator, $fee_payment_completed);
         $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
         $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
         $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';

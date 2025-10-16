@@ -114,6 +114,7 @@ function create_tables()
       `payment_plan_identificator` TEXT NOT NULL,
       `payment_method_identificator` TEXT NOT NULL,
       `account_identificator` TEXT NULL,
+      `payment_fee_completed` BOOLEAN NOT NULL DEFAULT TRUE,
       `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );
