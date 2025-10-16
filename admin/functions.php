@@ -468,6 +468,7 @@ function add_custom_admin_page()
                 4
             );
             add_submenu_page('add_admin_form_admission_content', __('Required Documents', 'edusystem'), __('Required Documents', 'edusystem'), 'manager_documents_aes', 'admission-documents', 'show_admission_documents', 10);
+            add_submenu_page('add_admin_form_admission_content', __('Payment link generator', 'edusystem'), __('Payment link generator', 'edusystem'), 'manager_dynamic_links', 'add_admin_form_dynamic_link_content', 'add_admin_form_dynamic_link_content', 10);
         }
 
         add_menu_page(
@@ -492,7 +493,6 @@ function add_custom_admin_page()
         add_submenu_page('add_admin_form_academic_content', __('Program', 'edusystem'), __('Program', 'edusystem'), 'manager_programs', 'add_admin_form_student_program_content', 'add_admin_form_student_program_content', 10);
         add_submenu_page('add_admin_form_academic_content', __('School subjects', 'edusystem'), __('School subjects', 'edusystem'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
         add_submenu_page('add_admin_form_academic_content', __('Student banners', 'edusystem'), __('Student banners', 'edusystem'), 'manager_feed', 'add_admin_form_feed_content', 'add_admin_form_feed_content', 10);
-        add_submenu_page('add_admin_form_academic_content', __('Payment link generator', 'edusystem'), __('Payment link generator', 'edusystem'), 'manager_dynamic_links', 'add_admin_form_dynamic_link_content', 'add_admin_form_dynamic_link_content', 10);
         remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
 
         add_menu_page(
