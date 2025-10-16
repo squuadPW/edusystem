@@ -1,8 +1,8 @@
 <div class="wrap">
     <?php if (isset($dynamic_link) && !empty($dynamic_link)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Dynamic link Details', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Payment link Details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Add Dynamic link', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Add Payment link', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php

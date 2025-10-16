@@ -226,11 +226,11 @@ function form_asp_psp_optimized($atts)
     // 3. Inicia el buffer de salida para capturar todo el HTML.
     ob_start();
 
-    // 4. Lógica de "Dynamic Link" con validaciones y salidas tempranas (Guard Clauses).
+    // 4. Lógica de "Payment Link" con validaciones y salidas tempranas (Guard Clauses).
     if ($dynamic_link) {
         // Valida que el token exista y no esté vacío.
         if (empty($_GET['token'])) {
-            $error_message = __('Error: Dynamic link token is missing.', 'edusystem');
+            $error_message = __('Error: Payment link token is missing.', 'edusystem');
             if (function_exists('wc_print_notice')) {
                 wc_print_notice($error_message, 'error');
             } else {
@@ -244,7 +244,7 @@ function form_asp_psp_optimized($atts)
         $dynamic_link_data = get_dynamic_link_detail_by_link($token);
 
         if (!$dynamic_link_data) {
-            $error_message = __('Error: Dynamic link token is invalid or expired.', 'edusystem');
+            $error_message = __('Error: Payment link token is invalid or expired.', 'edusystem');
             if (function_exists('wc_print_notice')) {
                 wc_print_notice($error_message, 'error');
             } else {
@@ -274,7 +274,7 @@ function form_asp_psp_optimized($atts)
         $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
     }
 
-    // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del dynamic link).
+    // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del payment link).
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
     $grades     = get_grades();
@@ -354,11 +354,11 @@ function student_registration_form_optimized($atts)
     // 3. Inicia el buffer de salida para capturar todo el HTML.
     ob_start();
 
-    // 4. Lógica de "Dynamic Link" con validaciones y salidas tempranas (Guard Clauses).
+    // 4. Lógica de "Payment Link" con validaciones y salidas tempranas (Guard Clauses).
     if ($dynamic_link) {
         // Valida que el token exista y no esté vacío.
         if (empty($_GET['token'])) {
-            $error_message = __('Error: Dynamic link token is missing.', 'edusystem');
+            $error_message = __('Error: Payment link token is missing.', 'edusystem');
             if (function_exists('wc_print_notice')) {
                 wc_print_notice($error_message, 'error');
             } else {
@@ -372,7 +372,7 @@ function student_registration_form_optimized($atts)
         $dynamic_link_data = get_dynamic_link_detail_by_link($token);
 
         if (!$dynamic_link_data) {
-            $error_message = __('Error: Dynamic link token is invalid or expired.', 'edusystem');
+            $error_message = __('Error: Payment link token is invalid or expired.', 'edusystem');
             if (function_exists('wc_print_notice')) {
                 wc_print_notice($error_message, 'error');
             } else {
@@ -402,7 +402,7 @@ function student_registration_form_optimized($atts)
         $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
     }
 
-    // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del dynamic link).
+    // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del payment link).
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
     $grades     = get_grades();

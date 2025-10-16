@@ -1,7 +1,7 @@
 <div class="tabs-content">
 	<div class="wrap">
 		<div style="text-align:start;">
-			<h1 class="wp-heading-line"><?= __('Dynamic links', 'edusystem'); ?></h1>
+			<h1 class="wp-heading-line"><?= __('Payment links', 'edusystem'); ?></h1>
 		</div>
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 			<a href="#" id="open-upload-modal" class="button button-outline-primary" onclick="return false;">
@@ -9,7 +9,7 @@
 			</a>
 		</div>
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
-			<a href="<?= admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=add_dynamic_link'); ?>" class="button button-outline-primary"><?= __('Add Dynamic Link', 'edusystem'); ?></a>
+			<a href="<?= admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=add_dynamic_link'); ?>" class="button button-outline-primary"><?= __('Add Payment Link', 'edusystem'); ?></a>
 		</div>
 	</div>
 
