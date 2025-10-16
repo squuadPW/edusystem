@@ -497,79 +497,90 @@ function get_dynamic_link_detail_by_link($dynamic_link)
     return $data;
 }
 
-function get_hidden_payment_methods_by_plan($payment_plan_identificator)
+/**
+ * Obtiene los métodos de pago no configurados para un plan específico y las cuentas asociadas.
+ *
+ * @param string $payment_plan_identificator El identificador del plan de pago.
+ * @return array Un array con los métodos ocultos y las cuentas conectadas.
+ */
+function get_hidden_payment_methods_by_plan(string $payment_plan_identificator): array
 {
     global $wpdb;
 
-    // Obtener las filas existentes para el plan
-    $payment_methods_by_plan = $wpdb->prefix . 'payment_methods_by_plan';
-    $rows = $wpdb->get_results($wpdb->prepare("SELECT payment_method_identificator FROM {$payment_methods_by_plan} WHERE payment_plan_identificator=%s", $payment_plan_identificator));
-
-    // Construir un set de identificadores existentes
-    $existing = [];
-    $connected_account = ''; // stripe
-    $flywire_portal_code = ''; // stripe
-    $zelle_account = ''; // stripe
-    $bank_transfer_account = ''; // stripe
-    if ($rows) {
-        foreach ($rows as $r) {
-            if (isset($r->payment_method_identificator)) {
-                $existing[$r->payment_method_identificator] = true;
-                switch ($r->payment_method_identificator) {
-                    case 'woo_squuad_stripe':
-                        $connected_account = $r->account_identificator;
-                        break;
-                    case 'flywire':
-                        $flywire_portal_code = $r->account_identificator;
-                        break;
-                    case 'zelle_payment':
-                        $zelle_account = $r->account_identificator;
-                        break;
-                    case 'aes_payment':
-                        $bank_transfer_account = $r->account_identificator;
-                        break;
-                }
-            }
-        }
+    // 1. Verificación inicial: Si WooCommerce no está activo, no hay nada que hacer.
+    if (!function_exists('WC')) {
+        // Devuelve una estructura vacía para mantener la consistencia del tipo de retorno.
+        return [
+            'hidden_methods' => [],
+            'hidden_methods_csv' => '',
+            'connected_account' => '',
+            'flywire_portal_code' => '',
+            'zelle_account' => '',
+            'bank_transfer_account' => '',
+        ];
     }
 
-    // Intentar obtener todos los métodos de pago de WooCommerce
-    $missing = [];
-    if (function_exists('WC')) {
-        try {
-            $gateways = WC()->payment_gateways()->payment_gateways();
-            if (is_array($gateways)) {
-                foreach ($gateways as $gateway_id => $gateway_obj) {
-                    // $gateway_id es el identificador del gateway
-                    if (!isset($existing[$gateway_id])) {
-                        $missing[] = $gateway_id;
-                    }
-                }
-            }
-        } catch (Exception $e) {
-            // En caso de error, devolver vacío
-            return [];
-        }
-    } else {
-        // Si WooCommerce no está disponible, devolver vacío
-        return [];
-    }
-
-    // Preparar CSV de identificadores (por ejemplo: "paypal,stripe")
-    $missing_csv = '';
-    if (!empty($missing)) {
-        $missing_csv = implode(',', $missing);
-    }
-
-    // Devolver un array asociativo con compatibilidad hacia atrás
-    return array(
-        'hidden_methods' => $missing, // array de identificadores
-        'hidden_methods_csv' => $missing_csv, // CSV para compatibilidad con templates existentes
-        'connected_account' => $connected_account,
-        'flywire_portal_code' => $flywire_portal_code,
-        'zelle_account' => $zelle_account,
-        'bank_transfer_account' => $bank_transfer_account,
+    // 2. Obtener solo las columnas necesarias de la base de datos.
+    $table_name = $wpdb->prefix . 'payment_methods_by_plan';
+    $plan_methods_raw = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT payment_method_identificator, account_identificator FROM {$table_name} WHERE payment_plan_identificator = %s",
+            $payment_plan_identificator
+        )
     );
+
+    // 3. Procesar los resultados de la DB de manera más eficiente.
+    // Usamos array_column para crear un array asociativo [method_id => row_object].
+    $plan_methods = [];
+    if (!empty($plan_methods_raw)) {
+        $plan_methods = array_column($plan_methods_raw, null, 'payment_method_identificator');
+    }
+
+    // 4. Obtener todos los gateways de WooCommerce.
+    // Usamos un bloque try-catch por si ocurre un error inesperado al obtener los gateways.
+    try {
+        $all_gateways = WC()->payment_gateways()->payment_gateways();
+        if (!is_array($all_gateways)) {
+            $all_gateways = [];
+        }
+    } catch (Exception $e) {
+        $all_gateways = [];
+    }
+
+    // 5. Encontrar los métodos faltantes usando funciones de array nativas.
+    // array_diff_key encuentra las claves (IDs de gateway) que están en $all_gateways pero no en $plan_methods.
+    $missing_gateways = array_diff_key($all_gateways, $plan_methods);
+    $hidden_methods = array_keys($missing_gateways);
+    $hidden_methods_csv = implode(',', $hidden_methods);
+    
+    // 6. Extraer las cuentas de forma más flexible, sin un 'switch' rígido.
+    // Se define un mapa para que sea fácil de extender en el futuro.
+    $account_map = [
+        'woo_squuad_stripe' => 'connected_account',
+        'flywire' => 'flywire_portal_code',
+        'zelle_payment' => 'zelle_account',
+        'aes_payment' => 'bank_transfer_account',
+    ];
+
+    $accounts = [
+        'connected_account' => '',
+        'flywire_portal_code' => '',
+        'zelle_account' => '',
+        'bank_transfer_account' => '',
+    ];
+
+    foreach ($plan_methods as $method_id => $method_data) {
+        if (isset($account_map[$method_id])) {
+            $account_key = $account_map[$method_id];
+            $accounts[$account_key] = $method_data->account_identificator;
+        }
+    }
+    
+    // 7. Devolver el resultado combinado.
+    return array_merge([
+        'hidden_methods' => $hidden_methods,
+        'hidden_methods_csv' => $hidden_methods_csv,
+    ], $accounts);
 }
 
 // Agregar función JS para copiar al portapapeles solo en la página de dynamic links

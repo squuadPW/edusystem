@@ -176,10 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
 //  no esta terminado necesita un remplazo
 function inputs_price_sale( input, id_input_regular ) {
 
-    console.log('paso');
-
     const mensaje_error = input.parentElement.querySelector('.text-danger.price-alert'); // Selecciona el mensaje de error
-    console.log(mensaje_error);
 
     input_regular = document.getElementById(id_input_regular);
     if( !input_regular ) return;
