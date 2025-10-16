@@ -16,6 +16,9 @@ function save_essential_data_order($order) {
     // Solo continuar si hay al menos un producto de la categoría "programs"
     if ( !$has_program ) return; */
 
+    // sino exite la cooki de guardar estudiantes entonces no guarda los datos 
+    if( !isset($_COOKIE['save_student']) ) return;
+
     // datos generales
     $order->update_meta_data('payment_method_selected', $_COOKIE['payment_method_selected'] ?? null );
     $order->update_meta_data('is_scholarship', $_COOKIE['is_scholarship'] ?? null );
@@ -78,6 +81,9 @@ function save_essential_data_order($order) {
     $order->update_meta_data('registration_data', $registration_data);
 
     $order->save();
+
+    // elimina la cooki de guardado
+    setcookie( 'save_student', '', time() - 3600, '/' );
 }
 
 
@@ -86,6 +92,8 @@ function save_student()
     if (
         isset($_GET['action']) && !empty($_GET['action']) && ($_GET['action'] == 'save_student' || $_GET['action'] == 'new_applicant_others' || $_GET['action'] == 'new_applicant_me' || $_GET['action'] == 'save_student_custom' || $_GET['action'] == 'save_student_info' || $_GET['action'] == 'save_student_scholarship')
     ) {
+
+        setcookie('save_student', 'save_student', time() + 864000, '/');
 
         $action = $_GET['action'];
         global $woocommerce;
