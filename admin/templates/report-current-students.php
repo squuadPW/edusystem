@@ -68,7 +68,7 @@
 		</div>
 		<form method="post"
 			action="<?= admin_url('admin.php?page=report-students') . ($_GET['section_tab'] ? '&section_tab=' . $_GET['section_tab'] : ''); ?>">
-			<div style="width:100%;text-align:right;padding-top:10px;">
+			<div class="filter-controls">
 				<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
 					<select name="academic_period" id="academic_period">
 						<option value="" selected="selected"><?= __('Select an academic period', 'edusystem'); ?></option>
@@ -90,32 +90,37 @@
 				<select name="country" id="country">
 					<option value=""><?= __('Select country', 'edusystem') ?></option>
 					<?php foreach ($countries as $key => $country) { ?>
-						<option value="<?= $key ?>" <?= $_POST['country'] == $key ? 'selected' : ''; ?>><?= $country; ?></option>
+						<option value="<?= $key ?>" <?= $_POST['country'] == $key ? 'selected' : ''; ?>><?= $country; ?>
+						</option>
 					<?php } ?>
 				</select>
 				<select name="institute" id="institute">
 					<option value=""><?= __('Select institute', 'edusystem') ?></option>
 					<?php foreach ($institutes as $key => $institute) { ?>
-						<option value="<?= $institute->id ?>" <?= $_POST['institute'] == $institute->id ? 'selected' : ''; ?>><?= $institute->name; ?></option>
+						<option value="<?= $institute->id ?>" <?= $_POST['institute'] == $institute->id ? 'selected' : ''; ?>>
+							<?= $institute->name; ?></option>
 					<?php } ?>
 				</select>
 				<input type="search" id="search-box-id-search-input" name="s"
 					placeholder="<?= __('Search for student', 'edusystem'); ?>"
 					value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
-				<?php if (wp_is_mobile()): ?>
-					<button type="submit"
-						class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
-					<button type="button"
-						id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>"
-						class="button button-success"
-						style="width:100%;"></span><?= __('Export excel', 'edusystem'); ?></button>
-				<?php else: ?>
-					<button type="submit"
-						class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
-					<button type="button"
-						id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>"
-						class="button button-success"></span><?= __('Export excel', 'edusystem'); ?></button>
-				<?php endif; ?>
+
+				<div class="filter-actions">
+					<?php if (wp_is_mobile()): ?>
+						<button type="submit"
+							class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
+						<button type="button"
+							id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>"
+							class="button button-success"
+							style="width:100%;"></span><?= __('Export excel', 'edusystem'); ?></button>
+					<?php else: ?>
+						<button type="submit"
+							class="button button-primary"></span><?= __('Update data', 'edusystem'); ?></button>
+						<button type="button"
+							id="<?= $_GET['section_tab'] == 'current' ? 'export_excel_students_current' : 'export_excel_students' ?>"
+							class="button button-success"></span><?= __('Export excel', 'edusystem'); ?></button>
+					<?php endif; ?>
+				</div>
 			</div>
 			<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
 				<div style="text-align: right; margin-top: 20px;">
