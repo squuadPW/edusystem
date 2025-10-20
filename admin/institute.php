@@ -1446,3 +1446,11 @@ function get_managers_institute($institute_id)
     }
     return $selected_manager_user_ids;
 }
+
+function get_all_institutes_active()
+{
+    global $wpdb;
+    $table_institutes = $wpdb->prefix . 'institutes';
+    $data = $wpdb->get_results("SELECT * FROM {$table_institutes} where status = 1");
+    return $data;
+}

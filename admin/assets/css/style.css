@@ -1842,6 +1842,50 @@ a.toplevel_page_logo_based_menu {
   text-align: right;
 }
 
+.filter-controls {
+  display: flex; /* Habilita el diseño flexible */
+  flex-wrap: wrap; /* **Permite que los elementos salten a la siguiente línea si no caben** */
+  gap: 10px; /* Espacio entre los elementos (selects, input, botones) */
+  align-items: center; /* Centra verticalmente los elementos */
+  justify-content: flex-end; /* Alinea el grupo de filtros a la derecha */
+  padding-top: 10px;
+  margin-bottom: 15px; /* Espacio debajo de los filtros */
+}
+
+/* 2. Estilos para los Selects y el Input de Búsqueda */
+.filter-controls select,
+.filter-controls input[type=search] {
+  flex-grow: 1; /* Permite que crezcan para llenar el espacio, pero con límite */
+  max-width: 200px; /* Limita el ancho máximo para evitar que se vean demasiado grandes */
+  min-width: 150px; /* Asegura un ancho mínimo legible */
+  /* El ancho de los selects y inputs se ajustará automáticamente */
+}
+
+/* 3. Estilos para el contenedor de los botones */
+.filter-actions {
+  display: flex;
+  gap: 10px; /* Espacio entre los botones */
+  flex-shrink: 0; /* Evita que los botones se encojan */
+}
+
+/* 4. Adaptación para dispositivos móviles (Responsividad) */
+@media (max-width: 782px) {
+  /* Punto de interrupción típico de WordPress */
+  .filter-controls {
+    flex-direction: column; /* Apila los elementos verticalmente en pantallas pequeñas */
+    align-items: stretch; /* Estira los elementos para que ocupen todo el ancho */
+    justify-content: flex-start;
+  }
+  .filter-controls select,
+  .filter-controls input[type=search],
+  .filter-actions {
+    max-width: 100%; /* Ocupan todo el ancho del contenedor padre */
+  }
+  .filter-actions {
+    flex-direction: column; /* Apila los botones (si no lo hiciste en el HTML con wp_is_mobile) */
+  }
+}
+
 .edusof-page-admin .container-card-admin {
   padding: 10px;
 }
