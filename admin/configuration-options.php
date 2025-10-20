@@ -154,7 +154,15 @@ function add_admin_form_configuration_options_content()
         }
     }
 
-    $courses = get_courses_moodle();
+    // En este punto cargo los cursos de moodle
+    $raw_moodle_response = get_courses_moodle();
+    if (is_array($raw_moodle_response) && isset($raw_moodle_response['exception'])) {
+        $courses = [];
+    } else {
+        $courses = $raw_moodle_response;
+    }
+
+    // Ahora $courses es SIEMPRE un array (o un array de cursos o un array vacío)
     include(plugin_dir_path(__FILE__) . 'templates/configuration-options.php');
 }
 
