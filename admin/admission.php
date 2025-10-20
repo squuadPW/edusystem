@@ -1324,9 +1324,13 @@ add_action('wp_ajax_update_status_documents', 'update_status_documents');
 function last_access_moodle()
 {
     $student_id = $_POST['student_id'];
-    $exist = is_search_student_by_email($student_id);
-    $last_access = $exist[0]['lastaccess'];
-    $date = $last_access != 0 ? date("Y-m-d H:i:s", $last_access) : null;
+    $exist = is_search_student_by_email($student_id); 
+    $last_access = $exist[0]['lastaccess']; 
+    $date = null;
+    if ($last_access != 0) {
+        $date = wp_date("Y-m-d H:i:s", $last_access); 
+    }
+    
     wp_send_json(array('last_access' => $date));
     die();
 }
