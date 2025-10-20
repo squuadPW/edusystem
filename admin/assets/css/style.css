@@ -1885,7 +1885,6 @@ a.toplevel_page_logo_based_menu {
     flex-direction: column; /* Apila los botones (si no lo hiciste en el HTML con wp_is_mobile) */
   }
 }
-
 .edusof-page-admin .container-card-admin {
   padding: 10px;
 }
