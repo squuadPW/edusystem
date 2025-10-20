@@ -87,6 +87,12 @@
 						<option value="E" <?= !empty($_POST['academic_period_cut']) ? (($_POST['academic_period_cut'] == 'E') ? 'selected' : '') : ''; ?>>E</option>
 					</select>
 				<?php } ?>
+				<select name="country" id="country">
+					<option value=""><?= __('Select country', 'edusystem') ?></option>
+					<?php foreach ($countries as $key => $country) { ?>
+						<option value="<?= $key ?>" <?= $_POST['country'] == $key ? 'selected' : ''; ?>><?= $country; ?></option>
+					<?php } ?>
+				</select>
 				<input type="search" id="search-box-id-search-input" name="s"
 					placeholder="<?= __('Search for student', 'edusystem'); ?>"
 					value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
