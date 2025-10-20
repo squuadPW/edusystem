@@ -95,6 +95,7 @@ function show_report_current_students()
     $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
     $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
     $countries = get_countries();
+    $institutes = get_all_institutes_active();
 
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
         if ($_GET['section_tab'] == 'pending_electives') {
@@ -1255,7 +1256,7 @@ function get_students_report($academic_period = null, $cut = null)
     return $students;
 }
 
-function get_students_report_offset($academic_period = null, $cut = null, $search, $country = null)
+function get_students_report_offset($academic_period = null, $cut = null, $search, $country = null, $institute = null)
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
@@ -1324,6 +1325,11 @@ function get_students_report_offset($academic_period = null, $cut = null, $searc
     if ($country && !empty($country)) {
         $conditions[] = "country = %s";
         $params[] = $country;
+    }
+
+    if ($institute && !empty($institute)) {
+        $conditions[] = "institute_id = %s";
+        $params[] = $institute;
     }
 
     // 3. Construcción y ejecución de la consulta
@@ -1805,6 +1811,7 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
         // Get the search term from $_POST
         $search = $_POST['s'] ?? '';
         $country = $_POST['country'] ?? '';
+        $institute = $_POST['institute'] ?? '';
 
         // PAGINATION
         $per_page = 20; // number of items per page
@@ -1819,6 +1826,11 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
         if ($country && !empty($country)) {
             $conditions[] = "country = %s";
             $params[] = $country;
+        }
+
+        if ($institute && !empty($institute)) {
+            $conditions[] = "institute_id = %s";
+            $params[] = $institute;
         }
 
         // 2. Smart search condition
@@ -2027,6 +2039,7 @@ class TT_Current_Student_List_Table extends WP_List_Table
         // Obtener el término de búsqueda de $_POST
         $search = $_POST['s'] ?? '';
         $country = $_POST['country'] ?? '';
+        $institute = $_POST['institute'] ?? '';
 
         // Cargar el período académico y el corte actual
         $load = load_current_cut();
@@ -2089,6 +2102,11 @@ class TT_Current_Student_List_Table extends WP_List_Table
         if ($country && !empty($country)) {
             $conditions[] = "country = %s";
             $params[] = $country;
+        }
+
+        if ($institute && !empty($institute)) {
+            $conditions[] = "institute_id = %s";
+            $params[] = $institute;
         }
 
         // PAGINATION
@@ -2298,8 +2316,9 @@ class TT_Active_Student_List_Table extends WP_List_Table
         $academic_period_cut = $_POST['academic_period_cut'] ?? '';
         $search = $_POST['s'] ?? '';
         $country = $_POST['country'] ?? '';
+        $institute = $_POST['institute'] ?? '';
 
-        $students = get_students_report_offset($academic_period, $academic_period_cut, $search, $country);
+        $students = get_students_report_offset($academic_period, $academic_period_cut, $search, $country, $institute);
         $total_count = count($students);
         $students_filtered = array_slice($students, $offset, $per_page);
 
@@ -2642,6 +2661,7 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
         // Obtener el término de búsqueda de $_POST
         $search = $_POST['s'] ?? '';
         $country = $_POST['country'] ?? '';
+        $institute = $_POST['institute'] ?? '';
 
         // Obtener el período académico y el corte del POST
         $academic_period_student = $_POST['academic_period'] ?? '';
@@ -2666,6 +2686,11 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
         if ($country && !empty($country)) {
             $conditions[] = "country = %s";
             $params[] = $country;
+        }
+
+        if ($institute && !empty($institute)) {
+            $conditions[] = "institute_id = %s";
+            $params[] = $institute;
         }
 
         // 4. Condición de búsqueda inteligente
@@ -2890,6 +2915,7 @@ class TT_Graduated_List_Table extends WP_List_Table
         // Obtener el término de búsqueda de $_POST
         $search = $_POST['s'] ?? '';
         $country = $_POST['country'] ?? '';
+        $institute = $_POST['institute'] ?? '';
 
         // PAGINATION
         $per_page = 20; // number of items per page
@@ -2908,6 +2934,11 @@ class TT_Graduated_List_Table extends WP_List_Table
         if ($country && !empty($country)) {
             $conditions[] = "country = %s";
             $params[] = $country;
+        }
+
+        if ($institute && !empty($institute)) {
+            $conditions[] = "institute_id = %s";
+            $params[] = $institute;
         }
 
         // 2. Condición de filtro por período académico (si está presente)
@@ -3139,6 +3170,7 @@ class TT_Scholarships_List_Table extends WP_List_Table
         // Sanitize and retrieve POST data
         $search = sanitize_text_field($_POST['s'] ?? '');
         $country = sanitize_text_field($_POST['country'] ?? '');
+        $institute = sanitize_text_field($_POST['institute'] ?? '');
         $academic_period_student = sanitize_text_field($_POST['academic_period'] ?? '');
         $academic_period_cut_student = sanitize_text_field($_POST['academic_period_cut'] ?? '');
 
@@ -3149,6 +3181,11 @@ class TT_Scholarships_List_Table extends WP_List_Table
         if ($country && !empty($country)) {
             $conditions[] = "country = %s";
             $params[] = $country;
+        }
+
+        if ($institute && !empty($institute)) {
+            $conditions[] = "institute_id = %s";
+            $params[] = $institute;
         }
 
         // 2. Academic period filter (if present)
@@ -3366,6 +3403,7 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
         // Obtener el término de búsqueda de $_POST
         $search = $_POST['s'] ?? '';
         $country = $_POST['country'] ?? '';
+        $institute = $_POST['institute'] ?? '';
 
         // Cargar el período académico y el corte actual
         $load = load_current_cut();
@@ -3400,6 +3438,11 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
         if ($country && !empty($country)) {
             $conditions[] = "country = %s";
             $params[] = $country;
+        }
+
+        if ($institute && !empty($institute)) {
+            $conditions[] = "institute_id = %s";
+            $params[] = $institute;
         }
 
         // 3. Condición de filtro por período académico (si está presente)

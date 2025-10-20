@@ -93,6 +93,12 @@
 						<option value="<?= $key ?>" <?= $_POST['country'] == $key ? 'selected' : ''; ?>><?= $country; ?></option>
 					<?php } ?>
 				</select>
+				<select name="institute" id="institute">
+					<option value=""><?= __('Select institute', 'edusystem') ?></option>
+					<?php foreach ($institutes as $key => $institute) { ?>
+						<option value="<?= $institute->id ?>" <?= $_POST['institute'] == $institute->id ? 'selected' : ''; ?>><?= $institute->name; ?></option>
+					<?php } ?>
+				</select>
 				<input type="search" id="search-box-id-search-input" name="s"
 					placeholder="<?= __('Search for student', 'edusystem'); ?>"
 					value="<?= (!empty($_POST['s'])) ? $_POST['s'] : ''; ?>">
