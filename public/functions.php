@@ -3615,7 +3615,7 @@ function custom_new_user_notification($send, $user)
         $content .= '<ul>';
         $content .= '<li>Website: <a href="' . $site_url . '" target="_blank">' . $site_url . '</a></li>';
         $content .= '<li>Virtual classroom: <a href="' . $login_url . '" target="_blank">' . $login_url . '</a></li>';
-        $content .= '<li>Contact us: <a href="' . $support_url . '" target="_blank">' . $support_url . '</a></li>';
+        $content .= '<li>Support: <a href="' . $support_url . '" target="_blank">' . $support_url . '</a></li>';
         $content .= '</ul>';
     }
     $content .= '<div>Best regards.</div>';

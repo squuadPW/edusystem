@@ -123,7 +123,7 @@ function get_students_by_period($academic_period, $cut, $filter, $graduating_stu
             5
         );
         $students = $wpdb->get_results($query);
-    } else {
+    } else if ($filter == 2) {
         $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
         // Obtiene los IDs de estudiantes según el período y corte en la otra tabla.
         $cut_student_ids = $wpdb->get_col($wpdb->prepare(
@@ -140,6 +140,31 @@ function get_students_by_period($academic_period, $cut, $filter, $graduating_stu
         $student_ids_str = implode(',', array_map('intval', $cut_student_ids));
         $query = "SELECT * FROM {$table_students} WHERE id IN ($student_ids_str)";
         $students = $wpdb->get_results($query);
+    } else {
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+
+        // Obtiene los IDs de estudiantes según el período y corte en la otra tabla (los que SÍ tienen inscripción).
+        $cut_student_ids = $wpdb->get_col($wpdb->prepare(
+            "SELECT student_id FROM {$table_student_period_inscriptions} WHERE code_period = %s AND cut_period = %s",
+            $academic_period,
+            $cut
+        ));
+
+        if (empty($cut_student_ids)) {
+            // Si la lista de estudiantes inscritos está vacía, significa que TODOS los estudiantes NO tienen inscripción.
+            // La consulta debe buscar a todos los estudiantes de la tabla principal.
+            $query = "SELECT * FROM {$table_students}";
+        } else {
+            // Aseguramos que los IDs son enteros.
+            $student_ids_str = implode(',', array_map('intval', $cut_student_ids));
+            
+            // LA MODIFICACIÓN CLAVE: Cambiar IN por NOT IN.
+            // Busca a los estudiantes cuyo ID *NO ESTÁ* en la lista de IDs de inscritos.
+            $query = "SELECT * FROM {$table_students} WHERE id NOT IN ($student_ids_str)";
+        }
+
+        $students = $wpdb->get_results($query);
+        // return $students; // Línea que faltaba en el fragmento original para devolver el resultado.
     }
 
     // Si se requiere filtrar estudiantes que estén "academic ready", se utiliza array_filter.
@@ -345,6 +370,7 @@ function handle_email_sending($type, $post_data)
                 $_POST['academic_period_cut_filter'],
                 $graduating_students
             );
+            error_log(print_r($students, true)); // --- IGNORE ---
             send_email_to_students($students, $subject, $message, $academic_period, $cut, $send_to_parent);
             break;
 
