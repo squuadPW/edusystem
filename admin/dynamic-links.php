@@ -341,7 +341,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
 
         $columns = array(
             'program' => __('Program', 'edusystem'),
-            'student' => __('Student', 'edusystem'),
+            'student' => __('Student or description', 'edusystem'),
             'payment_plan' => __('Scholarship', 'edusystem'),
             'created_by' => __('Created by', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
@@ -427,7 +427,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                 array_push($dynamic_links_array, [
                     'id' => $dynamic_links_val['id'],
                     'program' => $program->name . ' (' . $program->identificator . ')',
-                    'student' => $dynamic_links_val['name'] ? $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'] : 'N/A',
+                    'student' => $dynamic_links_val['name'] ? $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'] : $program->description,
                     'payment_plan' => $payment_plan->name . ' (' . $payment_plan->identificator . ')',
                     'link' => $dynamic_links_val['link'],
                     'created_by' => $created_by_user->first_name . ' ' . $created_by_user->last_name,
