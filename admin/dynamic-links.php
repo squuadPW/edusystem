@@ -427,7 +427,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                 array_push($dynamic_links_array, [
                     'id' => $dynamic_links_val['id'],
                     'program' => $program->name . ' (' . $program->identificator . ')',
-                    'student' => $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'],
+                    'student' => $dynamic_links_val['name'] ? $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'] : '',
                     'payment_plan' => $payment_plan->name . ' (' . $payment_plan->identificator . ')',
                     'link' => $dynamic_links_val['link'],
                     'created_by' => $created_by_user->first_name . ' ' . $created_by_user->last_name,
