@@ -4,7 +4,7 @@
 add_action('admin_enqueue_scripts', 'PMF_plugin_scripts');
 function PMF_plugin_scripts() {
 
-    wp_enqueue_style('PMF_styles', SPM_URL . '/payment_method_fees/assets/css/styles.css');
+    wp_enqueue_style('PMF_styles', plugin_dir_url(__FILE__) . '/assets/css/styles.css');
   
 }
 
