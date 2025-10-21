@@ -431,7 +431,8 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                     'payment_plan' => $payment_plan->name . ' (' . $payment_plan->identificator . ')',
                     'link' => $dynamic_links_val['link'],
                     'created_by' => $created_by_user->first_name . ' ' . $created_by_user->last_name,
-                    'created_at' => $dynamic_links_val['created_at']
+                    'created_at' => $dynamic_links_val['created_at'],
+                    'email' => $dynamic_links_val['email']
                 ]);
             }
         }
