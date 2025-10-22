@@ -358,14 +358,14 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
 
         // PAGINATION
         $per_page = 20; // number of items per page
-        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $pagenum = isset($_POST['paged']) ? absint($_POST['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
 
         $query_search = "";
         $query_args = [];
-        if (isset($_GET['s']) && !empty($_GET['s'])) {
-            $search = $wpdb->esc_like($_GET['s']);
+        if (isset($_POST['s']) && !empty($_POST['s'])) {
+            $search = $wpdb->esc_like($_POST['s']);
             $like = "%{$search}%";
             $query_search = "(`identificator` LIKE %s OR `name` LIKE %s OR `description` LIKE %s)";
             $query_args = [$like, $like, $like];
