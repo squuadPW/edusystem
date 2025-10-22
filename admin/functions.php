@@ -468,7 +468,7 @@ function add_custom_admin_page()
                 4
             );
             add_submenu_page('add_admin_form_admission_content', __('Required Documents', 'edusystem'), __('Required Documents', 'edusystem'), 'manager_documents_aes', 'admission-documents', 'show_admission_documents', 10);
-            add_submenu_page('add_admin_form_admission_content', __('Payment link generator', 'edusystem'), __('Payment link generator', 'edusystem'), 'manager_dynamic_links', 'add_admin_form_dynamic_link_content', 'add_admin_form_dynamic_link_content', 10);
+            add_submenu_page('add_admin_form_admission_content', __('Payment link', 'edusystem'), __('Payment link', 'edusystem'), 'manager_dynamic_links', 'add_admin_form_dynamic_link_content', 'add_admin_form_dynamic_link_content', 10);
         }
 
         add_menu_page(
