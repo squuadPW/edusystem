@@ -2601,31 +2601,62 @@ class TT_All_Payment_Plans_List_Table extends WP_List_Table
     function get_pensum()
     {
         global $wpdb;
-        $programs_array = [];
 
-        // PAGINATION
+        // --- CONFIGURATION ---
         $per_page = 20; // number of items per page
+        $table_programs = $wpdb->prefix . 'programs';
+
+        // --- PAGINATION ---
+        // Note: Using $_GET['paged'] for pagination as in the original code.
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
-        // PAGINATION
 
-        $table_programs = $wpdb->prefix . 'programs';
-        $programs = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM {$table_programs} ORDER BY id DESC LIMIT {$per_page} OFFSET {$offset}", "ARRAY_A");
+        $where = [];
+        $args = [];
+        // Checking for search term, typically passed via $_GET in WordPress admin lists
+        $search_term = isset($_GET['s']) ? trim($_GET['s']) : (isset($_POST['s']) ? trim($_POST['s']) : '');
 
+        // --- SEARCH LOGIC ---
+        if (!empty($search_term)) {
+            $search = $wpdb->esc_like($search_term);
+            $like = "%{$search}%";
+
+            // Search against identificator, name, and description in the programs table
+            $where[] = "(`identificator` LIKE %s OR `name` LIKE %s OR `description` LIKE %s)";
+            $args = array_merge($args, [$like, $like, $like]);
+        }
+
+        // --- FINAL QUERY CONSTRUCTION ---
+        $where_sql = '';
+        if (!empty($where)) {
+            // Since there's only search logic, we just join the conditions with AND (or just use the first one)
+            $where_sql = 'WHERE ' . implode(' AND ', $where);
+        }
+
+        // Add pagination arguments to the list for preparation
+        $args[] = $per_page;
+        $args[] = $offset;
+
+        // Prepare the final SQL query
+        $sql = $wpdb->prepare(
+            "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_programs} {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d",
+            $args
+        );
+
+        $programs = $wpdb->get_results($sql, ARRAY_A);
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
+        // --- DATA PROCESSING ---
+        $programs_array = [];
         if ($programs) {
             foreach ($programs as $pensum) {
-                // $program = get_student_program_details_by_identificator($pensum['identificator']);
                 array_push($programs_array, [
                     'id' => $pensum['id'],
-                    // 'program' => $program->name ?? 'N/A',
                     'status' => $pensum['is_active'] ? 'Active' : 'Inactive',
                     'name' => $pensum['name'],
                     'identificator' => $pensum['identificator'],
                     'description' => $pensum['description'],
                     'price' => $pensum['total_price'],
-                    'description' => $pensum['description'],
                     'created_at' => $pensum['created_at'],
                 ]);
             }
