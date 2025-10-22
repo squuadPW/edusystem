@@ -541,10 +541,10 @@ function get_hidden_payment_methods_by_plan(string $payment_plan_identificator, 
 
     // 2. Obtener solo las columnas necesarias de la base de datos.
     $table_name = $wpdb->prefix . 'payment_methods_by_plan';
-    
+
     // El valor booleano se convierte a entero (0 o 1) para la base de datos.
-    $fee_completed_int = (int) $fee_payment_completed; 
-    
+    $fee_completed_int = (int) $fee_payment_completed;
+
     $plan_methods_raw = $wpdb->get_results(
         $wpdb->prepare(
             // CONSULTA MODIFICADA: Agrega la condición para fee_payment_complete
@@ -608,33 +608,30 @@ function get_hidden_payment_methods_by_plan(string $payment_plan_identificator, 
     ], $accounts);
 }
 
-// Agregar función JS para copiar al portapapeles solo en la página de payment links
-if (!function_exists('edusystem_dynamic_links_copy_js')) {
-    function edusystem_dynamic_links_copy_js()
-    {
-        if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_dynamic_link_content') {
-            ?>
-            <script>
-                function copyToClipboard(text, el) {
-                    if (navigator.clipboard) {
-                        navigator.clipboard.writeText(text).then(function () {
-                            el.innerText = 'Copied!';
-                            setTimeout(function () { el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
-                        });
-                    } else {
-                        var tempInput = document.createElement('input');
-                        tempInput.value = text;
-                        document.body.appendChild(tempInput);
-                        tempInput.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(tempInput);
+function edusystem_dynamic_links_copy_js()
+{
+    if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_dynamic_link_content') {
+        ?>
+        <script>
+            function copyToClipboard(text, el) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text).then(function () {
                         el.innerText = 'Copied!';
                         setTimeout(function () { el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
-                    }
+                    });
+                } else {
+                    var tempInput = document.createElement('input');
+                    tempInput.value = text;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    el.innerText = 'Copied!';
+                    setTimeout(function () { el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
                 }
-            </script>
-            <?php
-        }
+            }
+        </script>
+        <?php
     }
-    add_action('admin_footer', 'edusystem_dynamic_links_copy_js');
 }
+add_action('admin_footer', 'edusystem_dynamic_links_copy_js');
