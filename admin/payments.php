@@ -863,8 +863,8 @@ function add_admin_form_payments_content()
             $program_id = isset($_POST['program_id']) ? sanitize_text_field($_POST['program_id']) : '';
             $program_product_id = isset($_POST['product_id']) ? sanitize_text_field($_POST['product_id']) : '';
             $identificator = strtoupper(sanitize_text_field($_POST['identificator']));
-            $name = strtoupper(sanitize_text_field($_POST['name']));
-            $description = strtoupper(sanitize_text_field($_POST['description']));
+            $name = strtoupper(sanitize_text_field(stripslashes($_POST['name'])));
+            $description = strtoupper(sanitize_text_field(stripslashes($_POST['description'])));
             $total_price = floatval(sanitize_text_field($_POST['total_price']));
             $is_active = $_POST['is_active'] ? true : false;
             $subprograms_post = $_POST['subprogram'] ?? '';
