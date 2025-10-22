@@ -3,14 +3,14 @@
 		<div style="text-align:start;">
 			<h1 class="wp-heading-line"><?= __('Payment links', 'edusystem'); ?></h1>
 		</div>
-		<div style="display: flex; gap: 10px;">
+		<div style="display: flex; gap: 10px; flex-wrap: wrap;">
 			<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 				<a href="#" id="open-upload-modal" class="button button-outline-primary" onclick="return false;">
 					<?= __('Upload .csv', 'edusystem'); ?>
 				</a>
 			</div>
 			<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
-				<a href="<?= admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=add_dynamic_link'); ?>" class="button button-outline-primary"><?= __('Add Payment Link', 'edusystem'); ?></a>
+				<a href="<?= admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=add_dynamic_link'); ?>" class="button button-primary"><?= __('Add Payment Link', 'edusystem'); ?></a>
 			</div>
 		</div>
 	</div>
@@ -20,7 +20,7 @@
     ?>
 
 	<form action="" id="post-filter" method="post">
-		<p class="search-box">
+		<p class="search-box" style="margin: 0px 20px">
 			<label class="screen-reader-text"
 				for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
 			<input type="search" id="search-box-id-search-input" name="s"
