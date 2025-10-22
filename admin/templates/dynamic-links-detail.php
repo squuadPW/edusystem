@@ -126,11 +126,13 @@
                             </div>
 
                             <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
-                                <?php if ($dynamic_link && $dynamic_link->email) { 
+                                <?php if ($dynamic_link) { 
                                         $dynamic_link_token = isset($dynamic_link->link) ? $dynamic_link->link : '';
                                         $dynamic_link_url = site_url('/registration-link?token=' . $dynamic_link_token);
                                     ?>
-                                    <button type="button" onclick="copyToClipboard('<?= $dynamic_link_url ?>', this)" class="button button-secondary">Copy link</button>
+                                    <button type="button" onclick="copyToClipboard('<?= $dynamic_link_url ?>', this)" class="button button-secondary"><?= __('Copy link', 'edusystem'); ?></button>
+                                <?php } ?>
+                                <?php if ($dynamic_link && $dynamic_link->email) { ?>
                                     <button onclick='return confirm("Are you sure?");' type="submit"
                                     class="button button-success" name="save_and_send_email" value="1"><?= __('Save and send email', 'edusystem'); ?></button>
                                 <?php } ?>
