@@ -367,8 +367,8 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
         if (isset($_GET['s']) && !empty($_GET['s'])) {
             $search = $wpdb->esc_like($_GET['s']);
             $like = "%{$search}%";
-            $query_search = "(`name` LIKE %s OR `last_name` LIKE %s OR `email` LIKE %s OR `id_document` LIKE %s)";
-            $query_args = [$like, $like, $like, $like];
+            $query_search = "(`identificator` LIKE %s OR `name` LIKE %s OR `description` LIKE %s)";
+            $query_args = [$like, $like, $like];
         }
 
         // Filtrado por rol
