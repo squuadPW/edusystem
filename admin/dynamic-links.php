@@ -354,86 +354,153 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
     function get_dynamic_links()
     {
         global $wpdb;
-        $dynamic_links_array = [];
 
-        // PAGINATION
+        // --- CONFIGURATION ---
         $per_page = 20; // number of items per page
+        $table_links = $wpdb->prefix . 'dynamic_links';
+        $table_programs = $wpdb->prefix . 'programs';
+        $table_student_programs = $wpdb->prefix . 'student_program';
+
+        // --- PAGINATION ---
         $pagenum = isset($_POST['paged']) ? absint($_POST['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
-        // PAGINATION
 
-        $query_search = "";
-        $query_args = [];
-        if (isset($_POST['s']) && !empty($_POST['s'])) {
-            $search = $wpdb->esc_like($_POST['s']);
+        $where = [];
+        $args = [];
+        $search_term = isset($_POST['s']) ? trim($_POST['s']) : '';
+        // error_log(print_r($search_term, true)); // Keep for debugging if needed
+
+        // --- SEARCH LOGIC (Corrected) ---
+        if (!empty($search_term)) {
+            $search = $wpdb->esc_like($search_term);
             $like = "%{$search}%";
-            $query_search = "(`identificator` LIKE %s OR `name` LIKE %s OR `description` LIKE %s)";
-            $query_args = [$like, $like, $like];
+            $found_identificators = [];
+            $search_args = [$like, $like, $like];
+
+            // 1. Search in wp_programs (for payment_plan_identificator)
+            $sql_program_search = $wpdb->prepare(
+                "SELECT `identificator` FROM {$table_programs} WHERE `identificator` LIKE %s OR `name` LIKE %s OR `description` LIKE %s",
+                $search_args
+            );
+            $program_identificators = $wpdb->get_col($sql_program_search);
+
+            if (!empty($program_identificators)) {
+                $found_identificators['payment_plan_identificator'] = $program_identificators;
+            }
+
+            // 2. Search in wp_student_programs (for program_identificator)
+            $sql_student_program_search = $wpdb->prepare(
+                "SELECT `identificator` FROM {$table_student_programs} WHERE `identificator` LIKE %s OR `name` LIKE %s OR `description` LIKE %s",
+                $search_args
+            );
+            $student_program_identificators = $wpdb->get_col($sql_student_program_search);
+
+            if (!empty($student_program_identificators)) {
+                $found_identificators['program_identificator'] = $student_program_identificators;
+            }
+
+            // 3. Direct Search on dynamic_links (Always included in search logic)
+            // We include name, last_name, and email to make the search more useful
+            $where_link_search = "(`name` LIKE %s OR `last_name` LIKE %s OR `email` LIKE %s)";
+            $search_link_args = [$like, $like, $like]; // 4 arguments
+
+            // 4. Construct the final search WHERE clause
+            $identificator_conditions = [];
+            $identificator_values = [];
+
+            if (isset($found_identificators['program_identificator']) && !empty($found_identificators['program_identificator'])) {
+                $placeholders = implode(', ', array_fill(0, count($found_identificators['program_identificator']), '%s'));
+                $identificator_conditions[] = "`program_identificator` IN ({$placeholders})";
+                $identificator_values = array_merge($identificator_values, $found_identificators['program_identificator']);
+            }
+
+            if (isset($found_identificators['payment_plan_identificator']) && !empty($found_identificators['payment_plan_identificator'])) {
+                $placeholders = implode(', ', array_fill(0, count($found_identificators['payment_plan_identificator']), '%s'));
+                $identificator_conditions[] = "`payment_plan_identificator` IN ({$placeholders})";
+                $identificator_values = array_merge($identificator_values, $found_identificators['payment_plan_identificator']);
+            }
+
+            // Combine all search conditions (Direct OR External Identificators)
+            $full_search_conditions = array_merge([$where_link_search], $identificator_conditions);
+            $full_search_args = array_merge($search_link_args, $identificator_values);
+
+            // Add the combined search condition to the main WHERE array
+            $where[] = '(' . implode(' OR ', $full_search_conditions) . ')';
+            $args = array_merge($args, $full_search_args);
         }
 
-        // Filtrado por rol
+
+        // --- USER ROLE FILTERING ---
         $current_user = wp_get_current_user();
         $roles = (array) $current_user->roles;
         $is_manager = in_array('manager', $roles);
         $is_admin = in_array('administrator', $roles);
-        $table = $wpdb->prefix . 'dynamic_links';
-
-        $where = [];
-        $args = [];
-        if (!empty($query_search)) {
-            $where[] = $query_search;
-            $args = $query_args;
-        }
 
         if (!$is_admin) {
             if ($is_manager) {
-                // Manager: ve los que creó y los asignados a él
+                // Manager: sees links they created OR links assigned to them
                 $where[] = "(created_by = %d OR manager_id = %d)";
                 $args[] = $current_user->ID;
                 $args[] = $current_user->ID;
             } else {
-                // Otros roles: ve los que creó y los de su manager
+                // Other roles: sees links they created OR links assigned to their manager
                 $manager_user_id = get_user_meta($current_user->ID, 'manager_user_id', true);
+                $user_filter = "created_by = %d";
+                $user_filter_args = [$current_user->ID];
+
                 if (!empty($manager_user_id)) {
-                    $where[] = "(created_by = %d OR manager_id = %d)";
-                    $args[] = $current_user->ID;
-                    $args[] = $manager_user_id;
-                } else {
-                    $where[] = "created_by = %d";
-                    $args[] = $current_user->ID;
+                    $user_filter = "(created_by = %d OR manager_id = %d)";
+                    $user_filter_args = [$current_user->ID, $manager_user_id];
                 }
+                $where[] = $user_filter;
+                $args = array_merge($args, $user_filter_args);
             }
         }
 
+        // --- FINAL QUERY CONSTRUCTION ---
         $where_sql = '';
         if (!empty($where)) {
-            $where_sql = 'WHERE ' . implode(' AND ', $where);
+            $where_sql = 'WHERE (' . implode(') AND (', $where) . ')'; // Grouping ALL WHERE conditions
         }
 
-        if (!empty($args)) {
-            $sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM {$table} {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d", array_merge($args, [$per_page, $offset]));
-        } else {
-            $sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM {$table} {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d", $per_page, $offset);
-        }
-        $dynamic_links = $wpdb->get_results($sql, "ARRAY_A");
+        // Add pagination arguments to the list for preparation
+        $args[] = $per_page;
+        $args[] = $offset;
 
+        // Use a single, safe prepare statement for the main query
+        $sql = $wpdb->prepare(
+            "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_links} {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d",
+            $args
+        );
+
+        // error_log(print_r($sql, true)); // Keep for debugging if needed
+        $dynamic_links = $wpdb->get_results($sql, ARRAY_A);
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
+        // --- DATA PROCESSING ---
+        $dynamic_links_array = [];
         if ($dynamic_links) {
             foreach ($dynamic_links as $dynamic_links_val) {
                 $payment_plan = get_program_details_by_identificator($dynamic_links_val['payment_plan_identificator']);
                 $program = get_student_program_details_by_identificator($dynamic_links_val['program_identificator']);
                 $created_by_user = get_user_by('id', $dynamic_links_val['created_by']);
-                array_push($dynamic_links_array, [
+
+                // Check if objects are returned before trying to access properties
+                $program_name = $program && isset($program->name) ? $program->name : 'N/A';
+                $student_name_desc = $dynamic_links_val['name'] ? $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'] : ($program && isset($program->description) ? $program->description : 'N/A');
+                $payment_plan_detail = $payment_plan && isset($payment_plan->name) ? $payment_plan->name . ' (' . $payment_plan->description . ')' : 'N/A';
+                $created_by_name = $created_by_user ? $created_by_user->first_name . ' ' . $created_by_user->last_name : 'Unknown User';
+
+                $dynamic_links_array[] = [
                     'id' => $dynamic_links_val['id'],
-                    'program' => $program->name,
-                    'student' => $dynamic_links_val['name'] ? $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'] : $program->description,
-                    'payment_plan' => $payment_plan->name . ' (' . $payment_plan->description . ')',
+                    'program' => $program_name,
+                    'student' => $student_name_desc,
+                    'payment_plan' => $payment_plan_detail,
                     'link' => $dynamic_links_val['link'],
-                    'created_by' => $created_by_user->first_name . ' ' . $created_by_user->last_name,
+                    'created_by' => $created_by_name,
                     'created_at' => $dynamic_links_val['created_at'],
                     'email' => $dynamic_links_val['email']
-                ]);
+                ];
             }
         }
 
