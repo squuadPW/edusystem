@@ -238,7 +238,7 @@
                                                         <?= $method['fee_payment_complete'] == 1 ? __('Yes', 'edusystem') : __('No', 'edusystem') ?>
                                                     </td>
                                                     <td data-colname="<?= __('Action', 'edusystem'); ?>" style="text-align: end">
-                                                        <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=delete_inscription&inscription_id=' . $method['id']); ?>" class="button button-danger" onclick="return confirm('Are you sure?');"><span class='dashicons dashicons-trash'></span></a>
+                                                        <a href="<?= admin_url('admin.php?page=add_admin_form_payments_plans_content&action=delete_payment_method&method_id=' . $method['id'] . '&program_id=' . $program->id); ?>" class="button button-danger" onclick="return confirm('Are you sure?');"><span class='dashicons dashicons-trash'></span></a>
                                                     </td>
                                                 </tr>
                                             <?php } ?>

@@ -1072,6 +1072,16 @@ function add_admin_form_payments_content()
             wp_redirect(admin_url('admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details&program_id=' . $program_id));
             exit;
 
+        } else if ($_GET['action'] == 'delete_payment_method') {
+            global $wpdb;
+            $payment_methods_by_plan = $wpdb->prefix . 'payment_methods_by_plan';
+            $program_id = intval($_GET['program_id']);
+            $method_id = intval($_GET['method_id']);
+            $wpdb->delete($payment_methods_by_plan, ['id' => $method_id]);
+            
+            setcookie('message', __('Payment method deleted successfully.', 'edusystem'), time() + 10, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details&program_id=' . $program_id));
+            exit;
         } else if ($_GET['action'] == 'save_quotas_rules') {
 
             global $wpdb;
