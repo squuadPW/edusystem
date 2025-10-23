@@ -2806,8 +2806,6 @@ add_action('wp', 'verificar_acciones_mi_cuenta_optimizado');
 
 function verificar_acciones_mi_cuenta_optimizado()
 {
-    // 1. SALIDAS TEMPRANAS: Salimos de inmediato si no cumplimos las condiciones básicas.
-    // Esto evita procesar innecesariamente en páginas que no son "Mi Cuenta".
     if (!is_account_page() || !is_user_logged_in()) {
         return;
     }
@@ -2817,7 +2815,6 @@ function verificar_acciones_mi_cuenta_optimizado()
     $user_id = $current_user->ID;
     $roles = (array) $current_user->roles;
 
-    // 2. LÓGICA CONSOLIDADA: Se obtiene el estudiante asociado una sola vez.
     $student = null;
     if (in_array('student', $roles, true)) {
         $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}students WHERE email = %s", $current_user->user_email));
@@ -2825,22 +2822,9 @@ function verificar_acciones_mi_cuenta_optimizado()
         $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}students WHERE partner_id = %d", $user_id));
     }
 
-    // --- Flujo Lógico Principal ---
-
-    // Caso 1: El usuario no tiene un registro de estudiante y necesita llenar información inicial.
-    // if (!$student && !get_user_meta($user_id, 'pay_application_password', true) && (in_array('student', $roles) || in_array('parent', $roles))) {
-    //     add_action('wp_footer', 'modal_fill_info');
-    //     return; // Termina la ejecución aquí.
-    // }
-
-    // Caso 2: El usuario ya tiene un registro de estudiante.
     if ($student) {
-        // Limpia un metadato que parece ser temporal.
-        // update_user_meta($user_id, 'pay_application_password', 0);
-
-        // Separamos la lógica en funciones más claras.
         load_split_payment_dashboard($user_id);
-        load_modal_action_dashboard($student, $roles, $user_id);
+        load_modal_action_dashboard($student, $roles);
     }
 }
 
@@ -2895,10 +2879,8 @@ function load_split_payment_dashboard($user_id)
     }
 }
 
-function load_modal_action_dashboard($student, $roles, $curret_user_id)
+function load_modal_action_dashboard($student, $roles)
 {
-    global $wpdb;
-
     // Si se necesita crear contraseña, esta es la acción prioritaria.
     if (in_array('student', $roles, true) && $student->set_password == 0) {
         add_action('wp_footer', 'modal_create_password');
@@ -2911,41 +2893,10 @@ function load_modal_action_dashboard($student, $roles, $curret_user_id)
         return;
     }
 
-    // 5. CONSULTAS SEGURAS Y EFICIENTES
-    // if (MODE != 'UNI') {
-    //     $table_user_signatures = $wpdb->prefix . 'users_signatures';
-    //     $student_user = in_array('student', $roles, true) ? get_user_by('id', $current_user_id) : get_user_by('email', $student->email);
-    //     $parent_user_id = $student->partner_id;
-
-    //     // Verificar firmas
-    //     $parent_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $parent_user_id));
-    //     $student_enrollment_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'ENROLLMENT'", $student_user->ID));
-
-    //     // Verificar si el documento de inscripción fue creado
-    //     $document_was_created = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_documents WHERE student_id = %d AND document_id = 'ENROLLMENT'", $student->id));
-
-    //     // Verificar pagos pendientes
-    //     $has_pending_payments = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}student_payments WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW()", $student->id));
-
-    //     // 6. CONDICIONALES LEGIBLES
-    //     $all_signatures_missing = !$parent_enrollment_sig || !$student_enrollment_sig;
-
-    //     if ($document_was_created && $all_signatures_missing && !$has_pending_payments) {
-    //         add_action('wp_footer', 'modal_enrollment_student');
-    //         return;
-    //     }
-
-    //     $parent_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $parent_user_id));
-    //     $student_missing_sig = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_user_signatures} WHERE user_id = %d AND document_id = 'MISSING DOCUMENT'", $student_user->ID));
-    //     $all_missing_sigs_done = !$parent_missing_sig || !$student_missing_sig;
-
-    //     if ($document_was_created && !$all_signatures_missing && $all_missing_sigs_done && !$has_pending_payments) {
-    //         add_action('wp_footer', 'modal_missing_student');
-    //     }
-    // }
-
     add_action('wp_footer', 'modal_document_automatic');
+    return;
 }
+
 function modal_take_elective()
 {
     global $wpdb, $current_user;
