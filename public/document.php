@@ -29,35 +29,48 @@ add_action('woocommerce_account_teacher-documents_endpoint', function () {
     include(plugin_dir_path(__FILE__) . 'templates/teacher-documents.php');
 });
 
-add_action('woocommerce_account_student-documents_endpoint', function () {
-    // Check if the 'status_register' user meta is NOT 1
-    if (get_user_meta(get_current_user_id(), 'status_register', true) != 1) {
-        // Get the base URL for the 'my-account' page
-        $redirect_url = wc_get_page_permalink('myaccount');
+add_action('woocommerce_account_student-documents_endpoint', function() {
+    $user_id = get_current_user_id();
+    global $current_user;
+    $roles = (array) $current_user->roles;
+    $has_access = false;
 
-        // Perform the redirection and stop script execution
+    if (in_array('parent', $roles)) {
+        if (get_user_meta($user_id, 'status_register', true) == 1) {
+            $has_access = true;
+        }
+    }
+
+    if (!$has_access && in_array('student', $roles)) {
+        $student_id = get_user_meta($user_id, 'student_id', true);
+        if ($student_id) {
+            $student = get_student_detail($student_id);
+            if ($student && !empty($student->partner_id) && get_user_meta($student->partner_id, 'status_register', true) == 1) {
+                $has_access = true;
+            }
+        }
+    }
+
+    if (!$has_access) {
+        $redirect_url = wc_get_page_permalink('myaccount');
         wp_redirect($redirect_url);
         exit;
     }
 
-    global $current_user;
-    $roles = $current_user->roles;
+    $students = [];
 
-    // Logic to fetch student data based on user roles
-    if (!in_array('parent', $roles) && in_array('student', $roles)) {
-        $student_id = get_user_meta(get_current_user_id(), 'student_id', true);
+    if (in_array('parent', $roles)) {
+        $students = get_student($user_id); 
+    } elseif (in_array('student', $roles)) {
+        $student_id = get_user_meta($user_id, 'student_id', true);
         if ($student_id) {
             $students = get_student_from_id($student_id);
         } else {
-            $students = get_student(get_current_user_id());
+            $students = get_student($user_id); // Fallback to fetching by user ID
         }
     }
 
-    if (in_array('parent', $roles) && in_array('student', $roles) || in_array('parent', $roles) && !in_array('student', $roles)) {
-        $students = get_student(get_current_user_id());
-    }
 
-    // Include the template file if the status is 1
     include(plugin_dir_path(__FILE__) . 'templates/documents.php');
 });
 
