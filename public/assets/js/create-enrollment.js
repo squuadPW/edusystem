@@ -12,6 +12,22 @@ document.addEventListener("DOMContentLoaded", (event) => {
     }, 1000);
   }
 
+  const closeModalEnrollment = document.getElementById("close-modal-enrollment");
+  if (closeModalEnrollment) {
+      closeModalEnrollment.addEventListener("click", () => {
+          const modalContrasena = document.getElementById("modal-contraseña");
+          const modalContent = document.getElementById("modal-content");
+
+          if (modalContrasena) {
+              modalContrasena.style.display = "none";
+          }
+          if (modalContent) {
+              modalContent.style.display = "none";
+          }
+          document.body.classList.remove("modal-open");
+      });
+  }
+
   function resizeCanvas(canvasId, timmeout) {
     const canvas = document.getElementById(canvasId);
     if (canvas && !downloading) {
@@ -123,14 +139,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
         document.getElementById("clear-student").style.display = "block";
         document.getElementById("generate-signature-student").style.display =
           "block";
-      });
-
-    document
-      .getElementById("close-modal-enrollment")
-      .addEventListener("click", () => {
-        document.getElementById("modal-contraseña").style.display = "none";
-        document.getElementById("modal-content").style.display = "none";
-        document.body.classList.remove("modal-open");
       });
 
     let clearParentElement = document.getElementById("clear-parent");
@@ -590,8 +598,7 @@ function autoSignature(hide, show, button_hide, clear_hide = null) {
 
   if (button_hide == "generate-signature-student") {
     document.querySelector('input[name="auto_signature_student"]').value = 1;
-    document.getElementById("clear-student-signature").style.display =
-      "block";
+    document.getElementById("clear-student-signature").style.display = "block";
   } else {
     document.querySelector('input[name="auto_signature_parent"]').value = 1;
     document.getElementById("clear-parent-signature").style.display = "block";

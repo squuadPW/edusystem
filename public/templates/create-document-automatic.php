@@ -1,4 +1,6 @@
 <!-- Your modal content here -->
+<input class="formdata" autocomplete="off" type="hidden" id="modal_open" name="modal_open" value="1">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">

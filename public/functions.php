@@ -3104,63 +3104,23 @@ function modal_enrollment_student()
 
 function modal_document_automatic()
 {
-    // // Imprime el contenido del archivo modal-reset-password.php
-    // global $wpdb, $current_user;
-    // $roles = $current_user->roles;
-    // $show_parent_info = 1;
-    
-    // if (in_array('student', $roles)) {
-    //     $table_students = $wpdb->prefix . 'students';
-    //     $table_student_payments = $wpdb->prefix . 'student_payments';
-    //     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
-    //     $payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY id DESC");
-    //     $partner_id = $student->partner_id;
-    //     $student_id = $current_user->ID;
-    //     $institute_id = $student->institute_id;
-    //     $age = floor((strtotime($student->created_at) - strtotime($student->birth_date)) / 31536000); // 31536000 es el número de segundos en un año
-    //     if ($age >= 18) {
-    //         $show_parent_info = 0;
-    //     }
-    // } else if (in_array('parent', $roles)) {
-    //     $table_students = $wpdb->prefix . 'students';
-    //     $table_student_payments = $wpdb->prefix . 'student_payments';
-    //     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
-    //     $user_student = get_user_by('email', $student->email);
-    //     $payment = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id='{$student->id}' ORDER BY id DESC");
-    //     $student_id = $user_student->ID;
-    //     $partner_id = $current_user->ID;
-    //     $institute_id = $student->institute_id;
-    // }
-
-    // $institute = $institute_id ? get_institute_details($institute_id) : null;
-    // $institute_name = $student->name_institute;
-    // $user_partner = get_user_by('id', $student->partner_id);
-
-    // $user = [
-    //     'student_full_name' => $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name,
-    //     'student_signature' => $student->name . ' ' . $student->last_name,
-    //     'student_created_at' => date('Y-m-d', strtotime($student->created_at)),
-    //     'student_grade' => $student->grade_id,
-    //     'student_payment' => $payment->type_payment,
-    //     'student_birth_date' => $student->birth_date,
-    //     'student_gender' => ucfirst($student->gender),
-    //     'student_address' => get_user_meta($partner_id, 'billing_address_1', true),
-    //     'student_country' => get_user_meta($partner_id, 'billing_country', true),
-    //     'student_phone' => $student->phone,
-    //     'parent_cell' => get_user_meta($partner_id, 'billing_phone', true),
-    //     'parent_identification' => get_user_meta($partner_id, 'id_document', true),
-    //     'student_identification' => $student->id_document,
-    //     'parent_full_name' => get_user_meta($student->partner_id, 'first_name', true) . ' ' . get_user_meta($student->partner_id, 'last_name', true),
-    //     'parent_email' => $user_partner->user_email,
-    //     'student_email' => $student->email,
-    //     'today' => date('Y-m-d'),
-    // ];
-    // include plugin_dir_path(__FILE__) . 'templates/create-enrollment.php';
-
     $automatic_documents = apply_filters('load_automatic_documents', []);
+    $all_documents_html = []; 
+
     foreach ($automatic_documents as $key => $document) {
-        $html = $document->header . $document->content . $document->footer;
+        // Wrap each part with structural block elements for clear separation
+        $header = '<div class="automatic-document-header">' . $document->header . '</div>';
+        $content = '<div class="automatic-document-content">' . $document->content . '</div>';
+        $footer = '<div class="automatic-document-footer">' . $document->footer . '</div>';
+        
+        // Concatenate the wrapped parts
+        $document_html = $header . $content . $footer;
+        
+        $all_documents_html[] = $document_html;
     }
+    
+    // Join all documents if needed, separated by a document separator
+    $html = implode('<hr class="document-separator">', $all_documents_html);
 
     if (count($automatic_documents) > 0) {
         include plugin_dir_path(__FILE__) . 'templates/create-document-automatic.php';
