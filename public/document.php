@@ -30,15 +30,9 @@ add_action('woocommerce_account_teacher-documents_endpoint', function() {
 });
 
 add_action('woocommerce_account_student-documents_endpoint', function() {
-
-    /*
-        0: no enviado
-        1: enviado
-        2: procesando
-        3: rechazado
-        4 vencido
-        5: aprobado
-    */
+    if (get_user_meta(get_current_user_id(), 'status_register', true) != 1) {
+        return;
+    }
 
     global $current_user;
     $roles = $current_user->roles;
