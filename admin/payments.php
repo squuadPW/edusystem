@@ -1526,9 +1526,37 @@ function add_admin_form_payments_content()
             include(plugin_dir_path(__FILE__) . 'templates/expenses-payroll-detail.php');
         } else if ($_GET['section_tab'] == 'program_details') {
             global $wpdb;
+            $final_payment_methods = array();
+
             $program_id = $_GET['program_id'];
             $program = get_program_details($program_id);
-            // $programs = get_student_programs();
+            $raw_payment_methods = get_program_payment_method_details($program->identificator);
+
+            if (function_exists('WC') && WC()->payment_gateways) {
+                $available_gateways = WC()->payment_gateways->payment_gateways();
+            } else {
+                $available_gateways = array();
+            }
+
+            foreach ($raw_payment_methods as $key => $method) {
+                $payment_id_woocommerce = $method->payment_method_identificator;
+                $processed_method = (array) $method;
+                if (isset($available_gateways[$payment_id_woocommerce])) {
+                    $gateway_object = $available_gateways[$payment_id_woocommerce];
+
+                    // Add WooCommerce gateway data to the array
+                    $processed_method['woocommerce_title'] = $gateway_object->get_title();
+                    $processed_method['woocommerce_description'] = $gateway_object->get_description();
+                    $processed_method['woocommerce_is_enabled'] = $gateway_object->is_available();
+                } else {
+                    $processed_method['woocommerce_title'] = 'Gateway Not Found';
+                    $processed_method['woocommerce_description'] = '';
+                    $processed_method['woocommerce_is_enabled'] = false;
+                }
+                $final_payment_methods[] = $processed_method;
+            }
+
+            error_log(print_r($final_payment_methods, true));
             include(plugin_dir_path(__FILE__) . 'templates/payment-plans-details.php');
         } else if ($_GET['section_tab'] == 'quotas_rules_programs') {
             global $wpdb;
