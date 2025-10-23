@@ -2921,7 +2921,7 @@ function custom_content_after_orders()
     // Group payments by student_id and status_id
     $student_payments = [];
     foreach ($students as $key => $student) {
-        $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$student->id} AND status_id = 0 AND cuote != 1");
+        $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id = {$student->id} AND status_id = 0 AND cuote != 1 ORDER BY cuote ASC");
         if (sizeof($payments) > 0) {
             $student_payments[$student->id] = $payments;
         }
