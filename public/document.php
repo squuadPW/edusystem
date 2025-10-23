@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-add_action('woocommerce_account_teacher-documents_endpoint', function() {
+add_action('woocommerce_account_teacher-documents_endpoint', function () {
 
     /*
         0: no enviado
@@ -13,57 +13,74 @@ add_action('woocommerce_account_teacher-documents_endpoint', function() {
 
     global $current_user;
     $roles = $current_user->roles;
-    if(!in_array('parent',$roles) && in_array('student',$roles)){
-        $student_id = get_user_meta(get_current_user_id(),'student_id',true);
-        if($student_id){
+    if (!in_array('parent', $roles) && in_array('student', $roles)) {
+        $student_id = get_user_meta(get_current_user_id(), 'student_id', true);
+        if ($student_id) {
             $students = get_student_from_id($student_id);
-        }else{
+        } else {
             $students = get_student(get_current_user_id());
         }
     }
 
-    if (in_array('parent',$roles) && in_array('student',$roles) || in_array('parent',$roles) && !in_array('student',$roles)) {
+    if (in_array('parent', $roles) && in_array('student', $roles) || in_array('parent', $roles) && !in_array('student', $roles)) {
         $students = get_student(get_current_user_id());
     }
-    
-    include(plugin_dir_path(__FILE__).'templates/teacher-documents.php');
+
+    include(plugin_dir_path(__FILE__) . 'templates/teacher-documents.php');
 });
 
 add_action('woocommerce_account_student-documents_endpoint', function() {
-
-    /*
-        0: no enviado
-        1: enviado
-        2: procesando
-        3: rechazado
-        4 vencido
-        5: aprobado
-    */
-
+    $user_id = get_current_user_id();
     global $current_user;
-    $roles = $current_user->roles;
-    if(!in_array('parent',$roles) && in_array('student',$roles)){
-        $student_id = get_user_meta(get_current_user_id(),'student_id',true);
-        if($student_id){
-            $students = get_student_from_id($student_id);
-        }else{
-            $students = get_student(get_current_user_id());
+    $roles = (array) $current_user->roles;
+    $has_access = false;
+
+    if (in_array('parent', $roles)) {
+        if (get_user_meta($user_id, 'status_register', true) == 1) {
+            $has_access = true;
         }
     }
 
-    if (in_array('parent',$roles) && in_array('student',$roles) || in_array('parent',$roles) && !in_array('student',$roles)) {
-        $students = get_student(get_current_user_id());
+    if (!$has_access && in_array('student', $roles)) {
+        $student_id = get_user_meta($user_id, 'student_id', true);
+        if ($student_id) {
+            $student = get_student_detail($student_id);
+            if ($student && !empty($student->partner_id) && get_user_meta($student->partner_id, 'status_register', true) == 1) {
+                $has_access = true;
+            }
+        }
     }
-    
+
+    if (!$has_access) {
+        $redirect_url = wc_get_page_permalink('myaccount');
+        wp_redirect($redirect_url);
+        exit;
+    }
+
+    $students = [];
+
+    if (in_array('parent', $roles)) {
+        $students = get_student($user_id); 
+    } elseif (in_array('student', $roles)) {
+        $student_id = get_user_meta($user_id, 'student_id', true);
+        if ($student_id) {
+            $students = get_student_from_id($student_id);
+        } else {
+            $students = get_student($user_id); // Fallback to fetching by user ID
+        }
+    }
+
     $arr_photos_student = ['PHOTO OF STUDENT CARD', 'STUDENT\'S PHOTO', 'FOTO DEL ESTUDIANTE', "PHOTO-ID OR PASSPORT"];
-    include(plugin_dir_path(__FILE__).'templates/documents.php');
+    include(plugin_dir_path(__FILE__) . 'templates/documents.php');
 });
 
-function save_document() {
-    if (!isset($_GET['actions']) || empty($_GET['actions'])) return;
+function save_document()
+{
+    if (!isset($_GET['actions']) || empty($_GET['actions']))
+        return;
 
     global $wpdb, $current_user;
-    
+
     $action_handlers = [
         'save_documents' => 'handle_student_documents',
         'save_documents_teacher' => 'handle_teacher_documents'
@@ -76,14 +93,16 @@ function save_document() {
     handle_missing_documents_redirect($wpdb, $current_user);
 }
 
-function handle_student_documents($wpdb, $current_user) {
-    if (empty($_POST['students'])) return;
+function handle_student_documents($wpdb, $current_user)
+{
+    if (empty($_POST['students']))
+        return;
 
     $tables = [
-        'documents' => $wpdb->prefix.'student_documents',
-        'students' => $wpdb->prefix.'students',
-        'signatures' => $wpdb->prefix.'users_signatures',
-        'payments' => $wpdb->prefix.'student_payments'
+        'documents' => $wpdb->prefix . 'student_documents',
+        'students' => $wpdb->prefix . 'students',
+        'signatures' => $wpdb->prefix . 'users_signatures',
+        'payments' => $wpdb->prefix . 'student_payments'
     ];
 
     $document_config = [
@@ -95,12 +114,14 @@ function handle_student_documents($wpdb, $current_user) {
     process_documents($wpdb, $current_user, $tables, $document_config, $_POST['students']);
 }
 
-function handle_teacher_documents($wpdb, $current_user) {
-    if (empty($_POST['teachers'])) return;
+function handle_teacher_documents($wpdb, $current_user)
+{
+    if (empty($_POST['teachers']))
+        return;
 
     $tables = [
-        'documents' => $wpdb->prefix.'teacher_documents',
-        'users' => $wpdb->prefix.'teachers',
+        'documents' => $wpdb->prefix . 'teacher_documents',
+        'users' => $wpdb->prefix . 'teachers',
         'redirect_endpoint' => 'teacher-documents'
     ];
 
@@ -113,10 +134,11 @@ function handle_teacher_documents($wpdb, $current_user) {
     process_documents($wpdb, $current_user, $tables, $document_config, $_POST['teachers']);
 }
 
-function process_documents($wpdb, $current_user, $tables, $config, $entities) {
+function process_documents($wpdb, $current_user, $tables, $config, $entities)
+{
     foreach ($entities as $entity_id) {
         $files = $_POST["file_{$config['id_prefix']}_{$entity_id}_id"] ?? [];
-        
+
         foreach ($files as $file_id) {
             process_single_file($wpdb, $config['id_prefix'], $entity_id, $file_id);
         }
@@ -128,28 +150,33 @@ function process_documents($wpdb, $current_user, $tables, $config, $entities) {
 
     wc_add_notice(__('Documents saved successfully.', 'edusystem'), 'success');
     wp_redirect(wc_get_endpoint_url(
-        $config['redirect_endpoint'], 
-        '', 
+        $config['redirect_endpoint'],
+        '',
         get_permalink(get_option('woocommerce_myaccount_page_id'))
     ));
     exit;
 }
 
-function process_single_file($wpdb, $prefix, $entity_id, $file_id) {
+function process_single_file($wpdb, $prefix, $entity_id, $file_id)
+{
     $status = $_POST["status_file_{$file_id}_{$prefix}_id_{$entity_id}"] ?? 0;
-    if (!in_array($status, [0, 3, 4])) return;
+    if (!in_array($status, [0, 3, 4]))
+        return;
 
     $file_temp = $_FILES["document_{$file_id}_{$prefix}_id_{$entity_id}"] ?? [];
-    if (empty($file_temp['tmp_name'])) return;
+    if (empty($file_temp['tmp_name']))
+        return;
 
     $upload_data = wp_handle_upload($file_temp, ['test_form' => false]);
-    if (is_wp_error($upload_data)) return;
+    if (is_wp_error($upload_data))
+        return;
 
     $attachment_id = create_attachment($upload_data);
-    if (!$attachment_id) return;
+    if (!$attachment_id)
+        return;
 
     $wpdb->update(
-        $wpdb->prefix."{$prefix}_documents",
+        $wpdb->prefix . "{$prefix}_documents",
         [
             'status' => 1,
             'attachment_id' => $attachment_id,
@@ -159,7 +186,8 @@ function process_single_file($wpdb, $prefix, $entity_id, $file_id) {
     );
 }
 
-function create_attachment($upload_data) {
+function create_attachment($upload_data)
+{
     $attachment = [
         'post_mime_type' => $upload_data['type'],
         'post_title' => sanitize_file_name($upload_data['file']),
@@ -168,15 +196,17 @@ function create_attachment($upload_data) {
     ];
 
     $attach_id = wp_insert_attachment($attachment, $upload_data['file']);
-    if (!$attach_id) return false;
+    if (!$attach_id)
+        return false;
 
     $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
     wp_update_attachment_metadata($attach_id, $attach_data);
-    
+
     return $attach_id;
 }
 
-function handle_post_processing($wpdb, $current_user, $tables, $student_id) {
+function handle_post_processing($wpdb, $current_user, $tables, $student_id)
+{
     WC()->mailer()->get_emails()['WC_Update_Document_Email']->trigger($student_id);
 
     $required_docs = $wpdb->get_results($wpdb->prepare(
@@ -190,9 +220,11 @@ function handle_post_processing($wpdb, $current_user, $tables, $student_id) {
     }
 }
 
-function check_virtual_access($documents) {
+function check_virtual_access($documents)
+{
     foreach ($documents as $doc) {
-        if ($doc->status != 5) return false;
+        if ($doc->status != 5)
+            return false;
     }
     return true;
 }
@@ -221,7 +253,8 @@ function handle_virtual_classroom($student_id, $current_user) {
     sync_student_with_moodle($student_id);
 }
 
-function prepare_user_data($student, $current_user) {
+function prepare_user_data($student, $current_user)
+{
     $type_document_map = [
         'identification_document' => 1,
         'passport' => 2,
@@ -256,7 +289,8 @@ function prepare_user_data($student, $current_user) {
     ];
 }
 
-function prepare_files_data($wpdb, $student_id) {
+function prepare_files_data($wpdb, $student_id)
+{
     $documents = $wpdb->get_results($wpdb->prepare(
         "SELECT * FROM {$wpdb->prefix}student_documents WHERE student_id = %d",
         $student_id
@@ -264,8 +298,9 @@ function prepare_files_data($wpdb, $student_id) {
 
     $files = [];
     foreach ($documents as $doc) {
-        if (!$doc->attachment_id) continue;
-        
+        if (!$doc->attachment_id)
+            continue;
+
         $id_requisito = $wpdb->get_var($wpdb->prepare(
             "SELECT id_requisito FROM {$wpdb->prefix}documents WHERE name = %s",
             $doc->document_id
@@ -274,7 +309,7 @@ function prepare_files_data($wpdb, $student_id) {
         $file_path = get_attached_file($doc->attachment_id);
         if ($file_path) {
             $files[] = [
-                'file' => curl_file_create($file_path, mime_content_type($file_path)), 
+                'file' => curl_file_create($file_path, mime_content_type($file_path)),
                 'id_requisito' => $id_requisito
             ];
         }
@@ -282,7 +317,8 @@ function prepare_files_data($wpdb, $student_id) {
     return $files;
 }
 
-function ensure_moodle_password($wpdb, $table, $student_id, $moodle_user) {
+function ensure_moodle_password($wpdb, $table, $student_id, $moodle_user)
+{
     $password = $wpdb->get_var($wpdb->prepare(
         "SELECT moodle_password FROM {$table} WHERE id = %d",
         $student_id
@@ -292,17 +328,19 @@ function ensure_moodle_password($wpdb, $table, $student_id, $moodle_user) {
         $password = generate_password_user();
         change_password_user_moodle($student_id);
     }
-    
+
     return $password;
 }
 
-function handle_missing_documents_redirect($wpdb, $current_user) {
-    if (!isset($_GET['missing'])) return;
+function handle_missing_documents_redirect($wpdb, $current_user)
+{
+    if (!isset($_GET['missing']))
+        return;
 
     $missing = json_decode($_GET['missing']);
     foreach ($missing as $student_id) {
         $student = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$wpdb->prefix}students WHERE id = %d", 
+            "SELECT * FROM {$wpdb->prefix}students WHERE id = %d",
             $student_id
         ));
 
@@ -321,8 +359,8 @@ function handle_missing_documents_redirect($wpdb, $current_user) {
 
         if ($signature_exists || !$document_exists) {
             wp_redirect(wc_get_endpoint_url(
-                'student-documents', 
-                '', 
+                'student-documents',
+                '',
                 get_permalink(get_option('woocommerce_myaccount_page_id'))
             ));
             exit;
@@ -330,13 +368,14 @@ function handle_missing_documents_redirect($wpdb, $current_user) {
     }
 }
 
-add_action('wp_loaded','save_document');
+add_action('wp_loaded', 'save_document');
 
 
 add_action('wp_ajax_nopriv_save_documents_teacher', 'save_documents_teacher');
 add_action('wp_ajax_save_documents_teacher', 'save_documents_teacher');
 
-function save_documents_teacher() {
+function save_documents_teacher()
+{
     global $wpdb, $current_user;
     handle_teacher_documents($wpdb, $current_user);
 }
@@ -345,55 +384,55 @@ add_action('wp_ajax_nopriv_save_documents', 'save_documents');
 add_action('wp_ajax_save_documents', 'save_documents');
 function save_documents()
 {
-    global $wpdb,$current_user;
+    global $wpdb, $current_user;
     $roles = $current_user->roles;
-    $table_student_documents = $wpdb->prefix.'student_documents';
-    $table_students = $wpdb->prefix.'students';
-    $table_users_signatures = $wpdb->prefix.'users_signatures';
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+    $table_students = $wpdb->prefix . 'students';
+    $table_users_signatures = $wpdb->prefix . 'users_signatures';
     // $missing_documents = [];
     // $user_signature = null;
     // $pending_required_documents = false;
-    if(isset($_POST['students']) && !empty($_POST['students'])){
+    if (isset($_POST['students']) && !empty($_POST['students'])) {
 
         $students = $_POST['students'];
 
         /* foreach student */
-        foreach($students as $student_id){
-            $files = $_POST['file_student_'.$student_id.'_id'];
+        foreach ($students as $student_id) {
+            $files = $_POST['file_student_' . $student_id . '_id'];
 
-            foreach($files as $file_id){
-                
-                $status = $_POST['status_file_'.$file_id.'_student_id_'.$student_id];
+            foreach ($files as $file_id) {
 
-                if(isset($_FILES['document_'.$file_id.'_student_id_'.$student_id]) && !empty($_FILES['document_'.$file_id.'_student_id_'.$student_id])){
-                    $file_temp = $_FILES['document_'.$file_id.'_student_id_'.$student_id];
-                }else{
+                $status = $_POST['status_file_' . $file_id . '_student_id_' . $student_id];
+
+                if (isset($_FILES['document_' . $file_id . '_student_id_' . $student_id]) && !empty($_FILES['document_' . $file_id . '_student_id_' . $student_id])) {
+                    $file_temp = $_FILES['document_' . $file_id . '_student_id_' . $student_id];
+                } else {
                     $file_temp = [];
                 }
 
-                if($status == 0 || $status == 3 || $status == 4 || $status == 6){
+                if ($status == 0 || $status == 3 || $status == 4 || $status == 6) {
 
-                    if(!empty($file_temp['tmp_name'])){
-                        
-                        $upload_data = wp_handle_upload($file_temp,array('test_form' => FALSE) );
-                    
+                    if (!empty($file_temp['tmp_name'])) {
+
+                        $upload_data = wp_handle_upload($file_temp, array('test_form' => FALSE));
+
                         if ($upload_data && !is_wp_error($upload_data)) {
-                            
+
                             $attachment = array(
                                 'post_mime_type' => $upload_data['type'],
                                 'post_title' => $file_id,
                                 'post_content' => '',
                                 'post_status' => 'inherit'
                             );
-                            
+
                             $attach_id = wp_insert_attachment($attachment, $upload_data['file']);
-                            $deleted = wp_delete_attachment($upload_data['file'], true );
+                            $deleted = wp_delete_attachment($upload_data['file'], true);
                             $attach_data = wp_generate_attachment_metadata($attach_id, $upload_data['file']);
                             wp_update_attachment_metadata($attach_id, $attach_data);
-                            $wpdb->update($table_student_documents,['status' => 1,'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')],['student_id' => $student_id,'id' => $file_id ]);
+                            $wpdb->update($table_student_documents, ['status' => 1, 'attachment_id' => $attach_id, 'upload_at' => date('Y-m-d H:i:s')], ['student_id' => $student_id, 'id' => $file_id]);
                         }
                     } else {
-                        $file_is_required = $_POST['file_is_required'.$file_id.'_student_id_'.$student_id];
+                        $file_is_required = $_POST['file_is_required' . $file_id . '_student_id_' . $student_id];
                         // if ($file_is_required == 1 && !$pending_required_documents) {
                         //     $pending_required_documents = true;
                         // }
@@ -409,6 +448,7 @@ function save_documents()
             $email_update_document = WC()->mailer()->get_emails()['WC_Update_Document_Email'];
             $email_update_document->trigger($student_id);
 
+            $access_virtual = true;
             $access_virtual = true;
 
             $documents_student = $wpdb->get_results("SELECT * FROM {$table_student_documents} WHERE is_required = 1 AND student_id={$student_id}");
@@ -450,10 +490,10 @@ function save_documents()
             }
         }
 
-        
+
     }
 
-    wc_add_notice( __( 'Documents saved successfully.', 'edusystem' ), 'success' );
+    wc_add_notice(__('Documents saved successfully.', 'edusystem'), 'success');
     wp_send_json(array('success' => true));
     exit;
 }
@@ -524,10 +564,11 @@ function view_pending_documents(){
     }
 }
 
-add_action('woocommerce_account_dashboard','view_pending_documents',3);
+add_action('woocommerce_account_dashboard', 'view_pending_documents', 3);
 
 
-function get_document_status_class($status) {
+function get_document_status_class($status)
+{
     $status_colors = [
         'No sent' => '',
         'Sent' => 'blue',
@@ -540,7 +581,8 @@ function get_document_status_class($status) {
     return isset($status_colors[$status]) ? $status_colors[$status] : '';
 }
 
-function should_display_document($document) {
+function should_display_document($document)
+{
     $pending_statuses = [
         0,
         1,
@@ -551,7 +593,8 @@ function should_display_document($document) {
     return in_array($document->status, $pending_statuses);
 }
 
-function get_name_document($document_id){
+function get_name_document($document_id)
+{
     /*
     $name = match ($document_id) {
         'certified_notes_high_school' => __('CERTIFIED NOTES HIGH SCHOOL','edusystem'),
@@ -644,49 +687,53 @@ function get_help_info_document($document_id) {
     return $text;
 }
 
-function get_type_file_document($document_id) {
+function get_type_file_document($document_id)
+{
     global $wpdb;
     $table_documents = $wpdb->prefix . 'documents';
-    
+
     // Usar prepare para evitar problemas con apóstrofes y inyección SQL
     $query = $wpdb->prepare("SELECT * FROM {$table_documents} WHERE name = %s", $document_id);
     $doc = $wpdb->get_row($query);
-    
+
     return $doc ? $doc->type_file : null; // Devuelve null si no se encuentra el documento
 }
 
-function get_type_file_document_teacher($document_id) {
+function get_type_file_document_teacher($document_id)
+{
     global $wpdb;
     $table_documents_for_teachers = $wpdb->prefix . 'documents_for_teachers';
-    
+
     // Usar prepare para evitar problemas con apóstrofes y inyección SQL
     $query = $wpdb->prepare("SELECT * FROM {$table_documents_for_teachers} WHERE name = %s", $document_id);
     $doc = $wpdb->get_row($query);
-    
+
     return $doc ? $doc->type_file : null; // Devuelve null si no se encuentra el documento
 }
 
-function get_status_document($status_id){
+function get_status_document($status_id)
+{
 
-    $status = match ($status_id){
-        '0' => __('No sent','edusystem'),
-        '1' => __('Sent','edusystem'),
-        '2' => __('Processing','edusystem'),
-        '3' => __('Declined','edusystem'),
-        '4' => __('Expired','edusystem'),
-        '5' => __('Approved','edusystem'),
-        '6' => __('Waiting update','edusystem'),
+    $status = match ($status_id) {
+        '0' => __('No sent', 'edusystem'),
+        '1' => __('Sent', 'edusystem'),
+        '2' => __('Processing', 'edusystem'),
+        '3' => __('Declined', 'edusystem'),
+        '4' => __('Expired', 'edusystem'),
+        '5' => __('Approved', 'edusystem'),
+        '6' => __('Waiting update', 'edusystem'),
         default => '',
     };
 
     return $status;
 }
 
-function get_name_type_document($type_document){
+function get_name_type_document($type_document)
+{
 
-    $type_document_parent = match($type_document){
-        'passport' => __('Passport','edusystem'),
-        'identification_document' => __('Identification Document','edusystem'),
+    $type_document_parent = match ($type_document) {
+        'passport' => __('Passport', 'edusystem'),
+        'identification_document' => __('Identification Document', 'edusystem'),
         'ssn' => __('SSN'),
         default => '',
     };
