@@ -75,7 +75,7 @@
                                                 <option 
                                                     value="<?= $plan->identificator ?>" 
                                                     <?= in_array($plan->identificator, $associated_plans_ids) ? 'selected' : ''; ?>>
-                                                    <?= $plan->name ?> (<?= $plan->identificator ?>)
+                                                    <?= $plan->name ?> (<?= $plan->description ?>)
                                                 </option>
                                             <?php } ?>
                                         </select>

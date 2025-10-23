@@ -90,7 +90,7 @@
 
                                             <?php
                                                 global $wpdb;
-                                                $payment_plans = $wpdb->get_results("SELECT identificator, name, subprogram FROM {$wpdb->prefix}programs");
+                                                $payment_plans = $wpdb->get_results("SELECT identificator, `name`, `description`, subprogram FROM {$wpdb->prefix}programs");
                                             ?>
                                             
                                             <select name="programs[]" multiple required id="programas_select" >
@@ -100,7 +100,7 @@
                                                         <optgroup label="<?= esc_attr($payment_plan->name) ?>">
 
                                                             <option value="<?= esc_attr($payment_plan->identificator)?>" <?= selected( in_array( $payment_plan->identificator, json_decode($fee['programs'], true) ?? [] ) ); ?>>
-                                                                <?= esc_html($payment_plan->name) ?> (<?= esc_html($payment_plan->identificator)?>)
+                                                                <?= esc_html($payment_plan->name) ?> (<?= esc_html($payment_plan->description)?>)
                                                             </option>
 
                                                             <?php $payment_subplans = json_decode($payment_plan->subprogram, true); ?>
