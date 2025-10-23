@@ -1,5 +1,6 @@
 <?php
 
+require plugin_dir_path(__FILE__) . '/shortcodes/shortcodes.php';
 require plugin_dir_path(__FILE__) . 'student-scholarship.php';
 require plugin_dir_path(__FILE__) . 'student.php';
 require plugin_dir_path(__FILE__) . 'account.php';
