@@ -864,7 +864,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (selectorAcademicPeriod && selectorCuts) {
     selectorAcademicPeriod.addEventListener("change", function (e) {
-      console.log(e.target.value);
       const XHR = new XMLHttpRequest();
       XHR.open("POST", get_approved_by.url, true);
       XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");

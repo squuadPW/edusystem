@@ -14,7 +14,7 @@ function add_admin_form_dynamic_link_content()
             $manager_user_id = get_user_meta($current_user->ID, 'manager_user_id', true);
             if (!empty($manager_user_id)) {
                 $all_managers = get_users_managers();
-                $managers = array_filter($all_managers, function($m) use ($manager_user_id) {
+                $managers = array_filter($all_managers, function ($m) use ($manager_user_id) {
                     return $m->ID == $manager_user_id;
                 });
             } else {
@@ -53,29 +53,35 @@ function add_admin_form_dynamic_link_content()
             global $wpdb;
 
             $table = $wpdb->prefix . 'dynamic_links';
-            $dynamic_link_id = $_POST['dynamic_link_id'];
+            $dynamic_link_id = $_POST['dynamic_link_id'] ?? null; // Usar ?? para evitar notices
             $type_document = sanitize_text_field($_POST['type_document']);
             $id_document = sanitize_text_field($_POST['id_document']);
             $name = sanitize_text_field($_POST['name']);
             $last_name = sanitize_text_field($_POST['last_name']);
-            $email = sanitize_text_field($_POST['email']);
+            $email = sanitize_email($_POST['email']); // Mejor usar sanitize_email
             $program_identificator = sanitize_text_field($_POST['program_identificator']);
             $payment_plan_identificator = sanitize_text_field($_POST['payment_plan_identificator']);
             $save_and_send_email = sanitize_text_field($_POST['save_and_send_email']);
-            $manager_id = $_POST['manager_id'];
+            $manager_id = intval($_POST['manager_id']); // Sanitizar como entero
             $current_user = wp_get_current_user();
             $created_by = $current_user->ID;
             $transfer_cr = $_POST['transfer_cr'] ?? 0;
             $fee_payment_completed = $_POST['fee_payment_completed'] ?? 0;
 
-            // Generar un token corto aleatorio para el link
-            $link = substr(bin2hex(random_bytes(6)), 0, 10);
+            // << CAMBIO 1: Declaramos la variable $link aquí, pero no le asignamos valor aún.
+            $link = '';
 
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
 
+            // Si existe un ID, estamos ACTUALIZANDO
             if (isset($dynamic_link_id) && !empty($dynamic_link_id)) {
+
+                // << CAMBIO 2: Recuperamos el link existente de la BD.
+                // Esto es importante por si se necesita enviar el email con el link original.
+                $link = $wpdb->get_var($wpdb->prepare("SELECT link FROM $table WHERE id = %d", $dynamic_link_id));
+
+                // << CAMBIO 3: Eliminamos 'link' => $link del array, para no sobreescribirlo.
                 $wpdb->update($table, [
-                    'link' => $link,
                     'type_document' => $type_document,
                     'id_document' => $id_document,
                     'name' => $name,
@@ -88,10 +94,17 @@ function add_admin_form_dynamic_link_content()
                     'manager_id' => $manager_id,
                     'created_by' => $created_by,
                 ], ['id' => $dynamic_link_id]);
+
                 wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=') . $dynamic_link_id);
+
+                // Si no existe ID, estamos CREANDO un nuevo registro
             } else {
+
+                // << CAMBIO 4: Generamos el link SÓLO al crear un nuevo registro.
+                $link = substr(bin2hex(random_bytes(6)), 0, 10);
+
                 $wpdb->insert($table, [
-                    'link' => $link,
+                    'link' => $link, // Aquí sí lo insertamos
                     'type_document' => $type_document,
                     'id_document' => $id_document,
                     'name' => $name,
@@ -104,14 +117,17 @@ function add_admin_form_dynamic_link_content()
                     'manager_id' => $manager_id,
                     'created_by' => $created_by,
                 ]);
+
                 $dynamic_link_id = $wpdb->insert_id;
                 wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=') . $dynamic_link_id);
             }
 
+            // El resto del código para enviar el email funciona igual,
+            // ya que la variable $link tendrá el valor correcto (el antiguo si se actualiza, o el nuevo si se crea).
             if ($save_and_send_email == '1') {
                 $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
                 $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
-                $html .= '<p>' . __('We are pleased to inform you that a dynamic link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
+                $html .= '<p>' . __('We are pleased to inform you that a payment link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
                 $html .= '<p><a href="' . site_url('/registration-link?token=' . $link) . '">' . site_url('/registration-link?token=' . $link) . '</a></p>';
                 $html .= '<p>' . __('If you have any questions or need assistance, please do not hesitate to contact us. We are here to help you with whatever you need.', 'edusystem') . '</p>';
                 $html .= '<p>' . __('Best regards,', 'edusystem') . '</p>';
@@ -190,7 +206,7 @@ function add_admin_form_dynamic_link_content()
                         if ($send_email == '1') {
                             $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
                             $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
-                            $html .= '<p>' . __('We are pleased to inform you that a dynamic link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
+                            $html .= '<p>' . __('We are pleased to inform you that a payment link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
                             $html .= '<p><a href="' . site_url('/registration-link?token=' . $link) . '">' . site_url('/registration-link?token=' . $link) . '</a></p>';
                             $html .= '<p>' . __('If you have any questions or need assistance, please do not hesitate to contact us. We are here to help you with whatever you need.', 'edusystem') . '</p>';
                             $html .= '<p>' . __('Best regards,', 'edusystem') . '</p>';
@@ -226,7 +242,7 @@ function add_admin_form_dynamic_link_content()
             $wpdb->delete($table, ['id' => $dynamic_link_id]);
             $wpdb->delete($table_dynamic_links_email_log, ['dynamic_link_id' => $dynamic_link_id]);
 
-            setcookie('message', __('Dynamic link deleted.', 'edusystem'), time() + 10, '/');
+            setcookie('message', __('Payment link deleted.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content'));
             exit;
         } else if ($_GET['action'] == 'send_email') {
@@ -243,7 +259,7 @@ function add_admin_form_dynamic_link_content()
 
             $sender_email = WC()->mailer()->get_emails()['WC_Email_Sender_Email'];
             $html = '<p>' . __('Dear', 'edusystem') . ' ' . $name . ' ' . $last_name . ',</p>';
-            $html .= '<p>' . __('We are pleased to inform you that a dynamic link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
+            $html .= '<p>' . __('We are pleased to inform you that a payment link has been created for you to complete your enrollment process. Please click on the link below to access your personalized portal.', 'edusystem') . '</p>';
             $html .= '<p><a href="' . site_url('/registration-link?token=' . $link) . '">' . site_url('/registration-link?token=' . $link) . '</a></p>';
             $html .= '<p>' . __('If you have any questions or need assistance, please do not hesitate to contact us. We are here to help you with whatever you need.', 'edusystem') . '</p>';
             $html .= '<p>' . __('Best regards,', 'edusystem') . '</p>';
@@ -257,7 +273,7 @@ function add_admin_form_dynamic_link_content()
                 'created_by' => $created_by
             ]);
 
-            setcookie('message', __('Dynamic link send to email.', 'edusystem'), time() + 10, '/');
+            setcookie('message', __('Payment link send to email.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_dynamic_link_content'));
             exit;
         } else {
@@ -296,7 +312,9 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
             case 'view_details':
                 $buttons = "<a href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&section_tab=dynamic_link_details&dynamic_link_id=' . $item['id']) . "' class='button button-primary'>" . __('View Details', 'edusystem') . "</a>";
                 $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&action=delete_dynamic_link&dynamic_link_id=' . $item['id']) . "' class='button button-danger'>" . __('Delete', 'edusystem') . "</a>";
-                $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&action=send_email&dynamic_link_id=' . $item['id']) . "' class='button button-success'>" . __('Send Email', 'edusystem') . "</a>";
+                if ($item['email']) {
+                    $buttons .= "<a onclick='return confirm(\"Are you sure?\");' style='margin-left: 4px' href='" . admin_url('/admin.php?page=add_admin_form_dynamic_link_content&action=send_email&dynamic_link_id=' . $item['id']) . "' class='button button-success'>" . __('Send Email', 'edusystem') . "</a>";
+                }
                 // Copiar link al portapapeles usando JS (usando el campo 'link' como token)
                 $dynamic_link_token = isset($item['link']) ? $item['link'] : '';
                 $dynamic_link_url = site_url('/registration-link?token=' . $dynamic_link_token);
@@ -323,9 +341,8 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
 
         $columns = array(
             'program' => __('Program', 'edusystem'),
-            'student' => __('Student', 'edusystem'),
+            'student' => __('Student or description', 'edusystem'),
             'payment_plan' => __('Scholarship', 'edusystem'),
-            'transfer_credits' => __('Transfer Credits', 'edusystem'),
             'created_by' => __('Created by', 'edusystem'),
             'created_at' => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
@@ -337,86 +354,153 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
     function get_dynamic_links()
     {
         global $wpdb;
-        $dynamic_links_array = [];
 
-        // PAGINATION
+        // --- CONFIGURATION ---
         $per_page = 20; // number of items per page
-        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-        $offset = (($pagenum - 1) * $per_page);
-        // PAGINATION
+        $table_links = $wpdb->prefix . 'dynamic_links';
+        $table_programs = $wpdb->prefix . 'programs';
+        $table_student_programs = $wpdb->prefix . 'student_program';
 
-        $query_search = "";
-        $query_args = [];
-        if (isset($_GET['s']) && !empty($_GET['s'])) {
-            $search = $wpdb->esc_like($_GET['s']);
+        // --- PAGINATION ---
+        $pagenum = isset($_POST['paged']) ? absint($_POST['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+
+        $where = [];
+        $args = [];
+        $search_term = isset($_POST['s']) ? trim($_POST['s']) : '';
+        // error_log(print_r($search_term, true)); // Keep for debugging if needed
+
+        // --- SEARCH LOGIC (Corrected) ---
+        if (!empty($search_term)) {
+            $search = $wpdb->esc_like($search_term);
             $like = "%{$search}%";
-            $query_search = "(`name` LIKE %s OR `last_name` LIKE %s OR `email` LIKE %s OR `id_document` LIKE %s)";
-            $query_args = [$like, $like, $like, $like];
+            $found_identificators = [];
+            $search_args = [$like, $like, $like];
+
+            // 1. Search in wp_programs (for payment_plan_identificator)
+            $sql_program_search = $wpdb->prepare(
+                "SELECT `identificator` FROM {$table_programs} WHERE `identificator` LIKE %s OR `name` LIKE %s OR `description` LIKE %s",
+                $search_args
+            );
+            $program_identificators = $wpdb->get_col($sql_program_search);
+
+            if (!empty($program_identificators)) {
+                $found_identificators['payment_plan_identificator'] = $program_identificators;
+            }
+
+            // 2. Search in wp_student_programs (for program_identificator)
+            $sql_student_program_search = $wpdb->prepare(
+                "SELECT `identificator` FROM {$table_student_programs} WHERE `identificator` LIKE %s OR `name` LIKE %s OR `description` LIKE %s",
+                $search_args
+            );
+            $student_program_identificators = $wpdb->get_col($sql_student_program_search);
+
+            if (!empty($student_program_identificators)) {
+                $found_identificators['program_identificator'] = $student_program_identificators;
+            }
+
+            // 3. Direct Search on dynamic_links (Always included in search logic)
+            // We include name, last_name, and email to make the search more useful
+            $where_link_search = "(`name` LIKE %s OR `last_name` LIKE %s OR `email` LIKE %s)";
+            $search_link_args = [$like, $like, $like]; // 4 arguments
+
+            // 4. Construct the final search WHERE clause
+            $identificator_conditions = [];
+            $identificator_values = [];
+
+            if (isset($found_identificators['program_identificator']) && !empty($found_identificators['program_identificator'])) {
+                $placeholders = implode(', ', array_fill(0, count($found_identificators['program_identificator']), '%s'));
+                $identificator_conditions[] = "`program_identificator` IN ({$placeholders})";
+                $identificator_values = array_merge($identificator_values, $found_identificators['program_identificator']);
+            }
+
+            if (isset($found_identificators['payment_plan_identificator']) && !empty($found_identificators['payment_plan_identificator'])) {
+                $placeholders = implode(', ', array_fill(0, count($found_identificators['payment_plan_identificator']), '%s'));
+                $identificator_conditions[] = "`payment_plan_identificator` IN ({$placeholders})";
+                $identificator_values = array_merge($identificator_values, $found_identificators['payment_plan_identificator']);
+            }
+
+            // Combine all search conditions (Direct OR External Identificators)
+            $full_search_conditions = array_merge([$where_link_search], $identificator_conditions);
+            $full_search_args = array_merge($search_link_args, $identificator_values);
+
+            // Add the combined search condition to the main WHERE array
+            $where[] = '(' . implode(' OR ', $full_search_conditions) . ')';
+            $args = array_merge($args, $full_search_args);
         }
 
-        // Filtrado por rol
+
+        // --- USER ROLE FILTERING ---
         $current_user = wp_get_current_user();
         $roles = (array) $current_user->roles;
         $is_manager = in_array('manager', $roles);
         $is_admin = in_array('administrator', $roles);
-        $table = $wpdb->prefix . 'dynamic_links';
-
-        $where = [];
-        $args = [];
-        if (!empty($query_search)) {
-            $where[] = $query_search;
-            $args = $query_args;
-        }
 
         if (!$is_admin) {
             if ($is_manager) {
-                // Manager: ve los que creó y los asignados a él
+                // Manager: sees links they created OR links assigned to them
                 $where[] = "(created_by = %d OR manager_id = %d)";
                 $args[] = $current_user->ID;
                 $args[] = $current_user->ID;
             } else {
-                // Otros roles: ve los que creó y los de su manager
+                // Other roles: sees links they created OR links assigned to their manager
                 $manager_user_id = get_user_meta($current_user->ID, 'manager_user_id', true);
+                $user_filter = "created_by = %d";
+                $user_filter_args = [$current_user->ID];
+
                 if (!empty($manager_user_id)) {
-                    $where[] = "(created_by = %d OR manager_id = %d)";
-                    $args[] = $current_user->ID;
-                    $args[] = $manager_user_id;
-                } else {
-                    $where[] = "created_by = %d";
-                    $args[] = $current_user->ID;
+                    $user_filter = "(created_by = %d OR manager_id = %d)";
+                    $user_filter_args = [$current_user->ID, $manager_user_id];
                 }
+                $where[] = $user_filter;
+                $args = array_merge($args, $user_filter_args);
             }
         }
 
+        // --- FINAL QUERY CONSTRUCTION ---
         $where_sql = '';
         if (!empty($where)) {
-            $where_sql = 'WHERE ' . implode(' AND ', $where);
+            $where_sql = 'WHERE (' . implode(') AND (', $where) . ')'; // Grouping ALL WHERE conditions
         }
 
-        if (!empty($args)) {
-            $sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM {$table} {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d", array_merge($args, [$per_page, $offset]));
-        } else {
-            $sql = $wpdb->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM {$table} {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d", $per_page, $offset);
-        }
-        $dynamic_links = $wpdb->get_results($sql, "ARRAY_A");
+        // Add pagination arguments to the list for preparation
+        $args[] = $per_page;
+        $args[] = $offset;
 
+        // Use a single, safe prepare statement for the main query
+        $sql = $wpdb->prepare(
+            "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_links} {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d",
+            $args
+        );
+
+        // error_log(print_r($sql, true)); // Keep for debugging if needed
+        $dynamic_links = $wpdb->get_results($sql, ARRAY_A);
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
+        // --- DATA PROCESSING ---
+        $dynamic_links_array = [];
         if ($dynamic_links) {
             foreach ($dynamic_links as $dynamic_links_val) {
                 $payment_plan = get_program_details_by_identificator($dynamic_links_val['payment_plan_identificator']);
                 $program = get_student_program_details_by_identificator($dynamic_links_val['program_identificator']);
                 $created_by_user = get_user_by('id', $dynamic_links_val['created_by']);
-                array_push($dynamic_links_array, [
+
+                // Check if objects are returned before trying to access properties
+                $program_name = $program && isset($program->name) ? $program->name : 'N/A';
+                $student_name_desc = $dynamic_links_val['name'] ? $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'] : ($program && isset($program->description) ? $program->description : 'N/A');
+                $payment_plan_detail = $payment_plan && isset($payment_plan->name) ? $payment_plan->name . ' (' . $payment_plan->description . ')' : 'N/A';
+                $created_by_name = $created_by_user ? $created_by_user->first_name . ' ' . $created_by_user->last_name : 'Unknown User';
+
+                $dynamic_links_array[] = [
                     'id' => $dynamic_links_val['id'],
-                    'program' => $program->name . ' (' . $program->identificator . ')',
-                    'student' => $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'],
-                    'transfer_credits' => $dynamic_links_val['transfer_cr'] == 1 ? __('Yes', 'edusystem') : __('No', 'edusystem'),
-                    'payment_plan' => $payment_plan->name . ' (' . $payment_plan->identificator . ')',
+                    'program' => $program_name,
+                    'student' => $student_name_desc,
+                    'payment_plan' => $payment_plan_detail,
                     'link' => $dynamic_links_val['link'],
-                    'created_by' => $created_by_user->first_name . ' ' . $created_by_user->last_name,
-                    'created_at' => $dynamic_links_val['created_at']
-                ]);
+                    'created_by' => $created_by_name,
+                    'created_at' => $dynamic_links_val['created_at'],
+                    'email' => $dynamic_links_val['email']
+                ];
             }
         }
 
@@ -499,92 +583,108 @@ function get_dynamic_link_detail_by_link($dynamic_link)
     return $data;
 }
 
-function get_hidden_payment_methods_by_plan($payment_plan_identificator)
+/**
+ * Obtiene los métodos de pago no configurados para un plan específico y las cuentas asociadas.
+ *
+ * @param string $payment_plan_identificator El identificador del plan de pago.
+ * @return array Un array con los métodos ocultos y las cuentas conectadas.
+ */
+function get_hidden_payment_methods_by_plan(string $payment_plan_identificator, $fee_payment_completed = false): array
 {
     global $wpdb;
 
-    // Obtener las filas existentes para el plan
-    $payment_methods_by_plan = $wpdb->prefix . 'payment_methods_by_plan';
-    $rows = $wpdb->get_results($wpdb->prepare("SELECT payment_method_identificator FROM {$payment_methods_by_plan} WHERE payment_plan_identificator=%s", $payment_plan_identificator));
-
-    // Construir un set de identificadores existentes
-    $existing = [];
-    $connected_account = ''; // stripe
-    $flywire_portal_code = ''; // stripe
-    $zelle_account = ''; // stripe
-    $bank_transfer_account = ''; // stripe
-    if ($rows) {
-        foreach ($rows as $r) {
-            if (isset($r->payment_method_identificator)) {
-                $existing[$r->payment_method_identificator] = true;
-                switch ($r->payment_method_identificator) {
-                    case 'woo_squuad_stripe':
-                        $connected_account = $r->account_identificator;
-                        break;
-                    case 'flywire':
-                        $flywire_portal_code = $r->account_identificator;
-                        break;
-                    case 'zelle_payment':
-                        $zelle_account = $r->account_identificator;
-                        break;
-                    case 'aes_payment':
-                        $bank_transfer_account = $r->account_identificator;
-                        break;
-                }
-            }
-        }
+    // 1. Verificación inicial: Si WooCommerce no está activo, no hay nada que hacer.
+    if (!function_exists('WC')) {
+        // Devuelve una estructura vacía para mantener la consistencia del tipo de retorno.
+        return [
+            'hidden_methods' => [],
+            'hidden_methods_csv' => '',
+            'connected_account' => '',
+            'flywire_portal_code' => '',
+            'zelle_account' => '',
+            'bank_transfer_account' => '',
+        ];
     }
 
-    // Intentar obtener todos los métodos de pago de WooCommerce
-    $missing = [];
-    if (function_exists('WC')) {
-        try {
-            $gateways = WC()->payment_gateways()->payment_gateways();
-            if (is_array($gateways)) {
-                foreach ($gateways as $gateway_id => $gateway_obj) {
-                    // $gateway_id es el identificador del gateway
-                    if (!isset($existing[$gateway_id])) {
-                        $missing[] = $gateway_id;
-                    }
-                }
-            }
-        } catch (Exception $e) {
-            // En caso de error, devolver vacío
-            return [];
-        }
-    } else {
-        // Si WooCommerce no está disponible, devolver vacío
-        return [];
-    }
+    // 2. Obtener solo las columnas necesarias de la base de datos.
+    $table_name = $wpdb->prefix . 'payment_methods_by_plan';
 
-    // Preparar CSV de identificadores (por ejemplo: "paypal,stripe")
-    $missing_csv = '';
-    if (!empty($missing)) {
-        $missing_csv = implode(',', $missing);
-    }
+    // El valor booleano se convierte a entero (0 o 1) para la base de datos.
+    $fee_completed_int = (int) $fee_payment_completed;
 
-    // Devolver un array asociativo con compatibilidad hacia atrás
-    return array(
-        'hidden_methods' => $missing, // array de identificadores
-        'hidden_methods_csv' => $missing_csv, // CSV para compatibilidad con templates existentes
-        'connected_account' => $connected_account,
-        'flywire_portal_code' => $flywire_portal_code,
-        'zelle_account' => $zelle_account,
-        'bank_transfer_account' => $bank_transfer_account,
+    $plan_methods_raw = $wpdb->get_results(
+        $wpdb->prepare(
+            // CONSULTA MODIFICADA: Agrega la condición para fee_payment_complete
+            "SELECT payment_method_identificator, account_identificator FROM {$table_name} WHERE payment_plan_identificator = %s AND fee_payment_complete = %d",
+            $payment_plan_identificator,
+            $fee_completed_int // Nuevo parámetro agregado
+        )
     );
+
+    // 3. Procesar los resultados de la DB de manera más eficiente.
+    // Usamos array_column para crear un array asociativo [method_id => row_object].
+    $plan_methods = [];
+    if (!empty($plan_methods_raw)) {
+        $plan_methods = array_column($plan_methods_raw, null, 'payment_method_identificator');
+    }
+
+    // 4. Obtener todos los gateways de WooCommerce.
+    // Usamos un bloque try-catch por si ocurre un error inesperado al obtener los gateways.
+    try {
+        $all_gateways = WC()->payment_gateways()->payment_gateways();
+        if (!is_array($all_gateways)) {
+            $all_gateways = [];
+        }
+    } catch (Exception $e) {
+        $all_gateways = [];
+    }
+
+    // 5. Encontrar los métodos faltantes usando funciones de array nativas.
+    // array_diff_key encuentra las claves (IDs de gateway) que están en $all_gateways pero no en $plan_methods.
+    $missing_gateways = array_diff_key($all_gateways, $plan_methods);
+    $hidden_methods = array_keys($missing_gateways);
+    $hidden_methods_csv = implode(',', $hidden_methods);
+
+    // 6. Extraer las cuentas de forma más flexible, sin un 'switch' rígido.
+    // Se define un mapa para que sea fácil de extender en el futuro.
+    $account_map = [
+        'woo_squuad_stripe' => 'connected_account',
+        'flywire' => 'flywire_portal_code',
+        'zelle_payment' => 'zelle_account',
+        'aes_payment' => 'bank_transfer_account',
+    ];
+
+    $accounts = [
+        'connected_account' => '',
+        'flywire_portal_code' => '',
+        'zelle_account' => '',
+        'bank_transfer_account' => '',
+    ];
+
+    foreach ($plan_methods as $method_id => $method_data) {
+        if (isset($account_map[$method_id])) {
+            $account_key = $account_map[$method_id];
+            $accounts[$account_key] = $method_data->account_identificator;
+        }
+    }
+
+    // 7. Devolver el resultado combinado.
+    return array_merge([
+        'hidden_methods' => $hidden_methods,
+        'hidden_methods_csv' => $hidden_methods_csv,
+    ], $accounts);
 }
 
-// Agregar función JS para copiar al portapapeles solo en la página de dynamic links
-if (!function_exists('edusystem_dynamic_links_copy_js')) {
-    function edusystem_dynamic_links_copy_js() {
-        if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_dynamic_link_content') {
-            ?>
-            <script>
+function edusystem_dynamic_links_copy_js()
+{
+    if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_dynamic_link_content') {
+        ?>
+        <script>
             function copyToClipboard(text, el) {
                 if (navigator.clipboard) {
-                    navigator.clipboard.writeText(text).then(function() {
+                    navigator.clipboard.writeText(text).then(function () {
                         el.innerText = 'Copied!';
-                        setTimeout(function(){ el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
+                        setTimeout(function () { el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
                     });
                 } else {
                     var tempInput = document.createElement('input');
@@ -594,12 +694,11 @@ if (!function_exists('edusystem_dynamic_links_copy_js')) {
                     document.execCommand('copy');
                     document.body.removeChild(tempInput);
                     el.innerText = 'Copied!';
-                    setTimeout(function(){ el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
+                    setTimeout(function () { el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
                 }
             }
-            </script>
-            <?php
-        }
+        </script>
+        <?php
     }
-    add_action('admin_footer', 'edusystem_dynamic_links_copy_js');
 }
+add_action('admin_footer', 'edusystem_dynamic_links_copy_js');

@@ -1,8 +1,8 @@
 <div class="wrap">
     <?php if (isset($dynamic_link) && !empty($dynamic_link)): ?>
-        <h2 style="margin-bottom:15px;"><?= __('Dynamic link Details', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Payment link Details', 'edusystem'); ?></h2>
     <?php else: ?>
-        <h2 style="margin-bottom:15px;"><?= __('Add Dynamic link', 'edusystem'); ?></h2>
+        <h2 style="margin-bottom:15px;"><?= __('Add Payment link', 'edusystem'); ?></h2>
     <?php endif; ?>
 
     <?php
@@ -26,14 +26,14 @@
                             <div>
                                 <h3
                                     style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Student Information', 'edusystem'); ?></b>
+                                    <b><?= __('Student Information (optional)', 'edusystem'); ?></b>
                                 </h3>
 
                                 <div style="margin: 18px;">
                                     <input type="hidden" name="dynamic_link_id" value="<?= $dynamic_link->id ?>">
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="type_document"><b><?= __('Type document', 'edusystem'); ?></b><span class="required">*</span></label>
-                                        <select name="type_document" autocomplete="off" required>
+                                        <label for="type_document"><b><?= __('Type document', 'edusystem'); ?></b></label>
+                                        <select name="type_document" autocomplete="off">
                                             <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                                             <option value="passport" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->type_document == 'passport') ? 'selected' : ''; ?>><?= __('Passport', 'edusystem'); ?></option>
                                             <option value="identification_document" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->type_document == 'identification_document') ? 'selected' : ''; ?>><?= __('Identification Document', 'edusystem'); ?></option>
@@ -42,27 +42,27 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="id_document"><b><?= __('ID document', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        <label for="id_document"><b><?= __('ID document', 'edusystem'); ?></b></label><br>
                                         <input type="text" name="id_document"
-                                            value="<?= $dynamic_link->id_document; ?>" required>
+                                            value="<?= $dynamic_link->id_document; ?>">
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="name"><b><?= __('First name', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        <label for="name"><b><?= __('First name', 'edusystem'); ?></b></label><br>
                                         <input type="text" name="name"
-                                            value="<?= $dynamic_link->name; ?>" required>
+                                            value="<?= $dynamic_link->name; ?>">
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="last_name"><b><?= __('First surname', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        <label for="last_name"><b><?= __('First surname', 'edusystem'); ?></b></label><br>
                                         <input type="text" name="last_name"
-                                            value="<?= $dynamic_link->last_name; ?>" required>
+                                            value="<?= $dynamic_link->last_name; ?>">
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <label for="email"><b><?= __('Email', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        <label for="email"><b><?= __('Email', 'edusystem'); ?></b></label><br>
                                         <input type="email" name="email"
-                                            value="<?= $dynamic_link->email; ?>" required>
+                                            value="<?= $dynamic_link->email; ?>">
                                     </div>
                                 </div>
 
@@ -126,8 +126,16 @@
                             </div>
 
                             <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
-                                <button onclick='return confirm("Are you sure?");' type="submit"
+                                <?php if ($dynamic_link) { 
+                                        $dynamic_link_token = isset($dynamic_link->link) ? $dynamic_link->link : '';
+                                        $dynamic_link_url = site_url('/registration-link?token=' . $dynamic_link_token);
+                                    ?>
+                                    <button type="button" onclick="copyToClipboard('<?= $dynamic_link_url ?>', this)" class="button button-secondary"><?= __('Copy link', 'edusystem'); ?></button>
+                                <?php } ?>
+                                <?php if ($dynamic_link && $dynamic_link->email) { ?>
+                                    <button onclick='return confirm("Are you sure?");' type="submit"
                                     class="button button-success" name="save_and_send_email" value="1"><?= __('Save and send email', 'edusystem'); ?></button>
+                                <?php } ?>
                                 <button type="submit"
                                     class="button button-primary" name="just_save" value="1"><?= __('Just save', 'edusystem'); ?></button>
                             </div>

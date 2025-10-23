@@ -41,6 +41,7 @@
                         <select name="academic_period_cut_filter" style="width: 100%">
                             <option value="1" selected>Initial</option>
                             <option value="2">With enrollment in the term</option>
+                            <option value="3">Without registration in the term</option>
                         </select>
                     </div>
                     <div class="form-group">

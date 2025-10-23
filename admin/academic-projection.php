@@ -1035,85 +1035,79 @@ function get_moodle_notes()
 
 function get_literal_note($calification)
 {
-    if (!$calification) {
+    // Accept numeric values (including '0' or '0.00'). Treat NULL or empty string as unknown.
+    if ($calification === null || $calification === '') {
         return '-';
     }
-    $calification = (int) $calification;
-    $note = 'A+';
-    switch ($calification) {
-        case $calification >= 95:
-            $note = 'A+';
-            break;
-        case $calification >= 90 && $calification <= 94:
-            $note = 'A-';
-            break;
-        case $calification >= 83 && $calification <= 89:
-            $note = 'B+';
-            break;
-        case $calification >= 80 && $calification <= 82:
-            $note = 'B-';
-            break;
-        case $calification >= 73 && $calification <= 79:
-            $note = 'C+';
-            break;
-        case $calification >= 70 && $calification <= 72:
-            $note = 'C-';
-            break;
-        case $calification >= 67 && $calification <= 69:
-            $note = 'D+';
-            break;
-        case $calification >= 60 && $calification <= 66:
-            $note = 'D-';
-            break;
-        case $calification <= 59:
-            $note = 'F';
-            break;
+
+    if (!is_numeric($calification)) {
+        return '-';
     }
+
+    $calification = (float) $calification;
+    $note = 'A+';
+
+    if ($calification >= 95) {
+        $note = 'A+';
+    } elseif ($calification >= 90) {
+        $note = 'A-';
+    } elseif ($calification >= 83) {
+        $note = 'B+';
+    } elseif ($calification >= 80) {
+        $note = 'B-';
+    } elseif ($calification >= 73) {
+        $note = 'C+';
+    } elseif ($calification >= 70) {
+        $note = 'C-';
+    } elseif ($calification >= 67) {
+        $note = 'D+';
+    } elseif ($calification >= 60) {
+        $note = 'D-';
+    } else {
+        $note = 'F';
+    }
+
     return $note;
 }
 
 function get_calc_note($calification)
 {
-    if (!$calification) {
+    // Accept numeric values (including '0' or '0.00'). Treat NULL or empty string as unknown.
+    if ($calification === null || $calification === '') {
         return '-';
     }
-    $calification = (int) $calification;
-    $note = 'abc';
-    switch ($calification) {
-        case $calification >= 95:
-            $note = 4;
-            break;
-        case $calification >= 90 && $calification <= 94:
-            $note = 3.75;
-            break;
-        case $calification >= 87 && $calification <= 89:
-            $note = 3.50;
-            break;
-        case $calification >= 83 && $calification <= 86:
-            $note = 3;
-            break;
-        case $calification >= 80 && $calification <= 82:
-            $note = 2.75;
-            break;
-        case $calification >= 77 && $calification <= 79:
-            $note = 2.50;
-            break;
-        case $calification >= 73 && $calification <= 76:
-            $note = 2;
-            break;
-        case $calification >= 70 && $calification <= 72:
-            $note = 1.75;
-            break;
-        case $calification >= 67 && $calification <= 69:
-            $note = 1.50;
-            break;
-        case $calification >= 60 && $calification <= 66:
-            $note = 1;
-            break;
-        case $calification <= 59:
-            $note = 0;
-            break;
+
+    if (!is_numeric($calification)) {
+        return '-';
     }
+
+    $calification = (float) $calification;
+    $note = 0;
+
+    if ($calification >= 95) {
+        $note = 4.00;
+    } elseif ($calification >= 90) {
+        $note = 3.75;
+    } elseif ($calification >= 87) {
+        $note = 3.50;
+    } elseif ($calification >= 83) {
+        $note = 3.00;
+    } elseif ($calification >= 80) {
+        $note = 2.75;
+    } elseif ($calification >= 77) {
+        $note = 2.50;
+    } elseif ($calification >= 73) {
+        $note = 2.00;
+    } elseif ($calification >= 70) {
+        $note = 1.75;
+    } elseif ($calification >= 67) {
+        $note = 1.50;
+    } elseif ($calification >= 60) {
+        $note = 1.00;
+    } else {
+        $note = 0.00;
+    }
+
     return $note;
 }
 
