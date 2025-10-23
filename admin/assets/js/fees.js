@@ -3,9 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     jQuery('#programas_select').select2({
         placeholder: "Select a program",
         width: '100%',
-        templateResult: function(option) {
-            return ( jQuery('#programas_select').val().includes(option.id) ) ? null : option.text;
-        }
+        // templateResult: function(option) {
+        //     return ( jQuery('#programas_select').val().includes(option.id) ) ? null : option.text;
+        // }
     });
 
     document.querySelectorAll('.modal-close').forEach((close) => {
