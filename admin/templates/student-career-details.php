@@ -45,7 +45,7 @@
                                         <select name="program_identificator" required>
                                             <option value="" selected>Select a program</option>
                                             <?php foreach ($programs as $key => $program) { ?>
-                                                <option value="<?= $program->identificator ?>" <?= ($career->program_identificator == $program->identificator) ? 'selected' : ''; ?>><?= $program->name ?> (<?= $program->identificator ?>)</option>
+                                                <option value="<?= $program->identificator ?>" <?= ($career->program_identificator == $program->identificator) ? 'selected' : ''; ?>><?= $program->name ?> (<?= $program->description ?>)</option>
                                             <?php } ?>
                                         </select>
                                     </div>

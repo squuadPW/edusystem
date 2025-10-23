@@ -39,16 +39,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- <div style="font-weight:400;">
-                                        <label for="hc"><b><?= __('Program to which it belongs', 'edusystem'); ?></b></label><br>
-                                        <select name="identificator" required>
-                                            <option value="" selected>Select a program</option>
-                                            <?php foreach ($programs as $key => $student_program) { ?>
-                                                <option value="<?= $student_program->identificator ?>" <?= ($student_program->identificator == $program->identificator) ? 'selected' : ''; ?>><?= $student_program->name ?></option>
-                                            <?php } ?>
-                                        </select>
-                                    </div> -->
-
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="identificator">
                                             <b><?= __('Identificator', 'edusystem'); ?></b>
