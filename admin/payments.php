@@ -1566,7 +1566,6 @@ function add_admin_form_payments_content()
                 $final_payment_methods[] = $processed_method;
             }
 
-            error_log(print_r($final_payment_methods, true));
             include(plugin_dir_path(__FILE__) . 'templates/payment-plans-details.php');
         } else if ($_GET['section_tab'] == 'quotas_rules_programs') {
             global $wpdb;
