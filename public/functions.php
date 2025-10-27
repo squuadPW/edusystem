@@ -3170,6 +3170,12 @@ function modal_document_automatic()
     extract($template_data, EXTR_SKIP);
 
     foreach ($automatic_documents as $document) {
+        $table_users_signatures = $wpdb->prefix . 'users_signatures';
+        $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_users_signatures} WHERE user_id = %d AND document_id = %s", $current_user->ID, $document->document_identificator));
+        if ($existing_row) {
+            break;
+        }
+
         if (empty($document->header) && empty($document->content) && empty($document->footer)) {
             continue;
         }
