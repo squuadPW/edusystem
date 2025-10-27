@@ -192,30 +192,30 @@ function form_asp_psp_optimized($atts)
     // 1. Define los atributos por defecto de forma segura.
     $atts = shortcode_atts(
         array(
-            'connected_account'          => '',
-            'coupon_code'                => '',
-            'flywire_portal_code'        => 'FGY',
-            'manager_user_id'            => '',
-            'zelle_account'              => '',
-            'bank_transfer_account'      => '',
-            'register_psp'               => false,
-            'hidden_payment_methods'     => '',
-            'fixed_fee_inscription'      => false,
-            'styles_shortcode'           => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
-            'styles_title_shortcode'     => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
-            'max_age'                    => 18,
-            'limit_age'                  => 100,
-            'program'                    => '',
-            'career'                     => '',
-            'mention'                    => '',
-            'plan'                       => '',
-            'birth_date_position'        => 'UP',
-            'title'                      => '',
+            'connected_account' => '',
+            'coupon_code' => '',
+            'flywire_portal_code' => 'FGY',
+            'manager_user_id' => '',
+            'zelle_account' => '',
+            'bank_transfer_account' => '',
+            'register_psp' => false,
+            'hidden_payment_methods' => '',
+            'fixed_fee_inscription' => false,
+            'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'max_age' => 18,
+            'limit_age' => 100,
+            'program' => '',
+            'career' => '',
+            'mention' => '',
+            'plan' => '',
+            'birth_date_position' => 'UP',
+            'title' => '',
             'use_expected_graduation_date' => false,
-            'separate_program_fee'       => false,
-            'dynamic_link'               => false,
-            'use_ethnicity'               => true,
-            'fee_payment_completed'    => false,
+            'separate_program_fee' => false,
+            'dynamic_link' => false,
+            'use_ethnicity' => true,
+            'fee_payment_completed' => false,
         ),
         $atts,
         'form_asp_psp'
@@ -255,18 +255,18 @@ function form_asp_psp_optimized($atts)
         }
 
         // Si el token es válido, sobrescribe las variables necesarias.
-        $type_document   = $dynamic_link_data->type_document;
-        $id_document     = $dynamic_link_data->id_document;
-        $name            = $dynamic_link_data->name;
-        $last_name       = $dynamic_link_data->last_name;
-        $email           = $dynamic_link_data->email;
-        $program         = $dynamic_link_data->program_identificator;
-        $plan            = $dynamic_link_data->payment_plan_identificator;
+        $type_document = $dynamic_link_data->type_document;
+        $id_document = $dynamic_link_data->id_document;
+        $name = $dynamic_link_data->name;
+        $last_name = $dynamic_link_data->last_name;
+        $email = $dynamic_link_data->email;
+        $program = $dynamic_link_data->program_identificator;
+        $plan = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
         $separate_program_fee = $dynamic_link_data->fee_payment_completed == 0 ? 'true' : false;
         $fixed_fee_inscription = 'true';
-        
+
         $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
         $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
         $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
@@ -278,10 +278,10 @@ function form_asp_psp_optimized($atts)
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del payment link).
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
-    $grades     = get_grades();
-    $programs   = get_student_program();
-    $careers    = [];
-    $mentions   = [];
+    $grades = get_grades();
+    $programs = get_student_program();
+    $careers = [];
+    $mentions = [];
 
     // Añade la acción al footer.
     // Considerar añadir una verificación para no agregarlo múltiples veces si el shortcode se usa más de una vez.
@@ -320,30 +320,30 @@ function student_registration_form_optimized($atts)
     // 1. Define los atributos por defecto de forma segura.
     $atts = shortcode_atts(
         array(
-            'connected_account'          => '',
-            'coupon_code'                => '',
-            'flywire_portal_code'        => 'FGY',
-            'manager_user_id'            => '',
-            'zelle_account'              => '',
-            'bank_transfer_account'      => '',
-            'register_psp'               => false,
-            'hidden_payment_methods'     => '',
-            'fixed_fee_inscription'      => false,
-            'styles_shortcode'           => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
-            'styles_title_shortcode'     => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
-            'max_age'                    => 18,
-            'limit_age'                  => 100,
-            'program'                    => '',
-            'career'                     => '',
-            'mention'                    => '',
-            'plan'                       => '',
-            'birth_date_position'        => 'UP',
-            'title'                      => '',
+            'connected_account' => '',
+            'coupon_code' => '',
+            'flywire_portal_code' => 'FGY',
+            'manager_user_id' => '',
+            'zelle_account' => '',
+            'bank_transfer_account' => '',
+            'register_psp' => false,
+            'hidden_payment_methods' => '',
+            'fixed_fee_inscription' => false,
+            'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
+            'max_age' => 18,
+            'limit_age' => 100,
+            'program' => '',
+            'career' => '',
+            'mention' => '',
+            'plan' => '',
+            'birth_date_position' => 'UP',
+            'title' => '',
             'use_expected_graduation_date' => false,
-            'separate_program_fee'       => false,
-            'dynamic_link'               => false,
-            'use_ethnicity'               => true,
-            'fee_payment_completed'    => false,
+            'separate_program_fee' => false,
+            'dynamic_link' => false,
+            'use_ethnicity' => true,
+            'fee_payment_completed' => false,
         ),
         $atts,
         'student_registration_form'
@@ -383,13 +383,13 @@ function student_registration_form_optimized($atts)
         }
 
         // Si el token es válido, sobrescribe las variables necesarias.
-        $type_document   = $dynamic_link_data->type_document;
-        $id_document     = $dynamic_link_data->id_document;
-        $name            = $dynamic_link_data->name;
-        $last_name       = $dynamic_link_data->last_name;
-        $email           = $dynamic_link_data->email;
-        $program         = $dynamic_link_data->program_identificator;
-        $plan            = $dynamic_link_data->payment_plan_identificator;
+        $type_document = $dynamic_link_data->type_document;
+        $id_document = $dynamic_link_data->id_document;
+        $name = $dynamic_link_data->name;
+        $last_name = $dynamic_link_data->last_name;
+        $email = $dynamic_link_data->email;
+        $program = $dynamic_link_data->program_identificator;
+        $plan = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
         $separate_program_fee = $dynamic_link_data->fee_payment_completed == 0 ? 'true' : false;
@@ -406,10 +406,10 @@ function student_registration_form_optimized($atts)
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del payment link).
     $countries = get_countries();
     $institutes = get_list_institutes_active($manager_user_id);
-    $grades     = get_grades();
-    $programs   = get_student_program();
-    $careers    = [];
-    $mentions   = [];
+    $grades = get_grades();
+    $programs = get_student_program();
+    $careers = [];
+    $mentions = [];
 
     // Añade la acción al footer.
     // Considerar añadir una verificación para no agregarlo múltiples veces si el shortcode se usa más de una vez.
@@ -835,8 +835,8 @@ function optimize_my_account_menu_links(array $menu_links): array
     if ($is_parent_or_student) {
         $new_menu_links['student'] = __('Student Information', 'edusystem');
 
-            // Agregar "Califications"
-            $menu_links['califications'] = __('Grades', 'edusystem');
+        // Agregar "Califications"
+        $menu_links['califications'] = __('Grades', 'edusystem');
 
         // D. Documents Logic (Parent/Student)
         $has_registered_status = false;
@@ -1127,7 +1127,7 @@ function status_order_completed($order, $order_id, $customer_id)
  * @return void
  */
 function update_or_create_payment_record(WC_Order_Item_Product $item, int $student_id, int $order_id): void
-{   
+{
     /* $logger = wc_get_logger();
     $logger->debug('update_or_create_payment_record',['order_id' => $order_id]); */
 
@@ -1219,10 +1219,11 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
     // verifica si la orden tien un meta con el numero de cuota 
     // y si la pose verifica que le pertenesca al usuario y a la 
     $order = wc_get_order($order_id);
-    if ($order) $cuote_payment = $order->get_meta('cuote_payment', true); 
+    if ($order)
+        $cuote_payment = $order->get_meta('cuote_payment', true);
     $oldest_pending_payment_id = 0;
-    
-    if( $cuote_payment ){
+
+    if ($cuote_payment) {
 
         $oldest_pending_payment_id = $wpdb->get_var($wpdb->prepare(
             "SELECT id FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d AND id = %d",
@@ -1233,7 +1234,7 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
 
     }
 
-    if ( !$oldest_pending_payment_id ) {
+    if (!$oldest_pending_payment_id) {
 
         // No se puede usar LIMIT y ORDER BY directamente con $wpdb->update().
         // Para actualizar solo la 'cuota' más baja, necesitamos seleccionarla primero.
@@ -1245,7 +1246,7 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
     }
 
     $rows_updated = 0;
-    if ( $oldest_pending_payment_id ) {
+    if ($oldest_pending_payment_id) {
         $rows_updated = $wpdb->update(
             $table_student_payment,
             $update_data, // Datos a actualizar
@@ -1354,38 +1355,40 @@ function status_order_not_completed($order, $order_id, $customer_id, $status_reg
 }
 
 function process_program_payments(WC_Order $order, int $order_id): void
-{   
+{
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
 
     // Obtener el ID del estudiante y si no lo encuentra, salir ya que es un dato crítico.
     $student_id = $order->get_meta('student_id');
-    if ( empty($student_id) ) return; 
-   
+    if (empty($student_id))
+        return;
+
     foreach ($order->get_items() as $item_id => $item) {
 
 
-        process_payments( $student_id, $order, $item );
+        process_payments($student_id, $order, $item);
 
         $program_data = $order->get_meta('program_data', true) ?? [];
         $program_data = json_decode($program_data, true);
-        if( $program_data ) {
-            process_payments( $student_id, null, null, (int) $program_data['product_id'], (int) $program_data['variation_id'], (int) $program_data['rule_id'], $program_data['coupons'] );
+        if ($program_data) {
+            process_payments($student_id, null, null, (int) $program_data['product_id'], (int) $program_data['variation_id'], (int) $program_data['rule_id'], $program_data['coupons']);
         }
     }
 }
 
-function process_payments ( $student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [] )
-{       
+function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [])
+{
     /* $logger = wc_get_logger();
     $logger->debug('process_payments',['order_id' => $order_id]); */
 
     // si no viene el id del estudiante, salir ya que es un dato crítico.
-    if ( !$student_id ) return;
+    if (!$student_id)
+        return;
 
     // obtiene los id de los productos en caso tal vengan por las ordenes
     $order_id = null;
-    if( $order && $item ) {
+    if ($order && $item) {
 
         $order_id = $order->get_id();
 
@@ -1402,7 +1405,8 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
         $student_id,
         $product_id
     ));
-    if ( $existing_record_count > 0 ) return;
+    if ($existing_record_count > 0)
+        return;
 
     // Inicializacion de variables necesarias para el registro
     $manager_user_id = null;
@@ -1412,7 +1416,7 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
     $installments = 1;
 
     // obtiene la orden si viene
-    if( $order ) {
+    if ($order) {
 
         // obtiene la data del estudiante
         $student_data = get_student_detail($student_id);
@@ -1420,17 +1424,18 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
         // Validar si $student_data existe y tiene un institute_id
         $alliances = []; // Array de alianzas vacío
         $institute = null;
-        if ( $student_data && isset($student_data->institute_id) && !empty($student_data->institute_id) ) {
+        if ($student_data && isset($student_data->institute_id) && !empty($student_data->institute_id)) {
 
             $institute_id = $student_data->institute_id;
             $selected_manager_user_ids = get_managers_institute($institute_id);
             $manager_user_id = isset($selected_manager_user_ids) ? $selected_manager_user_ids[0] : 0;
 
             $institute = get_institute_details($institute_id);
-            if ( $institute ) {
+            if ($institute) {
                 // Obtener las alianzas del instituto si el instituto existe.
-                $alliances = get_alliances_from_institute( $institute_id);
-                if ( !is_array($alliances) ) $alliances = []; // Si get_alliances_from_institute devuelve null o no es un array, se inicializa como vacío.
+                $alliances = get_alliances_from_institute($institute_id);
+                if (!is_array($alliances))
+                    $alliances = []; // Si get_alliances_from_institute devuelve null o no es un array, se inicializa como vacío.
             }
         }
 
@@ -1438,32 +1443,32 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
         $product_id_registration = get_fee_product_id($student_id, 'registration');
         $product_id_graduation = get_fee_product_id($student_id, 'graduation');
         $is_fee_product = in_array($product_id, [$product_id_registration, $product_id_graduation]);
-        
+
         $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca.
 
         // Calcular el institute_fee
         // Solo se calcula la tarifa del instituto si el instituto existe y no es un producto FEE o beca.
-        
-        if ( $institute && !$is_fee_product && !$is_scholarship ) {
+
+        if ($institute && !$is_fee_product && !$is_scholarship) {
             $institute_fee_percentage = (float) ($institute->fee ?? 0);
-            $current_item_institute_fee = ( $institute_fee_percentage * (float) $item->get_total() ) / 100;
+            $current_item_institute_fee = ($institute_fee_percentage * (float) $item->get_total()) / 100;
         }
-        
+
         // --- Recalcular tarifas de alianzas para este producto específico ---
         $current_item_alliances_fees = [];
-        if ( !empty($alliances) && is_array($alliances) ) {
-            foreach ( $alliances as $alliance ) {
+        if (!empty($alliances) && is_array($alliances)) {
+            foreach ($alliances as $alliance) {
 
                 $alliance_id = $alliance->id ?? null;
-                $alliance_data = ( $alliance_id ) ? get_alliance_detail( $alliance_id ) : null;
-                $alliance_fee_percentage = (float) $alliance->fee ?? ( $alliance_data->fee ?? 0 );
+                $alliance_data = ($alliance_id) ? get_alliance_detail($alliance_id) : null;
+                $alliance_fee_percentage = (float) $alliance->fee ?? ($alliance_data->fee ?? 0);
 
                 $total_alliance_fee = 0.0;
-                if ( !$is_fee_product && !$is_scholarship ) {
-                    $total_alliance_fee = ( $alliance_fee_percentage * (float) $item->get_total() ) / 100;
+                if (!$is_fee_product && !$is_scholarship) {
+                    $total_alliance_fee = ($alliance_fee_percentage * (float) $item->get_total()) / 100;
                 }
 
-                if ( $alliance_id ) {
+                if ($alliance_id) {
                     $current_item_alliances_fees[] = [
                         'id' => $alliance_id,
                         'fee_percentage' => $alliance_fee_percentage,
@@ -1473,11 +1478,11 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
             }
         }
 
-        $current_item_alliances_json = json_encode( $current_item_alliances_fees ) ?? json_encode([]);
-        
+        $current_item_alliances_json = json_encode($current_item_alliances_fees) ?? json_encode([]);
+
         // --- Cálculos de precios ---
-        $amount = (double) ( $item->get_total() / $item->get_quantity() );
-        $original_price = (double) ( $item->get_subtotal() / $item->get_quantity() );
+        $amount = (double) ($item->get_total() / $item->get_quantity());
+        $original_price = (double) ($item->get_subtotal() / $item->get_quantity());
         $total_amount_to_pay = $amount * $installments;
         $total_original_amount = $original_price * $installments;
 
@@ -1487,8 +1492,9 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
     }
 
     // Obtener el producto y verifica si existe
-    $product = wc_get_product( ( $variation_id == 0 ) ? $product_id : $variation_id );
-    if( !$product ) return;
+    $product = wc_get_product(($variation_id == 0) ? $product_id : $variation_id);
+    if (!$product)
+        return;
 
     // obtiene el valor de descuento que venga por cuppon
     $discount_cuppon_value = 0;
@@ -1503,7 +1509,7 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
     }
 
     // --- Cálculos de precios si hay una regla ---
-    if ( $rule_id ) {
+    if ($rule_id) {
 
         $data_quota_rule = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM `{$wpdb->prefix}quota_rules` WHERE id = %d",
@@ -1511,40 +1517,42 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
         ));
 
         if ($data_quota_rule) {
-                
+
             // precio inicial
             $initial_payment_regular = (double) $data_quota_rule->initial_payment;
             $initial_payment_sale = $data_quota_rule->initial_payment_sale ?? null;
-            $initial_payment = (double) ( $initial_payment_sale != null ) ? $initial_payment_sale : $data_quota_rule->initial_payment;
+            $initial_payment = (double) ($initial_payment_sale != null) ? $initial_payment_sale : $data_quota_rule->initial_payment;
 
             // precio final
             $final_payment_regular = (double) $data_quota_rule->final_payment;
             $final_payment_sale = $data_quota_rule->final_payment_sale ?? null;
-            $final_payment = (double) ( $final_payment_sale != null ) ? $final_payment_sale : $final_payment_regular;
+            $final_payment = (double) ($final_payment_sale != null) ? $final_payment_sale : $final_payment_regular;
 
             // precio de la cuota
             $quote_price_regular = (double) $data_quota_rule->quote_price;
             $quote_price_sale = $data_quota_rule->quote_price_sale ?? null;
-            $quote_price = (double) ( $quote_price_sale != null ) ? $quote_price_sale : $quote_price_regular;
-            
+            $quote_price = (double) ($quote_price_sale != null) ? $quote_price_sale : $quote_price_regular;
+
             $quotas_quantity_rule = (int) $data_quota_rule->quotas_quantity;
             $frequency_value = $data_quota_rule->frequency_value;
             $type_frequency = $data_quota_rule->type_frequency;
 
             // total a pagar, si descuento de cupon
             $total_pay = (double) ($quotas_quantity_rule * $quote_price) + $initial_payment + $final_payment;
-            $total_amount_to_pay = $total_pay - ( ($total_pay * $discount_cuppon_value) / 100);
+            $total_amount_to_pay = $total_pay - (($total_pay * $discount_cuppon_value) / 100);
             $total_original_amount = (double) ($quotas_quantity_rule * $quote_price_regular) + $initial_payment_regular + $final_payment_regular;
-            
+
             $installments = $quotas_quantity_rule;
-            if ($initial_payment > 0) $installments++;
-            if ($final_payment > 0) $installments++;
+            if ($initial_payment > 0)
+                $installments++;
+            if ($final_payment > 0)
+                $installments++;
         }
 
-    } else if( !$order ) {
+    } else if (!$order) {
 
         // Cálculos de precios sin regla, toma el precio del producto
-        $amount = $product->get_price() - ( ( $product->get_price() * $discount_cuppon_value) / 100);
+        $amount = $product->get_price() - (($product->get_price() * $discount_cuppon_value) / 100);
         $original_price = $product->get_regular_price();
         $total_amount_to_pay = $amount * $installments;
         $total_original_amount = $original_price * $installments;
@@ -1558,27 +1566,27 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
     $start_date = new DateTime();
     $payment_date = clone $start_date;
 
-    for ( $i = 0; $i < $installments; $i++ ) {
+    for ($i = 0; $i < $installments; $i++) {
 
         $next_payment_date = null;
-        if ( $needs_next_payment && $rule_id ) {
+        if ($needs_next_payment && $rule_id) {
 
             $original_price_pay = $quote_price; // monto a pagar sin descuento de cupon
             $original_price_regular = $quote_price_regular; // monto original a pagar sin descuento de cupon
-            if ( $i == 0 && $initial_payment > 0 ) {
+            if ($i == 0 && $initial_payment > 0) {
                 $original_price_pay = $initial_payment;
                 $original_price_regular = $initial_payment_regular;
-            } else if ( ($i+1) == $installments && $final_payment > 0 ) {
+            } else if (($i + 1) == $installments && $final_payment > 0) {
                 $original_price_pay = $final_payment;
                 $original_price_regular = $final_payment_regular;
             }
-            
+
             // Calcular el monto a pagar con descuento de cupon
-            $amount = $original_price_pay - (( $original_price_pay * $discount_cuppon_value ) / 100);
+            $amount = $original_price_pay - (($original_price_pay * $discount_cuppon_value) / 100);
             $original_price = $original_price_regular;
 
             // fechas de cuotas;
-            if ( $i > 0 && $type_frequency ) {
+            if ($i > 0 && $type_frequency) {
                 switch ($type_frequency) {
                     case 'day':
                         $payment_date->modify("+{$frequency_value} days");
@@ -1594,7 +1602,8 @@ function process_payments ( $student_id, $order, $item, $product_id = null, $var
             $next_payment_date = $payment_date->format('Y-m-d');
         }
 
-        if( $amount == 0 ) continue;
+        if ($amount == 0)
+            continue;
 
         $data = [
             'status_id' => 0,
@@ -1819,7 +1828,7 @@ function woocommerce_update_cart()
     $applied_coupons = array_map('strtolower', $applied_coupons);
 
     $value = $_POST['option'];
-    foreach ( $cart->get_cart() as $key => $product ) {
+    foreach ($cart->get_cart() as $key => $product) {
         array_push($products_id, $product['product_id']);
     }
 
@@ -1898,10 +1907,11 @@ function woocommerce_update_cart()
     die();
 }
 
-function fee_update_optimized() {
+function fee_update_optimized()
+{
     // Verificar si la solicitud es una llamada AJAX de WordPress.
-    if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
-        wp_send_json_error( 'Acceso no autorizado' );
+    if (!defined('DOING_AJAX') || !DOING_AJAX) {
+        wp_send_json_error('Acceso no autorizado');
         return;
     }
 
@@ -1909,43 +1919,43 @@ function fee_update_optimized() {
     $cart = WC()->cart;
 
     // Sanitizar y validar los datos de entrada.
-    $value = isset( $_POST['option'] ) ? sanitize_text_field( $_POST['option'] ) : '';
-    $plan_id = isset( $_COOKIE['plan_id'] ) ? sanitize_text_field( $_COOKIE['plan_id'] ) : 0;
+    $value = isset($_POST['option']) ? sanitize_text_field($_POST['option']) : '';
+    $plan_id = isset($_COOKIE['plan_id']) ? sanitize_text_field($_COOKIE['plan_id']) : 0;
 
     // Verificar que los datos necesarios estén presentes.
-    if ( empty( $value ) || empty( $plan_id ) ) {
-        wp_send_json_error( 'Faltan datos en la solicitud.' );
+    if (empty($value) || empty($plan_id)) {
+        wp_send_json_error('Faltan datos en la solicitud.');
         return;
     }
 
     // Obtener el ID del producto de forma segura.
-    $product_id_registration = get_fee_product_id_program( [ $plan_id ], 'registration' );
+    $product_id_registration = get_fee_product_id_program([$plan_id], 'registration');
 
-    if ( ! $product_id_registration ) {
-        wp_send_json_error( 'No se pudo obtener el ID del producto.' );
+    if (!$product_id_registration) {
+        wp_send_json_error('No se pudo obtener el ID del producto.');
         return;
     }
 
     // Lógica para añadir o remover el producto y los cupones.
     $is_complete = returnIsComplete();
-    $offer_coupon = $is_complete ? get_option( 'offer_complete' ) : get_option( 'offer_quote' );
-    $from_webinar = isset( $_COOKIE['from_webinar'] ) && ! empty( $_COOKIE['from_webinar'] );
+    $offer_coupon = $is_complete ? get_option('offer_complete') : get_option('offer_quote');
+    $from_webinar = isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar']);
 
-    if ( $value === 'true' ) {
-        $cart->add_to_cart( $product_id_registration, 1 );
+    if ($value === 'true') {
+        $cart->add_to_cart($product_id_registration, 1);
 
-        if ( ! $from_webinar && ! empty( $offer_coupon ) ) {
-            $cart->apply_coupon( $offer_coupon );
+        if (!$from_webinar && !empty($offer_coupon)) {
+            $cart->apply_coupon($offer_coupon);
         }
     } else {
-        $cart_item_key = $cart->find_product_in_cart( $cart->generate_cart_id( $product_id_registration ) );
+        $cart_item_key = $cart->find_product_in_cart($cart->generate_cart_id($product_id_registration));
 
-        if ( $cart_item_key ) {
-            $cart->remove_cart_item( $cart_item_key );
+        if ($cart_item_key) {
+            $cart->remove_cart_item($cart_item_key);
         }
 
-        if ( ! $from_webinar && ! empty( $offer_coupon ) ) {
-            $cart->remove_coupon( $offer_coupon );
+        if (!$from_webinar && !empty($offer_coupon)) {
+            $cart->remove_coupon($offer_coupon);
         }
     }
 
@@ -1953,11 +1963,11 @@ function fee_update_optimized() {
     $cart->calculate_totals();
 
     // Enviar una respuesta exitosa.
-    wp_send_json_success( 'Carrito actualizado correctamente.' );
+    wp_send_json_success('Carrito actualizado correctamente.');
 }
 
-add_action( 'wp_ajax_nopriv_fee_update', 'fee_update_optimized' );
-add_action( 'wp_ajax_fee_update', 'fee_update_optimized' );
+add_action('wp_ajax_nopriv_fee_update', 'fee_update_optimized');
+add_action('wp_ajax_fee_update', 'fee_update_optimized');
 
 function returnIsComplete()
 {
@@ -2031,7 +2041,7 @@ function update_price_product_cart_quota_rule()
     $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
     $rule_id = isset($_POST['rule_id']) ? intval($_POST['rule_id']) : 0;
 
-    if ( $product_id <= 0 || $rule_id <= 0 ) {
+    if ($product_id <= 0 || $rule_id <= 0) {
         wp_send_json_error(__('Invalid data', 'edusystem'));
         exit;
     }
@@ -2060,24 +2070,26 @@ function update_price_product_cart_quota_rule()
 
     $initial_payment_regular = $rule->initial_payment;
     $initial_payment_sale = $rule->initial_payment_sale ?? null;
-    $initial_payment = ( $initial_payment_sale != null ) ? $initial_payment_sale : $initial_payment_regular;
+    $initial_payment = ($initial_payment_sale != null) ? $initial_payment_sale : $initial_payment_regular;
 
     $quote_price_regular = $rule->quote_price;
     $quote_price_sale = $rule->quote_price_sale ?? null;
-    $quote_price = ( $quote_price_sale != null ) ? $quote_price_sale : $quote_price_regular;
+    $quote_price = ($quote_price_sale != null) ? $quote_price_sale : $quote_price_regular;
 
     $final_payment_regular = $rule->final_payment;
     $final_payment_sale = $rule->final_payment_sale ?? null;
-    $final_payment = ( $final_payment_sale != null ) ? $final_payment_sale : $final_payment_regular;
+    $final_payment = ($final_payment_sale != null) ? $final_payment_sale : $final_payment_regular;
 
     // Get the quotas_quantity
     $quotas_quantity = $rule->quotas_quantity;
 
     $quotas = $quotas_quantity;
-    if( $initial_payment > 0 ) $quotas += 1;
-    if( $final_payment > 0 ) $quotas += 1;
+    if ($initial_payment > 0)
+        $quotas += 1;
+    if ($final_payment > 0)
+        $quotas += 1;
 
-    if ( $initial_payment > 0 ) {
+    if ($initial_payment > 0) {
         $price = $initial_payment;
         $price_regular = $initial_payment_regular;
 
@@ -2126,16 +2138,16 @@ function update_price_product_cart_quota_rule()
             // Establecer el precio de venta 
             $cart_item['data']->set_price($price);
 
-            if( $quotas == 1 || $quotas == 0 ) {
+            if ($quotas == 1 || $quotas == 0) {
                 // Establecer el precio de venta (descuento)
                 $cart_item['data']->set_sale_price($price);
 
                 // Establecer el precio original
                 $cart_item['data']->set_regular_price($price_regular);
-            } 
+            }
 
             // total de cuotas
-            $cart_item['total_quotas'] = $quotas; 
+            $cart_item['total_quotas'] = $quotas;
 
             // Almacenar el nuevo precio en el array del artículo del carrito
             $cart_item['custom_price_regular'] = $price_regular; // Aquí se almacena el nuevo precio_regular
@@ -2147,13 +2159,13 @@ function update_price_product_cart_quota_rule()
             // Actualizar el artículo del carrito
             $cart->cart_contents[$cart_item_key] = $cart_item;
 
-        } else if ( isset( $cart_item['program_data'] ) ) {
+        } else if (isset($cart_item['program_data'])) {
 
             $program_data = $cart_item['program_data'];
             $program_data['rule_id'] = $rule_id;
 
             WC()->cart->cart_contents[$cart_item_key]['program_data'] = $program_data;
-            
+
         }
     }
 
@@ -2190,14 +2202,16 @@ function save_metadata_checkout_create_order_item($item, $cart_item_key, $values
         $item->add_meta_data('quota_rule_id', $values['quota_rule_id']);
     }
 
-    if ( isset( $values['custom_price_regular'] ) && isset( $values['total_quotas'] ) &&
-         ( $values['total_quotas'] == 0 || $values['total_quotas'] == 1 )  ) {
+    if (
+        isset($values['custom_price_regular']) && isset($values['total_quotas']) &&
+        ($values['total_quotas'] == 0 || $values['total_quotas'] == 1)
+    ) {
 
-        $item->set_subtotal( $values['custom_price_regular'] );
+        $item->set_subtotal($values['custom_price_regular']);
     }
 
-    if ( isset( $values['program_data'] ) ) {
-        $order->add_meta_data('program_data', json_encode($values['program_data']) );
+    if (isset($values['program_data'])) {
+        $order->add_meta_data('program_data', json_encode($values['program_data']));
     }
 
 }
@@ -2213,8 +2227,8 @@ function reload_payment_table()
     $value = $_POST['option'];
     global $woocommerce;
     $cart = $woocommerce->cart->get_cart();
-    $plan_id = isset( $_COOKIE['plan_id'] ) ? sanitize_text_field( $_COOKIE['plan_id'] ) : 0;
-    $product_id_registration = get_fee_product_id_program( [ $plan_id ], 'registration' );
+    $plan_id = isset($_COOKIE['plan_id']) ? sanitize_text_field($_COOKIE['plan_id']) : 0;
+    $product_id_registration = get_fee_product_id_program([$plan_id], 'registration');
     $id = $product_id_registration;
     $filtered_products = array_filter($cart, function ($product) use ($id) {
         return $product['product_id'] != $id;
@@ -2361,14 +2375,15 @@ function apply_scholarship()
 }
 
 add_action('woocommerce_before_calculate_totals', 'woocommerce_custom_price_to_cart_item', 99);
-function woocommerce_custom_price_to_cart_item($cart_object) {
+function woocommerce_custom_price_to_cart_item($cart_object)
+{
     if (!WC()->session->__isset("reload_checkout")) {
         foreach ($cart_object->cart_contents as $key => $value) {
             if (isset($value["custom_price"])) {
                 // Establece el precio de venta (descuento)
                 $value['data']->set_price($value["custom_price"]);
                 $value['data']->set_sale_price($value["custom_price"]);
-                
+
                 // Comprueba si el precio original existe y lo establece
                 if (isset($value["custom_price_regular"])) {
                     $value['data']->set_regular_price($value["custom_price_regular"]);
@@ -2464,23 +2479,24 @@ add_filter('woocommerce_login_redirect', 'redirect_after_login', 999, 2);
  * @param string $requested_redirect_to URL de redirección solicitada.
  * @return string La nueva URL de redirección.
  */
-function custom_logout_redirect_to_my_account( $redirect_to, $requested_redirect_to ) {
+function custom_logout_redirect_to_my_account($redirect_to, $requested_redirect_to)
+{
     // Si el usuario no estaba en la página "Mi cuenta" antes de cerrar sesión,
     // puedes asegurarte de que la redirección solo ocurra en ese caso.
     // O puedes simplemente forzar la redirección a la página "Mi cuenta".
-    
+
     // Obtener la URL de la página "Mi cuenta" de WooCommerce.
     // Usamos wc_get_page_permalink() para que sea compatible con traducciones.
-    $my_account_page_url = wc_get_page_permalink( 'myaccount' );
-    
-    if ( $my_account_page_url ) {
+    $my_account_page_url = wc_get_page_permalink('myaccount');
+
+    if ($my_account_page_url) {
         return $my_account_page_url;
     }
-    
+
     // Si no se pudo obtener la URL de "Mi cuenta", devolvemos la URL por defecto
     return $redirect_to;
 }
-add_filter( 'logout_redirect', 'custom_logout_redirect_to_my_account', 10, 2 );
+add_filter('logout_redirect', 'custom_logout_redirect_to_my_account', 10, 2);
 
 function custom_cart_item_name($item_name, $cart_item, $cart_item_key)
 {
@@ -3055,25 +3071,139 @@ function modal_enrollment_student()
 
 function modal_document_automatic()
 {
-    $automatic_documents = apply_filters('load_automatic_documents', []);
-    $all_documents_html = []; 
+    global $wpdb, $current_user;
 
-    foreach ($automatic_documents as $key => $document) {
-        // Wrap each part with structural block elements for clear separation
-        $header = '<div class="automatic-document-header">' . $document->header . '</div>';
-        $content = '<div class="automatic-document-content">' . $document->content . '</div>';
-        $footer = '<div class="automatic-document-footer">' . $document->footer . '</div>';
-        
-        // Concatenate the wrapped parts
-        $document_html = $header . $content . $footer;
-        
-        $all_documents_html[] = $document_html;
+    $roles = (array) $current_user->roles;
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+
+    $student = null;
+    $student_id = 0;
+    $partner_id = 0;
+    $show_parent_info = 1;
+
+    if (in_array('student', $roles)) {
+        $student = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM {$table_students} WHERE email = %s",
+                $current_user->user_email
+            )
+        );
+
+        if ($student) {
+            $student_id = $current_user->ID;
+            $partner_id = (int) $student->partner_id;
+            $age = floor((time() - strtotime($student->birth_date)) / 31536000);
+            if ($age >= 18) {
+                $show_parent_info = 0;
+            }
+        }
+    } elseif (in_array('parent', $roles)) {
+        $partner_id = $current_user->ID;
+        $student = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM {$table_students} WHERE partner_id = %d",
+                $partner_id
+            )
+        );
+
+        if ($student) {
+            $user_student = get_user_by('email', $student->email);
+            if ($user_student) {
+                $student_id = $user_student->ID;
+            }
+        }
     }
-    
-    // Join all documents if needed, separated by a document separator
-    $html = implode('<hr class="document-separator">', $all_documents_html);
 
-    if (count($automatic_documents) > 0) {
+    if (!$student) {
+        return;
+    }
+
+    $institute_id = (int) $student->institute_id;
+    $user_partner = $student->partner_id ? get_user_by('id', (int) $student->partner_id) : null;
+
+    $payment = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT type_payment FROM {$table_student_payments} WHERE student_id = %d ORDER BY id DESC",
+            $student->id
+        )
+    );
+
+    $institute = $institute_id ? get_institute_details($institute_id) : null;
+    $institute_name = $student->name_institute;
+
+    $user = [
+        'student_full_name' => trim(implode(' ', array_filter([$student->name, $student->middle_name, $student->last_name, $student->middle_last_name]))),
+        'student_signature' => trim($student->name . ' ' . $student->last_name),
+        'student_created_at' => date('Y-m-d', strtotime($student->created_at)),
+        'student_grade' => $student->grade_id,
+        'student_payment' => $payment ? $payment->type_payment : '',
+        'student_birth_date' => $student->birth_date,
+        'student_gender' => ucfirst($student->gender),
+        'student_address' => $partner_id ? get_user_meta($partner_id, 'billing_address_1', true) : '',
+        'student_country' => $partner_id ? get_user_meta($partner_id, 'billing_country', true) : '',
+        'student_phone' => $student->phone,
+        'parent_cell' => $partner_id ? get_user_meta($partner_id, 'billing_phone', true) : '',
+        'parent_identification' => $partner_id ? get_user_meta($partner_id, 'id_document', true) : '',
+        'student_identification' => $student->id_document,
+        'parent_full_name' => $user_partner ? trim($user_partner->first_name . ' ' . $user_partner->last_name) : '',
+        'parent_email' => $user_partner ? $user_partner->user_email : '',
+        'student_email' => $student->email,
+        'today' => date('Y-m-d'),
+    ];
+
+    $template_data = [
+        'user' => $user,
+        'institute' => $institute,
+        'institute_name' => $institute_name,
+        'show_parent_info' => $show_parent_info,
+        'student_id' => $student_id,
+        'partner_id' => $partner_id,
+        'student' => $student,
+        'payment' => $payment,
+        'user_partner' => $user_partner,
+    ];
+
+    $automatic_documents = apply_filters('load_automatic_documents', []);
+    $html_parts = [];
+
+    extract($template_data, EXTR_SKIP);
+
+    foreach ($automatic_documents as $document) {
+        if (empty($document->header) && empty($document->content) && empty($document->footer)) {
+            continue;
+        }
+
+        ob_start();
+
+        if (!empty($document->header)) {
+            echo '<div class="automatic-document-header">';
+            eval ('?>' . $document->header . '<?php ');
+            echo '</div>';
+        }
+
+        if (!empty($document->content)) {
+            echo '<div class="automatic-document-content">';
+            eval ('?>' . $document->content . '<?php ');
+            echo '</div>';
+        }
+
+        if (!empty($document->footer)) {
+            echo '<div class="automatic-document-footer">';
+            eval ('?>' . $document->footer . '<?php ');
+            echo '</div>';
+        }
+
+        $document_html = ob_get_clean();
+
+        if (!empty($document_html)) {
+            $html_parts[] = $document_html;
+        }
+    }
+
+    $html = implode('<hr class="document-separator">', $html_parts);
+
+    if (!empty($html)) {
         include plugin_dir_path(__FILE__) . 'templates/create-document-automatic.php';
     }
 }
