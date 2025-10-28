@@ -143,14 +143,13 @@ function payment_table(rule_data) {
 
         if( i > 0 ){
             
-            frequency = i * frequency_value;
             date.setFullYear(
-                date.getFullYear() + (type_frequency == "year" ? frequency : 0)
+                date.getFullYear() + (type_frequency == "year" ? frequency_value : 0)
             );
             date.setMonth(
-                date.getMonth() + (type_frequency == "month" ? frequency : 0)
+                date.getMonth() + (type_frequency == "month" ? frequency_value : 0)
             );
-            date.setDate(date.getDate() + (type_frequency == "day" ? frequency : 0));
+            date.setDate(date.getDate() + (type_frequency == "day" ? frequency_value : 0));
         }
         
         if( price == 0 ) continue; 
