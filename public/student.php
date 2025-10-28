@@ -82,8 +82,6 @@ function save_essential_data_order($order) {
 
     $order->save();
 
-    // elimina la cooki de guardado
-    setcookie( 'save_student', '', time() - 3600, '/' );
 }
 
 
