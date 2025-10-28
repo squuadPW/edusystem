@@ -200,6 +200,52 @@
 
                                 </div>
 
+                                <br>
+                                <div>
+                                    <h3
+                                        style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
+                                        <b><?= __('Payment methods availables', 'edusystem'); ?></b>
+                                    </h3>
+
+                                    <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="manage-column column-primary column-payment-method">
+                                                    <?= __('Payment method', 'edusystem'); ?>
+                                                </th>
+                                                <th scope="col" class="manage-column column-account">
+                                                    <?= __('Account', 'edusystem'); ?>
+                                                </th>
+                                                <th scope="col" class="manage-column column-apply-fee">
+                                                    <?= __('Apply to pay the registration fee', 'edusystem'); ?>
+                                                </th>
+                                                <th scope="col" class="manage-column column-action-header" style="text-align: end">
+                                                    <?= __('Action', 'edusystem'); ?>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($final_payment_methods as $key => $method) { ?>
+                                                <tr>
+                                                    <td  class="column-primary" data-colname="<?= __('Payment method', 'edusystem'); ?>">
+                                                        <?= $method['woocommerce_title'] ?>
+                                                        <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
+                                                    </td>
+                                                    <td data-colname="<?= __('Account', 'edusystem'); ?>">
+                                                        <?= $method['account_identificator'] ?>
+                                                    </td>
+                                                    <td data-colname="<?= __('Apply to pay the registration fee', 'edusystem'); ?>">
+                                                        <?= $method['fee_payment_complete'] == 1 ? __('Yes', 'edusystem') : __('No', 'edusystem') ?>
+                                                    </td>
+                                                    <td data-colname="<?= __('Action', 'edusystem'); ?>" style="text-align: end">
+                                                        <a href="<?= admin_url('admin.php?page=add_admin_form_payments_plans_content&action=delete_payment_method&method_id=' . $method['id'] . '&program_id=' . $program->id); ?>" class="button button-danger" onclick="return confirm('Are you sure?');"><span class='dashicons dashicons-trash'></span></a>
+                                                    </td>
+                                                </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+
 
                             </div>
 

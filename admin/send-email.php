@@ -370,7 +370,6 @@ function handle_email_sending($type, $post_data)
                 $_POST['academic_period_cut_filter'],
                 $graduating_students
             );
-            error_log(print_r($students, true)); // --- IGNORE ---
             send_email_to_students($students, $subject, $message, $academic_period, $cut, $send_to_parent);
             break;
 

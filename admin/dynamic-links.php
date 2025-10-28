@@ -368,7 +368,6 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
         $where = [];
         $args = [];
         $search_term = isset($_POST['s']) ? trim($_POST['s']) : '';
-        // error_log(print_r($search_term, true)); // Keep for debugging if needed
 
         // --- SEARCH LOGIC (Corrected) ---
         if (!empty($search_term)) {
@@ -473,7 +472,6 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
             $args
         );
 
-        // error_log(print_r($sql, true)); // Keep for debugging if needed
         $dynamic_links = $wpdb->get_results($sql, ARRAY_A);
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 

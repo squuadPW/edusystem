@@ -619,6 +619,15 @@ function get_program_details($id)
     return $program;
 }
 
+function get_program_payment_method_details($identificator)
+{
+    global $wpdb;
+    $payment_methods_by_plan = $wpdb->prefix . 'payment_methods_by_plan';
+
+    $payment_methods = $wpdb->get_results("SELECT * FROM {$payment_methods_by_plan} WHERE payment_plan_identificator='{$identificator}'");
+    return $payment_methods;
+}
+
 function get_student_program_details($id)
 {
     global $wpdb;
