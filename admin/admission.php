@@ -276,6 +276,13 @@ function add_admin_form_admission_content()
                 $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
                 $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} WHERE code = '{$student->academic_period}' ORDER BY created_at ASC");
                 $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $student->email . "'");
+                $sections = [
+                    'program' => __('Programs', 'edusystem'),
+                    'career' => __('Careers', 'edusystem'),
+                    'mention' => __('Mentions', 'edusystem'),
+                    'plan' => __('Payment plans', 'edusystem'),
+                ];
+
                 include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
             }
 
@@ -1578,14 +1585,12 @@ function get_program_data_student($student_id) {
             $student_id
         )
     );
-    error_log(print_r($student_programs, true));
 
     foreach ($student_programs as $key => $student_program) {
-        error_log(print_r($student_program, true));
         $program[] = get_student_program_details_by_identificator($student_program->program_identificator);
         $career[] = get_career_details_by_identificator($student_program->career_identificator);
         $mention[] = get_mention_details_by_identificator($student_program->mention_identificator);
-        $plan[] = get_program_details_by_identificator($student_program->program_identificator);
+        $plan[] = get_program_details_by_identificator($student_program->plan_identificator);
     }
 
     return ['program' => $program, 'career' => $career, 'mention' => $mention, 'plan' => $plan];
