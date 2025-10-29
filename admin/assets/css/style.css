@@ -1460,11 +1460,11 @@ h2 {
 #select2-programas_select-results [role=group] {
   position: relative;
   /* li{
-      margin-bottom: 0px;
-  } */
+          margin-bottom: 0px;
+      } */
   /* .select2-results__group {
-      display: none;
-  } */
+          display: none;
+      } */
 }
 #select2-programas_select-results [role=group] li:first-of-type {
   position: absolute;
@@ -1951,7 +1951,8 @@ a.toplevel_page_logo_based_menu {
   display: flex;
   justify-content: space-between;
 }
-.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p strong, .edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p span {
+.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p strong,
+.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p span {
   flex: 1.5;
   text-align: end;
 }
@@ -2030,4 +2031,40 @@ a.toplevel_page_logo_based_menu {
 }
 #modalStatusPayment strong {
   color: #000;
+}
+
+.detail-card {
+  border: 1px solid #e0e0e0;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.detail-heading {
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #bbc3cb;
+  padding-bottom: 5px;
+}
+
+.item-name {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.item-description {
+  font-size: 0.85em; /* Small text as requested */
+  color: #666;
+  margin-bottom: 15px;
+  padding-left: 10px;
+}
+
+.no-data {
+  color: #999;
+  font-style: italic;
 }/*# sourceMappingURL=style.css.map */

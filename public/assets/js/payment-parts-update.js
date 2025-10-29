@@ -150,7 +150,6 @@ function payment_table(rule_data) {
                 date.getMonth() + (type_frequency == "month" ? frequency_value : 0)
             );
             date.setDate(date.getDate() + (type_frequency == "day" ? frequency_value : 0));
-            
         }
         
         if( price == 0 ) continue; 

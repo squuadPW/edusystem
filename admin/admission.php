@@ -263,6 +263,7 @@ function add_admin_form_admission_content()
                 $roles = $current_user->roles;
                 $documents = get_documents($_GET['student_id']);
                 $fee_payment_ready = get_fee_paid($_GET['student_id'], 'registration');
+                $program_data_student = get_program_data_student($_GET['student_id']);
                 $product_ready = get_payments($_GET['student_id']);
                 $fee_graduation_ready = get_fee_paid($_GET['student_id'], 'graduation');
                 $documents_ready = get_documents_ready($_GET['student_id']);
@@ -275,6 +276,13 @@ function add_admin_form_admission_content()
                 $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
                 $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} WHERE code = '{$student->academic_period}' ORDER BY created_at ASC");
                 $user_student = $wpdb->get_row("SELECT * FROM {$table_users} WHERE user_email='" . $student->email . "'");
+                $sections = [
+                    'program' => __('Programs', 'edusystem'),
+                    'career' => __('Careers', 'edusystem'),
+                    'mention' => __('Mentions', 'edusystem'),
+                    'plan' => __('Payment plans', 'edusystem'),
+                ];
+
                 include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
             }
 
@@ -1564,6 +1572,28 @@ function get_fee_paid($student_id, $type) {
     }
 
     return true;
+}
+
+
+function get_program_data_student($student_id) {
+    global $wpdb;
+    $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
+
+    $student_programs = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM {$table_programs_by_student} WHERE student_id = %d",
+            $student_id
+        )
+    );
+
+    foreach ($student_programs as $key => $student_program) {
+        $program[] = get_student_program_details_by_identificator($student_program->program_identificator);
+        $career[] = get_career_details_by_identificator($student_program->career_identificator);
+        $mention[] = get_mention_details_by_identificator($student_program->mention_identificator);
+        $plan[] = get_program_details_by_identificator($student_program->plan_identificator);
+    }
+
+    return ['program' => $program, 'career' => $career, 'mention' => $mention, 'plan' => $plan];
 }
 
 function get_fee_product_id($student_id, $type) {
