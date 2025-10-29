@@ -267,7 +267,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
           .getElementById("select_grade")
           .scrollIntoView({ behavior: "smooth" });
         alert(
-          "To proceed with your enrollment, please select the last grade you completed"
+          "To proceed with your document, please select the last grade you completed"
         );
         return;
       }
@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         } else if (signaturePadStudent.isEmpty()) {
           save_signatures.disabled = false;
           alert(
-            "To proceed with your enrollment, please sign in the student area or generate the signature automatically"
+            "To proceed with your document, please sign in the student area or generate the signature automatically"
           );
           return;
         } else {
@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     let filename = "Student Enrollment Agreement.pdf";
     if (document_name) {
-      filename = `${document_name}.pdf`
+      filename = `${document_name.toLower()}.pdf`
     } else if (document_id != "ENROLLMENT") {
       filename = "Student Missing Document Agreement.pdf";
     }
@@ -456,7 +456,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     let filename = "Student Enrollment Agreement.pdf";
     if (document_name) {
-      filename = `${document_name}.pdf`
+      filename = `${document_name.toLower()}.pdf`
     } else if (document_id != "ENROLLMENT") {
       filename = "Student Missing Document Agreement.pdf";
     }
@@ -591,7 +591,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     }
 
     if (document_name) {
-      return document_name;
+      return document_name.toLower();
     } else if (document_id == "ENROLLMENT") {
       return "enrollment";
     } else {
