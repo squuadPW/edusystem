@@ -280,7 +280,7 @@ function add_admin_form_admission_content()
                     'program' => __('Programs', 'edusystem'),
                     'career' => __('Careers', 'edusystem'),
                     'mention' => __('Mentions', 'edusystem'),
-                    'plan' => __('Payment plans', 'edusystem'),
+                    'plan' => __('Scholarships', 'edusystem'),
                 ];
 
                 include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
