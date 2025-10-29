@@ -7,6 +7,12 @@ $countries = get_countries();
 $institutes = get_list_institutes_active();
 $grades = get_grades();
 $url = wp_get_attachment_url($student->profile_picture);
+function truncate_text($text, $max_length = 100) {
+    if (strlen($text) > $max_length) {
+        return substr($text, 0, $max_length) . '...';
+    }
+    return $text;
+}
 ?>
 
 <div class="wrap">
@@ -109,53 +115,6 @@ $url = wp_get_attachment_url($student->profile_picture);
     <?php
     do_action('extras_student', $user_student);
     ?>
-    <div class="student-details-container" style="margin-top: 10px">
-        <?php foreach ($sections as $key => $title): ?>
-            <div class="detail-card">
-                <h3 class="detail-heading"><?php echo esc_html($title); ?></h3>
-
-                <?php
-                $items = isset($program_data_student[$key]) ? $program_data_student[$key] : [];
-                $has_valid_data = false;
-
-                if (!empty($items)):
-                    foreach ($items as $item):
-
-                        // Safely extract name and description from the stdClass object
-                        $item_name = '';
-                        $item_description = '';
-
-                        if (is_object($item)) {
-                            $item_name = isset($item->name) ? $item->name : 'N/A';
-                            $item_description = isset($item->description) ? $item->description : 'No description provided.';
-                        } elseif (is_string($item) && !empty($item)) {
-                            // Fallback for simple string entries (if they ever occur outside of 'mention')
-                            $item_name = $item;
-                            $item_description = 'Simple information entry.';
-                        }
-
-                        // Check if the item is truly empty (like the example in 'mention')
-                        if (empty(trim((string) $item_name)) && empty(trim((string) $item_description)) && $key === 'mention') {
-                            continue; // Skip this completely empty entry
-                        }
-
-                        // If we reach here, we have something to display
-                        $has_valid_data = true;
-                        ?>
-                        <div class="detail-item">
-                            <div class="item-name"><?php echo esc_html($item_name); ?></div>
-                            <p class="item-description"><?php echo esc_html($item_description); ?></p>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-
-                <?php if (!$has_valid_data): ?>
-                    <p class="no-data">No data found for <?php echo strtolower(esc_html($title)); ?>.</p>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
-
-    </div>
     <form id="student-form" method="post"
         action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=save_users_details'); ?>">
         <div id="dashboard-widgets" class="metabox-holder">
@@ -219,7 +178,8 @@ $url = wp_get_attachment_url($student->profile_picture);
                                                 style="width: 100%; <?= ($student->academic_period == 'noperiod' || $student->academic_period == 'out') ? 'background-color: red; color: white;' : '' ?>"
                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                 <option value="" <?= ($student->academic_period == 'noperiod' || $student->academic_period == 'out') ? 'selected' : '' ?>>
-                                                    <?= __('Out of school year', 'edusystem') ?></option>
+                                                    <?= __('Out of school year', 'edusystem') ?>
+                                                </option>
                                                 <?php foreach ($periods as $key => $period) { ?>
                                                     <option value="<?= $period->code ?>"
                                                         <?= $student->academic_period == $period->code ? 'selected' : '' ?>>
@@ -236,7 +196,8 @@ $url = wp_get_attachment_url($student->profile_picture);
                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>
                                                 data-initial-cut="<?= htmlspecialchars($student->initial_cut) ?>">
                                                 <option value="" <?= $student->initial_cut == 'nocut' || $student->initial_cut == 'out' ? 'selected' : '' ?>>
-                                                    <?= __('Out of term', 'edusystem') ?></option>
+                                                    <?= __('Out of term', 'edusystem') ?>
+                                                </option>
                                                 <?php foreach ($periods_cuts as $key => $cut) { ?>
                                                     <option value="<?= $cut->cut ?>" <?= $student->initial_cut == $cut->cut ? 'selected' : '' ?>><?= $cut->cut ?></option>
                                                 <?php } ?>
@@ -754,8 +715,60 @@ $url = wp_get_attachment_url($student->profile_picture);
         </table>
 
     <?php endif; ?>
-</div>
 
+    <div class="student-details-container" style="margin-top: 10px">
+        <div class="student-details-flex-container">
+
+            <?php foreach ($sections as $key => $title): ?>
+                <div class="detail-section-wrapper">
+                    <h3 class="detail-heading"><?php echo esc_html($title); ?></h3>
+
+                    <?php
+                    $items = isset($program_data_student[$key]) ? $program_data_student[$key] : [];
+                    $has_valid_data = false;
+
+                    if (!empty($items)):
+                        foreach ($items as $item):
+
+                            // Safely extract name and description from the stdClass object
+                            $item_name = '';
+                            $item_description = '';
+
+                            if (is_object($item)) {
+                                $item_name = isset($item->name) ? $item->name : 'N/A';
+                                $item_description = isset($item->description) ? $item->description : 'No description provided.';
+                            } elseif (is_string($item) && !empty($item)) {
+                                $item_name = $item;
+                                $item_description = 'Simple information entry.';
+                            }
+
+                            // Check if the item is truly empty (like the example in 'mention')
+                            if (empty(trim((string) $item_name)) && empty(trim((string) $item_description)) && $key === 'mention') {
+                                continue; // Skip this completely empty entry
+                            }
+
+                            // Apply truncation logic here
+                            $truncated_description = truncate_text($item_description, 30);
+
+                            // If we reach here, we have something to display
+                            $has_valid_data = true;
+                            ?>
+                            <div class="detail-item">
+                                <div class="item-name"><?php echo esc_html($item_name); ?></div>
+                                <p class="item-description"><?php echo esc_html($truncated_description); ?></p>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+
+                    <?php if (!$has_valid_data): ?>
+                        <p class="no-data">No data found for <?php echo strtolower(esc_html($title)); ?>.</p>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+
+        </div>
+    </div>
+</div>
 
 <div id='decline-modal' class='modal' style='display:none'>
     <div class='modal-content'>
@@ -782,7 +795,6 @@ $url = wp_get_attachment_url($student->profile_picture);
         </div>
     </div>
 </div>
-
 
 <div id='detail-modal' class='modal' style='display:none'>
     <div class='modal-content' style="width: 70%;">
