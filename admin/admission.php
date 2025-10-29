@@ -269,7 +269,7 @@ function add_admin_form_admission_content()
                 $documents_ready = get_documents_ready($_GET['student_id']);
                 $academic_ready = get_academic_ready($_GET['student_id']);
                 $student = get_student_detail($_GET['student_id']);
-                $documents_certificates = function_exists('get_documents_certificates') ? get_documents_certificates() : [];
+                $documents_certificates = function_exists('get_documents_certificates') ? get_documents_certificates('managed') : [];
                 $users_signatures_certificates = function_exists('get_users_signatures_certificates') ? get_users_signatures_certificates() : [];
                 $partner = get_userdata($student->partner_id);
                 $table_users = $wpdb->prefix . 'users';
