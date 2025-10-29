@@ -19,7 +19,7 @@ add_filter( 'woocommerce_new_customer_data', 'filter_woocommerce_new_customer_da
 
 add_action('woocommerce_order_status_changed', 'create_and_login_user_if_payment_successful', 9, 4);
 function create_and_login_user_if_payment_successful($order_id, $old_status, $new_status, $order) {
-    $valid_statuses = ['on-hold', 'processing', 'completed'];
+    $valid_statuses = ['on-hold', 'processing', 'completed','split-payment'];
 
     // Exit if the new status is not one of the valid statuses
     if (!in_array($new_status, $valid_statuses)) {
