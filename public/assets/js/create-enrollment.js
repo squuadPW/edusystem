@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         document_id = document.querySelector("input[name=document_id]").value;
       }
 
-      if (!gradeSelected && document_id != "MISSING DOCUMENT") {
+      if (!gradeSelected && (document.getElementById("please_select_grade") && document.getElementById("select_grade"))) {
         save_signatures.disabled = false;
         document.getElementById("please_select_grade").style.display = "block";
         document.getElementById("select_grade").style.color = "red";
@@ -352,8 +352,15 @@ document.addEventListener("DOMContentLoaded", (event) => {
       document_id = document.querySelector("input[name=document_id]").value;
     }
 
+    let document_name = null;
+    if (document.querySelector("input[name=document_name]")) {
+      document_name = document.querySelector("input[name=document_name]").value;
+    }
+
     let filename = "Student Enrollment Agreement.pdf";
-    if (document_id != "ENROLLMENT") {
+    if (document_name) {
+      filename = `${document_name}.pdf`
+    } else if (document_id != "ENROLLMENT") {
       filename = "Student Missing Document Agreement.pdf";
     }
 
@@ -442,8 +449,15 @@ document.addEventListener("DOMContentLoaded", (event) => {
     }
     formData.append("document_id", document_id);
 
+    let document_name = null;
+    if (document.querySelector("input[name=document_name]")) {
+      document_name = document.querySelector("input[name=document_name]").value;
+    }
+
     let filename = "Student Enrollment Agreement.pdf";
-    if (document_id != "ENROLLMENT") {
+    if (document_name) {
+      filename = `${document_name}.pdf`
+    } else if (document_id != "ENROLLMENT") {
       filename = "Student Missing Document Agreement.pdf";
     }
 
@@ -567,11 +581,18 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
   function returnButtonTitle() {
     let document_id = "ENROLLMENT";
+    let document_name = null;
     if (document.querySelector("input[name=document_id]")) {
       document_id = document.querySelector("input[name=document_id]").value;
     }
 
-    if (document_id == "ENROLLMENT") {
+    if (document.querySelector("input[name=document_name]")) {
+      document_name = document.querySelector("input[name=document_name]").value;
+    }
+
+    if (document_name) {
+      return document_name;
+    } else if (document_id == "ENROLLMENT") {
       return "enrollment";
     } else {
       return "missing document";

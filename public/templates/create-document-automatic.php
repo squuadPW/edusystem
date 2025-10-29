@@ -11,6 +11,8 @@
             <span id="close-modal-enrollment" style="float: right; cursor: pointer"><span
                     class='dashicons dashicons-no-alt'></span></span>
             <div class="modal-body" id="content-pdf">
+                <input type="hidden" name="document_id" value="<?= $document->document_identificator ?>">
+                <input type="hidden" name="document_name" value="<?= $document->title ?>">
                 <?php echo $html ?>
             </div>
             <div class="modal-footer" style="text-align: center; display: block">

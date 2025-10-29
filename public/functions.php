@@ -3164,51 +3164,45 @@ function modal_document_automatic()
         'user_partner' => $user_partner,
     ];
 
-    $automatic_documents = apply_filters('load_automatic_documents', []);
+    $document = apply_filters('get_first_pending_automatic_document', null);
     $html_parts = [];
 
     extract($template_data, EXTR_SKIP);
 
-    foreach ($automatic_documents as $document) {
-        $table_users_signatures = $wpdb->prefix . 'users_signatures';
-        $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_users_signatures} WHERE user_id = %d AND document_id = %s", $current_user->ID, $document->document_identificator));
-        if ($existing_row) {
-            continue;
-        }
+    if ($document) {
+        if (!empty($document->header) || !empty($document->content) || !empty($document->footer)) {
 
-        if (empty($document->header) && empty($document->content) && empty($document->footer)) {
-            continue;
-        }
+            ob_start();
 
-        ob_start();
+            if (!empty($document->header)) {
+                echo '<div class="automatic-document-header">';
+                eval ('?>' . $document->header . '<?php ');
+                echo '</div>';
+            }
 
-        if (!empty($document->header)) {
-            echo '<div class="automatic-document-header">';
-            eval ('?>' . $document->header . '<?php ');
-            echo '</div>';
-        }
+            if (!empty($document->content)) {
+                echo '<div class="automatic-document-content">';
+                eval ('?>' . $document->content . '<?php ');
+                echo '</div>';
+            }
 
-        if (!empty($document->content)) {
-            echo '<div class="automatic-document-content">';
-            eval ('?>' . $document->content . '<?php ');
-            echo '</div>';
-        }
+            if (!empty($document->footer)) {
+                echo '<div class="automatic-document-footer">';
+                eval ('?>' . $document->footer . '<?php ');
+                echo '</div>';
+            }
 
-        if (!empty($document->footer)) {
-            echo '<div class="automatic-document-footer">';
-            eval ('?>' . $document->footer . '<?php ');
-            echo '</div>';
-        }
+            $document_html = ob_get_clean();
 
-        $document_html = ob_get_clean();
-
-        if (!empty($document_html)) {
-            $html_parts[] = $document_html;
+            if (!empty($document_html)) {
+                // Se agrega el único documento a la lista de partes
+                $html_parts[] = $document_html;
+            }
         }
     }
 
+    // Unir el documento (si existe) y cargar la plantilla
     $html = implode('<hr class="document-separator">', $html_parts);
-
     if (!empty($html)) {
         include plugin_dir_path(__FILE__) . 'templates/create-document-automatic.php';
     }
