@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     let filename = "Student Enrollment Agreement.pdf";
     if (document_name) {
-      filename = `${document_name.toLower()}.pdf`
+      filename = `${document_name.toLowerCase()}.pdf`
     } else if (document_id != "ENROLLMENT") {
       filename = "Student Missing Document Agreement.pdf";
     }
@@ -456,7 +456,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     let filename = "Student Enrollment Agreement.pdf";
     if (document_name) {
-      filename = `${document_name.toLower()}.pdf`
+      filename = `${document_name.toLowerCase()}.pdf`
     } else if (document_id != "ENROLLMENT") {
       filename = "Student Missing Document Agreement.pdf";
     }
@@ -591,7 +591,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     }
 
     if (document_name) {
-      return document_name.toLower();
+      return document_name.toLowerCase();
     } else if (document_id == "ENROLLMENT") {
       return "enrollment";
     } else {
