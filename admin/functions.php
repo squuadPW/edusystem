@@ -1353,6 +1353,22 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
             'value' => $form_filled ? $form_filled['step_1']['fax'] : 'N/A',
             'wrap' => true,
         ],
+        'institution_name_form_filled' => [
+            'value' => $form_filled ? $form_filled['step_3']['institution'] : 'N/A',
+            'wrap' => true,
+        ],
+        'institution_city_country_form_filled' => [
+            'value' => $form_filled ? $form_filled['step_3']['city'] . ' / ' . $form_filled['step_3']['institution_country_residence'] : 'N/A',
+            'wrap' => true,
+        ],
+        'institution_title_obtained_form_filled' => [
+            'value' => $form_filled ? $form_filled['step_3']['title_obtained'] : 'N/A',
+            'wrap' => true,
+        ],
+        'institution_graduation_year_form_filled' => [
+            'value' => $form_filled ? $form_filled['step_3']['graduation_year'] : 'N/A',
+            'wrap' => true,
+        ],
         'other_phone' => [
             'value' => $form_filled ? $form_filled['step_1']['other_phone'] : 'N/A',
             'wrap' => true,

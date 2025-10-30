@@ -1309,7 +1309,7 @@ function get_payment_method_table_html($student): string
                         text-align: center;
                     "
                 >
-                    <?php echo esc_html(__('METHOD OF PAYMENT (FIRST ORDER)', 'text-domain')); ?>
+                    <?php echo esc_html(__('METHOD OF PAYMENT', 'text-domain')); ?>
                 </th>
             </tr>
         </thead>
