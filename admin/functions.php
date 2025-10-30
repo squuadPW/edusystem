@@ -1218,18 +1218,19 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
     $countries = WC()->countries->get_countries();
     $country_code = $student->country;
     $country_name = isset($countries[$country_code]) ? $countries[$country_code] : $country_code;
+    $form_filled = function_exists('get_form_filled') ? get_form_filled() : null;
 
     $replacements = [
         'student_name' => [
-            'value' => $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name,
+            'value' => implode(' ', array_filter([$student->last_name, $student->middle_last_name])) . ', ' . implode(' ', array_filter([$student->name, $student->middle_name])),
             'wrap' => true,
         ],
         'name' => [
-            'value' => $student->name . ' ' . $student->middle_name,
+            'value' => implode(' ', array_filter([$student->name, $student->middle_name])),
             'wrap' => true,
         ],
         'last_name' => [
-            'value' => $student->last_name . ' ' . $student->middle_last_name,
+            'value' => implode(' ', array_filter([$student->last_name, $student->middle_last_name])),
             'wrap' => true,
         ],
         'id_student' => [
@@ -1255,6 +1256,32 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
         'program' => [
             'value' => get_name_program_student($student->id),
             'wrap' => true,
+        ],
+        'career_mention' => [
+            'value' => get_career_and_mention($student->id),
+            'wrap' => true,
+        ],
+        'name_term_student_entered' => [
+            'value' => get_term_student_entered($student->academic_period, $student->initial_cut)->name,
+            'wrap' => true,
+        ],
+        'year_term_student_entered' => [
+            'value' => get_term_student_entered($student->academic_period, $student->initial_cut)->year,
+            'wrap' => true,
+        ],
+        'start_term_student_entered' => [
+            'value' => date('m/d/Y', strtotime(get_term_student_entered($student->academic_period, $student->initial_cut)->start_date)),
+            'wrap' => true,
+        ],
+        'end_term_student_entered' => [
+            'value' => date('m/d/Y', strtotime(get_term_student_entered($student->academic_period, $student->initial_cut)->end_date)),
+            'wrap' => true,
+        ],
+        'payment_method_table' => [
+            'value' => function () use ($student) {
+                return get_payment_method_table_html($student);
+            },
+            'wrap' => false,
         ],
         'academic_year' => [
             'value' => $academic_period->name,
@@ -1317,6 +1344,34 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
         'phone' => [
             'value' => $student->phone,
             'wrap' => true,
+        ],
+        'city' => [
+            'value' => $student->city,
+            'wrap' => true,
+        ],
+        'fax' => [
+            'value' => $form_filled ? $form_filled['step_1']['fax'] : 'N/A',
+            'wrap' => true,
+        ],
+        'other_phone' => [
+            'value' => $form_filled ? $form_filled['step_1']['other_phone'] : 'N/A',
+            'wrap' => true,
+        ],
+        'created_at' => [
+            'value' => date('m/d/Y', strtotime($student->created_at)),
+            'wrap' => true,
+        ],
+        'ethinicity_selected' => [
+            'value' => function () use ($student) {
+                return get_ethnicity_selected_html($student->ethnicity);
+            },
+            'wrap' => false,
+        ],        
+        'language_selected' => [
+            'value' => function () use ($student, $form_filled) {
+                return $form_filled ? get_language_selected_html($form_filled['step_1']['take_courses_lang']) : 'N/A';
+            },
+            'wrap' => false,
         ],
         'email' => [
             'value' => $student->email,

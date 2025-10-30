@@ -3230,10 +3230,10 @@ function modal_document_automatic()
         }
     }
 
-    error_log(print_r($form_filled, true));
-    error_log(print_r($program_data_student, true));
-    error_log(print_r($program_data_student->career, true));
     $html = implode('<hr class="document-separator">', $html_parts);
+    $replacements = get_replacements_variables($student);
+    $html = process_template($html, $replacements);
+
     if (!empty($html)) {
         include plugin_dir_path(__FILE__) . 'templates/create-document-automatic.php';
     }

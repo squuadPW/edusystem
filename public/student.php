@@ -1139,6 +1139,35 @@ function get_name_program_student($student_id)
     return implode(', ', $program_names);
 }
 
+function get_career_and_mention($student_id)
+{
+    $program_data_student = get_program_data_student($student_id);
+
+    // Get the career name. Assuming it always exists and is an object with a 'name' property.
+    $career_name = $program_data_student['career'][0]->name;
+
+    // Safely check for the mention name. Uses null coalescing operator and a conditional check.
+    // The conditional check is only executed if the mention exists in the array and is not empty.
+    $mention_name = (
+        isset($program_data_student['mention'][0]->name) && 
+        is_array($program_data_student['mention']) && 
+        !empty($program_data_student['mention'])
+    ) ? $program_data_student['mention'][0]->name : '';
+
+    // Construct the final string: "Career" + (" Mention" if it exists, otherwise "")
+    // Using a simple ternary operator to conditionally add the space and the mention name.
+    $result_text = $career_name . ($mention_name ? ' ' . $mention_name : '');
+
+    return $result_text;
+}
+
+function get_term_student_entered($academic_period, $academic_period_cut)
+{
+    global $wpdb;
+    $table_academic_periods = $wpdb->prefix . 'academic_periods';
+    $period = $wpdb->get_row("SELECT * FROM {$table_academic_periods} WHERE `code` = '{$academic_period}'");
+    return $period;
+}
 
 function get_name_program($identificator)
 {

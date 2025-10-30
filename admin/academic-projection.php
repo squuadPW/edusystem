@@ -1254,6 +1254,94 @@ HTML;
     return $html;
 }
 
+function get_payment_method_table_html($student): string
+{
+    // Define payment methods with WooCommerce/plugin IDs as keys.
+    $payment_methods = [
+        'woo_squuad_stripe' => 'CREDIT CARD',
+        'check' => 'CHECK (US$)',
+        'money' => 'MONEY ORDER',
+        'aes_payment' => 'WIRE TRANSFER',
+        'coupon' => 'COUPON',
+        'zelle_payment' => 'ZELLE'
+    ];
+
+    $selected_method_index = '';
+    
+    $args = [
+        'customer_id' => $student->partner_id,
+        'status' => ['wc-completed'],
+        'limit' => 1,
+        // Adjusted: Use 'ASC' (Ascending) to get the oldest order (the first one).
+        'orderby' => 'date', 
+        'order' => 'ASC', 
+        // CRUCIAL: Force the function to return standard WC_Order objects, resolving the Fatal Error.
+        'return' => 'objects', 
+    ];
+    
+    $orders_completed = wc_get_orders($args);
+    
+    if (!empty($orders_completed) && is_array($orders_completed)) {
+        // Since we limited the query to 1 and ordered by ASC, the first element is the oldest.
+        $first_order = reset($orders_completed);
+        
+        // Validation: Ensure the element is truly a WC_Order object before calling its methods.
+        if (is_a($first_order, 'WC_Order')) {
+            $selected_method_index = $first_order->get_payment_method();
+        }
+    }
+    
+    // Check if the extracted method ID exists in our array of methods.
+    $is_valid_selection = (array_key_exists($selected_method_index, $payment_methods));
+
+    // Start output buffering to capture the HTML.
+    ob_start();
+
+    ?>
+    <table style="width: 50%; border-collapse: collapse; margin: 0 auto">
+        <thead>
+            <tr style="background-color: #dcdcdc">
+                <th
+                    colspan="2"
+                    style="
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: center;
+                    "
+                >
+                    <?php echo esc_html(__('METHOD OF PAYMENT (FIRST ORDER)', 'text-domain')); ?>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php 
+        foreach ($payment_methods as $index => $method_name): 
+            $is_selected = ($is_valid_selection && $index === $selected_method_index);
+            $mark_content = $is_selected ? 'X' : '';
+            $mark_style = 'border: 1px solid black; padding: 8px; text-align: center;';
+            if ($is_selected) {
+                $mark_style .= ' font-weight: bold;'; 
+            }
+            ?>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px; width: 80%">
+                    <?php echo esc_html($method_name); ?>
+                </td>
+                <td
+                    style="<?php echo $mark_style; ?>"
+                >
+                    <?php echo $mark_content; ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php
+    
+    // Capture the buffer content and return it as a string.
+    return ob_get_clean();
+}
+
 function new_table_notes_html($student_id, $projection)
 {
     $is_certified_approved = get_status_approved('CERTIFIED NOTES HIGH SCHOOL', $student_id);
@@ -1501,6 +1589,120 @@ HTML;
         esc_html($earned_ch),
         esc_html($gpa)
     );
+}
+
+function get_ethnicity_selected_html(int|string|null $selected_ethnicity_index): string
+{
+    // Define las etnicidades y (opcionalmente) un mapeo de índices
+    $ethnicities = [
+        1 => 'AFRICAN AMERICAN',
+        2 => 'ASIAN',
+        3 => 'CAUCASIAN',
+        4 => 'HISPANIC',
+        5 => 'NATIVE AMERICAN',
+        6 => 'OTHER',
+        7 => 'CHOOSE NOT TO RESPOND'
+    ];
+    
+    // Convertir a int si es un string que representa un número
+    if (is_string($selected_ethnicity_index) && ctype_digit($selected_ethnicity_index)) {
+        $selected_ethnicity_index = (int) $selected_ethnicity_index;
+    }
+
+    if (empty($selected_ethnicity_index) || !is_int($selected_ethnicity_index) || !array_key_exists($selected_ethnicity_index, $ethnicities)) {
+        // En lugar de devolver un HTML simple, es mejor empezar con el buffering y manejar la condición dentro
+        ob_start();
+        ?>
+        <p><?php echo esc_html(__('No data to show.', 'edusystem')); ?></p>
+        <?php
+        return ob_get_clean();
+    }
+
+    // 1. Iniciar el buffering de salida para capturar el HTML
+    ob_start();
+
+    // 2. Escribir el HTML directamente, usando la sintaxis de plantillas de PHP
+    ?>
+    <p>
+    <?php 
+    // Usamos 'endforeach;' y 'endif;' para un HTML más limpio y legible
+    foreach ($ethnicities as $index => $ethnicity_name): 
+        // 3. La lógica de comparación es clara: el índice actual vs. el índice seleccionado
+        $is_selected = ($index === $selected_ethnicity_index);
+        
+        // Agregar un separador, excepto antes del primer elemento
+        if ($index > 0) {
+            echo ' - ';
+        }
+        
+        if ($is_selected):
+            // **IMPORTANTE**: Usar funciones de escape (ej: esc_html) si el valor viene de una fuente no confiable
+            // Aunque en este caso viene del array local, es buena práctica para texto
+            // Usamos <strong> y <u> en lugar de estilos en línea
+            ?>
+            <strong style="text-decoration: underline;"><?php echo esc_html($ethnicity_name); ?></strong>
+        <?php else: ?>
+            <?php echo esc_html($ethnicity_name); ?>
+        <?php 
+        endif; 
+    endforeach; 
+    ?>
+    </p>
+    <?php
+    
+    // 4. Capturar el contenido del buffer y devolverlo como un string
+    return ob_get_clean();
+}
+
+function get_language_selected_html(string|null $selected_lang_index): string
+{
+    // Define las etnicidades y (opcionalmente) un mapeo de índices
+    $langs = [
+        'en_EN' => 'ENGLISH',
+        'es_ES' => 'SPANISH'
+    ];
+
+    if (empty($selected_lang_index) || !array_key_exists($selected_lang_index, $langs)) {
+        // En lugar de devolver un HTML simple, es mejor empezar con el buffering y manejar la condición dentro
+        ob_start();
+        ?>
+        <p><?php echo esc_html(__('No data to show.', 'edusystem')); ?></p>
+        <?php
+        return ob_get_clean();
+    }
+
+    // 1. Iniciar el buffering de salida para capturar el HTML
+    ob_start();
+
+    // 2. Escribir el HTML directamente, usando la sintaxis de plantillas de PHP
+    ?>
+    <p>
+    <?php 
+    // Usamos 'endforeach;' y 'endif;' para un HTML más limpio y legible
+    foreach ($langs as $index => $lang_name): 
+        // 3. La lógica de comparación es clara: el índice actual vs. el índice seleccionado
+        $is_selected = ($index === $selected_lang_index);
+        
+        // Agregar un separador, excepto antes del primer elemento
+        echo ' - ';
+        
+        if ($is_selected):
+            // **IMPORTANTE**: Usar funciones de escape (ej: esc_html) si el valor viene de una fuente no confiable
+            // Aunque en este caso viene del array local, es buena práctica para texto
+            // Usamos <strong> y <u> en lugar de estilos en línea
+            ?>
+            <strong style="text-decoration: underline;"><?php echo esc_html($lang_name); ?></strong>
+        <?php else: ?>
+            <?php echo esc_html($lang_name); ?>
+        <?php 
+        endif; 
+    endforeach; 
+    ?>
+    </p>
+    <?php
+    
+    // 4. Capturar el contenido del buffer y devolverlo como un string
+    return ob_get_clean();
 }
 
 function get_academic_ready($student_id)
