@@ -3072,10 +3072,37 @@ function modal_enrollment_student()
 function modal_document_automatic()
 {
     global $wpdb, $current_user;
-
     $roles = (array) $current_user->roles;
     $table_students = $wpdb->prefix . 'students';
     $table_student_payments = $wpdb->prefix . 'student_payments';
+
+    $has_registered_status = false;
+    $is_parent = in_array('parent', $roles);
+    $is_student = in_array('student', $roles);
+    $is_parent_or_student = $is_parent || $is_student;
+
+    if ($is_parent_or_student) {
+        if ($is_parent) {
+            $has_registered_status = get_user_meta($current_user->ID, 'status_register', true) == 1;
+        }
+
+        if ($is_student && !$has_registered_status) {
+            $student_id = get_user_meta($current_user->ID, 'student_id', true);
+            $student = $student_id ? get_student_detail($student_id) : null;
+            if ($student && isset($student->partner_id)) {
+                $has_registered_status = get_user_meta($student->partner_id, 'status_register', true) == 1;
+            }
+        }
+    }
+
+    if (!$has_registered_status) {
+        return;
+    }
+
+    $load_automatic_available = function_exists('get_complete_data_success') ? get_complete_data_success() : true;
+    if (!$load_automatic_available) {
+        return;
+    }
 
     $student = null;
     $student_id = 0;
@@ -3162,6 +3189,8 @@ function modal_document_automatic()
         'student' => $student,
         'payment' => $payment,
         'user_partner' => $user_partner,
+        'form_filled' => function_exists('get_form_filled') ? get_form_filled() : null,
+        'program_data_student' => get_program_data_student($student->id)
     ];
 
     $document = apply_filters('get_first_pending_automatic_document', null);
@@ -3201,7 +3230,9 @@ function modal_document_automatic()
         }
     }
 
-    // Unir el documento (si existe) y cargar la plantilla
+    error_log(print_r($form_filled, true));
+    error_log(print_r($program_data_student, true));
+    error_log(print_r($program_data_student->career, true));
     $html = implode('<hr class="document-separator">', $html_parts);
     if (!empty($html)) {
         include plugin_dir_path(__FILE__) . 'templates/create-document-automatic.php';
