@@ -59,8 +59,8 @@ function add_admin_form_student_program_content()
             $program_id = isset($_POST['program_id']) ? sanitize_text_field($_POST['program_id']) : '';
             $is_active = isset($_POST['is_active']) ? true : false;
             $identificator = strtoupper(sanitize_text_field($_POST['identificator']));
-            $name = strtoupper(sanitize_text_field($_POST['name']));
-            $description = strtoupper(sanitize_text_field($_POST['description']));
+            $name = strtoupper(sanitize_text_field(stripslashes($_POST['name'])));
+            $description = strtoupper(sanitize_text_field(stripslashes($_POST['description'])));
             $type = sanitize_text_field($_POST['type']);
 
             // Comprobar si el identificador ya existe (tu código original)
