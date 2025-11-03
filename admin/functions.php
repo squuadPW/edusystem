@@ -1218,7 +1218,8 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
     $countries = WC()->countries->get_countries();
     $country_code = $student->country;
     $country_name = isset($countries[$country_code]) ? $countries[$country_code] : $country_code;
-    $form_filled = function_exists('get_form_filled') ? get_form_filled() : null;
+    $user_student = get_user_by('email', $student->email);
+    $form_filled = function_exists('get_form_filled') ? get_form_filled($user_student->ID) : null;
 
     $replacements = [
         'student_name' => [
