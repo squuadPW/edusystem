@@ -124,7 +124,7 @@
                 <option value="female"><?= __('Female', 'edusystem'); ?></option>
             </select>
         </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="display: <?php $use_ethnicity != 'false' ? 'auto' : 'none' ?>;">
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" style="display: <?= $use_ethnicity != 'false' ? 'auto' : 'none' ?>;">
             <label for="etnia"><?= __('Ethnicity', 'edusystem'); ?><span class="required">*</span></label>
             <select class="form-control" id="etnia" required name="etnia">
                 <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
