@@ -1705,6 +1705,204 @@ function get_language_selected_html(string|null $selected_lang_index): string
     return ob_get_clean();
 }
 
+function get_payment_plan_table(int $student_id): string
+{
+    global $wpdb;
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+    $program_data = get_program_data_student($student_id);
+    $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student_id} ORDER BY cuote ASC");
+    $plan = $program_data['plan'][0];
+    $fees = get_fees_associated_plan_complete($plan->identificator);
+    // 1. Initialize variables for dynamic prices
+    $tuition_price = 0.00;
+    $registration_fee_price = 0.00;
+    $graduation_fee_price = 0.00;
+    $undergraduate_program_total = 0.00;
+    $adendum_scholarship_price = 0.00; 
+    $tech_library_fees = 0.00;
+
+    foreach ($payments as $key => $payment) {
+        $product_id = (isset($payment->variation_id) && $payment->variation_id != 0) ? $payment->variation_id : $payment->product_id;
+        $product = wc_get_product($product_id);
+        if ($product) {
+            // Check if the product belongs to the 'programs' category
+            if (has_term('programs', 'product_cat', $product_id)) {
+                $tuition_price = $payment->original_amount;
+                $adendum_scholarship_price = $payment->discount_amount;
+            }
+        }
+    }
+
+    // 2. Iterate and filter the $fees array
+    // We sum the prices for 'registration' and 'graduation' types.
+    foreach ($fees as $fee) {
+        if (is_object($fee) && property_exists($fee, 'type_fee') && property_exists($fee, 'price')) {
+            $price = (float)$fee->price;
+            
+            switch ($fee->type_fee) {
+                case 'registration':
+                    $registration_fee_price += $price;
+                    break;
+                case 'graduation':
+                    $graduation_fee_price += $price;
+                    break;
+                // Other fee types like 'others' (100.00 in the log) are ignored 
+                // for this specific table structure as they don't have a dedicated row.
+            }
+        }
+    }
+
+    $undergraduate_program_total = ($tuition_price + $registration_fee_price + $graduation_fee_price + $tech_library_fees) - $adendum_scholarship_price;
+
+    ob_start();
+
+    ?>
+    <table
+        style="width: 100%; border-collapse: collapse; margin: 0 !important"
+    >
+        <thead>
+            <tr style="background-color: #dcdcdc">
+                <th
+                    style="
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: left;
+                        width: 40%;
+                    "
+                ></th>
+                <th
+                    style="
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: center;
+                        width: 30%;
+                    "
+                >
+                    <strong>Undergraduate Program:</strong>
+                </th>
+                <th
+                    style="
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: center;
+                        width: 30%;
+                    "
+                >
+                    <strong>Graduate Program:</strong>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">
+                    Tuition
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong><?= wc_price($tuition_price) ?></strong>
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong>-</strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">
+                    Application for Admission Fee (non-refundable)
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong><?= wc_price($registration_fee_price) ?></strong>
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong>-</strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">
+                    Technology Fee
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong>-</strong>
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong>-</strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">Library Fee</td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong>-</strong>
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong>-</strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">
+                    Graduation Fee
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong><?= wc_price($graduation_fee_price) ?></strong>
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong>-</strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">
+                    Adendum (Scholarship)
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong><?= wc_price($adendum_scholarship_price) ?></strong>
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong>-</strong>
+                </td>
+            </tr>
+            <tr style="font-weight: bold; background-color: #f0f0f0">
+                <td style="border: 1px solid black; padding: 8px">
+                    <strong>Total:</strong>
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong><?= wc_price($undergraduate_program_total) ?></strong>
+                </td>
+                <td
+                    style="border: 1px solid black; padding: 8px; text-align: center"
+                >
+                    <strong>-</strong>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <?php
+    
+    return ob_get_clean();
+}
+
 function get_academic_ready($student_id)
 {
     $student = get_student_detail($student_id);

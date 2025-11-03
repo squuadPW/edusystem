@@ -1388,6 +1388,12 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
                 return $form_filled ? get_language_selected_html($form_filled['step_1']['take_courses_lang']) : 'N/A';
             },
             'wrap' => false,
+        ],      
+        'payment_plan_table' => [
+            'value' => function () use ($student) {
+                return get_payment_plan_table($student->id);
+            },
+            'wrap' => false,
         ],
         'email' => [
             'value' => $student->email,
