@@ -1964,7 +1964,7 @@ function get_educational_background_information_table(int $student_id, $form_fil
             style="border: 1px solid black; padding: 8px; vertical-align: top"
           >
             <div style="font-weight: bold">Name:</div>
-            <?= $form_filled ? $form_filled['step_3']['institution'] : 'N/A' ?>
+            <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['institution'] : 'N/A' ?>
             <div style="font-weight: bold; margin-top: 20px">
               City & Country:
             </div>
@@ -2046,7 +2046,7 @@ function get_educational_background_information_table(int $student_id, $form_fil
             style="border: 1px solid black; padding: 8px; vertical-align: top"
           >
             <div style="font-weight: bold">Name:</div>
-            <?= $form_filled ? $form_filled['step_3']['institution'] : 'N/A' ?>
+            <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['institution'] : 'N/A' ?>
             <div style="font-weight: bold; margin-top: 20px">
               City & Country:
             </div>
