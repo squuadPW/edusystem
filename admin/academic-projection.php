@@ -1904,6 +1904,287 @@ function get_payment_plan_table(int $student_id): string
     return ob_get_clean();
 }
 
+function get_educational_background_information_table(int $student_id, $form_filled = null): string
+{   
+    $program_data = get_program_data_student($student_id);
+    $program = $program_data['program'][0];
+    $type = $program->type;
+
+    ob_start();
+    ?>
+    <div
+      style="
+        padding: 8px 15px;
+        font-weight: bold;
+        border: 1px solid gray;
+        border-top: none;
+        background-color: #f0f0f0;
+      "
+    >
+      HIGH SCHOOL
+    </div>
+    <table style="width: 100%; border-collapse: collapse; margin: 0 !important">
+      <thead style="background-color: #dcdcdc">
+        <tr>
+          <th
+            style="
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+              width: 50%;
+            "
+          >
+            Name of Secondary School/ City/ Country:
+          </th>
+          <th
+            style="
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+              width: 30%;
+            "
+          >
+            Major:
+          </th>
+          <th
+            style="
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+              width: 20%;
+            "
+          >
+            Degree awarded (year):
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td
+            style="border: 1px solid black; padding: 8px; vertical-align: top"
+          >
+            <div style="font-weight: bold">Name:</div>
+            <?= $form_filled ? $form_filled['step_3']['institution'] : 'N/A' ?>
+            <div style="font-weight: bold; margin-top: 20px">
+              City & Country:
+            </div>
+            <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['city'] . ' / ' . $form_filled['step_3']['institution_country_residence'] : 'N/A' ?>
+          </td>
+          <td
+            style="
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+              vertical-align: middle;
+            "
+          >
+            <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['title_obtained'] : 'N/A' ?>
+          </td>
+          <td
+            style="
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+              vertical-align: middle;
+            "
+          >
+            <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['graduation_year'] : 'N/A' ?>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div
+      style="
+        padding: 8px 15px;
+        font-weight: bold;
+        border: 1px solid gray;
+        border-top: none;
+        background-color: #f0f0f0;
+      "
+    >
+      COLLEGES & UNIVERSITIES
+    </div>
+    <table style="width: 100%; border-collapse: collapse; margin: 0 !important">
+      <thead style="background-color: #dcdcdc">
+        <tr>
+          <th
+            style="
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+              width: 50%;
+            "
+          >
+            Name of Secondary School/ City/ Country:
+          </th>
+          <th
+            style="
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+              width: 30%;
+            "
+          >
+            Major:
+          </th>
+          <th
+            style="
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+              width: 20%;
+            "
+          >
+            Degree awarded (year):
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td
+            style="border: 1px solid black; padding: 8px; vertical-align: top"
+          >
+            <div style="font-weight: bold">Name:</div>
+            <?= $form_filled ? $form_filled['step_3']['institution'] : 'N/A' ?>
+            <div style="font-weight: bold; margin-top: 20px">
+              City & Country:
+            </div>
+            <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['city'] . ' / ' . $form_filled['step_3']['institution_country_residence'] : 'N/A' ?>
+          </td>
+          <td
+            style="
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+              vertical-align: middle;
+            "
+          >
+            <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['title_obtained'] : 'N/A' ?>
+          </td>
+          <td
+            style="
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+              vertical-align: middle;
+            "
+          >
+            <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['graduation_year'] : 'N/A' ?>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <?php
+    return ob_get_clean();
+}
+
+function get_admission_requirements_table(int $student_id): string
+{   
+    $program_data = get_program_data_student($student_id);
+    $program = $program_data['program'][0];
+    $type = $program->type;
+
+    ob_start();
+    ?>
+    <section>
+      <div style="padding: 8px; border: 1px solid gray; border-top: none">
+        <strong style="display: block; margin-bottom: 10px"
+          >Admission Requirements:</strong
+        >
+        <strong style="display: block; margin-bottom: 5px"
+          ><?= ucfirst($type) ?>:</strong
+        >
+        <?php if ($type === 'undergraduated') { ?>
+            <ul style="list-style-type: none; padding-left: 0; margin-top: 0">
+          <li style="margin-bottom: 5px">
+            1. GOVERNMENT PHOTO ID. (IDENTITY DOCUMENT OR PASSPORT OR DRIVER'S
+            LICENSE OR IDENTITY CARD)
+          </li>
+          <li style="margin-bottom: 5px">
+            2. ORIGINAL UNDERGRADUATE DEGREE FROM A STATE LICENSED, OR A
+            GOVERNMENT RECOGNIZED U.S COLLEGE OR UNIVERSITY, OR AN EQUIVALENT
+            DEGREE FROM COLLEGE OR UNIVERSITY OUTSIDE OF THE UNITED STATES
+          </li>
+          <li style="margin-bottom: 5px">
+            3. ORIGINAL HIGH SCHOOL DIPLOMA, GED, OR PROOF OF SECONDARY
+            EDUCATION
+          </li>
+          <li style="margin-bottom: 5px">
+            4. OFFICIAL TRANSCRIPTS ORIGINAL HIGH SCHOOL GED
+          </li>
+          <li style="margin-bottom: 5px">
+            5. TRANSLATION OR EQUIVALENT HIGH SCHOOL OR GED BY RECOGNIZED
+            INSTITUTION
+          </li>
+          <li style="margin-bottom: 5px">6. STUDENT APPLICATION</li>
+          <li style="margin-bottom: 5px">
+            7. PAYMENT RECEIVED (Application Fee)
+          </li>
+          <li style="margin-bottom: 5px">8. ONLINE REQUIREMENTS</li>
+          <li style="margin-bottom: 5px">
+            9. MISSING DOCUMENT COMMITMENT LETTER
+          </li>
+          <li style="margin-bottom: 5px">10. SCHOLARSHIP REQUEST FORM</li>
+          <li style="margin-bottom: 5px">
+            11. CERTIFICATION LETTER (AGREEMENT) (_____________________)
+          </li>
+          <li style="margin-bottom: 5px">12. RECORD OF CLOSING OF FILE</li>
+          <li style="margin-bottom: 5px">13. ENROLLMENT</li>
+          <li style="margin-bottom: 5px">14. ACCEPTANCE LETTER SPANISH</li>
+          <li style="margin-bottom: 5px">15. ACCEPTANCE LETTER</li>
+          <li style="margin-bottom: 5px">
+            16. ASSOCIATE DEGREE DIPLOMA (TSU OR TECHNICAL) FROM A NATIONAL OR
+            FOREIGN HIGHER EDUCATION INSTITUTION
+          </li>
+          <li style="margin-bottom: 5px">
+            17. REPORT OF OFFICIAL GRADES OF THE COURSES APPROVED IN A NATIONAL
+            OR FOREIGN HIGHER EDUCATION INSTITUTION.
+          </li>
+          <li style="margin-bottom: 5px">18. ACADEMIC TITLE - SCAN PAPER</li>
+          <li style="margin-bottom: 5px">19. PASSPORT OR PASSPORT PHOTO</li>
+        </ul>
+        <?php } else { ?>
+            <ul style="list-style-type: none; padding-left: 0; margin-top: 0">
+                <li style="margin-bottom: 5px">
+                    1. GOVERNMENT PHOTO ID. (IDENTITY DOCUMENT OR PASSPORT OR DRIVER'S LICENSE OR IDENTITY CARD)
+                </li>
+                <li style="margin-bottom: 5px">
+                    2. ORIGINAL UNDERGRADUATE DEGREE FROM A STATE LICENSED, OR A GOVERNMENT RECOGNIZED U.S COLLEGE OR UNIVERSITY, OR AN EQUIVALENT DEGREE FROM COLLEGE OR UNIVERSITY OUTSIDE OF THE UNITED STATES
+                </li>
+                <li style="margin-bottom: 5px">
+                    3. OFFICIAL TRANSCRIPTS ORIGINAL HIGH SCHOOL GED OR UNDERGRADUATE DIPLOMA
+                </li>
+                <li style="margin-bottom: 5px">
+                    4. TRASLATION OR EQUIVALENT HIGH SCHOOL OR UNDERGRADUATE DEGREE BY RECOGNIZED INSTITUTION
+                </li>
+                <li style="margin-bottom: 5px">
+                    5. STUDENT APPLICATION
+                </li>
+                <li style="margin-bottom: 5px">6. PAYMENT RECEIVED (Application Fee)</li>
+                <li style="margin-bottom: 5px">
+                    7. ONLINE REQUERIMENTS
+                </li>
+                <li style="margin-bottom: 5px">8. MISSING DOCUMENT COMMITMENT LETTER</li>
+                <li style="margin-bottom: 5px">9. SCHOLARSHIP REQUEST FORM</li>
+                <li style="margin-bottom: 5px">
+                    10. CERTIFICATION LETTER (AGREEMENT) (_____________________)
+                </li>
+                <li style="margin-bottom: 5px">11. ENROLLMENT</li>
+                <li style="margin-bottom: 5px">12. ACCEPTANCE LETTER</li>
+                <li style="margin-bottom: 5px">13. ACCEPTANCE LETTER SPANISH</li>
+                <li style="margin-bottom: 5px">14. RECORD OF CLOSING OF FILE</li>
+                <li style="margin-bottom: 5px">15. ACADEMIC TITLE - SCAN PAPER</li>
+                <li style="margin-bottom: 5px">16. PASSPORT OR PASSPORT PHOTO</li>
+                </ul>
+        <?php } ?> 
+      </div>
+    </section>
+    <?php
+    return ob_get_clean();
+}
+
+
 function get_academic_ready($student_id)
 {
     $student = get_student_detail($student_id);
