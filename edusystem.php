@@ -142,6 +142,7 @@ function create_tables()
       `identificator` TEXT NOT NULL,
       `name` TEXT NOT NULL,
       `description` TEXT NOT NULL,
+      `type` TEXT NOT NULL,
       `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );

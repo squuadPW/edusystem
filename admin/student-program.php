@@ -61,6 +61,7 @@ function add_admin_form_student_program_content()
             $identificator = strtoupper(sanitize_text_field($_POST['identificator']));
             $name = strtoupper(sanitize_text_field($_POST['name']));
             $description = strtoupper(sanitize_text_field($_POST['description']));
+            $type = sanitize_text_field($_POST['type']);
 
             // Comprobar si el identificador ya existe (tu código original)
             $query_check = $wpdb->prepare(
@@ -82,6 +83,7 @@ function add_admin_form_student_program_content()
                 'identificator' => $identificator,
                 'name' => $name,
                 'description' => $description,
+                'type' => $type,
             ];
 
             // Crea o actualiza el programa principal (tu código original)

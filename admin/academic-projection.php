@@ -1711,6 +1711,7 @@ function get_payment_plan_table(int $student_id): string
     $table_student_payments = $wpdb->prefix . 'student_payments';
     $program_data = get_program_data_student($student_id);
     $payments = $wpdb->get_results("SELECT * FROM {$table_student_payments} WHERE student_id={$student_id} ORDER BY cuote ASC");
+    $program = $program_data['program'][0];
     $plan = $program_data['plan'][0];
     $fees = get_fees_associated_plan_complete($plan->identificator);
     // 1. Initialize variables for dynamic prices
@@ -1800,12 +1801,12 @@ function get_payment_plan_table(int $student_id): string
                 <td
                     style="border: 1px solid black; padding: 8px; text-align: center"
                 >
-                    <strong><?= wc_price($tuition_price) ?></strong>
+                    <strong><?= $program->type === 'undergraduated' ? wc_price($tuition_price) : '-' ?></strong>
                 </td>
                 <td
                     style="border: 1px solid black; padding: 8px; text-align: center"
                 >
-                    <strong>-</strong>
+                    <strong><?= $program->type === 'graduated' ? wc_price($tuition_price) : '-' ?></strong>
                 </td>
             </tr>
             <tr>
@@ -1815,12 +1816,12 @@ function get_payment_plan_table(int $student_id): string
                 <td
                     style="border: 1px solid black; padding: 8px; text-align: center"
                 >
-                    <strong><?= wc_price($registration_fee_price) ?></strong>
+                    <strong><?= $program->type === 'undergraduated' ? wc_price($registration_fee_price) : '-' ?></strong>
                 </td>
                 <td
                     style="border: 1px solid black; padding: 8px; text-align: center"
                 >
-                    <strong>-</strong>
+                    <strong><?= $program->type === 'graduated' ? wc_price($registration_fee_price) : '-' ?></strong>
                 </td>
             </tr>
             <tr>
@@ -1858,12 +1859,12 @@ function get_payment_plan_table(int $student_id): string
                 <td
                     style="border: 1px solid black; padding: 8px; text-align: center"
                 >
-                    <strong><?= wc_price($graduation_fee_price) ?></strong>
+                    <strong><?= $program->type === 'undergraduated' ? wc_price($graduation_fee_price) : '-' ?></strong>
                 </td>
                 <td
                     style="border: 1px solid black; padding: 8px; text-align: center"
                 >
-                    <strong>-</strong>
+                    <strong><?= $program->type === 'graduated' ? wc_price($graduation_fee_price) : '-' ?></strong>
                 </td>
             </tr>
             <tr>
@@ -1873,12 +1874,12 @@ function get_payment_plan_table(int $student_id): string
                 <td
                     style="border: 1px solid black; padding: 8px; text-align: center"
                 >
-                    <strong><?= wc_price($adendum_scholarship_price) ?></strong>
+                    <strong><?= $program->type === 'undergraduated' ? wc_price($adendum_scholarship_price) : '-' ?></strong>
                 </td>
                 <td
                     style="border: 1px solid black; padding: 8px; text-align: center"
                 >
-                    <strong>-</strong>
+                    <strong><?= $program->type === 'graduated' ? wc_price($adendum_scholarship_price) : '-' ?></strong>
                 </td>
             </tr>
             <tr style="font-weight: bold; background-color: #f0f0f0">
@@ -1888,12 +1889,12 @@ function get_payment_plan_table(int $student_id): string
                 <td
                     style="border: 1px solid black; padding: 8px; text-align: center"
                 >
-                    <strong><?= wc_price($undergraduate_program_total) ?></strong>
+                    <strong><?= $program->type === 'undergraduated' ? wc_price($undergraduate_program_total) : '-' ?></strong>
                 </td>
                 <td
                     style="border: 1px solid black; padding: 8px; text-align: center"
                 >
-                    <strong>-</strong>
+                    <strong><?= $program->type === 'graduated' ? wc_price($undergraduate_program_total) : '-' ?></strong>
                 </td>
             </tr>
         </tbody>
