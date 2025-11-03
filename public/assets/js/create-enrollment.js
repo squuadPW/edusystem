@@ -378,7 +378,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
       image: { type: "jpeg", quality: 0.98 },
       jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
       html2canvas: { scale: 3 },
-      pagebreak: { after: ".page-break-new-section" },
+      pagebreak: { after: ".pagebreak" },
     };
 
     html2pdf()
