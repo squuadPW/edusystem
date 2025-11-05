@@ -1128,9 +1128,6 @@ function status_order_completed($order, $order_id, $customer_id)
  */
 function update_or_create_payment_record(WC_Order_Item_Product $item, int $student_id, int $order_id): void
 {
-    /* $logger = wc_get_logger();
-    $logger->debug('update_or_create_payment_record',['order_id' => $order_id]); */
-
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
     $product_id = $item->get_product_id();

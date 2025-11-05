@@ -27,9 +27,9 @@
         'moodle' => __('Moodle', 'edusystem'),       // Already short
         'crm' => __('CRM', 'edusystem'),          // Already short
         'offers' => __('Offers', 'edusystem'),       // Original: Offers (or 'Deals')
-        'inscriptions' => __('Enroll.', 'edusystem'),      // Original: Inscriptions (or 'Reg.')
         'notifications' => __('Emails', 'edusystem'),       // Original: Notifications (or 'Notif.')
         'design' => __('Design', 'edusystem'),       // Original: Design
+        'inscriptions' => __('Others', 'edusystem'),      // Original: Inscriptions (or 'Reg.')
       );
 
       // You can define an initial active option if you like:
@@ -278,7 +278,7 @@
         </div>
         <div id="inscriptions" style="display: none">
           <div style="text-align: center;">
-            <div>
+            <!-- <div>
               <a style="margin: 5px; text-wrap: auto;"
                 href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=clear_electives') ?>"
                 class="button button-outline-primary" onclick="return confirm('Are you sure?');">
@@ -290,6 +290,14 @@
                 href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projections') ?>"
                 class="button button-outline-primary" onclick="return confirm('Are you sure?');">
                 <?= __('Generate pending academic projections', 'edusystem'); ?>
+              </a>
+            </div> -->
+
+            <div>
+              <a style="margin: 5px"
+                href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_student_payments_record') ?>"
+                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
+                <?= __('Generate student payments records', 'edusystem'); ?>
               </a>
             </div>
           </div>
