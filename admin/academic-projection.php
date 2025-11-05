@@ -146,20 +146,8 @@ function add_admin_form_academic_projection_content()
                 }
 
                 foreach ($order->get_items() as $item) {
-                    // Se asume que process_payments y update_or_create_payment_record existen
                     process_payments($student_id, $order, $item);
-                    
-                    $program_data = $order->get_meta('program_data', true);
-                    $program_data = $program_data ? json_decode($program_data, true) : [];
-
-                    if ($program_data && is_array($program_data)) {
-                        process_payments($student_id, null, null, (int) $program_data['product_id'], (int) $program_data['variation_id'], (int) $program_data['rule_id'], $program_data['coupons']);
-                    }
-
-                    update_or_create_payment_record($item, $student_id, $order->get_id());
                 }
-
-                error_log(print_r('Studetns record affected ' . $student_id, true));
             }
 
             setcookie('message', __('Successfully generated all missing payments records for the students.', 'edusystem'), time() + 3600, '/');
