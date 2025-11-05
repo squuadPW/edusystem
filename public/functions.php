@@ -1405,6 +1405,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
     if ($existing_record_count > 0)
         return;
 
+    error_log('llega al punto de creat todo');
     // Inicializacion de variables necesarias para el registro
     $manager_user_id = null;
     $institute_id = null;
