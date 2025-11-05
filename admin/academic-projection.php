@@ -141,7 +141,6 @@ function add_admin_form_academic_projection_content()
                     'customer' => $student->partner_id
                 ];
                 $orders = wc_get_orders($args);
-                error_log(print_r($orders, true));
                 foreach ($orders as $order) {
                     foreach ($order->get_items() as $item) {
                         process_payments($student->id, $order, $item);

@@ -1376,10 +1376,6 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
 function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [])
 {
-    /* $logger = wc_get_logger();
-    $logger->debug('process_payments',['order_id' => $order_id]); */
-
-    // si no viene el id del estudiante, salir ya que es un dato crítico.
     if (!$student_id)
         return;
 
@@ -1405,7 +1401,6 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
     if ($existing_record_count > 0)
         return;
 
-    error_log('llega al punto de creat todo');
     // Inicializacion de variables necesarias para el registro
     $manager_user_id = null;
     $institute_id = null;
@@ -1600,8 +1595,8 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
             $next_payment_date = $payment_date->format('Y-m-d');
         }
 
-        if ($amount == 0)
-            continue;
+        // if ($amount == 0)
+        //     continue;
 
         $data = [
             'status_id' => 0,
