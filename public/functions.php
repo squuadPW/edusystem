@@ -2661,7 +2661,7 @@ function select_elective_callback()
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $load = load_current_cut_enrollment();
+    $load = load_current_cut();
     $code = $load['code'];
     $cut = $load['cut'];
 
@@ -2920,7 +2920,7 @@ function modal_take_elective()
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
-    $load = load_current_cut_enrollment();
+    $load = load_current_cut();
     $code = $load['code'];
     $cut = $load['cut'];
 
