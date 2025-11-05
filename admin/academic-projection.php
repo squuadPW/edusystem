@@ -133,20 +133,19 @@ function add_admin_form_academic_projection_content()
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'generate_student_payments_record') {
-            $args = [
-                'status' => ['wc-completed'],
-                'limit'  => -1,
-            ];
-            $orders = wc_get_orders($args);
-
-            foreach ($orders as $order) {
-                $student_id = $order->get_meta('student_id');
-                if (empty($student_id)) {
-                    continue;
-                }
-
-                foreach ($order->get_items() as $item) {
-                    process_payments($student_id, $order, $item);
+            $students = get_active_students();
+            foreach ($students as $key => $student) {
+                $args = [
+                    'status' => ['wc-completed'],
+                    'limit'  => -1,
+                    'customer' => $student->partner_id
+                ];
+                $orders = wc_get_orders($args);
+                error_log(print_r($orders, true));
+                foreach ($orders as $order) {
+                    foreach ($order->get_items() as $item) {
+                        process_payments($student->id, $order, $item);
+                    }
                 }
             }
 
