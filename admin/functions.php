@@ -1220,10 +1220,22 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
     $country_name = isset($countries[$country_code]) ? $countries[$country_code] : $country_code;
     $user_student = get_user_by('email', $student->email);
     $form_filled = function_exists('get_form_filled') ? get_form_filled($user_student->ID) : null;
+    $student_full_name = '';
+
+    if (!empty($lastNameParts)) {
+        $student_full_name .= implode(' ', $lastNameParts);
+    }
+
+    if (!empty($firstNameParts)) {
+        if (!empty($student_full_name)) {
+            $student_full_name .= ', ';
+        }
+        $student_full_name .= implode(' ', $firstNameParts);
+    }
 
     $replacements = [
         'student_name' => [
-            'value' => implode(' ', array_filter([$student->last_name, $student->middle_last_name])) . ', ' . implode(' ', array_filter([$student->name, $student->middle_name])),
+            'value' => $student_full_name,
             'wrap' => true,
         ],
         'name' => [
@@ -1387,6 +1399,12 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
         'language_selected' => [
             'value' => function () use ($student, $form_filled) {
                 return $form_filled ? get_language_selected_html($form_filled['step_1']['take_courses_lang']) : 'N/A';
+            },
+            'wrap' => false,
+        ],
+        'signature_section_fgu' => [
+            'value' => function () use ($student) {
+                return get_signature_section_fgu($student);
             },
             'wrap' => false,
         ],      

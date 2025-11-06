@@ -1000,6 +1000,7 @@ function insert_register_documents($student_id, $grade_id)
 
     $table_student_documents = $wpdb->prefix . 'student_documents';
     $table_documents = $wpdb->prefix . 'documents';
+    $table_documents_certificates = $wpdb->prefix . 'documents_certificates';
 
     // 2. PRIMERA CONSULTA: Obtiene todos los documentos para el grado.
     $documents_for_grade = $wpdb->get_results(
@@ -1030,8 +1031,6 @@ function insert_register_documents($student_id, $grade_id)
             continue;
         }
 
-        // ✅ LÓGICA MEJORADA Y MÁS CLARA PARA is_required e is_visible
-        // Por defecto, usamos los valores del documento maestro.
         $is_required = $document->is_required;
         $is_visible = $document->is_visible;
 
@@ -1047,6 +1046,20 @@ function insert_register_documents($student_id, $grade_id)
             'document_id' => $document->name,
             'is_required' => $is_required,
             'is_visible' => $is_visible,
+            'status' => 0,
+            'created_at' => current_time('mysql'),
+        ]);
+    }
+
+    $automatic_docs = $wpdb->get_results(
+        $wpdb->prepare("SELECT * FROM {$table_documents_certificates} WHERE `type` = %s and `status` = %d", 'automatic', 1)
+    );
+    foreach ($automatic_docs as $key => $doc) {
+        $wpdb->insert($table_student_documents, [
+            'student_id' => $student_id,
+            'document_id' => $doc->document_identificator,
+            'is_required' => $doc->is_required,
+            'is_visible' => $doc->is_visible,
             'status' => 0,
             'created_at' => current_time('mysql'),
         ]);
