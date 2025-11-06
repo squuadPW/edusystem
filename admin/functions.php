@@ -1395,31 +1395,37 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
                 return get_ethnicity_selected_html($student->ethnicity);
             },
             'wrap' => false,
-        ],        
+        ],
         'language_selected' => [
             'value' => function () use ($student, $form_filled) {
                 return $form_filled ? get_language_selected_html($form_filled['step_1']['take_courses_lang']) : 'N/A';
             },
             'wrap' => false,
         ],
-        'signature_section_fgu' => [
+        'signature_section' => [
+            'value' => function () use ($student) {
+                return get_signature_section($student);
+            },
+            'wrap' => false,
+        ],
+        'admission_signature_fgu' => [
             'value' => function () use ($student) {
                 return get_signature_section_fgu($student);
             },
             'wrap' => false,
-        ],      
+        ],
         'payment_plan_table' => [
             'value' => function () use ($student) {
                 return get_payment_plan_table($student->id);
             },
             'wrap' => false,
-        ], 
+        ],
         'educational_background_information' => [
             'value' => function () use ($student, $form_filled) {
                 return get_educational_background_information_table($student->id, $form_filled);
             },
             'wrap' => false,
-        ], 
+        ],
         'admission_requirements_table' => [
             'value' => function () use ($student) {
                 return get_admission_requirements_table($student->id);
