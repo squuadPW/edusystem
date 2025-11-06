@@ -1088,20 +1088,19 @@ add_action('woocommerce_order_status_changed', 'status_changed_payment', 11, 4);
  * @param int      $customer_id ID del cliente.
  */
 function status_order_completed($order, $order_id, $customer_id)
-{
+{   
     // 1. Actualiza los metadatos del usuario de forma directa.
     update_user_meta($customer_id, 'status_register', 1);
     update_user_meta($customer_id, 'cuote_pending', 0);
 
     $student_id = $order->get_meta('student_id');
-
+    
     // 2. Salir temprano si no hay un ID de estudiante asociado.
-    if (empty($student_id)) {
-        return;
-    }
+    if (empty($student_id)) return;
 
     // Asegura que el usuario de WordPress para el estudiante exista.
     create_user_student($student_id);
+    
 
     // 3. Itera sobre los artículos para actualizar o crear registros de pago.
     foreach ($order->get_items() as $item) {
@@ -1130,7 +1129,7 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
 {
     /* $logger = wc_get_logger();
     $logger->debug('update_or_create_payment_record',['order_id' => $order_id]); */
-
+    
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
     $product_id = $item->get_product_id();
