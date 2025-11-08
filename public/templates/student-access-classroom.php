@@ -8,7 +8,10 @@
 			<?php } ?>
 			<div style="display:flex">
 				<div style="width: 100%; text-align: center">
-					<a style="width: 60% !important; <?php echo count($access) == 0 ? 'background-color: #002fbd75 !important; pointer-events: none;' : '' ?>" target="_blank" href="<?= home_url('?action=access_moodle_url&student_id='.$student->id); ?>" class="button button-primary"><?= __('Virtual Classroom','edusystem'); ?></a>
+					<a style="width: 60% !important; <?php echo count($access) == 0 ? 'background-color: #002fbd75 !important; pointer-events: none;' : '' ?>" 
+					<?php echo ! wp_is_mobile() ? 'target="_blank"' : ''; ?> 
+					href="<?= home_url('?action=access_moodle_url&student_id='.$student->id); ?>" 
+					class="button button-primary"><?= __('Virtual Classroom','edusystem'); ?></a>
 				</div>
 			</div>
 		<?php } else { ?>
