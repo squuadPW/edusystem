@@ -17,8 +17,11 @@ $roles = $current_user->roles;
     
     <div>
         <div style="display:flex; justify-content: start;">
+            <?php
+            $referer_url = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : admin_url();
+            ?>
             <a class="button button-outline-primary"
-                href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content'); ?>"><?= __('Back', 'edusystem'); ?></a>
+                href="<?= esc_url($referer_url); ?>"><?= __('Back', 'edusystem'); ?></a>
         </div>
         <div style="display:flex; justify-content: end;">
             <?php
