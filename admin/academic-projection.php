@@ -119,6 +119,20 @@ function add_admin_form_academic_projection_content()
         }
 
         if ($_GET['section_tab'] == 'student_matrix') {
+            $student = get_student_detail($_GET['student_id']);
+            $lastNameParts = array_filter([$student->last_name, $student->middle_last_name]);
+            $firstNameParts = array_filter([$student->name, $student->middle_name]);
+            $student_full_name = '';
+            if (!empty($lastNameParts)) {
+                $student_full_name .= implode(' ', $lastNameParts);
+            }
+
+            if (!empty($firstNameParts)) {
+                if (!empty($student_full_name)) {
+                    $student_full_name .= ', ';
+                }
+                $student_full_name .= implode(' ', $firstNameParts);
+            }
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-student-matrix.php');
         }
     } else {

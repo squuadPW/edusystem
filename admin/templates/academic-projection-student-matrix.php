@@ -5,7 +5,7 @@ $roles = $current_user->roles;
 ?>
 
 <div class="wrap">
-    <?php if (isset($projection) && !empty($projection)): ?>
+    <?php if (isset($student) && !empty($student)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Matrix', 'edusystem'); ?></h2>
     <?php else: ?>
         <h2 style="margin-bottom:15px;"><?= __('Not found', 'edusystem'); ?></h2>
@@ -40,7 +40,7 @@ $roles = $current_user->roles;
             <div id="normal-sortables">
                 <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
                     <div class="inside">
-
+                        <h1 style="text-align: center;"><?= $student_full_name ?></h1>
                     </div>
                 </div>
             </div>

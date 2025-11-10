@@ -6,7 +6,7 @@
 
 <?php if($student_id) { ?>
     <div style="margin-left: 5px; margin-right: 5px;">
-        <?php if($projection && current_user_can('manager_academic_projection_aes') && $_GET['page'] != 'add_admin_form_academic_projection_content') { ?>
+        <?php if($projection && current_user_can('manager_academic_projection_aes') && ($_GET['section_tab'] != 'academic_projection_details')) { ?>
             <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=') . $projection->id ?>"
                 class="button button-outline-primary">
                 <?= __('Academic projection', 'edusystem'); ?>
@@ -24,7 +24,7 @@
                 <?= __('Payments', 'edusystem'); ?>
             </a>
         <?php } ?>
-        <?php if (current_user_can('manager_student_matrix') && $_GET['page'] == 'add_admin_form_academic_projection_content') { ?>
+        <?php if (current_user_can('manager_student_matrix') && ($_GET['section_tab'] != 'student_matrix')) { ?>
             <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=student_matrix&student_id=') . $student_id ?>"
                 class="button button-outline-primary">
                 <?= __('Matrix', 'edusystem'); ?>
