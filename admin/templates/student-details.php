@@ -249,20 +249,13 @@ $url = wp_get_attachment_url($student->profile_picture);
                             <div>
                                 <?php
                                 if (current_user_can('can_switch_student')) {
-
-                                    // 1. Construimos la URL base (igual que en el código fuente)
                                     $base_url = admin_url('users.php');
                                     $base_url = add_query_arg(array(
                                         'ure_switch_action' => 'switch_to',
                                         'user_id' => $user_student->ID,
                                     ), $base_url);
-
-                                    // 2. Esta es la acción de nonce correcta que encontraste:
                                     $nonce_action = 'switch_to_user_' . $user_student->ID;
-
-                                    // 3. Creamos la URL final con el nonce correcto
                                     $nonce_url = wp_nonce_url($base_url, $nonce_action);
-
                                     ?>
                                     <p style="text-align: center">
                                         <a href="<?php echo $nonce_url; ?>" target="_blank">
@@ -437,20 +430,13 @@ $url = wp_get_attachment_url($student->profile_picture);
                                 <div>
                                     <?php
                                     if (current_user_can('can_switch_student')) {
-
-                                        // 1. Construimos la URL base (igual que en el código fuente)
                                         $base_url = admin_url('users.php');
                                         $base_url = add_query_arg(array(
                                             'ure_switch_action' => 'switch_to',
                                             'user_id' => $partner->ID,
                                         ), $base_url);
-
-                                        // 2. Esta es la acción de nonce correcta que encontraste:
                                         $nonce_action = 'switch_to_user_' . $partner->ID;
-
-                                        // 3. Creamos la URL final con el nonce correcto
                                         $nonce_url = wp_nonce_url($base_url, $nonce_action);
-
                                         ?>
                                         <p style="text-align: center">
                                             <a href="<?php echo $nonce_url; ?>" target="_blank">
