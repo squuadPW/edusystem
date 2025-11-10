@@ -595,6 +595,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_academic_projection_aes');
     $role->add_cap('manager_automatically_inscriptions');
     $role->add_cap('manager_teachers_aes');
+    $role->add_cap('can_switch_student');
     $role->add_cap('manager_enrollments_aes');
     $role->add_cap('withdraw_student');
     $role->add_cap('can_regenerate_projection');
