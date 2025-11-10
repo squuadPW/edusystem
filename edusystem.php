@@ -431,6 +431,7 @@ function create_tables()
       id INT(11) NOT NULL AUTO_INCREMENT,
       student_id INT(11) NOT NULL,
       projection JSON NULL,
+      matrix JSON NULL,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id))$charset_collate;"
   );
