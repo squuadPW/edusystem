@@ -183,6 +183,11 @@
                         value="manager_feed" id="manager_feed" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_feed'])) ? 'checked' : ''; ?>>
                     <label for="manager_feed" <?= !in_array('manager_feed', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Student banners', 'edusystem'); ?></label>
                 </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_student_matrix', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_student_matrix" id="manager_student_matrix" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_student_matrix'])) ? 'checked' : ''; ?>>
+                    <label for="manager_student_matrix" <?= !in_array('manager_student_matrix', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Manager student matrix', 'edusystem'); ?></label>
+                </div>
             </div>
 
             <div class="capability-group">

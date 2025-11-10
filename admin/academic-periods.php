@@ -4,13 +4,84 @@ function add_admin_form_academic_periods_content()
 {
 
     if (isset($_GET['action']) && !empty($_GET['action'])) {
-
-        if ($_GET['action'] == 'change_status_academic_period') {
+        if ($_GET['action'] == 'generate_next_period') {
             try {
+                global $wpdb;
+
+                $table_academic_periods = $wpdb->prefix . 'academic_periods';
+                $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+                $period = $wpdb->get_row("SELECT * FROM {$table_academic_periods} ORDER BY `year` DESC, code DESC LIMIT 1", OBJECT);
+
+                if ($period) {
+                    $new_year = (int) $period->year + 1;
+                    $new_start_code = (int) substr($period->code, 0, 4) + 1;
+                    $new_end_code = (int) substr($period->code, 4, 4) + 1;
+                    $new_code = (string) $new_start_code . (string) $new_end_code;
+                    $new_code_next = (string) ($new_start_code + 1) . (string) ($new_end_code + 1);
+                    $new_name = 'Academic Year ' . (string) $new_start_code . '-' . (string) $new_end_code;
+                    $new_start_date = (new DateTime($period->start_date))->modify('+1 year')->format('Y-m-d');
+                    $new_end_date = (new DateTime($period->end_date))->modify('+1 year')->format('Y-m-d');
+                    $new_start_date_inscription = $period->start_date_inscription ? (new DateTime($period->start_date_inscription))->modify('+1 year')->format('Y-m-d') : null;
+                    $new_end_date_inscription = $period->end_date_inscription ? (new DateTime($period->end_date_inscription))->modify('+1 year')->format('Y-m-d') : null;
+                    $new_start_date_pre_inscription = $period->start_date_pre_inscription ? (new DateTime($period->start_date_pre_inscription))->modify('+1 year')->format('Y-m-d') : null;
+                    $new_end_date_pre_inscription = $period->end_date_pre_inscription ? (new DateTime($period->end_date_pre_inscription))->modify('+1 year')->format('Y-m-d') : null;
+
+                    $wpdb->insert($table_academic_periods, [
+                        'name' => $new_name,
+                        'code' => $new_code,
+                        'code_next' => $new_code_next,
+                        'year' => $new_year,
+                        'start_date' => $new_start_date,
+                        'end_date' => $new_end_date,
+                        'start_date_inscription' => $new_start_date_inscription,
+                        'end_date_inscription' => $new_end_date_inscription,
+                        'start_date_pre_inscription' => $new_start_date_pre_inscription,
+                        'end_date_pre_inscription' => $new_end_date_pre_inscription,
+                        'status_id' => $period->status_id, // Keep the same status or change it as needed
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'current' => 0 // New period should probably not be 'current' initially
+                    ], [
+                        '%s',
+                        '%s',
+                        '%s',
+                        '%d',
+                        '%s',
+                        '%s',
+                        '%s',
+                        '%s',
+                        '%s',
+                        '%s',
+                        '%d',
+                        '%s',
+                        '%d'
+                    ]);
+
+                    $new_period_id = $wpdb->insert_id;
+                    $cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} where code = '{$period->code}' order by cut asc");
+                    if ($new_period_id && isset($cuts)) {
+                        foreach ($cuts as $cut) {
+                            $wpdb->insert($table_academic_periods_cut, [
+                                'code' => $new_code,
+                                'cut' => $cut->cut,
+                                'start_date' => (new DateTime($cut->start_date))->modify('+1 year')->format('Y-m-d'),
+                                'end_date' => (new DateTime($cut->end_date))->modify('+1 year')->format('Y-m-d'),
+                                'max_date' => (new DateTime($cut->max_date))->modify('+1 year')->format('Y-m-d'),
+                            ]);
+                        }
+
+                        setcookie('message', __('Period generated correctly.', 'edusystem'), time() + 10, '/');
+                    }
+
+                } else {
+                    setcookie('error', __('Period not available.', 'edusystem'), time() + 10, '/');
+                }
+
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
                 exit;
             } catch (\Throwable $th) {
-                echo $th;
+                // Use setcookie for error message to allow wp_redirect to work
+                setcookie('error', __('Error generating period: ', 'edusystem') . $th->getMessage(), time() + 10, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
                 exit;
             }
         }

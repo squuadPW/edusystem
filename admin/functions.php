@@ -5,7 +5,7 @@ require plugin_dir_path(__FILE__) . 'admission.php';
 require plugin_dir_path(__FILE__) . 'report.php';
 require plugin_dir_path(__FILE__) . 'payments.php';
 require plugin_dir_path(__FILE__) . 'scholarships.php';
-require plugin_dir_path(__FILE__) . 'academic_periods.php';
+require plugin_dir_path(__FILE__) . 'academic-periods.php';
 require plugin_dir_path(__FILE__) . 'school_subjects.php';
 require plugin_dir_path(__FILE__) . 'academic-projection.php';
 require plugin_dir_path(__FILE__) . 'teachers.php';
@@ -526,6 +526,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_pensums');
     $role->add_cap('manager_programs');
     $role->add_cap('manager_feed');
+    $role->add_cap('manager_student_matrix');
     $role->add_cap('manager_templates_emails');
     $role->add_cap('manager_academic_offers_aes');
     $role->add_cap('manager_requests_aes');

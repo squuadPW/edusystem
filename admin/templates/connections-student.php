@@ -24,5 +24,11 @@
                 <?= __('Payments', 'edusystem'); ?>
             </a>
         <?php } ?>
+        <?php if (current_user_can('manager_student_matrix') && $_GET['page'] == 'add_admin_form_academic_projection_content') { ?>
+            <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=student_matrix&student_id=') . $student_id ?>"
+                class="button button-outline-primary">
+                <?= __('Matrix', 'edusystem'); ?>
+            </a>
+        <?php } ?>
     </div>
 <?php } ?>

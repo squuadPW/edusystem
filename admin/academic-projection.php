@@ -117,6 +117,10 @@ function add_admin_form_academic_projection_content()
 
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-validation-subject.php');
         }
+
+        if ($_GET['section_tab'] == 'student_matrix') {
+            include(plugin_dir_path(__FILE__) . 'templates/academic-projection-student-matrix.php');
+        }
     } else {
 
         if (isset($_GET['action']) && $_GET['action'] == 'generate_academic_projections') {
