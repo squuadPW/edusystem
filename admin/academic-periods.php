@@ -4,13 +4,159 @@ function add_admin_form_academic_periods_content()
 {
 
     if (isset($_GET['action']) && !empty($_GET['action'])) {
-
-        if ($_GET['action'] == 'change_status_academic_period') {
+        if ($_GET['action'] == 'generate_next_period') {
             try {
+                global $wpdb;
+
+                $table_academic_periods = $wpdb->prefix . 'academic_periods';
+                $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+
+                // 1. Fetch the latest period
+                $period = $wpdb->get_row("SELECT * FROM {$table_academic_periods} ORDER BY `year` DESC, code DESC LIMIT 1", OBJECT);
+
+                if (!$period) {
+                    setcookie('error', __('Period not available.', 'edusystem'), time() + 10, '/');
+                    wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
+                    exit;
+                }
+
+                // --- DYNAMIC CODE AND NAME CALCULATION ---
+
+                $new_year = (int) $period->year + 1;
+                $original_code = $period->code;
+                $original_name = $period->name;
+                $new_code = '';
+                $new_code_next = '';
+                $new_name = '';
+
+                // Check for YYYY format (e.g., 20252026)
+                if (is_numeric($original_code) && strlen($original_code) === 8) {
+                    $new_start_code = (int) substr($original_code, 0, 4) + 1;
+                    $new_end_code = (int) substr($original_code, 4, 4) + 1;
+                    $new_code = (string) $new_start_code . (string) $new_end_code;
+                    $new_code_next = (string) ($new_start_code + 1) . (string) ($new_end_code + 1);
+
+                    // Assuming name format is 'Academic Year YYYY-YYYY'
+                    $new_name = 'Academic Year ' . (string) $new_start_code . '-' . (string) $new_end_code;
+                }
+                // Check for TEXTYYYY or TEXTYYYYTEXT (hybrid format, e.g., FALL2025, YYYY-YYYY, 2025-2026)
+                else if (preg_match('/(\d{4})/', $original_code, $matches)) {
+                    $start_year = (int) $matches[1];
+                    $next_start_year = $start_year + 1;
+
+                    // Reconstruct Code: Replace the first occurrence of the year with the incremented year
+                    // This handles codes like FALL2025, SEMESTER_2025, or even 2025_A
+                    $new_code = preg_replace('/' . preg_quote((string) $start_year, '/') . '/', (string) $next_start_year, $original_code, 1);
+
+                    // Calculate code_next: If current code has two year components (like 2025-2026), this is complex.
+                    // For safety and simplicity, if a clear YYYY-YYYY pattern is not found, we base code_next
+                    // on the first found year + 2 years, or set it to null/empty if unclear.
+                    if (preg_match('/(\d{4})-(\d{4})/', $original_code, $name_matches)) {
+                        // If it looks like '2025-2026', calculate the next one properly
+                        $start_code_next = (int) $name_matches[1] + 2;
+                        $end_code_next = (int) $name_matches[2] + 2;
+                        $new_code_next = (string) $start_code_next . (string) $end_code_next;
+                    } else {
+                        // For FALL2025 or other single year codes, next next is less clear, use default
+                        $new_code_next = '';
+                    }
+
+                    // Reconstruct Name: Replace the year in the name.
+                    if (preg_match('/(\d{4})/', $original_name, $name_matches)) {
+                        $new_name = preg_replace('/' . preg_quote((string) $name_matches[1], '/') . '/', (string) $next_start_year, $original_name, 1);
+
+                        // If the name contains two year parts (e.g., 2025-2026), ensure both are incremented
+                        if (preg_match('/(\d{4})-(\d{4})/', $original_name)) {
+                            $new_end_year = (int) $name_matches[1] + 2; // Assuming the second year is the first year + 1, so new end year is (start_year+1)+1
+                            $new_name = preg_replace('/(\d{4})-(\d{4})/', (string) $next_start_year . '-' . (string) $new_end_year, $new_name);
+                        }
+                    } else {
+                        // Fallback for name calculation if year is not found
+                        $new_name = $original_name . ' - Next Period ' . $new_year;
+                    }
+                }
+                // Fallback for codes that don't contain a clear 4-digit year (e.g., TERM_A)
+                else {
+                    $new_code = $original_code . '_' . $new_year; // e.g., TERM_A_2026
+                    $new_name = $original_name . ' (' . $new_year . ')';
+                }
+
+                // --- End of Dynamic Code Calculation ---
+
+                // Date calculations: Add 1 year to all relevant dates (same robust logic)
+                $new_start_date = (new DateTime($period->start_date))->modify('+1 year')->format('Y-m-d');
+                $new_end_date = (new DateTime($period->end_date))->modify('+1 year')->format('Y-m-d');
+                $new_start_date_inscription = $period->start_date_inscription ? (new DateTime($period->start_date_inscription))->modify('+1 year')->format('Y-m-d') : null;
+                $new_end_date_inscription = $period->end_date_inscription ? (new DateTime($period->end_date_inscription))->modify('+1 year')->format('Y-m-d') : null;
+                $new_start_date_pre_inscription = $period->start_date_pre_inscription ? (new DateTime($period->start_date_pre_inscription))->modify('+1 year')->format('Y-m-d') : null;
+                $new_end_date_pre_inscription = $period->end_date_pre_inscription ? (new DateTime($period->end_date_pre_inscription))->modify('+1 year')->format('Y-m-d') : null;
+
+                // Insertion of new academic period
+                $wpdb->insert($table_academic_periods, [
+                    'name' => $new_name,
+                    'code' => $new_code,
+                    'code_next' => $new_code_next,
+                    'year' => $new_year,
+                    'start_date' => $new_start_date,
+                    'end_date' => $new_end_date,
+                    'start_date_inscription' => $new_start_date_inscription,
+                    'end_date_inscription' => $new_end_date_inscription,
+                    'start_date_pre_inscription' => $new_start_date_pre_inscription,
+                    'end_date_pre_inscription' => $new_end_date_pre_inscription,
+                    'status_id' => $period->status_id,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'current' => 0
+                ], [
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%d',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%d',
+                    '%s',
+                    '%d'
+                ]);
+
+                $new_period_id = $wpdb->insert_id;
+
+                // Fetch previous cuts, using $wpdb->prepare for security
+                $cuts_query = $wpdb->prepare(
+                    "SELECT * FROM {$table_academic_periods_cut} WHERE code = %s ORDER BY cut ASC",
+                    $period->code
+                );
+                $cuts = $wpdb->get_results($cuts_query);
+
+                if ($new_period_id && $cuts) {
+                    foreach ($cuts as $cut) {
+                        // Note: Assuming cut dates (start_date, end_date, max_date) are also 'Y-m-d' strings
+                        // and should be incremented by one year, even in hybrid codes.
+                        $wpdb->insert($table_academic_periods_cut, [
+                            'code' => $new_code,
+                            'cut' => $cut->cut,
+                            'start_date' => (new DateTime($cut->start_date))->modify('+1 year')->format('Y-m-d'),
+                            'end_date' => (new DateTime($cut->end_date))->modify('+1 year')->format('Y-m-d'),
+                            'max_date' => (new DateTime($cut->max_date))->modify('+1 year')->format('Y-m-d'),
+                        ], [
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s',
+                            '%s'
+                        ]);
+                    }
+                    setcookie('message', __('Period generated correctly.', 'edusystem'), time() + 10, '/');
+                }
+
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
                 exit;
             } catch (\Throwable $th) {
-                echo $th;
+                setcookie('error', __('Error generating period: ', 'edusystem') . $th->getMessage(), time() + 10, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
                 exit;
             }
         }
