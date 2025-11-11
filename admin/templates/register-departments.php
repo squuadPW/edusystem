@@ -193,6 +193,11 @@
                         value="manager_dynamic_links" id="manager_dynamic_links" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_dynamic_links'])) ? 'checked' : ''; ?>>
                     <label for="manager_dynamic_links" <?= !in_array('manager_dynamic_links', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Payment link', 'edusystem'); ?></label>
                 </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_student_matrix', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_student_matrix" id="manager_student_matrix" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_student_matrix'])) ? 'checked' : ''; ?>>
+                    <label for="manager_student_matrix" <?= !in_array('manager_student_matrix', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Manager student matrix', 'edusystem'); ?></label>
+                </div>
             </div>
 
             <div class="capability-group">
@@ -236,6 +241,11 @@
                     <input <?= !in_array('manager_teachers_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_teachers_aes" id="manager_teachers_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_teachers_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_teachers_aes" <?= !in_array('manager_teachers_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Teachers', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('can_switch_student', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="can_switch_student" id="can_switch_student" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['can_switch_student'])) ? 'checked' : ''; ?>>
+                    <label for="can_switch_student" <?= !in_array('can_switch_student', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Can switch between student', 'edusystem'); ?></label>
                 </div>
             </div>
 

@@ -11,10 +11,16 @@
             <span id="close-modal-enrollment" style="float: right; cursor: pointer"><span
                     class='dashicons dashicons-no-alt'></span></span>
             <div class="modal-body" id="content-pdf">
-                <?php echo $html ?>
+                <input class="formdata" autocomplete="off" type="hidden" id="modal_open" name="modal_open" value="1" />
+                <input type="hidden" name="student_user_id" value="<?= $student_id ?>" />
+                <input type="hidden" name="parent_user_id" value="<?= $partner_id ?>" />
+                <input type="hidden" name="show_parent_info" value="<?= $show_parent_info ?>" />
+                <input type="hidden" name="document_id" value="<?= $document->document_identificator ?>">
+                <input type="hidden" name="document_name" value="<?= $document->title ?>">
+                <?= $html ?>
             </div>
             <div class="modal-footer" style="text-align: center; display: block">
-                <button type="button" class="submit button-create-enrollment" id="saveSignatures">Save</button>
+                <button type="button" class="submit button-create-enrollment" id="saveSignatures"><?= __('Save', 'edusystem') ?></button>
             </div>
         </div>
     </div>

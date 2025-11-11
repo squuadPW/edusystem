@@ -12,20 +12,22 @@ document.addEventListener("DOMContentLoaded", (event) => {
     }, 1000);
   }
 
-  const closeModalEnrollment = document.getElementById("close-modal-enrollment");
+  const closeModalEnrollment = document.getElementById(
+    "close-modal-enrollment"
+  );
   if (closeModalEnrollment) {
-      closeModalEnrollment.addEventListener("click", () => {
-          const modalContrasena = document.getElementById("modal-contraseña");
-          const modalContent = document.getElementById("modal-content");
+    closeModalEnrollment.addEventListener("click", () => {
+      const modalContrasena = document.getElementById("modal-contraseña");
+      const modalContent = document.getElementById("modal-content");
 
-          if (modalContrasena) {
-              modalContrasena.style.display = "none";
-          }
-          if (modalContent) {
-              modalContent.style.display = "none";
-          }
-          document.body.classList.remove("modal-open");
-      });
+      if (modalContrasena) {
+        modalContrasena.style.display = "none";
+      }
+      if (modalContent) {
+        modalContent.style.display = "none";
+      }
+      document.body.classList.remove("modal-open");
+    });
   }
 
   function resizeCanvas(canvasId, timmeout) {
@@ -259,7 +261,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
         document_id = document.querySelector("input[name=document_id]").value;
       }
 
-      if (!gradeSelected && document_id != "MISSING DOCUMENT") {
+      if (
+        !gradeSelected &&
+        document.getElementById("please_select_grade") &&
+        document.getElementById("select_grade")
+      ) {
         save_signatures.disabled = false;
         document.getElementById("please_select_grade").style.display = "block";
         document.getElementById("select_grade").style.color = "red";
@@ -267,7 +273,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
           .getElementById("select_grade")
           .scrollIntoView({ behavior: "smooth" });
         alert(
-          "To proceed with your enrollment, please select the last grade you completed"
+          "To proceed with your document, please select the last grade you completed"
         );
         return;
       }
@@ -278,7 +284,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         } else if (signaturePadStudent.isEmpty()) {
           save_signatures.disabled = false;
           alert(
-            "To proceed with your enrollment, please sign in the student area or generate the signature automatically"
+            "To proceed with your document, please sign in the student area or generate the signature automatically"
           );
           return;
         } else {
@@ -352,8 +358,15 @@ document.addEventListener("DOMContentLoaded", (event) => {
       document_id = document.querySelector("input[name=document_id]").value;
     }
 
+    let document_name = null;
+    if (document.querySelector("input[name=document_name]")) {
+      document_name = document.querySelector("input[name=document_name]").value;
+    }
+
     let filename = "Student Enrollment Agreement.pdf";
-    if (document_id != "ENROLLMENT") {
+    if (document_name) {
+      filename = `${document_name.toLowerCase()}.pdf`;
+    } else if (document_id != "ENROLLMENT") {
       filename = "Student Missing Document Agreement.pdf";
     }
 
@@ -365,7 +378,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
       image: { type: "jpeg", quality: 0.98 },
       jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
       html2canvas: { scale: 3 },
-      pagebreak: { after: "#part1" },
+      pagebreak: { after: ".pagebreak" },
     };
 
     html2pdf()
@@ -442,8 +455,15 @@ document.addEventListener("DOMContentLoaded", (event) => {
     }
     formData.append("document_id", document_id);
 
+    let document_name = null;
+    if (document.querySelector("input[name=document_name]")) {
+      document_name = document.querySelector("input[name=document_name]").value;
+    }
+
     let filename = "Student Enrollment Agreement.pdf";
-    if (document_id != "ENROLLMENT") {
+    if (document_name) {
+      filename = `${document_name.toLowerCase()}.pdf`;
+    } else if (document_id != "ENROLLMENT") {
       filename = "Student Missing Document Agreement.pdf";
     }
 
@@ -567,11 +587,18 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
   function returnButtonTitle() {
     let document_id = "ENROLLMENT";
+    let document_name = null;
     if (document.querySelector("input[name=document_id]")) {
       document_id = document.querySelector("input[name=document_id]").value;
     }
 
-    if (document_id == "ENROLLMENT") {
+    if (document.querySelector("input[name=document_name]")) {
+      document_name = document.querySelector("input[name=document_name]").value;
+    }
+
+    if (document_name) {
+      return document_name.toLowerCase();
+    } else if (document_id == "ENROLLMENT") {
       return "enrollment";
     } else {
       return "missing document";

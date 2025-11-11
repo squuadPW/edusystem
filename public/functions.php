@@ -1127,9 +1127,6 @@ function status_order_completed($order, $order_id, $customer_id)
  */
 function update_or_create_payment_record(WC_Order_Item_Product $item, int $student_id, int $order_id): void
 {
-    /* $logger = wc_get_logger();
-    $logger->debug('update_or_create_payment_record',['order_id' => $order_id]); */
-    
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
     $product_id = $item->get_product_id();
@@ -1378,10 +1375,6 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
 function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [])
 {
-    /* $logger = wc_get_logger();
-    $logger->debug('process_payments',['order_id' => $order_id]); */
-
-    // si no viene el id del estudiante, salir ya que es un dato crítico.
     if (!$student_id)
         return;
 
@@ -1601,8 +1594,8 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
             $next_payment_date = $payment_date->format('Y-m-d');
         }
 
-        if ($amount == 0)
-            continue;
+        // if ($amount == 0)
+        //     continue;
 
         $data = [
             'status_id' => 0,
@@ -2667,7 +2660,7 @@ function select_elective_callback()
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $load = load_current_cut_enrollment();
+    $load = load_current_cut();
     $code = $load['code'];
     $cut = $load['cut'];
 
@@ -2926,7 +2919,7 @@ function modal_take_elective()
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
-    $load = load_current_cut_enrollment();
+    $load = load_current_cut();
     $code = $load['code'];
     $cut = $load['cut'];
 
@@ -3071,10 +3064,37 @@ function modal_enrollment_student()
 function modal_document_automatic()
 {
     global $wpdb, $current_user;
-
     $roles = (array) $current_user->roles;
     $table_students = $wpdb->prefix . 'students';
     $table_student_payments = $wpdb->prefix . 'student_payments';
+
+    $has_registered_status = false;
+    $is_parent = in_array('parent', $roles);
+    $is_student = in_array('student', $roles);
+    $is_parent_or_student = $is_parent || $is_student;
+
+    if ($is_parent_or_student) {
+        if ($is_parent) {
+            $has_registered_status = get_user_meta($current_user->ID, 'status_register', true) == 1;
+        }
+
+        if ($is_student && !$has_registered_status) {
+            $student_id = get_user_meta($current_user->ID, 'student_id', true);
+            $student = $student_id ? get_student_detail($student_id) : null;
+            if ($student && isset($student->partner_id)) {
+                $has_registered_status = get_user_meta($student->partner_id, 'status_register', true) == 1;
+            }
+        }
+    }
+
+    if (!$has_registered_status) {
+        return;
+    }
+
+    $load_automatic_available = function_exists('get_complete_data_success') ? get_complete_data_success() : true;
+    if (!$load_automatic_available) {
+        return;
+    }
 
     $student = null;
     $student_id = 0;
@@ -3161,52 +3181,50 @@ function modal_document_automatic()
         'student' => $student,
         'payment' => $payment,
         'user_partner' => $user_partner,
+        'form_filled' => function_exists('get_form_filled') ? get_form_filled() : null,
+        'program_data_student' => get_program_data_student($student->id)
     ];
 
-    $automatic_documents = apply_filters('load_automatic_documents', []);
+    $document = apply_filters('get_first_pending_automatic_document', null);
     $html_parts = [];
 
     extract($template_data, EXTR_SKIP);
 
-    foreach ($automatic_documents as $document) {
-        $table_users_signatures = $wpdb->prefix . 'users_signatures';
-        $existing_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_users_signatures} WHERE user_id = %d AND document_id = %s", $current_user->ID, $document->document_identificator));
-        if ($existing_row) {
-            continue;
-        }
+    if ($document) {
+        if (!empty($document->header) || !empty($document->content) || !empty($document->footer)) {
 
-        if (empty($document->header) && empty($document->content) && empty($document->footer)) {
-            continue;
-        }
+            ob_start();
 
-        ob_start();
+            if (!empty($document->header)) {
+                echo '<div class="automatic-document-header">';
+                eval ('?>' . $document->header . '<?php ');
+                echo '</div>';
+            }
 
-        if (!empty($document->header)) {
-            echo '<div class="automatic-document-header">';
-            eval ('?>' . $document->header . '<?php ');
-            echo '</div>';
-        }
+            if (!empty($document->content)) {
+                echo '<div class="automatic-document-content">';
+                eval ('?>' . $document->content . '<?php ');
+                echo '</div>';
+            }
 
-        if (!empty($document->content)) {
-            echo '<div class="automatic-document-content">';
-            eval ('?>' . $document->content . '<?php ');
-            echo '</div>';
-        }
+            if (!empty($document->footer)) {
+                echo '<div class="automatic-document-footer">';
+                eval ('?>' . $document->footer . '<?php ');
+                echo '</div>';
+            }
 
-        if (!empty($document->footer)) {
-            echo '<div class="automatic-document-footer">';
-            eval ('?>' . $document->footer . '<?php ');
-            echo '</div>';
-        }
+            $document_html = ob_get_clean();
 
-        $document_html = ob_get_clean();
-
-        if (!empty($document_html)) {
-            $html_parts[] = $document_html;
+            if (!empty($document_html)) {
+                // Se agrega el único documento a la lista de partes
+                $html_parts[] = $document_html;
+            }
         }
     }
 
     $html = implode('<hr class="document-separator">', $html_parts);
+    $replacements = get_replacements_variables($student);
+    $html = process_template($html, $replacements);
 
     if (!empty($html)) {
         include plugin_dir_path(__FILE__) . 'templates/create-document-automatic.php';

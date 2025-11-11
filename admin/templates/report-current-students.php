@@ -77,7 +77,7 @@
 			action="<?= admin_url('admin.php?page=report-students') . ($_GET['section_tab'] ? '&section_tab=' . $_GET['section_tab'] : ''); ?>">
 			<div class="filter-controls">
 				<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
-					<select name="academic_period" required style="width: 100%;">
+					<select name="academic_period" style="width: 100%;">
 						<option value="" selected>Select an academic period</option>
 						<?php foreach ($periods as $key => $period) { ?>
 							<option value="<?= $period->code ?>"
@@ -86,7 +86,7 @@
 							</option>
 						<?php } ?>
 					</select>
-					<select name="academic_period_cut" required
+					<select name="academic_period_cut"
 						style="width: 100%;">
 						<option value="" selected>Select a term</option>
 						<?php foreach ($periods_cuts as $key => $cut) { ?>

@@ -65,6 +65,15 @@
                                         <textarea style="width: 100%" name="description" id="description" rows="4" required><?= $program->description; ?></textarea>
                                     </div>
 
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label for="name"><b><?= __('Type of program', 'edusystem'); ?></b><span
+                                                class="text-danger">*</span></label><br>
+                                        <select name="type" id="type">
+                                            <option value="undergraduated" <?= $program->type == 'undergraduated' ? 'selected' : '' ?>>Undergraduated</option>
+                                            <option value="graduated" <?= $program->type == 'graduated' ? 'selected' : '' ?>>Graduated</option>
+                                        </select>
+                                    </div>
+
                                     <div style="font-weight:400;">
                                         <label for="hc"><b><?= __('Associated payment plans', 'edusystem'); ?></b></label><br>
                                         

@@ -3,7 +3,5 @@
 	define('PROGRAM_ID', 'HSD-01'); // AES program for endpoint for laravel create user and move documents
 	define('TYPE_PROGRAM', '0'); // AES type of program for endpoint for laravel create user and move documents
 	define('ROLE_ID_STUDENT_MOODLE', 5); // Role ID moodle student
-	define('VERSIONS_JS', '2.2.46'); // Versions JS
-	define('MODE', 'UNIf');
-	define('LANG', 'en_EN');
+	define('VERSIONS_JS', '2.2.48'); // Versions JS
 ?>

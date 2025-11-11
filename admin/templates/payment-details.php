@@ -70,7 +70,14 @@
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if(!in_array('institutes',$roles)): ?>
+                                <?php
+                                    $age = floor((time() - strtotime($student->birth_date)) / 31536000);
+                                    $show_parent_info = 1;
+                                    if ($age >= 18) {
+                                        $show_parent_info = 0;
+                                    }
+                                ?>
+                                <?php if(!in_array('institutes',$roles) && $show_parent_info): ?>
                                     <div class="seccion-card">
                                         <span class="dashicons dashicons-businessperson no-vertical seccion-icon" ></span>
                                         

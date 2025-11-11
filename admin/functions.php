@@ -5,7 +5,7 @@ require plugin_dir_path(__FILE__) . 'admission.php';
 require plugin_dir_path(__FILE__) . 'report.php';
 require plugin_dir_path(__FILE__) . 'payments.php';
 require plugin_dir_path(__FILE__) . 'scholarships.php';
-require plugin_dir_path(__FILE__) . 'academic_periods.php';
+require plugin_dir_path(__FILE__) . 'academic-periods.php';
 require plugin_dir_path(__FILE__) . 'school_subjects.php';
 require plugin_dir_path(__FILE__) . 'academic-projection.php';
 require plugin_dir_path(__FILE__) . 'teachers.php';
@@ -595,6 +595,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_academic_projection_aes');
     $role->add_cap('manager_automatically_inscriptions');
     $role->add_cap('manager_teachers_aes');
+    $role->add_cap('can_switch_student');
     $role->add_cap('manager_enrollments_aes');
     $role->add_cap('withdraw_student');
     $role->add_cap('can_regenerate_projection');
@@ -603,6 +604,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_programs');
     $role->add_cap('manager_feed');
     $role->add_cap('manager_dynamic_links');
+    $role->add_cap('manager_student_matrix');
     $role->add_cap('manager_templates_emails');
     $role->add_cap('manager_academic_offers_aes');
     $role->add_cap('manager_requests_aes');
@@ -1218,18 +1220,34 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
     $countries = WC()->countries->get_countries();
     $country_code = $student->country;
     $country_name = isset($countries[$country_code]) ? $countries[$country_code] : $country_code;
+    $user_student = get_user_by('email', $student->email);
+    $form_filled = function_exists('get_form_filled') ? get_form_filled($user_student->ID) : null;
+    $lastNameParts = array_filter([$student->last_name, $student->middle_last_name]);
+    $firstNameParts = array_filter([$student->name, $student->middle_name]);
+    $student_full_name = '';
+
+    if (!empty($lastNameParts)) {
+        $student_full_name .= implode(' ', $lastNameParts);
+    }
+
+    if (!empty($firstNameParts)) {
+        if (!empty($student_full_name)) {
+            $student_full_name .= ', ';
+        }
+        $student_full_name .= implode(' ', $firstNameParts);
+    }
 
     $replacements = [
         'student_name' => [
-            'value' => $student->last_name . ' ' . $student->middle_last_name . ' ' . $student->name . ' ' . $student->middle_name,
+            'value' => $student_full_name,
             'wrap' => true,
         ],
         'name' => [
-            'value' => $student->name . ' ' . $student->middle_name,
+            'value' => implode(' ', array_filter([$student->name, $student->middle_name])),
             'wrap' => true,
         ],
         'last_name' => [
-            'value' => $student->last_name . ' ' . $student->middle_last_name,
+            'value' => implode(' ', array_filter([$student->last_name, $student->middle_last_name])),
             'wrap' => true,
         ],
         'id_student' => [
@@ -1255,6 +1273,32 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
         'program' => [
             'value' => get_name_program_student($student->id),
             'wrap' => true,
+        ],
+        'career_mention' => [
+            'value' => get_career_and_mention($student->id),
+            'wrap' => true,
+        ],
+        'name_term_student_entered' => [
+            'value' => get_term_student_entered($student->academic_period, $student->initial_cut)->name,
+            'wrap' => true,
+        ],
+        'year_term_student_entered' => [
+            'value' => get_term_student_entered($student->academic_period, $student->initial_cut)->year,
+            'wrap' => true,
+        ],
+        'start_term_student_entered' => [
+            'value' => date('m/d/Y', strtotime(get_term_student_entered($student->academic_period, $student->initial_cut)->start_date)),
+            'wrap' => true,
+        ],
+        'end_term_student_entered' => [
+            'value' => date('m/d/Y', strtotime(get_term_student_entered($student->academic_period, $student->initial_cut)->end_date)),
+            'wrap' => true,
+        ],
+        'payment_method_table' => [
+            'value' => function () use ($student) {
+                return get_payment_method_table_html($student);
+            },
+            'wrap' => false,
         ],
         'academic_year' => [
             'value' => $academic_period->name,
@@ -1317,6 +1361,80 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
         'phone' => [
             'value' => $student->phone,
             'wrap' => true,
+        ],
+        'city' => [
+            'value' => $student->city,
+            'wrap' => true,
+        ],
+        'fax' => [
+            'value' => $form_filled ? $form_filled['step_1']['fax'] : 'N/A',
+            'wrap' => true,
+        ],
+        'institution_name_form_filled' => [
+            'value' => $form_filled ? $form_filled['step_3']['institution'] : 'N/A',
+            'wrap' => true,
+        ],
+        'institution_city_country_form_filled' => [
+            'value' => $form_filled ? $form_filled['step_3']['city'] . ' / ' . $form_filled['step_3']['institution_country_residence'] : 'N/A',
+            'wrap' => true,
+        ],
+        'institution_title_obtained_form_filled' => [
+            'value' => $form_filled ? $form_filled['step_3']['title_obtained'] : 'N/A',
+            'wrap' => true,
+        ],
+        'institution_graduation_year_form_filled' => [
+            'value' => $form_filled ? $form_filled['step_3']['graduation_year'] : 'N/A',
+            'wrap' => true,
+        ],
+        'other_phone' => [
+            'value' => $form_filled ? $form_filled['step_1']['other_phone'] : 'N/A',
+            'wrap' => true,
+        ],
+        'created_at' => [
+            'value' => date('m/d/Y', strtotime($student->created_at)),
+            'wrap' => true,
+        ],
+        'ethinicity_selected' => [
+            'value' => function () use ($student) {
+                return get_ethnicity_selected_html($student->ethnicity);
+            },
+            'wrap' => false,
+        ],
+        'language_selected' => [
+            'value' => function () use ($student, $form_filled) {
+                return $form_filled ? get_language_selected_html($form_filled['step_1']['take_courses_lang']) : 'N/A';
+            },
+            'wrap' => false,
+        ],
+        'signature_section' => [
+            'value' => function () use ($student) {
+                return get_signature_section($student);
+            },
+            'wrap' => false,
+        ],
+        'admission_signature_fgu' => [
+            'value' => function () use ($student) {
+                return get_signature_section_fgu($student);
+            },
+            'wrap' => false,
+        ],
+        'payment_plan_table' => [
+            'value' => function () use ($student) {
+                return get_payment_plan_table($student->id);
+            },
+            'wrap' => false,
+        ],
+        'educational_background_information' => [
+            'value' => function () use ($student, $form_filled) {
+                return get_educational_background_information_table($student->id, $form_filled);
+            },
+            'wrap' => false,
+        ],
+        'admission_requirements_table' => [
+            'value' => function () use ($student) {
+                return get_admission_requirements_table($student->id);
+            },
+            'wrap' => false,
         ],
         'email' => [
             'value' => $student->email,

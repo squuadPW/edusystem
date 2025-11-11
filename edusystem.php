@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 3.7.62
+Version: 3.7.96
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
@@ -144,16 +144,17 @@ function create_tables()
             ) $charset_collate;"
         );
 
-    dbDelta(
-        "CREATE TABLE " . $table_student_program . " (
-        `id` INT(11) NOT NULL AUTO_INCREMENT,
-        `is_active` tinyint(1) DEFAULT 1,
-        `identificator` TEXT NOT NULL,
-        `name` TEXT NOT NULL,
-        `description` TEXT NOT NULL,
-        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
-    );
+  dbDelta(
+    "CREATE TABLE " . $table_student_program . " (
+      `id` INT(11) NOT NULL AUTO_INCREMENT,
+      `is_active` tinyint(1) DEFAULT 1,
+      `identificator` TEXT NOT NULL,
+      `name` TEXT NOT NULL,
+      `description` TEXT NOT NULL,
+      `type` TEXT NOT NULL,
+      `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id))$charset_collate;"
+  );
 
     dbDelta(
         "CREATE TABLE " . $table_careers_by_program . " (
@@ -433,15 +434,16 @@ function create_tables()
         );
     }
 
-    // table_student_academic_projection
-    dbDelta(
-        "CREATE TABLE " . $table_student_academic_projection . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        student_id INT(11) NOT NULL,
-        projection JSON NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
-    );
+  // table_student_academic_projection
+  dbDelta(
+    "CREATE TABLE " . $table_student_academic_projection . " (
+      id INT(11) NOT NULL AUTO_INCREMENT,
+      student_id INT(11) NOT NULL,
+      projection JSON NULL,
+      matrix JSON NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id))$charset_collate;"
+  );
 
     // table_student_califications
     dbDelta(
