@@ -51,10 +51,10 @@ function truncate_text($text, $max_length = 100) {
         <button style="margin-left: 5px;" data-id="<?= $student->id; ?>" id="button-export-xlsx"
             class="button button-primary"><?= __('Export Excel', 'edusystem'); ?></button>
         <!-- <?php
-                global $current_user;
-                $roles = $current_user->roles;
-                if (in_array('administrator', $roles)) {
-                ?>
+        global $current_user;
+        $roles = $current_user->roles;
+        if (in_array('administrator', $roles)) {
+            ?>
             <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>" target="_blank">
                 <button class="button button-success" style="margin-left: 10px"><?= __('View user', 'edusystem'); ?></button>
             </a>
@@ -248,7 +248,7 @@ function truncate_text($text, $max_length = 100) {
                                 global $current_user;
                                 $roles = $current_user->roles;
                                 if (in_array('administrator', $roles)) {
-                                ?>
+                                    ?>
                                     <p style="text-align: center">
                                         <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>"
                                             target="_blank">
@@ -261,24 +261,16 @@ function truncate_text($text, $max_length = 100) {
                             <div>
                                 <?php
                                 if (current_user_can('can_switch_student')) {
-
-                                    // 1. Construimos la URL base (igual que en el código fuente)
                                     $base_url = admin_url('users.php');
                                     $base_url = add_query_arg(array(
                                         'ure_switch_action' => 'switch_to',
                                         'user_id' => $user_student->ID,
                                     ), $base_url);
-
-                                    // 2. Esta es la acción de nonce correcta que encontraste:
                                     $nonce_action = 'switch_to_user_' . $user_student->ID;
-
-                                    // 3. Creamos la URL final con el nonce correcto
                                     $nonce_url = wp_nonce_url($base_url, $nonce_action);
-
-                                ?>
+                                    ?>
                                     <p style="text-align: center">
-                                        <a href="<?php echo $nonce_url; ?>"
-                                            target="_blank">
+                                        <a href="<?php echo $nonce_url; ?>" target="_blank">
                                             <button type="button" class="button button-primary"
                                                 style="margin-left: 10px"><?= __('Switch', 'edusystem'); ?></button>
                                         </a>
@@ -437,12 +429,31 @@ function truncate_text($text, $max_length = 100) {
                                     global $current_user;
                                     $roles = $current_user->roles;
                                     if (in_array('administrator', $roles)) {
-                                    ?>
+                                        ?>
                                         <p style="text-align: center">
                                             <a href="<?php echo admin_url('user-edit.php?user_id=') . $partner->ID ?>"
                                                 target="_blank">
                                                 <button type="button" class="button button-success"
                                                     style="margin-left: 10px"><?= __('View user parent', 'edusystem'); ?></button>
+                                            </a>
+                                        </p>
+                                    <?php } ?>
+                                </div>
+                                <div>
+                                    <?php
+                                    if (current_user_can('can_switch_student')) {
+                                        $base_url = admin_url('users.php');
+                                        $base_url = add_query_arg(array(
+                                            'ure_switch_action' => 'switch_to',
+                                            'user_id' => $partner->ID,
+                                        ), $base_url);
+                                        $nonce_action = 'switch_to_user_' . $partner->ID;
+                                        $nonce_url = wp_nonce_url($base_url, $nonce_action);
+                                        ?>
+                                        <p style="text-align: center">
+                                            <a href="<?php echo $nonce_url; ?>" target="_blank">
+                                                <button type="button" class="button button-primary"
+                                                    style="margin-left: 10px"><?= __('Switch', 'edusystem'); ?></button>
                                             </a>
                                         </p>
                                     <?php } ?>
@@ -943,8 +954,8 @@ function truncate_text($text, $max_length = 100) {
                         <option value="" selected>Assigns an user</option>
                         <?php foreach ($users_signatures_certificates as $user) {
                             $user_loaded = get_user_by('id', $user->user_id);
-                        ?>
-                            <option value="<?= $user->id ?>"><?= $user_loaded->first_name ?> <?= $user_loaded->last_name ?>
+                            ?>
+                            <option value="<?= $user->id ?>"><?= $user_loaded->first_name ?>         <?= $user_loaded->last_name ?>
                                 (<?= $user->charge ?>)</option>
                         <?php } ?>
                     </select>
