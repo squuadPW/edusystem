@@ -44,10 +44,10 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                         <h1 style="text-align: center; margin-bottom: 30px;"><?= $student_full_name ?></h1>
 
                         <?php if (!empty($matrix) && is_array($matrix)): ?>
-                            <h3 style="margin-top: 10px;"><?= __('Academic Projection Matrix Configuration', 'edusystem'); ?></h3>
-                            
+
                             <!-- FORM START: Matrix Configuration -->
-                            <form method="post" action="">
+                            <form method="post"
+                                action="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=update_matrix'); ?>">
                                 <!-- Hidden fields for context -->
                                 <input type="hidden" name="action" value="update_academic_matrix" />
                                 <input type="hidden" name="student_id" value="<?= esc_attr($student_id); ?>" />
@@ -61,8 +61,10 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                             <tr>
                                                 <th scope="col" style="width: 5%;">#</th>
                                                 <th scope="col" style="width: 15%;"><?= __('Type', 'edusystem'); ?></th>
-                                                <th scope="col" style="width: 25%;"><?= __('Academic Period', 'edusystem'); ?></th>
-                                                <th scope="col" style="width: 25%;"><?= __('Academic Cut', 'edusystem'); ?></th>
+                                                <th scope="col" style="width: 25%;">
+                                                    <?= __('Academic Period', 'edusystem'); ?></th>
+                                                <th scope="col" style="width: 25%;"><?= __('Academic Cut', 'edusystem'); ?>
+                                                </th>
                                                 <th scope="col" style="width: 30%;"><?= __('Subject', 'edusystem'); ?></th>
                                             </tr>
                                         </thead>
@@ -71,7 +73,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                 <?php $item = (array) $item; // Ensure it's an array for safe access ?>
                                                 <tr id="matrix-row-<?= $index; ?>">
                                                     <th scope="row"><?= $index + 1; ?></th>
-                                                    
+
                                                     <!-- 1. Tipo de materia (type) -->
                                                     <td>
                                                         <?php
@@ -79,58 +81,75 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                         $type_label = $type === 'R' ? __('Regular', 'edusystem') : ($type === 'E' ? __('Elective', 'edusystem') : 'N/A');
                                                         echo esc_html($type_label);
                                                         ?>
-                                                        <input type="hidden" name="matrix[<?= $index ?>][type]" value="<?= esc_attr($type) ?>" />
+                                                        <input type="hidden" name="matrix[<?= $index ?>][type]"
+                                                            value="<?= esc_attr($type) ?>" />
                                                     </td>
-                                                    
+
                                                     <!-- 2. Periodo académico (Select) -->
                                                     <td>
-                                                        <select name="matrix[<?= $index ?>][code_period]" class="academic-period-select" style="width: 100%; min-width: 150px;" 
-                                                            <?= !empty($item['code_period']) ? 'disabled' : '' ?>>
+                                                        <?php if (!empty($item['code_period'])): ?>
+                                                            <input type="hidden" name="matrix[<?= $index ?>][code_period]"
+                                                                value="<?= esc_attr($item['code_period']) ?>" />
+                                                        <?php endif; ?>
+
+                                                        <select name="matrix[<?= $index ?>][code_period]"
+                                                            class="academic-period-select"
+                                                            style="width: 100%; min-width: 150px;"
+                                                            <?= !empty($item['code_period']) ? 'disabled' : '' ?> required>
                                                             <?php if (empty($item['code_period'])): ?>
-                                                                <option value="" selected><?= __('Select Period', 'edusystem') ?></option>
+                                                                <option value="" selected><?= __('Select Period', 'edusystem') ?>
+                                                                </option>
                                                             <?php endif; ?>
                                                             <?php foreach ($periods as $period) { ?>
-                                                                <option value="<?= esc_attr($period->code) ?>" <?= (isset($item['code_period']) && $item['code_period'] == $period->code) ? 'selected' : '' ?>>
+                                                                <option value="<?= esc_attr($period->code) ?>"
+                                                                    <?= (isset($item['code_period']) && $item['code_period'] == $period->code) ? 'selected' : '' ?>>
                                                                     <?= esc_html($period->name) ?>
                                                                 </option>
                                                             <?php } ?>
-                                                            <?php if (!empty($item['code_period']) && !in_array($item['code_period'], array_column($periods, 'code'))) : ?>
-                                                                <option value="<?= esc_attr($item['code_period']) ?>" selected>Current: <?= esc_html($item['code_period']) ?></option>
-                                                            <?php endif; ?>
                                                         </select>
                                                     </td>
-                                                    
+
                                                     <!-- 3. Corte académico (Select) -->
                                                     <td>
-                                                        <select name="matrix[<?= $index ?>][cut]" class="academic-cut-select" style="width: 100%; min-width: 150px;"
-                                                            <?= !empty($item['cut']) ? 'disabled' : '' ?>>
+                                                        <?php if (!empty($item['cut'])): ?>
+                                                            <input type="hidden" name="matrix[<?= $index ?>][cut]"
+                                                                value="<?= esc_attr($item['cut']) ?>" />
+                                                        <?php endif; ?>
+
+                                                        <select name="matrix[<?= $index ?>][cut]" class="academic-cut-select"
+                                                            style="width: 100%; min-width: 150px;" <?= !empty($item['cut']) ? 'disabled' : '' ?> required>
                                                             <?php if (empty($item['cut'])): ?>
-                                                                <option value="" selected><?= __('Select Cut', 'edusystem') ?></option>
-                                                            <?php else: ?>
-                                                                <option value="<?= esc_attr($item['cut']) ?>" selected>Current: <?= esc_html($item['cut']) ?></option>
+                                                                <option value="" selected><?= __('Select cut', 'edusystem') ?>
+                                                                </option>
                                                             <?php endif; ?>
-                                                            <!-- Add more cut options here later if needed -->
+                                                            <?php foreach ($cuts as $cut) { ?>
+                                                                <option value="<?= esc_attr($cut) ?>" <?= (isset($item['cut']) && $item['cut'] == $cut) ? 'selected' : '' ?>>
+                                                                    <?= esc_html($cut) ?>
+                                                                </option>
+                                                            <?php } ?>
                                                         </select>
                                                     </td>
-                                                    
+
                                                     <!-- 4. Materia (Select) -->
                                                     <td>
-                                                        <select name="matrix[<?= $index ?>][subject_id]" class="subject-select" style="width: 100%; min-width: 200px;" 
+                                                        <?php if (!empty($item['subject_id'])): ?>
+                                                            <input type="hidden" name="matrix[<?= $index ?>][subject_id]"
+                                                                value="<?= esc_attr($item['subject_id']) ?>" />
+                                                        <?php endif; ?>
+
+                                                        <select name="matrix[<?= $index ?>][subject_id]" class="subject-select"
+                                                            style="width: 100%; min-width: 200px;"
                                                             <?= !empty($item['subject_id']) ? 'disabled' : '' ?>>
                                                             <?php if (empty($item['subject_id'])): ?>
-                                                                <option value="" selected><?= __('Select Subject', 'edusystem') ?></option>
+                                                                <option value="" selected><?= __('Select Subject', 'edusystem') ?>
+                                                                </option>
                                                             <?php endif; ?>
                                                             <?php foreach ($subjects as $subject) { ?>
-                                                                <option value="<?= esc_attr($subject->id) ?>" <?= (isset($item['subject_id']) && $item['subject_id'] == $subject->id) ? 'selected' : '' ?>>
+                                                                <option value="<?= $subject->id ?>" <?= (isset($item['subject_id']) && $item['subject_id'] == $subject->id) ? 'selected' : '' ?>>
                                                                     <?= esc_html($subject->name) ?>
                                                                 </option>
                                                             <?php } ?>
-                                                            <?php if (!empty($item['subject']) && !empty($item['subject_id']) && !in_array($item['subject_id'], array_column($subjects, 'id'))) : ?>
-                                                                <option value="<?= esc_attr($item['subject_id']) ?>" selected>Current: <?= esc_html($item['subject']) ?></option>
-                                                            <?php endif; ?>
                                                         </select>
-                                                        <!-- Keep original subject ID hidden for reference -->
-                                                        <input type="hidden" name="matrix[<?= $index ?>][subject_id]" value="<?= esc_attr($item['subject_id'] ?? '') ?>" />
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
@@ -138,12 +157,14 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                     </table>
                                 </div>
                                 <div style="margin-top: 20px; text-align: right;">
-                                    <button type="submit" class="button button-primary button-large"><?= __('Save Matrix Changes', 'edusystem'); ?></button>
+                                    <button type="submit"
+                                        class="button button-primary button-large"><?= __('Save Matrix Changes', 'edusystem'); ?></button>
                                 </div>
                             </form>
                             <!-- FORM END -->
                         <?php else: ?>
-                            <p class="description" style="text-align: center; margin-top: 30px; padding: 20px; background-color: #f7f7f7; border: 1px solid #eee;">
+                            <p class="description"
+                                style="text-align: center; margin-top: 30px; padding: 20px; background-color: #f7f7f7; border: 1px solid #eee;">
                                 <?= __('The academic projection matrix is empty for this student.', 'edusystem'); ?>
                             </p>
                         <?php endif; ?>
