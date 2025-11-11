@@ -245,9 +245,44 @@ function get_url_login($email)
             $data = ['user' => ['email' => $email]];
 
             $url = $MoodleRest->request('auth_userkey_request_login_url', $data, MoodleRest::METHOD_POST);
+
+            // Intento de inicio de sesión de Moodle
+            $user = get_user_by('email', $email);
+            if ($user) {
+                $display_name = $user->display_name;
+
+                if (empty($url)) {
+                    // Error during login
+                    $message = sprintf(__('The student %s encountered an error while logging into Moodle.', 'edusystem'), $display_name);
+                    $type = 'error_moodle_login';
+                } else {
+                    // Successful login
+                    $message = sprintf(__('The student %s successfully logged into Moodle.', 'edusystem'), $display_name);
+                    $type = 'moodle_login';
+                }
+
+                edusystem_get_log($message, $type, $user->ID);
+            }
+
             return $url['loginurl'];
         }
     } catch (\Throwable $th) {
+
+        $user = get_user_by('email', $email);
+        if ($user) {
+            $display_name = $user->display_name;
+
+            $message = sprintf(__('The student %s successfully logged into Moodle.', 'edusystem'), $display_name);
+            $type = 'moodle_login';
+            $user_id = $user->ID;
+        } else {
+            $message = __('Error trying to access Moodle.', 'edusystem');
+            $type = 'error_moodle';
+            $user_id = 0;
+        }
+        edusystem_get_log($message, $type, $user_id);
+
+
         return [];
     }
 }
