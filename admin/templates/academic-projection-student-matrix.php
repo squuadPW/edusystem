@@ -44,10 +44,10 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                         <h1 style="text-align: center; margin-bottom: 30px;"><?= $student_full_name ?></h1>
 
                         <?php if (!empty($matrix) && is_array($matrix)): ?>
-                            <h3 style="margin-top: 10px;"><?= __('Academic Projection Matrix Configuration', 'edusystem'); ?></h3>
-                            
+
                             <!-- FORM START: Matrix Configuration -->
-                            <form method="post" action="">
+                            <form method="post"
+                                action="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=update_matrix'); ?>">
                                 <!-- Hidden fields for context -->
                                 <input type="hidden" name="action" value="update_academic_matrix" />
                                 <input type="hidden" name="student_id" value="<?= esc_attr($student_id); ?>" />
@@ -61,8 +61,10 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                             <tr>
                                                 <th scope="col" style="width: 5%;">#</th>
                                                 <th scope="col" style="width: 15%;"><?= __('Type', 'edusystem'); ?></th>
-                                                <th scope="col" style="width: 25%;"><?= __('Academic Period', 'edusystem'); ?></th>
-                                                <th scope="col" style="width: 25%;"><?= __('Academic Cut', 'edusystem'); ?></th>
+                                                <th scope="col" style="width: 25%;">
+                                                    <?= __('Academic Period', 'edusystem'); ?></th>
+                                                <th scope="col" style="width: 25%;"><?= __('Academic Cut', 'edusystem'); ?>
+                                                </th>
                                                 <th scope="col" style="width: 30%;"><?= __('Subject', 'edusystem'); ?></th>
                                             </tr>
                                         </thead>
@@ -71,7 +73,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                 <?php $item = (array) $item; // Ensure it's an array for safe access ?>
                                                 <tr id="matrix-row-<?= $index; ?>">
                                                     <th scope="row"><?= $index + 1; ?></th>
-                                                    
+
                                                     <!-- 1. Tipo de materia (type) -->
                                                     <td>
                                                         <?php
@@ -79,42 +81,66 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                         $type_label = $type === 'R' ? __('Regular', 'edusystem') : ($type === 'E' ? __('Elective', 'edusystem') : 'N/A');
                                                         echo esc_html($type_label);
                                                         ?>
-                                                        <input type="hidden" name="matrix[<?= $index ?>][type]" value="<?= esc_attr($type) ?>" />
+                                                        <input type="hidden" name="matrix[<?= $index ?>][type]"
+                                                            value="<?= esc_attr($type) ?>" />
                                                     </td>
-                                                    
+
                                                     <!-- 2. Periodo académico (Select) -->
                                                     <td>
-                                                        <select name="matrix[<?= $index ?>][code_period]" class="academic-period-select" style="width: 100%; min-width: 150px;">
-                                                            <!-- Placeholder option with current value -->
-                                                            <option value="<?= esc_attr($item['code_period'] ?? '') ?>" selected>
-                                                                <?= !empty($item['code_period']) ? 'Current: ' . esc_html($item['code_period']) : __('Select Period', 'edusystem') ?>
-                                                            </option>
-                                                            <!-- Add more options here later -->
+                                                        <?php if (!empty($item['code_period'])): ?>
+                                                            <input type="hidden" name="matrix[<?= $index ?>][code_period]"
+                                                                value="<?= esc_attr($item['code_period']) ?>" />
+                                                        <?php endif; ?>
+
+                                                        <select name="matrix[<?= $index ?>][code_period]"
+                                                            class="academic-period-select"
+                                                            style="width: 100%; min-width: 150px;"
+                                                            <?= $item['completed'] ? 'disabled' : '' ?>>
+                                                            <option value="" <?= empty($item['code_period']) ? 'selected' : '' ?>><?= __('Select Period', 'edusystem') ?></option>
+                                                            <?php foreach ($periods as $period) { ?>
+                                                                <option value="<?= esc_attr($period->code) ?>"
+                                                                    <?= (isset($item['code_period']) && $item['code_period'] == $period->code) ? 'selected' : '' ?>>
+                                                                    <?= esc_html($period->name) ?>
+                                                                </option>
+                                                            <?php } ?>
                                                         </select>
                                                     </td>
-                                                    
+
                                                     <!-- 3. Corte académico (Select) -->
                                                     <td>
-                                                        <select name="matrix[<?= $index ?>][cut]" class="academic-cut-select" style="width: 100%; min-width: 150px;">
-                                                            <!-- Placeholder option with current value -->
-                                                            <option value="<?= esc_attr($item['cut'] ?? '') ?>" selected>
-                                                                <?= !empty($item['cut']) ? 'Current: ' . esc_html($item['cut']) : __('Select Cut', 'edusystem') ?>
-                                                            </option>
-                                                            <!-- Add more options here later -->
+                                                        <?php if (!empty($item['cut'])): ?>
+                                                            <input type="hidden" name="matrix[<?= $index ?>][cut]"
+                                                                value="<?= esc_attr($item['cut']) ?>" />
+                                                        <?php endif; ?>
+
+                                                        <select name="matrix[<?= $index ?>][cut]" class="academic-cut-select"
+                                                            style="width: 100%; min-width: 150px;" <?= $item['completed'] ? 'disabled' : '' ?>>
+                                                            <option value="" <?= empty($item['cut']) ? 'selected' : '' ?>><?= __('Select cut', 'edusystem') ?></option>
+                                                            <?php foreach ($cuts as $cut) { ?>
+                                                                <option value="<?= esc_attr($cut) ?>" <?= (isset($item['cut']) && $item['cut'] == $cut) ? 'selected' : '' ?>>
+                                                                    <?= esc_html($cut) ?>
+                                                                </option>
+                                                            <?php } ?>
                                                         </select>
                                                     </td>
-                                                    
+
                                                     <!-- 4. Materia (Select) -->
                                                     <td>
-                                                        <select name="matrix[<?= $index ?>][code_subject]" class="subject-select" style="width: 100%; min-width: 200px;">
-                                                            <!-- Placeholder option with current value -->
-                                                            <option value="<?= esc_attr($item['code_subject'] ?? '') ?>" selected>
-                                                                <?= !empty($item['subject']) ? 'Current: ' . esc_html($item['subject']) : __('Select Subject', 'edusystem') ?>
-                                                            </option>
-                                                            <!-- Add more options here later -->
+                                                        <?php if (!empty($item['subject_id'])): ?>
+                                                            <input type="hidden" name="matrix[<?= $index ?>][subject_id]"
+                                                                value="<?= esc_attr($item['subject_id']) ?>" />
+                                                        <?php endif; ?>
+
+                                                        <select name="matrix[<?= $index ?>][subject_id]" class="subject-select"
+                                                            style="width: 100%; min-width: 200px;"
+                                                            <?= $item['completed'] ? 'disabled' : '' ?>>
+                                                            <option value="" <?= empty($item['subject_id']) ? 'selected' : '' ?>><?= __('Select Subject', 'edusystem') ?></option>
+                                                            <?php foreach ($subjects as $subject) { ?>
+                                                                <option value="<?= $subject->id ?>" <?= (isset($item['subject_id']) && $item['subject_id'] == $subject->id) ? 'selected' : '' ?>>
+                                                                    <?= esc_html($subject->name) ?>
+                                                                </option>
+                                                            <?php } ?>
                                                         </select>
-                                                        <!-- Keep original subject ID hidden for reference -->
-                                                        <input type="hidden" name="matrix[<?= $index ?>][subject_id]" value="<?= esc_attr($item['subject_id'] ?? '') ?>" />
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
@@ -122,12 +148,14 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                     </table>
                                 </div>
                                 <div style="margin-top: 20px; text-align: right;">
-                                    <button type="submit" class="button button-primary button-large"><?= __('Save Matrix Changes', 'edusystem'); ?></button>
+                                    <button type="submit"
+                                        class="button button-primary button-large"><?= __('Save Matrix Changes', 'edusystem'); ?></button>
                                 </div>
                             </form>
                             <!-- FORM END -->
                         <?php else: ?>
-                            <p class="description" style="text-align: center; margin-top: 30px; padding: 20px; background-color: #f7f7f7; border: 1px solid #eee;">
+                            <p class="description"
+                                style="text-align: center; margin-top: 30px; padding: 20px; background-color: #f7f7f7; border: 1px solid #eee;">
                                 <?= __('The academic projection matrix is empty for this student.', 'edusystem'); ?>
                             </p>
                         <?php endif; ?>
