@@ -130,7 +130,8 @@ function add_admin_form_academic_projection_content()
 
             $student_id = (int) $_GET['student_id'];
             $student = get_student_detail($student_id);
-            $inscriptions = get_inscriptions_by_student($student_id);
+            $projection = get_projection_by_student($student_id);
+            $matrix = $projection ? $projection->matrix : [];
             $lastNameParts = array_filter([$student->last_name, $student->middle_last_name]);
             $firstNameParts = array_filter([$student->name, $student->middle_name]);
             $student_full_name = '';
@@ -144,32 +145,6 @@ function add_admin_form_academic_projection_content()
                     $student_full_name .= ', ';
                 }
                 $student_full_name .= implode(' ', $firstNameParts);
-            }
-
-            // First query: Get all academic periods
-            $academic_periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY `year` ASC, code DESC");
-
-            $cuts_map = [];
-            if (!empty($academic_periods)) {
-
-                // Extract all unique period codes
-                $period_codes = array_column($academic_periods, 'code');
-
-                // Sanitize codes and prepare the IN clause
-                $codes_in = "'" . implode("','", array_map('esc_sql', $period_codes)) . "'";
-
-                // Second query: Get all cuts for all periods at once (N+1 solution)
-                $all_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} WHERE code IN ({$codes_in}) ORDER BY cut ASC");
-
-                // Map cuts to their respective periods
-                foreach ($all_cuts as $cut) {
-                    $cuts_map[$cut->code][] = $cut;
-                }
-
-                // Attach cuts to the academic periods objects
-                foreach ($academic_periods as $period) {
-                    $period->cuts = $cuts_map[$period->code] ?? [];
-                }
             }
 
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-student-matrix.php');
