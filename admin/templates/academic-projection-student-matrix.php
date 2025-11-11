@@ -95,7 +95,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                         <select name="matrix[<?= $index ?>][code_period]"
                                                             class="academic-period-select"
                                                             style="width: 100%; min-width: 150px;"
-                                                            <?= !empty($item['code_period']) ? 'disabled' : '' ?> required>
+                                                            <?= $item['completed'] ? 'disabled' : '' ?>>
                                                             <?php if (empty($item['code_period'])): ?>
                                                                 <option value="" selected><?= __('Select Period', 'edusystem') ?>
                                                                 </option>
@@ -117,7 +117,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                         <?php endif; ?>
 
                                                         <select name="matrix[<?= $index ?>][cut]" class="academic-cut-select"
-                                                            style="width: 100%; min-width: 150px;" <?= !empty($item['cut']) ? 'disabled' : '' ?> required>
+                                                            style="width: 100%; min-width: 150px;" <?= $item['completed'] ? 'disabled' : '' ?>>
                                                             <?php if (empty($item['cut'])): ?>
                                                                 <option value="" selected><?= __('Select cut', 'edusystem') ?>
                                                                 </option>
@@ -139,7 +139,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
 
                                                         <select name="matrix[<?= $index ?>][subject_id]" class="subject-select"
                                                             style="width: 100%; min-width: 200px;"
-                                                            <?= !empty($item['subject_id']) ? 'disabled' : '' ?>>
+                                                            <?= $item['completed'] ? 'disabled' : '' ?>>
                                                             <?php if (empty($item['subject_id'])): ?>
                                                                 <option value="" selected><?= __('Select Subject', 'edusystem') ?>
                                                                 </option>

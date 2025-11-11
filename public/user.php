@@ -57,7 +57,6 @@ function crear_y_loguear_usuario_si_pago_exitoso_optimizado($order_id, $old_stat
     // Handle user creation errors
     if (is_wp_error($user_id)) {
         // Log the error for debugging purposes
-        error_log('Error creating user for order ' . $order_id . ': ' . $user_id->get_error_message());
         return;
     }
 

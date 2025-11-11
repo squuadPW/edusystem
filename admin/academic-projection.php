@@ -503,7 +503,6 @@ function add_admin_form_academic_projection_content()
             $projection_id = isset($_POST['projection_id']) ? intval($_POST['projection_id']) : 0;
             $student_id = isset($_POST['student_id']) ? intval($_POST['student_id']) : 0;
             $new_matrix_data_raw = isset($_POST['matrix']) ? $_POST['matrix'] : [];
-            error_log(print_r($new_matrix_data_raw, true));
 
             $errors = [];
 
@@ -513,7 +512,15 @@ function add_admin_form_academic_projection_content()
 
             // 3. Process and Save Data
             if (empty($errors)) {
-                // You might want to JSON encode/decode here if storing as JSON string
+                foreach ($new_matrix_data_raw as $key => &$new_m) {
+                    $new_m['completed'] = false;
+                    if ($new_m['code_period'] && $new_m['cut'] && $new_m['subject_id']) {
+                        $inscription = get_inscriptions_by_student_subject($student_id, $new_m['code_period'], $new_m['cut'], $new_m['subject_id']);
+                        if ($inscription) {
+                            $new_m['completed'] = true;       
+                        }
+                    }
+                }
                 $data_to_update = [
                     'matrix' => json_encode($new_matrix_data_raw)
                 ];

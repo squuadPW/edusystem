@@ -1842,7 +1842,6 @@ function generate_quote_public_callback() {
         );
     } else {
         // Log or handle the case where the email class isn't found
-        error_log('WC_Email_Sender_User_Email class not found for sending email.');
     }
 
 
