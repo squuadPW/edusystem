@@ -96,10 +96,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                             class="academic-period-select"
                                                             style="width: 100%; min-width: 150px;"
                                                             <?= $item['completed'] ? 'disabled' : '' ?>>
-                                                            <?php if (empty($item['code_period'])): ?>
-                                                                <option value="" selected><?= __('Select Period', 'edusystem') ?>
-                                                                </option>
-                                                            <?php endif; ?>
+                                                            <option value="" <?= empty($item['code_period']) ? 'selected' : '' ?>><?= __('Select Period', 'edusystem') ?></option>
                                                             <?php foreach ($periods as $period) { ?>
                                                                 <option value="<?= esc_attr($period->code) ?>"
                                                                     <?= (isset($item['code_period']) && $item['code_period'] == $period->code) ? 'selected' : '' ?>>
@@ -118,10 +115,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
 
                                                         <select name="matrix[<?= $index ?>][cut]" class="academic-cut-select"
                                                             style="width: 100%; min-width: 150px;" <?= $item['completed'] ? 'disabled' : '' ?>>
-                                                            <?php if (empty($item['cut'])): ?>
-                                                                <option value="" selected><?= __('Select cut', 'edusystem') ?>
-                                                                </option>
-                                                            <?php endif; ?>
+                                                            <option value="" <?= empty($item['cut']) ? 'selected' : '' ?>><?= __('Select cut', 'edusystem') ?></option>
                                                             <?php foreach ($cuts as $cut) { ?>
                                                                 <option value="<?= esc_attr($cut) ?>" <?= (isset($item['cut']) && $item['cut'] == $cut) ? 'selected' : '' ?>>
                                                                     <?= esc_html($cut) ?>
@@ -140,10 +134,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                         <select name="matrix[<?= $index ?>][subject_id]" class="subject-select"
                                                             style="width: 100%; min-width: 200px;"
                                                             <?= $item['completed'] ? 'disabled' : '' ?>>
-                                                            <?php if (empty($item['subject_id'])): ?>
-                                                                <option value="" selected><?= __('Select Subject', 'edusystem') ?>
-                                                                </option>
-                                                            <?php endif; ?>
+                                                            <option value="" <?= empty($item['subject_id']) ? 'selected' : '' ?>><?= __('Select Subject', 'edusystem') ?></option>
                                                             <?php foreach ($subjects as $subject) { ?>
                                                                 <option value="<?= $subject->id ?>" <?= (isset($item['subject_id']) && $item['subject_id'] == $subject->id) ? 'selected' : '' ?>>
                                                                     <?= esc_html($subject->name) ?>
