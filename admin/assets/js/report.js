@@ -417,8 +417,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Definir los encabezados fijos
       const headers = [
+        "Income",
+        "Term",
+        "ID",
         "Student",
-        "Student document",
         "Student email",
         "Parent",
         "Parent email",
