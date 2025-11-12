@@ -57,70 +57,55 @@ class Edusystem_Log_Table extends WP_List_Table {
     public function get_data_log() {
 
         $conditions = [];
-        if ( isset( $_GET['s'] )) {
-            
-            $keywords = explode(" ", $_GET['s']);
 
-            $meta_query = array('relation' => 'OR');
+        if ( isset($_GET['s']) && !empty($_GET['s']) ) {
+            global $wpdb;
+            $search = trim($_GET['s']);
+            $like   = '%' . $wpdb->esc_like($search) . '%';
 
-            foreach ( $keywords as $keyword ) {
-                $meta_query[] = array(
-                    'key'     => 'first_name',
-                    'value'   => $keyword,
-                    'compare' => 'LIKE'
-                );
-                $meta_query[] = array(
-                    'key'     => 'last_name',
-                    'value'   => $keyword,
-                    'compare' => 'LIKE'
-                );
-            }
-
-            $args = array(
-                'fields'     => 'ID', // solo devolver IDs
-                'meta_query' => $meta_query
-            );
-
-            $user_query = new WP_User_Query($args);
-            $user_ids = $user_query->get_results();
-
-            $ids_placeholder = implode(',', array_map('intval', $user_ids));
-            $conditions[] = " user_id IN ($ids_placeholder)";
+            // JOIN con usermeta para obtener first_name y last_name
+            $conditions[] = $wpdb->prepare("
+                (
+                    CONCAT_WS(' ', fn.meta_value, ln.meta_value) LIKE %s
+                    OR u.display_name LIKE %s
+                    OR u.user_login LIKE %s
+                    OR u.user_nicename LIKE %s
+                )
+            ", $like, $like, $like, $like);
         }
 
-        if ( isset( $_GET['type'] ) && !empty($_GET['type'] ) ) {
-            $conditions[] = " type LIKE '{$_GET['type']}' ";
+        // Filtro por tipo
+        if ( isset($_GET['type']) && !empty($_GET['type']) ) {
+            $conditions[] = $wpdb->prepare(" l.type LIKE %s ", $_GET['type']);
         }
 
-        switch ( $_GET['date'] ?? "" ) {
+        // Filtro por fecha
+        switch ($_GET['date'] ?? "") {
             case 'today':
-                $conditions[] = " DATE(created_at ) = CURDATE()";
+                $conditions[] = " DATE(l.created_at) = CURDATE()";
                 break;
             case 'last_week':
-                $conditions[] = " created_at  >= CURDATE() - INTERVAL 7 DAY AND created_at  < CURDATE() + INTERVAL 1 DAY ";
+                $conditions[] = " l.created_at >= CURDATE() - INTERVAL 7 DAY AND l.created_at < CURDATE() + INTERVAL 1 DAY ";
                 break;
             case 'last_3_months':
-                $conditions[] = " created_at  >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) AND created_at  < CURDATE() + INTERVAL 1 DAY ";
+                $conditions[] = " l.created_at >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) AND l.created_at < CURDATE() + INTERVAL 1 DAY ";
                 break;
             case 'custom':
-                $start_date = isset($_GET['startDate']) ? $_GET['startDate'] : "";
-                $end_date = isset($_GET['endDate']) ? $_GET['endDate'] : "";
-                $conditions[] = "
-                    created_at >= STR_TO_DATE('{$start_date}', '%m-%d-%Y')
-                    AND created_at < DATE_ADD(STR_TO_DATE('{$end_date}', '%m-%d-%Y'), INTERVAL 1 DAY)
-                ";
+                $start_date = $_GET['startDate'] ?? "";
+                $end_date   = $_GET['endDate'] ?? "";
+                $conditions[] = $wpdb->prepare("
+                    l.created_at >= STR_TO_DATE(%s, '%%m-%%d-%%Y')
+                    AND l.created_at < DATE_ADD(STR_TO_DATE(%s, '%%m-%%d-%%Y'), INTERVAL 1 DAY)
+                ", $start_date, $end_date);
                 break;
             default:
-                $conditions[] = " created_at  >= DATE_FORMAT(CURDATE(), '%Y-%m-01') AND created_at  < CURDATE() + INTERVAL 1 DAY ";
+                $conditions[] = " l.created_at >= DATE_FORMAT(CURDATE(), '%Y-%m-01') AND l.created_at < CURDATE() + INTERVAL 1 DAY ";
         }
 
         $where = "";
         if ($conditions) {
-            $where .= " WHERE " . implode(" AND ", $conditions);
-        }  
-        
-        /* $sql .= " ORDER BY `t`.id DESC ";
-        $sql .= " LIMIT {$this->per_page} OFFSET {$paged};";  */
+            $where = " WHERE " . implode(" AND ", $conditions);
+        }
 
         global $wpdb;
         $table_edusystem_log = $wpdb->prefix . 'edusystem_log';
@@ -128,13 +113,21 @@ class Edusystem_Log_Table extends WP_List_Table {
         $current_page = $this->get_pagenum();
         $offset = ($current_page - 1) * $this->per_page;
 
+        // 🚀 Traemos first_name y last_name directamente
         $logs = $wpdb->get_results(
-           "SELECT *, COUNT(*) OVER() AS total
-            FROM $table_edusystem_log 
+            "SELECT l.*, 
+                    u.display_name, 
+                    fn.meta_value AS first_name, 
+                    ln.meta_value AS last_name, 
+                    COUNT(*) OVER() AS total
+            FROM {$table_edusystem_log} l
+            INNER JOIN {$wpdb->users} u ON u.ID = l.user_id
+            LEFT JOIN {$wpdb->usermeta} fn ON fn.user_id = u.ID AND fn.meta_key = 'first_name'
+            LEFT JOIN {$wpdb->usermeta} ln ON ln.user_id = u.ID AND ln.meta_key = 'last_name'
             $where
-            ORDER BY created_at DESC 
-            LIMIT {$this->per_page} OFFSET {$offset};
-        ");
+            ORDER BY l.created_at DESC 
+            LIMIT {$this->per_page} OFFSET {$offset};"
+        );
 
         // Enriquecer los logs con nombre y rol
         $data = [];
@@ -143,29 +136,27 @@ class Edusystem_Log_Table extends WP_List_Table {
             $this->total_items = $logs[0]->total;
 
             foreach ($logs as $log) {
+                
+                $first_name = $log->first_name ?? '';
+                $last_name  = $log->last_name ?? '';
+                $user_name  = trim($first_name . ' ' . $last_name);
 
-                $user_name = __('Unknown', 'edusystem');
-
-                $user = get_userdata( (int) $log->user_id );
-                if( $user ) {
-                    $first_name = get_user_meta( $user->ID, 'first_name', true );
-                    $last_name = get_user_meta( $user->ID, 'last_name', true );
-
-                    $user_name = $first_name.' '.$last_name;
+                if (empty($user_name)) {
+                    $user_name = $log->display_name ?: __('Unknown', 'edusystem');
                 }
 
-                array_push($data,[
+                $data[] = [
                     'id'         => $log->id,
                     'user'       => $user_name,
                     'type'       => edusystem_get_log_type_label($log->type),
                     'message'    => $log->message,
                     'created_at' => $log->created_at,
-                ]);
+                ];
             }
         }
         return $data;
-       
     }
+
 
     public function prepare_items(){
         $data = $this->get_data_log();
