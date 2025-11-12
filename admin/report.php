@@ -3215,13 +3215,15 @@ class TT_Retired_List_Table extends WP_List_Table
     function get_columns()
     {
         $columns = array(
+            'income' => __('Income', 'edusystem'),
+            'term' => __('Term', 'edusystem'),
+            'id_document' => __('ID', 'edusystem'),
             'student' => __('Student', 'edusystem'),
-            'id_document' => __('Student document', 'edusystem'),
             'email' => __('Student email', 'edusystem'),
             'parent' => __('Parent', 'edusystem'),
             'parent_email' => __('Parent email', 'edusystem'),
             'country' => __('Country', 'edusystem'),
-            'grade' => __('Grade', 'edusystem'),
+            // 'grade' => __('Grade', 'edusystem'),
             'institute' => __('Institute', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
@@ -3416,6 +3418,8 @@ class TT_Retired_List_Table extends WP_List_Table
                     'id' => $student['id'],
                     'id_document' => $student['id_document'],
                     'email' => $student['email'],
+                    'income' => $student['academic_period'],
+                    'term' => $student['initial_cut'],
                     'parent' => $parent_full_name,
                     'parent_email' => $parent_email,
                     'country' => $student['country'],
