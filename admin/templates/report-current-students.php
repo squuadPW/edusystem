@@ -11,6 +11,9 @@
 	<a href="<?= admin_url('admin.php?page=report-students&section_tab=non-enrolled'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'non-enrolled') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Non-enrolled students', 'edusystem'); ?>
 		(<strong><?= $total_count_non_enrolled ?></strong>)</a>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending-documents'); ?>"
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending-documents') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Pending documents', 'edusystem'); ?>
+		(<strong><?= $total_count_pending_documents ?></strong>)</a>
 	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending-graduation'); ?>"
 		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending-graduation') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Pending graduation', 'edusystem'); ?>
 		(<strong><?= $total_count_pending_graduation ?></strong>)</a>
@@ -51,6 +54,10 @@
 				case 'pending-graduation':
 					$heading_text = __('Students academically ready, awaiting graduation', 'edusystem');
 					$name_document = __('Pending graduation.xlsx', 'edusystem');
+					break;
+				case 'pending-documents':
+					$heading_text = __('Students with pending documents', 'edusystem');
+					$name_document = __('Pending documents.xlsx', 'edusystem');
 					break;
 				case 'graduated':
 					$heading_text = __('Graduated students', 'edusystem');

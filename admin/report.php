@@ -88,6 +88,7 @@ function show_report_current_students()
     $total_count_pending_electives = (int) get_students_pending_elective_count();
     $total_count_non_enrolled = (int) get_students_non_enrolled_count();
     $total_count_pending_graduation = (int) get_students_pending_graduation_count();
+    $total_count_pending_documents = (int) get_students_pending_documents_count();
     $total_count_graduated = (int) get_students_graduated_count();
     $total_count_retired = (int) get_students_retired_count();
     $total_count_scholarships = (int) get_students_scholarships_count();
@@ -120,6 +121,10 @@ function show_report_current_students()
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'pending-graduation') {
             $list_students = new TT_Pending_Graduation_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'pending-documents') {
+            $list_students = new TT_Pending_Documents_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'graduated') {
@@ -2871,6 +2876,323 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
 
 }
 
+class TT_Pending_Documents_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'active',
+                'plural' => 'actives',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+        $columns = array(
+            'student' => __('Student', 'edusystem'),
+            'pending_document_ids' => __('Documents', 'edusystem'),
+            // 'country' => __('Country', 'edusystem'),
+            // 'institute' => __('Institute', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_students_pending_documents_report()
+    {
+        global $wpdb;
+
+        // Define table names early
+        $table_students = $wpdb->prefix . 'students';
+        $table_student_documents = $wpdb->prefix . 'student_documents';
+        $table_users = $wpdb->users;
+        $table_usermeta = $wpdb->usermeta;
+
+        // --- 1. Sanitization and Variable Assignment ---
+
+        // Sanitize input variables using appropriate functions
+        $search = sanitize_text_field($_POST['s'] ?? '');
+        $country = sanitize_text_field($_POST['country'] ?? '');
+        $institute = sanitize_text_field($_POST['institute'] ?? '');
+        $academic_period_student = sanitize_text_field($_POST['academic_period'] ?? '');
+        $academic_period_cut_student = sanitize_text_field($_POST['academic_period_cut'] ?? '');
+
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        // Use max(1, ...) to ensure a minimum page number of 1
+        $pagenum = max(1, absint($_GET['paged'] ?? 1));
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+
+        $conditions = [];
+        $params = [];
+
+        // --- 2. Filtering Conditions ---
+
+        // STATUS: Must NOT be graduated or retired (status_id != 5 AND status_id != 6) - Mandatory condition
+        $conditions[] = "s.status_id NOT IN (%d, %d)";
+        $params[] = 5;
+        $params[] = 6;
+
+        // MANDATORY FILTER: Student must have at least one pending document
+        // We use a JOIN + HAVING clause to ensure only students with pending documents are included.
+
+        // Filter by Country
+        if (!empty($country)) {
+            $conditions[] = "s.country = %s";
+            $params[] = $country;
+        }
+
+        // Filter by Institute
+        if (!empty($institute)) {
+            $conditions[] = "s.institute_id = %s";
+            $params[] = $institute;
+        }
+
+        // Filter by Academic Period
+        if (!empty($academic_period_student)) {
+            $conditions[] = "s.academic_period = %s";
+            $params[] = $academic_period_student;
+        }
+
+        // Filter by Period Cut
+        if (!empty($academic_period_cut_student)) {
+            $conditions[] = "s.initial_cut = %s";
+            $params[] = $academic_period_cut_student;
+        }
+
+        // --- 3. Optimized Smart Search Condition ---
+
+        if (!empty($search)) {
+            $search_term_like = '%' . $wpdb->esc_like($search) . '%';
+            $search_terms = explode(' ', $search);
+
+            $search_sub_conditions = [];
+            $search_sub_params = [];
+
+            $search_fields = ['s.name', 's.middle_name', 's.last_name', 's.middle_last_name', 's.email', 's.id_document'];
+
+            foreach ($search_terms as $term) {
+                if (strlen($term) > 1) {
+                    $term_like = '%' . $wpdb->esc_like($term) . '%';
+                    $term_conditions = [];
+                    foreach ($search_fields as $field) {
+                        $term_conditions[] = "{$field} LIKE %s";
+                        $search_sub_params[] = $term_like;
+                    }
+                    $search_sub_conditions[] = "(" . implode(" OR ", $term_conditions) . ")";
+                }
+            }
+
+            if (!empty($search_sub_conditions)) {
+                $conditions[] = "(" . implode(" AND ", $search_sub_conditions) . ")";
+                $params = array_merge($params, $search_sub_params);
+            } else {
+                $term_conditions = [];
+                foreach ($search_fields as $field) {
+                    $term_conditions[] = "{$field} LIKE %s";
+                    $search_sub_params[] = $search_term_like;
+                }
+                $conditions[] = "(" . implode(" OR ", $term_conditions) . ")";
+                $params = array_merge($params, $search_sub_params);
+            }
+        }
+
+        // --- 4. Main Query Construction and Execution (Including Documents JOIN) ---
+
+        // Get all required student columns, and parent data via JOIN
+        $select_cols = [
+            's.*',
+            'u.user_email AS parent_email',
+            'um_first.meta_value AS parent_first_name',
+            'um_last.meta_value AS parent_last_name',
+        ];
+
+        $query = "
+        SELECT SQL_CALC_FOUND_ROWS " . implode(', ', $select_cols) . "
+        FROM {$table_students} AS s
+        INNER JOIN {$table_student_documents} AS d ON s.id = d.student_id
+        LEFT JOIN {$table_users} AS u ON s.partner_id = u.ID
+        LEFT JOIN {$table_usermeta} AS um_first ON u.ID = um_first.user_id AND um_first.meta_key = 'first_name'
+        LEFT JOIN {$table_usermeta} AS um_last ON u.ID = um_last.user_id AND um_last.meta_key = 'last_name'
+    ";
+
+        // Append the mandatory document condition
+        // attachment_id = 0 (pendiente) AND (is_required = 1 OR max_date_upload IS NOT NULL)
+        $document_condition = "d.attachment_id = %d AND (d.is_required = %d OR d.max_date_upload IS NOT NULL)";
+        $conditions[] = $document_condition;
+        $params[] = 0;
+        $params[] = 1;
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        // Group by student ID to ensure each student appears only once and meets the pending document condition (via INNER JOIN)
+        $query .= " GROUP BY s.id";
+
+        $query .= " ORDER BY s.id DESC LIMIT %d OFFSET %d";
+        $params[] = $per_page;
+        $params[] = $offset;
+
+        // Execute the query
+        $students = $wpdb->get_results($wpdb->prepare($query, $params), ARRAY_A);
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        $students_array = [];
+
+        // --- 5. Result Processing (Including Document ID fetch) ---
+
+        if ($students) {
+            foreach ($students as $student) {
+                // --- NEW: Fetch Pending Document IDs ---
+                // Separate query to get all document_id for the current student that meet the pending criteria.
+                $doc_query = $wpdb->prepare(
+                    "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND attachment_id = %d AND (is_required = %d OR max_date_upload IS NOT NULL)",
+                    $student['id'],
+                    0, // attachment_id = 0 (pendiente)
+                    1  // is_required = 1
+                );
+                // Get all document_id values as a flat array
+                $pending_document_ids = $wpdb->get_col($doc_query);
+                // --- END NEW ---
+
+                // Format Parent Name
+                $parent_full_name = '';
+                if ($student['parent_first_name'] || $student['parent_last_name']) {
+                    $parent_name = strtoupper(trim($student['parent_last_name'] . ' ' . $student['parent_first_name']));
+                    $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . $parent_name . "</span>";
+                }
+
+                // Format Student Name
+                $lastNameParts = array_filter([$student['last_name'], $student['middle_last_name']]);
+                $firstNameParts = array_filter([$student['name'], $student['middle_name']]);
+
+                $student_full_name = implode(' ', $lastNameParts);
+                if (!empty($firstNameParts)) {
+                    if (!empty($student_full_name)) {
+                        $student_full_name .= ', ';
+                    }
+                    $student_full_name .= implode(' ', $firstNameParts);
+                }
+
+                // External function calls only once per row
+                $grade_name = function_exists('get_name_grade') ? get_name_grade($student['grade_id']) : $student['grade_id'];
+                $institute_name = (function_exists('get_name_institute') && $student['institute_id'])
+                    ? get_name_institute($student['institute_id'])
+                    : ($student['name_institute'] ?? '');
+
+
+                $students_array[] = [
+                    'student' => '<span class="text-uppercase">' . $student_full_name . '</span>',
+                    'id' => $student['id'],
+                    'id_document' => $student['id_document'],
+                    'income' => $student['academic_period'],
+                    'term' => $student['initial_cut'],
+                    'email' => $student['email'],
+                    'parent' => $parent_full_name,
+                    'parent_email' => $student['parent_email'] ?? '',
+                    'country' => $student['country'],
+                    'grade' => $grade_name,
+                    'institute' => $institute_name,
+                    // --- NEW: Add the array of pending document IDs ---
+                    'pending_document_ids' => implode(', ', $pending_document_ids)
+                ];
+            }
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
+    function prepare_items()
+    {
+
+        $data_student = $this->get_students_pending_documents_report();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
 class TT_Graduated_List_Table extends WP_List_Table
 {
 
@@ -4495,6 +4817,33 @@ function get_students_pending_graduation_count()
     }
 
     return $count;
+}
+
+function get_students_pending_documents_count()
+{
+    global $wpdb;
+
+    // Obtener los nombres de las tablas con prefijo
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+
+    // La consulta optimizada usa un JOIN y una subconsulta para contar
+    // a los estudiantes que tienen al menos un documento pendiente.
+    $query = $wpdb->prepare(
+        "SELECT COUNT(DISTINCT s.id)
+        FROM %i AS s
+        INNER JOIN %i AS d ON s.id = d.student_id
+        WHERE s.status_id NOT IN (5, 6)
+        AND d.attachment_id = 0
+        AND (d.is_required = 1 OR d.max_date_upload IS NOT NULL)",
+        $table_students,
+        $table_student_documents
+    );
+
+    // Ejecutar la consulta y devolver el conteo directamente
+    $count = $wpdb->get_var($query);
+
+    return (int) $count;
 }
 
 function get_students_graduated_count()
