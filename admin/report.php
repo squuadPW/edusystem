@@ -1004,7 +1004,7 @@ function get_institute_payments_data($start, $end)
             'institute_fee' => number_format($total_fee, 2, '.', '')
         ];
     }
-    
+
     // Agrega el total global como el último elemento del array
     $formatted_data[] = [
         'institute_name' => __('Total', 'edusystem'),
@@ -2869,8 +2869,10 @@ class TT_Graduated_List_Table extends WP_List_Table
     function get_columns()
     {
         $columns = array(
+            'income' => __('Income', 'edusystem'),
+            'term' => __('Term', 'edusystem'),
+            'id_document' => __('ID', 'edusystem'),
             'student' => __('Student', 'edusystem'),
-            'id_document' => __('Student document', 'edusystem'),
             'email' => __('Student email', 'edusystem'),
             'parent' => __('Parent', 'edusystem'),
             'parent_email' => __('Parent email', 'edusystem'),
@@ -3016,12 +3018,27 @@ class TT_Graduated_List_Table extends WP_List_Table
                     $parent_email = $parent->user_email;
                 }
 
-                $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
+                $lastNameParts = array_filter([$student['last_name'], $student['middle_last_name']]);
+                $firstNameParts = array_filter([$student['name'], $student['middle_name']]);
+                $student_full_name = '';
+
+                if (!empty($lastNameParts)) {
+                    $student_full_name .= implode(' ', $lastNameParts);
+                }
+
+                if (!empty($firstNameParts)) {
+                    if (!empty($student_full_name)) {
+                        $student_full_name .= ', ';
+                    }
+                    $student_full_name .= implode(' ', $firstNameParts);
+                }
 
                 $students_array[] = [
-                    'student' => $student_full_name,
+                    'student' => '<span class="text-uppercase">' . $student_full_name . '</span>',
                     'id' => $student['id'],
                     'id_document' => $student['id_document'],
+                    'income' => $student['academic_period'],
+                    'term' => $student['initial_cut'],
                     'email' => $student['email'],
                     'parent' => $parent_full_name,
                     'parent_email' => $parent_email,
