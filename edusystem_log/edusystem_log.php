@@ -20,6 +20,7 @@ define('EDUSYSTEM_TYPE_LOGS', [
     'error'     => __('System error', 'edusystem'),
     'warning'   => __('System warning', 'edusystem'),
     'info'      => __('Information', 'edusystem'),
+    'save_student_data'      => __('Student data saved', 'edusystem'),
     'califications'      => __('Grades viewed', 'edusystem'),
     'moodle_login'       => __('Moodle login', 'edusystem'),
     'error_moodle_login' => __('Moodle login error', 'edusystem'),
@@ -213,6 +214,32 @@ add_action('wp_logout', function () {
 
         // Limpiar el transient
         delete_transient('last_logout_user');
+    }
+});
+
+// registra cuando un studiante es actualizado
+add_action('edusystem_save_student_data', function ( $student_id ) {
+
+    $user = wp_get_current_user();
+    if ($user && $user->ID) {
+
+        $first_name   = get_user_meta( $user->ID, 'first_name', true );
+        $last_name = get_user_meta( $user->ID, 'last_name', true );
+        $name_user = $first_name.' '.$last_name;
+        
+        $name_student = '';
+        if( $student_id ){
+            $first_name   = get_user_meta( (int) $student_id, 'first_name', true );
+            $last_name = get_user_meta( (int) $student_id, 'last_name', true );
+            $name_student = $first_name.' '.$last_name;
+        }   
+
+        // Mensaje traducible con nombre y rol
+        $message = sprintf(__('User %s has updated the data for student %s', 'edusystem'), $name_user, $name_student);
+
+        // Registrar el log
+        edusystem_get_log($message, 'save_student_data', $user->ID);
+
     }
 });
 
