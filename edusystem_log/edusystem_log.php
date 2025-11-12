@@ -94,7 +94,7 @@ function edusystem_show_logs_table() {
         <div id="edusystem_logs" class="wrap">
             <h1><?= esc_html(__('Edusystem Logs', 'edusystem')); ?></h1>
 
-            <div class="filters_container" >
+            <form method="get" class="filters_container" >
 
                 <?php
                     $date = isset($_GET['date']) ? $_GET['date'] : "last_month";
@@ -143,12 +143,10 @@ function edusystem_show_logs_table() {
                     
                 </select>    
                 
-                <form method="get" >
-                    <input type="hidden" name="page" value="<?=$_REQUEST['page']?>" />
-                    <?php $logs_table->search_box('search', 'search_id'); ?>
-                </form>
+                <input type="hidden" name="page" value="<?=$_REQUEST['page']?>" />
+                <?php $logs_table->search_box('search', 'search_id'); ?>
 
-            </div>
+            </form>
 
             <?php $logs_table->display(); ?>
         </div>

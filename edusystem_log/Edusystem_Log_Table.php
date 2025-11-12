@@ -56,6 +56,11 @@ class Edusystem_Log_Table extends WP_List_Table {
 
     public function get_data_log() {
 
+        global $wpdb;
+        $table_edusystem_log = $wpdb->prefix . 'edusystem_log';
+
+        $current_page = $this->get_pagenum();
+        $offset = ($current_page - 1) * $this->per_page;
         $conditions = [];
 
         if ( isset($_GET['s']) && !empty($_GET['s']) ) {
@@ -107,13 +112,7 @@ class Edusystem_Log_Table extends WP_List_Table {
             $where = " WHERE " . implode(" AND ", $conditions);
         }
 
-        global $wpdb;
-        $table_edusystem_log = $wpdb->prefix . 'edusystem_log';
-
-        $current_page = $this->get_pagenum();
-        $offset = ($current_page - 1) * $this->per_page;
-
-        // 🚀 Traemos first_name y last_name directamente
+        // consulta principal
         $logs = $wpdb->get_results(
             "SELECT l.*, 
                     u.display_name, 

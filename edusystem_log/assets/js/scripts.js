@@ -86,7 +86,7 @@ function edusystem_filters_transactions( param, value, startdate ='', enddate = 
     if( startdate !== '' && enddate !== '' ){
         params.set('startDate', startdate);
         params.set('endDate', enddate);
-    } else {
+    } else if( !params.has('startDate') || !params.has('endDate') ) {
         params.delete("startDate");
         params.delete("endDate");
     }
