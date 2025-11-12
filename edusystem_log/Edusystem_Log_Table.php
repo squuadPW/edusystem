@@ -63,6 +63,11 @@ class Edusystem_Log_Table extends WP_List_Table {
         $offset = ($current_page - 1) * $this->per_page;
         $conditions = [];
 
+        if ( ! empty( $_GET['user_id'] ) ) {
+            $user_id = intval( $_GET['user_id'] );
+            $conditions[] = $wpdb->prepare( " l.user_id = %d", $user_id );
+        }
+
         if ( isset($_GET['s']) && !empty($_GET['s']) ) {
             global $wpdb;
             $search = trim($_GET['s']);

@@ -144,12 +144,32 @@ function edusystem_show_logs_table() {
                 </select>    
                 
                 <input type="hidden" name="page" value="<?=$_REQUEST['page']?>" />
-                <?php $logs_table->search_box('search', 'search_id'); ?>
+
+                <?php if ( empty( $_GET['user_id'] ) ): ?>
+                    <?php $logs_table->search_box('search', 'search_id'); ?>
+                <?php endif ?>
 
             </form>
 
             <?php $logs_table->display(); ?>
         </div>
+    <?php
+}
+
+// Añade el link de los logs de edusystem del usuario 
+add_action('personal_options', 'mi_link_en_personal_options');
+function mi_link_en_personal_options($user) {
+    $user_id = is_object($user) ? (int) $user->ID : (int) $user;
+    $url = admin_url('admin.php?page=edusystem-logs&user_id=' . $user_id);
+    ?>
+    <tr>
+        <th scope="row"><?php esc_html_e('Edusystem Logs', 'edusystem'); ?></th>
+        <td>
+            <a href="<?= esc_url( $url ); ?>" rel="noopener">
+                <?php esc_html_e("View this user's logs", 'edusystem'); ?>
+            </a>
+        </td>
+    </tr>
     <?php
 }
 
@@ -195,6 +215,8 @@ add_action('wp_logout', function () {
         delete_transient('last_logout_user');
     }
 });
+
+
 
 
 
