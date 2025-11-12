@@ -81,6 +81,7 @@ function show_report_current_students()
 {
     global $current_user, $wpdb;
     $table_academic_periods = $wpdb->prefix . 'academic_periods';
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
     $table_grades = $wpdb->prefix . 'grades';
     $total_count_current = (int) get_students_current_count();
     $total_count_active = (int) get_students_active_count();
@@ -88,7 +89,10 @@ function show_report_current_students()
     $total_count_non_enrolled = (int) get_students_non_enrolled_count();
     $total_count_pending_graduation = (int) get_students_pending_graduation_count();
     $total_count_graduated = (int) get_students_graduated_count();
+    $total_count_retired = (int) get_students_retired_count();
     $total_count_scholarships = (int) get_students_scholarships_count();
+    $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+    $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut}  ORDER BY created_at ASC");
     $load = load_current_cut();
     $academic_period = $load['code'];
     $cut = $load['cut'];
@@ -120,6 +124,10 @@ function show_report_current_students()
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'graduated') {
             $list_students = new TT_Graduated_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        }  else if ($_GET['section_tab'] == 'retired') {
+            $list_students = new TT_Retired_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'scholarships') {
@@ -1647,7 +1655,7 @@ function list_report_students()
             $html .= "<td data-colname='" . __('Parent email', 'edusystem') . "'>" . $parent->user_email . "</td>";
             $html .= "<td data-colname='" . __('Country', 'edusystem') . "'>" . $student->country . "</td>";
             $html .= "<td data-colname='" . __('Grade', 'edusystem') . "'>" . get_name_grade($student->grade_id) . "</td>";
-            $html .= "<td data-colname='" . __('Program', 'edusystem') . "'>" . get_name_program($student->program_id) . "</td>";
+            $html .= "<td data-colname='" . __('Program', 'edusystem') . "'>" . get_name_program_student($student->id) . "</td>";
             $html .= "<td data-colname='" . __('Institute', 'edusystem') . "'>" . $student->name_institute . "</td>";
             $html .= "</tr>";
         }
@@ -3164,6 +3172,240 @@ class TT_Graduated_List_Table extends WP_List_Table
 
 }
 
+class TT_Retired_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'active',
+                'plural' => 'actives',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+        $columns = array(
+            'student' => __('Student', 'edusystem'),
+            'id_document' => __('Student document', 'edusystem'),
+            'email' => __('Student email', 'edusystem'),
+            'parent' => __('Parent', 'edusystem'),
+            'parent_email' => __('Parent email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'grade' => __('Grade', 'edusystem'),
+            'institute' => __('Institute', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_student_retired()
+    {
+        global $wpdb;
+        $table_students = $wpdb->prefix . 'students';
+        $students_array = [];
+        $conditions = array();
+        $params = array();
+
+        // Obtener el término de búsqueda de $_POST
+        $search = $_POST['s'] ?? '';
+
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+
+        // Obtener el período académico y el corte del POST
+        $academic_period_student = $_POST['academic_period'] ?? '';
+        $academic_period_cut_student = $_POST['academic_period_cut'] ?? '';
+
+        // 1. Condición de estado: estudiantes graduados (status_id = 5)
+        $conditions[] = "status_id = %d";
+        $params[] = 6;
+
+        // 2. Condición de filtro por período académico (si está presente)
+        if (!empty($academic_period_student)) {
+            $conditions[] = "academic_period = %s";
+            $params[] = $academic_period_student;
+        }
+
+        // 3. Condición de filtro por corte de período (si está presente)
+        if (!empty($academic_period_cut_student)) {
+            $conditions[] = "initial_cut = %s";
+            $params[] = $academic_period_cut_student;
+        }
+
+        // 4. Condición de búsqueda inteligente
+        if (!empty($search)) {
+            $search_term_like = '%' . $wpdb->esc_like($search) . '%';
+
+            $search_sub_conditions = [];
+            $search_sub_params = [];
+
+            // Búsqueda combinada de nombres y apellidos (CONCAT_WS)
+            $combined_fields = [
+                'CONCAT_WS(" ", name, last_name)',
+                'CONCAT_WS(" ", name, middle_name, last_name)',
+                'CONCAT_WS(" ", name, middle_name, last_name, middle_last_name)',
+                'CONCAT_WS(" ", last_name, name)',
+                'CONCAT_WS(" ", last_name, middle_last_name)',
+                'CONCAT_WS(" ", name, middle_name)',
+                'CONCAT_WS(" ", last_name, middle_last_name)'
+            ];
+
+            foreach ($combined_fields as $field_combination) {
+                $search_sub_conditions[] = "{$field_combination} LIKE %s";
+                $search_sub_params[] = $search_term_like;
+            }
+
+            // Búsqueda directa en campos individuales
+            $individual_fields = ['name', 'middle_name', 'last_name', 'middle_last_name', 'email', 'id_document'];
+            foreach ($individual_fields as $field) {
+                $search_sub_conditions[] = "{$field} LIKE %s";
+                $search_sub_params[] = $search_term_like;
+            }
+
+            // Agregamos la condición de búsqueda principal al array de condiciones generales
+            if (!empty($search_sub_conditions)) {
+                $conditions[] = "(" . implode(" OR ", $search_sub_conditions) . ")";
+                $params = array_merge($params, $search_sub_params);
+            }
+        }
+
+        // 5. Construcción y ejecución de la consulta principal
+        $query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students}";
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $query .= " ORDER BY id DESC LIMIT %d OFFSET %d"; // Añadimos placeholders para LIMIT y OFFSET
+        $params[] = $per_page;
+        $params[] = $offset;
+
+        // Ejecutar la consulta de estudiantes
+        $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        // 6. Procesamiento de los resultados
+        if ($students) {
+            foreach ($students as $student) {
+                $parent = get_user_by('id', $student['partner_id']);
+                $parent_full_name = '';
+                $parent_email = '';
+                if ($parent) {
+                    $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
+                    $parent_email = $parent->user_email;
+                }
+
+                $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
+
+                $students_array[] = [
+                    'student' => $student_full_name,
+                    'id' => $student['id'],
+                    'id_document' => $student['id_document'],
+                    'email' => $student['email'],
+                    'parent' => $parent_full_name,
+                    'parent_email' => $parent_email,
+                    'country' => $student['country'],
+                    'grade' => function_exists('get_name_grade') ? get_name_grade($student['grade_id']) : $student['grade_id'],
+                    'institute' => (function_exists('get_name_institute') && $student['institute_id']) ? get_name_institute($student['institute_id']) : ($student['name_institute'] ?? '')
+                ];
+            }
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
+    function prepare_items()
+    {
+
+        $data_student = $this->get_student_retired();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
 class TT_Scholarships_List_Table extends WP_List_Table
 {
 
@@ -4203,6 +4445,28 @@ function get_students_graduated_count()
             "SELECT COUNT(id) FROM %i WHERE status_id = %d",
             $table_students,
             5
+        )
+    );
+
+    if ($total_count === null) {
+        return 0;
+    }
+
+    return (int) $total_count; // Asegurarse de que el retorno sea un entero
+}
+
+function get_students_retired_count()
+{
+    global $wpdb;
+
+    $table_students = $wpdb->prefix . 'students';
+
+    // Contar directamente el número de estudiantes con status_id = 5
+    $total_count = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(id) FROM %i WHERE status_id = %d",
+            $table_students,
+            6
         )
     );
 
