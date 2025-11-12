@@ -1,5 +1,32 @@
 <?php 
 
+// script y styles para el log
+add_action('admin_enqueue_scripts', function () {
+
+    wp_enqueue_style('styles-log', EDUSYSTEM_URL . '/edusystem_log/assets/css/styles.css');
+
+    wp_enqueue_script('scripts-log', EDUSYSTEM_URL . '/edusystem_log/assets/js/scripts.js');
+
+    // Encola Flatpickr para la selección de fechas
+    wp_enqueue_style('flatpickr', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css');
+    wp_enqueue_script('flatpickr', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js');
+
+});
+
+// tipos de log de edusistem
+define('EDUSYSTEM_TYPE_LOGS', [
+    'login'     => __('User logged in', 'edusystem'),
+    'logout'    => __('User logged out', 'edusystem'),
+    'error'     => __('System error', 'edusystem'),
+    'warning'   => __('System warning', 'edusystem'),
+    'info'      => __('Information', 'edusystem'),
+    'califications'      => __('Grades viewed', 'edusystem'),
+    'moodle_login'       => __('Moodle login', 'edusystem'),
+    'error_moodle_login' => __('Moodle login error', 'edusystem'),
+    'error_moodle'       => __('Moodle system error', 'edusystem'),
+]);
+
+// craea la tabla en base de datos
 register_activation_hook( EDUSYSTEM__FILE__, function () {
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
@@ -12,6 +39,7 @@ register_activation_hook( EDUSYSTEM__FILE__, function () {
         `user_id` INT(11) NOT NULL,
         `message` TEXT NOT NULL,
         `type` TEXT NOT NULL,
+        `ip` VARCHAR(45) NOT NULL,
         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (id)
@@ -30,10 +58,15 @@ function edusystem_get_log( $message, $type = 'info', $user_id = null) {
             'user_id' => (int) $user_id,
             'message' => $message,
             'type'    => $type,
+            'ip'      => $_SERVER['REMOTE_ADDR'] ?? '',
         ]
     );
 }
 
+// obtiene los textos del tipo de log
+function edusystem_get_log_type_label( $type ) {
+    return isset( EDUSYSTEM_TYPE_LOGS[$type]) ? EDUSYSTEM_TYPE_LOGS[$type] : $type;
+}
 
 // agraga la seccion de log del edusystem
 add_action('admin_menu', 'edusystem_add_logs_page');
@@ -50,142 +83,89 @@ function edusystem_add_logs_page() {
 }
 
 // muestra la tabla de los logs del sistema
-function edusystem_show_logs_table() { ?>
-    <div class="wrap">
-        <h1><?= esc_html(__('Edusystem Logs', 'edusystem')); ?></h1>
+function edusystem_show_logs_table() { 
 
-        <?php
-            if (!class_exists('WP_List_Table')) require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
-
-            $logs_table = new Edusystem_Log_Table();
-            $logs_table->prepare_items();
-            $logs_table->display();
-        ?>
-    </div>
-<?php }
-
-
-if (!class_exists('WP_List_Table')) require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
-
-class Edusystem_Log_Table extends WP_List_Table {
-
-    protected $total_items = 0;
-    protected $per_page = 50;
-
-    public function __construct() {
-        parent::__construct([
-            'singular' => __('Log', 'edusystem'),
-            'plural'   => __('Logs', 'edusystem'),
-            'ajax'     => false
-        ]);
-    }
-
-    public function get_columns() {
-        return [
-            'id'         => __('ID', 'edusystem'),
-            'user'       => __('User', 'edusystem'),
-            'role'       => __('Role', 'edusystem'),
-            'message'    => __('Description', 'edusystem'),
-            'type'       => __('Type', 'edusystem'),
-            'created_at' => __('Date', 'edusystem')
-        ];
-    }
-
-    public function get_sortable_columns() {
-        $sortable_columns = array(
-            'id'         => array('id', true) ,
-            'user'       => array('user', false ),
-            'role'       => array('role', false  ),
-            'type'       => array('type', false  ) ,
-            'message'    => array('message', false  ) ,
-            'created_at' => array('created_at', false  ),
-        );
-        return $sortable_columns;
-    }
-
-    // Función de ordenamiento 
-    public function usort_reorder($a, $b) { 
-        // Si no hay ordenamiento, el valor predeterminado es user_login 
-        $orderby = (!empty($_GET['orderby'])) ? $_GET['orderby'] : 'user_login'; 
-
-        // Si no hay ordenamiento, el valor predeterminado es asc 
-        $order = (!empty($_GET['order'])) ? $_GET['order'] : 'asc'; 
-
-        // Determinar el ordenamiento 
-        $result = strcmp($a[$orderby], $b[$orderby]); 
-
-        // Enviar la dirección de ordenamiento final a usort 
-        return ($order === 'asc') ? $result : -$result; 
-    }
-
-    public function get_data_log() {
-        global $wpdb;
-        $table = $wpdb->prefix . 'edusystem_log';
-
-        /* $current_page = $this->get_pagenum();
-        $offset = ($current_page - 1) * $per_page; */
-
-        $this->$total_items = $wpdb->get_var("SELECT COUNT(*) FROM $table");
-        $logs = $wpdb->get_results("SELECT * FROM $table ORDER BY created_at DESC");
-
-        // Enriquecer los logs con nombre y rol
-        $data = [];
-        if( $logs ){
-
-            foreach ($logs as $log) {
-                
-                $user = get_userdata( (int) $log->user_id );
-                $display_name = $user ? $user->display_name : __('Unknown', 'edusystem');
-                $role = $user && !empty($user->roles) ? $user->roles[0] : __('None', 'edusystem');
-               
-                array_push($data,[
-                    'id'         => $log->id,
-                    'user'       => $display_name,
-                    'role'       => $role,
-                    'type'       => edusystem_get_log_type_label($log->type),
-                    'message'    => $log->message,
-                    'created_at' => $log->created_at,
-                ]);
-            }
-        }
-        return $data;
-       
-    }
-
-    public function column_default($item, $column_name) {
-        return isset($item[$column_name]) ? esc_html($item[$column_name]) : '';
-    }
-
-    public function prepare_items(){
-        $data = $this->get_data_log();
+    include_once(EDUSYSTEM_PATH . '/edusystem_log/Edusystem_Log_Table.php');
     
-        $columns = $this->get_columns(); 
-        $hidden = array(); 
-        usort( $data, array( &$this, 'usort_reorder' ) );
-        $sortable = $this->get_sortable_columns(); 
+    $logs_table = new Edusystem_Log_Table();
+    $logs_table->prepare_items();
 
-        $this->_column_headers = array( $columns ,$hidden , $sortable );
-        $this->process_bulk_action();
+    ?>
+        <div id="edusystem_logs" class="wrap">
+            <h1><?= esc_html(__('Edusystem Logs', 'edusystem')); ?></h1>
 
-        $this->set_pagination_args( array(
-            'total_items' => $this->total_items,
-            'per_page'    => $this->per_page, 
-            'total_pages' => ceil($this->total_items / $this->per_page)
-        ) );
+            <div class="filters_container" >
 
-        $this->items = $data;
-        
-    }
+                <?php
+                    $date = isset($_GET['date']) ? $_GET['date'] : "last_month";
+                    $start_date = isset($_GET['startDate']) ? $_GET['startDate'] : "";
+                    $end_date = isset($_GET['endDate']) ? $_GET['endDate'] : "";
+                
+                    $date_custom = '';
+                    if($date !== 'custom') $date_custom = 'display: none;'; 
+                    
+                ?>
+
+                <input type="text" id="date-range" class="input-text" style="<?= $date_custom ?>" value="<?= $start_date.' to '.$end_date ?>" />
+
+                <?php $date = $_GET['date'] ?? '' ?>
+                <select id="select-date" class="woocommerce-Input input-text" data-date="<?=$date?>" onchange ="edusystem_date_filter_transactions(this.value);" >
+                    <option value="today" <?=  selected( $date, 'today' ); ?> ><?= __('Today', 'edusystem') ?></option>
+                    <option value="last_week" <?=  selected( $date, 'last_week'); ?>  ><?= __('Last Week', 'edusystem') ?></option>
+                    <option value="last_month" <?=  selected( $date, 'last_month' ); ?>><?= __('Last Month', 'edusystem') ?></option>
+                    <option value="last_3_months" <?=  selected( $date, 'last_3_months' ); ?>><?= __('Last 3 months', 'edusystem') ?></option>
+                    <option value="custom" <?=  selected( $date, 'custom' ); ?>><?= __('Custom', 'edusystem') ?></option>
+                </select>
+                
+                <?php 
+
+                    // Traer todos los tipos únicos
+                    global $wpdb;
+                    $types_logs = $wpdb->get_col("
+                        SELECT DISTINCT type
+                        FROM `{$wpdb->prefix}edusystem_log`
+                        ORDER BY type
+                    ");
+
+                    // Unir las llaves de la constante con el array
+                    $types = array_unique(array_merge(array_keys(EDUSYSTEM_TYPE_LOGS), $types_logs));
+
+                ?>                
+                <select name="type" onchange ="edusystem_filters_transactions('type',this.value);">
+                    
+                    <option value="" <?=  selected( $_GET['type'] ?? '', '' ); ?>><?= __('Select type', 'edusystem') ?></option>
+
+                    <?php foreach( $types AS $type ): ?>
+                        
+                        <option value="<?=$type?>" <?= selected( $_GET['type'] ?? '', $type ); ?> >
+                            <?= edusystem_get_log_type_label( $type ) ?>
+                        </option>
+                    <?php endforeach; ?>
+                    
+                </select>    
+                
+                <form method="get" >
+                    <input type="hidden" name="page" value="<?=$_REQUEST['page']?>" />
+                    <?php $logs_table->search_box('search', 'search_id'); ?>
+                </form>
+
+            </div>
+
+            <?php $logs_table->display(); ?>
+        </div>
+    <?php
 }
 
 // Registra el logeo del usuario
 add_action('wp_login', function ($user_login, $user) {
 
-    $message = sprintf(__('User %s logged in', 'edusystem'), $user_login);
+    $first_name = get_user_meta($user->ID, 'first_name', true);
+    $last_name  = get_user_meta($user->ID, 'last_name', true);
+
+    $message = sprintf(__('User %s logged in', 'edusystem'), $first_name.' '.$last_name);
     edusystem_get_log( $message, 'login', $user->ID);
 
 }, 10, 2);
-
 
 // Guardamos el usuario que está a punto de cerrar sesión
 add_action('clear_auth_cookie', function () {
@@ -205,11 +185,11 @@ add_action('wp_logout', function () {
 
         $user = get_userdata($user_id);
 
-        $display_name = $user->display_name;
-        $rol = !empty($user->roles) ? $user->roles[0] : __('user','edusystem');
+        $first_name   = get_user_meta( $user->ID, 'first_name', true );
+        $last_name = get_user_meta( $user->ID, 'last_name', true );
 
         // Mensaje traducible con nombre y rol
-        $message = sprintf(__('The %s %s session closed', 'edusystem'), $rol, $display_name );
+        $message = sprintf(__('The user %s session closed', 'edusystem'), $first_name.' '.$last_name);
 
         // Registrar el log
         edusystem_get_log($message, 'logout', $user_id);
@@ -219,22 +199,6 @@ add_action('wp_logout', function () {
     }
 });
 
-// obtiene los textos del tipo de log
-function edusystem_get_log_type_label($type) {
-    $types = [
-        'login'     => __('User logged in', 'edusystem'),
-        'logout'    => __('User logged out', 'edusystem'),
-        'error'     => __('System error', 'edusystem'),
-        'warning'   => __('System warning', 'edusystem'),
-        'info'      => __('Information', 'edusystem'),
-        'update'    => __('Data updated', 'edusystem'),
-        'create'    => __('Data created', 'edusystem'),
-        'delete'    => __('Data deleted', 'edusystem'),
-        'access'    => __('Access attempt', 'edusystem'),
-        'permission'=> __('Permission change', 'edusystem'),
-    ];
 
-    return isset($types[$type]) ? $types[$type] : $type;
-}
 
 

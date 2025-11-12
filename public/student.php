@@ -635,6 +635,13 @@ add_action('woocommerce_account_califications_endpoint', function () {
 
     $admin_virtual_access = get_option('virtual_access');
     include(plugin_dir_path(__FILE__) . 'templates/califications.php');
+
+    // Successful login actividad de acceso
+    $first_name   = get_user_meta( $current_user->ID, 'first_name', true );
+    $last_name = get_user_meta( $current_user->ID, 'last_name', true );
+    $message = sprintf(__('The student %s saw grades.', 'edusystem'), $first_name.' '.$last_name);
+    edusystem_get_log($message, 'califications', $current_user->ID );
+    
 });
 
 add_action('woocommerce_account_teacher-course-students_endpoint', function () {

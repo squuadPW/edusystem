@@ -13,6 +13,8 @@ Text Domain:  edusystem
 
 // Definición de constantes del plugin
 define('EDUSYSTEM__FILE__', __FILE__); // ruta __FILE__
+define('EDUSYSTEM_PATH', plugin_dir_path(__FILE__)); // Ruta del directorio del plugin
+define('EDUSYSTEM_URL', plugin_dir_url(__FILE__)); // URL del plugin
 
 // funciones de comisiones
 include_once( plugin_dir_path(__FILE__).'payment_method_fees/payment_method_fees.php' );
