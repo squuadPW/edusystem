@@ -75,7 +75,7 @@ function edusystem_add_logs_page() {
     add_menu_page(
         __('Edusystem Logs', 'edusystem'),     // Page title
         __('Edusystem Logs', 'edusystem'),               // Menu title
-        'manage_options',
+        'manager_logs',
         'edusystem-logs',
         'edusystem_show_logs_table',
         'dashicons-list-view',

@@ -627,6 +627,8 @@ function add_cap_to_administrator()
     $role->add_cap('manager_institutes_aes');
     $role->add_cap('manager_moodle_aes');
     $role->add_cap('manager_moodle_settings_aes');
+    $role->add_cap('manager_moodle_settings_aes');
+    $role->add_cap('manager_logs');
 }
 
 add_action('admin_init', 'add_cap_to_administrator');
