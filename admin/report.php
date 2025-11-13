@@ -2487,6 +2487,8 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
 
     function get_students_active_report()
     {
+        global $wpdb;
+        $table_student_documents = $wpdb->prefix . 'student_documents';
         $students_array = [];
 
         // PAGINATION
@@ -2501,6 +2503,8 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
         $country = $_POST['country'] ?? '';
         $institute = $_POST['institute'] ?? '';
 
+        $table_documents = $wpdb->prefix . 'documents';
+        $documents = $wpdb->get_results("SELECT * FROM {$table_documents} WHERE grade_id = 4", OBJECT);
         $students = get_students_report_offset($academic_period, $academic_period_cut, $search, $country, $institute);
         $total_count = count($students);
         $students_filtered = array_slice($students, $offset, $per_page);
@@ -2509,8 +2513,17 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
             $parent = get_user_by('id', $student->partner_id);
             $student_full_name = '<span class="text-uppercase">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . '</span>';
             $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
-            $students_array[] = ['student' => $student_full_name, 'id' => $student->id, 'id_document' => $student->id_document, 'email' => $student->email, 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student->country, 'grade' => get_name_grade($student->grade_id), 'institute' => $student->institute_id ? get_name_institute($student->institute_id) : $student->name_institute];
+            $student_data = ['student' => $student_full_name, 'id' => $student->id, 'id_document' => $student->id_document, 'email' => $student->email, 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student->country, 'grade' => get_name_grade($student->grade_id), 'institute' => $student->institute_id ? get_name_institute($student->institute_id) : $student->name_institute];
+            foreach ($documents as $document) {
+                $name_lower = strtolower($document->name);
+                $name_sanitized = preg_replace('/[^a-z0-9\s]/', '', $name_lower);
+                $key = str_replace(' ', '_', $name_sanitized);
+                $student_document_uploaded = $wpdb->get_results("SELECT * FROM {$table_documents} WHERE student_id = {$student->id} AND document_id = '{$document->name}' AND attachment_id != 0", OBJECT);
+                $student_data[$key] = !empty($student_document_uploaded) ? __('Yes', 'edusystem') : __('No', 'edusystem');
+            }
+            $students_array[] = $student_data;
         }
+        error_log(print_r($students_array, true));
 
         return ['data' => $students_array, 'total_count' => $total_count];
     }

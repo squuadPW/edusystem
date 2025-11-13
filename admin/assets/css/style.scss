@@ -1921,6 +1921,35 @@ a.toplevel_page_logo_based_menu {
     display: inline-block !important; /* Mantiene la clase original del elemento */
 }
 
+/* Define el ancho de la barra de desplazamiento vertical y el alto de la horizontal */
+.nav-scroll-h::-webkit-scrollbar {
+    width: 10px; /* Ancho para scroll vertical */
+    height: 10px; /* Altura para scroll horizontal */
+}
+
+/* Estiliza el "fondo" o la pista donde se desliza el scroll */
+.nav-scroll-h::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color de fondo claro */
+    border-radius: 5px;
+}
+
+/* Estiliza el "pulgar" o la barra que mueves */
+.nav-scroll-h::-webkit-scrollbar-thumb {
+    background: #888; /* Color de la barra, gris oscuro */
+    border-radius: 5px;
+}
+
+/* Estiliza la barra al pasar el ratón por encima */
+.nav-scroll-h::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color más oscuro al hacer hover */
+}
+
+/* Firefox solo permite cambiar el color y el ancho/tamaño, no la forma. */
+.nav-scroll-h {
+    scrollbar-width: thin; /* 'auto' o 'thin' */
+    scrollbar-color: #888 #f1f1f1; /* Color del thumb / Color del track */
+}
+
 /* CSS/SCSS */
 /* Aplica el scroll al contenedor envoltorio */
 .table-scroll-container {
