@@ -5,15 +5,15 @@
     <a href="<?= admin_url('admin.php?page=report-students') ?>"
         class="nav-tab <?= !isset($_GET['section_tab']) ? 'nav-tab-active' : ''; ?>"><?= __('All Active Students', 'edusystem'); ?>
         (<strong><?= $total_count_active ?></strong>)</a>
-    <a href="<?= admin_url('admin.php?page=report-students&section_tab=pending-documents'); ?>"
-        class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending-documents') ? 'nav-tab-active' : ''; ?>"><?= __('Documents Missing', 'edusystem'); ?>
-        (<strong><?= $total_count_pending_documents ?></strong>)</a>
     <a href="<?= admin_url('admin.php?page=report-students&section_tab=documents_active_students') ?>"
         class="nav-tab <?= !empty($_GET['section_tab']) && $_GET['section_tab'] == 'documents_active_students' ? 'nav-tab-active' : ''; ?>"><?= __('Active Student Documents', 'edusystem'); ?>
         (<strong><?= $total_count_active ?></strong>)</a>
     <a href="<?= admin_url('admin.php?page=report-students&section_tab=enrollment_active_students') ?>"
         class="nav-tab <?= !empty($_GET['section_tab']) && $_GET['section_tab'] == 'enrollment_active_students' ? 'nav-tab-active' : ''; ?>"><?= __('Enrollment of active students', 'edusystem'); ?>
         (<strong><?= $total_count_active ?></strong>)</a>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending-documents'); ?>"
+        class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending-documents') ? 'nav-tab-active' : ''; ?>"><?= __('Documents Missing', 'edusystem'); ?>
+        (<strong><?= $total_count_pending_documents ?></strong>)</a>
     <a href="<?= admin_url('admin.php?page=report-students&section_tab=pending_electives'); ?>"
         class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending_electives') ? 'nav-tab-active' : ''; ?>"><?= __('Electives Pending', 'edusystem'); ?>
         (<strong><?= $total_count_pending_electives ?></strong>)</a>
