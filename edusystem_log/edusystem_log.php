@@ -97,98 +97,6 @@ function edusystem_get_log_type_label( $type ) {
     return isset( EDUSYSTEM_TYPE_LOGS[$type]) ? EDUSYSTEM_TYPE_LOGS[$type] : $type;
 }
 
-// Agrega la sección de logs de Edusystem
-add_action('admin_menu', 'edusystem_add_logs_page');
-function edusystem_add_logs_page() {
-    add_menu_page(
-        __('Edusystem Logs', 'edusystem'),     // Page title
-        __('Edusystem Logs', 'edusystem'),               // Menu title
-        'manager_logs',
-        'edusystem-logs',
-        'edusystem_show_logs_table',
-        'dashicons-list-view',
-        80
-    );
-}
-
-// Muestra la tabla de los logs del sistema
-function edusystem_show_logs_table() { 
-
-    if ( ! current_user_can( 'manager_logs' ) ) {
-        wp_die( __( 'You do not have permission to view this page.', 'edusystem' ) );
-    }
-
-    include_once(EDUSYSTEM_PATH . '/edusystem_log/Edusystem_Log_Table.php');
-    
-    $logs_table = new Edusystem_Log_Table();
-    $logs_table->prepare_items();
-
-    ?>
-        <div id="edusystem_logs" class="wrap">
-            <h1><?= esc_html(__('Edusystem Logs', 'edusystem')); ?></h1>
-
-            <form method="get" class="filters_container" >
-
-                <?php
-                    $date = isset($_GET['date']) ? $_GET['date'] : "last_month";
-                    $start_date = isset($_GET['startDate']) ? $_GET['startDate'] : "";
-                    $end_date = isset($_GET['endDate']) ? $_GET['endDate'] : "";
-                
-                    $date_custom = '';
-                    if($date !== 'custom') $date_custom = 'display: none;'; 
-                    
-                ?>
-
-                <input type="text" id="date-range" class="input-text" style="<?= $date_custom ?>" value="<?= $start_date.' to '.$end_date ?>" />
-
-                <select id="select-date" class="woocommerce-Input input-text" data-date="<?=$date?>" onchange ="edusystem_date_filter_transactions(this.value);" >
-                    <option value="today" <?=  selected( $date, 'today' ); ?> ><?= __('Today', 'edusystem') ?></option>
-                    <option value="last_week" <?=  selected( $date, 'last_week'); ?>  ><?= __('Last Week', 'edusystem') ?></option>
-                    <option value="last_month" <?=  selected( $date, 'last_month' ); ?>><?= __('Last Month', 'edusystem') ?></option>
-                    <option value="last_3_months" <?=  selected( $date, 'last_3_months' ); ?>><?= __('Last 3 months', 'edusystem') ?></option>
-                    <option value="custom" <?=  selected( $date, 'custom' ); ?>><?= __('Custom', 'edusystem') ?></option>
-                </select>
-                
-                <?php 
-
-                    // Traer todos los tipos únicos
-                    global $wpdb;
-                    $types_logs = $wpdb->get_col("
-                        SELECT DISTINCT type
-                        FROM `{$wpdb->prefix}edusystem_log`
-                        ORDER BY type
-                    ");
-
-                    // Unir las llaves de la constante con el array
-                    $types = array_unique(array_merge(array_keys(EDUSYSTEM_TYPE_LOGS), $types_logs));
-
-                ?>                
-                <select name="type" onchange ="edusystem_filters_transactions('type',this.value);">
-                    
-                    <option value="" <?=  selected( $_GET['type'] ?? '', '' ); ?>><?= __('Select type', 'edusystem') ?></option>
-
-                    <?php foreach( $types AS $type ): ?>
-                        
-                        <option value="<?=$type?>" <?= selected( $_GET['type'] ?? '', $type ); ?> >
-                            <?= edusystem_get_log_type_label( $type ) ?>
-                        </option>
-                    <?php endforeach; ?>
-                    
-                </select>    
-                
-                <input type="hidden" name="page" value="<?=$_REQUEST['page']?>" />
-
-                <?php if ( empty( $_GET['user_id'] ) ): ?>
-                    <?php $logs_table->search_box('search', 'search_id'); ?>
-                <?php endif ?>
-
-            </form>
-
-            <?php $logs_table->display(); ?>
-        </div>
-    <?php
-}
-
 // Añade el enlace a los logs de Edusystem de un usuario
 add_action('personal_options', function ($user) {
     $user_id = is_object($user) ? (int) $user->ID : (int) $user;
@@ -203,6 +111,98 @@ add_action('personal_options', function ($user) {
         </td>
     </tr>
     <?php
+});
+
+// Agrega la sección de logs de Edusystem
+add_action('admin_menu', function () {
+    // Menú principal (sin callback)
+    add_menu_page(
+        __('Edusystem Logs', 'edusystem'),     // Page title
+        __('Edusystem Logs', 'edusystem'),     // Menu title
+        'manager_logs',                        // Capability
+        'edusystem-logs',                      // Slug
+        '',                                    // Callback vacío
+        'dashicons-list-view',
+        80
+    );
+
+    // Lista de log
+    add_submenu_page(
+        'edusystem-logs',                      // Slug
+        __('Edusystem Logs', 'edusystem'),     // Page title
+        __('Edusystem Logs', 'edusystem'),     // Menu title
+        'manager_logs',                        // Capability
+        'edusystem-logs',                      // Slug i
+        'edusystem_show_logs_table'            // Callback
+    );
+
+    // Eliminar
+    $current_user = wp_get_current_user(); // solo para administradores
+    if ( in_array( 'administrator', (array) $current_user->roles ) ) {
+
+        add_submenu_page(
+            'edusystem-logs',
+            __('Delete Logs', 'edusystem'),
+            __('Delete Logs', 'edusystem'),
+            'manager_logs',
+            'edusystem-logs-delete',
+            'edusystem_show_logs_delete_page'
+        );
+    }
+    
+});
+
+// Muestra la tabla de los logs del sistema
+function edusystem_show_logs_table() { 
+
+    if ( ! current_user_can( 'manager_logs' ) ) {
+        wp_die( __( 'You do not have permission to view this page.', 'edusystem' ) );
+    }
+
+    include_once(EDUSYSTEM_PATH . '/edusystem_log/template/logs_table.php');
+
+}
+
+// Muestra la pagina para eliminar logs
+function edusystem_show_logs_delete_page() {
+
+    if ( ! current_user_can('manage_options') ) {
+        wp_die(__('Solo administradores pueden acceder a esta página.', 'edusystem'));
+    }
+
+    include_once(EDUSYSTEM_PATH . '/edusystem_log/template/delete_logs.php');
+}
+
+// Ajax para el selct2 del usuario
+add_action('wp_ajax_edusystem_search_users', function() {
+    global $wpdb;
+    $term = sanitize_text_field($_GET['q'] ?? '');
+
+    // Buscar en display_name, user_email y en los metadatos first_name / last_name
+    $users = $wpdb->get_results(
+        $wpdb->prepare("
+            SELECT u.ID, u.display_name, u.user_email, fn.meta_value AS first_name, ln.meta_value AS last_name
+            FROM {$wpdb->users} u
+            LEFT JOIN {$wpdb->usermeta} fn ON fn.user_id = u.ID AND fn.meta_key = 'first_name'
+            LEFT JOIN {$wpdb->usermeta} ln ON ln.user_id = u.ID AND ln.meta_key = 'last_name'
+            WHERE u.display_name LIKE %s
+               OR u.user_email LIKE %s
+               OR fn.meta_value LIKE %s
+               OR ln.meta_value LIKE %s
+            LIMIT 20
+        ", '%'.$wpdb->esc_like($term).'%', '%'.$wpdb->esc_like($term).'%', '%'.$wpdb->esc_like($term).'%', '%'.$wpdb->esc_like($term).'%')
+    );
+
+    $results = [];
+    foreach ($users as $user) {
+        $results[] = [
+            'ID' => $user->ID,
+            'display_name' =>"{$user->first_name} {$user->last_name}",
+            'user_email' => $user->user_email
+        ];
+    }
+
+    wp_send_json($results);
 });
 
 
