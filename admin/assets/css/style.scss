@@ -1896,3 +1896,27 @@ a.toplevel_page_logo_based_menu {
     flex-direction: column; /* Apila los botones (si no lo hiciste en el HTML con wp_is_mobile) */
   }
 }
+
+/* Usamos el selector combinado para máxima especificidad */
+.nav-tab-wrapper.nav-scroll-h {
+    /* CLAVE 1: Usa Flexbox para controlar la distribución de los hijos */
+    display: flex !important;
+    
+    /* CLAVE 2: Evita que los elementos Flexbox salten a la siguiente línea */
+    flex-wrap: nowrap !important;
+    
+    /* CLAVE 3: Habilita el desplazamiento horizontal cuando el contenido se desborda */
+    overflow-x: auto !important;
+    
+    /* Asegura que no haya scroll vertical no deseado */
+    overflow-y: hidden !important; 
+    
+    /* Opcional: Esto ayuda a que el scroll funcione correctamente en algunos navegadores */
+    width: 100%; 
+}
+
+/* Esencial: Asegura que cada pestaña pueda ser tan ancha como necesite (no se encoge) */
+.nav-tab-wrapper.nav-scroll-h a {
+    flex-shrink: 0 !important;
+    display: inline-block !important; /* Mantiene la clase original del elemento */
+}

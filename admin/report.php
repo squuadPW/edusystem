@@ -139,6 +139,10 @@ function show_report_current_students()
             $list_students = new TT_Scholarships_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'documents_active_students') {
+            $list_students = new TT_Active_Student_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         }
     } else {
         $list_students = new TT_Active_Student_List_Table;
