@@ -54,6 +54,35 @@ class Edusystem_Log_Table extends WP_List_Table {
         return isset($item[$column_name]) ? esc_html($item[$column_name]) : '';
     }
 
+    public function column_user($item) {
+        $user_id = $item['user_id']; 
+
+        $url = add_query_arg(
+            array( 'user_id' => $user_id ),
+            admin_url('user-edit.php')
+        );
+
+        return sprintf(
+            '<a href="%s">%s</a>',
+            esc_url($url),
+            esc_html($item['user'])
+        );
+    }
+
+
+    public function column_message($item) {
+        // Permitir solo etiquetas seguras como <a>
+        return wp_kses(
+            $item['message'],
+            array(
+                'a' => array(
+                    'href' => array(),
+                    'title' => array(),
+                ),
+            )
+        );
+    }
+
     public function get_data_log() {
 
         global $wpdb;
@@ -151,6 +180,7 @@ class Edusystem_Log_Table extends WP_List_Table {
 
                 $data[] = [
                     'id'         => $log->id,
+                    'user_id'       =>  $log->user_id,
                     'user'       => $user_name,
                     'type'       => edusystem_get_log_type_label($log->type),
                     'message'    => $log->message,
@@ -160,7 +190,6 @@ class Edusystem_Log_Table extends WP_List_Table {
         }
         return $data;
     }
-
 
     public function prepare_items(){
         $data = $this->get_data_log();
