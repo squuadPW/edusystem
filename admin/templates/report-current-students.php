@@ -37,48 +37,58 @@
 			<?php
 			$heading_text = '';
 			$name_document = '';
-
+			$headers = [];
 			switch ($_GET['section_tab']) {
 				case 'current':
 					$heading_text = __('Students seeing classes in the current term.', 'edusystem');
 					$name_document = __('Students studying.xlsx', 'edusystem');
+					$headers = ['Student', 'Subjects'];
 					break;
 				case 'pending_electives':
 					$heading_text = __('Pending students to select electives', 'edusystem');
 					$name_document = __('Pending electives.xlsx', 'edusystem');
+					$headers = ['Student', 'ID', 'Student email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 				case 'non-enrolled':
 					$heading_text = __('Students who are not seeing classes in the current term', 'edusystem');
 					$name_document = __('Non-enrolled.xlsx', 'edusystem');
+					$headers = ['Student', 'ID', 'Student email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 				case 'pending-graduation':
 					$heading_text = __('Students academically ready, awaiting graduation', 'edusystem');
 					$name_document = __('Pending graduation.xlsx', 'edusystem');
+					$headers = ['Student', 'Country', 'Institute', 'Academic ready', 'Documents', 'Fee registration', 'Program payment', 'Fee graduation'];
 					break;
 				case 'pending-documents':
 					$heading_text = __('Students with pending documents', 'edusystem');
 					$name_document = __('Pending documents.xlsx', 'edusystem');
+					$headers = ['Student', 'Documents'];
 					break;
 				case 'graduated':
 					$heading_text = __('Graduated students', 'edusystem');
 					$name_document = __('Graduated students.xlsx', 'edusystem');
+					$headers = ['Income', 'Term', 'ID', 'Student', 'Student email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 				case 'retired':
 					$heading_text = __('Retired students', 'edusystem');
 					$name_document = __('Retired students.xlsx', 'edusystem');
+					$headers = ['Income', 'Term', 'ID', 'Student', 'Student email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 				case 'scholarships':
 					$heading_text = __('Scholarship students', 'edusystem');
 					$name_document = __('Scholarship students.xlsx', 'edusystem');
+					$headers = ['Scholarship', 'Student', 'ID', 'Student email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 				default:
 					$heading_text = __('All students with active status', 'edusystem');
 					$name_document = __('Active students.xlsx', 'edusystem');
+					$headers = ['Student', 'ID', 'Email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 			}
 			?>
 			<h1 class='wp-heading-line'><?= $heading_text ?></h1>
 			<input type="hidden" name="name_document" id="name-document" value="<?= $name_document ?>">
+			<input type="hidden" name="headers" id="headers-document" value="<?= esc_attr( wp_json_encode( $headers ) ); ?>">
 		</div>
 		<form method="post"
 			action="<?= admin_url('admin.php?page=report-students') . ($_GET['section_tab'] ? '&section_tab=' . $_GET['section_tab'] : ''); ?>">

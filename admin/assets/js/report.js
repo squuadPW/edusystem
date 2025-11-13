@@ -416,18 +416,20 @@ document.addEventListener("DOMContentLoaded", function () {
       const data = [];
 
       // Definir los encabezados fijos
-      const headers = [
-        "Income",
-        "Term",
-        "ID",
-        "Student",
-        "Student email",
-        "Parent",
-        "Parent email",
-        "Country",
-        "Grade",
-        "Institute",
-      ];
+      // const headers = [
+      //   "Income",
+      //   "Term",
+      //   "ID",
+      //   "Student",
+      //   "Student email",
+      //   "Parent",
+      //   "Parent email",
+      //   "Country",
+      //   "Grade",
+      //   "Institute",
+      // ];
+      console.log(document.getElementById("headers-document").value);
+      const headers = JSON.parse(document.getElementById("headers-document").value);
 
       data.push(headers); // Agrega los encabezados al array de datos
 
@@ -442,7 +444,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Itera sobre las celdas de cada fila, excluyendo la última celda ("Actions")
         for (let j = 0; j < row.cells.length - 1; j++) {
-          rowData.push(row.cells[j].textContent.trim());
+          let cellText = row.cells[j].textContent.trim();
+          cellText = cellText.replace(/Show more details/g, "");
+          rowData.push(cellText);
         }
 
         data.push(rowData);
