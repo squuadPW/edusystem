@@ -1770,18 +1770,18 @@ a.toplevel_page_logo_based_menu {
 }
 
 .wp-list-table .column-governmentissued_photo_id_identity_document_or_passport_or_drivers_license_or_cedula_or_dni_or_din {
-  width: 400px !important;
-  min-width: 400px !important;
+  width: 350px !important;
+  min-width: 350px !important;
 }
 
 .wp-list-table .column-photoid_or_passport {
-  width: 400px !important;
-  min-width: 400px !important;
+  width: 150px !important;
+  min-width: 150px !important;
 }
 
 .wp-list-table .column-last_degree_diploma_obtained_national_or_foreign {
-  width: 400px !important;
-  min-width: 400px !important;
+  width: 350px !important;
+  min-width: 350px !important;
 }
 
 .wp-list-table .column-report_of_grades_or_official_transcripts_of_courses_passed_at_a_higher_education_institution_tsu_or_bachelors_degree {
@@ -1790,8 +1790,8 @@ a.toplevel_page_logo_based_menu {
 }
 
 .wp-list-table .column-official_ged_high_school_original_transcripts {
-  width: 400px !important;
-  min-width: 400px !important;
+  width: 300px !important;
+  min-width: 300px !important;
 }
 
 .wp-list-table .column-translation_or_equivalent_high_school_or_ged_by_recognized_institution {
@@ -1800,11 +1800,11 @@ a.toplevel_page_logo_based_menu {
 }
 
 .wp-list-table .column-curriculum_vitae_ph_d_only {
-  width: 400px !important;
-  min-width: 400px !important;
+  width: 200px !important;
+  min-width: 200px !important;
 }
 
 .wp-list-table .column-thesis_idea_to_develop_phd_only {
-  width: 400px !important;
-  min-width: 400px !important;
+  width: 200px !important;
+  min-width: 200px !important;
 }/*# sourceMappingURL=style.css.map */
