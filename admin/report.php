@@ -2487,34 +2487,133 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
 
     function get_students_active_report()
     {
-        $students_array = [];
+        global $wpdb;
+
+        // --- 1. PREPARACIÓN DE PARÁMETROS Y TABLAS ---
+        $table_student_documents = $wpdb->prefix . 'student_documents';
+        $table_documents = $wpdb->prefix . 'documents';
 
         // PAGINATION
-        $per_page = 20; // number of items per page
+        $per_page = 20;
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
-        // PAGINATION
 
+        // FILTERS
         $academic_period = $_POST['academic_period'] ?? '';
         $academic_period_cut = $_POST['academic_period_cut'] ?? '';
         $search = $_POST['s'] ?? '';
         $country = $_POST['country'] ?? '';
         $institute = $_POST['institute'] ?? '';
 
+        // --- 2. OPTIMIZACIÓN DE CONSULTAS A BD ---
+
+        // Obtener los documentos de grado 4 solo una vez
+        $documents = $wpdb->get_results("SELECT id, name FROM {$table_documents} WHERE grade_id = 4", OBJECT_K);
+
+        // Preparar el array de nombres de documentos para la consulta SQL
+        $document_names = array_column($documents, 'name');
+        $documents_keys_map = [];
+
+        foreach ($documents as $document) {
+            $name_lower = strtolower($document->name);
+            // Deprecation: Usar ?? '' para garantizar que $document->middle_last_name sea string
+            $name_sanitized = preg_replace('/[^a-z0-9\s]/', '', $name_lower);
+            $documents_keys_map[$document->name] = str_replace(' ', '_', $name_sanitized);
+        }
+
+        // Obtención de estudiantes (Se mantiene la ineficiencia forzada, pero se procesa mejor)
         $students = get_students_report_offset($academic_period, $academic_period_cut, $search, $country, $institute);
         $total_count = count($students);
         $students_filtered = array_slice($students, $offset, $per_page);
 
-        foreach ($students_filtered as $student) {
-            $parent = get_user_by('id', $student->partner_id);
-            $student_full_name = '<span class="text-uppercase">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . '</span>';
-            $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
-            $students_array[] = ['student' => $student_full_name, 'id' => $student->id, 'id_document' => $student->id_document, 'email' => $student->email, 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student->country, 'grade' => get_name_grade($student->grade_id), 'institute' => $student->institute_id ? get_name_institute($student->institute_id) : $student->name_institute];
+        // Optimizando la obtención de datos de padres y documentos para el subset filtrado
+        $student_ids = array_column($students_filtered, 'id');
+        $parent_ids = array_column($students_filtered, 'partner_id');
+
+        // Cargar los datos de los padres (WP_User objects) de una sola vez
+        $parents = get_users(['include' => $parent_ids, 'fields' => ['ID', 'user_email']]);
+        $parents_map = array_column($parents, null, 'ID');
+
+        // Preparación de Placeholders para parent_ids (Números enteros)
+        $parent_id_placeholders = implode(',', array_fill(0, count($parent_ids), '%d'));
+
+        // Cargar los metadatos de los padres (last_name, first_name) de una sola vez
+        // Se utiliza vsprintf en lugar de $wpdb->prepare para la lista IN de IDs
+        $parent_meta_query = $wpdb->prepare(
+            "SELECT user_id, meta_key, meta_value FROM {$wpdb->usermeta} WHERE user_id IN ({$parent_id_placeholders}) AND meta_key IN ('first_name', 'last_name')",
+            ...$parent_ids
+        );
+        $parent_meta_results = $wpdb->get_results($parent_meta_query, ARRAY_A);
+        $parent_meta_map = [];
+
+        foreach ($parent_meta_results as $meta) {
+            $parent_meta_map[$meta['user_id']][$meta['meta_key']] = $meta['meta_value'];
         }
+
+        // Cargar los documentos subidos de los estudiantes filtrados de una sola vez
+
+        // 1. Preparar Placeholders para student_id (Números enteros)
+        $student_id_placeholders = implode(',', array_fill(0, count($student_ids), '%d'));
+
+        // 2. Preparar Placeholders para document_id (Strings)
+        $document_name_placeholders = implode(',', array_fill(0, count($document_names), '%s'));
+
+        // NOTA CLAVE: Al usar $wpdb->prepare, se pasan los arrays de IDs y Nombres como argumentos separados.
+        $student_documents_query = $wpdb->prepare(
+            "SELECT student_id, document_id FROM {$table_student_documents} WHERE student_id IN ({$student_id_placeholders}) AND document_id IN ({$document_name_placeholders}) AND `status` = 5",
+            ...$student_ids,
+            ...$document_names
+        );
+
+        $student_documents_uploaded = $wpdb->get_results($student_documents_query, OBJECT);
+
+        $uploaded_map = [];
+        foreach ($student_documents_uploaded as $doc) {
+            $uploaded_map[$doc->student_id][$doc->document_id] = true;
+        }
+
+        // --- 3. PROCESAMIENTO DE DATOS ---
+        $students_array = [];
+
+        // Preparar strings comunes una sola vez
+        $yes_label = __('Yes', 'edusystem');
+        $no_label = __('No', 'edusystem');
+        $parent_label = __('Parent', 'edusystem');
+
+        foreach ($students_filtered as $student) {
+            $parent = $parents_map[$student->partner_id] ?? null;
+            $parent_meta = $parent_meta_map[$student->partner_id] ?? ['first_name' => '', 'last_name' => ''];
+
+            $student_full_name = '<span class="text-uppercase">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . '</span>';
+
+            $parent_full_name_raw = $parent_meta['last_name'] . ' ' . $parent_meta['first_name'];
+            $parent_full_name = "<span class='text-uppercase' data-colname='" . $parent_label . "'>" . strtoupper($parent_full_name_raw) . "</span>";
+
+            $student_data = [
+                'student' => $student_full_name,
+                'id' => $student->id,
+                'id_document' => $student->id_document,
+                'email' => $student->email,
+                'parent' => $parent_full_name,
+                'parent_email' => $parent->user_email ?? '',
+                'country' => $student->country,
+                'grade' => get_name_grade($student->grade_id),
+                'institute' => $student->institute_id ? get_name_institute($student->institute_id) : $student->name_institute
+            ];
+
+            // Mapeo eficiente de documentos subidos
+            $student_uploaded_docs = $uploaded_map[$student->id] ?? [];
+            foreach ($documents_keys_map as $document_name => $key) {
+                $student_data[$key] = isset($student_uploaded_docs[$document_name]) ? $yes_label : $no_label;
+            }
+
+            $students_array[] = $student_data;
+        }
+
+        // error_log(print_r($students_array, true));
 
         return ['data' => $students_array, 'total_count' => $total_count];
     }
-
     function prepare_items()
     {
 
