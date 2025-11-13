@@ -186,31 +186,52 @@ add_action('wp_ajax_edusystem_search_users', function() {
     global $wpdb;
     $term = sanitize_text_field($_GET['q'] ?? '');
 
-    // Buscar en display_name, user_email y en los metadatos first_name / last_name
-    $users = $wpdb->get_results(
-        $wpdb->prepare("
-            SELECT u.ID, u.display_name, u.user_email, fn.meta_value AS first_name, ln.meta_value AS last_name
-            FROM {$wpdb->users} u
-            LEFT JOIN {$wpdb->usermeta} fn ON fn.user_id = u.ID AND fn.meta_key = 'first_name'
-            LEFT JOIN {$wpdb->usermeta} ln ON ln.user_id = u.ID AND ln.meta_key = 'last_name'
-            WHERE u.display_name LIKE %s
-               OR u.user_email LIKE %s
-               OR fn.meta_value LIKE %s
-               OR ln.meta_value LIKE %s
-            LIMIT 20
-        ", '%'.$wpdb->esc_like($term).'%', '%'.$wpdb->esc_like($term).'%', '%'.$wpdb->esc_like($term).'%', '%'.$wpdb->esc_like($term).'%')
-    );
+    // Dividir el término en palabras (para soportar "nombre apellido")
+    $parts = preg_split('/\s+/', $term);
+
+    $sql = "
+        SELECT u.ID, u.user_email,
+               fn.meta_value AS first_name,
+               ln.meta_value AS last_name
+        FROM {$wpdb->users} u
+        LEFT JOIN {$wpdb->usermeta} fn ON fn.user_id = u.ID AND fn.meta_key = 'first_name'
+        LEFT JOIN {$wpdb->usermeta} ln ON ln.user_id = u.ID AND ln.meta_key = 'last_name'
+        WHERE u.user_email LIKE %s
+           OR fn.meta_value LIKE %s
+           OR ln.meta_value LIKE %s
+    ";
+
+    $params = [
+        '%'.$wpdb->esc_like($term).'%',
+        '%'.$wpdb->esc_like($term).'%',
+        '%'.$wpdb->esc_like($term).'%'
+    ];
+
+    // Si hay dos palabras (ej: nombre apellido), buscar combinación
+    if (count($parts) >= 2) {
+        $sql .= " OR (fn.meta_value LIKE %s AND ln.meta_value LIKE %s)";
+        $params[] = '%'.$wpdb->esc_like($parts[0]).'%';
+        $params[] = '%'.$wpdb->esc_like($parts[1]).'%';
+    }
+
+    $sql .= " LIMIT 20";
+
+    $users = $wpdb->get_results($wpdb->prepare($sql, ...$params));
 
     $results = [];
     foreach ($users as $user) {
+        $full_name = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
         $results[] = [
-            'ID' => $user->ID,
-            'display_name' =>"{$user->first_name} {$user->last_name}",
-            'user_email' => $user->user_email
+            'ID'          => $user->ID,
+            'first_name'  => $user->first_name,
+            'last_name'   => $user->last_name,
+            'user_email'  => $user->user_email,
+            'text'        => ($full_name ?: $user->user_email) . ' (' . $user->user_email . ')'
         ];
     }
 
     wp_send_json($results);
 });
+
 
 

@@ -2,9 +2,10 @@
 
 ## Breve descripción
 
-Módulo para registrar y visualizar eventos del sistema Edusystem (login/logout, errores, cambios en datos de estudiantes, etc.). Provee:
+Módulo para registrar, visualizar y eliminar eventos del sistema Edusystem (login/logout, errores, cambios en datos de estudiantes, etc.). Provee:
 - Inserción de registros desde funciones.
 - Página en el área de administración para filtrar y explorar logs.
+- Página adicional para eliminar registros según criterios.
 - Enlace en la pantalla de perfil para ver los logs de un usuario concreto.
 
 ## Índice
@@ -15,7 +16,9 @@ Módulo para registrar y visualizar eventos del sistema Edusystem (login/logout,
 - [Comportamiento por defecto (logs automáticos)](#comportamiento-por-defecto-logs-automáticos)
 - [Tipos de log y traducciones](#tipos-de-log-y-traducciones)
 - [Funciones públicas y ejemplos](#funciones-públicas-y-ejemplos)  
-- [Interfaz de administración](#interfaz-de-administración)  
+- [Interfaz de administración](#interfaz-de-administración) 
+- [Eliminación de logs](#eliminación-de-logs)   
+- [Roles y capacidades](#roles-y-capacidades)
 - [Esquema de la base de datos](#esquema-de-la-base-de-datos)  
 
 ## Requisitos
@@ -112,6 +115,36 @@ if ( ! defined( 'EDUSYSTEM_TYPE_LOGS' ) ) {
     - `Búsqueda por nombre y apellido del usuario`  
 
 - En la página de administración de usuarios se incluye un enlace que permite acceder directamente a los registros (logs) de un usuario específico.
+
+## Eliminación de logs
+
+El módulo incluye una página específica en el área de administración para **eliminar registros de logs**.  
+Esta funcionalidad está restringida a usuarios con rol **Administrador**.
+
+### Filtros disponibles
+- **Usuario:** selector con búsqueda dinámica (Select2 AJAX) que permite encontrar usuarios por nombre, apellido o correo.  
+- **Rango de fechas:** dos campos de tipo `date` (inicio y fin). Si se selecciona uno, el otro se marca como obligatorio.  
+- **Combinación de filtros:** se pueden aplicar ambos filtros simultáneamente para eliminar solo los registros de un usuario en un rango de fechas específico.
+
+### Comportamiento
+- Si se selecciona únicamente un usuario, se eliminan todos sus registros.  
+- Si se selecciona únicamente un rango de fechas, se eliminan todos los registros en ese rango.  
+- Si se seleccionan ambos, se eliminan solo los registros del usuario en ese rango.  
+- Si no se selecciona ningún criterio, no se ejecuta la eliminación y se muestra un mensaje de error.
+
+### Seguridad
+- Solo los administradores pueden acceder a esta página.  
+- La acción de eliminación se ejecuta mediante consultas SQL seguras (`$wpdb->prepare`).  
+- Se muestra un mensaje de confirmación al finalizar la operación.
+
+## Roles y capacidades
+
+El módulo define una capacidad personalizada llamada **`manager_logs`**.  
+- Se asigna automáticamente al rol **Administrador** al activar el plugin.  
+- Se elimina del rol al desactivar el plugin.  
+- Esta capacidad controla el acceso al menú *Edusystem Logs* y sus subpáginas (incluida la de eliminación de logs).  
+
+De esta forma, solo los usuarios con la capacidad `manager_logs` pueden visualizar y gestionar los registros desde el área de administración.
 
 ## Esquema de la base de datos
 

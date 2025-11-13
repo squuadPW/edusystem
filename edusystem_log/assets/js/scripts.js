@@ -118,9 +118,11 @@ jQuery(document).ready(function($){
                 processResults: function (data) {
                     return {
                         results: $.map(data, function (item) {
+                            let fullName = (item.first_name ? item.first_name : '') + ' ' + (item.last_name ? item.last_name : '');
+                            fullName = fullName.trim() || item.user_email;
                             return {
                                 id: item.ID,
-                                text: item.display_name + ' (' + item.user_email + ')'
+                                text: fullName + ' (' + item.user_email + ')'
                             };
                         })
                     };
