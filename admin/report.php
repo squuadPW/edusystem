@@ -108,7 +108,7 @@ function show_report_current_students()
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'enrollment_active_students') {
-            $list_students = new TT_Documents_Active_Student_List_Table;
+            $list_students = new TT_Enrollments_Active_Student_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'current') {
@@ -2679,6 +2679,282 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
 
         return ['data' => $students_array, 'total_count' => $total_count];
     }
+    function prepare_items()
+    {
+
+        $data_student = $this->get_students_active_report();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Enrollments_Active_Student_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'active',
+                'plural' => 'actives',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    /**
+     * Retrieves the table columns definition, including dynamic document columns.
+     *
+     * @return array The array of column definitions.
+     */
+    function get_columns()
+    {
+        global $wpdb;
+        $table_school_subjects = $wpdb->prefix . 'school_subjects';
+        $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1 AND `type` <> 'equivalence' ORDER BY `type` DESC, `id` ASC", OBJECT);
+
+        $columns = array(
+            'student' => __('Student', 'edusystem'),
+            'id_document' => __('Student document', 'edusystem'),
+            'email' => __('Student email', 'edusystem'),
+            'parent' => __('Parent', 'edusystem'),
+            'parent_email' => __('Parent email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'grade' => __('Grade', 'edusystem'),
+            'institute' => __('Institute', 'edusystem')
+        );
+        foreach ($subjects as $subject) {
+            $display_name = $subject->name;
+            $name_lower = strtolower($subject->code_subject);
+            $name_sanitized = preg_replace('/[^a-z0-9\s]/', '', $name_lower);
+            $key = str_replace(' ', '_', $name_sanitized);
+            $columns[$key] = __($display_name, 'edusystem');
+        }
+        $columns['view_details'] = __('Actions', 'edusystem');
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_students_active_report()
+    {
+        global $wpdb;
+
+        // --- 1. PREPARACIÓN DE PARÁMETROS Y TABLAS ---
+        $table_school_subjects = $wpdb->prefix . 'school_subjects';
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+
+        // PAGINATION
+        $per_page = 20;
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+
+        // FILTERS
+        $academic_period = $_POST['academic_period'] ?? '';
+        $academic_period_cut = $_POST['academic_period_cut'] ?? '';
+        $search = $_POST['s'] ?? '';
+        $country = $_POST['country'] ?? '';
+        $institute = $_POST['institute'] ?? '';
+
+        // --- 2. OPTIMIZACIÓN DE CONSULTAS A BD ---
+
+        // Obtener las asignaturas activas. Cambiamos OBJECT_K por OBJECT para que array_column funcione correctamente.
+        $subjects = $wpdb->get_results("SELECT id, code_subject FROM {$table_school_subjects} WHERE is_active = 1 and `type` <> 'equivalence' ORDER BY `type` DESC, `id` ASC", OBJECT);
+
+        // Lista de IDs (Números enteros) y Códigos (Strings)
+        $subjects_ids = array_column($subjects, 'id');
+        // **USANDO TU DEFINICIÓN EXPLÍCITA**
+        $subject_codes_list = array_column($subjects, 'code_subject');
+
+        // Obtención de estudiantes
+        $students = get_students_report_offset($academic_period, $academic_period_cut, $search, $country, $institute);
+        $total_count = count($students);
+        $students_filtered = array_slice($students, $offset, $per_page);
+
+        // Optimizando la obtención de datos para el subset filtrado
+        $student_ids = array_column($students_filtered, 'id');
+        $parent_ids = array_column($students_filtered, 'partner_id');
+
+        // Cargar los datos de los padres (WP_User objects) de una sola vez
+        $parents = get_users(['include' => $parent_ids, 'fields' => ['ID', 'user_email']]);
+        $parents_map = array_column($parents, null, 'ID');
+
+        // Preparación de Placeholders para parent_ids (Números enteros)
+        $parent_id_placeholders = implode(',', array_fill(0, count($parent_ids), '%d'));
+
+        // Cargar los metadatos de los padres (last_name, first_name) de una sola vez
+        $parent_meta_query = $wpdb->prepare(
+            "SELECT user_id, meta_key, meta_value FROM {$wpdb->usermeta} WHERE user_id IN ({$parent_id_placeholders}) AND meta_key IN ('first_name', 'last_name')",
+            ...$parent_ids
+        );
+        $parent_meta_results = $wpdb->get_results($parent_meta_query, ARRAY_A);
+        $parent_meta_map = [];
+
+        foreach ($parent_meta_results as $meta) {
+            $parent_meta_map[$meta['user_id']][$meta['meta_key']] = $meta['meta_value'];
+        }
+
+        // Cargar las inscripciones de los estudiantes filtrados de una sola vez
+
+        // 1. Preparar Placeholders para student_id (Números enteros)
+        $student_id_placeholders = implode(',', array_fill(0, count($student_ids), '%d'));
+
+        // 2. Preparar Placeholders para subject_id (Números enteros)
+        $subject_id_placeholders = implode(',', array_fill(0, count($subjects_ids), '%d'));
+
+        // 3. Preparar Placeholders para code_subject (Strings)
+        $subject_code_placeholders = implode(',', array_fill(0, count($subject_codes_list), '%s'));
+
+        $student_enrollments_query = $wpdb->prepare(
+            "SELECT student_id, code_subject, cut_period, code_period 
+         FROM {$table_student_period_inscriptions} 
+         WHERE student_id IN ({$student_id_placeholders}) 
+         AND (subject_id IN ({$subject_id_placeholders}) OR code_subject IN ({$subject_code_placeholders})) 
+         AND status_id != 1",
+            ...$student_ids,
+            ...$subjects_ids,
+            ...$subject_codes_list
+        );
+
+        // Obtener los campos necesarios: student_id, code_subject, cut_period y code_period
+        $student_enrollments = $wpdb->get_results($student_enrollments_query, OBJECT);
+
+        $enrollment_map = [];
+        foreach ($student_enrollments as $enrollment) {
+            // Mapear los datos por student_id y code_subject, almacenando los valores requeridos
+            $enrollment_map[$enrollment->student_id][$enrollment->code_subject] = [
+                'cut_period' => $enrollment->cut_period,
+                'code_period' => $enrollment->code_period
+            ];
+        }
+
+        // --- 3. PROCESAMIENTO DE DATOS ---
+        $students_array = [];
+
+        // Preparar strings comunes una sola vez
+        $no_label = '';
+        $parent_label = __('Parent', 'edusystem');
+
+        foreach ($students_filtered as $student) {
+            $parent = $parents_map[$student->partner_id] ?? null;
+            $parent_meta = $parent_meta_map[$student->partner_id] ?? ['first_name' => '', 'last_name' => ''];
+            $student_full_name = '<span class="text-uppercase">' . student_names_lastnames_helper($student->id) . '</span>';
+            $parent_full_name_raw = $parent_meta['last_name'] . ' ' . $parent_meta['first_name'];
+            $parent_full_name = "<span class='text-uppercase' data-colname='" . $parent_label . "'>" . strtoupper($parent_full_name_raw) . "</span>";
+
+            $student_data = [
+                'student' => $student_full_name,
+                'id' => $student->id,
+                'id_document' => $student->id_document,
+                'email' => $student->email,
+                'parent' => $parent_full_name,
+                'parent_email' => $parent->user_email ?? '',
+                'country' => $student->country,
+                'grade' => get_name_grade($student->grade_id),
+                'institute' => $student->institute_id ? get_name_institute($student->institute_id) : $student->name_institute
+            ];
+
+            // Obtener las inscripciones de este estudiante
+            $student_enrollment_map = $enrollment_map[$student->id] ?? [];
+
+            // Itera sobre la lista de todos los códigos de asignatura
+            foreach ($subject_codes_list as $subject_code) {
+
+                // Sanear la clave para el array de reporte (como lo tenías)
+                $name_lower = strtolower($subject_code);
+                $name_sanitized = preg_replace('/[^a-z0-9\s]/', '', $name_lower);
+                $key = str_replace(' ', '_', $name_sanitized);
+
+                $enrollment_data = $student_enrollment_map[$subject_code] ?? null;
+
+                if ($enrollment_data) {
+                    // Si la inscripción existe, concatena los valores
+                    $student_data[$key] = $enrollment_data['cut_period'] . ' ' . $enrollment_data['code_period'];
+                } else {
+                    // Si no existe, usa la etiqueta "No"
+                    $student_data[$key] = $no_label;
+                }
+            }
+
+            $students_array[] = $student_data;
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
     function prepare_items()
     {
 

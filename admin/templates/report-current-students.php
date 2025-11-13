@@ -43,6 +43,7 @@
 			<?php
 			global $wpdb;
 	        $table_documents = $wpdb->prefix . 'documents';
+			$table_school_subjects = $wpdb->prefix . 'school_subjects';
 
 			$heading_text = '';
 			$name_document = '';
@@ -59,28 +60,19 @@
 					$documents = $wpdb->get_results("SELECT * FROM {$table_documents} WHERE grade_id = 4", OBJECT);
 					$headers = ['Student', 'ID', 'Email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					foreach ($documents as $document) {
-						// Apply strtolower and then ucfirst to the document name for display.
 						$display_name = ucfirst(strtolower($document->name));
-
-						// Convert to lowercase.
-						$name_lower = strtolower($document->name);
-
-						// Remove all non-alphanumeric characters (except spaces) for a clean key.
-						// This removes special characters like periods, parentheses, commas, etc.
-						$name_sanitized = preg_replace('/[^a-z0-9\s]/', '', $name_lower);
-
-						// Replace spaces with underscores to create the final array key.
-						$key = str_replace(' ', '_', $name_sanitized);
-
-						// Use the modified name for the column header.
 						$headers[] = __($display_name, 'edusystem');
 					}
 					break;
 				case 'enrollment_active_students':
 					$heading_text = __('Enrollment history of active students ', 'edusystem');
 					$name_document = __('Enrollments of active students.xlsx', 'edusystem');
-					$documents = $wpdb->get_results("SELECT * FROM {$table_documents} WHERE grade_id = 4", OBJECT);
+        			$subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1 and `type` <> 'equivalence' ORDER BY `type` DESC, `id` ASC", OBJECT);
 					$headers = ['Student', 'ID', 'Email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
+					foreach ($subjects as $subject) {
+						$display_name = $subject->name;
+						$headers[] = __($display_name, 'edusystem');
+					}
 					break;
 				case 'pending_electives':
 					$heading_text = __('Pending students to select electives', 'edusystem');
