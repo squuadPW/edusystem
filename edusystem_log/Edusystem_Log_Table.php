@@ -69,7 +69,6 @@ class Edusystem_Log_Table extends WP_List_Table {
         );
     }
 
-
     public function column_message($item) {
         // Permitir solo etiquetas seguras como <a>
         return wp_kses(
