@@ -1,3 +1,6 @@
+ajax_url = ajax_object.ajax_url;
+translations = ajax_object.translations;
+
 document.addEventListener('DOMContentLoaded', () => {
     const date_range = document.getElementById('date-range');
     if( date_range )  edusystem_date_range_js( date_range );
@@ -96,5 +99,57 @@ function edusystem_filters_transactions( param, value, startdate ='', enddate = 
     window.location.href = newUrl;
 }
 
+jQuery(document).ready(function($){
+    // Validar que exista el input con id user_id
+    if (jQuery('#user_id').length) {
+        jQuery('#user_id').select2({
+            placeholder: translations.select_user,
+            allowClear: true,
+            ajax: {
+                url: ajaxurl, // endpoint de WP admin AJAX
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        action: 'edusystem_search_users',
+                        q: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.ID,
+                                text: item.display_name + ' (' + item.user_email + ')'
+                            };
+                        })
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2
+        });
+    }
+
+    jQuery('#start_date, #end_date').on('change input', edusystem_toggle_required);
+
+});
+
+function edusystem_toggle_required() {
+    const startVal = jQuery('#start_date').val();
+    const endVal   = jQuery('#end_date').val();
+
+    if (startVal && !endVal) {
+        jQuery('#end_date').attr('required', true);
+    } else {
+        jQuery('#end_date').removeAttr('required');
+    }
+
+    if (endVal && !startVal) {
+        jQuery('#start_date').attr('required', true);
+    } else {
+        jQuery('#start_date').removeAttr('required');
+    }
+}
 
 
