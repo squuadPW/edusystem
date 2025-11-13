@@ -2560,7 +2560,7 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
 
         // NOTA CLAVE: Al usar $wpdb->prepare, se pasan los arrays de IDs y Nombres como argumentos separados.
         $student_documents_query = $wpdb->prepare(
-            "SELECT student_id, document_id FROM {$table_student_documents} WHERE student_id IN ({$student_id_placeholders}) AND document_id IN ({$document_name_placeholders}) AND status_id = 5",
+            "SELECT student_id, document_id FROM {$table_student_documents} WHERE student_id IN ({$student_id_placeholders}) AND document_id IN ({$document_name_placeholders}) AND `status` = 5",
             ...$student_ids,
             ...$document_names
         );
