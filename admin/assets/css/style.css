@@ -1753,4 +1753,58 @@ a.toplevel_page_logo_based_menu {
 .nav-tab-wrapper.nav-scroll-h a {
   flex-shrink: 0 !important;
   display: inline-block !important; /* Mantiene la clase original del elemento */
+}
+
+/* CSS/SCSS */
+/* Aplica el scroll al contenedor envoltorio */
+.table-scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%; /* Asegura que tome el ancho disponible */
+}
+
+/* Aplica el ancho mínimo a la tabla real */
+.table-scroll-container .wp-list-table {
+  min-width: 1800px; /* Ajusta este valor (ej. 1800px) basado en la cantidad de columnas dinámicas */
+  width: auto !important;
+}
+
+.wp-list-table .column-governmentissued_photo_id_identity_document_or_passport_or_drivers_license_or_cedula_or_dni_or_din {
+  width: 400px !important;
+  min-width: 400px !important;
+}
+
+.wp-list-table .column-photoid_or_passport {
+  width: 400px !important;
+  min-width: 400px !important;
+}
+
+.wp-list-table .column-last_degree_diploma_obtained_national_or_foreign {
+  width: 400px !important;
+  min-width: 400px !important;
+}
+
+.wp-list-table .column-report_of_grades_or_official_transcripts_of_courses_passed_at_a_higher_education_institution_tsu_or_bachelors_degree {
+  width: 400px !important;
+  min-width: 400px !important;
+}
+
+.wp-list-table .column-official_ged_high_school_original_transcripts {
+  width: 400px !important;
+  min-width: 400px !important;
+}
+
+.wp-list-table .column-translation_or_equivalent_high_school_or_ged_by_recognized_institution {
+  width: 400px !important;
+  min-width: 400px !important;
+}
+
+.wp-list-table .column-curriculum_vitae_ph_d_only {
+  width: 400px !important;
+  min-width: 400px !important;
+}
+
+.wp-list-table .column-thesis_idea_to_develop_phd_only {
+  width: 400px !important;
+  min-width: 400px !important;
 }/*# sourceMappingURL=style.css.map */

@@ -103,7 +103,15 @@ function show_report_current_students()
     $institutes = get_all_institutes_active();
 
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
-        if ($_GET['section_tab'] == 'pending_electives') {
+        if ($_GET['section_tab'] == 'documents_active_students') {
+            $list_students = new TT_Documents_Active_Student_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'current') {
+            $list_students = new TT_Current_Student_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'pending_electives') {
             $list_students = new TT_Pending_Elective_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
@@ -111,20 +119,12 @@ function show_report_current_students()
             $list_students = new TT_Non_Enrolled_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
-        } else if ($_GET['section_tab'] == 'current') {
-            $list_students = new TT_Current_Student_List_Table;
-            $list_students->prepare_items();
-            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
-        } else if ($_GET['section_tab'] == 'active') {
-            $list_students = new TT_Active_Student_List_Table;
+        } else if ($_GET['section_tab'] == 'pending-documents') {
+            $list_students = new TT_Pending_Documents_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'pending-graduation') {
             $list_students = new TT_Pending_Graduation_List_Table;
-            $list_students->prepare_items();
-            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
-        } else if ($_GET['section_tab'] == 'pending-documents') {
-            $list_students = new TT_Pending_Documents_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'graduated') {
@@ -137,10 +137,6 @@ function show_report_current_students()
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'scholarships') {
             $list_students = new TT_Scholarships_List_Table;
-            $list_students->prepare_items();
-            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
-        } else if ($_GET['section_tab'] == 'documents_active_students') {
-            $list_students = new TT_Active_Student_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         }
@@ -2294,6 +2290,176 @@ class TT_Active_Student_List_Table extends WP_List_Table
             'institute' => __('Institute', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_students_active_report()
+    {
+        $students_array = [];
+
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+
+        $academic_period = $_POST['academic_period'] ?? '';
+        $academic_period_cut = $_POST['academic_period_cut'] ?? '';
+        $search = $_POST['s'] ?? '';
+        $country = $_POST['country'] ?? '';
+        $institute = $_POST['institute'] ?? '';
+
+        $students = get_students_report_offset($academic_period, $academic_period_cut, $search, $country, $institute);
+        $total_count = count($students);
+        $students_filtered = array_slice($students, $offset, $per_page);
+
+        foreach ($students_filtered as $student) {
+            $parent = get_user_by('id', $student->partner_id);
+            $student_full_name = '<span class="text-uppercase">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . '</span>';
+            $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
+            $students_array[] = ['student' => $student_full_name, 'id' => $student->id, 'id_document' => $student->id_document, 'email' => $student->email, 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student->country, 'grade' => get_name_grade($student->grade_id), 'institute' => $student->institute_id ? get_name_institute($student->institute_id) : $student->name_institute];
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
+    function prepare_items()
+    {
+
+        $data_student = $this->get_students_active_report();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Documents_Active_Student_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'active',
+                'plural' => 'actives',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    /**
+     * Retrieves the table columns definition, including dynamic document columns.
+     *
+     * @return array The array of column definitions.
+     */
+    function get_columns()
+    {
+        global $wpdb;
+        $table_documents = $wpdb->prefix . 'documents';
+        $documents = $wpdb->get_results("SELECT * FROM {$table_documents} WHERE grade_id = 4", OBJECT);
+
+        $columns = array(
+            'student' => __('Student', 'edusystem'),
+            'id_document' => __('Student document', 'edusystem'),
+            'email' => __('Student email', 'edusystem'),
+            'parent' => __('Parent', 'edusystem'),
+            'parent_email' => __('Parent email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'grade' => __('Grade', 'edusystem'),
+            'institute' => __('Institute', 'edusystem')
+        );
+        foreach ($documents as $document) {
+            // Apply strtolower and then ucfirst to the document name for display.
+            $display_name = ucfirst(strtolower($document->name));
+
+            // Convert to lowercase.
+            $name_lower = strtolower($document->name);
+
+            // Remove all non-alphanumeric characters (except spaces) for a clean key.
+            // This removes special characters like periods, parentheses, commas, etc.
+            $name_sanitized = preg_replace('/[^a-z0-9\s]/', '', $name_lower);
+
+            // Replace spaces with underscores to create the final array key.
+            $key = str_replace(' ', '_', $name_sanitized);
+
+            // Use the modified name for the column header.
+            $columns[$key] = __($display_name, 'edusystem');
+        }
+        $columns['view_details'] = __('Actions', 'edusystem');
 
         return $columns;
     }
