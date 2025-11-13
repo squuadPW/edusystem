@@ -88,6 +88,7 @@ function show_report_current_students()
     $total_count_pending_electives = (int) get_students_pending_elective_count();
     $total_count_non_enrolled = (int) get_students_non_enrolled_count();
     $total_count_pending_graduation = (int) get_students_pending_graduation_count();
+    $total_count_pending_documents = (int) get_students_pending_documents_count();
     $total_count_graduated = (int) get_students_graduated_count();
     $total_count_retired = (int) get_students_retired_count();
     $total_count_scholarships = (int) get_students_scholarships_count();
@@ -102,7 +103,15 @@ function show_report_current_students()
     $institutes = get_all_institutes_active();
 
     if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {
-        if ($_GET['section_tab'] == 'pending_electives') {
+        if ($_GET['section_tab'] == 'documents_active_students') {
+            $list_students = new TT_Documents_Active_Student_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'current') {
+            $list_students = new TT_Current_Student_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'pending_electives') {
             $list_students = new TT_Pending_Elective_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
@@ -110,12 +119,8 @@ function show_report_current_students()
             $list_students = new TT_Non_Enrolled_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
-        } else if ($_GET['section_tab'] == 'current') {
-            $list_students = new TT_Current_Student_List_Table;
-            $list_students->prepare_items();
-            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
-        } else if ($_GET['section_tab'] == 'active') {
-            $list_students = new TT_Active_Student_List_Table;
+        } else if ($_GET['section_tab'] == 'pending-documents') {
+            $list_students = new TT_Pending_Documents_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'pending-graduation') {
@@ -1012,7 +1017,7 @@ function get_institute_payments_data($start, $end)
             'institute_fee' => number_format($total_fee, 2, '.', '')
         ];
     }
-    
+
     // Agrega el total global como el último elemento del array
     $formatted_data[] = [
         'institute_name' => __('Total', 'edusystem'),
@@ -2377,6 +2382,275 @@ class TT_Active_Student_List_Table extends WP_List_Table
 
 }
 
+class TT_Documents_Active_Student_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'active',
+                'plural' => 'actives',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    /**
+     * Retrieves the table columns definition, including dynamic document columns.
+     *
+     * @return array The array of column definitions.
+     */
+    function get_columns()
+    {
+        global $wpdb;
+        $table_documents = $wpdb->prefix . 'documents';
+        $documents = $wpdb->get_results("SELECT * FROM {$table_documents} WHERE grade_id = 4", OBJECT);
+
+        $columns = array(
+            'student' => __('Student', 'edusystem'),
+            'id_document' => __('Student document', 'edusystem'),
+            'email' => __('Student email', 'edusystem'),
+            'parent' => __('Parent', 'edusystem'),
+            'parent_email' => __('Parent email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            'grade' => __('Grade', 'edusystem'),
+            'institute' => __('Institute', 'edusystem')
+        );
+        foreach ($documents as $document) {
+            // Apply strtolower and then ucfirst to the document name for display.
+            $display_name = ucfirst(strtolower($document->name));
+
+            // Convert to lowercase.
+            $name_lower = strtolower($document->name);
+
+            // Remove all non-alphanumeric characters (except spaces) for a clean key.
+            // This removes special characters like periods, parentheses, commas, etc.
+            $name_sanitized = preg_replace('/[^a-z0-9\s]/', '', $name_lower);
+
+            // Replace spaces with underscores to create the final array key.
+            $key = str_replace(' ', '_', $name_sanitized);
+
+            // Use the modified name for the column header.
+            $columns[$key] = __($display_name, 'edusystem');
+        }
+        $columns['view_details'] = __('Actions', 'edusystem');
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_students_active_report()
+    {
+        global $wpdb;
+
+        // --- 1. PREPARACIÓN DE PARÁMETROS Y TABLAS ---
+        $table_student_documents = $wpdb->prefix . 'student_documents';
+        $table_documents = $wpdb->prefix . 'documents';
+
+        // PAGINATION
+        $per_page = 20;
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        $offset = (($pagenum - 1) * $per_page);
+
+        // FILTERS
+        $academic_period = $_POST['academic_period'] ?? '';
+        $academic_period_cut = $_POST['academic_period_cut'] ?? '';
+        $search = $_POST['s'] ?? '';
+        $country = $_POST['country'] ?? '';
+        $institute = $_POST['institute'] ?? '';
+
+        // --- 2. OPTIMIZACIÓN DE CONSULTAS A BD ---
+
+        // Obtener los documentos de grado 4 solo una vez
+        $documents = $wpdb->get_results("SELECT id, name FROM {$table_documents} WHERE grade_id = 4", OBJECT_K);
+
+        // Preparar el array de nombres de documentos para la consulta SQL
+        $document_names = array_column($documents, 'name');
+        $documents_keys_map = [];
+
+        foreach ($documents as $document) {
+            $name_lower = strtolower($document->name);
+            // Deprecation: Usar ?? '' para garantizar que $document->middle_last_name sea string
+            $name_sanitized = preg_replace('/[^a-z0-9\s]/', '', $name_lower);
+            $documents_keys_map[$document->name] = str_replace(' ', '_', $name_sanitized);
+        }
+
+        // Obtención de estudiantes (Se mantiene la ineficiencia forzada, pero se procesa mejor)
+        $students = get_students_report_offset($academic_period, $academic_period_cut, $search, $country, $institute);
+        $total_count = count($students);
+        $students_filtered = array_slice($students, $offset, $per_page);
+
+        // Optimizando la obtención de datos de padres y documentos para el subset filtrado
+        $student_ids = array_column($students_filtered, 'id');
+        $parent_ids = array_column($students_filtered, 'partner_id');
+
+        // Cargar los datos de los padres (WP_User objects) de una sola vez
+        $parents = get_users(['include' => $parent_ids, 'fields' => ['ID', 'user_email']]);
+        $parents_map = array_column($parents, null, 'ID');
+
+        // Preparación de Placeholders para parent_ids (Números enteros)
+        $parent_id_placeholders = implode(',', array_fill(0, count($parent_ids), '%d'));
+
+        // Cargar los metadatos de los padres (last_name, first_name) de una sola vez
+        // Se utiliza vsprintf en lugar de $wpdb->prepare para la lista IN de IDs
+        $parent_meta_query = $wpdb->prepare(
+            "SELECT user_id, meta_key, meta_value FROM {$wpdb->usermeta} WHERE user_id IN ({$parent_id_placeholders}) AND meta_key IN ('first_name', 'last_name')",
+            ...$parent_ids
+        );
+        $parent_meta_results = $wpdb->get_results($parent_meta_query, ARRAY_A);
+        $parent_meta_map = [];
+
+        foreach ($parent_meta_results as $meta) {
+            $parent_meta_map[$meta['user_id']][$meta['meta_key']] = $meta['meta_value'];
+        }
+
+        // Cargar los documentos subidos de los estudiantes filtrados de una sola vez
+
+        // 1. Preparar Placeholders para student_id (Números enteros)
+        $student_id_placeholders = implode(',', array_fill(0, count($student_ids), '%d'));
+
+        // 2. Preparar Placeholders para document_id (Strings)
+        $document_name_placeholders = implode(',', array_fill(0, count($document_names), '%s'));
+
+        // NOTA CLAVE: Al usar $wpdb->prepare, se pasan los arrays de IDs y Nombres como argumentos separados.
+        $student_documents_query = $wpdb->prepare(
+            "SELECT student_id, document_id FROM {$table_student_documents} WHERE student_id IN ({$student_id_placeholders}) AND document_id IN ({$document_name_placeholders}) AND `status` = 5",
+            ...$student_ids,
+            ...$document_names
+        );
+
+        $student_documents_uploaded = $wpdb->get_results($student_documents_query, OBJECT);
+
+        $uploaded_map = [];
+        foreach ($student_documents_uploaded as $doc) {
+            $uploaded_map[$doc->student_id][$doc->document_id] = true;
+        }
+
+        // --- 3. PROCESAMIENTO DE DATOS ---
+        $students_array = [];
+
+        // Preparar strings comunes una sola vez
+        $yes_label = __('Yes', 'edusystem');
+        $no_label = __('No', 'edusystem');
+        $parent_label = __('Parent', 'edusystem');
+
+        foreach ($students_filtered as $student) {
+            $parent = $parents_map[$student->partner_id] ?? null;
+            $parent_meta = $parent_meta_map[$student->partner_id] ?? ['first_name' => '', 'last_name' => ''];
+
+            $student_full_name = '<span class="text-uppercase">' . $student->last_name . ' ' . ($student->middle_last_name ?? '') . ' ' . $student->name . ' ' . ($student->middle_name ?? '') . '</span>';
+
+            $parent_full_name_raw = $parent_meta['last_name'] . ' ' . $parent_meta['first_name'];
+            $parent_full_name = "<span class='text-uppercase' data-colname='" . $parent_label . "'>" . strtoupper($parent_full_name_raw) . "</span>";
+
+            $student_data = [
+                'student' => $student_full_name,
+                'id' => $student->id,
+                'id_document' => $student->id_document,
+                'email' => $student->email,
+                'parent' => $parent_full_name,
+                'parent_email' => $parent->user_email ?? '',
+                'country' => $student->country,
+                'grade' => get_name_grade($student->grade_id),
+                'institute' => $student->institute_id ? get_name_institute($student->institute_id) : $student->name_institute
+            ];
+
+            // Mapeo eficiente de documentos subidos
+            $student_uploaded_docs = $uploaded_map[$student->id] ?? [];
+            foreach ($documents_keys_map as $document_name => $key) {
+                $student_data[$key] = isset($student_uploaded_docs[$document_name]) ? $yes_label : $no_label;
+            }
+
+            $students_array[] = $student_data;
+        }
+
+        // error_log(print_r($students_array, true));
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+    function prepare_items()
+    {
+
+        $data_student = $this->get_students_active_report();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
 class TT_Summary_Comissions_Institute_List_Table extends WP_List_Table
 {
 
@@ -2624,13 +2898,13 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
     {
         $columns = array(
             'student' => __('Student', 'edusystem'),
-            'id_document' => __('Student document', 'edusystem'),
-            'email' => __('Student email', 'edusystem'),
-            'parent' => __('Parent', 'edusystem'),
-            'parent_email' => __('Parent email', 'edusystem'),
             'country' => __('Country', 'edusystem'),
-            'grade' => __('Grade', 'edusystem'),
             'institute' => __('Institute', 'edusystem'),
+            'academic_ready' => __('Academic ready', 'edusystem'),
+            'documents_ready' => __('Documents', 'edusystem'),
+            'fee_payment_ready' => __('Fee registration', 'edusystem'),
+            'product_ready' => __('Program payment', 'edusystem'),
+            'fee_graduation_ready' => __('Fee graduation', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
 
@@ -2658,109 +2932,123 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
         }
     }
 
+    /**
+     * Retrieves a paginated report of students potentially pending graduation, 
+     * filtered by various criteria and academic readiness.
+     *
+     * @return array Contains the paginated student data and the total count.
+     */
     function get_students_pending_graduation_report()
     {
         global $wpdb;
-        $students_array = [];
-        $conditions = array();
-        $params = array();
+
+        // --- 1. Data Initialization and Input Sanitization ---
         $table_students = $wpdb->prefix . 'students';
 
-        // Obtener el término de búsqueda de $_POST
-        $search = $_POST['s'] ?? '';
-        $country = $_POST['country'] ?? '';
-        $institute = $_POST['institute'] ?? '';
+        // Get input parameters, using COALESCE for null checks and empty strings
+        $search = sanitize_text_field($_POST['s'] ?? '');
+        $country = sanitize_text_field($_POST['country'] ?? '');
+        $institute = sanitize_text_field($_POST['institute'] ?? '');
+        $academic_period_student = sanitize_text_field($_POST['academic_period'] ?? '');
+        $academic_period_cut_student = sanitize_text_field($_POST['academic_period_cut'] ?? '');
 
-        // Obtener el período académico y el corte del POST
-        $academic_period_student = $_POST['academic_period'] ?? '';
-        $academic_period_cut_student = $_POST['academic_period_cut'] ?? '';
+        $conditions = [];
+        $params = [];
 
-        // 1. Condición de estado del estudiante
+        // --- 2. Constructing WHERE Clause Conditions ---
+
+        // Primary condition: Student status is not 5 (assuming 5 is 'not pending graduation')
         $conditions[] = "status_id != %d";
-        $params[] = 5; // Assuming 5 is the status_id for not pending graduation
+        $params[] = 5;
 
-        // 2. Condición de filtro por período académico (si está presente)
+        // Filter by Academic Period
         if (!empty($academic_period_student)) {
             $conditions[] = "academic_period = %s";
             $params[] = $academic_period_student;
         }
 
-        // 3. Condición de filtro por corte de período (si está presente)
+        // Filter by Academic Period Cut
         if (!empty($academic_period_cut_student)) {
+            // NOTE: The original code used 'initial_cut' which might be correct, 
+            // assuming it stores the cut being filtered.
             $conditions[] = "initial_cut = %s";
-            $params[] = $academic_period_cut_student; // Corrected variable name
+            $params[] = $academic_period_cut_student;
         }
 
-        if ($country && !empty($country)) {
+        // Filter by Country
+        if (!empty($country)) {
             $conditions[] = "country = %s";
             $params[] = $country;
         }
 
-        if ($institute && !empty($institute)) {
+        // Filter by Institute
+        if (!empty($institute)) {
             $conditions[] = "institute_id = %s";
             $params[] = $institute;
         }
 
-        // 4. Condición de búsqueda inteligente
+        // --- 3. Smart Search Condition ---
         if (!empty($search)) {
             $search_term_like = '%' . $wpdb->esc_like($search) . '%';
-
             $search_sub_conditions = [];
             $search_sub_params = [];
 
-            // Búsqueda combinada de nombres y apellidos (CONCAT_WS es ideal para esto)
-            $combined_fields = [
-                'CONCAT_WS(" ", name, last_name)',
-                'CONCAT_WS(" ", name, middle_name, last_name)',
-                'CONCAT_WS(" ", name, middle_name, last_name, middle_last_name)',
-                'CONCAT_WS(" ", last_name, name)',
-                'CONCAT_WS(" ", last_name, middle_last_name)',
-                'CONCAT_WS(" ", name, middle_name)',
-                'CONCAT_WS(" ", last_name, middle_last_name)'
+            // Fields to search directly (individual and combined names/IDs)
+            // Using CONCAT_WS is better for combined search performance than multiple ORs on individual fields
+            $search_fields = [
+                'name',
+                'middle_name',
+                'last_name',
+                'middle_last_name',
+                'email',
+                'id_document',
+                "CONCAT_WS(' ', name, last_name)",
+                "CONCAT_WS(' ', last_name, name)"
             ];
 
-            foreach ($combined_fields as $field_combination) {
-                $search_sub_conditions[] = "{$field_combination} LIKE %s";
-                $search_sub_params[] = $search_term_like;
-            }
-
-            // Búsqueda directa en campos individuales
-            $individual_fields = ['name', 'middle_name', 'last_name', 'middle_last_name', 'email', 'id_document'];
-            foreach ($individual_fields as $field) {
+            foreach ($search_fields as $field) {
                 $search_sub_conditions[] = "{$field} LIKE %s";
                 $search_sub_params[] = $search_term_like;
             }
 
-            // Agregamos la condición de búsqueda principal al array de condiciones generales
-            if (!empty($search_sub_conditions)) {
-                $conditions[] = "(" . implode(" OR ", $search_sub_conditions) . ")";
-                $params = array_merge($params, $search_sub_params);
-            }
+            // Add the combined search condition to the main conditions array
+            $conditions[] = "(" . implode(" OR ", $search_sub_conditions) . ")";
+            $params = array_merge($params, $search_sub_params);
         }
 
-        // Construcción de la consulta principal para obtener todos los estudiantes que coinciden con las condiciones (antes de academic_ready)
-        $query = "SELECT * FROM {$table_students}"; // SQL_CALC_FOUND_ROWS is not needed here since we filter in PHP
+        // --- 4. Main Query Construction and Execution ---
 
-        if (!empty($conditions)) {
-            $query .= " WHERE " . implode(" AND ", $conditions);
-        }
+        $where_clause = !empty($conditions) ? " WHERE " . implode(" AND ", $conditions) : "";
 
-        $query .= " ORDER BY id DESC";
+        // IMPORTANT OPTIMIZATION NOTE: The bottleneck is the PHP filtering with get_academic_ready().
+        // If possible, the logic inside get_academic_ready() should be refactored 
+        // into a JOIN or a subquery to filter results directly in SQL.
+        // Since this is not possible here, we proceed with the current structure, 
+        // but the performance issue for large datasets remains.
 
-        // Obtener todos los estudiantes que cumplen las condiciones iniciales (incluida la búsqueda)
+        $query = "SELECT * FROM {$table_students}{$where_clause} ORDER BY id DESC";
+
+        // Retrieve all students matching SQL conditions
         $all_students_from_db = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
 
-        // Filtrar los estudiantes usando get_academic_ready()
+        // --- 5. PHP Filtering (Bottleneck) ---
         $filtered_students = [];
-        if (!empty($all_students_from_db)) {
+        if (function_exists('get_academic_ready')) {
             foreach ($all_students_from_db as $student) {
-                if (function_exists('get_academic_ready') && get_academic_ready($student['id'])) {
+                // NOTE: get_academic_ready() is executed for every student retrieved, 
+                // which can be very slow if the function involves complex lookups.
+                if (get_academic_ready($student['id'])) {
                     $filtered_students[] = $student;
                 }
             }
+        } else {
+            // Fallback: If get_academic_ready doesn't exist, we can't filter the intended way. 
+            // For safety, we assume no students are "academically ready" for graduation 
+            // unless defined by the function.
+            $filtered_students = [];
         }
 
-        // Aplicar paginación a los estudiantes REALMENTE filtrados
+        // --- 6. Pagination ---
         $per_page = 20; // number of items per page
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
@@ -2768,29 +3056,52 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
         $total_academic_ready_students = count($filtered_students);
         $paginated_students = array_slice($filtered_students, $offset, $per_page);
 
-        // Procesar los estudiantes paginados
+        // --- 7. Final Data Processing ---
+        $students_array = [];
         foreach ($paginated_students as $student) {
-            // Asegúrate de que get_user_by y get_user_meta existen o manejas su ausencia
+            // Reduced repeated calls to get_academic_ready(), now it's only called once above.
+
             $parent = get_user_by('id', $student['partner_id']);
             $parent_full_name = '';
             $parent_email = '';
             if ($parent) {
-                $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
+                $parent_last_name = get_user_meta($parent->ID, 'last_name', true);
+                $parent_first_name = get_user_meta($parent->ID, 'first_name', true);
+                $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper($parent_last_name . ' ' . $parent_first_name) . "</span>";
                 $parent_email = $parent->user_email;
             }
 
-            $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
+            // Format Student Name
+            $lastNameParts = array_filter([$student['last_name'], $student['middle_last_name']]);
+            $firstNameParts = array_filter([$student['name'], $student['middle_name']]);
+
+            $student_full_name = implode(' ', $lastNameParts);
+            if (!empty($firstNameParts)) {
+                $student_full_name = (!empty($student_full_name) ? $student_full_name . ', ' : '') . implode(' ', $firstNameParts);
+            }
+
+            // Get status indicators (Calls to external functions are necessary here)
+            $fee_payment_ready = function_exists('get_payments') ? get_payments($student['id'], FEE_INSCRIPTION) : false;
+            $product_ready = function_exists('get_payments') ? get_payments($student['id']) : false;
+            $fee_graduation_ready = function_exists('get_payments') ? get_payments($student['id'], product_id: FEE_GRADUATION) : false;
+            $documents_ready = function_exists('get_documents_ready') ? get_documents_ready($student['id']) : false;
 
             $students_array[] = [
-                'student' => $student_full_name,
+                'student' => '<span class="text-uppercase">' . $student_full_name . '</span>',
+                'fee_payment_ready' => $fee_payment_ready ? 'Yes' : 'No',
+                'product_ready' => $product_ready ? 'Yes' : 'No',
+                'fee_graduation_ready' => $fee_graduation_ready ? 'Yes' : 'No',
+                'documents_ready' => $documents_ready ? 'Yes' : 'No',
+                'academic_ready' => 'Yes', // Already filtered, so it must be 'Yes' for included students
                 'id' => $student['id'],
                 'id_document' => $student['id_document'],
                 'email' => $student['email'],
                 'parent' => $parent_full_name,
                 'parent_email' => $parent_email,
                 'country' => $student['country'],
-                'grade' => function_exists('get_name_grade') ? get_name_grade($student['grade_id']) : $student['grade_id'], // Fallback if function doesn't exist
-                'institute' => (function_exists('get_name_institute') && $student['institute_id']) ? get_name_institute($student['institute_id']) : ($student['name_institute'] ?? '') // Fallback for institute
+                'grade' => function_exists('get_name_grade') ? get_name_grade($student['grade_id']) : $student['grade_id'],
+                // Use COALESCE pattern for better readability/maintainability
+                'institute' => (function_exists('get_name_institute') && $student['institute_id']) ? get_name_institute($student['institute_id']) : ($student['name_institute'] ?? $student['institute_id'] ?? '')
             ];
         }
 
@@ -2801,6 +3112,323 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
     {
 
         $data_student = $this->get_students_pending_graduation_report();
+
+        $per_page = 10;
+
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        $per_page = 20; // items per page
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
+
+}
+
+class TT_Pending_Documents_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'active',
+                'plural' => 'actives',
+                'ajax' => true
+            )
+        );
+
+    }
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+        $columns = array(
+            'student' => __('Student', 'edusystem'),
+            'pending_document_ids' => __('Documents', 'edusystem'),
+            // 'country' => __('Country', 'edusystem'),
+            // 'institute' => __('Institute', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_students_pending_documents_report()
+    {
+        global $wpdb;
+
+        // Define table names early
+        $table_students = $wpdb->prefix . 'students';
+        $table_student_documents = $wpdb->prefix . 'student_documents';
+        $table_users = $wpdb->users;
+        $table_usermeta = $wpdb->usermeta;
+
+        // --- 1. Sanitization and Variable Assignment ---
+
+        // Sanitize input variables using appropriate functions
+        $search = sanitize_text_field($_POST['s'] ?? '');
+        $country = sanitize_text_field($_POST['country'] ?? '');
+        $institute = sanitize_text_field($_POST['institute'] ?? '');
+        $academic_period_student = sanitize_text_field($_POST['academic_period'] ?? '');
+        $academic_period_cut_student = sanitize_text_field($_POST['academic_period_cut'] ?? '');
+
+        // PAGINATION
+        $per_page = 20; // number of items per page
+        // Use max(1, ...) to ensure a minimum page number of 1
+        $pagenum = max(1, absint($_GET['paged'] ?? 1));
+        $offset = (($pagenum - 1) * $per_page);
+        // PAGINATION
+
+        $conditions = [];
+        $params = [];
+
+        // --- 2. Filtering Conditions ---
+
+        // STATUS: Must NOT be graduated or retired (status_id != 5 AND status_id != 6) - Mandatory condition
+        $conditions[] = "s.status_id NOT IN (%d, %d)";
+        $params[] = 5;
+        $params[] = 6;
+
+        // MANDATORY FILTER: Student must have at least one pending document
+        // We use a JOIN + HAVING clause to ensure only students with pending documents are included.
+
+        // Filter by Country
+        if (!empty($country)) {
+            $conditions[] = "s.country = %s";
+            $params[] = $country;
+        }
+
+        // Filter by Institute
+        if (!empty($institute)) {
+            $conditions[] = "s.institute_id = %s";
+            $params[] = $institute;
+        }
+
+        // Filter by Academic Period
+        if (!empty($academic_period_student)) {
+            $conditions[] = "s.academic_period = %s";
+            $params[] = $academic_period_student;
+        }
+
+        // Filter by Period Cut
+        if (!empty($academic_period_cut_student)) {
+            $conditions[] = "s.initial_cut = %s";
+            $params[] = $academic_period_cut_student;
+        }
+
+        // --- 3. Optimized Smart Search Condition ---
+
+        if (!empty($search)) {
+            $search_term_like = '%' . $wpdb->esc_like($search) . '%';
+            $search_terms = explode(' ', $search);
+
+            $search_sub_conditions = [];
+            $search_sub_params = [];
+
+            $search_fields = ['s.name', 's.middle_name', 's.last_name', 's.middle_last_name', 's.email', 's.id_document'];
+
+            foreach ($search_terms as $term) {
+                if (strlen($term) > 1) {
+                    $term_like = '%' . $wpdb->esc_like($term) . '%';
+                    $term_conditions = [];
+                    foreach ($search_fields as $field) {
+                        $term_conditions[] = "{$field} LIKE %s";
+                        $search_sub_params[] = $term_like;
+                    }
+                    $search_sub_conditions[] = "(" . implode(" OR ", $term_conditions) . ")";
+                }
+            }
+
+            if (!empty($search_sub_conditions)) {
+                $conditions[] = "(" . implode(" AND ", $search_sub_conditions) . ")";
+                $params = array_merge($params, $search_sub_params);
+            } else {
+                $term_conditions = [];
+                foreach ($search_fields as $field) {
+                    $term_conditions[] = "{$field} LIKE %s";
+                    $search_sub_params[] = $search_term_like;
+                }
+                $conditions[] = "(" . implode(" OR ", $term_conditions) . ")";
+                $params = array_merge($params, $search_sub_params);
+            }
+        }
+
+        // --- 4. Main Query Construction and Execution (Including Documents JOIN) ---
+
+        // Get all required student columns, and parent data via JOIN
+        $select_cols = [
+            's.*',
+            'u.user_email AS parent_email',
+            'um_first.meta_value AS parent_first_name',
+            'um_last.meta_value AS parent_last_name',
+        ];
+
+        $query = "
+        SELECT SQL_CALC_FOUND_ROWS " . implode(', ', $select_cols) . "
+        FROM {$table_students} AS s
+        INNER JOIN {$table_student_documents} AS d ON s.id = d.student_id
+        LEFT JOIN {$table_users} AS u ON s.partner_id = u.ID
+        LEFT JOIN {$table_usermeta} AS um_first ON u.ID = um_first.user_id AND um_first.meta_key = 'first_name'
+        LEFT JOIN {$table_usermeta} AS um_last ON u.ID = um_last.user_id AND um_last.meta_key = 'last_name'
+    ";
+
+        // Append the mandatory document condition
+        // attachment_id = 0 (pendiente) AND (is_required = 1 OR max_date_upload IS NOT NULL)
+        $document_condition = "d.attachment_id = %d AND (d.is_required = %d OR d.max_date_upload IS NOT NULL)";
+        $conditions[] = $document_condition;
+        $params[] = 0;
+        $params[] = 1;
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        // Group by student ID to ensure each student appears only once and meets the pending document condition (via INNER JOIN)
+        $query .= " GROUP BY s.id";
+
+        $query .= " ORDER BY s.id DESC LIMIT %d OFFSET %d";
+        $params[] = $per_page;
+        $params[] = $offset;
+
+        // Execute the query
+        $students = $wpdb->get_results($wpdb->prepare($query, $params), ARRAY_A);
+        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        $students_array = [];
+
+        // --- 5. Result Processing (Including Document ID fetch) ---
+
+        if ($students) {
+            foreach ($students as $student) {
+                // --- NEW: Fetch Pending Document IDs ---
+                // Separate query to get all document_id for the current student that meet the pending criteria.
+                $doc_query = $wpdb->prepare(
+                    "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND attachment_id = %d AND (is_required = %d OR max_date_upload IS NOT NULL)",
+                    $student['id'],
+                    0, // attachment_id = 0 (pendiente)
+                    1  // is_required = 1
+                );
+                // Get all document_id values as a flat array
+                $pending_document_ids = $wpdb->get_col($doc_query);
+                // --- END NEW ---
+
+                // Format Parent Name
+                $parent_full_name = '';
+                if ($student['parent_first_name'] || $student['parent_last_name']) {
+                    $parent_name = strtoupper(trim($student['parent_last_name'] . ' ' . $student['parent_first_name']));
+                    $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . $parent_name . "</span>";
+                }
+
+                // Format Student Name
+                $lastNameParts = array_filter([$student['last_name'], $student['middle_last_name']]);
+                $firstNameParts = array_filter([$student['name'], $student['middle_name']]);
+
+                $student_full_name = implode(' ', $lastNameParts);
+                if (!empty($firstNameParts)) {
+                    if (!empty($student_full_name)) {
+                        $student_full_name .= ', ';
+                    }
+                    $student_full_name .= implode(' ', $firstNameParts);
+                }
+
+                // External function calls only once per row
+                $grade_name = function_exists('get_name_grade') ? get_name_grade($student['grade_id']) : $student['grade_id'];
+                $institute_name = (function_exists('get_name_institute') && $student['institute_id'])
+                    ? get_name_institute($student['institute_id'])
+                    : ($student['name_institute'] ?? '');
+
+
+                $students_array[] = [
+                    'student' => '<span class="text-uppercase">' . $student_full_name . '</span>',
+                    'id' => $student['id'],
+                    'id_document' => $student['id_document'],
+                    'income' => $student['academic_period'],
+                    'term' => $student['initial_cut'],
+                    'email' => $student['email'],
+                    'parent' => $parent_full_name,
+                    'parent_email' => $student['parent_email'] ?? '',
+                    'country' => $student['country'],
+                    'grade' => $grade_name,
+                    'institute' => $institute_name,
+                    // --- NEW: Add the array of pending document IDs ---
+                    'pending_document_ids' => implode(', ', $pending_document_ids)
+                ];
+            }
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
+    function prepare_items()
+    {
+
+        $data_student = $this->get_students_pending_documents_report();
 
         $per_page = 10;
 
@@ -2877,8 +3505,10 @@ class TT_Graduated_List_Table extends WP_List_Table
     function get_columns()
     {
         $columns = array(
+            'income' => __('Income', 'edusystem'),
+            'term' => __('Term', 'edusystem'),
+            'id_document' => __('ID', 'edusystem'),
             'student' => __('Student', 'edusystem'),
-            'id_document' => __('Student document', 'edusystem'),
             'email' => __('Student email', 'edusystem'),
             'parent' => __('Parent', 'edusystem'),
             'parent_email' => __('Parent email', 'edusystem'),
@@ -2915,127 +3545,180 @@ class TT_Graduated_List_Table extends WP_List_Table
     function get_student_graduated()
     {
         global $wpdb;
-        $table_students = $wpdb->prefix . 'students';
-        $students_array = [];
-        $conditions = array();
-        $params = array();
 
-        // Obtener el término de búsqueda de $_POST
-        $search = $_POST['s'] ?? '';
-        $country = $_POST['country'] ?? '';
-        $institute = $_POST['institute'] ?? '';
+        // Define table names early
+        $table_students = $wpdb->prefix . 'students';
+        $table_users = $wpdb->users;
+        $table_usermeta = $wpdb->usermeta;
+
+        // --- 1. Sanitization and Variable Assignment ---
+
+        // Sanitize input variables using appropriate functions
+        $search = sanitize_text_field($_POST['s'] ?? '');
+        $country = sanitize_text_field($_POST['country'] ?? '');
+        $institute = sanitize_text_field($_POST['institute'] ?? '');
+        $academic_period_student = sanitize_text_field($_POST['academic_period'] ?? '');
+        $academic_period_cut_student = sanitize_text_field($_POST['academic_period_cut'] ?? '');
 
         // PAGINATION
         $per_page = 20; // number of items per page
-        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+        // Use max(1, ...) to ensure a minimum page number of 1
+        $pagenum = max(1, absint($_GET['paged'] ?? 1));
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
 
-        // Obtener el período académico y el corte del POST
-        $academic_period_student = $_POST['academic_period'] ?? '';
-        $academic_period_cut_student = $_POST['academic_period_cut'] ?? '';
+        $conditions = [];
+        $params = [];
 
-        // 1. Condición de estado: estudiantes graduados (status_id = 5)
-        $conditions[] = "status_id = %d";
+        // --- 2. Filtering Conditions ---
+
+        // Status: Graduated (status_id = 5) - Mandatory condition
+        $conditions[] = "s.status_id = %d";
         $params[] = 5;
 
-        if ($country && !empty($country)) {
-            $conditions[] = "country = %s";
+        // Filter by Country
+        if (!empty($country)) {
+            $conditions[] = "s.country = %s";
             $params[] = $country;
         }
 
-        if ($institute && !empty($institute)) {
-            $conditions[] = "institute_id = %s";
+        // Filter by Institute
+        if (!empty($institute)) {
+            $conditions[] = "s.institute_id = %s";
             $params[] = $institute;
         }
 
-        // 2. Condición de filtro por período académico (si está presente)
+        // Filter by Academic Period
         if (!empty($academic_period_student)) {
-            $conditions[] = "academic_period = %s";
+            $conditions[] = "s.academic_period = %s";
             $params[] = $academic_period_student;
         }
 
-        // 3. Condición de filtro por corte de período (si está presente)
+        // Filter by Period Cut
         if (!empty($academic_period_cut_student)) {
-            $conditions[] = "initial_cut = %s";
+            $conditions[] = "s.initial_cut = %s";
             $params[] = $academic_period_cut_student;
         }
 
-        // 4. Condición de búsqueda inteligente
+        // --- 3. Optimized Smart Search Condition (Less reliance on CONCAT/LIKE '%...%') ---
+
         if (!empty($search)) {
             $search_term_like = '%' . $wpdb->esc_like($search) . '%';
+            $search_terms = explode(' ', $search); // Break search string into words for better matching
 
             $search_sub_conditions = [];
             $search_sub_params = [];
 
-            // Búsqueda combinada de nombres y apellidos (CONCAT_WS)
-            $combined_fields = [
-                'CONCAT_WS(" ", name, last_name)',
-                'CONCAT_WS(" ", name, middle_name, last_name)',
-                'CONCAT_WS(" ", name, middle_name, last_name, middle_last_name)',
-                'CONCAT_WS(" ", last_name, name)',
-                'CONCAT_WS(" ", last_name, middle_last_name)',
-                'CONCAT_WS(" ", name, middle_name)',
-                'CONCAT_WS(" ", last_name, middle_last_name)'
-            ];
+            // Prioritize matching full terms if possible (still using LIKE)
+            $search_fields = ['s.name', 's.middle_name', 's.last_name', 's.middle_last_name', 's.email', 's.id_document'];
 
-            foreach ($combined_fields as $field_combination) {
-                $search_sub_conditions[] = "{$field_combination} LIKE %s";
-                $search_sub_params[] = $search_term_like;
+            // Try to match each word in the search query against fields
+            foreach ($search_terms as $term) {
+                if (strlen($term) > 1) { // Ignore very short terms
+                    $term_like = '%' . $wpdb->esc_like($term) . '%';
+                    $term_conditions = [];
+                    foreach ($search_fields as $field) {
+                        $term_conditions[] = "{$field} LIKE %s";
+                        $search_sub_params[] = $term_like;
+                    }
+                    // Group OR conditions for each search term
+                    $search_sub_conditions[] = "(" . implode(" OR ", $term_conditions) . ")";
+                }
             }
 
-            // Búsqueda directa en campos individuales
-            $individual_fields = ['name', 'middle_name', 'last_name', 'middle_last_name', 'email', 'id_document'];
-            foreach ($individual_fields as $field) {
-                $search_sub_conditions[] = "{$field} LIKE %s";
-                $search_sub_params[] = $search_term_like;
-            }
-
-            // Agregamos la condición de búsqueda principal al array de condiciones generales
+            // Combine all search term conditions with AND
             if (!empty($search_sub_conditions)) {
-                $conditions[] = "(" . implode(" OR ", $search_sub_conditions) . ")";
+                $conditions[] = "(" . implode(" AND ", $search_sub_conditions) . ")";
+                $params = array_merge($params, $search_sub_params);
+            } else {
+                // Fallback for full string search if no individual terms were long enough
+                $term_conditions = [];
+                foreach ($search_fields as $field) {
+                    $term_conditions[] = "{$field} LIKE %s";
+                    $search_sub_params[] = $search_term_like;
+                }
+                $conditions[] = "(" . implode(" OR ", $term_conditions) . ")";
                 $params = array_merge($params, $search_sub_params);
             }
         }
 
-        // 5. Construcción y ejecución de la consulta principal
-        $query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students}";
+        // --- 4. Main Query Construction and Execution (Including JOIN for Parent Data) ---
+
+        // Get all required student columns, and parent data via JOIN
+        // This replaces the slow get_user_by/get_user_meta calls inside the loop.
+        $select_cols = [
+            's.*',
+            'u.user_email AS parent_email',
+            // Join the usermeta to get first_name and last_name of the parent
+            'um_first.meta_value AS parent_first_name',
+            'um_last.meta_value AS parent_last_name',
+        ];
+
+        $query = "
+            SELECT SQL_CALC_FOUND_ROWS " . implode(', ', $select_cols) . " 
+            FROM {$table_students} AS s
+            LEFT JOIN {$table_users} AS u ON s.partner_id = u.ID
+            LEFT JOIN {$table_usermeta} AS um_first ON u.ID = um_first.user_id AND um_first.meta_key = 'first_name'
+            LEFT JOIN {$table_usermeta} AS um_last ON u.ID = um_last.user_id AND um_last.meta_key = 'last_name'
+        ";
 
         if (!empty($conditions)) {
             $query .= " WHERE " . implode(" AND ", $conditions);
         }
 
-        $query .= " ORDER BY id DESC LIMIT %d OFFSET %d"; // Añadimos placeholders para LIMIT y OFFSET
+        $query .= " ORDER BY s.id DESC LIMIT %d OFFSET %d";
         $params[] = $per_page;
         $params[] = $offset;
 
-        // Ejecutar la consulta de estudiantes
-        $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
+        // Execute the query
+        $students = $wpdb->get_results($wpdb->prepare($query, $params), ARRAY_A);
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
-        // 6. Procesamiento de los resultados
+        $students_array = [];
+
+        // --- 5. Result Processing (Highly Optimized) ---
+
         if ($students) {
             foreach ($students as $student) {
-                $parent = get_user_by('id', $student['partner_id']);
+
+                // Format Parent Name (already available from the JOIN)
                 $parent_full_name = '';
-                $parent_email = '';
-                if ($parent) {
-                    $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
-                    $parent_email = $parent->user_email;
+                if ($student['parent_first_name'] || $student['parent_last_name']) {
+                    $parent_name = strtoupper(trim($student['parent_last_name'] . ' ' . $student['parent_first_name']));
+                    $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . $parent_name . "</span>";
                 }
 
-                $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
+                // Format Student Name (Optimized)
+                $lastNameParts = array_filter([$student['last_name'], $student['middle_last_name']]);
+                $firstNameParts = array_filter([$student['name'], $student['middle_name']]);
+
+                $student_full_name = implode(' ', $lastNameParts);
+                if (!empty($firstNameParts)) {
+                    if (!empty($student_full_name)) {
+                        $student_full_name .= ', ';
+                    }
+                    $student_full_name .= implode(' ', $firstNameParts);
+                }
+
+                // External function calls only once per row
+                $grade_name = function_exists('get_name_grade') ? get_name_grade($student['grade_id']) : $student['grade_id'];
+                $institute_name = (function_exists('get_name_institute') && $student['institute_id'])
+                    ? get_name_institute($student['institute_id'])
+                    : ($student['name_institute'] ?? '');
+
 
                 $students_array[] = [
-                    'student' => $student_full_name,
+                    'student' => '<span class="text-uppercase">' . $student_full_name . '</span>',
                     'id' => $student['id'],
                     'id_document' => $student['id_document'],
+                    'income' => $student['academic_period'],
+                    'term' => $student['initial_cut'],
                     'email' => $student['email'],
                     'parent' => $parent_full_name,
-                    'parent_email' => $parent_email,
+                    'parent_email' => $student['parent_email'] ?? '',
                     'country' => $student['country'],
-                    'grade' => function_exists('get_name_grade') ? get_name_grade($student['grade_id']) : $student['grade_id'],
-                    'institute' => (function_exists('get_name_institute') && $student['institute_id']) ? get_name_institute($student['institute_id']) : ($student['name_institute'] ?? '')
+                    'grade' => $grade_name,
+                    'institute' => $institute_name
                 ];
             }
         }
@@ -3123,13 +3806,15 @@ class TT_Retired_List_Table extends WP_List_Table
     function get_columns()
     {
         $columns = array(
+            'income' => __('Income', 'edusystem'),
+            'term' => __('Term', 'edusystem'),
+            'id_document' => __('ID', 'edusystem'),
             'student' => __('Student', 'edusystem'),
-            'id_document' => __('Student document', 'edusystem'),
             'email' => __('Student email', 'edusystem'),
             'parent' => __('Parent', 'edusystem'),
             'parent_email' => __('Parent email', 'edusystem'),
             'country' => __('Country', 'edusystem'),
-            'grade' => __('Grade', 'edusystem'),
+            // 'grade' => __('Grade', 'edusystem'),
             'institute' => __('Institute', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
@@ -3161,113 +3846,175 @@ class TT_Retired_List_Table extends WP_List_Table
     function get_student_retired()
     {
         global $wpdb;
+
+        // --- 1. PREPARACIÓN Y RECOLECCIÓN DE DATOS DE ENTRADA ---
         $table_students = $wpdb->prefix . 'students';
-        $students_array = [];
-        $conditions = array();
-        $params = array();
-
-        // Obtener el término de búsqueda de $_POST
-        $search = $_POST['s'] ?? '';
-
-        // PAGINATION
-        $per_page = 20; // number of items per page
+        $per_page = 20;
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
-        // PAGINATION
 
-        // Obtener el período académico y el corte del POST
+        // Obtener y sanear entradas
+        $search = $_POST['s'] ?? '';
         $academic_period_student = $_POST['academic_period'] ?? '';
         $academic_period_cut_student = $_POST['academic_period_cut'] ?? '';
 
-        // 1. Condición de estado: estudiantes graduados (status_id = 5)
+        $conditions = [];
+        $params = [];
+
+        // --- 2. CONSTRUCCIÓN DE CONDICIONES WHERE ---
+
+        // Condición de estado (status_id = 6 para 'retired' / 'retirado')
         $conditions[] = "status_id = %d";
         $params[] = 6;
 
-        // 2. Condición de filtro por período académico (si está presente)
+        // Filtro por período académico
         if (!empty($academic_period_student)) {
             $conditions[] = "academic_period = %s";
             $params[] = $academic_period_student;
         }
 
-        // 3. Condición de filtro por corte de período (si está presente)
+        // Filtro por corte de período
         if (!empty($academic_period_cut_student)) {
             $conditions[] = "initial_cut = %s";
             $params[] = $academic_period_cut_student;
         }
 
-        // 4. Condición de búsqueda inteligente
+        // Condición de búsqueda inteligente
         if (!empty($search)) {
-            $search_term_like = '%' . $wpdb->esc_like($search) . '%';
-
+            // Usar un array para las sub-condiciones de búsqueda
             $search_sub_conditions = [];
-            $search_sub_params = [];
+            $search_term_like = '%' . $wpdb->esc_like($search) . '%';
+            $search_fields = [
+                'id_document',
+                'email',
+                'name',
+                'middle_name',
+                'last_name',
+                'middle_last_name',
+            ];
 
-            // Búsqueda combinada de nombres y apellidos (CONCAT_WS)
+            // Añadir condiciones LIKE para campos individuales
+            foreach ($search_fields as $field) {
+                $search_sub_conditions[] = "{$field} LIKE %s";
+                $params[] = $search_term_like; // Agregar el parámetro
+            }
+
+            // Simplificación y optimización de CONCAT_WS (Se puede limitar a las combinaciones más comunes)
+            // Nota: Estas combinaciones son muy costosas y no utilizan índices. Es una necesidad de diseño actual.
             $combined_fields = [
                 'CONCAT_WS(" ", name, last_name)',
-                'CONCAT_WS(" ", name, middle_name, last_name)',
-                'CONCAT_WS(" ", name, middle_name, last_name, middle_last_name)',
                 'CONCAT_WS(" ", last_name, name)',
-                'CONCAT_WS(" ", last_name, middle_last_name)',
-                'CONCAT_WS(" ", name, middle_name)',
-                'CONCAT_WS(" ", last_name, middle_last_name)'
+                'CONCAT_WS(" ", name, middle_name, last_name, middle_last_name)'
             ];
 
             foreach ($combined_fields as $field_combination) {
                 $search_sub_conditions[] = "{$field_combination} LIKE %s";
-                $search_sub_params[] = $search_term_like;
-            }
-
-            // Búsqueda directa en campos individuales
-            $individual_fields = ['name', 'middle_name', 'last_name', 'middle_last_name', 'email', 'id_document'];
-            foreach ($individual_fields as $field) {
-                $search_sub_conditions[] = "{$field} LIKE %s";
-                $search_sub_params[] = $search_term_like;
+                $params[] = $search_term_like; // Agregar el parámetro
             }
 
             // Agregamos la condición de búsqueda principal al array de condiciones generales
             if (!empty($search_sub_conditions)) {
                 $conditions[] = "(" . implode(" OR ", $search_sub_conditions) . ")";
-                $params = array_merge($params, $search_sub_params);
             }
         }
 
-        // 5. Construcción y ejecución de la consulta principal
-        $query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_students}";
+        // --- 3. CONSTRUCCIÓN Y EJECUCIÓN DE LA CONSULTA PRINCIPAL ---
+        $where_clause = !empty($conditions) ? " WHERE " . implode(" AND ", $conditions) : "";
 
-        if (!empty($conditions)) {
-            $query .= " WHERE " . implode(" AND ", $conditions);
-        }
+        // Consulta principal con LIMIT y OFFSET
+        $query = "
+        SELECT SQL_CALC_FOUND_ROWS *
+        FROM {$table_students}
+        {$where_clause}
+        ORDER BY id DESC
+        LIMIT %d OFFSET %d
+    ";
 
-        $query .= " ORDER BY id DESC LIMIT %d OFFSET %d"; // Añadimos placeholders para LIMIT y OFFSET
+        // Añadir placeholders para LIMIT y OFFSET al final de los parámetros
         $params[] = $per_page;
         $params[] = $offset;
 
         // Ejecutar la consulta de estudiantes
         $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
+
+        // Obtener el total de filas
         $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
 
-        // 6. Procesamiento de los resultados
+        $students_array = [];
+
+        // --- 4. PROCESAMIENTO DE LOS RESULTADOS (Optimización de consultas en bucle) ---
         if ($students) {
-            foreach ($students as $student) {
-                $parent = get_user_by('id', $student['partner_id']);
-                $parent_full_name = '';
-                $parent_email = '';
-                if ($parent) {
-                    $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
-                    $parent_email = $parent->user_email;
+            // Obtener una lista de todos los 'partner_id' (IDs de los padres)
+            $parent_ids = array_filter(array_column($students, 'partner_id'));
+            $parent_data = [];
+
+            // Pre-cargar todos los datos de usuario y meta de los padres en una sola operación
+            if (!empty($parent_ids)) {
+                $parent_ids_placeholders = implode(',', array_fill(0, count($parent_ids), '%d'));
+                $table_users = $wpdb->users;
+                $table_usermeta = $wpdb->usermeta;
+
+                // 1. Obtener emails de los padres
+                $user_query = "SELECT ID, user_email FROM {$table_users} WHERE ID IN ({$parent_ids_placeholders})";
+                $users = $wpdb->get_results($wpdb->prepare($user_query, $parent_ids), ARRAY_A);
+
+                foreach ($users as $user) {
+                    $parent_data[$user['ID']] = ['email' => $user['user_email'], 'last_name' => '', 'first_name' => ''];
                 }
 
-                $student_full_name = '<span class="text-uppercase">' . $student['last_name'] . ' ' . ($student['middle_last_name'] ?? '') . ' ' . $student['name'] . ' ' . ($student['middle_name'] ?? '') . '</span>';
+                // 2. Obtener meta data (last_name y first_name)
+                // Esto se podría hacer en una sola consulta para mejorar la eficiencia.
+                $meta_query = "
+                SELECT user_id, meta_key, meta_value 
+                FROM {$table_usermeta} 
+                WHERE user_id IN ({$parent_ids_placeholders}) 
+                AND meta_key IN ('last_name', 'first_name')
+            ";
+                $metas = $wpdb->get_results($wpdb->prepare($meta_query, $parent_ids), ARRAY_A);
+
+                foreach ($metas as $meta) {
+                    if (isset($parent_data[$meta['user_id']])) {
+                        $parent_data[$meta['user_id']][$meta['meta_key']] = $meta['meta_value'];
+                    }
+                }
+            }
+
+            // El bucle ahora solo procesa los datos ya cargados
+            foreach ($students as $student) {
+                $partner_id = $student['partner_id'];
+                $parent_full_name = '';
+                $parent_email = '';
+
+                if (isset($parent_data[$partner_id])) {
+                    $parent_data_item = $parent_data[$partner_id];
+                    $parent_name = strtoupper($parent_data_item['last_name'] . ' ' . $parent_data_item['first_name']);
+                    $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>{$parent_name}</span>";
+                    $parent_email = $parent_data_item['email'];
+                }
+
+                // Format Student Name (Optimized)
+                $lastNameParts = array_filter([$student['last_name'], $student['middle_last_name']]);
+                $firstNameParts = array_filter([$student['name'], $student['middle_name']]);
+
+                $student_full_name = implode(' ', $lastNameParts);
+                if (!empty($firstNameParts)) {
+                    if (!empty($student_full_name)) {
+                        $student_full_name .= ', ';
+                    }
+                    $student_full_name .= implode(' ', $firstNameParts);
+                }
 
                 $students_array[] = [
-                    'student' => $student_full_name,
+                    'student' => '<span class="text-uppercase">' . $student_full_name . '</span>',
                     'id' => $student['id'],
                     'id_document' => $student['id_document'],
                     'email' => $student['email'],
+                    'income' => $student['academic_period'],
+                    'term' => $student['initial_cut'],
                     'parent' => $parent_full_name,
                     'parent_email' => $parent_email,
                     'country' => $student['country'],
+                    // Se asume que get_name_grade y get_name_institute son funciones externas eficientes o almacenan datos en caché.
                     'grade' => function_exists('get_name_grade') ? get_name_grade($student['grade_id']) : $student['grade_id'],
                     'institute' => (function_exists('get_name_institute') && $student['institute_id']) ? get_name_institute($student['institute_id']) : ($student['name_institute'] ?? '')
                 ];
@@ -4339,6 +5086,33 @@ function get_students_pending_graduation_count()
     }
 
     return $count;
+}
+
+function get_students_pending_documents_count()
+{
+    global $wpdb;
+
+    // Obtener los nombres de las tablas con prefijo
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+
+    // La consulta optimizada usa un JOIN y una subconsulta para contar
+    // a los estudiantes que tienen al menos un documento pendiente.
+    $query = $wpdb->prepare(
+        "SELECT COUNT(DISTINCT s.id)
+        FROM %i AS s
+        INNER JOIN %i AS d ON s.id = d.student_id
+        WHERE s.status_id NOT IN (5, 6)
+        AND d.attachment_id = 0
+        AND (d.is_required = 1 OR d.max_date_upload IS NOT NULL)",
+        $table_students,
+        $table_student_documents
+    );
+
+    // Ejecutar la consulta y devolver el conteo directamente
+    $count = $wpdb->get_var($query);
+
+    return (int) $count;
 }
 
 function get_students_graduated_count()

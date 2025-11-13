@@ -1,27 +1,33 @@
-<h2 class="nav-tab-wrapper">
-	<a href="<?= admin_url('admin.php?page=report-students') ?>"
-		class="nav-tab <?= !isset($_GET['section_tab']) ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Active students', 'edusystem'); ?>
+<h2 class="nav-tab-wrapper nav-scroll-h">
+	<a href="<?= admin_url('admin.php?page=report-students') ?>"        
+		class="nav-tab <?= !isset($_GET['section_tab']) ? 'nav-tab-active' : ''; ?>"><?= __('Active students', 'edusystem'); ?>
 		(<strong><?= $total_count_active ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-students&section_tab=current') ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'current') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Students studying', 'edusystem'); ?>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=documents_active_students') ?>"        
+		class="nav-tab <?= !empty($_GET['section_tab']) && $_GET['section_tab'] == 'documents_active_students' ? 'nav-tab-active' : ''; ?>"><?= __('Documents active students', 'edusystem'); ?>
+		(<strong><?= $total_count_active ?></strong>)</a>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=current') ?>"        
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'current') ? 'nav-tab-active' : ''; ?>"><?= __('Students studying', 'edusystem'); ?>
 		(<strong><?= $total_count_current ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending_electives'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending_electives') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Pending electives', 'edusystem'); ?>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending_electives'); ?>"        
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending_electives') ? 'nav-tab-active' : ''; ?>"><?= __('Pending electives', 'edusystem'); ?>
 		(<strong><?= $total_count_pending_electives ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-students&section_tab=non-enrolled'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'non-enrolled') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Non-enrolled students', 'edusystem'); ?>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=non-enrolled'); ?>"        
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'non-enrolled') ? 'nav-tab-active' : ''; ?>"><?= __('Non-enrolled students', 'edusystem'); ?>
 		(<strong><?= $total_count_non_enrolled ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending-graduation'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending-graduation') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Pending graduation', 'edusystem'); ?>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending-documents'); ?>"        
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending-documents') ? 'nav-tab-active' : ''; ?>"><?= __('Pending documents', 'edusystem'); ?>
+		(<strong><?= $total_count_pending_documents ?></strong>)</a>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=pending-graduation'); ?>"        
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending-graduation') ? 'nav-tab-active' : ''; ?>"><?= __('Pending graduation', 'edusystem'); ?>
 		(<strong><?= $total_count_pending_graduation ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-students&section_tab=graduated'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'graduated') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Graduated', 'edusystem'); ?>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=graduated'); ?>"        
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'graduated') ? 'nav-tab-active' : ''; ?>"><?= __('Graduated', 'edusystem'); ?>
 		(<strong><?= $total_count_graduated ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-students&section_tab=retired'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'retired') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Retired', 'edusystem'); ?>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=retired'); ?>"        
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'retired') ? 'nav-tab-active' : ''; ?>"><?= __('Retired', 'edusystem'); ?>
 		(<strong><?= $total_count_retired ?></strong>)</a>
-	<a href="<?= admin_url('admin.php?page=report-students&section_tab=scholarships'); ?>"
-		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'scholarships') ? 'nav-tab-active' : ''; ?>" style="font-size: 10px;"><?= __('Scholarships', 'edusystem'); ?>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=scholarships'); ?>"        
+		class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'scholarships') ? 'nav-tab-active' : ''; ?>"><?= __('Scholarships', 'edusystem'); ?>
 		(<strong><?= $total_count_scholarships ?></strong>)</a>
 </h2>
 
@@ -32,46 +38,87 @@
 				<?= $academic_period ?> - <?= $cut ?>
 			</h4>
 			<?php
+			global $wpdb;
+	        $table_documents = $wpdb->prefix . 'documents';
+
 			$heading_text = '';
 			$name_document = '';
-
+			$headers = [];
 			switch ($_GET['section_tab']) {
 				case 'current':
 					$heading_text = __('Students seeing classes in the current term.', 'edusystem');
 					$name_document = __('Students studying.xlsx', 'edusystem');
+					$headers = ['Student', 'Subjects'];
+					break;
+				case 'documents_active_students':
+					$heading_text = __('Documents active students', 'edusystem');
+					$name_document = __('Documents active students.xlsx', 'edusystem');
+					$documents = $wpdb->get_results("SELECT * FROM {$table_documents} WHERE grade_id = 4", OBJECT);
+					$headers = ['Student', 'ID', 'Email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
+					foreach ($documents as $document) {
+						// Apply strtolower and then ucfirst to the document name for display.
+						$display_name = ucfirst(strtolower($document->name));
+
+						// Convert to lowercase.
+						$name_lower = strtolower($document->name);
+
+						// Remove all non-alphanumeric characters (except spaces) for a clean key.
+						// This removes special characters like periods, parentheses, commas, etc.
+						$name_sanitized = preg_replace('/[^a-z0-9\s]/', '', $name_lower);
+
+						// Replace spaces with underscores to create the final array key.
+						$key = str_replace(' ', '_', $name_sanitized);
+
+						// Use the modified name for the column header.
+						$headers[] = __($display_name, 'edusystem');
+					}
 					break;
 				case 'pending_electives':
 					$heading_text = __('Pending students to select electives', 'edusystem');
 					$name_document = __('Pending electives.xlsx', 'edusystem');
+					$headers = ['Student', 'ID', 'Student email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 				case 'non-enrolled':
 					$heading_text = __('Students who are not seeing classes in the current term', 'edusystem');
 					$name_document = __('Non-enrolled.xlsx', 'edusystem');
+					$headers = ['Student', 'ID', 'Student email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 				case 'pending-graduation':
 					$heading_text = __('Students academically ready, awaiting graduation', 'edusystem');
 					$name_document = __('Pending graduation.xlsx', 'edusystem');
+					$headers = ['Student', 'Country', 'Institute', 'Academic ready', 'Documents', 'Fee registration', 'Program payment', 'Fee graduation'];
+					break;
+				case 'pending-documents':
+					$heading_text = __('Students with pending documents', 'edusystem');
+					$name_document = __('Pending documents.xlsx', 'edusystem');
+					$headers = ['Student', 'Documents'];
 					break;
 				case 'graduated':
 					$heading_text = __('Graduated students', 'edusystem');
 					$name_document = __('Graduated students.xlsx', 'edusystem');
+					$headers = ['Income', 'Term', 'ID', 'Student', 'Student email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 				case 'retired':
 					$heading_text = __('Retired students', 'edusystem');
 					$name_document = __('Retired students.xlsx', 'edusystem');
+					$headers = ['Income', 'Term', 'ID', 'Student', 'Student email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 				case 'scholarships':
 					$heading_text = __('Scholarship students', 'edusystem');
 					$name_document = __('Scholarship students.xlsx', 'edusystem');
+					$headers = ['Scholarship', 'Student', 'ID', 'Student email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 				default:
 					$heading_text = __('All students with active status', 'edusystem');
 					$name_document = __('Active students.xlsx', 'edusystem');
+					$headers = ['Student', 'ID', 'Email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
 					break;
 			}
 			?>
 			<h1 class='wp-heading-line'><?= $heading_text ?></h1>
 			<input type="hidden" name="name_document" id="name-document" value="<?= $name_document ?>">
+			<input type="hidden" name="headers" id="headers-document"
+				value="<?= esc_attr(wp_json_encode($headers)); ?>">
 		</div>
 		<form method="post"
 			action="<?= admin_url('admin.php?page=report-students') . ($_GET['section_tab'] ? '&section_tab=' . $_GET['section_tab'] : ''); ?>">
@@ -80,8 +127,7 @@
 					<select name="academic_period" style="width: 100%;">
 						<option value="" selected>Select an academic period</option>
 						<?php foreach ($periods as $key => $period) { ?>
-							<option value="<?= $period->code ?>"
-								<?= $_POST['academic_period'] == $period->code ? 'selected' : '' ?>>
+							<option value="<?= $period->code ?>" <?= $_POST['academic_period'] == $period->code ? 'selected' : '' ?>>
 								<?= $period->name ?>
 							</option>
 						<?php } ?>
@@ -105,7 +151,8 @@
 					<option value=""><?= __('Select institute', 'edusystem') ?></option>
 					<?php foreach ($institutes as $key => $institute) { ?>
 						<option value="<?= $institute->id ?>" <?= $_POST['institute'] == $institute->id ? 'selected' : ''; ?>>
-							<?= $institute->name; ?></option>
+							<?= $institute->name; ?>
+						</option>
 					<?php } ?>
 				</select>
 				<input type="search" id="search-box-id-search-input" name="s"
@@ -138,7 +185,9 @@
 		</form>
 		<form action="" id="post-filter" method="get">
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-			<?php $list_students->display() ?>
+			<div class="table-scroll-container">
+				<?php $list_students->display() ?>
+			</div>
 		</form>
 	</div>
 </div>
