@@ -1717,6 +1717,98 @@ class TT_payment_pending_List_Table extends WP_List_Table
         return $columns;
     }
 
+    function single_row($item) {
+        // CSS embebido
+        echo '<style>
+            /* Padre normal, sin color oscuro */
+            tr.parent-order-row {
+                background: #fff; /* fondo blanco normal */
+                font-weight: normal;
+                border-bottom: none; /* sin línea divisoria fuerte */
+            }
+            tr.parent-order-row td {
+                font-size: 14px;
+            }
+
+            /* Hijas */
+            tr.child-order-row {
+                background: #f9f9f9; /* fondo gris claro */
+                font-size: 13px;
+            }
+            tr.child-order-row td.payment_id {
+                padding-left: 30px; /* indentación para marcar jerarquía */
+                font-style: italic;
+            }
+            tr.child-order-row td {
+                border-top: 1px dashed #ccc; /* borde punteado arriba */
+            }
+
+            /* Última hija con línea divisoria fuerte */
+            tr.child-order-row.last-child td {
+                border-bottom: 3px solid #0073aa;
+            }
+        </style>';
+
+        // Fila principal
+        echo '<tr class="parent-order-row">';
+            $this->single_row_columns($item);
+        echo '</tr>';
+
+        // Sub-órdenes
+        if ( !empty($item['split_payments']) ) {
+            $payment_data = json_decode( $item['split_payments'], true );
+            if ( !empty($payment_data['payments']) ) {
+                $total_hijas = count($payment_data['payments']);
+                $i = 0;
+
+                foreach ( $payment_data['payments'] as $payment ) {
+                    $i++;
+                    $payment_order = wc_get_order( $payment['id'] );
+                    if ( !$payment_order ) continue;
+
+                    $url = add_query_arg(
+                        array(
+                            'page'        => 'add_admin_form_payments_content',
+                            'section_tab' => 'order_detail',
+                            'order_id'    => $payment_order->get_id(),
+                        ),
+                        admin_url('admin.php')
+                    );
+
+                    // Marcar última hija
+                    $last_class = ($i === $total_hijas) ? ' last-child' : '';
+
+                    echo '<tr class="child-order-row parent-' . esc_attr($item['payment_id']) . $last_class . '">';
+
+                    echo '<td class="payment_id column-payment_id column-primary" data-colname="Payment ID">';
+                    echo esc_html( $payment_order->get_id() );
+                    echo '</td>';
+
+                    echo '<td class="date column-date" data-colname="Date">';
+                    echo esc_html( $payment_order->get_date_created()->date_i18n('F j, Y g:i a') );
+                    echo '</td>';
+
+                    echo '<td class="partner_name column-partner_name" data-colname="Parent"></td>';
+                    echo '<td class="student_name column-student_name" data-colname="Student"></td>';
+
+                    echo '<td class="total column-total" data-colname="Total"><b>' . wc_price( $payment['amount'] ) . '</b></td>';
+
+                    echo '<td class="payment_method column-payment_method" data-colname="Payment Method"></td>';
+
+                    echo '<td class="status column-status" data-colname="Status">';
+                    echo esc_html( wc_get_order_status_name( $payment_order->get_status() ) );
+                    echo '</td>';
+
+                    echo '<td class="view_details column-view_details" data-colname="Actions">';
+                    echo '<a class="button" href="' . esc_url( $url ) . '">View</a>';
+                    echo '</td>';
+
+                    echo '</tr>';
+                }
+            }
+        }
+    }
+
     function get_payment_pendings()
     {
         global $current_user, $wpdb;
@@ -1740,6 +1832,12 @@ class TT_payment_pending_List_Table extends WP_List_Table
         ];
 
         $meta_query = [];
+
+        // Excluir órdenes que sean sub ordenes de un split payment
+        $meta_query[] = [
+            'key'     => 'split_payment_main_order',
+            'compare' => 'NOT EXISTS'
+        ];
 
         // 1. Filter by 'from_webinar' meta key for specific roles
         if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
@@ -1825,6 +1923,12 @@ class TT_payment_pending_List_Table extends WP_List_Table
                 $billing_last_name = $order->get_billing_last_name();
                 $partner_name = trim($billing_last_name . ' ' . $billing_first_name);
 
+                $split_meta = $order->get_meta('split_payment_method');
+                $split_payments = [];
+                if (!empty($split_meta)) {
+                    $split_payments = $split_meta;
+                }
+
                 $orders_array[] = [
                     'payment_id' => $order->get_id(),
                     'date' => $order->get_date_created() ? $order->get_date_created()->format('F j, Y g:i a') : '',
@@ -1832,7 +1936,8 @@ class TT_payment_pending_List_Table extends WP_List_Table
                     'student_name' => '<span class="text-uppercase">' . $student_full_name . '</span>', // Apply uppercase here
                     'total' => wc_price($order->get_total()),
                     'status' => ($order->get_status() === 'pending') ? __('Payment pending', 'your-text-domain') : wc_get_order_status_name($order->get_status()), // Use wc_get_order_status_name for localized status
-                    'payment_method' => $order->get_payment_method_title()
+                    'payment_method' => $order->get_payment_method_title(),
+                    'split_payments' => $split_payments,
                 ];
             }
         }
@@ -1848,12 +1953,12 @@ class TT_payment_pending_List_Table extends WP_List_Table
 
         return ['data' => $orders_array, 'total_count' => $total_orders_count];
     }
+    
     function get_sortable_columns()
     {
         $sortable_columns = [];
         return $sortable_columns;
     }
-
 
     function get_bulk_actions()
     {
@@ -1993,6 +2098,13 @@ class TT_all_payments_List_Table extends WP_List_Table
         ];
 
         $meta_query = [];
+
+        // Excluir órdenes que sean sub ordenes de un split payment
+        $meta_query[] = [
+            'key'     => 'split_payment_main_order',
+            'compare' => 'NOT EXISTS'
+        ];
+
 
         // 1. Filter by 'from_webinar' meta key for specific roles
         if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {

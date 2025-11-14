@@ -151,7 +151,7 @@
                                     <tbody>
 
                                         <input type="hidden" name="order_id" value="<?= $order->get_id(); ?>" />
-
+                                       
                                         <?php foreach($order->get_items() as $item){ ?>
                                             <tr class="item-product-payment" >
                                                 <td class="column-primary">
@@ -160,6 +160,33 @@
                                                 </td>
                                                 <td data-colname="<?= __('Regular price','edusystem'); ?>">
                                                     <?= wc_price($item->get_subtotal()); ?>
+                                                </td>
+                                                <td data-colname="<?= __('Sale priceTotal','edusystem'); ?>">
+                                                    <div class="total-price">
+                                                        <?= wc_price($item->get_total()); ?>
+
+                                                        <?php if( $order->status == 'pending' || $order->status == 'on-hold' ): ?>
+                                                            <a onclick="active_edit_price_item();" >
+                                                                <span class="dashicons dashicons-edit no-vertical seccion-icon" ></span>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    </div>
+
+                                                    <div class="inputs-price hidden" >
+                                                        <input type="number" class="input-text" name="items[<?= $item->get_id(); ?>][amount]" data-origin-price="<?= esc_attr($item->get_total() ); ?>" min="0" step="0.01" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+                                        
+                                        <?php foreach( $order->get_fees() as $item){ ?>
+                                            <tr class="item-product-payment" >
+                                                <td class="column-primary">
+                                                    <?= $item->get_name(); ?>
+                                                    <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
+                                                </td>
+                                                <td data-colname="<?= __('Regular price','edusystem'); ?>">
+                                                    <?= ''//wc_price($item->get_subtotal()) ?? '---'; ?>
                                                 </td>
                                                 <td data-colname="<?= __('Sale priceTotal','edusystem'); ?>">
                                                     <div class="total-price">
@@ -200,7 +227,7 @@
 
                         <?php
                             // hook para mostrar información adicional después de la lista de ítems
-                            do_action('after_items_list_payments_edusystem');
+                            do_action('after_items_list_payments_edusystem', $order->get_id() );
                         ?>
 
                         <?php if($order->get_meta('split_payment') && $order->get_meta('split_payment') == 1) { ?>
