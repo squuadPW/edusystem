@@ -1566,3 +1566,25 @@ function wp_widget_requests_review_callback()
     );
     include(plugin_dir_path(__FILE__) . 'templates/widget-requests-review.php');
 }
+
+function student_names_lastnames_helper($student_id = null) {
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+    if ($student) {
+        $lastNameParts = array_filter([$student->last_name, $student->middle_last_name]);
+        $firstNameParts = array_filter([$student->name, $student->middle_name]);
+
+        $student_full_name = implode(' ', $lastNameParts);
+        if (!empty($firstNameParts)) {
+            if (!empty($student_full_name)) {
+                $student_full_name .= ', ';
+            }
+            $student_full_name .= implode(' ', $firstNameParts);
+        }
+
+        return $student_full_name;
+    } else {
+        return '';
+    }
+}
