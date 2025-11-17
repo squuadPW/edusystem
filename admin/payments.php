@@ -2898,8 +2898,8 @@ function generate_quote_public_callback()
         wp_send_json_error(['message' => 'Payment record not found.']);
     }
 
-    $student = get_student_detail($payment_row->student_id);
-
+    error_log('Payment Row: ' . print_r($payment_row, true));
+        $student = get_student_detail($payment_row->student_id);error_log('Student: ' . print_r($student, true));
     if (!$student || !isset($student->partner_id)) {
         wp_send_json_error(['message' => 'Student or Partner ID not found.']);
     }
@@ -2907,16 +2907,16 @@ function generate_quote_public_callback()
     $customer_id = $student->partner_id;
 
     // Resolve Product ID
-    $product_id = $payment_row->variation_id ? $payment_row->variation_id : $payment_row->original_amount_product;
+    $product_id = $payment_row->variation_id ? $payment_row->variation_id : $payment_row->product_id;
     $product = wc_get_product($product_id);
-
+    error_log('Product: ' . print_r($product, true));
     if (!$product) {
         wp_send_json_error(['message' => 'Product definition not found.']);
     }
 
     try {
         $order = wc_create_order(['customer_id' => $customer_id]);
-
+        error_log('Order Created: ' . print_r($order, true));
         // Force custom price via arguments
         $item_id = $order->add_product($product, 1, [
             'subtotal' => $payment_row->amount,
@@ -2967,7 +2967,7 @@ function generate_quote_public_callback()
         $order->save();
 
         $checkout_url = $order->get_checkout_payment_url();
-
+        error_log('Checkout URL: ' . $checkout_url);
         wp_send_json_success(['url' => $checkout_url]);
     } catch (Exception $e) {
         wp_send_json_error(['message' => $e->getMessage()]);
