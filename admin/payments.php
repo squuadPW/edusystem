@@ -136,7 +136,6 @@ function add_admin_form_payments_content()
                                 WHERE id = %d",
                                 $cuote_payment_id
                             ));
-
                         } else {
                             $cuote_payment = $wpdb->get_row($wpdb->prepare(
                                 "SELECT *, COALESCE( SUM(amount), 0) AS amount_pay FROM {$table_student_payments}
@@ -273,7 +272,6 @@ function add_admin_form_payments_content()
                                     );
                                     $counter++;
                                 }
-
                             } else {
 
                                 $payment_row = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE id = {$cuote_credit}");
@@ -288,7 +286,6 @@ function add_admin_form_payments_content()
                                     'amount' => $new_amount,
                                     'original_amount_product' => $new_original_amount_product,
                                 ], ['id' => $payment_row->id]);
-
                             }
                         }
 
@@ -311,7 +308,6 @@ function add_admin_form_payments_content()
                                 ], ['id' => $payment_row->id]);
 
                                 $balance = 0;
-
                             } elseif ($balance >= $payment_row->amount) {
 
                                 $balance = $balance - $payment_row->amount;
@@ -344,7 +340,6 @@ function add_admin_form_payments_content()
                             $wpdb->update($table_student_balance, [
                                 'balance' => $balance,
                             ], ['id' => $balance_id]);
-
                         }
                     }
                 }
@@ -356,7 +351,6 @@ function add_admin_form_payments_content()
                 } else {
                     wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
                 }
-
             } else {
                 // Cambiar a set_status() para disparar el hook
                 $order->set_status('cancelled');
@@ -464,7 +458,6 @@ function add_admin_form_payments_content()
                         if ($billing_address = $order_old->get_address('billing')) {
                             $new_order->set_address($billing_address, 'billing');
                         }
-
                     }
 
                     // Calculate totals and save order
@@ -490,7 +483,6 @@ function add_admin_form_payments_content()
                     // Redirect with success message
                     wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&success_save_changes=true'));
                     exit;
-
                 } catch (Exception $e) {
                     // Log error and redirect with error message
                     wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&error=' . urlencode($e->getMessage())));
@@ -589,7 +581,6 @@ function add_admin_form_payments_content()
                     // Redirect with success message
                     wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&success_save_changes=true'));
                     exit;
-
                 } catch (Exception $e) {
                     // Log error and redirect with error message
                     wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document . '&error=' . urlencode($e->getMessage())));
@@ -869,7 +860,7 @@ function add_admin_form_payments_content()
             $is_active = $_POST['is_active'] ? true : false;
             $subprograms_post = $_POST['subprogram'] ?? '';
 
-            $subprograms = [];// array para guardas los subprogramas
+            $subprograms = []; // array para guardas los subprogramas
 
             // verifica y crea en caso de necesitar una categoria llamada programs;"
             $category_id = 0;
@@ -877,12 +868,11 @@ function add_admin_form_payments_content()
             $category = term_exists($name_category, 'product_cat');
             if ($category) {
                 $category_id = (int) $category['term_id'];
-
             } else {
                 // La categoría no existe, crearla
                 $category = wp_insert_term($name_category, 'product_cat');
                 if (!is_wp_error($category)) {
-                    $category_id = (int) $category['term_id'];// Devolver el ID de la nueva categoría creada
+                    $category_id = (int) $category['term_id']; // Devolver el ID de la nueva categoría creada
                 }
             }
 
@@ -903,7 +893,6 @@ function add_admin_form_payments_content()
 
                 // Asignar la categoría al producto
                 wp_set_object_terms($program_product_id, $category_id, 'product_cat');
-
             } else {
 
                 // Función para crear un producto
@@ -978,7 +967,6 @@ function add_admin_form_payments_content()
                         update_post_meta($product_id, '_stock_status', ($is_active && $is_active_subprogram) ? 'instock' : 'outofstock');
 
                         wp_set_object_terms($product_id, (int) $category_id, 'product_cat');
-
                     } else {
 
                         // Función para crear un producto
@@ -1010,7 +998,6 @@ function add_admin_form_payments_content()
                             }
                             update_post_meta($program_product_id, '_product_attributes', $current_values);
                         }
-
                     }
 
                     // crea el array con los datos del subprograma
@@ -1042,7 +1029,6 @@ function add_admin_form_payments_content()
                     'is_active' => $is_active,
                     'subprogram' => json_encode($subprograms) ?? null,
                 ], ['id' => $program_id]);
-
             } else {
 
                 if (!empty($subprograms)) {
@@ -1071,14 +1057,13 @@ function add_admin_form_payments_content()
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details&program_id=' . $program_id));
             exit;
-
         } else if ($_GET['action'] == 'delete_payment_method') {
             global $wpdb;
             $payment_methods_by_plan = $wpdb->prefix . 'payment_methods_by_plan';
             $program_id = intval($_GET['program_id']);
             $method_id = intval($_GET['method_id']);
             $wpdb->delete($payment_methods_by_plan, ['id' => $method_id]);
-            
+
             setcookie('message', __('Payment method deleted successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details&program_id=' . $program_id));
             exit;
@@ -1134,7 +1119,6 @@ function add_admin_form_payments_content()
                             'start_charging' => $start_charging,
                             'position' => $position,
                         ], ['id' => $rule_id]);
-
                     } else {
 
                         $wpdb->insert($table_quota_rules, [
@@ -1158,14 +1142,12 @@ function add_admin_form_payments_content()
 
                 setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
                 wp_redirect($_SERVER['HTTP_REFERER']);
-
             } else {
                 setcookie('message-error', __('Identifier not found', 'edusystem'), time() + 10, '/');
                 wp_redirect(admin_url("admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details"));
             }
 
             exit;
-
         } else if ($_GET['action'] == 'delete_quota_rule') {
 
             global $wpdb;
@@ -1187,7 +1169,6 @@ function add_admin_form_payments_content()
 
             wp_redirect($_SERVER['HTTP_REFERER']);
             exit;
-
         } else if ($_GET['action'] == 'delete_subprogram') {
 
             $subprogram_id = $_POST['subprogram_id'];
@@ -1230,14 +1211,12 @@ function add_admin_form_payments_content()
                 } else {
                     setcookie('message-error', __('The subprogram was not removed correctly.', 'edusystem'), time() + 10, '/');
                 }
-
             } else {
                 setcookie('message-error', __('The subprogram contains enrolled students.', 'edusystem'), time() + 10, '/');
             }
 
             wp_redirect($_SERVER['HTTP_REFERER']);
             exit;
-
         } else if ($_GET['action'] == 'delete_program') {
 
             $program_id = $_POST['program_id'];
@@ -1284,14 +1263,12 @@ function add_admin_form_payments_content()
                 } else {
                     setcookie('message-error', __('The subprogram was not removed correctly.', 'edusystem'), time() + 10, '/');
                 }
-
             } else {
                 setcookie('message-error', __('The subprogram contains enrolled students.', 'edusystem'), time() + 10, '/');
             }
 
             wp_redirect($_SERVER['HTTP_REFERER']);
             exit;
-
         } else if ($_GET['action'] == 'save_fee') {
 
 
@@ -1315,12 +1292,11 @@ function add_admin_form_payments_content()
             $category = term_exists($name_category, 'product_cat');
             if ($category) {
                 $category_id = (int) $category['term_id'];
-
             } else {
                 // La categoría no existe, crearla
                 $category = wp_insert_term($name_category, 'product_cat');
                 if (!is_wp_error($category))
-                    $category_id = (int) $category['term_id'];// Devolver el ID de la nueva categoría creada
+                    $category_id = (int) $category['term_id']; // Devolver el ID de la nueva categoría creada
 
             }
 
@@ -1341,7 +1317,6 @@ function add_admin_form_payments_content()
 
                 // Asignar la categoría al producto
                 wp_set_object_terms($product_id, $category_id, 'product_cat');
-
             } else {
 
                 // Función para crear un producto
@@ -1377,7 +1352,6 @@ function add_admin_form_payments_content()
                     'programs' => json_encode($programs),
                     'type_fee' => $type_fee,
                 ], ['id' => $fee_id]);
-
             } else {
 
                 $wpdb->insert($table_admission_fees, [
@@ -1396,7 +1370,6 @@ function add_admin_form_payments_content()
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=fees_content&section_tab=fee_details&fee_id=' . $fee_id));
             exit;
-
         } else if ($_GET['action'] == 'delete_fee') {
 
             $fee_id = (int) $_POST['fee_id'] ?? null;
@@ -1419,14 +1392,12 @@ function add_admin_form_payments_content()
 
                     setcookie('message', __('The fee has been deleted successfully.', 'edusystem'), time() + 10, '/');
                 }
-
             } else {
                 setcookie('message-error', __('The fee has not been deleted correctly.', 'edusystem'), time() + 10, '/');
             }
 
             wp_redirect($_SERVER['HTTP_REFERER']);
             exit;
-
         } else if ($_GET['action'] == 'update_price_items_order') {
 
             // Obtener datos POST
@@ -1449,13 +1420,11 @@ function add_admin_form_payments_content()
 
                 setcookie('message', __('Items updated successfully.', 'edusystem'), time() + 10, '/');
                 wp_redirect("admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id={$order_id}");
-
             } else {
                 setcookie('message-error', __('Items could not be updated.', 'edusystem'), time() + 10, '/');
                 wp_redirect($_SERVER['HTTP_REFERER']);
             }
             exit;
-
         }
     }
 
@@ -1466,7 +1435,6 @@ function add_admin_form_payments_content()
             $list_payments = new TT_all_payments_List_Table;
             $list_payments->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-payments.php');
-
         } else if ($_GET['section_tab'] == 'order_detail') {
 
             global $current_user;
@@ -1476,7 +1444,6 @@ function add_admin_form_payments_content()
             $student = get_student_detail($order->get_meta('student_id'));
 
             include(plugin_dir_path(__FILE__) . 'templates/payment-details.php');
-
         } else if ($_GET['section_tab'] == 'invoices_alliances') {
 
             if ($_GET['id_payment']) {
@@ -1488,7 +1455,6 @@ function add_admin_form_payments_content()
             $list_payments = new TT_Invoices_Alliances_List_Table;
             $list_payments->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-invoices-alliance.php');
-
         } else if ($_GET['section_tab'] == 'invoices_institutes') {
 
             if ($_GET['id_payment']) {
@@ -1579,7 +1545,6 @@ function add_admin_form_payments_content()
             $fee = get_admission_fee($fee_id);
             include(plugin_dir_path(__FILE__) . 'templates/fee-details.php');
         }
-
     } else {
         if ($_GET['page'] == 'add_admin_form_payments_content') {
             $list_payments = new TT_payment_pending_List_Table;
@@ -1590,14 +1555,12 @@ function add_admin_form_payments_content()
             $list_payments->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-payments.php');
             include(plugin_dir_path(__FILE__) . '/templates/modal-delete-program.php');
-
         } else if ($_GET['page'] == 'fees_content') {
 
             $list_payments = new TT_All_Fees_List_Table;
             $list_payments->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/list-payments.php');
             include(plugin_dir_path(__FILE__) . '/templates/modal-delete-admission-fee.php');
-
         }
     }
 }
@@ -1627,19 +1590,19 @@ function update_order_pending_approved($order, $payment_selected, $transaction_i
 function success_advance_payment()
 {
     if (isset($_GET['success_advance_payment']) && $_GET['success_advance_payment'] == 'true') {
-        ?>
+?>
         <div class="notice notice-success is-dismissible">
             <p>Payment generated successfully</p>
         </div>
-        <?php
+    <?php
     }
 
     if (isset($_GET['success_save_changes']) && $_GET['success_save_changes'] == 'true') {
-        ?>
+    ?>
         <div class="notice notice-success is-dismissible">
             <p>Changes saved successfully</p>
         </div>
-        <?php
+<?php
     }
 }
 
@@ -1659,7 +1622,6 @@ class TT_payment_pending_List_Table extends WP_List_Table
             'plural' => 'payment_pendings',
             'ajax' => true
         ));
-
     }
 
     function column_default($item, $column_name)
@@ -1897,7 +1859,6 @@ class TT_payment_pending_List_Table extends WP_List_Table
         ));
         $this->items = $data;
     }
-
 }
 
 class TT_all_payments_List_Table extends WP_List_Table
@@ -1912,7 +1873,6 @@ class TT_all_payments_List_Table extends WP_List_Table
             'plural' => 'payment_pendings',
             'ajax' => true
         ));
-
     }
 
     function column_default($item, $column_name)
@@ -2152,7 +2112,6 @@ class TT_all_payments_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Invoices_Alliances_List_Table extends WP_List_Table
@@ -2167,7 +2126,6 @@ class TT_Invoices_Alliances_List_Table extends WP_List_Table
             'plural' => 'invoices_alliances',
             'ajax' => true
         ));
-
     }
 
     function column_default($item, $column_name)
@@ -2298,7 +2256,6 @@ class TT_Invoices_Alliances_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Expenses_Payroll_List_Table extends WP_List_Table
@@ -2313,7 +2270,6 @@ class TT_Expenses_Payroll_List_Table extends WP_List_Table
             'plural' => 'expenses',
             'ajax' => true
         ));
-
     }
 
     function column_default($item, $column_name)
@@ -2425,7 +2381,6 @@ class TT_Expenses_Payroll_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Invoices_Institutes_List_Table extends WP_List_Table
@@ -2440,7 +2395,6 @@ class TT_Invoices_Institutes_List_Table extends WP_List_Table
             'plural' => 'invoices_institutes',
             'ajax' => true
         ));
-
     }
 
     function column_default($item, $column_name)
@@ -2571,7 +2525,6 @@ class TT_Invoices_Institutes_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_All_Payment_Plans_List_Table extends WP_List_Table
@@ -2588,7 +2541,6 @@ class TT_All_Payment_Plans_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     function column_default($item, $column_name)
@@ -2757,7 +2709,6 @@ class TT_All_Payment_Plans_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_All_Fees_List_Table extends WP_List_Table
@@ -2774,7 +2725,6 @@ class TT_All_Fees_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     function column_default($item, $column_name)
@@ -2906,7 +2856,6 @@ class TT_All_Fees_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 function get_admission_fee($fee_id)
@@ -2930,104 +2879,99 @@ add_action('wp_ajax_generate_quote_public', 'generate_quote_public_callback');
 
 function generate_quote_public_callback()
 {
-    // 1. Input Validation and Sanitization
     if (!isset($_POST['payment_id'])) {
-        wp_send_json_error(array('message' => 'Missing required parameters.'));
-        die();
+        wp_send_json_error(['message' => 'Missing required parameters.']);
     }
 
     global $wpdb;
-    $payment_id = floatval($_POST['payment_id']);
-    $table_student_payments = $wpdb->prefix . 'student_payments';
-    $payment_row = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE id={$payment_id}");
+
+    $payment_id = absint($_POST['payment_id']);
+    $table_name = $wpdb->prefix . 'student_payments';
+
+    // Secure SQL Query
+    $payment_row = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$table_name} WHERE id = %d",
+        $payment_id
+    ));
+
+    if (!$payment_row) {
+        wp_send_json_error(['message' => 'Payment record not found.']);
+    }
+
     $student = get_student_detail($payment_row->student_id);
+
+    if (!$student || !isset($student->partner_id)) {
+        wp_send_json_error(['message' => 'Student or Partner ID not found.']);
+    }
+
     $customer_id = $student->partner_id;
 
-    // Crear una nueva orden
-    $order = wc_create_order(array('customer_id' => $customer_id));
+    // Resolve Product ID
+    $product_id = $payment_row->variation_id ? $payment_row->variation_id : $payment_row->original_amount_product;
+    $product = wc_get_product($product_id);
 
-    // Añadir productos a la orden
-    $product = wc_get_product($payment_row->variation_id);
     if (!$product) {
-        $product = wc_get_product($payment_row->original_amount_product);
+        wp_send_json_error(['message' => 'Product definition not found.']);
     }
 
-    if ($product) {
-        $quantity = 1;
-        $product->set_price($payment_row->amount);
+    try {
+        $order = wc_create_order(['customer_id' => $customer_id]);
 
-        if ($payment_row->num_cuotes == 1)
-            $product->set_regular_price($payment_row->original_amount_product);
+        // Force custom price via arguments
+        $item_id = $order->add_product($product, 1, [
+            'subtotal' => $payment_row->amount,
+            'total'    => $payment_row->amount
+        ]);
 
-        $order->add_product($product, $quantity);
+        if (!$item_id) {
+            throw new Exception('Error adding product to order.');
+        }
+
+        $customer = new WC_Customer($customer_id);
+
+        // Efficient fallback logic using Elvis operator
+        $first_name = $customer->get_billing_first_name() ?: $customer->get_first_name() ?: 'Nombre';
+        $last_name  = $customer->get_billing_last_name() ?: $customer->get_last_name() ?: 'Apellido';
+
+        $address_data = [
+            'first_name' => $first_name,
+            'last_name'  => $last_name,
+            'company'    => $customer->get_billing_company(),
+            'email'      => $customer->get_billing_email() ?: $customer->get_email(),
+            'phone'      => $customer->get_billing_phone(),
+            'address_1'  => $customer->get_billing_address_1(),
+            'address_2'  => $customer->get_billing_address_2(),
+            'city'       => $customer->get_billing_city(),
+            'state'      => $customer->get_billing_state(),
+            'postcode'   => $customer->get_billing_postcode(),
+            'country'    => $customer->get_billing_country()
+        ];
+
+        $order->set_billing_address($address_data);
+
+        // Inherit shipping from billing unless specific shipping exists
+        $shipping_data = array_merge($address_data, [
+            'first_name' => $customer->get_shipping_first_name() ?: $first_name,
+            'last_name'  => $customer->get_shipping_last_name() ?: $last_name,
+            'address_1'  => $customer->get_shipping_address_1() ?: $address_data['address_1'],
+            // Map other specific shipping fields if needed, otherwise they default to empty or billing logic above
+        ]);
+
+        $order->set_shipping_address($shipping_data);
+
+        $order->update_meta_data('cuote_payment', $payment_row->id);
+        $order->update_meta_data('student_id', $payment_row->student_id);
+        $order->update_meta_data('institute_id', $payment_row->institute_id);
+
+        $order->calculate_totals();
+        $order->save();
+
+        $checkout_url = $order->get_checkout_payment_url();
+
+        wp_send_json_success(['url' => $checkout_url]);
+    } catch (Exception $e) {
+        wp_send_json_error(['message' => $e->getMessage()]);
     }
-
-    // Obtener información del cliente existente
-    $customer = new WC_Customer($customer_id);
-
-    // 🔥 CORREGIR OBTENCIÓN DE NOMBRES - Usar datos de usuario si no hay en billing
-    $first_name = $customer->get_billing_first_name();
-    $last_name = $customer->get_billing_last_name();
-
-    // Si no hay nombre en billing, usar los datos base del usuario
-    if (empty($first_name)) {
-        $first_name = $customer->get_first_name();
-    }
-    if (empty($last_name)) {
-        $last_name = $customer->get_last_name();
-    }
-
-    // Si aún no hay nombre, usar valores por defecto
-    $first_name = !empty($first_name) ? $first_name : 'Nombre';
-    $last_name = !empty($last_name) ? $last_name : 'Apellido';
-
-    // Usar direcciones del cliente si existen, de lo contrario usar valores por defecto
-    $billing_address = array(
-        'first_name' => $first_name,
-        'last_name' => $last_name,
-        'company' => $customer->get_billing_company(),
-        'email' => $customer->get_billing_email() ?: $customer->get_email(),
-        'phone' => $customer->get_billing_phone(),
-        'address_1' => $customer->get_billing_address_1(),
-        'address_2' => $customer->get_billing_address_2(),
-        'city' => $customer->get_billing_city(),
-        'state' => $customer->get_billing_state(),
-        'postcode' => $customer->get_billing_postcode(),
-        'country' => $customer->get_billing_country()
-    );
-
-    $shipping_address = array(
-        'first_name' => $customer->get_shipping_first_name() ?: $first_name,
-        'last_name' => $customer->get_shipping_last_name() ?: $last_name,
-        'company' => $customer->get_shipping_company(),
-        'address_1' => $customer->get_shipping_address_1(),
-        'address_2' => $customer->get_shipping_address_2(),
-        'city' => $customer->get_shipping_city(),
-        'state' => $customer->get_shipping_state(),
-        'postcode' => $customer->get_shipping_postcode(),
-        'country' => $customer->get_shipping_country()
-    );
-
-    // Establecer direcciones
-    $order->set_billing_address($billing_address);
-    $order->set_shipping_address($shipping_address);
-
-    // 🔥 CORREGIR METADATOS - student_id debe ser el ID del estudiante
-    $order->update_meta_data('cuote_payment', $payment_row->id);
-    $order->update_meta_data('student_id', $payment_row->student_id); // Corregido aquí
-    $order->update_meta_data('institute_id', $payment_row->institute_id);
-
-    // Calcular totales (ahora con el monto personalizado)
-    $order->calculate_totals();
-
-    // Guardar la orden
-    $order->save();
-
-    // Generate checkout URL
-    $checkout_url = wc_get_checkout_url() . 'order-pay/' . $order->get_id() . '/?pay_for_order=true&key=' . $order->get_order_key();
-
-    wp_send_json_success(array('url' => $checkout_url));
-    die();
 }
 
 function manage_payments_search_student_callback()
@@ -3085,9 +3029,9 @@ function manage_payments_search_student_callback()
                 'description' => $student->id_document . ' - ' . ($student->email ?? ''), // Ensure email exists
                 'text' => trim(
                     ($student->name ?? '') . ' ' .
-                    ($student->middle_name ?? '') . ' ' .
-                    ($student->last_name ?? '') . ' ' .
-                    ($student->middle_last_name ?? '')
+                        ($student->middle_name ?? '') . ' ' .
+                        ($student->last_name ?? '') . ' ' .
+                        ($student->middle_last_name ?? '')
                 )
             ];
         }
