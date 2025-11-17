@@ -2675,8 +2675,6 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
             $students_array[] = $student_data;
         }
 
-        // error_log(print_r($students_array, true));
-
         return ['data' => $students_array, 'total_count' => $total_count];
     }
     function prepare_items()
