@@ -1,6 +1,6 @@
 <?php
 
-add_action('woocommerce_checkout_order_created', 'save_essential_data_order', 10, 1);
+add_action('woocommerce_checkout_order_created', 'save_essential_data_order', 8, 1);
 function save_essential_data_order($order) {
 
     /* // Verificar si algún producto es de la categoría "programs"
@@ -15,6 +15,9 @@ function save_essential_data_order($order) {
 
     // Solo continuar si hay al menos un producto de la categoría "programs"
     if ( !$has_program ) return; */
+
+    // sino exite la cooki de guardar estudiantes entonces no guarda los datos 
+    if( !isset($_COOKIE['save_student']) ) return;
 
     // datos generales
     $order->update_meta_data('payment_method_selected', $_COOKIE['payment_method_selected'] ?? null );
@@ -78,6 +81,7 @@ function save_essential_data_order($order) {
     $order->update_meta_data('registration_data', $registration_data);
 
     $order->save();
+
 }
 
 
@@ -86,6 +90,8 @@ function save_student()
     if (
         isset($_GET['action']) && !empty($_GET['action']) && ($_GET['action'] == 'save_student' || $_GET['action'] == 'new_applicant_others' || $_GET['action'] == 'new_applicant_me' || $_GET['action'] == 'save_student_custom' || $_GET['action'] == 'save_student_info' || $_GET['action'] == 'save_student_scholarship')
     ) {
+
+        setcookie('save_student', 'save_student', time() + 864000, '/');
 
         $action = $_GET['action'];
         global $woocommerce;
@@ -629,6 +635,13 @@ add_action('woocommerce_account_califications_endpoint', function () {
 
     $admin_virtual_access = get_option('virtual_access');
     include(plugin_dir_path(__FILE__) . 'templates/califications.php');
+
+    // Successful login actividad de acceso
+    $first_name   = get_user_meta( $current_user->ID, 'first_name', true );
+    $last_name = get_user_meta( $current_user->ID, 'last_name', true );
+    $message = sprintf(__('The student %s saw grades.', 'edusystem'), $first_name.' '.$last_name);
+    edusystem_get_log($message, 'califications', $current_user->ID );
+    
 });
 
 add_action('woocommerce_account_teacher-course-students_endpoint', function () {

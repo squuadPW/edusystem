@@ -35,7 +35,7 @@ foreach ($student_payments as $student_id => $payments) {
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date" data-title="Date">
                         <?= date('F d, Y', strtotime($payment->date_next_payment)) ?></td>
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="Total">
-                        <?= wc_price($payment->amount) ?></td>
+                        <?= wc_price($payment->amount, [ 'currency' => $payment->currency ]) ?></td>
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-action" data-title="Action" style="text-align: end">
                         <?php if($key == 0 && !$pending_orders) { ?>
                             <button style="width: 70px;" type="button" class="button button-primary" id="generate-quote" data-payment-id="<?= $payment->id ?>"><?= __('Pay', 'edusystem') ?></button>

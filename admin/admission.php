@@ -165,6 +165,9 @@ function add_admin_form_admission_content()
                     do_action('portal_update_user_external', $id);
                 }
 
+                // al hook se le pasa el student_id
+                do_action('edusystem_save_student_data', $id);
+
                 wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $id));
                 exit;
             }
