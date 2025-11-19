@@ -13,7 +13,7 @@ Text Domain:  edusystem
 
 // Definición de constantes del plugin
 define('EDUSYSTEM__FILE__', __FILE__); // ruta __FILE__
-define('EDUSYSTEM_PATH', plugin_dir_path(__FILE__)); // Ruta del directorio del plugin
+define('EDUSYSTEM_PATH', plugin_dir_path(__FILE__) ); // Ruta del directorio del plugin
 define('EDUSYSTEM_URL', plugin_dir_url(__FILE__)); // URL del plugin
 
 // funciones de comisiones
@@ -716,28 +716,30 @@ function create_tables()
     // table_student_payments
     dbDelta(
         "CREATE TABLE " . $table_student_payments . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        status_id INT(11) NOT NULL,
-        student_id INT(11) NOT NULL,
-        order_id INT(11) NULL,
-        product_id INT(11) NOT NULL,
-        variation_id INT(11) NULL,
-        manager_id INT(11) NULL,
-        institute_id INT(11) NULL,
-        institute_fee DOUBLE(10, 2) NULL,
-        alliances JSON NULL,
-        amount DOUBLE(10, 2) NOT NULL DEFAULT 0,
-        original_amount_product DOUBLE(10, 2) NULL DEFAULT 0,
-        total_amount DOUBLE(10, 2) NULL DEFAULT 0,
-        original_amount DOUBLE(10, 2) NULL DEFAULT 0,
-        discount_amount DOUBLE(10, 2) NULL DEFAULT 0,
-        type_payment INT(11) NOT NULL,
-        cuote INT(11) NULL,
-        num_cuotes INT(11) NULL,
-        date_payment DATE NULL,
-        date_next_payment DATE NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            status_id INT(11) NOT NULL,
+            student_id INT(11) NOT NULL,
+            order_id INT(11) NULL,
+            product_id INT(11) NOT NULL,
+            variation_id INT(11) NULL,
+            manager_id INT(11) NULL,
+            institute_id INT(11) NULL,
+            institute_fee DOUBLE(10, 2) NULL,
+            alliances JSON NULL,
+            currency VARCHAR(10) NOT NULL,
+            amount DOUBLE(10, 2) NOT NULL DEFAULT 0,
+            original_amount_product DOUBLE(10, 2) NULL DEFAULT 0,
+            total_amount DOUBLE(10, 2) NULL DEFAULT 0,
+            original_amount DOUBLE(10, 2) NULL DEFAULT 0,
+            discount_amount DOUBLE(10, 2) NULL DEFAULT 0,
+            type_payment INT(11) NOT NULL,
+            cuote INT(11) NULL,
+            num_cuotes INT(11) NULL,
+            date_payment DATE NULL,
+            date_next_payment DATE NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // table_student_payments_log
@@ -1249,6 +1251,7 @@ function create_tables()
 }
 
 register_activation_hook(__FILE__, 'create_tables');
+
 
 
 

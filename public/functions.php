@@ -1100,7 +1100,6 @@ function status_order_completed($order, $order_id, $customer_id)
 
     // Asegura que el usuario de WordPress para el estudiante exista.
     create_user_student($student_id);
-    
 
     // 3. Itera sobre los artículos para actualizar o crear registros de pago.
     foreach ($order->get_items() as $item) {
@@ -1265,6 +1264,7 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
             'institute_id' => $institute_id,
             'institute_fee' => $current_item_institute_fee,
             'alliances' => $current_item_alliances_json,
+            'currency' => $order->get_currency(),
             'amount' => $total,
             'original_amount_product' => $original_price,
             'total_amount' => $total,
@@ -1362,21 +1362,28 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
     foreach ($order->get_items() as $item_id => $item) {
 
-
         process_payments($student_id, $order, $item);
 
         $program_data = $order->get_meta('program_data', true) ?? [];
         $program_data = json_decode($program_data, true);
         if ($program_data) {
-            process_payments($student_id, null, null, (int) $program_data['product_id'], (int) $program_data['variation_id'], (int) $program_data['rule_id'], $program_data['coupons']);
+            process_payments(
+                $student_id, // id del estudiante
+                null, // no viene de una orden de pago del programa
+                null, // no viene de un ítem
+                (int) $program_data['product_id'], // id del producto
+                (int) $program_data['variation_id'], // id de la variación
+                (int) $program_data['rule_id'], // regla de pago
+                $program_data['coupons'], // cupones aplicados
+                $order->get_currency() // moneda de la orden
+            ); 
         }
     }
 }
 
-function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [])
+function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [], $currency = null )
 {
-    if (!$student_id)
-        return;
+    if (!$student_id) return;
 
     // obtiene los id de los productos en caso tal vengan por las ordenes
     $order_id = null;
@@ -1386,7 +1393,12 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
 
         $product_id = $item->get_product_id();
         $variation_id = $item->get_variation_id() ?? 0;
+
+        $currency = $order->get_currency();
     }
+
+    // obtienen la moneda si no viene
+    if( $currency === null ) $currency = get_woocommerce_currency();
 
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
@@ -1397,6 +1409,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
         $student_id,
         $product_id
     ));
+
     if ($existing_record_count > 0)
         return;
 
@@ -1607,6 +1620,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
             'institute_id' => $i == 0 ? $institute_id : null,
             'institute_fee' => $i == 0 ? $current_item_institute_fee : 0,
             'alliances' => $i == 0 ? $current_item_alliances_json : null,
+            'currency' => $currency,
             'amount' => $amount,
             'original_amount_product' => $original_price,
             'total_amount' => $total_amount_to_pay,
@@ -3907,6 +3921,20 @@ function customer_pending_orders($user_id = null)
 
     // Obtener las órdenes que coincidan.
     $orders = wc_get_orders($args);
+
+    // filtar las ordenes que sean pending y metodo de pago flywire
+    foreach ( $orders as $key => $order_id ) {
+        $order = wc_get_order( $order_id );
+
+        // Obtener estado y método de pago
+        $status        = $order->get_status();
+        $payment_method = $order->get_payment_method();
+
+        // Excluir si es pending y flywire
+        if ( $status == 'pending' && $payment_method == 'flywire' ){
+            unset( $orders[ $key ] );
+        }
+    }
 
     // Retorna true si se encontró al menos una orden, de lo contrario false.
     return !empty($orders);

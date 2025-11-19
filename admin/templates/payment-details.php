@@ -50,6 +50,15 @@
                                     </p>
                                 </div>
 
+                                <div class="seccion-card">
+                                    <span class="dashicons dashicons-money-alt no-vertical seccion-icon" ></span>
+                                    
+                                    <p>
+                                        <strong><?=__('Payment currency','edusystem')?>:</strong>
+                                        <?= $order->get_currency(); ?>
+                                    </p>
+                                </div>
+
                             </div>
 
                             <div>

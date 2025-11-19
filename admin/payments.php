@@ -1068,6 +1068,9 @@ function add_admin_form_payments_content()
                 $program_id = $wpdb->insert_id;
             }
 
+            // hook para extender las acciones de guardado 
+            do_action( 'edusystem_save_payment_plan_details', $program_id );
+
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details&program_id=' . $program_id));
             exit;
