@@ -190,6 +190,7 @@ add_action('init', 'removed_hooks');
 function form_asp_psp_optimized($atts)
 {
     // 1. Define los atributos por defecto de forma segura.
+    $is_school_mode = get_option('site_mode') === 'SCHOOL';
     $atts = shortcode_atts(
         array(
             'connected_account' => '',
@@ -211,7 +212,7 @@ function form_asp_psp_optimized($atts)
             'plan' => '',
             'birth_date_position' => 'UP',
             'title' => '',
-            'use_expected_graduation_date' => false,
+            'use_expected_graduation_date' => $is_school_mode ? true : false,
             'separate_program_fee' => false,
             'dynamic_link' => false,
             'use_ethnicity' => true,
@@ -318,6 +319,7 @@ add_shortcode('form_asp_psp', 'form_asp_psp_optimized');
 function student_registration_form_optimized($atts)
 {
     // 1. Define los atributos por defecto de forma segura.
+    $is_school_mode = get_option('site_mode') === 'SCHOOL';
     $atts = shortcode_atts(
         array(
             'connected_account' => '',
@@ -339,7 +341,7 @@ function student_registration_form_optimized($atts)
             'plan' => '',
             'birth_date_position' => 'UP',
             'title' => '',
-            'use_expected_graduation_date' => false,
+            'use_expected_graduation_date' => $is_school_mode ? true : false,
             'separate_program_fee' => false,
             'dynamic_link' => false,
             'use_ethnicity' => true,
