@@ -79,6 +79,8 @@
                                         <textarea name="description" ><?= $fee['description'] ?? '' ?></textarea>
                                     </div>
 
+                                    <?php do_action( 'edusystem_after_description_fee_fields', $fee_id ); ?>
+
                                     <div class="group-input" >
 
                                         <div class="space-offer" style="flex: 2;">
