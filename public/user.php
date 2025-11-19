@@ -22,13 +22,10 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
     $valid_statuses = ['on-hold', 'processing', 'completed','split-payment'];
 
     // Exit if the new status is not one of the valid statuses
-    if (!in_array($new_status, $valid_statuses)) {
-        return;
-    }
+    if ( !in_array($new_status, $valid_statuses) ) return;
 
     $registration_data = $order->meta_exists('registration_data') ?  json_decode( $order->get_meta('registration_data'), true ) : null;
-
-    $email = $order->get_billing_email();
+    if ( !$registration_data ) return; // Exit if no registration data found
 
     // Set student_id on order from cookie if it's for a fee
     if (isset($_COOKIE['fee_student_id']) && !empty($_COOKIE['fee_student_id'])) {
@@ -43,6 +40,8 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
         }
     }
     
+    $email = $order->get_billing_email();
+
     // Exit if user already exists
     if (email_exists($email)) return;
 
@@ -54,10 +53,7 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
     $user_id = wp_create_user($username, $password, $email);
 
     // Handle user creation errors
-    if (is_wp_error($user_id)) {
-        // Log the error for debugging purposes
-        return;
-    }
+    if (is_wp_error($user_id)) return; // Log the error for debugging purposes
 
     // Update basic user information
     wp_update_user([

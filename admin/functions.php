@@ -627,6 +627,8 @@ function add_cap_to_administrator()
     $role->add_cap('manager_institutes_aes');
     $role->add_cap('manager_moodle_aes');
     $role->add_cap('manager_moodle_settings_aes');
+    $role->add_cap('manager_moodle_settings_aes');
+    $role->add_cap('manager_logs');
 }
 
 add_action('admin_init', 'add_cap_to_administrator');
@@ -1586,3 +1588,69 @@ function student_names_lastnames_helper($student_id = null) {
         return '';
     }
 }
+
+// Muestra la tabla de split en las ordenes
+add_action('after_items_list_payments_edusystem', function ( $order_id ) {
+    
+    $order = wc_get_order( $order_id ); 
+    if( !$order ) return;
+
+    $split_payment_method = $order->get_meta('split_payment_method', true);
+    
+    if( $split_payment_method ) {
+        $payment_data = json_decode( $split_payment_method, true );
+
+        if ( !empty($payment_data['payments']) ) {
+            ?>
+                <div id="table_split_payment_order" >
+                    <h2 class="title" ><?= __('Payments', 'split-payment-method'); ?></h2>
+
+                    <table class="spm-payment-table">
+                        <thead>
+                            <tr>
+                                <th><?= __('ID', 'split-payment-method'); ?></th>
+                                <th><?= __('Date', 'split-payment-method'); ?></th>
+                                <th><?= __('Amount', 'split-payment-method'); ?></th>
+                                <th><?= __('Status', 'split-payment-method'); ?></th>
+                                <th><?= __('Action', 'split-payment-method'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $i = 0; foreach ( $payment_data['payments'] as $payment ) :
+                                $i++;
+                                $payment_order = wc_get_order( $payment['id'] );
+                                if ( !$payment_order ) continue;
+
+                                $url = add_query_arg(
+                                    array(
+                                        'page'        => 'add_admin_form_payments_content',
+                                        'section_tab' => 'order_detail',
+                                        'order_id'    => $payment_order->get_id(),
+                                    ),
+                                    admin_url('admin.php')
+                                );
+
+                            ?>
+                                <tr>
+                                    <td data-label="<?= __('ID', 'split-payment-method'); ?>"><?= $order->get_id() .' - '.$i ?></td>
+                                    <td data-label="<?= __('Date', 'split-payment-method'); ?>"><?= $payment_order->get_date_created() ?></td>
+                                    <td data-label="<?= __('Amount', 'split-payment-method'); ?>"><?= wc_price( $payment['amount'] ); ?></td>
+                                    <td data-label="<?= __('Status', 'split-payment-method'); ?>"><?= esc_html( wc_get_order_status_name( $payment_order->get_status() ) ) ?></td>
+                                    <td data-label="<?= __('Action', 'split-payment-method'); ?>">
+                                        <a class="button" href="<?= esc_url( $url ) ?>">
+                                            <?= __('View', 'woocommerce'); ?>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+
+                    </br>
+                </div>
+            <?php
+        }
+    }
+
+}, 10, 1);
+

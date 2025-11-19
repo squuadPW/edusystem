@@ -72,6 +72,9 @@
                                             required>
                                     </div>
 
+                                    <!-- manda el id del programa -->
+                                    <?php do_action( 'edusystem_after_payment_plan_fields', $program->id   ); ?>
+
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="description"><b><?= __('Description', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>

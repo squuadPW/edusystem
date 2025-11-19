@@ -118,9 +118,9 @@ function form_plugin_scripts()
     }
 
     if (str_contains(home_url($wp->request), 'orders')) {
-        wp_enqueue_script('next-payment', plugins_url('edusystem') . '/public/assets/js/next-payment.js', array('jquery'), $version, true);
+        wp_enqueue_script('next-payment', plugins_url('edusystem') . '/public/assets/js/next-payment.js', array('jquery'), $version, false);
         wp_localize_script('next-payment', 'ajax_object', [
-            'url' => admin_url('admin-ajax.php')
+            'ajax_url' => admin_url('admin-ajax.php')
         ]);
     }
 
@@ -156,7 +156,7 @@ function form_plugin_scripts()
     );
     wp_enqueue_script('previous-form');
 
-    wp_register_script('functions-theme', plugins_url('edusystem') . '/public/assets/js/functions-theme.js', array('jquery'), $version, true);
+    wp_register_script('functions-theme', plugins_url('edusystem') . '/public/assets/js/functions-theme.js', array('jquery'), $version, false);
     wp_localize_script(
         'functions-theme',
         'ajax_object',
@@ -1047,10 +1047,10 @@ function add_loginout_link($items, $args)
     return $items;
 }
 
-function status_changed_payment($order_id, $status_transition_from, $current_status, $that)
+function status_changed_payment( $order_id, $old_status, $current_status, $order )
 {
-
-    $order = wc_get_order($order_id);
+    $order_id = $order->get_id();
+    
     $customer_id = $order->get_customer_id();
     $status_register = get_user_meta($customer_id, 'status_register', true);
 
@@ -1068,12 +1068,12 @@ function status_changed_payment($order_id, $status_transition_from, $current_sta
     /* $logger = wc_get_logger();
     $logger->debug('status_changed_payment',['order_id'=>$order_id,'status_order' => $current_status]); */
 
-    if (!in_array($current_status, ['failed', 'pending'])) {
+    if (!in_array($order->get_status(), ['failed', 'pending'])) {
         status_order_not_completed($order, $order_id, $customer_id, $status_register);
     }
 
     // Determinar qué función ejecutar
-    if ($current_status === 'completed') {
+    if ($order->get_status() === 'completed') {
         status_order_completed($order, $order_id, $customer_id);
         clear_all_cookies(); // se completa la orden, borramos todo
     }
@@ -1090,17 +1090,15 @@ add_action('woocommerce_order_status_changed', 'status_changed_payment', 11, 4);
  * @param int      $customer_id ID del cliente.
  */
 function status_order_completed($order, $order_id, $customer_id)
-{
+{   
     // 1. Actualiza los metadatos del usuario de forma directa.
     update_user_meta($customer_id, 'status_register', 1);
     update_user_meta($customer_id, 'cuote_pending', 0);
 
     $student_id = $order->get_meta('student_id');
-
+    
     // 2. Salir temprano si no hay un ID de estudiante asociado.
-    if (empty($student_id)) {
-        return;
-    }
+    if (empty($student_id)) return;
 
     // Asegura que el usuario de WordPress para el estudiante exista.
     create_user_student($student_id);
@@ -1268,6 +1266,7 @@ function update_or_create_payment_record(WC_Order_Item_Product $item, int $stude
             'institute_id' => $institute_id,
             'institute_fee' => $current_item_institute_fee,
             'alliances' => $current_item_alliances_json,
+            'currency' => $order->get_currency(),
             'amount' => $total,
             'original_amount_product' => $original_price,
             'total_amount' => $total,
@@ -1365,21 +1364,28 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
     foreach ($order->get_items() as $item_id => $item) {
 
-
         process_payments($student_id, $order, $item);
 
         $program_data = $order->get_meta('program_data', true) ?? [];
         $program_data = json_decode($program_data, true);
         if ($program_data) {
-            process_payments($student_id, null, null, (int) $program_data['product_id'], (int) $program_data['variation_id'], (int) $program_data['rule_id'], $program_data['coupons']);
+            process_payments(
+                $student_id, // id del estudiante
+                null, // no viene de una orden de pago del programa
+                null, // no viene de un ítem
+                (int) $program_data['product_id'], // id del producto
+                (int) $program_data['variation_id'], // id de la variación
+                (int) $program_data['rule_id'], // regla de pago
+                $program_data['coupons'], // cupones aplicados
+                $order->get_currency() // moneda de la orden
+            ); 
         }
     }
 }
 
-function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [])
+function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [], $currency = null )
 {
-    if (!$student_id)
-        return;
+    if (!$student_id) return;
 
     // obtiene los id de los productos en caso tal vengan por las ordenes
     $order_id = null;
@@ -1389,7 +1395,12 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
 
         $product_id = $item->get_product_id();
         $variation_id = $item->get_variation_id() ?? 0;
+
+        $currency = $order->get_currency();
     }
+
+    // obtienen la moneda si no viene
+    if( $currency === null ) $currency = get_woocommerce_currency();
 
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
@@ -1400,6 +1411,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
         $student_id,
         $product_id
     ));
+
     if ($existing_record_count > 0)
         return;
 
@@ -1610,6 +1622,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
             'institute_id' => $i == 0 ? $institute_id : null,
             'institute_fee' => $i == 0 ? $current_item_institute_fee : 0,
             'alliances' => $i == 0 ? $current_item_alliances_json : null,
+            'currency' => $currency,
             'amount' => $amount,
             'original_amount_product' => $original_price,
             'total_amount' => $total_amount_to_pay,
@@ -3413,32 +3426,10 @@ function custom_content_after_orders()
     include(plugin_dir_path(__FILE__) . 'templates/next-payments.php');
 }
 
-add_action('woocommerce_cart_calculate_fees', 'yaycommerce_add_checkout_fee_for_gateway');
-function yaycommerce_add_checkout_fee_for_gateway()
-{
-    if (!isset($_COOKIE['from_webinar']) || empty($_COOKIE['from_webinar'])) {
-        $chosen_gateway = WC()->session->get('chosen_payment_method');
-        if ($chosen_gateway == 'aes_payment') {
-            WC()->cart->add_fee('Bank Transfer Fee', 35);
-        }
+/*  aqui estaba el codigo de los fees de los metodos de pago, tenia la validacion
+    de que si el usuario venia del webinar no se le aplicaran  
+*/
 
-        if ($chosen_gateway == 'woo_squuad_stripe') {
-            $stripe_fee_percentage = 4.5; // 4.5% fee
-            $cart_subtotal = WC()->cart->get_subtotal();
-            $discount = WC()->cart->get_cart_discount_total();
-            $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
-            WC()->cart->add_fee('Credit Card Fee', $stripe_fee_amount);
-        }
-
-        if ($chosen_gateway == 'ppcp-gateway') {
-            $stripe_fee_percentage = 4.5; // 4.5% fee
-            $cart_subtotal = WC()->cart->get_subtotal();
-            $discount = WC()->cart->get_cart_discount_total();
-            $stripe_fee_amount = (($cart_subtotal - $discount) / 100) * $stripe_fee_percentage;
-            WC()->cart->add_fee('PayPal Fee', $stripe_fee_amount);
-        }
-    }
-}
 add_action('woocommerce_after_checkout_form', 'yaycommerce_refresh_checkout_on_payment_methods_change');
 function yaycommerce_refresh_checkout_on_payment_methods_change()
 {
@@ -3906,7 +3897,7 @@ function send_notification_user($user_id, $description, $importance, $type)
 }
 
 /**
- * Verifica si un usuario tiene órdenes con estado "pending-payment".
+ * Verifica si un usuario tiene órdenes con estado "pending", "on-hold" y "split-payment".
  *
  * @param int $user_id (opcional) ID del usuario. Si no se proporciona, usa el usuario actual.
  * @return bool
@@ -3925,13 +3916,27 @@ function customer_pending_orders($user_id = null)
     // Argumentos para buscar órdenes del cliente.
     $args = array(
         'customer_id' => $user_id,
-        'status' => array('pending', 'on-hold'),
+        'status' => array('pending', 'on-hold', 'split-payment'), // Estados que indican "pending-payment"
         'limit' => 1, // Solo necesitamos saber si existe al menos 1 orden.
         'return' => 'ids', // Es más eficiente obtener solo los IDs.
     );
 
     // Obtener las órdenes que coincidan.
     $orders = wc_get_orders($args);
+
+    // filtar las ordenes que sean pending y metodo de pago flywire
+    foreach ( $orders as $key => $order_id ) {
+        $order = wc_get_order( $order_id );
+
+        // Obtener estado y método de pago
+        $status        = $order->get_status();
+        $payment_method = $order->get_payment_method();
+
+        // Excluir si es pending y flywire
+        if ( $status == 'pending' && $payment_method == 'flywire' ){
+            unset( $orders[ $key ] );
+        }
+    }
 
     // Retorna true si se encontró al menos una orden, de lo contrario false.
     return !empty($orders);
