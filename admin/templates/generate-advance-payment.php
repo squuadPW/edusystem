@@ -68,7 +68,7 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
 							<p style="margin: 0; font-size: 16px; color: #555;">
 								<strong style="color: #333;"><?= __('Country:', 'edusystem'); ?></strong>
-								<?= $student->country ?>
+								<?= WC()->countries->countries[$student->country] ?? $student->country ?>
 							</p>
 						</div>
 
