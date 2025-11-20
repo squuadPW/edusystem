@@ -219,8 +219,10 @@
 								<?php
 								$observations_array = [];
 								foreach ($student_data['payments'] as $payment) {
+									$fee_inscription_id = get_fee_product_id($payment->student_id, 'registration');
+									$fee_graduation_id = get_fee_product_id($payment->student_id, 'graduation');
 									$date = isset($payment->date_payment) && !empty($payment->date_payment) ? $payment->date_payment : $payment->date_next_payment;
-									$text = $payment->product_id == FEE_INSCRIPTION ? __('Registration fee') : ($payment->product_id == FEE_GRADUATION ? __('Graduation fee') : __('Quota', 'edusystem') . ' ' . esc_html($payment->cuote));
+									$text = $payment->product_id == $fee_inscription_id ? __('Registration fee') : ($payment->product_id == $fee_graduation_id ? __('Graduation fee') : __('Quota', 'edusystem') . ' ' . esc_html($payment->cuote));
 									$observations_array[] = $text . ": " . wc_price($payment->amount) . " " . __('on date', 'edusystem') . " " . $date;
 								}
 								echo implode(', ', $observations_array);

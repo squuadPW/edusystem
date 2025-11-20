@@ -455,8 +455,9 @@ function get_orders($start, $end)
 
             $cuote->product = isset($products_for_cuotes[$cuote->variation_id ?: $cuote->product_id]) ? $products_for_cuotes[$cuote->variation_id ?: $cuote->product_id] : '';
 
-            // Fix para el descuento
-            if (defined('FEE_INSCRIPTION') && $cuote->product_id != FEE_INSCRIPTION) {
+            $fee_inscription_id = get_fee_product_id($cuote->student_id, 'registration');
+            $fee_graduation_id = get_fee_product_id($cuote->student_id, 'graduation');
+            if ($cuote->product_id != $fee_inscription_id) {
                 $created_at = $cuote->created_at;
                 $month = date('n', strtotime($created_at));
                 if ($month == 8) { // August is the 8th month
@@ -682,13 +683,16 @@ function get_new_student_payments_table_data($start, $end)
             }
         }
 
-        if (isset($payment->product_id) && $payment->product_id == FEE_INSCRIPTION) {
+        $fee_inscription_id = get_fee_product_id($student_id, 'registration');
+        $fee_graduation_id = get_fee_product_id($student_id, 'graduation');
+
+        if (isset($payment->product_id) && $payment->product_id == $fee_inscription_id) {
             $payments_data[$student_id]['calculated_amounts']['initial_fee_usd'] += (float) $payment->amount;
             $global_calculated_amounts['fee_inscription'] += (float) $payment->amount;
         }
 
         if (isset($payment->status_id) && $payment->status_id == 1) {
-            if ($payment->product_id != FEE_INSCRIPTION && $payment->product_id != FEE_GRADUATION) {
+            if ($payment->product_id != $fee_inscription_id && $payment->product_id != $fee_graduation_id) {
                 $payments_data[$student_id]['calculated_amounts']['tuition_amount_usd'] += (float) $payment->amount;
                 $global_calculated_amounts['tuition_amount'] += (float) $payment->amount;
                 // Incrementa el contador de pagos de matrícula
@@ -899,13 +903,16 @@ function get_student_payments_table_data($start, $end)
             }
         }
 
-        if (isset($payment->product_id) && $payment->product_id == FEE_INSCRIPTION) {
+        $fee_inscription_id = get_fee_product_id($student_id, 'registration');
+        $fee_graduation_id = get_fee_product_id($student_id, 'graduation');
+        
+        if (isset($payment->product_id) && $payment->product_id == $fee_inscription_id) {
             $payments_data[$student_id]['calculated_amounts']['initial_fee_usd'] += (float) $payment->amount;
             $global_calculated_amounts['fee_inscription'] += (float) $payment->amount;
         }
 
         if (isset($payment->status_id) && $payment->status_id == 1) {
-            if ($payment->product_id != FEE_INSCRIPTION && $payment->product_id != FEE_GRADUATION) {
+            if ($payment->product_id != $fee_inscription_id && $payment->product_id != $fee_graduation_id) {
                 $payments_data[$student_id]['calculated_amounts']['tuition_amount_usd'] += (float) $payment->amount;
                 $global_calculated_amounts['tuition_amount'] += (float) $payment->amount;
                 // Incrementa el contador de pagos de matrícula
