@@ -1,7 +1,6 @@
 <?php
 
-function delete_data_student($user_id)
-{
+function delete_data_student($user_id) {
     global $wpdb;
 
     // Definir nombres de tablas
@@ -19,7 +18,7 @@ function delete_data_student($user_id)
         'programs_by_student' => $wpdb->prefix . 'programs_by_student'
     ];
 
-    // 1. Obtener todos los correos electrónicos de los estudiantes asociados a este partner_id
+    // 1. Obtener correos y borrar usuarios asociados (estudiantes)
     $student_emails = $wpdb->get_col(
         $wpdb->prepare(
             "SELECT email FROM {$tables['students']} WHERE partner_id = %d",
@@ -32,12 +31,17 @@ function delete_data_student($user_id)
             $wp_user = get_user_by('email', $email);
 
             if ($wp_user && $wp_user->ID !== $user_id) {
+                // Borrar primero las órdenes del estudiante ANTES de borrar su cuenta de WP
+                delete_woocommerce_orders($wp_user->ID); 
                 wp_delete_user($wp_user->ID, false);
             }
         }
     }
 
-    // Obtener IDs de estudiantes en un solo query
+    // 2. Borrar las órdenes del usuario principal (partner) ANTES de limpiar sus otros datos
+    delete_woocommerce_orders($user_id);
+    
+    // 3. Obtener IDs de estudiantes para limpieza de tablas personalizadas
     $student_ids = $wpdb->get_col(
         $wpdb->prepare(
             "SELECT id FROM {$tables['students']} WHERE partner_id = %d",
@@ -52,7 +56,7 @@ function delete_data_student($user_id)
     // Convertir IDs a enteros y crear lista segura para SQL
     $ids = implode(',', array_map('intval', $student_ids));
 
-    // Eliminar datos relacionados en operaciones bulk
+    // 4. Eliminar datos relacionados en operaciones bulk
     $wpdb->query("DELETE FROM {$tables['documents']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['payments']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['payments_log']} WHERE student_id IN ($ids)");
@@ -64,22 +68,19 @@ function delete_data_student($user_id)
     $wpdb->query("DELETE FROM {$tables['scholarship_assigned']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['programs_by_student']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['students']} WHERE id IN ($ids)");
-    delete_woocommerce_orders($user_id);
 }
 
-// Nueva función para borrar órdenes de WooCommerce
+// Función para borrar órdenes de WooCommerce (sin cambios, ya que está optimizada)
 function delete_woocommerce_orders($user_id) {
-    // Obtener todas las órdenes asociadas con el ID de usuario
-    $customer_orders = wc_get_orders( [
+    $customer_orders = wc_get_orders([
         'customer' => $user_id,
-        'limit' => -1,
-        'status' => 'any', // Obtener órdenes con cualquier estado
-    ] );
+        'limit'    => -1,
+        'status'   => 'any',
+    ]);
 
-    if ( ! empty( $customer_orders ) ) {
-        foreach ( $customer_orders as $order ) {
-            // Borra la orden de forma permanente
-            wp_delete_post( $order->get_id(), true );
+    if (!empty($customer_orders)) {
+        foreach ($customer_orders as $order) {
+            $order->delete(true);
         }
     }
 }
