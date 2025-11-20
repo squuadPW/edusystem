@@ -1207,15 +1207,12 @@ function get_products_by_order($start, $end)
 
     $orders = wc_get_orders($args);
 
-    // 1. Fetch all fee IDs (registration and graduation) outside the loop
     $fee_registration_ids = get_fee_product_id_all('registration');
     $fee_graduation_ids = get_fee_product_id_all('graduation');
 
-    // 2. Validate arrays to ensure array_merge doesn't fail
     if (!is_array($fee_registration_ids)) $fee_registration_ids = [];
     if (!is_array($fee_graduation_ids)) $fee_graduation_ids = [];
 
-    // 3. Merge into a single exclusion list for faster lookup
     $excluded_fee_ids = array_merge($fee_registration_ids, $fee_graduation_ids);
 
     $product_quantities = array();
@@ -1234,15 +1231,23 @@ function get_products_by_order($start, $end)
 
     foreach ($orders as $order) {
         $order_items = $order->get_items();
-        $discount = $order->get_total_discount();
 
         foreach ($order_items as $item) {
             $use_product_id = $item->get_product_id();
             $use_variation_id = $item->get_variation_id();
             $quantity = $item->get_quantity();
-            $subtotal = $item->get_subtotal();
-            $tax = $item->get_total_tax();
+            
+            // In WooCommerce: Line Subtotal (pre-discount) - Line Total (post-discount) = Line Discount
+            // Note: These values exclude tax.
+            $subtotal = $item->get_subtotal(); 
             $total = $item->get_total();
+            $tax = $item->get_total_tax();
+            
+            // Calculate the REAL discount for this specific item
+            $item_discount_amount = $subtotal - $total; 
+            
+            // Avoid negative precision errors (floating point math)
+            if ($item_discount_amount < 0) $item_discount_amount = 0;
 
             $product_id = $use_product_id;
 
@@ -1260,9 +1265,11 @@ function get_products_by_order($start, $end)
                 $product_totals_variation[$product_id][$use_variation_id] = 0;
             }
 
-            // Check if product is NOT in the excluded list (neither registration nor graduation)
             $should_apply_discount = !in_array($product_id, $excluded_fee_ids);
-            $discount_value = ($should_apply_discount) ? $discount : 0;
+            
+            // If it's an excluded fee, we force discount to 0 (even if WC applied one)
+            // Otherwise use the calculated item discount
+            $discount_value = ($should_apply_discount) ? $item_discount_amount : 0;
 
             $product_quantities[$product_id] += $quantity;
             $product_quantities_variation[$product_id][$use_variation_id] += $quantity;
@@ -1276,7 +1283,12 @@ function get_products_by_order($start, $end)
             $product_discounts[$product_id] += $discount_value;
             $product_discounts_variation[$product_id][$use_variation_id] += $discount_value;
 
-            $product_totals[$product_id] += $total;
+            // We sum the total from the item, but if we forced discount to 0 for fees,
+            // we might want to adjust the total here? 
+            // Usually $total is what was paid. If you want the report to reflect "what should have been paid without discount" for fees, 
+            // you would add $discount_value back. 
+            // But for accurate financial reporting of what happened:
+            $product_totals[$product_id] += $total; 
             $product_totals_variation[$product_id][$use_variation_id] += $total;
         }
     }
@@ -1549,7 +1561,6 @@ add_action('wp_ajax_list_orders_sales', 'get_list_orders_sales');
 
 function list_sales_product()
 {
-
     if (isset($_POST['filter']) && !empty($_POST['filter'])) {
 
         $filter = $_POST['filter'];
@@ -1568,8 +1579,11 @@ function list_sales_product()
 
             foreach ($orders['product_quantities'] as $product_id => $quantity) {
                 $product = wc_get_product($product_id);
-                $product_name = $product->get_name();
-                $calculated_totals_initial = ($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]));
+                $product_name = $product ? $product->get_name() : 'Unknown Product (' . $product_id . ')';
+                
+                // Formula: Subtotal - Discount + Tax = Total
+                // Your view logic was: Subtotal - (Discount - Tax) which is mathematically equivalent to Subtotal - Discount + Tax
+                $calculated_totals_initial = ($orders['product_subtotals'][$product_id] - $orders['product_discounts'][$product_id] + $orders['product_taxs'][$product_id]);
                 $orders_total += $calculated_totals_initial;
 
                 $html .= "<tr style='background-color: #f6f7f7; -webkit-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); -moz-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%);'>";
@@ -1583,27 +1597,30 @@ function list_sales_product()
                 $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'><strong>" . wc_price($calculated_totals_initial) . "</strong></td>";
                 $html .= "</tr>";
 
-                uasort($orders['product_quantities_variation'][$product_id], function ($a, $b) {
-                    return $b <=> $a;
-                });
-                foreach ($orders['product_quantities_variation'][$product_id] as $key => $variation) {
-                    if ($key > 0) {
-                        $product = wc_get_product($key);
-                        $product_name = $product->get_name();
-                        $ex_product_name = explode(' - ', $product_name);
-                        $calculated_total = ($orders['product_subtotals_variation'][$product_id][$key] - ($orders['product_discounts_variation'][$product_id][$key] - $orders['product_taxs_variation'][$product_id][$key]));
-                        $orders_total += $calculated_total;
-
-                        $html .= "<tr style='background-color: #ffffff;'>";
-                        $html .= "<td class='column column-primary' data-colname='" . __('Program', 'edusystem') . "'>" . $ex_product_name[1];
-                        $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
-                        $html .= "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Quantity', 'edusystem') . "'>" . $orders['product_quantities_variation'][$product_id][$key] . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Subtotal', 'edusystem') . "'>" . wc_price($orders['product_subtotals_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Discount', 'edusystem') . "'>" . wc_price($orders['product_discounts_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Tax', 'edusystem') . "'>" . wc_price($orders['product_taxs_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'>" . wc_price($calculated_total) . "</td>";
-                        $html .= "</tr>";
+                if (isset($orders['product_quantities_variation'][$product_id])) {
+                    uasort($orders['product_quantities_variation'][$product_id], function ($a, $b) {
+                        return $b <=> $a;
+                    });
+                    foreach ($orders['product_quantities_variation'][$product_id] as $key => $variation) {
+                        if ($key > 0) {
+                            $product = wc_get_product($key);
+                            $product_name = $product ? $product->get_name() : '';
+                            $ex_product_name = explode(' - ', $product_name);
+                            $display_name = isset($ex_product_name[1]) ? $ex_product_name[1] : $product_name;
+                            
+                            $calculated_total = ($orders['product_subtotals_variation'][$product_id][$key] - $orders['product_discounts_variation'][$product_id][$key] + $orders['product_taxs_variation'][$product_id][$key]);
+                            
+                            $html .= "<tr style='background-color: #ffffff;'>";
+                            $html .= "<td class='column column-primary' data-colname='" . __('Program', 'edusystem') . "'>" . $display_name;
+                            $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
+                            $html .= "</td>";
+                            $html .= "<td class='column' data-colname='" . __('Quantity', 'edusystem') . "'>" . $orders['product_quantities_variation'][$product_id][$key] . "</td>";
+                            $html .= "<td class='column' data-colname='" . __('Subtotal', 'edusystem') . "'>" . wc_price($orders['product_subtotals_variation'][$product_id][$key]) . "</td>";
+                            $html .= "<td class='column' data-colname='" . __('Discount', 'edusystem') . "'>" . wc_price($orders['product_discounts_variation'][$product_id][$key]) . "</td>";
+                            $html .= "<td class='column' data-colname='" . __('Tax', 'edusystem') . "'>" . wc_price($orders['product_taxs_variation'][$product_id][$key]) . "</td>";
+                            $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'>" . wc_price($calculated_total) . "</td>";
+                            $html .= "</tr>";
+                        }
                     }
                 }
             }
