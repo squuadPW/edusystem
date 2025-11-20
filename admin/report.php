@@ -3416,7 +3416,7 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
             // Get status indicators (Calls to external functions are necessary here)
             $fee_payment_ready = get_fee_paid($student['id'], 'registration');
             $product_ready = get_payments($student['id']);
-            $fee_graduation_ready = get_fee_paid($_GET['student_id'], 'graduation');
+            $fee_graduation_ready = get_fee_paid($student['id'], 'graduation');
             $documents_ready = get_documents_ready($student['id']);
 
             $students_array[] = [
