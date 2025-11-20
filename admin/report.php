@@ -3414,10 +3414,10 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
             $student_full_name = '<span class="text-uppercase">' . student_names_lastnames_helper($student['id']) . '</span>';
 
             // Get status indicators (Calls to external functions are necessary here)
-            $fee_payment_ready = function_exists('get_payments') ? get_payments($student['id'], FEE_INSCRIPTION) : false;
-            $product_ready = function_exists('get_payments') ? get_payments($student['id']) : false;
-            $fee_graduation_ready = function_exists('get_payments') ? get_payments($student['id'], product_id: FEE_GRADUATION) : false;
-            $documents_ready = function_exists('get_documents_ready') ? get_documents_ready($student['id']) : false;
+            $fee_payment_ready = get_fee_paid($student['id'], 'registration');
+            $product_ready = get_payments($student['id']);
+            $fee_graduation_ready = get_fee_paid($_GET['student_id'], 'graduation');
+            $documents_ready = get_documents_ready($student['id']);
 
             $students_array[] = [
                 'student' => $student_full_name,
