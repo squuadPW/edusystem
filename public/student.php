@@ -1002,10 +1002,9 @@ function insert_register_documents($student_id, $grade_id)
 {
     global $wpdb;
 
-    // 1. OBTENCIÓN DE DATOS INICIALES
     $student = get_student_detail($student_id);
     if (!$student) {
-        return; // Salir si no se encuentra el estudiante
+        return;
     }
 
     $birthDate = new DateTime($student->birth_date);
@@ -1015,7 +1014,7 @@ function insert_register_documents($student_id, $grade_id)
     $table_documents = $wpdb->prefix . 'documents';
     $table_documents_certificates = $wpdb->prefix . 'documents_certificates';
 
-    // 2. PRIMERA CONSULTA: Obtiene todos los documentos para el grado.
+    // 1. OBTENCIÓN DE DOCUMENTOS PARA EL GRADO
     $documents_for_grade = $wpdb->get_results(
         $wpdb->prepare("SELECT * FROM {$table_documents} WHERE grade_id = %d", $grade_id)
     );
@@ -1024,39 +1023,37 @@ function insert_register_documents($student_id, $grade_id)
         return;
     }
 
-    // 3. SEGUNDA CONSULTA: Obtiene los documentos que YA existen para el estudiante.
-    // Esto reemplaza la consulta dentro del bucle.
-    $document_names = wp_list_pluck($documents_for_grade, 'name'); // Extrae solo los nombres
-    $placeholders = implode(', ', array_fill(0, count($document_names), '%s'));
+    // 2. VALIDACIÓN DE DUPLICADOS PARA DOCUMENTOS DEL GRADO
+    $document_ids_for_grade = wp_list_pluck($documents_for_grade, 'ID');
+    $placeholders_grade = implode(', ', array_fill(0, count($document_ids_for_grade), '%s'));
 
-    $query_params = array_merge([$student_id], $document_names);
-    $existing_docs = $wpdb->get_col(
+    $query_params_grade = array_merge([$student_id], $document_ids_for_grade);
+    $existing_docs_ids = $wpdb->get_col(
         $wpdb->prepare(
-            "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND document_id IN ({$placeholders})",
-            ...$query_params
+            "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND document_id IN ({$placeholders_grade})",
+            ...$query_params_grade
         )
     );
 
-    // 4. LÓGICA EN PHP: Itera e inserta solo los documentos que faltan.
+    // 3. INSERCIÓN DE DOCUMENTOS FALTANTES DEL GRADO
     foreach ($documents_for_grade as $document) {
-        // Si el documento ya existe en la lista que obtuvimos, lo saltamos.
-        if (in_array($document->name, $existing_docs, true)) {
+        $document_id_to_insert = $document->ID;
+
+        if (in_array($document_id_to_insert, $existing_docs_ids, true)) {
             continue;
         }
 
         $is_required = $document->is_required;
         $is_visible = $document->is_visible;
 
-        // Aplicamos la condición especial SOLO si es el documento de los padres y el estudiante es mayor de edad.
         if ($is_legal_age && $document->name === 'ID OR CI OF THE PARENTS') {
-            $is_required = 0; // No es requerido
-            $is_visible = 0;  // No es visible
+            $is_required = 0;
+            $is_visible = 0;
         }
 
-        // Inserción segura en la base de datos
         $wpdb->insert($table_student_documents, [
             'student_id' => $student_id,
-            'document_id' => $document->name,
+            'document_id' => $document_id_to_insert,
             'is_required' => $is_required,
             'is_visible' => $is_visible,
             'status' => 0,
@@ -1064,13 +1061,38 @@ function insert_register_documents($student_id, $grade_id)
         ]);
     }
 
+    // 4. OBTENCIÓN DE DOCUMENTOS AUTOMÁTICOS
     $automatic_docs = $wpdb->get_results(
         $wpdb->prepare("SELECT * FROM {$table_documents_certificates} WHERE `type` = %s and `status` = %d", 'automatic', 1)
     );
-    foreach ($automatic_docs as $key => $doc) {
+    
+    // 5. VALIDACIÓN DE DUPLICADOS PARA DOCUMENTOS AUTOMÁTICOS
+    $automatic_doc_identifiers = wp_list_pluck($automatic_docs, 'document_identificator');
+    if (!empty($automatic_doc_identifiers)) {
+        $placeholders_auto = implode(', ', array_fill(0, count($automatic_doc_identifiers), '%s'));
+        $query_params_auto = array_merge([$student_id], $automatic_doc_identifiers);
+        
+        $existing_auto_doc_ids = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND document_id IN ({$placeholders_auto})",
+                ...$query_params_auto
+            )
+        );
+    } else {
+        $existing_auto_doc_ids = [];
+    }
+
+    // 6. INSERCIÓN DE DOCUMENTOS AUTOMÁTICOS FALTANTES
+    foreach ($automatic_docs as $doc) {
+        $document_id_to_insert = $doc->document_identificator;
+
+        if (in_array($document_id_to_insert, $existing_auto_doc_ids, true)) {
+            continue;
+        }
+        
         $wpdb->insert($table_student_documents, [
             'student_id' => $student_id,
-            'document_id' => $doc->document_identificator,
+            'document_id' => $document_id_to_insert,
             'is_required' => $doc->is_required,
             'is_visible' => $doc->is_visible,
             'status' => 0,
