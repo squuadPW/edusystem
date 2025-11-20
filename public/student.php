@@ -1023,12 +1023,19 @@ function insert_register_documents($student_id, $grade_id)
         return;
     }
 
-    // 2. VALIDACIÓN DE DUPLICADOS PARA DOCUMENTOS DEL GRADO
-    $document_ids_for_grade = wp_list_pluck($documents_for_grade, 'ID');
-    $placeholders_grade = implode(', ', array_fill(0, count($document_ids_for_grade), '%s'));
+    // 2. VALIDACIÓN DE DUPLICADOS PARA DOCUMENTOS DEL GRADO (Usando 'name' como identificador)
+    $document_names_for_grade = wp_list_pluck($documents_for_grade, 'name');
+    
+    // Si no hay nombres, salimos (aunque ya validamos $documents_for_grade)
+    if (empty($document_names_for_grade)) {
+        return;
+    }
+    
+    $placeholders_grade = implode(', ', array_fill(0, count($document_names_for_grade), '%s'));
 
-    $query_params_grade = array_merge([$student_id], $document_ids_for_grade);
-    $existing_docs_ids = $wpdb->get_col(
+    // Obtenemos los 'document_id' (que son los nombres) ya existentes
+    $query_params_grade = array_merge([$student_id], $document_names_for_grade);
+    $existing_docs_names = $wpdb->get_col(
         $wpdb->prepare(
             "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND document_id IN ({$placeholders_grade})",
             ...$query_params_grade
@@ -1037,10 +1044,17 @@ function insert_register_documents($student_id, $grade_id)
 
     // 3. INSERCIÓN DE DOCUMENTOS FALTANTES DEL GRADO
     foreach ($documents_for_grade as $document) {
-        $document_id_to_insert = $document->ID;
+        // Usar la columna 'name' como el document_id
+        $document_id_to_insert = $document->name;
 
-        if (in_array($document_id_to_insert, $existing_docs_ids, true)) {
+        // Si el documento ya existe (validación de existencia con el nombre), lo saltamos.
+        if (in_array($document_id_to_insert, $existing_docs_names, true)) {
             continue;
+        }
+
+        // Si el nombre del documento es NULL por alguna razón, lo saltamos para evitar el error.
+        if (is_null($document_id_to_insert)) {
+            continue; 
         }
 
         $is_required = $document->is_required;
@@ -1053,7 +1067,7 @@ function insert_register_documents($student_id, $grade_id)
 
         $wpdb->insert($table_student_documents, [
             'student_id' => $student_id,
-            'document_id' => $document_id_to_insert,
+            'document_id' => $document_id_to_insert, // CORREGIDO: Usamos $document->name
             'is_required' => $is_required,
             'is_visible' => $is_visible,
             'status' => 0,
