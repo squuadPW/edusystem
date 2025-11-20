@@ -1604,6 +1604,21 @@ function get_fee_product_id($student_id, $type) {
     return false;
 }
 
+function get_fee_product_id_all($type) {
+    global $wpdb;
+    $table_admission_fees = $wpdb->prefix . 'admission_fees';
+
+    $student_programs = $wpdb->get_col(
+        $wpdb->prepare(
+            "SELECT product_id FROM {$table_admission_fees} WHERE is_active = %d AND type_fee = %s",
+            1,
+            $type
+        )
+    );
+
+    return $student_programs;
+}
+
 function get_fee_product_id_program($student_programs, $type) {
     foreach ($student_programs as $program) {
         $fees = get_fees_associated_plan($program, $type);

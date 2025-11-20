@@ -538,6 +538,26 @@ function get_new_student_payments_table_data($start, $end)
     $table_alliances = $wpdb->prefix . 'alliances';
 
     // 1. Consulta los pagos y los une con la información del estudiante, programa, etc.
+    // Get arrays of IDs
+    $fee_registration_ids = get_fee_product_id_all('registration');
+    $fee_graduation_ids   = get_fee_product_id_all('graduation');
+
+    // Merge and sanitize IDs to ensure they are integers
+    $all_excluded_ids = array_merge($fee_registration_ids, $fee_graduation_ids);
+    $all_excluded_ids = array_map('intval', $all_excluded_ids);
+
+    // Specific Logic: Handle empty array scenario to prevent SQL syntax error in 'NOT IN ()'
+    if (empty($all_excluded_ids)) {
+        // If no IDs to exclude, we pass a dummy impossible ID (like -1) to keep syntax valid
+        $all_excluded_ids = [-1];
+    }
+
+    // Dynamically create placeholders string (e.g., "%d, %d, %d")
+    $placeholders = implode(', ', array_fill(0, count($all_excluded_ids), '%d'));
+
+    // Prepare the arguments: Start Date, End Date, followed by the list of IDs
+    $query_args = array_merge([$start, $end], $all_excluded_ids);
+
     $sql = $wpdb->prepare(
         "SELECT 
             p.*,
@@ -554,12 +574,9 @@ function get_new_student_payments_table_data($start, $end)
         LEFT JOIN {$table_grades} AS g ON s.grade_id = g.id
         WHERE p.date_payment BETWEEN %s AND %s
         AND p.cuote = 1
-        AND p.product_id NOT IN (%d, %d)
+        AND p.product_id NOT IN ($placeholders)
         ORDER BY s.last_name, s.middle_last_name, s.name, s.middle_name",
-        $start,
-        $end,
-        FEE_INSCRIPTION,
-        FEE_GRADUATION
+        $query_args
     );
 
     $payments = $wpdb->get_results($sql);
