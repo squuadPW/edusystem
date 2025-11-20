@@ -135,7 +135,7 @@ function show_report_current_students()
             $list_students = new TT_Graduated_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
-        }  else if ($_GET['section_tab'] == 'retired') {
+        } else if ($_GET['section_tab'] == 'retired') {
             $list_students = new TT_Retired_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
@@ -540,7 +540,7 @@ function get_new_student_payments_table_data($start, $end)
     // 1. Consulta los pagos y los une con la información del estudiante, programa, etc.
     // Get arrays of IDs
     $fee_registration_ids = get_fee_product_id_all('registration');
-    $fee_graduation_ids   = get_fee_product_id_all('graduation');
+    $fee_graduation_ids = get_fee_product_id_all('graduation');
 
     // Merge and sanitize IDs to ensure they are integers
     $all_excluded_ids = array_merge($fee_registration_ids, $fee_graduation_ids);
@@ -922,7 +922,7 @@ function get_student_payments_table_data($start, $end)
 
         $fee_inscription_id = get_fee_product_id($student_id, 'registration');
         $fee_graduation_id = get_fee_product_id($student_id, 'graduation');
-        
+
         if (isset($payment->product_id) && $payment->product_id == $fee_inscription_id) {
             $payments_data[$student_id]['calculated_amounts']['initial_fee_usd'] += (float) $payment->amount;
             $global_calculated_amounts['fee_inscription'] += (float) $payment->amount;
@@ -1198,20 +1198,41 @@ function get_products_by_order($start, $end)
 {
     $strtotime_start = strtotime($start);
     $strtotime_end = strtotime($end);
-    $args['limit'] = -1;
-    $args['status'] = 'wc-completed';
-    $args['date_created'] = $strtotime_start . '...' . $strtotime_end;
+
+    $args = [
+        'limit' => -1,
+        'status' => 'wc-completed',
+        'date_created' => $strtotime_start . '...' . $strtotime_end,
+    ];
+
     $orders = wc_get_orders($args);
+
+    // 1. Fetch all fee IDs (registration and graduation) outside the loop
+    $fee_registration_ids = get_fee_product_id_all('registration');
+    $fee_graduation_ids = get_fee_product_id_all('graduation');
+
+    // 2. Validate arrays to ensure array_merge doesn't fail
+    if (!is_array($fee_registration_ids)) $fee_registration_ids = [];
+    if (!is_array($fee_graduation_ids)) $fee_graduation_ids = [];
+
+    // 3. Merge into a single exclusion list for faster lookup
+    $excluded_fee_ids = array_merge($fee_registration_ids, $fee_graduation_ids);
 
     $product_quantities = array();
     $product_subtotals = array();
     $product_discounts = array();
     $product_totals = array();
     $product_taxs = array();
+
+    $product_quantities_variation = array();
+    $product_subtotals_variation = array();
+    $product_taxs_variation = array();
+    $product_discounts_variation = array();
+    $product_totals_variation = array();
+
     $orders_count = count($orders);
 
     foreach ($orders as $order) {
-        $order_id = $order->get_id();
         $order_items = $order->get_items();
         $discount = $order->get_total_discount();
 
@@ -1225,30 +1246,36 @@ function get_products_by_order($start, $end)
 
             $product_id = $use_product_id;
 
-            if (!isset($product_quantities[$product_id])) {
-                $product_quantities[$product_id] = 0;
+            if (!isset($product_quantities[$product_id])) $product_quantities[$product_id] = 0;
+            if (!isset($product_subtotals[$product_id])) $product_subtotals[$product_id] = 0;
+            if (!isset($product_discounts[$product_id])) $product_discounts[$product_id] = 0;
+            if (!isset($product_totals[$product_id])) $product_totals[$product_id] = 0;
+            if (!isset($product_taxs[$product_id])) $product_taxs[$product_id] = 0;
+
+            if (!isset($product_quantities_variation[$product_id][$use_variation_id])) {
+                $product_quantities_variation[$product_id][$use_variation_id] = 0;
+                $product_subtotals_variation[$product_id][$use_variation_id] = 0;
+                $product_taxs_variation[$product_id][$use_variation_id] = 0;
+                $product_discounts_variation[$product_id][$use_variation_id] = 0;
+                $product_totals_variation[$product_id][$use_variation_id] = 0;
             }
-            if (!isset($product_subtotals[$product_id])) {
-                $product_subtotals[$product_id] = 0;
-            }
-            if (!isset($product_discounts[$product_id])) {
-                $product_discounts[$product_id] = 0;
-            }
-            if (!isset($product_totals[$product_id])) {
-                $product_totals[$product_id] = 0;
-            }
-            if (!isset($product_taxs[$product_id])) {
-                $product_taxs[$product_id] = 0;
-            }
+
+            // Check if product is NOT in the excluded list (neither registration nor graduation)
+            $should_apply_discount = !in_array($product_id, $excluded_fee_ids);
+            $discount_value = ($should_apply_discount) ? $discount : 0;
 
             $product_quantities[$product_id] += $quantity;
             $product_quantities_variation[$product_id][$use_variation_id] += $quantity;
+
             $product_subtotals[$product_id] += $subtotal;
             $product_subtotals_variation[$product_id][$use_variation_id] += $subtotal;
+
             $product_taxs[$product_id] += $tax;
             $product_taxs_variation[$product_id][$use_variation_id] += $tax;
-            $product_discounts[$product_id] += ($product_id != FEE_INSCRIPTION) ? $discount : 0;
-            $product_discounts_variation[$product_id][$use_variation_id] += ($product_id != FEE_INSCRIPTION) ? $discount : 0;
+
+            $product_discounts[$product_id] += $discount_value;
+            $product_discounts_variation[$product_id][$use_variation_id] += $discount_value;
+
             $product_totals[$product_id] += $total;
             $product_totals_variation[$product_id][$use_variation_id] += $total;
         }
@@ -1268,7 +1295,6 @@ function get_products_by_order($start, $end)
         'orders_count' => $orders_count,
         'orders_total' => 0
     ];
-
 }
 
 function get_students_report($academic_period = null, $cut = null)
