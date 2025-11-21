@@ -130,12 +130,13 @@ function add_admin_form_payments_content()
                         // obtiene la cuota a pagar
                         $cuote_payment_id = $order->get_meta('cuote_payment') ?? 0;
                         if ($cuote_payment_id) {
-
+                            global $wpdb;
                             $cuote_payment = $wpdb->get_row($wpdb->prepare(
                                 "SELECT *, COALESCE( amount, 0) AS amount_pay FROM {$table_student_payments} 
                                 WHERE id = %d",
                                 $cuote_payment_id
                             ));
+
                         } else {
                             $cuote_payment = $wpdb->get_row($wpdb->prepare(
                                 "SELECT *, COALESCE( SUM(amount), 0) AS amount_pay FROM {$table_student_payments}
@@ -1421,7 +1422,6 @@ function add_admin_form_payments_content()
                     }
                 }
 
-
                 foreach ( $order->get_fees() as $fee ) {
                     $fee_id = $fee->get_id();
 
@@ -1434,9 +1434,64 @@ function add_admin_form_payments_content()
                     }
                 }
 
-
                 $order->calculate_totals();
                 $order->save();
+
+                if( isset( $_POST['excess_amount'] ) && !empty( $_POST['excess_amount'] ) ) {
+
+                    $order_main = $order->get_meta('split_payment_main_order', true);
+                    $order_main = wc_get_order( $order_main );
+
+                    $student_id = intval( $order_main->get_meta( 'student_id' ) );
+                    $excess_amount = floatval($_POST['excess_amount']) ?? 0;
+                    $balance = 0;
+                    $balance_id = 0;
+
+                    // Primero verificamos si ya existe un registro para el estudiante y obtenemos el balance actual
+                    global $wpdb;
+                    $table_student_balance = $wpdb->prefix . 'student_balance';
+                    $student_balance = $wpdb->get_row($wpdb->prepare(
+                        "SELECT id, balance FROM $table_student_balance WHERE student_id = %d",
+                        $student_id
+                    ));
+
+                    $balance = $balance + $excess_amount;
+                    if ( !$student_balance ) {
+
+                        $wpdb->insert(
+                            $wpdb->prefix . 'student_balance',
+                            [
+                                'student_id' => $student_id,
+                                'balance' => $balance ?? 0,
+                            ],
+                            ['%d', '%f']
+                        );
+
+                        $balance_id = $wpdb->insert_id;
+                    } else {
+
+                        $balance = $student_balance->balance + $excess_amount;
+
+                        $wpdb->update(
+                            $wpdb->prefix . 'student_balance',
+                            [
+                                'balance' => $balance,
+                            ],
+                            ['id' => $student_balance->id],
+                            ['%f'],
+                            ['%d']
+                        );
+                    }
+
+                    // registra la cantidad de mas que fue acreditada
+                    $order_main->update_meta_data('amount_credit', $excess_amount);
+                    $order_main->save();
+                    
+                    // actualiza el estado de la orden a completada
+                    $order->update_status( 'completed' );
+                    $order->save();
+
+                }
 
                 setcookie('message', __('Items updated successfully.', 'edusystem'), time() + 10, '/');
                 wp_redirect("admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id={$order_id}");

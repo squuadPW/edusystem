@@ -17,15 +17,19 @@ if ( $order_main ) : ?>
 			<div class="modal-header">
 				<h3 style="font-size:20px;"><?= __('Split payment editing notice', 'edusystem') ?></h3>
 
-				<?php if( $balance == 0 || ( $balance > 0 && count($payments) == 0 ) ): ?>
-					<span class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
-				<?php endif; ?>
+				<span class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+
 			</div>
 			<form method="post"
 				action="<?= admin_url('admin.php?page=add_admin_form_payments_content&action=change_status_payment') ?>">
 				<div class="modal-body" style="margin: 10px; padding: 0px">
 					
 					<p><?= __('Outstanding amount', 'edusystem') ?>: <strong><?= wc_price($amount_pending, [ 'currency' => $order->get_currency() ]) ?></strong> </p>
+					
+					<?php if($previous_amount): ?>
+						<p><?= __('Previous amount', 'edusystem') ?>: <strong><?= wc_price($previous_amount, [ 'currency' => $order->get_currency() ]) ?></strong> </p>
+					<?php endif; ?>
+
 					<p><?= __('Amount entered', 'edusystem') ?>: <strong id="amount_entered">0</strong> </p>
 					
 					<p><?= __('The amount deposited exceeds the outstanding balance.', 'edusystem') ?></p>
@@ -33,16 +37,14 @@ if ( $order_main ) : ?>
 					<p><?= sprintf(__('Do you want to record the excess %s as a balance in favor of the user?', 'edusystem'), '<strong id="excess_amount"></strong>' ) ?></p>
 
 					<input type="hidden" id="input_amount_pending" name="amount_pending" value="<?= $amount_pending ?>" data-currency="<?= $order->get_currency() ?>">
-					<input type="hidden" id="input_excess_amount" name="order_id" value="<?= $order->get_id(); ?>">
+					<input type="hidden" id="input_excess_amount" name="excess_amount" value="">
 
 				</div>
 				<div class="modal-footer" >
 					
 					<a id="modalEditItemSplitPaymentYes" class="button button-primary"><?= __('Yes', 'edusystem'); ?></a>
 
-					<?php if( $balance == 0 ): ?>
-						<button type="button" class="button button-outline-primary modal-close"><?= __('No', 'edusystem'); ?></button>
-					<?php endif; ?>
+					<button type="button" class="button button-outline-primary modal-close"><?= __('No', 'edusystem'); ?></button>
 
 				</div>
 			</form>

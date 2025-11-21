@@ -183,7 +183,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('modalEditItemSplitPaymentYes').addEventListener('click', function() {
 
-        // Envía el formulario si el usuario confirma
-        document.getElementById('recalculate_button').submit();
+         // Selecciona todos los inputs que tengan el atributo data-fee-split-payment
+        split_payment = document.querySelector('input[data-fee-split-payment]');
+        if( split_payment ){
+            
+            pending = document.getElementById('input_amount_pending')?.value ?? 0;
+            pending = parseFloat(pending);
+            
+            origin_price = parseFloat(split_payment.getAttribute('data-origin-price') ?? 0);
+            
+            excess_amount = origin_price + pending;
+
+            split_payment.value = excess_amount;
+
+            // Busca el formulario padre del botón y lo envía
+            document.getElementById('recalculate_button').closest('form').submit();
+        }
     });
+
 });
