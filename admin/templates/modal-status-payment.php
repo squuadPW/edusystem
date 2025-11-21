@@ -4,8 +4,17 @@
 	$table_student_payments = $wpdb->prefix . 'student_payments';
 
 	$amount = 0;
-	$student_id = $order->get_meta('student_id');
-	$cuote_payment = $order->get_meta('cuote_payment') ?? 0;
+
+	// en caso de que sea un split payment
+	$order_main = $order->get_meta('split_payment_main_order', true);
+	if ( $order_main ) {
+		$main_order = wc_get_order( $order_main );
+		$student_id = $main_order->get_meta('student_id');
+		$cuote_payment = $main_order->get_meta('cuote_payment') ?? 0;
+	} else {
+		$student_id = $order->get_meta('student_id');
+		$cuote_payment = $order->get_meta('cuote_payment') ?? 0;
+	}
 
 	// obtiene el balance
 	$student_balance = $wpdb->get_row( $wpdb->prepare(
@@ -48,7 +57,7 @@
 		}
 		$cuote_payment = $cuote_payments[0]->id;
 	}
-	
+
 	// Genera los marcadores de posición
 	$placeholders = implode(',', array_fill(0, count($cuotes_ids), '%d'));
 	$payments = $wpdb->get_results($wpdb->prepare(
@@ -60,6 +69,15 @@
 	$total_order_items = 0;
 	foreach ( $order->get_items() as $item ) {
 		$total_order_items += $item->get_total(); // subtotal sin impuestos
+	}
+
+	if( $order_main ) {
+		$amount = 0;
+		foreach( $order->get_fees() as $fee ) {
+			if( empty( $fee->get_meta( 'split_payment_method', true ) )  ) {}
+			$amount += floatval( $fee->get_total() );
+		}
+		$total_order_items = $amount;	
 	}
 
 ?>

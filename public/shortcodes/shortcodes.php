@@ -2,7 +2,7 @@
 
 // Muestra las cuotas disponibles para un programa y carga el carrito en caso de seleccionar una
 add_shortcode('PROGRAM-QUOTAS', function () {
-
+    
     global $woocommerce;
     $cart = $woocommerce->cart;
 
@@ -67,10 +67,8 @@ add_shortcode('PROGRAM-QUOTAS', function () {
 
     }
         
-    /* $product = wc_get_product($product_id);
-    if ( !$product ) return; */
-
-    if( !(get_post_type($product_id) === 'product') ) return;
+    $product = wc_get_product($product_id);
+    if ( !$product ) return;
 
     global $wpdb;
     $quotas_rules = $wpdb->get_results($wpdb->prepare(

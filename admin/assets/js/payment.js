@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded',function(){
 
     approved_status = document.getElementById('approved_payment');
-
     if(approved_status){
 
         approved_status.addEventListener('click',(e) => {
@@ -20,7 +19,6 @@ document.addEventListener('DOMContentLoaded',function(){
     }
 
     decline_status = document.getElementById('decline_payment');
-
     if(decline_status){
 
         decline_status.addEventListener('click',(e) => {
@@ -39,7 +37,6 @@ document.addEventListener('DOMContentLoaded',function(){
     }
 
     payment_selected = document.querySelector('select[name=payment_selected]');
-
     if(payment_selected){
 
         payment_selected.addEventListener('change',(e) => {
@@ -50,10 +47,8 @@ document.addEventListener('DOMContentLoaded',function(){
             }
         });
     }
-
     
     generate_order_split = document.getElementById('generate_order_split');
-
     if(generate_order_split){
         generate_order_split.addEventListener('click',(e) => {
             let order_id = generate_order_split.getAttribute('data-id');
@@ -73,6 +68,7 @@ document.addEventListener('DOMContentLoaded',function(){
         close.addEventListener('click',(e) => {
             document.getElementById('modalStatusPayment').style.display = "none";
             document.getElementById('modalGenerateOrder').style.display = "none";
+            document.getElementById('modalEditItemSplitPayment').style.display = "none";
         });
     });
 
@@ -138,3 +134,56 @@ function desactive_edit_price_item () {
         seccion_button.classList.remove('hidden');
     }
 }
+
+// modal para verificar si el monto ingresado excede el monto pendiente si es de split payment
+document.addEventListener('DOMContentLoaded', function() {
+
+    document.getElementById('recalculate_button').addEventListener('click', function(event) {
+
+        // Selecciona todos los inputs que tengan el atributo data-fee-split-payment
+        split_payment = document.querySelector('input[data-fee-split-payment]');
+        if( split_payment ){
+            event.preventDefault();
+            
+            pending = document.getElementById('input_amount_pending')?.value ?? 0;
+            currency = document.getElementById('input_amount_pending')?.getAttribute('data-currency') ?? '';
+
+            pending = parseFloat(pending);
+            total_entered = parseFloat(split_payment.value);
+            origin_price = parseFloat(split_payment.getAttribute('data-origin-price') ?? 0);
+
+            pending_entered = total_entered - origin_price;
+
+            if( pending_entered > pending ) {
+                
+                excess_amount = pending_entered - pending;
+
+                modal = document.getElementById('modalEditItemSplitPayment');
+                if( modal ) {
+
+                    input_excess_amount = document.getElementById('input_excess_amount');
+                    if( input_excess_amount ) input_excess_amount.value = excess_amount;
+
+                    text_excess_amount = document.getElementById('excess_amount');
+                    if( text_excess_amount ) text_excess_amount.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(excess_amount);
+
+                    amount_entered = document.getElementById('amount_entered');
+                    if( amount_entered ) amount_entered.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(total_entered);
+
+                    modal.style.display = "block";
+                }
+
+            } else {
+                // Si no excede, envía el formulario
+                event.target.closest('form').submit();
+            }
+        }
+
+    });
+
+    document.getElementById('modalEditItemSplitPaymentYes').addEventListener('click', function() {
+
+        // Envía el formulario si el usuario confirma
+        document.getElementById('recalculate_button').submit();
+    });
+});

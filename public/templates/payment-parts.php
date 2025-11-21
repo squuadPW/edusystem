@@ -29,11 +29,11 @@
 
         }
         
-        // $product = wc_get_product($product_id);
+        $product = wc_get_product($product_id);
 
     ?>
 
-    <?php if ( get_post_type($product_id) === 'product' && !isset($_COOKIE['is_scholarship']) ): ?>
+    <?php if ( $product && !isset($_COOKIE['is_scholarship']) ): ?>
 
         <?php
         $cookie_name = 'fixed_fee_inscription';

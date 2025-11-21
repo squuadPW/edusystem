@@ -1409,14 +1409,31 @@ function add_admin_form_payments_content()
 
             $order = wc_get_order($order_id);
             if ($order) {
-                foreach ($order->get_items() as $item_id => $order_item) {
+                foreach ( $order->get_items() as $order_item ) {
+                    $item_id = $order_item->get_id();
 
-                    if (isset($items[$item_id])) {
-                        $order_item->set_subtotal((float) $items[$item_id]['amount'] ?? $order_item->get_total());
-                        $order_item->set_total((float) $items[$item_id]['amount'] ?? $order_item->get_total());
+                    if ( isset( $items[ $item_id ] ) ) {
+                        $amount = (float) ( $items[ $item_id ]['amount'] ?? $order_item->get_total() );
+
+                        $order_item->set_subtotal( $amount );
+                        $order_item->set_total( $amount );
                         $order_item->save();
                     }
                 }
+
+
+                foreach ( $order->get_fees() as $fee ) {
+                    $fee_id = $fee->get_id();
+
+                    if ( isset( $items[ $fee_id ] ) ) {
+                        $amount = (float) ( $items[ $fee_id ]['amount'] ?? $fee->get_total() );
+
+                        $fee->set_amount( $amount );
+                        $fee->set_total( $amount );
+                        $fee->save();
+                    }
+                }
+
 
                 $order->calculate_totals();
                 $order->save();

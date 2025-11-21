@@ -197,7 +197,7 @@
                                                 <td data-colname="<?= __('Regular price','edusystem'); ?>">
                                                     <?= ''//wc_price($item->get_subtotal()) ?? '---'; ?>
                                                 </td>
-                                                <td data-colname="<?= __('Sale priceTotal','edusystem'); ?>">
+                                                <td data-colname="<?= __('Sale price total','edusystem'); ?>">
                                                     <div class="total-price">
                                                         <?= wc_price($item->get_total()); ?>
 
@@ -209,7 +209,11 @@
                                                     </div>
 
                                                     <div class="inputs-price hidden" >
-                                                        <input type="number" class="input-text" name="items[<?= $item->get_id(); ?>][amount]" data-origin-price="<?= esc_attr($item->get_total() ); ?>" min="0" step="0.01" />
+                                                        <?php $split_meta = $item->get_meta( 'split_payment_method' ) ? true : false ?>
+
+                                                        <input type="number" class="input-text" name="items[<?= $item->get_id(); ?>][amount]" min="0" step="0.01"
+                                                            data-origin-price="<?= esc_attr($item->get_total() ); ?>" 
+                                                            <?= $split_meta ? 'data-fee-split-payment="true"' : '' ?> />
                                                     </div>
                                                 </td>
                                             </tr>
@@ -221,7 +225,7 @@
                                             <td colspan="2">
                                                 <div  class="actions hidden">
                                                     <button type="button" class="button button-danger" onclick="desactive_edit_price_item();"><?= __('Cancelar','edusystem'); ?></button>
-                                                    <button type="submit" class="button button-primary" ><?= __('Recalculate','edusystem'); ?></button>
+                                                    <button type="submit" id="recalculate_button" class="button button-primary" ><?= __('Recalculate','edusystem'); ?></button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -547,6 +551,7 @@
     $split_payment = $order->get_meta('split_payment');
     $payments = json_decode($order->get_meta('split_method'));
     include(plugin_dir_path(__FILE__).'modal-status-payment.php');
+    include(plugin_dir_path(__FILE__).'modal-edit-item-split-payment.php');
     include(plugin_dir_path(__FILE__).'modal-generate-order.php');
 
 ?>

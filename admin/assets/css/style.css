@@ -173,11 +173,9 @@ div#application-passwords-section {
   padding: 10px;
   border-top: 1px solid #ddd;
   display: flex;
+  gap: 10px;
   justify-content: flex-end;
   border-radius: 0px 0px 15px 15px;
-}
-.modal-footer button {
-  margin-right: 5px !important;
 }
 
 @media screen and (max-width: 782px) {
