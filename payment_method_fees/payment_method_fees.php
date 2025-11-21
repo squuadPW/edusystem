@@ -144,18 +144,18 @@ function PMF_add_payment_method_fee_to_cart( $cart = null ) {
         $type = $data['type'];
         $value = floatval( $data['value'] );
 
-        // Use 'subtotal' property for raw numeric value instead of get_subtotal() string
-        $calculation_base = $cart->subtotal; 
-        $shipping_total = $cart->get_shipping_total();
-        
-        // Validate discounts and subtract from base
-        $discount_total = $cart->get_total_discount();
+        // Force float conversion to prevent 'Unsupported operand types' error
+        $calculation_base = floatval( $cart->subtotal ); 
+        $shipping_total   = floatval( $cart->get_shipping_total() );
+        $discount_total   = floatval( $cart->get_total_discount() );
+
+        // Safe subtraction
         if ( $discount_total > 0 ) {
             $calculation_base -= $discount_total;
         }
 
-        // Ensure base is not negative
-        $calculation_base = max( 0, $calculation_base );
+        // Prevent negative base
+        $calculation_base = max( 0.0, $calculation_base );
 
         $fee_amount = $type === 'percentage'
             ? ( $calculation_base + $shipping_total ) * ( $value / 100 )
