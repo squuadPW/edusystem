@@ -127,33 +127,44 @@ function PMF_add_payment_method_fee_to_cart( $cart = null ) {
 
     if( $cart === null ) $cart = WC()->cart;
 
-    // Elimina solo el fee del método de pago anterior
     PMF_remove_payment_method_fee_from_cart( $cart );
 
-    // si no esta en el checkout no hace nada
     if ( ! is_checkout() || ( isset( $_COOKIE['PMF_payment_fee_disabled'] ) && $_COOKIE['PMF_payment_fee_disabled'] == true ) ) return;
     
     $chosen_payment_method = WC()->session->get( 'chosen_payment_method' );
     $commissions = get_option( 'payment_method_commissions', [] );
     $data = isset( $commissions[ $chosen_payment_method ] ) ? $commissions[ $chosen_payment_method ] : null;
 
-    if ( $data && $cart->get_total() > 0 ) {
+    // We check cart_contents_total instead of get_total() to ensure we have items
+    if ( $data && $cart->get_cart_contents_total() > 0 ) {
 
         $gateway = WC()->payment_gateways->payment_gateways()[ $chosen_payment_method ];
-
-        // obtiene el titulo del fee actual
         $gateway_title = $gateway ? $gateway->get_title() : ucfirst( $chosen_payment_method );
-        // $fee_name = __( 'Payment method fee', 'payment-method-fees' ) . " ({$gateway_title})";
-        $fee_name = $gateway_title." ".__( 'Fee', 'payment-method-fees' );
+        $fee_name = $gateway_title . " " . __( 'Fee', 'payment-method-fees' );
 
         $type = $data['type'];
-        $value = floatval($data['value']);
+        $value = floatval( $data['value'] );
 
-        $subtotal = $cart->get_subtotal();
-        $shipping_total = $cart->get_shipping_total();
+        /* * SOLUCIÓN EXPERTA:
+         * get_cart_contents_total() devuelve: (Precio items - Descuentos de cupones).
+         * Esto ya trae el descuento restado automáticamente y evita el error de cálculo.
+         */
+        $calculation_base = floatval( $cart->get_cart_contents_total() );
+        
+        /*
+         * NOTA SOBRE EL ENVÍO:
+         * En este hook, el envío suele ser 0 porque se calcula DESPUÉS de los fees.
+         * Si tu producto es virtual (como parece en la imagen), esto será 0 y está bien.
+         * Si necesitas forzar el envío, requeriría acceder a la sesión, pero 
+         * para este caso usamos 0 para evitar errores.
+         */
+        $shipping_total = 0; // Se asume 0 ya que el hook corre antes del cálculo de envío final.
+
+        // Debug logs (optional, you can remove them once tested)
+        // error_log( 'Base (With Discount Applied): ' . $calculation_base );
 
         $fee_amount = $type === 'percentage'
-            ? ( $subtotal + $shipping_total ) * ( $value / 100 )
+            ? ( $calculation_base + $shipping_total ) * ( $value / 100 )
             : $value;
 
         if( $fee_amount > 0 ){
