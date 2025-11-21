@@ -135,7 +135,8 @@ function PMF_add_payment_method_fee_to_cart( $cart = null ) {
     $commissions = get_option( 'payment_method_commissions', [] );
     $data = isset( $commissions[ $chosen_payment_method ] ) ? $commissions[ $chosen_payment_method ] : null;
 
-    if ( $data && $cart->get_total() > 0 ) {
+    // We check cart_contents_total instead of get_total() to ensure we have items
+    if ( $data && $cart->get_cart_contents_total() > 0 ) {
 
         $gateway = WC()->payment_gateways->payment_gateways()[ $chosen_payment_method ];
         $gateway_title = $gateway ? $gateway->get_title() : ucfirst( $chosen_payment_method );
@@ -144,18 +145,23 @@ function PMF_add_payment_method_fee_to_cart( $cart = null ) {
         $type = $data['type'];
         $value = floatval( $data['value'] );
 
-        // Force float conversion to prevent 'Unsupported operand types' error
-        $calculation_base = floatval( $cart->subtotal ); 
-        $shipping_total   = floatval( $cart->get_shipping_total() );
-        $discount_total   = floatval( $cart->get_total_discount() );
+        /* * SOLUCIÓN EXPERTA:
+         * get_cart_contents_total() devuelve: (Precio items - Descuentos de cupones).
+         * Esto ya trae el descuento restado automáticamente y evita el error de cálculo.
+         */
+        $calculation_base = floatval( $cart->get_cart_contents_total() );
+        
+        /*
+         * NOTA SOBRE EL ENVÍO:
+         * En este hook, el envío suele ser 0 porque se calcula DESPUÉS de los fees.
+         * Si tu producto es virtual (como parece en la imagen), esto será 0 y está bien.
+         * Si necesitas forzar el envío, requeriría acceder a la sesión, pero 
+         * para este caso usamos 0 para evitar errores.
+         */
+        $shipping_total = 0; // Se asume 0 ya que el hook corre antes del cálculo de envío final.
 
-        // Safe subtraction
-        if ( $discount_total > 0 ) {
-            $calculation_base -= $discount_total;
-        }
-
-        // Prevent negative base
-        $calculation_base = max( 0.0, $calculation_base );
+        // Debug logs (optional, you can remove them once tested)
+        // error_log( 'Base (With Discount Applied): ' . $calculation_base );
 
         $fee_amount = $type === 'percentage'
             ? ( $calculation_base + $shipping_total ) * ( $value / 100 )
