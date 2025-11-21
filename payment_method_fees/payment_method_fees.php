@@ -127,10 +127,8 @@ function PMF_add_payment_method_fee_to_cart( $cart = null ) {
 
     if( $cart === null ) $cart = WC()->cart;
 
-    // Elimina solo el fee del método de pago anterior
     PMF_remove_payment_method_fee_from_cart( $cart );
 
-    // si no esta en el checkout no hace nada
     if ( ! is_checkout() || ( isset( $_COOKIE['PMF_payment_fee_disabled'] ) && $_COOKIE['PMF_payment_fee_disabled'] == true ) ) return;
     
     $chosen_payment_method = WC()->session->get( 'chosen_payment_method' );
@@ -140,20 +138,27 @@ function PMF_add_payment_method_fee_to_cart( $cart = null ) {
     if ( $data && $cart->get_total() > 0 ) {
 
         $gateway = WC()->payment_gateways->payment_gateways()[ $chosen_payment_method ];
-
-        // obtiene el titulo del fee actual
         $gateway_title = $gateway ? $gateway->get_title() : ucfirst( $chosen_payment_method );
-        // $fee_name = __( 'Payment method fee', 'payment-method-fees' ) . " ({$gateway_title})";
-        $fee_name = $gateway_title." ".__( 'Fee', 'payment-method-fees' );
+        $fee_name = $gateway_title . " " . __( 'Fee', 'payment-method-fees' );
 
         $type = $data['type'];
-        $value = floatval($data['value']);
+        $value = floatval( $data['value'] );
 
-        $subtotal = $cart->get_subtotal();
+        // Use 'subtotal' property for raw numeric value instead of get_subtotal() string
+        $calculation_base = $cart->subtotal; 
         $shipping_total = $cart->get_shipping_total();
+        
+        // Validate discounts and subtract from base
+        $discount_total = $cart->get_total_discount();
+        if ( $discount_total > 0 ) {
+            $calculation_base -= $discount_total;
+        }
+
+        // Ensure base is not negative
+        $calculation_base = max( 0, $calculation_base );
 
         $fee_amount = $type === 'percentage'
-            ? ( $subtotal + $shipping_total ) * ( $value / 100 )
+            ? ( $calculation_base + $shipping_total ) * ( $value / 100 )
             : $value;
 
         if( $fee_amount > 0 ){
