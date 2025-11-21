@@ -19,30 +19,29 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 					<label for="hc"><b><?= __('Search student', 'edusystem'); ?></b></label><br>
 					<select class="js-example-basic" name="student_id"></select>
 					<br>
-					<button type="submit" class="button button-primary" style="margin: 10px">Load payments</button>
+					<button type="submit" class="button button-primary" style="margin: 10px"><?= __('Load payments', 'edusystem'); ?></button>
 				</div>
 			<?php } ?>
 
 			<input type="hidden" id="id_document" name="id_document" value="<?= $_GET['id_document'] ?>" required>
 			<input type="hidden" id="generate" name="generate"
-				value="<?php echo $_GET['student_available'] == 1 && isset($payments) ? true : false ?>" required>
+				value="<?= $_GET['student_available'] == 1 && isset($payments) ? true : false ?>" required>
 
 			<?php if ($_GET['student_available']) { ?>
 				<div style="padding: 10px">
 					<div
 						style="font-family: Arial, sans-serif; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #ffffff;">
-						<h2 style="text-align: center; color: #333; margin-bottom: 25px; font-weight: bold;">Detalles del
-							Estudiante</h2>
+						<h2 style="text-align: center; color: #333; margin-bottom: 25px; font-weight: bold;"><?= __('Student Details', 'edusystem'); ?></h2>
 
 						<div style="display: flex; align-items: center; margin-bottom: 15px;">
 							<span class="dashicons dashicons-businessperson no-vertical"
 								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
 							<p style="margin: 0; font-size: 16px; color: #555;">
-								<strong style="color: #333;">Nombre:</strong>
-								<?php echo $student->name ?>
-								<?php echo $student->middle_name ?>
-								<?php echo $student->last_name ?>
-								<?php echo $student->middle_last_name ?>
+								<strong style="color: #333;"><?= __('Name:', 'edusystem'); ?></strong>
+								<?= $student->name ?>
+								<?= $student->middle_name ?>
+								<?= $student->last_name ?>
+								<?= $student->middle_last_name ?>
 							</p>
 						</div>
 
@@ -50,8 +49,8 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 							<span class="dashicons dashicons-email no-vertical"
 								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
 							<p style="margin: 0; font-size: 16px; color: #555;">
-								<strong style="color: #333;">Email:</strong>
-								<?php echo $student->email ?>
+								<strong style="color: #333;"><?= __('Email:', 'edusystem'); ?></strong>
+								<?= $student->email ?>
 							</p>
 						</div>
 
@@ -59,8 +58,8 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 							<span class="dashicons dashicons-phone no-vertical"
 								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
 							<p style="margin: 0; font-size: 16px; color: #555;">
-								<strong style="color: #333;">Teléfono:</strong>
-								<?php echo $student->phone ?>
+								<strong style="color: #333;"><?= __('Phone:', 'edusystem'); ?></strong>
+								<?= $student->phone ?>
 							</p>
 						</div>
 
@@ -68,8 +67,8 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 							<span class="dashicons dashicons-location-alt no-vertical"
 								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
 							<p style="margin: 0; font-size: 16px; color: #555;">
-								<strong style="color: #333;">País:</strong>
-								<?php echo $student->country ?>
+								<strong style="color: #333;"><?= __('Country:', 'edusystem'); ?></strong>
+								<?= WC()->countries->countries[$student->country] ?? $student->country ?>
 							</p>
 						</div>
 
@@ -77,8 +76,8 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 							<span class="dashicons dashicons-text-page no-vertical"
 								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
 							<p style="margin: 0; font-size: 16px; color: #555;">
-								<strong style="color: #333;">Período Académico:</strong>
-								<?php echo $student->academic_period ?>
+								<strong style="color: #333;"><?= __('Academic Period:', 'edusystem'); ?></strong>
+								<?= $student->academic_period ?>
 							</p>
 						</div>
 
@@ -86,8 +85,8 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 							<span class="dashicons dashicons-location-alt no-vertical"
 								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
 							<p style="margin: 0; font-size: 16px; color: #555;">
-								<strong style="color: #333;">Corte Inicial:</strong>
-								<?php echo $student->initial_cut ?>
+								<strong style="color: #333;"><?= __('Initial Cohort:', 'edusystem'); ?></strong>
+								<?= $student->initial_cut ?>
 							</p>
 						</div>
 					</div>
@@ -95,7 +94,7 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 
 				<div style="display:flex;width:100%;justify-content:center">
 					<button type="submit" class="button button-primary-outline" name="cancel" value="1"
-						style="margin: 10px">Change student</button>
+						style="margin: 10px"><?= __('Change student', 'edusystem'); ?></button>
 				</div>
 
 				<div class="table-controls-header">
@@ -103,7 +102,6 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 
 					<div class="header-actions">
 						<?php
-						// Tu lógica PHP para definir los botones
 						$payments_status = [
 							'registration' => get_fee_paid($student->id, 'registration'),
 							'graduation' => get_fee_paid($student->id, 'graduation'),
@@ -111,15 +109,15 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 						];
 
 						$buttons = [
-							['condition' => !$payments_status['registration'], 'name' => 'generate_fee_registration', 'label' => 'Generate registration fee order'],
-							['condition' => !$payments_status['graduation'], 'name' => 'generate_fee_graduation', 'label' => 'Generate graduation fee order'],
-							['condition' => $payments_status['pending'] == 2, 'name' => '', 'label' => 'Generate next installment order', 'class' => 'button-success']
+							['condition' => !$payments_status['registration'], 'name' => 'generate_fee_registration', 'label' => __('Generate registration fee order', 'edusystem')],
+							['condition' => !$payments_status['graduation'], 'name' => 'generate_fee_graduation', 'label' => __('Generate graduation fee order', 'edusystem')],
+							['condition' => $payments_status['pending'] == 2, 'name' => '', 'label' => __('Generate next installment order', 'edusystem'), 'class' => 'button-success']
 						];
 
 						foreach ($buttons as $button) {
 							if ($button['condition']) { ?>
 								<button type="submit" class="button <?= $button['class'] ?? 'button-secondary' ?>"
-									onclick="return confirm('Are you sure?');" name="<?= $button['name'] ?>" value="1">
+									onclick="return confirm('<?= __('Are you sure?', 'edusystem'); ?>');" name="<?= $button['name'] ?>" value="1">
 									<?= $button['label'] ?>
 								</button>
 							<?php }
@@ -141,7 +139,7 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 								<?= __('Expected payment date', 'edusystem'); ?>
 							</th>
 							<th scope="col" class="manage-column column-date-payment-header">
-								<?= __('Date of payment made', 'edusystem'); ?>
+								<?= __('Payment date', 'edusystem'); ?>
 							</th>
 							<th scope="col" class="manage-column column-amount-header">
 								<?= __('Amount', 'edusystem'); ?>
@@ -152,55 +150,72 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 						</tr>
 					</thead>
 					<tbody>
-						<?php foreach ($payments as $payment) { ?>
+						<?php
+						$reg_id = get_fee_product_id($student->id, 'registration');
+						$grad_id = get_fee_product_id($student->id, 'graduation');
+						$special_products = [$reg_id, $grad_id];
+
+						foreach ($payments as $payment) {
+							$is_paid = ($payment->status_id == 1);
+
+							$p_id = $payment->variation_id ?: $payment->product_id;
+							$product = wc_get_product($p_id);
+							$name_product = $product ? $product->get_name() : '';
+
+							$use_payment_date = in_array($payment->product_id, $special_products) || empty($payment->date_next_payment);
+							$effective_date = $use_payment_date ? $payment->date_payment : $payment->date_next_payment;
+
+							$display_date_formatted = date('m/d/Y', strtotime($effective_date));
+							$input_date_formatted = date('Y-m-d', strtotime($effective_date));
+							?>
 							<tr>
 								<td class="column-primary" data-colname="<?= __('Payment', 'edusystem'); ?>">
 									<div style="display: flex; align-items: center; gap: 10px;">
 										<?php if ($payment->status_id == 0) { ?>
 											<button type="submit" class="button button-danger" name="delete_quote"
-												value="<?= $payment->id ?>" onclick="return confirm('Are you sure?');">
+												value="<?= $payment->id ?>" onclick="return confirm('<?= __('Are you sure?', 'edusystem'); ?>');">
 												<span class='dashicons dashicons-trash'></span>
 											</button>
 										<?php } ?>
-
-										<?php
-										$product = wc_get_product($payment->variation_id ?: $payment->product_id);
-										$name_product = $product->get_name();
-										?>
 										<span>#<?= $payment->cuote ?> - <?= $name_product ?></span>
 									</div>
 									<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
 								</td>
-								<td data-colname="<?= __('Expected payment date', 'edusystem'); ?>">
-									<?php
-									$product_id_registration = get_fee_product_id($student->id, 'registration');
-									$product_id_graduation = get_fee_product_id($student->id, 'graduation');
 
-									if ($payment->status_id == 1) {
-										// Muestra la fecha formateada y un input hidden con el mismo valor
-										$display_date = date('m/d/Y', strtotime(in_array($payment->product_id, [$product_id_registration, $product_id_graduation]) ? $payment->date_payment : $payment->date_next_payment));
-										echo $display_date;
-										echo '<input type="hidden" name="date_payment[]" value="' . date('Y-m-d', strtotime(in_array($payment->product_id, [$product_id_registration, $product_id_graduation]) ? $payment->date_payment : $payment->date_next_payment)) . '" />';
-									} else {
-										// Muestra el input de tipo fecha editable
-										echo '<input type="date" name="date_payment[]" class="date_payment" value="' . date('Y-m-d', strtotime($payment->product_id == $product_id_registration || $payment->product_id == $product_id_graduation ? $payment->date_payment : $payment->date_next_payment)) . '" />';
-									}
-									?>
+								<td data-colname="<?= __('Expected payment date', 'edusystem'); ?>">
+									<?php if ($is_paid) { ?>
+										<?= $display_date_formatted; ?>
+										<input type="hidden" name="date_payment[]" value="<?= $input_date_formatted; ?>" />
+									<?php } else { ?>
+										<input type="date" name="date_payment[]" class="date_payment"
+											value="<?= $input_date_formatted; ?>" />
+									<?php } ?>
 								</td>
-								<td data-colname="<?= __('Date of payment made', 'edusystem'); ?>">
-									<?= $payment->status_id == 1 ? date('m/d/Y', strtotime($payment->date_payment)) : 'N/A'; ?>
+
+								<td data-colname="<?= __('Payment date', 'edusystem'); ?>">
+									<?= $is_paid ? date('m/d/Y', strtotime($payment->date_payment)) : 'N/A'; ?>
 								</td>
+
 								<td data-colname="<?= __('Amount', 'edusystem'); ?>">
-									<?= $payment->status_id == 1
-										? wc_price($payment->amount) . '<input type="hidden" name="amount_payment[]" class="amount_payment" value="' . $payment->amount . '" />'
-										: '<input type="number" step="0.01" name="amount_payment[]" class="amount_payment" value="' . $payment->amount . '" />';
-									?>
+									<?php if ($is_paid) { ?>
+										<?= wc_price($payment->amount); ?>
+										<input type="hidden" name="amount_payment[]" class="amount_payment"
+											value="<?= $payment->amount; ?>" />
+									<?php } else { ?>
+										<input type="number" step="0.01" name="amount_payment[]" class="amount_payment"
+											value="<?= $payment->amount; ?>" />
+									<?php } ?>
 								</td>
+
 								<td data-colname="<?= __('Status', 'edusystem'); ?>">
-									<?= $payment->status_id == 1
-										? '<a target="_blank" href="' . admin_url('admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $payment->order_id) . '"><span style="color: green">View payment</span></a>'
-										: '<span style="color: gray">To pay</span>';
-									?>
+									<?php if ($is_paid) { ?>
+										<a target="_blank"
+											href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $payment->order_id); ?>">
+											<span style="color: green"><?= __('View payment', 'edusystem') ?></span>
+										</a>
+									<?php } else { ?>
+										<span style="color: gray"><?= __('Pending', 'edusystem') ?></span>
+									<?php } ?>
 								</td>
 							</tr>
 						<?php } ?>
@@ -211,11 +226,11 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 					<div class="payment-actions">
 						<div class="payment-description">
 							<textarea name="description_payment_log" id="description_payment_log"
-								placeholder="Description"></textarea>
+								placeholder="<?= __('Description', 'edusystem'); ?>"></textarea>
 						</div>
 						<div>
 							<button type="submit" class="button button-success" name="save_changes" value="1"
-								onclick="return confirm('Are you sure?');">Save changes</button>
+								onclick="return confirm('<?= __('Are you sure?', 'edusystem'); ?>');"><?= __('Save changes', 'edusystem') ?></button>
 						</div>
 					</div>
 				</div>
@@ -283,10 +298,10 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 					<div style="padding: 10px">
 						<table class="wp-list-table widefat fixed posts striped">
 							<tr>
-								<th>Student details</th>
+								<th><?= __('Student details', 'edusystem') ?></th>
 							</tr>
 							<tr>
-								<td style="text-align: center">This student not exist</td>
+								<td style="text-align: center"><?= __('This student does not exist', 'edusystem') ?></td>
 							</tr>
 						</table>
 					</div>

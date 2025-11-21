@@ -135,7 +135,7 @@ function show_report_current_students()
             $list_students = new TT_Graduated_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
-        }  else if ($_GET['section_tab'] == 'retired') {
+        } else if ($_GET['section_tab'] == 'retired') {
             $list_students = new TT_Retired_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
@@ -455,8 +455,9 @@ function get_orders($start, $end)
 
             $cuote->product = isset($products_for_cuotes[$cuote->variation_id ?: $cuote->product_id]) ? $products_for_cuotes[$cuote->variation_id ?: $cuote->product_id] : '';
 
-            // Fix para el descuento
-            if (defined('FEE_INSCRIPTION') && $cuote->product_id != FEE_INSCRIPTION) {
+            $fee_inscription_id = get_fee_product_id($cuote->student_id, 'registration');
+            $fee_graduation_id = get_fee_product_id($cuote->student_id, 'graduation');
+            if ($cuote->product_id != $fee_inscription_id) {
                 $created_at = $cuote->created_at;
                 $month = date('n', strtotime($created_at));
                 if ($month == 8) { // August is the 8th month
@@ -537,6 +538,26 @@ function get_new_student_payments_table_data($start, $end)
     $table_alliances = $wpdb->prefix . 'alliances';
 
     // 1. Consulta los pagos y los une con la información del estudiante, programa, etc.
+    // Get arrays of IDs
+    $fee_registration_ids = get_fee_product_id_all('registration');
+    $fee_graduation_ids = get_fee_product_id_all('graduation');
+
+    // Merge and sanitize IDs to ensure they are integers
+    $all_excluded_ids = array_merge($fee_registration_ids, $fee_graduation_ids);
+    $all_excluded_ids = array_map('intval', $all_excluded_ids);
+
+    // Specific Logic: Handle empty array scenario to prevent SQL syntax error in 'NOT IN ()'
+    if (empty($all_excluded_ids)) {
+        // If no IDs to exclude, we pass a dummy impossible ID (like -1) to keep syntax valid
+        $all_excluded_ids = [-1];
+    }
+
+    // Dynamically create placeholders string (e.g., "%d, %d, %d")
+    $placeholders = implode(', ', array_fill(0, count($all_excluded_ids), '%d'));
+
+    // Prepare the arguments: Start Date, End Date, followed by the list of IDs
+    $query_args = array_merge([$start, $end], $all_excluded_ids);
+
     $sql = $wpdb->prepare(
         "SELECT 
             p.*,
@@ -553,12 +574,9 @@ function get_new_student_payments_table_data($start, $end)
         LEFT JOIN {$table_grades} AS g ON s.grade_id = g.id
         WHERE p.date_payment BETWEEN %s AND %s
         AND p.cuote = 1
-        AND p.product_id NOT IN (%d, %d)
+        AND p.product_id NOT IN ($placeholders)
         ORDER BY s.last_name, s.middle_last_name, s.name, s.middle_name",
-        $start,
-        $end,
-        FEE_INSCRIPTION,
-        FEE_GRADUATION
+        $query_args
     );
 
     $payments = $wpdb->get_results($sql);
@@ -682,13 +700,16 @@ function get_new_student_payments_table_data($start, $end)
             }
         }
 
-        if (isset($payment->product_id) && $payment->product_id == FEE_INSCRIPTION) {
+        $fee_inscription_id = get_fee_product_id($student_id, 'registration');
+        $fee_graduation_id = get_fee_product_id($student_id, 'graduation');
+
+        if (isset($payment->product_id) && $payment->product_id == $fee_inscription_id) {
             $payments_data[$student_id]['calculated_amounts']['initial_fee_usd'] += (float) $payment->amount;
             $global_calculated_amounts['fee_inscription'] += (float) $payment->amount;
         }
 
         if (isset($payment->status_id) && $payment->status_id == 1) {
-            if ($payment->product_id != FEE_INSCRIPTION && $payment->product_id != FEE_GRADUATION) {
+            if ($payment->product_id != $fee_inscription_id && $payment->product_id != $fee_graduation_id) {
                 $payments_data[$student_id]['calculated_amounts']['tuition_amount_usd'] += (float) $payment->amount;
                 $global_calculated_amounts['tuition_amount'] += (float) $payment->amount;
                 // Incrementa el contador de pagos de matrícula
@@ -899,13 +920,16 @@ function get_student_payments_table_data($start, $end)
             }
         }
 
-        if (isset($payment->product_id) && $payment->product_id == FEE_INSCRIPTION) {
+        $fee_inscription_id = get_fee_product_id($student_id, 'registration');
+        $fee_graduation_id = get_fee_product_id($student_id, 'graduation');
+
+        if (isset($payment->product_id) && $payment->product_id == $fee_inscription_id) {
             $payments_data[$student_id]['calculated_amounts']['initial_fee_usd'] += (float) $payment->amount;
             $global_calculated_amounts['fee_inscription'] += (float) $payment->amount;
         }
 
         if (isset($payment->status_id) && $payment->status_id == 1) {
-            if ($payment->product_id != FEE_INSCRIPTION && $payment->product_id != FEE_GRADUATION) {
+            if ($payment->product_id != $fee_inscription_id && $payment->product_id != $fee_graduation_id) {
                 $payments_data[$student_id]['calculated_amounts']['tuition_amount_usd'] += (float) $payment->amount;
                 $global_calculated_amounts['tuition_amount'] += (float) $payment->amount;
                 // Incrementa el contador de pagos de matrícula
@@ -1174,58 +1198,97 @@ function get_products_by_order($start, $end)
 {
     $strtotime_start = strtotime($start);
     $strtotime_end = strtotime($end);
-    $args['limit'] = -1;
-    $args['status'] = 'wc-completed';
-    $args['date_created'] = $strtotime_start . '...' . $strtotime_end;
+
+    $args = [
+        'limit' => -1,
+        'status' => 'wc-completed',
+        'date_created' => $strtotime_start . '...' . $strtotime_end,
+    ];
+
     $orders = wc_get_orders($args);
+
+    $fee_registration_ids = get_fee_product_id_all('registration');
+    $fee_graduation_ids = get_fee_product_id_all('graduation');
+
+    if (!is_array($fee_registration_ids)) $fee_registration_ids = [];
+    if (!is_array($fee_graduation_ids)) $fee_graduation_ids = [];
+
+    $excluded_fee_ids = array_merge($fee_registration_ids, $fee_graduation_ids);
 
     $product_quantities = array();
     $product_subtotals = array();
     $product_discounts = array();
     $product_totals = array();
     $product_taxs = array();
+
+    $product_quantities_variation = array();
+    $product_subtotals_variation = array();
+    $product_taxs_variation = array();
+    $product_discounts_variation = array();
+    $product_totals_variation = array();
+
     $orders_count = count($orders);
 
     foreach ($orders as $order) {
-        $order_id = $order->get_id();
         $order_items = $order->get_items();
-        $discount = $order->get_total_discount();
 
         foreach ($order_items as $item) {
             $use_product_id = $item->get_product_id();
             $use_variation_id = $item->get_variation_id();
             $quantity = $item->get_quantity();
-            $subtotal = $item->get_subtotal();
-            $tax = $item->get_total_tax();
+            
+            // In WooCommerce: Line Subtotal (pre-discount) - Line Total (post-discount) = Line Discount
+            // Note: These values exclude tax.
+            $subtotal = $item->get_subtotal(); 
             $total = $item->get_total();
+            $tax = $item->get_total_tax();
+            
+            // Calculate the REAL discount for this specific item
+            $item_discount_amount = $subtotal - $total; 
+            
+            // Avoid negative precision errors (floating point math)
+            if ($item_discount_amount < 0) $item_discount_amount = 0;
 
             $product_id = $use_product_id;
 
-            if (!isset($product_quantities[$product_id])) {
-                $product_quantities[$product_id] = 0;
+            if (!isset($product_quantities[$product_id])) $product_quantities[$product_id] = 0;
+            if (!isset($product_subtotals[$product_id])) $product_subtotals[$product_id] = 0;
+            if (!isset($product_discounts[$product_id])) $product_discounts[$product_id] = 0;
+            if (!isset($product_totals[$product_id])) $product_totals[$product_id] = 0;
+            if (!isset($product_taxs[$product_id])) $product_taxs[$product_id] = 0;
+
+            if (!isset($product_quantities_variation[$product_id][$use_variation_id])) {
+                $product_quantities_variation[$product_id][$use_variation_id] = 0;
+                $product_subtotals_variation[$product_id][$use_variation_id] = 0;
+                $product_taxs_variation[$product_id][$use_variation_id] = 0;
+                $product_discounts_variation[$product_id][$use_variation_id] = 0;
+                $product_totals_variation[$product_id][$use_variation_id] = 0;
             }
-            if (!isset($product_subtotals[$product_id])) {
-                $product_subtotals[$product_id] = 0;
-            }
-            if (!isset($product_discounts[$product_id])) {
-                $product_discounts[$product_id] = 0;
-            }
-            if (!isset($product_totals[$product_id])) {
-                $product_totals[$product_id] = 0;
-            }
-            if (!isset($product_taxs[$product_id])) {
-                $product_taxs[$product_id] = 0;
-            }
+
+            $should_apply_discount = !in_array($product_id, $excluded_fee_ids);
+            
+            // If it's an excluded fee, we force discount to 0 (even if WC applied one)
+            // Otherwise use the calculated item discount
+            $discount_value = ($should_apply_discount) ? $item_discount_amount : 0;
 
             $product_quantities[$product_id] += $quantity;
             $product_quantities_variation[$product_id][$use_variation_id] += $quantity;
+
             $product_subtotals[$product_id] += $subtotal;
             $product_subtotals_variation[$product_id][$use_variation_id] += $subtotal;
+
             $product_taxs[$product_id] += $tax;
             $product_taxs_variation[$product_id][$use_variation_id] += $tax;
-            $product_discounts[$product_id] += ($product_id != FEE_INSCRIPTION) ? $discount : 0;
-            $product_discounts_variation[$product_id][$use_variation_id] += ($product_id != FEE_INSCRIPTION) ? $discount : 0;
-            $product_totals[$product_id] += $total;
+
+            $product_discounts[$product_id] += $discount_value;
+            $product_discounts_variation[$product_id][$use_variation_id] += $discount_value;
+
+            // We sum the total from the item, but if we forced discount to 0 for fees,
+            // we might want to adjust the total here? 
+            // Usually $total is what was paid. If you want the report to reflect "what should have been paid without discount" for fees, 
+            // you would add $discount_value back. 
+            // But for accurate financial reporting of what happened:
+            $product_totals[$product_id] += $total; 
             $product_totals_variation[$product_id][$use_variation_id] += $total;
         }
     }
@@ -1244,7 +1307,6 @@ function get_products_by_order($start, $end)
         'orders_count' => $orders_count,
         'orders_total' => 0
     ];
-
 }
 
 function get_students_report($academic_period = null, $cut = null)
@@ -1499,7 +1561,6 @@ add_action('wp_ajax_list_orders_sales', 'get_list_orders_sales');
 
 function list_sales_product()
 {
-
     if (isset($_POST['filter']) && !empty($_POST['filter'])) {
 
         $filter = $_POST['filter'];
@@ -1518,8 +1579,11 @@ function list_sales_product()
 
             foreach ($orders['product_quantities'] as $product_id => $quantity) {
                 $product = wc_get_product($product_id);
-                $product_name = $product->get_name();
-                $calculated_totals_initial = ($orders['product_subtotals'][$product_id] - ($orders['product_discounts'][$product_id] - $orders['product_taxs'][$product_id]));
+                $product_name = $product ? $product->get_name() : 'Unknown Product (' . $product_id . ')';
+                
+                // Formula: Subtotal - Discount + Tax = Total
+                // Your view logic was: Subtotal - (Discount - Tax) which is mathematically equivalent to Subtotal - Discount + Tax
+                $calculated_totals_initial = ($orders['product_subtotals'][$product_id] - $orders['product_discounts'][$product_id] + $orders['product_taxs'][$product_id]);
                 $orders_total += $calculated_totals_initial;
 
                 $html .= "<tr style='background-color: #f6f7f7; -webkit-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); -moz-box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%); box-shadow: 0px -1px 0.5px 0px rgb(205 199 199 / 30%);'>";
@@ -1533,27 +1597,30 @@ function list_sales_product()
                 $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'><strong>" . wc_price($calculated_totals_initial) . "</strong></td>";
                 $html .= "</tr>";
 
-                uasort($orders['product_quantities_variation'][$product_id], function ($a, $b) {
-                    return $b <=> $a;
-                });
-                foreach ($orders['product_quantities_variation'][$product_id] as $key => $variation) {
-                    if ($key > 0) {
-                        $product = wc_get_product($key);
-                        $product_name = $product->get_name();
-                        $ex_product_name = explode(' - ', $product_name);
-                        $calculated_total = ($orders['product_subtotals_variation'][$product_id][$key] - ($orders['product_discounts_variation'][$product_id][$key] - $orders['product_taxs_variation'][$product_id][$key]));
-                        $orders_total += $calculated_total;
-
-                        $html .= "<tr style='background-color: #ffffff;'>";
-                        $html .= "<td class='column column-primary' data-colname='" . __('Program', 'edusystem') . "'>" . $ex_product_name[1];
-                        $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
-                        $html .= "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Quantity', 'edusystem') . "'>" . $orders['product_quantities_variation'][$product_id][$key] . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Subtotal', 'edusystem') . "'>" . wc_price($orders['product_subtotals_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Discount', 'edusystem') . "'>" . wc_price($orders['product_discounts_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Tax', 'edusystem') . "'>" . wc_price($orders['product_taxs_variation'][$product_id][$key]) . "</td>";
-                        $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'>" . wc_price($calculated_total) . "</td>";
-                        $html .= "</tr>";
+                if (isset($orders['product_quantities_variation'][$product_id])) {
+                    uasort($orders['product_quantities_variation'][$product_id], function ($a, $b) {
+                        return $b <=> $a;
+                    });
+                    foreach ($orders['product_quantities_variation'][$product_id] as $key => $variation) {
+                        if ($key > 0) {
+                            $product = wc_get_product($key);
+                            $product_name = $product ? $product->get_name() : '';
+                            $ex_product_name = explode(' - ', $product_name);
+                            $display_name = isset($ex_product_name[1]) ? $ex_product_name[1] : $product_name;
+                            
+                            $calculated_total = ($orders['product_subtotals_variation'][$product_id][$key] - $orders['product_discounts_variation'][$product_id][$key] + $orders['product_taxs_variation'][$product_id][$key]);
+                            
+                            $html .= "<tr style='background-color: #ffffff;'>";
+                            $html .= "<td class='column column-primary' data-colname='" . __('Program', 'edusystem') . "'>" . $display_name;
+                            $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
+                            $html .= "</td>";
+                            $html .= "<td class='column' data-colname='" . __('Quantity', 'edusystem') . "'>" . $orders['product_quantities_variation'][$product_id][$key] . "</td>";
+                            $html .= "<td class='column' data-colname='" . __('Subtotal', 'edusystem') . "'>" . wc_price($orders['product_subtotals_variation'][$product_id][$key]) . "</td>";
+                            $html .= "<td class='column' data-colname='" . __('Discount', 'edusystem') . "'>" . wc_price($orders['product_discounts_variation'][$product_id][$key]) . "</td>";
+                            $html .= "<td class='column' data-colname='" . __('Tax', 'edusystem') . "'>" . wc_price($orders['product_taxs_variation'][$product_id][$key]) . "</td>";
+                            $html .= "<td class='column' data-colname='" . __('Total', 'edusystem') . "'>" . wc_price($calculated_total) . "</td>";
+                            $html .= "</tr>";
+                        }
                     }
                 }
             }
@@ -3414,10 +3481,10 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
             $student_full_name = '<span class="text-uppercase">' . student_names_lastnames_helper($student['id']) . '</span>';
 
             // Get status indicators (Calls to external functions are necessary here)
-            $fee_payment_ready = function_exists('get_payments') ? get_payments($student['id'], FEE_INSCRIPTION) : false;
-            $product_ready = function_exists('get_payments') ? get_payments($student['id']) : false;
-            $fee_graduation_ready = function_exists('get_payments') ? get_payments($student['id'], product_id: FEE_GRADUATION) : false;
-            $documents_ready = function_exists('get_documents_ready') ? get_documents_ready($student['id']) : false;
+            $fee_payment_ready = get_fee_paid($student['id'], 'registration');
+            $product_ready = get_payments($student['id']);
+            $fee_graduation_ready = get_fee_paid($student['id'], 'graduation');
+            $documents_ready = get_documents_ready($student['id']);
 
             $students_array[] = [
                 'student' => $student_full_name,

@@ -1890,9 +1890,9 @@ function get_signature_section($student): string
                                     <div style="bottom: 0; position: absolute; text-align: center; width: 100%;">
                                         <?= $parent_full_name ?>
                                     </div>
-                                    <button id="clear-parent-signature"
-                                        style="width: 100%; display: none"><?= __('Cancel', 'edusystem') ?></button>
                                 </div>
+                                <button id="clear-parent-signature"
+                                        style="width: 100%; display: none"><?= __('Cancel', 'edusystem') ?></button>
                             </div>
                 <?php } ?>
             </div>
