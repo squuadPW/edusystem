@@ -1,5 +1,33 @@
 <?php
 
+/**
+ * Registra la opción 'tt_students_per_page' en el menú de Screen Options.
+ *
+ * Se usa el ID de pantalla exacto: report_page_report-students
+ */
+function tt_add_active_students_per_page_option() {
+    // 1. Obtener la pantalla actual.
+    $screen = get_current_screen();
+    
+    // 2. Comprobar que el ID de pantalla coincida con el DEBUG ID:
+    if ( ! is_object( $screen ) || $screen->id !== 'report_page_report-students' ) {
+        return;
+    }
+
+    // 3. Definir y registrar la opción 'per_page' (Elementos por página).
+    $args = array(
+        'label'   => __( 'Active Students', 'edusystem' ), 
+        'default' => 20,                                   
+        'option'  => 'tt_students_per_page'                
+    );
+    
+    // Función nativa para inyectar la opción de paginación en Screen Options
+    add_screen_option( 'per_page', $args );
+}
+
+// 4. USAR EL HOOK DE CARGA ESPECÍFICO CON EL ID CORREGIDO
+add_action( 'load-report_page_report-students', 'tt_add_active_students_per_page_option' );
+
 function add_admin_form_report_content()
 {
     include(plugin_dir_path(__FILE__) . 'templates/report-blade.php');
@@ -1210,8 +1238,10 @@ function get_products_by_order($start, $end)
     $fee_registration_ids = get_fee_product_id_all('registration');
     $fee_graduation_ids = get_fee_product_id_all('graduation');
 
-    if (!is_array($fee_registration_ids)) $fee_registration_ids = [];
-    if (!is_array($fee_graduation_ids)) $fee_graduation_ids = [];
+    if (!is_array($fee_registration_ids))
+        $fee_registration_ids = [];
+    if (!is_array($fee_graduation_ids))
+        $fee_graduation_ids = [];
 
     $excluded_fee_ids = array_merge($fee_registration_ids, $fee_graduation_ids);
 
@@ -1236,26 +1266,32 @@ function get_products_by_order($start, $end)
             $use_product_id = $item->get_product_id();
             $use_variation_id = $item->get_variation_id();
             $quantity = $item->get_quantity();
-            
+
             // In WooCommerce: Line Subtotal (pre-discount) - Line Total (post-discount) = Line Discount
             // Note: These values exclude tax.
-            $subtotal = $item->get_subtotal(); 
+            $subtotal = $item->get_subtotal();
             $total = $item->get_total();
             $tax = $item->get_total_tax();
-            
+
             // Calculate the REAL discount for this specific item
-            $item_discount_amount = $subtotal - $total; 
-            
+            $item_discount_amount = $subtotal - $total;
+
             // Avoid negative precision errors (floating point math)
-            if ($item_discount_amount < 0) $item_discount_amount = 0;
+            if ($item_discount_amount < 0)
+                $item_discount_amount = 0;
 
             $product_id = $use_product_id;
 
-            if (!isset($product_quantities[$product_id])) $product_quantities[$product_id] = 0;
-            if (!isset($product_subtotals[$product_id])) $product_subtotals[$product_id] = 0;
-            if (!isset($product_discounts[$product_id])) $product_discounts[$product_id] = 0;
-            if (!isset($product_totals[$product_id])) $product_totals[$product_id] = 0;
-            if (!isset($product_taxs[$product_id])) $product_taxs[$product_id] = 0;
+            if (!isset($product_quantities[$product_id]))
+                $product_quantities[$product_id] = 0;
+            if (!isset($product_subtotals[$product_id]))
+                $product_subtotals[$product_id] = 0;
+            if (!isset($product_discounts[$product_id]))
+                $product_discounts[$product_id] = 0;
+            if (!isset($product_totals[$product_id]))
+                $product_totals[$product_id] = 0;
+            if (!isset($product_taxs[$product_id]))
+                $product_taxs[$product_id] = 0;
 
             if (!isset($product_quantities_variation[$product_id][$use_variation_id])) {
                 $product_quantities_variation[$product_id][$use_variation_id] = 0;
@@ -1266,7 +1302,7 @@ function get_products_by_order($start, $end)
             }
 
             $should_apply_discount = !in_array($product_id, $excluded_fee_ids);
-            
+
             // If it's an excluded fee, we force discount to 0 (even if WC applied one)
             // Otherwise use the calculated item discount
             $discount_value = ($should_apply_discount) ? $item_discount_amount : 0;
@@ -1288,7 +1324,7 @@ function get_products_by_order($start, $end)
             // Usually $total is what was paid. If you want the report to reflect "what should have been paid without discount" for fees, 
             // you would add $discount_value back. 
             // But for accurate financial reporting of what happened:
-            $product_totals[$product_id] += $total; 
+            $product_totals[$product_id] += $total;
             $product_totals_variation[$product_id][$use_variation_id] += $total;
         }
     }
@@ -1580,7 +1616,7 @@ function list_sales_product()
             foreach ($orders['product_quantities'] as $product_id => $quantity) {
                 $product = wc_get_product($product_id);
                 $product_name = $product ? $product->get_name() : 'Unknown Product (' . $product_id . ')';
-                
+
                 // Formula: Subtotal - Discount + Tax = Total
                 // Your view logic was: Subtotal - (Discount - Tax) which is mathematically equivalent to Subtotal - Discount + Tax
                 $calculated_totals_initial = ($orders['product_subtotals'][$product_id] - $orders['product_discounts'][$product_id] + $orders['product_taxs'][$product_id]);
@@ -1607,9 +1643,9 @@ function list_sales_product()
                             $product_name = $product ? $product->get_name() : '';
                             $ex_product_name = explode(' - ', $product_name);
                             $display_name = isset($ex_product_name[1]) ? $ex_product_name[1] : $product_name;
-                            
+
                             $calculated_total = ($orders['product_subtotals_variation'][$product_id][$key] - $orders['product_discounts_variation'][$product_id][$key] + $orders['product_taxs_variation'][$product_id][$key]);
-                            
+
                             $html .= "<tr style='background-color: #ffffff;'>";
                             $html .= "<td class='column column-primary' data-colname='" . __('Program', 'edusystem') . "'>" . $display_name;
                             $html .= "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>";
@@ -2388,6 +2424,31 @@ class TT_Active_Student_List_Table extends WP_List_Table
 
     }
 
+    protected function get_per_page_option_name() {
+        return 'tt_students_per_page'; 
+    }
+
+    /**
+     * Retrieves the number of items per page using the explicit WordPress storage key,
+     * which includes the screen ID verified during debugging.
+     * @return int Number of items per page.
+     */
+    protected function get_per_page() {
+        // WordPress saves the 'per_page' screen option using the key: per_page_[screen-id]
+        // The screen ID was verified as 'report_page_report-students'.
+        $storage_key = 'per_page_report_page_report-students'; 
+        $default_value = 20;
+
+        // Retrieve the stored value using the explicit storage key.
+        $per_page = (int) get_user_option( $storage_key, $default_value );
+        
+        if ( $per_page < 1 ) {
+            $per_page = $default_value;
+        }
+        
+        return $per_page;
+    }
+
     function column_default($item, $column_name)
     {
         switch ($column_name) {
@@ -2402,7 +2463,7 @@ class TT_Active_Student_List_Table extends WP_List_Table
 
     function column_name($item)
     {
-        return ucwords($item['name']);
+        return ucwords($item['student']); 
     }
 
     function column_cb($item)
@@ -2442,38 +2503,43 @@ class TT_Active_Student_List_Table extends WP_List_Table
 
     function process_bulk_action()
     {
-
-        //Detect when a bulk action is being triggered...
         if ('delete' === $this->current_action()) {
             wp_die('Items deleted (or they would be if we had items to delete)!');
         }
     }
 
-    function get_students_active_report()
+    function fetch_students_active_data($limit, $offset)
     {
         $students_array = [];
-
-        // PAGINATION
-        $per_page = 20; // number of items per page
-        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-        $offset = (($pagenum - 1) * $per_page);
-        // PAGINATION
-
+        
         $academic_period = $_POST['academic_period'] ?? '';
         $academic_period_cut = $_POST['academic_period_cut'] ?? '';
         $search = $_POST['s'] ?? '';
         $country = $_POST['country'] ?? '';
         $institute = $_POST['institute'] ?? '';
-
+        
+        // This function should be modified for efficiency to fetch only the required data
         $students = get_students_report_offset($academic_period, $academic_period_cut, $search, $country, $institute);
         $total_count = count($students);
-        $students_filtered = array_slice($students, $offset, $per_page);
+
+        // Apply pagination using array_slice
+        $students_filtered = array_slice($students, $offset, $limit);
 
         foreach ($students_filtered as $student) {
             $parent = get_user_by('id', $student->partner_id);
             $student_full_name = "<span class='text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . student_names_lastnames_helper($student->id) . '</span>';
             $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
-            $students_array[] = ['student' => $student_full_name, 'id' => $student->id, 'id_document' => $student->id_document, 'email' => $student->email, 'parent' => $parent_full_name, 'parent_email' => $parent->user_email, 'country' => $student->country, 'grade' => get_name_grade($student->grade_id), 'institute' => $student->institute_id ? get_name_institute($student->institute_id) : $student->name_institute];
+            $students_array[] = [
+                'student' => $student_full_name, 
+                'id' => $student->id, 
+                'id_document' => $student->id_document, 
+                'email' => $student->email, 
+                'parent' => $parent_full_name, 
+                'parent_email' => $parent->user_email, 
+                'country' => $student->country, 
+                'grade' => get_name_grade($student->grade_id), 
+                'institute' => $student->institute_id ? get_name_institute($student->institute_id) : $student->name_institute
+            ];
         }
 
         return ['data' => $students_array, 'total_count' => $total_count];
@@ -2481,18 +2547,17 @@ class TT_Active_Student_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
-        $data_student = $this->get_students_active_report();
-
-        $per_page = 10;
-
-
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
-
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
+
+        $per_page = $this->get_per_page();
+        $current_page = $this->get_pagenum();
+        $offset = ( $current_page - 1 ) * $per_page;
+
+        $data_student = $this->fetch_students_active_data($per_page, $offset);
 
         $data = $data_student['data'];
         $total_count = (int) $data_student['total_count'];
@@ -2505,15 +2570,14 @@ class TT_Active_Student_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $per_page = 20; // items per page
         $this->set_pagination_args(array(
             'total_items' => $total_count,
             'per_page' => $per_page,
+            'total_pages' => ceil($total_count / $per_page),
         ));
 
         $this->items = $data;
     }
-
 }
 
 class TT_Documents_Active_Student_List_Table extends WP_List_Table
