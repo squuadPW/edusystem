@@ -2429,18 +2429,21 @@ class TT_Active_Student_List_Table extends WP_List_Table
     }
 
     /**
-     * Retrieves the number of items per page using the explicit WordPress storage key,
-     * which includes the screen ID verified during debugging.
+     * Retrieves the number of items per page.
+     * WordPress saves the 'per_page' screen option using the key: per_page_[screen-id]
+     * The screen ID was verified as 'report_page_report-students', leading to the key:
+     * 'per_page_report_page_report-students'
      * @return int Number of items per page.
      */
     protected function get_per_page() {
-        // WordPress saves the 'per_page' screen option using the key: per_page_[screen-id]
-        // The screen ID was verified as 'report_page_report-students'.
+        // The definitive WordPress storage key for per_page option on this screen
         $storage_key = 'per_page_report_page_report-students'; 
         $default_value = 20;
 
         // Retrieve the stored value using the explicit storage key.
-        $per_page = (int) get_user_option( $storage_key, $default_value );
+        $per_page_raw = get_user_option( $storage_key, $default_value );
+        
+        $per_page = (int) $per_page_raw;
         
         if ( $per_page < 1 ) {
             $per_page = $default_value;
@@ -2556,6 +2559,8 @@ class TT_Active_Student_List_Table extends WP_List_Table
         $per_page = $this->get_per_page();
         $current_page = $this->get_pagenum();
         $offset = ( $current_page - 1 ) * $per_page;
+        
+        // Final calculated per_page must now be 50 if the user set it.
 
         $data_student = $this->fetch_students_active_data($per_page, $offset);
 
