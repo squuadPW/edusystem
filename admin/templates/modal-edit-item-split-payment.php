@@ -20,8 +20,7 @@ if ( $order_main ) : ?>
 				<span class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
 
 			</div>
-			<form method="post"
-				action="<?= admin_url('admin.php?page=add_admin_form_payments_content&action=change_status_payment') ?>">
+				
 				<div class="modal-body" style="margin: 10px; padding: 0px">
 					
 					<p><?= __('Outstanding amount', 'edusystem') ?>: <strong><?= wc_price($amount_pending, [ 'currency' => $order->get_currency() ]) ?></strong> </p>
@@ -47,7 +46,6 @@ if ( $order_main ) : ?>
 					<button type="button" class="button button-outline-primary modal-close"><?= __('No', 'edusystem'); ?></button>
 
 				</div>
-			</form>
 		</div>
 	</div>	
 	

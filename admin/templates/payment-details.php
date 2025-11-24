@@ -188,7 +188,7 @@
                                             </tr>
                                         <?php } ?>
                                         
-                                        <?php foreach( $order->get_fees() as $item){ ?>
+                                        <?php foreach( $order->get_fees() as $item) { ?>
                                             <tr class="item-product-payment" >
                                                 <td class="column-primary">
                                                     <?= $item->get_name(); ?>
@@ -210,18 +210,17 @@
 
                                                     <div class="inputs-price hidden" >
                                                         <?php $split_meta = $item->get_meta( 'split_payment_method' ) ? true : false ?>
-
+                                                        
                                                         <input type="number" class="input-text" name="items[<?= $item->get_id(); ?>][amount]" min="0" step="0.01"
                                                             data-origin-price="<?= $item->get_total() ?>" 
                                                             <?= $split_meta ? 'data-fee-split-payment="true"' : '' ?> />
 
-                                                        <?php 
-                                                            if( $split_meta ){ 
-                                                                $previous_amount = $item->get_total();
-                                                                include(plugin_dir_path(__FILE__).'modal-edit-item-split-payment.php'); 
-                                                            }
-                                                        ?>
-
+                                                            <?php
+                                                                if( $split_meta ) {
+                                                                    $previous_amount = $item->get_total();
+                                                                    include(plugin_dir_path(__FILE__).'modal-edit-item-split-payment.php'); 
+                                                                }  
+                                                            ?>
                                                     </div>
                                                 </td>
                                             </tr>

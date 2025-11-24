@@ -139,10 +139,10 @@ function desactive_edit_price_item () {
 document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('recalculate_button').addEventListener('click', function(event) {
-
+        
         // Selecciona todos los inputs que tengan el atributo data-fee-split-payment
         split_payment = document.querySelector('input[data-fee-split-payment]');
-        if( split_payment ){
+        if( split_payment ) {
             event.preventDefault();
             
             pending = document.getElementById('input_amount_pending')?.value ?? 0;
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('modalEditItemSplitPaymentYes').addEventListener('click', function() {
 
-         // Selecciona todos los inputs que tengan el atributo data-fee-split-payment
+        // Selecciona todos los inputs que tengan el atributo data-fee-split-payment
         split_payment = document.querySelector('input[data-fee-split-payment]');
         if( split_payment ){
             
