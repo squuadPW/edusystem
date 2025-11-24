@@ -361,10 +361,23 @@
 
                             <?php if( !in_array('institutes',$roles) && !in_array('alliance',$roles) ): ?>
 
+                                <?php 
+                                    $total_fees = 0;
+                                    $total_fees_split = 0;
+                                    foreach ( $order->get_fees() as $fee_item ) {
+
+                                        if( $fee_item->get_meta( 'split_payment_method' ) ){
+                                            $total_fees_split += $fee_item->get_total();
+                                        } else {
+                                            $total_fees += $fee_item->get_total();
+                                        }
+                                    } 
+                                ?>
+
                                 <div class="seccion-card">
                                     <p> 
                                         <strong><?=__('Items Subtotal','edusystem')?>:</strong>
-                                        <span><?= wc_price( $order->get_subtotal() ) ?></span>
+                                        <span><?= wc_price( $order->get_subtotal() + $total_fees_split ) ?></span>
                                     </p>
                                 </div>
 
@@ -377,12 +390,6 @@
                                     </div>
                                 <?php endif; ?>
 
-                                <?php 
-                                    $total_fees = 0;
-                                    foreach ( $order->get_fees() as $fee_item ) {
-                                        $total_fees += $fee_item->get_total();
-                                    } 
-                                ?>
                                 <?php if( $total_fees ): ?>
                                     <div class="seccion-card">
                                         <p> 
