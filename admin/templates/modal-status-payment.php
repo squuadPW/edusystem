@@ -16,12 +16,12 @@
 		$cuote_payment = $order->get_meta('cuote_payment') ?? 0;
 	}
 
-	// obtiene el balance
+	/* // obtiene el balance
 	$student_balance = $wpdb->get_row( $wpdb->prepare(
         "SELECT id, balance FROM `{$wpdb->prefix}student_balance` WHERE student_id = %d",
         $student_id
-    ));
-	$balance = $student_balance->balance ?? 0;
+    ));*/
+	$balance = $student_balance->balance ?? 0; 
 
 	// obtiene el valor actual a pagar
 	if ($cuote_payment ) {
@@ -81,7 +81,6 @@
 	}
 
 ?>
-
 
 <div id='modalStatusPayment' class='modal' style='<?= $balance > 0 ? "display:block" : "display:none" ?>'>
 	<div class='modal-content'>
@@ -165,7 +164,7 @@
 								}
 								?>
 
-								<?php if( $less_amount )?> <option value="new_cuote"> <?= __('New cuote','edusystem') ?> </option>
+								<?php if( !$less_amount )?> <option value="new_cuote"> <?= __('New cuote','edusystem') ?> </option>
 								
 							</select>
 						</div>

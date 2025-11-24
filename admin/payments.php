@@ -290,29 +290,33 @@ function add_admin_form_payments_content()
                             }
                         }
 
-                        $recargar = false;
+                       /*  $recargar = false;
                         if ($balance > 0) {
 
                             // nueva quota a pagar
                             $payment_row = $wpdb->get_row("SELECT id, amount, original_amount_product, cuote  FROM {$table_student_payments} WHERE id = {$cuote_credit}");
-                            if ($balance < $payment_row->amount) {
-
-                                $new_amount = $payment_row->amount - $balance;
+                            
+                            $balance = floatval($balance);
+                            $amount_payment = floatval($payment_row->amount);
+                            $amount_original = floatval($payment_row->original_amount_product);
+                            
+                            if ($balance < $amount_payment) {
+                                
+                                $new_amount = $amount_payment - $balance;
 
                                 // Nuevo monto original proporcional
-                                $paid_portion = $balance / $payment_row->amount;
-                                $new_original_amount_product = $payment_row->original_amount_product * (1 - $paid_portion);
-
+                                $paid_portion = $balance / $amount_payment;
+                                $new_original_amount_product = $amount_original * (1 - $paid_portion);
                                 $wpdb->update($table_student_payments, [
                                     'amount' => $new_amount,
                                     'original_amount_product' => $new_original_amount_product,
                                 ], ['id' => $payment_row->id]);
 
                                 $balance = 0;
-                            } elseif ($balance >= $payment_row->amount) {
+                            } elseif ($balance >= $amount_payment) {
 
-                                $balance = $balance - $payment_row->amount;
-                                $wpdb->delete($table_student_payments, array('id' => $payment_row->id));
+                                $balance = $balance - $amount_payment;
+                                $wpdb->delete($table_student_payments, array('id' => (int) $payment_row->id));
 
                                 // actualiza el total de las cuotas si elimina una
                                 $wpdb->query($wpdb->prepare(
@@ -341,17 +345,17 @@ function add_admin_form_payments_content()
                             $wpdb->update($table_student_balance, [
                                 'balance' => $balance,
                             ], ['id' => $balance_id]);
-                        }
+                        } */
                     }
                 }
 
                 $order->save();
 
-                if ($recargar && true) {
+                // if ($recargar && true) {
                     wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $order_id));
-                } else {
+                /* } else {
                     wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content'));
-                }
+                } */
             } else {
                 // Cambiar a set_status() para disparar el hook
                 $order->set_status('cancelled');
