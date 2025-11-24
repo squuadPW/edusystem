@@ -1654,3 +1654,58 @@ add_action('after_items_list_payments_edusystem', function ( $order_id ) {
 
 }, 10, 1);
 
+add_action('woocommerce_order_status_changed', function ($order_id, $old_status, $new_status, $order) {
+    global $wpdb;
+    $table_student_balance = $wpdb->prefix . 'student_balance';
+
+    // Solo reintegramos si la orden pasa a cancelada o fallida
+    if (in_array($new_status, ['cancelled', 'failed', 'trash'])) {
+
+        // Obtener el student_id de la orden    
+        $student_id = $order->get_meta('student_id'); 
+
+        //verifica si es un split y lo busca el student id en los metadatos de la orden principal
+        $order_main_id = $order->get_meta('split_payment_main_order');
+        if ($order_main_id) {
+            $order_main = wc_get_order( (int) $order_main_id);
+            if ($order_main) {
+                $student_id = $order_main->get_meta('student_id');
+            }
+        }
+
+        // Buscar ítems de tipo fee (descuentos)
+        foreach ($order->get_items('fee') as $item_id => $item) {
+            $balance_discount = $item->get_meta('balance_discount');
+            
+            if ($balance_discount && $student_id) {
+                // Recuperar balance actual
+                $student_balance = $wpdb->get_row($wpdb->prepare(
+                    "SELECT id, balance FROM $table_student_balance WHERE student_id = %d",
+                    $student_id
+                ));
+
+                if ($student_balance) {
+                    $new_balance = $student_balance->balance + $balance_discount;
+
+                    // Actualizar balance sumando lo que se había descontado
+                    $wpdb->update(
+                        $table_student_balance,
+                        ['balance' => $new_balance],
+                        ['id' => $student_balance->id],
+                        ['%f'],
+                        ['%d']
+                    );
+
+                    // Eliminar el ítem de descuento de la orden
+                    $order->remove_item($item_id);
+
+                    // Guardar los cambios en la orden
+                    $order->calculate_totals(); 
+                    $order->save();
+                }
+            }
+        }
+    }
+}, 10, 4);
+
+

@@ -3118,8 +3118,8 @@ function generate_quote_public_callback()
         $customer = new WC_Customer($customer_id);
 
         // Efficient fallback logic using Elvis operator
-        $first_name = $customer->get_billing_first_name() ?: $customer->get_first_name() ?: 'Nombre';
-        $last_name  = $customer->get_billing_last_name() ?: $customer->get_last_name() ?: 'Apellido';
+        $first_name = $customer->get_billing_first_name() ?: $customer->get_first_name() ?: __('Nombre','edusystem');
+        $last_name  = $customer->get_billing_last_name() ?: $customer->get_last_name() ?: __('Apellido','edusystem');
 
         $address_data = [
             'first_name' => $first_name,
@@ -3147,6 +3147,48 @@ function generate_quote_public_callback()
 
         $order->set_shipping_address($shipping_data);
 
+        // balance
+        $table_student_balance = $wpdb->prefix . 'student_balance';
+        $student_balance = $wpdb->get_row($wpdb->prepare(
+            "SELECT id, balance FROM $table_student_balance WHERE student_id = %d",
+            $payment_row->student_id
+        ));
+
+        if( $student_balance ){
+            $balance = $student_balance->balance ?? 0;
+            $balance_id = $student_balance->id ?? 0;
+
+            $discount_amount = 0;
+            if( $balance >= $payment_row->amount ){
+                $discount_amount = $payment_row->amount;   
+                $balance = $balance - $payment_row->amount;
+
+                $order->update_status('completed', __('Order automatically completed due to balance', 'edusystem'));
+            } else {
+                $discount_amount = $balance;
+                $balance = 0;
+            }
+
+            // Añadir un descuento por el balance actual
+            $discount = new WC_Order_Item_Fee();
+            $discount->set_name( __('Balance Discount', 'edusystem') );
+            $discount->set_amount(-$discount_amount);
+            $discount->set_total(-$discount_amount);
+            $discount->add_meta_data('balance_discount', $discount_amount, true);
+
+            // Añadir el ítem de descuento a la orden
+            $order->add_item($discount);
+
+            // Actualizar el balance del estudiante a 0
+            $wpdb->update(
+                $table_student_balance,
+                ['balance' => $balance],
+                ['id' => $balance_id],
+                ['%f'],
+                ['%d']
+            );
+        }
+
         $order->update_meta_data('cuote_payment', $payment_row->id);
         $order->update_meta_data('student_id', $payment_row->student_id);
         $order->update_meta_data('institute_id', $payment_row->institute_id);
@@ -3154,8 +3196,14 @@ function generate_quote_public_callback()
         $order->calculate_totals();
         $order->save();
 
-        $checkout_url = $order->get_checkout_payment_url();
-        wp_send_json_success(['url' => $checkout_url]);
+        if( $order->get_status() == 'completed' ) {
+            $checkout_url = wc_get_page_permalink('myaccount');
+            wp_send_json_success(['url' => $checkout_url]);
+        } else {
+            $checkout_url = $order->get_checkout_payment_url();
+            wp_send_json_success(['url' => $checkout_url]);
+        }
+        
     } catch (Exception $e) {
         wp_send_json_error(['message' => $e->getMessage()]);
     }
