@@ -245,7 +245,7 @@ function wpdocs_remove_dashboard_widgets_optimized()
 }
 
 add_action('wp_dashboard_setup', 'wpdocs_remove_dashboard_widgets_optimized', 99999999999);
-add_filter('screen_options_show_screen', '__return_false');
+// add_filter('screen_options_show_screen', '__return_false');
 
 function replace_howdy($wp_admin_bar)
 {
