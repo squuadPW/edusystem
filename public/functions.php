@@ -1047,10 +1047,10 @@ function add_loginout_link($items, $args)
     return $items;
 }
 
-function status_changed_payment( $order_id, $old_status, $current_status, $order )
+function status_changed_payment($order_id, $old_status, $current_status, $order)
 {
     $order_id = $order->get_id();
-    
+
     $customer_id = $order->get_customer_id();
     $status_register = get_user_meta($customer_id, 'status_register', true);
 
@@ -1090,15 +1090,16 @@ add_action('woocommerce_order_status_changed', 'status_changed_payment', 11, 4);
  * @param int      $customer_id ID del cliente.
  */
 function status_order_completed($order, $order_id, $customer_id)
-{   
+{
     // 1. Actualiza los metadatos del usuario de forma directa.
     update_user_meta($customer_id, 'status_register', 1);
     update_user_meta($customer_id, 'cuote_pending', 0);
 
     $student_id = $order->get_meta('student_id');
-    
+
     // 2. Salir temprano si no hay un ID de estudiante asociado.
-    if (empty($student_id)) return;
+    if (empty($student_id))
+        return;
 
     // Asegura que el usuario de WordPress para el estudiante exista.
     create_user_student($student_id);
@@ -1378,29 +1379,32 @@ function process_program_payments(WC_Order $order, int $order_id): void
                 (int) $program_data['rule_id'], // regla de pago
                 $program_data['coupons'], // cupones aplicados
                 $order->get_currency() // moneda de la orden
-            ); 
+            );
         }
     }
 }
 
-function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [], $currency = null )
+function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [], $currency = null)
 {
-    if (!$student_id) return;
+    if (!$student_id)
+        return;
 
     // obtiene los id de los productos en caso tal vengan por las ordenes
     $order_id = null;
+
+    // Inicialización de variables de descuento para asegurar su disponibilidad
+    $discount_cuppon_value = 0;
+
     if ($order && $item) {
-
         $order_id = $order->get_id();
-
         $product_id = $item->get_product_id();
         $variation_id = $item->get_variation_id() ?? 0;
-
         $currency = $order->get_currency();
     }
 
     // obtienen la moneda si no viene
-    if( $currency === null ) $currency = get_woocommerce_currency();
+    if ($currency === null)
+        $currency = get_woocommerce_currency();
 
     global $wpdb;
     $table_student_payment = $wpdb->prefix . 'student_payments';
@@ -1422,14 +1426,41 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
     $current_item_alliances_json = null;
     $installments = 1;
 
+    // Variables iniciales para el cálculo final si no hay regla
+    $amount = 0.0;
+    $original_price = 0.0;
+    $total_amount_to_pay = 0.0;
+    $total_original_amount = 0.0;
+
+    // Obtener el producto (necesario para la validación de cupón)
+    $product = wc_get_product(($variation_id == 0) ? $product_id : $variation_id);
+    if (!$product)
+        return;
+
     // obtiene la orden si viene
     if ($order) {
+
+        // --- NUEVA LÓGICA DE CUPONES (se mueve aquí para usar $order y $product) ---
+        $coupons = $order->get_coupon_codes(); // OBTENER TODOS LOS CÓDIGOS DE CUPÓN DE LA ORDEN
+
+        // obtiene el valor de descuento que venga por cuppon
+        if (!empty($coupons) && is_array($coupons)) {
+            foreach ($coupons as $coupon_code) { // Iteramos sobre los códigos de cupón de la orden
+                $coupon = new WC_Coupon($coupon_code);
+                // Validar si el cupón es aplicable al producto y si es un descuento porcentual
+                if ($coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent') {
+                    $discount_cuppon_value += (double) $coupon->get_amount();
+                }
+            }
+        }
+        // --- FIN DE NUEVA LÓGICA DE CUPONES ---
 
         // obtiene la data del estudiante
         $student_data = get_student_detail($student_id);
 
-        // Validar si $student_data existe y tiene un institute_id
-        $alliances = []; // Array de alianzas vacío
+        // ... lógica de institute, alliances, fees, etc. (sin cambios) ...
+
+        $alliances = [];
         $institute = null;
         if ($student_data && isset($student_data->institute_id) && !empty($student_data->institute_id)) {
 
@@ -1439,29 +1470,23 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
 
             $institute = get_institute_details($institute_id);
             if ($institute) {
-                // Obtener las alianzas del instituto si el instituto existe.
                 $alliances = get_alliances_from_institute($institute_id);
                 if (!is_array($alliances))
-                    $alliances = []; // Si get_alliances_from_institute devuelve null o no es un array, se inicializa como vacío.
+                    $alliances = [];
             }
         }
 
-        // Determinar si este producto es un FEE de inscripción o graduación.
         $product_id_registration = get_fee_product_id($student_id, 'registration');
         $product_id_graduation = get_fee_product_id($student_id, 'graduation');
         $is_fee_product = in_array($product_id, [$product_id_registration, $product_id_graduation]);
 
-        $is_scholarship = (bool) $order->get_meta('is_scholarship'); // Obtener el meta para la beca.
-
-        // Calcular el institute_fee
-        // Solo se calcula la tarifa del instituto si el instituto existe y no es un producto FEE o beca.
+        $is_scholarship = (bool) $order->get_meta('is_scholarship');
 
         if ($institute && !$is_fee_product && !$is_scholarship) {
             $institute_fee_percentage = (float) ($institute->fee ?? 0);
             $current_item_institute_fee = ($institute_fee_percentage * (float) $item->get_total()) / 100;
         }
 
-        // --- Recalcular tarifas de alianzas para este producto específico ---
         $current_item_alliances_fees = [];
         if (!empty($alliances) && is_array($alliances)) {
             foreach ($alliances as $alliance) {
@@ -1487,7 +1512,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
 
         $current_item_alliances_json = json_encode($current_item_alliances_fees) ?? json_encode([]);
 
-        // --- Cálculos de precios ---
+        // --- Cálculos de precios (se usan como fallback si no hay regla) ---
         $amount = (double) ($item->get_total() / $item->get_quantity());
         $original_price = (double) ($item->get_subtotal() / $item->get_quantity());
         $total_amount_to_pay = $amount * $installments;
@@ -1495,47 +1520,42 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
 
         // obtiene el id de la regla si existe
         $rule_id = $item->get_meta('quota_rule_id') ?? null;
-        $coupons = $item->get_meta('coupons', true) ?? [];
+        // LÍNEA ELIMINADA: $coupons = $item->get_meta('coupons', true) ?? []; 
+
+    } else {
+        // En caso de que se llame la función sin orden/item, necesitamos el producto para la lógica de abajo.
+        $product_id = $product_id ?? $item->get_product_id();
     }
 
-    // Obtener el producto y verifica si existe
-    $product = wc_get_product(($variation_id == 0) ? $product_id : $variation_id);
-    if (!$product)
-        return;
-
-    // obtiene el valor de descuento que venga por cuppon
-    $discount_cuppon_value = 0;
-    if (!empty($coupons) && is_array($coupons)) {
-        foreach ($coupons as $coupon_id) {
-            $coupon = new WC_Coupon($coupon_id);
-            // Validar si el cupón es aplicable al producto y si es un descuento porcentual
-            if ($coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent') {
-                $discount_cuppon_value += (double) $coupon->get_amount();
-            }
-        }
-    }
+    // LÍNEAS ELIMINADAS: La obtención de $product y la lógica de cupones se movieron arriba.
 
     // --- Cálculos de precios si hay una regla ---
-    if ($rule_id) {
+    $quote_price = 0.0;
+    $quote_price_regular = 0.0;
+    $initial_payment = 0.0;
+    $initial_payment_regular = 0.0;
+    $final_payment = 0.0;
+    $final_payment_regular = 0.0;
+    $quotas_quantity_rule = 0;
+    $frequency_value = null;
+    $type_frequency = null;
 
+    if ($rule_id) {
+        // ... Lógica de reglas de cuotas ...
         $data_quota_rule = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM `{$wpdb->prefix}quota_rules` WHERE id = %d",
             (int) $rule_id
         ));
 
         if ($data_quota_rule) {
-
-            // precio inicial
             $initial_payment_regular = (double) $data_quota_rule->initial_payment;
             $initial_payment_sale = $data_quota_rule->initial_payment_sale ?? null;
             $initial_payment = (double) ($initial_payment_sale != null) ? $initial_payment_sale : $data_quota_rule->initial_payment;
 
-            // precio final
             $final_payment_regular = (double) $data_quota_rule->final_payment;
             $final_payment_sale = $data_quota_rule->final_payment_sale ?? null;
             $final_payment = (double) ($final_payment_sale != null) ? $final_payment_sale : $final_payment_regular;
 
-            // precio de la cuota
             $quote_price_regular = (double) $data_quota_rule->quote_price;
             $quote_price_sale = $data_quota_rule->quote_price_sale ?? null;
             $quote_price = (double) ($quote_price_sale != null) ? $quote_price_sale : $quote_price_regular;
@@ -1544,9 +1564,11 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
             $frequency_value = $data_quota_rule->frequency_value;
             $type_frequency = $data_quota_rule->type_frequency;
 
-            // total a pagar, si descuento de cupon
             $total_pay = (double) ($quotas_quantity_rule * $quote_price) + $initial_payment + $final_payment;
+
+            // Aplicación del descuento del cupón a la suma de los montos de la regla
             $total_amount_to_pay = $total_pay - (($total_pay * $discount_cuppon_value) / 100);
+
             $total_original_amount = (double) ($quotas_quantity_rule * $quote_price_regular) + $initial_payment_regular + $final_payment_regular;
 
             $installments = $quotas_quantity_rule;
@@ -1556,9 +1578,9 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
                 $installments++;
         }
 
-    } else if (!$order) {
-
+    } else if (!$order && $product) { // Usamos $product ya inicializado
         // Cálculos de precios sin regla, toma el precio del producto
+        // Aplicación del descuento del cupón al precio del producto
         $amount = $product->get_price() - (($product->get_price() * $discount_cuppon_value) / 100);
         $original_price = $product->get_regular_price();
         $total_amount_to_pay = $amount * $installments;
@@ -1568,7 +1590,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
     // monto del descuento total
     $total_discount_amount = $total_original_amount - $total_amount_to_pay;
 
-    // --- Lógica de fechas ---
+    // --- Lógica de fechas y bucle de inserción (sin cambios en la lógica de cálculo de montos internos) ---
     $needs_next_payment = !$is_fee_product;
     $start_date = new DateTime();
     $payment_date = clone $start_date;
@@ -1578,8 +1600,8 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
         $next_payment_date = null;
         if ($needs_next_payment && $rule_id) {
 
-            $original_price_pay = $quote_price; // monto a pagar sin descuento de cupon
-            $original_price_regular = $quote_price_regular; // monto original a pagar sin descuento de cupon
+            $original_price_pay = $quote_price;
+            $original_price_regular = $quote_price_regular;
             if ($i == 0 && $initial_payment > 0) {
                 $original_price_pay = $initial_payment;
                 $original_price_regular = $initial_payment_regular;
@@ -1588,11 +1610,12 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
                 $original_price_regular = $final_payment_regular;
             }
 
-            // Calcular el monto a pagar con descuento de cupon
+            // Calcular el monto a pagar con descuento de cupon (Monto para la columna 'amount')
             $amount = $original_price_pay - (($original_price_pay * $discount_cuppon_value) / 100);
+
+            // Precio original para la columna 'original_amount_product'
             $original_price = $original_price_regular;
 
-            // fechas de cuotas;
             if ($i > 0 && $type_frequency) {
                 switch ($type_frequency) {
                     case 'day':
@@ -1608,9 +1631,6 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
             }
             $next_payment_date = $payment_date->format('Y-m-d');
         }
-
-        // if ($amount == 0)
-        //     continue;
 
         $data = [
             'status_id' => 0,
@@ -1636,7 +1656,6 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
         ];
         $result = $wpdb->insert($table_student_payment, $data);
     }
-
 }
 
 
@@ -3925,16 +3944,16 @@ function customer_pending_orders($user_id = null)
     $orders = wc_get_orders($args);
 
     // filtar las ordenes que sean pending y metodo de pago flywire
-    foreach ( $orders as $key => $order_id ) {
-        $order = wc_get_order( $order_id );
+    foreach ($orders as $key => $order_id) {
+        $order = wc_get_order($order_id);
 
         // Obtener estado y método de pago
-        $status        = $order->get_status();
+        $status = $order->get_status();
         $payment_method = $order->get_payment_method();
 
         // Excluir si es pending y flywire
-        if ( $status == 'pending' && $payment_method == 'flywire' ){
-            unset( $orders[ $key ] );
+        if ($status == 'pending' && $payment_method == 'flywire') {
+            unset($orders[$key]);
         }
     }
 
