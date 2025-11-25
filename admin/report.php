@@ -1857,6 +1857,27 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
 
     }
 
+    // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
+    }
+
+    protected function get_per_page()
+    {
+        $storage_key = 'tt_students_per_page';
+        $default_value = 20;
+
+        $per_page = (int) get_user_option($storage_key);
+
+        if (empty($per_page) || $per_page < 1) {
+            $per_page = $default_value;
+        }
+
+        return $per_page;
+    }
+    // --- FIN NUEVO ---
+
     function column_default($item, $column_name)
     {
         switch ($column_name) {
@@ -1919,7 +1940,7 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
         }
     }
 
-    function get_students_pending_elective_report()
+    function get_students_pending_elective_report($per_page = 20) // MODIFICADO: agregar parámetro con valor por defecto
     {
         global $wpdb;
 
@@ -1938,7 +1959,7 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
         $institute = sanitize_text_field($_POST['institute'] ?? '');
 
         // 2. Pagination setup
-        $per_page = 20;
+        // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
@@ -2013,7 +2034,7 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
         $query .= $where_clause;
         $query .= " ORDER BY s.id DESC LIMIT %d OFFSET %d";
 
-        $final_params = array_merge($params, [$per_page, $offset]);
+        $final_params = array_merge($params, [$per_page, $offset]); // MODIFICADO: usar $per_page
 
         // Execute the student query
         $students = $wpdb->get_results($wpdb->prepare($query, $final_params), "ARRAY_A");
@@ -2096,11 +2117,9 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
-        $data_student = $this->get_students_pending_elective_report();
-
-        $per_page = 10;
-
+        // MODIFICADO: usar get_per_page() en lugar de valor fijo
+        $per_page = $this->get_per_page();
+        $data_student = $this->get_students_pending_elective_report($per_page);
 
         $columns = $this->get_columns();
         $hidden = array();
@@ -2120,7 +2139,7 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $per_page = 20; // items per page
+        // MODIFICADO: usar $per_page en lugar de 20
         $this->set_pagination_args(array(
             'total_items' => $total_count,
             'per_page' => $per_page,
@@ -2147,6 +2166,27 @@ class TT_Current_Student_List_Table extends WP_List_Table
         );
 
     }
+
+    // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
+    }
+
+    protected function get_per_page()
+    {
+        $storage_key = 'tt_students_per_page';
+        $default_value = 20;
+
+        $per_page = (int) get_user_option($storage_key);
+
+        if (empty($per_page) || $per_page < 1) {
+            $per_page = $default_value;
+        }
+
+        return $per_page;
+    }
+    // --- FIN NUEVO ---
 
     function column_default($item, $column_name)
     {
@@ -2204,7 +2244,7 @@ class TT_Current_Student_List_Table extends WP_List_Table
         }
     }
 
-    function get_students_current_report()
+    function get_students_current_report($per_page = 20) // MODIFICADO: agregar parámetro con valor por defecto
     {
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
@@ -2274,7 +2314,7 @@ class TT_Current_Student_List_Table extends WP_List_Table
         }
 
         // PAGINATION
-        $per_page = 20;
+        // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
@@ -2292,7 +2332,7 @@ class TT_Current_Student_List_Table extends WP_List_Table
 
         // Agrupamos por ID para asegurar que DISTINCT funcione correctamente en el set paginado
         $query_students .= " GROUP BY s.id ORDER BY s.id DESC LIMIT %d OFFSET %d";
-        $params[] = $per_page;
+        $params[] = $per_page; // MODIFICADO: usar $per_page
         $params[] = $offset;
 
         // Ejecutar la consulta de estudiantes
@@ -2371,11 +2411,9 @@ class TT_Current_Student_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
-        $data_student = $this->get_students_current_report();
-
-        $per_page = 10;
-
+        // MODIFICADO: usar get_per_page() en lugar de valor fijo
+        $per_page = $this->get_per_page();
+        $data_student = $this->get_students_current_report($per_page);
 
         $columns = $this->get_columns();
         $hidden = array();
@@ -2395,7 +2433,7 @@ class TT_Current_Student_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $per_page = 20; // items per page
+        // MODIFICADO: usar $per_page en lugar de 20
         $this->set_pagination_args(array(
             'total_items' => $total_count,
             'per_page' => $per_page,
@@ -2594,6 +2632,27 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
 
     }
 
+    // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
+    }
+
+    protected function get_per_page()
+    {
+        $storage_key = 'tt_students_per_page';
+        $default_value = 20;
+
+        $per_page = (int) get_user_option($storage_key);
+
+        if (empty($per_page) || $per_page < 1) {
+            $per_page = $default_value;
+        }
+
+        return $per_page;
+    }
+    // --- FIN NUEVO ---
+
     function column_default($item, $column_name)
     {
         switch ($column_name) {
@@ -2680,7 +2739,7 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
         }
     }
 
-    function get_students_active_report()
+    function get_students_active_report($per_page = 20) // MODIFICADO: agregar parámetro con valor por defecto
     {
         global $wpdb;
 
@@ -2689,7 +2748,7 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
         $table_documents = $wpdb->prefix . 'documents';
 
         // PAGINATION
-        $per_page = 20;
+        // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
@@ -2719,7 +2778,7 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
         // Obtención de estudiantes (Se mantiene la ineficiencia forzada, pero se procesa mejor)
         $students = get_students_report_offset($academic_period, $academic_period_cut, $search, $country, $institute);
         $total_count = count($students);
-        $students_filtered = array_slice($students, $offset, $per_page);
+        $students_filtered = array_slice($students, $offset, $per_page); // MODIFICADO: usar $per_page
 
         // Optimizando la obtención de datos de padres y documentos para el subset filtrado
         $student_ids = array_column($students_filtered, 'id');
@@ -2805,13 +2864,12 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
 
         return ['data' => $students_array, 'total_count' => $total_count];
     }
+
     function prepare_items()
     {
-
-        $data_student = $this->get_students_active_report();
-
-        $per_page = 10;
-
+        // MODIFICADO: usar get_per_page() en lugar de valor fijo
+        $per_page = $this->get_per_page();
+        $data_student = $this->get_students_active_report($per_page);
 
         $columns = $this->get_columns();
         $hidden = array();
@@ -2831,7 +2889,7 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $per_page = 20; // items per page
+        // MODIFICADO: usar $per_page en lugar de 20
         $this->set_pagination_args(array(
             'total_items' => $total_count,
             'per_page' => $per_page,
@@ -2858,6 +2916,27 @@ class TT_Enrollments_Active_Student_List_Table extends WP_List_Table
         );
 
     }
+
+    // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
+    }
+
+    protected function get_per_page()
+    {
+        $storage_key = 'tt_students_per_page';
+        $default_value = 20;
+
+        $per_page = (int) get_user_option($storage_key);
+
+        if (empty($per_page) || $per_page < 1) {
+            $per_page = $default_value;
+        }
+
+        return $per_page;
+    }
+    // --- FIN NUEVO ---
 
     function column_default($item, $column_name)
     {
@@ -2935,7 +3014,7 @@ class TT_Enrollments_Active_Student_List_Table extends WP_List_Table
         }
     }
 
-    function get_students_active_report()
+    function get_students_active_report($per_page = 20) // MODIFICADO: agregar parámetro con valor por defecto
     {
         global $wpdb;
 
@@ -2944,7 +3023,7 @@ class TT_Enrollments_Active_Student_List_Table extends WP_List_Table
         $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
         // PAGINATION
-        $per_page = 20;
+        // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
@@ -2968,7 +3047,7 @@ class TT_Enrollments_Active_Student_List_Table extends WP_List_Table
         // Obtención de estudiantes
         $students = get_students_report_offset($academic_period, $academic_period_cut, $search, $country, $institute);
         $total_count = count($students);
-        $students_filtered = array_slice($students, $offset, $per_page);
+        $students_filtered = array_slice($students, $offset, $per_page); // MODIFICADO: usar $per_page
 
         // Optimizando la obtención de datos para el subset filtrado
         $student_ids = array_column($students_filtered, 'id');
@@ -3083,11 +3162,9 @@ class TT_Enrollments_Active_Student_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
-        $data_student = $this->get_students_active_report();
-
-        $per_page = 10;
-
+        // MODIFICADO: usar get_per_page() en lugar de valor fijo
+        $per_page = $this->get_per_page();
+        $data_student = $this->get_students_active_report($per_page);
 
         $columns = $this->get_columns();
         $hidden = array();
@@ -3107,7 +3184,7 @@ class TT_Enrollments_Active_Student_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $per_page = 20; // items per page
+        // MODIFICADO: usar $per_page en lugar de 20
         $this->set_pagination_args(array(
             'total_items' => $total_count,
             'per_page' => $per_page,
@@ -3338,6 +3415,27 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
 
     }
 
+    // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
+    }
+
+    protected function get_per_page()
+    {
+        $storage_key = 'tt_students_per_page';
+        $default_value = 20;
+
+        $per_page = (int) get_user_option($storage_key);
+
+        if (empty($per_page) || $per_page < 1) {
+            $per_page = $default_value;
+        }
+
+        return $per_page;
+    }
+    // --- FIN NUEVO ---
+
     function column_default($item, $column_name)
     {
         switch ($column_name) {
@@ -3405,7 +3503,7 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
      *
      * @return array Contains the paginated student data and the total count.
      */
-    function get_students_pending_graduation_report()
+    function get_students_pending_graduation_report($per_page = 20) // MODIFICADO: agregar parámetro con valor por defecto
     {
         global $wpdb;
 
@@ -3516,12 +3614,12 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
         }
 
         // --- 6. Pagination ---
-        $per_page = 20; // number of items per page
+        // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
         $total_academic_ready_students = count($filtered_students);
-        $paginated_students = array_slice($filtered_students, $offset, $per_page);
+        $paginated_students = array_slice($filtered_students, $offset, $per_page); // MODIFICADO: usar $per_page
 
         // --- 7. Final Data Processing ---
         $students_array = [];
@@ -3571,11 +3669,9 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
-        $data_student = $this->get_students_pending_graduation_report();
-
-        $per_page = 10;
-
+        // MODIFICADO: usar get_per_page() en lugar de valor fijo
+        $per_page = $this->get_per_page();
+        $data_student = $this->get_students_pending_graduation_report($per_page);
 
         $columns = $this->get_columns();
         $hidden = array();
@@ -3595,7 +3691,7 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $per_page = 20; // items per page
+        // MODIFICADO: usar $per_page en lugar de 20
         $this->set_pagination_args(array(
             'total_items' => $total_count,
             'per_page' => $per_page,
@@ -3622,6 +3718,27 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
         );
 
     }
+
+    // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
+    }
+
+    protected function get_per_page()
+    {
+        $storage_key = 'tt_students_per_page';
+        $default_value = 20;
+
+        $per_page = (int) get_user_option($storage_key);
+
+        if (empty($per_page) || $per_page < 1) {
+            $per_page = $default_value;
+        }
+
+        return $per_page;
+    }
+    // --- FIN NUEVO ---
 
     function column_default($item, $column_name)
     {
@@ -3680,7 +3797,7 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
         }
     }
 
-    function get_students_pending_documents_report()
+    function get_students_pending_documents_report($per_page = 20) // MODIFICADO: agregar parámetro con valor por defecto
     {
         global $wpdb;
 
@@ -3700,8 +3817,7 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
         $academic_period_cut_student = sanitize_text_field($_POST['academic_period_cut'] ?? '');
 
         // PAGINATION
-        $per_page = 20; // number of items per page
-        // Use max(1, ...) to ensure a minimum page number of 1
+        // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = max(1, absint($_GET['paged'] ?? 1));
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
@@ -3762,14 +3878,17 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
                         $term_conditions[] = "{$field} LIKE %s";
                         $search_sub_params[] = $term_like;
                     }
+                    // Group OR conditions for each search term
                     $search_sub_conditions[] = "(" . implode(" OR ", $term_conditions) . ")";
                 }
             }
 
+            // Combine all search term conditions with AND
             if (!empty($search_sub_conditions)) {
                 $conditions[] = "(" . implode(" AND ", $search_sub_conditions) . ")";
                 $params = array_merge($params, $search_sub_params);
             } else {
+                // Fallback for full string search if no individual terms were long enough
                 $term_conditions = [];
                 foreach ($search_fields as $field) {
                     $term_conditions[] = "{$field} LIKE %s";
@@ -3783,9 +3902,11 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
         // --- 4. Main Query Construction and Execution (Including Documents JOIN) ---
 
         // Get all required student columns, and parent data via JOIN
+        // This replaces the slow get_user_by/get_user_meta calls inside the loop.
         $select_cols = [
             's.*',
             'u.user_email AS parent_email',
+            // Join the usermeta to get first_name and last_name of the parent
             'um_first.meta_value AS parent_first_name',
             'um_last.meta_value AS parent_last_name',
         ];
@@ -3814,7 +3935,7 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
         $query .= " GROUP BY s.id";
 
         $query .= " ORDER BY s.id DESC LIMIT %d OFFSET %d";
-        $params[] = $per_page;
+        $params[] = $per_page; // MODIFICADO: usar $per_page
         $params[] = $offset;
 
         // Execute the query
@@ -3879,11 +4000,9 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
-        $data_student = $this->get_students_pending_documents_report();
-
-        $per_page = 10;
-
+        // MODIFICADO: usar get_per_page() en lugar de valor fijo
+        $per_page = $this->get_per_page();
+        $data_student = $this->get_students_pending_documents_report($per_page);
 
         $columns = $this->get_columns();
         $hidden = array();
@@ -3903,7 +4022,7 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $per_page = 20; // items per page
+        // MODIFICADO: usar $per_page en lugar de 20
         $this->set_pagination_args(array(
             'total_items' => $total_count,
             'per_page' => $per_page,
@@ -3930,6 +4049,27 @@ class TT_Graduated_List_Table extends WP_List_Table
         );
 
     }
+
+    // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
+    }
+
+    protected function get_per_page()
+    {
+        $storage_key = 'tt_students_per_page';
+        $default_value = 20;
+
+        $per_page = (int) get_user_option($storage_key);
+
+        if (empty($per_page) || $per_page < 1) {
+            $per_page = $default_value;
+        }
+
+        return $per_page;
+    }
+    // --- FIN NUEVO ---
 
     function column_default($item, $column_name)
     {
@@ -3994,7 +4134,7 @@ class TT_Graduated_List_Table extends WP_List_Table
         }
     }
 
-    function get_student_graduated()
+    function get_student_graduated($per_page = 20) // MODIFICADO: agregar parámetro con valor por defecto
     {
         global $wpdb;
 
@@ -4013,8 +4153,7 @@ class TT_Graduated_List_Table extends WP_List_Table
         $academic_period_cut_student = sanitize_text_field($_POST['academic_period_cut'] ?? '');
 
         // PAGINATION
-        $per_page = 20; // number of items per page
-        // Use max(1, ...) to ensure a minimum page number of 1
+        // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = max(1, absint($_GET['paged'] ?? 1));
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
@@ -4119,7 +4258,7 @@ class TT_Graduated_List_Table extends WP_List_Table
         }
 
         $query .= " ORDER BY s.id DESC LIMIT %d OFFSET %d";
-        $params[] = $per_page;
+        $params[] = $per_page; // MODIFICADO: usar $per_page
         $params[] = $offset;
 
         // Execute the query
@@ -4171,11 +4310,9 @@ class TT_Graduated_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
-        $data_student = $this->get_student_graduated();
-
-        $per_page = 10;
-
+        // MODIFICADO: usar get_per_page() en lugar de valor fijo
+        $per_page = $this->get_per_page();
+        $data_student = $this->get_student_graduated($per_page);
 
         $columns = $this->get_columns();
         $hidden = array();
@@ -4195,7 +4332,7 @@ class TT_Graduated_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $per_page = 20; // items per page
+        // MODIFICADO: usar $per_page en lugar de 20
         $this->set_pagination_args(array(
             'total_items' => $total_count,
             'per_page' => $per_page,
@@ -4222,6 +4359,27 @@ class TT_Retired_List_Table extends WP_List_Table
         );
 
     }
+
+    // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
+    }
+
+    protected function get_per_page()
+    {
+        $storage_key = 'tt_students_per_page';
+        $default_value = 20;
+
+        $per_page = (int) get_user_option($storage_key);
+
+        if (empty($per_page) || $per_page < 1) {
+            $per_page = $default_value;
+        }
+
+        return $per_page;
+    }
+    // --- FIN NUEVO ---
 
     function column_default($item, $column_name)
     {
@@ -4286,13 +4444,13 @@ class TT_Retired_List_Table extends WP_List_Table
         }
     }
 
-    function get_student_retired()
+    function get_student_retired($per_page = 20) // MODIFICADO: agregar parámetro con valor por defecto
     {
         global $wpdb;
 
         // --- 1. PREPARACIÓN Y RECOLECCIÓN DE DATOS DE ENTRADA ---
         $table_students = $wpdb->prefix . 'students';
-        $per_page = 20;
+        // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
@@ -4374,7 +4532,7 @@ class TT_Retired_List_Table extends WP_List_Table
     ";
 
         // Añadir placeholders para LIMIT y OFFSET al final de los parámetros
-        $params[] = $per_page;
+        $params[] = $per_page; // MODIFICADO: usar $per_page
         $params[] = $offset;
 
         // Ejecutar la consulta de estudiantes
@@ -4460,11 +4618,9 @@ class TT_Retired_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
-        $data_student = $this->get_student_retired();
-
-        $per_page = 10;
-
+        // MODIFICADO: usar get_per_page() en lugar de valor fijo
+        $per_page = $this->get_per_page();
+        $data_student = $this->get_student_retired($per_page);
 
         $columns = $this->get_columns();
         $hidden = array();
@@ -4484,7 +4640,7 @@ class TT_Retired_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $per_page = 20; // items per page
+        // MODIFICADO: usar $per_page en lugar de 20
         $this->set_pagination_args(array(
             'total_items' => $total_count,
             'per_page' => $per_page,
@@ -4511,6 +4667,27 @@ class TT_Scholarships_List_Table extends WP_List_Table
         );
 
     }
+
+    // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
+    }
+
+    protected function get_per_page()
+    {
+        $storage_key = 'tt_students_per_page';
+        $default_value = 20;
+
+        $per_page = (int) get_user_option($storage_key);
+
+        if (empty($per_page) || $per_page < 1) {
+            $per_page = $default_value;
+        }
+
+        return $per_page;
+    }
+    // --- FIN NUEVO ---
 
     function column_default($item, $column_name)
     {
@@ -4575,7 +4752,7 @@ class TT_Scholarships_List_Table extends WP_List_Table
     }
 
 
-    function get_student_scholarships()
+    function get_student_scholarships($per_page = 20) // MODIFICADO: agregar parámetro con valor por defecto
     {
         global $wpdb;
 
@@ -4657,7 +4834,7 @@ class TT_Scholarships_List_Table extends WP_List_Table
         }
 
         // Pagination setup
-        $per_page = 20;
+        // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
@@ -4684,7 +4861,7 @@ class TT_Scholarships_List_Table extends WP_List_Table
         }
 
         $query .= " ORDER BY s.id DESC LIMIT %d OFFSET %d";
-        $params[] = $per_page;
+        $params[] = $per_page; // MODIFICADO: usar $per_page
         $params[] = $offset;
 
         $students_from_db = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
@@ -4722,11 +4899,9 @@ class TT_Scholarships_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
-        $data_student = $this->get_student_scholarships();
-
-        $per_page = 10;
-
+        // MODIFICADO: usar get_per_page() en lugar de valor fijo
+        $per_page = $this->get_per_page();
+        $data_student = $this->get_student_scholarships($per_page);
 
         $columns = $this->get_columns();
         $hidden = array();
@@ -4746,7 +4921,7 @@ class TT_Scholarships_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $per_page = 20; // items per page
+        // MODIFICADO: usar $per_page en lugar de 20
         $this->set_pagination_args(array(
             'total_items' => $total_count,
             'per_page' => $per_page,
@@ -4756,7 +4931,6 @@ class TT_Scholarships_List_Table extends WP_List_Table
     }
 
 }
-
 class TT_Non_Enrolled_List_Table extends WP_List_Table
 {
 
@@ -4773,6 +4947,27 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
         );
 
     }
+
+    // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
+    }
+
+    protected function get_per_page()
+    {
+        $storage_key = 'tt_students_per_page';
+        $default_value = 20;
+
+        $per_page = (int) get_user_option($storage_key);
+
+        if (empty($per_page) || $per_page < 1) {
+            $per_page = $default_value;
+        }
+
+        return $per_page;
+    }
+    // --- FIN NUEVO ---
 
     function column_default($item, $column_name)
     {
@@ -4814,7 +5009,7 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
         return $columns;
     }
 
-    function get_students_non_enrolled_report()
+    function get_students_non_enrolled_report($per_page = 20) // MODIFICADO: agregar parámetro con valor por defecto
     {
         global $wpdb;
         $table_students = $wpdb->prefix . 'students';
@@ -4920,7 +5115,7 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
         }
 
         // PAGINATION
-        $per_page = 20; // number of items per page
+        // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
         // PAGINATION
@@ -4933,7 +5128,7 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
         }
 
         $query .= " ORDER BY id DESC LIMIT %d OFFSET %d"; // Añadimos placeholders para LIMIT y OFFSET
-        $params[] = $per_page;
+        $params[] = $per_page; // MODIFICADO: usar $per_page
         $params[] = $offset;
 
         // Ejecutar la consulta de estudiantes
@@ -4992,11 +5187,9 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
-        $data_student = $this->get_students_non_enrolled_report();
-
-        $per_page = 10;
-
+        // MODIFICADO: usar get_per_page() en lugar de valor fijo
+        $per_page = $this->get_per_page();
+        $data_student = $this->get_students_non_enrolled_report($per_page);
 
         $columns = $this->get_columns();
         $hidden = array();
@@ -5016,7 +5209,7 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
             return ($order === 'asc') ? $result : -$result;
         }
 
-        $per_page = 20; // items per page
+        // MODIFICADO: usar $per_page en lugar de 20
         $this->set_pagination_args(array(
             'total_items' => $total_count,
             'per_page' => $per_page,
