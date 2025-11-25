@@ -37,7 +37,7 @@
                                     
                                     <p>
                                         <strong><?=__('Status','edusystem')?>:</strong>
-                                        <?= $order->get_status() ?>
+                                        <?= ucfirst($order->get_status()) ?>
                                     </p>
                                 </div>
 
@@ -87,7 +87,7 @@
                                         
                                         <p>
                                             <strong><?=__('Parent','edusystem')?>:</strong>
-                                            <?= $order->get_billing_last_name().' '.$order->get_billing_first_name() ?>
+                                            <?= $order->get_billing_last_name().', '.$order->get_billing_first_name() ?>
                                         </p>
                                     </div>
                                 <?php endif; ?>
