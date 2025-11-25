@@ -69,12 +69,7 @@
                                         
                                         <p>
                                             <strong><?=__('Student','edusystem')?>:</strong>
-                                            <?= 
-                                                $student->last_name . ' ' . 
-                                                $student->middle_last_name . ' ' . 
-                                                $student->name . ' ' . 
-                                                $student->middle_name; 
-                                            ?>
+                                            <?= student_names_lastnames_helper($student->id); ?>
                                         </p>
                                     </div>
                                 <?php endif; ?>
