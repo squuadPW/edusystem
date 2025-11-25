@@ -37,7 +37,7 @@
                                     
                                     <p>
                                         <strong><?=__('Status','edusystem')?>:</strong>
-                                        <?= ucfirst($order->get_status()) ?>
+                                        <?= wc_get_order_status_name($order->get_status()) ?>
                                     </p>
                                 </div>
 
