@@ -343,12 +343,12 @@ class TT_document_review_List_Table extends WP_List_Table
             case 'index':
                 return $item['index'];
             case 'full_name':
-
+                $student_full_name = student_names_lastnames_helper($item['id']);
                 if (in_array('owner', $roles) || in_array('administrator', $roles)) {
                     $user_student = get_user_by('email', $item['email']);
-                    return '<a class="text-uppercase" href="' . $url . $user_student->ID . '" target="_blank">' . strtoupper($item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name']) . '</a>';
+                    return '<a class="text-uppercase" href="' . $url . $user_student->ID . '" target="_blank">' . $student_full_name . '</a>';
                 } else {
-                    return '<label class="text-uppercase">' . strtoupper($item['last_name'] . ' ' . $item['middle_last_name'] . ' ' . $item['name'] . ' ' . $item['middle_name']) . '</label>';
+                    return '<label class="text-uppercase">' . $student_full_name . '</label>';
                 }
 
             case 'grade':
@@ -358,7 +358,7 @@ class TT_document_review_List_Table extends WP_List_Table
                 } else {
                     $grade = $item['academic_period'] . ' - ' . $item['initial_cut'];
                 }
-                
+
                 return $grade;
             case 'pending_documents':
                 return $item['count_pending_documents'];
@@ -1509,7 +1509,8 @@ function load_cuts_period()
 add_action('wp_ajax_nopriv_load_cuts_period', 'load_cuts_period');
 add_action('wp_ajax_load_cuts_period', 'load_cuts_period');
 
-function get_fee_paid($student_id, $type) {
+function get_fee_paid($student_id, $type)
+{
     global $wpdb;
     $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
 
@@ -1546,7 +1547,8 @@ function get_fee_paid($student_id, $type) {
 }
 
 
-function get_program_data_student($student_id) {
+function get_program_data_student($student_id)
+{
     global $wpdb;
     $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
 
@@ -1567,7 +1569,8 @@ function get_program_data_student($student_id) {
     return ['program' => $program, 'career' => $career, 'mention' => $mention, 'plan' => $plan];
 }
 
-function get_fee_product_id($student_id, $type) {
+function get_fee_product_id($student_id, $type)
+{
     global $wpdb;
     $table_programs_by_student = $wpdb->prefix . 'programs_by_student';
     $table_student_payments = $wpdb->prefix . 'student_payments';
@@ -1604,7 +1607,8 @@ function get_fee_product_id($student_id, $type) {
     return false;
 }
 
-function get_fee_product_id_all($type) {
+function get_fee_product_id_all($type)
+{
     global $wpdb;
     $table_admission_fees = $wpdb->prefix . 'admission_fees';
 
@@ -1619,7 +1623,8 @@ function get_fee_product_id_all($type) {
     return $student_programs;
 }
 
-function get_fee_product_id_program($student_programs, $type) {
+function get_fee_product_id_program($student_programs, $type)
+{
     foreach ($student_programs as $program) {
         $fees = get_fees_associated_plan($program, $type);
         foreach ($fees as $fee_product_id) {
