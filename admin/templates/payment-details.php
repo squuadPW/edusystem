@@ -317,7 +317,14 @@
                             <div class="seccion-card">
                                 <p>
                                     <strong><?=__('Payment Method selected','edusystem')?>:</strong>
-                                    <?= $order->get_payment_method_title(); ?>
+                                    <?php 
+                                        $split_payment_method = $order->get_meta('split_payment_method', true);
+                                        if ($split_payment_method) {
+                                            echo esc_html(__('Split payment', 'edusystem'));
+                                        } else {
+                                            echo  $order->get_payment_method_title(); 
+                                        }
+                                    ?>
                                 </p>
                             </div>
 
