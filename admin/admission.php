@@ -888,7 +888,7 @@ class TT_all_student_List_Table extends WP_List_Table
             $value['index'] = $key + 1;
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
                 $value['student'] = '<a class="text-uppercase" href="' . $url . $student->ID . '" target="_blank">' . $student_full_name . '</a>';
-                $value['parent'] = '<a class="text-uppercase" href="' . $url . $parent->ID . '" target="_blank">' . $parent->last_name . ' ' . $parent->first_name . '</a>';
+                $value['parent'] = '<a class="text-uppercase" href="' . $url . $parent->ID . '" target="_blank">' . $parent->last_name . ', ' . $parent->first_name . '</a>';
             } else {
                 $value['student'] = '<label class="text-uppercase">' . $student_full_name . '</label>';
                 $value['parent'] = '<label class="text-uppercase">' . $parent->last_name . ', ' . $parent->first_name . '</label>';
