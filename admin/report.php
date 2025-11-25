@@ -8,7 +8,7 @@ function tt_add_active_students_per_page_option() {
     }
 
     $args = array(
-        'label'   => __( 'Active Students', 'edusystem' ),
+        'label'   => __( 'Students to list', 'edusystem' ),
         'default' => 20,
         'option'  => 'tt_students_per_page' // This is the unique key
     );
