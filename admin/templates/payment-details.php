@@ -209,11 +209,16 @@
                                                     </div>
 
                                                     <div class="inputs-price hidden" >
-                                                        <?php $split_meta = $item->get_meta( 'split_payment_method' ) ? true : false ?>
+                                                        <?php 
+                                                            $split_meta = $item->get_meta( 'split_payment_method' ) ? true : false;
+                                                            $balance_discount = $item->get_meta( 'balance_discount' ) ? true : false;
+                                                        ?>
                                                         
-                                                        <input type="number" class="input-text" name="items[<?= $item->get_id(); ?>][amount]" min="0" step="0.01"
+                                                        <input type="number" class="input-text" name="items[<?= $item->get_id(); ?>][amount]" 
+                                                            step="0.01" <?= !$balance_discount ? 'min="0"' : 'max="0"' ?>
                                                             data-origin-price="<?= $item->get_total() ?>" 
-                                                            <?= $split_meta ? 'data-fee-split-payment="true"' : '' ?> />
+                                                            <?= $split_meta ? 'data-fee-split-payment="true"' : '' ?> 
+                                                        />
 
                                                             <?php
                                                                 if( $split_meta ) {

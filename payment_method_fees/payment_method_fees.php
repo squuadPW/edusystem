@@ -266,6 +266,7 @@ function PMF_update_payment_method_fee( $order) {
     // Elimina o actualiza el fee si ya existe
     $fee_found = false;
     foreach ( $order->get_items('fee') as $fee_item_id => $fee_item ) {
+        
         if ( $fee_item->get_name() === $fee_name ) {
             if ( $fee_amount <= 0 ) {
                 $order->remove_item( $fee_item_id );
@@ -296,6 +297,177 @@ function PMF_update_payment_method_fee( $order) {
     $order->save();
 }
 
+// actualiza el fee de la orden via ajax (solo para pruebas)
+add_action( 'wp_ajax_PMF_update_fee_order_pay', 'PMF_update_fee_order_pay' );
+add_action( 'wp_ajax_nopriv_PMF_update_fee_order_pay', 'PMF_update_fee_order_pay' );
+function PMF_update_fee_order_pay() {
+
+    if ( !isset($_POST['payment_method']) || !$_POST['order_id'] ) 
+        wp_send_json_error( __('Invalid parameters','payment-method-fees'), 400 );
+
+    $order_id       = sanitize_text_field( $_POST['order_id'] );
+    $payment_method = sanitize_text_field( $_POST['payment_method'] );
+
+    // Obtiene el nombre del fee actual
+    $gateway = WC()->payment_gateways->payment_gateways()[ $payment_method ] ?? null;
+    $gateway_title = $gateway ? $gateway->get_title() : ucfirst( $payment_method );
+    $fee_name = $gateway_title . ' ' . __( 'Fee', 'payment-method-fees' );
+
+    $commissions = get_option( 'payment_method_commissions', [] );
+    $data = $commissions[ $payment_method ] ?? null;
+    if ( ! $data ) wp_send_json_error( __('No commission data for this payment method','payment-method-fees'), 400 );
+
+    $order = wc_get_order( $order_id );
+    if ( ! $order ) wp_send_json_error( __('Order not found','payment-method-fees'), 404 );
+
+    $type = $data['type'];
+    $value = floatval( $data['value'] );
+
+    $total = $order->get_total();
+
+    $fee_amount = $type === 'percentage'
+        ? ( $total ) * ( $value / 100 )
+        : $value;
+
+    // Elimina o actualiza el fee si ya existe
+    foreach ( $order->get_items('fee') as $fee_item_id => $fee_item ) {
+        if( $fee_item->get_meta( '_payment_method_fee' ) != '' ) {
+            $order->remove_item( $fee_item_id );
+        }
+    }
+
+    // Si no se encontró el fee, lo crea
+    if ( $fee_amount > 0 ) {
+
+        $item = new WC_Order_Item_Fee();
+        $item->set_name( $fee_name );
+        $item->set_amount( $fee_amount );
+        $item->set_total( $fee_amount );
+        $item->add_meta_data( '_payment_method_fee', $fee_amount, true );
+        $order->add_item( $item );
+    }
+
+    // Actualiza el método de pago de la orden
+    $order->set_payment_method( $payment_method );
+    $order->set_payment_method_title( $gateway_title );
+
+    // Recalcula totales y guarda
+    $order->calculate_totals();
+    $order->save();
+
+
+    // Obtener el fee del metodo de pago actualizado
+    $fee = null;
+    foreach ( $order->get_items('fee') as $fee_item_id => $fee_item ) {
+        
+        if ( $fee_item->get_meta( '_payment_method_fee' ) != '') {
+            $fee = [
+                'name'   => $fee_item->get_name(),
+                'amount' => wc_price($fee_item->get_amount()),
+            ];
+            break;
+        }
+    }
+
+    wp_send_json_success( array(
+        'message' => __('Fee updated successfully','payment-method-fees'),
+        'fee' => $fee,
+        'order_total'     => wc_price($order->get_total()),
+        'payment_method'  => $gateway_title,
+    ) );
+}
+
+add_filter( 'woocommerce_get_order_item_totals', function( $totals, $order, $tax_display ) {
+    foreach( $totals as $key => &$total ) {
+        $total['class'] = $key; // añade la clave como clase al <tr>
+    }
+    return $totals;
+}, 10, 3 );
+
+// añadir script en la pagina de pay order para actualizar el fee via ajax
+add_action( 'woocommerce_pay_order_before_submit',function () {
+
+    if( !is_checkout('order-pay') ) return; 
+
+    $order_id = absint( get_query_var( 'order-pay' ) );
+    $order = wc_get_order( $order_id );
+    $payment_method = $order ? $order->get_payment_method() : '';
+
+    ?>
+        <input type="hidden" id="PMF_order_id" value="<?= esc_attr( $order_id ); ?>" />
+
+        <script>
+            
+            jQuery(function () {
+
+                // Seleccionar automáticamente el método de pago de la orden
+                var payment_method = "<?php echo esc_js( $payment_method ); ?>";
+                if (payment_method) {
+                    jQuery('input[name="payment_method"][value="' + payment_method + '"]').prop('checked', true).trigger('change');
+                }
+
+                jQuery('input[name="payment_method"]').on('change', function(){
+
+                    var metodo = jQuery(this).val();
+                    var order_id = jQuery('#PMF_order_id').val(); // WooCommerce pone el ID en el form
+
+                    jQuery.ajax({
+                        url: ajax_object.ajax_url,
+                        type: 'POST',
+                        data: {
+                            action: 'PMF_update_fee_order_pay',
+                            order_id: order_id,
+                            payment_method: metodo
+                        },
+                        success: function(response){
+                            if(response.success){
+                                console.log(response);
+                                // loadTableTotalsFee(fee);
+                            }
+                        }
+                    });
+                });
+            });
+
+            function actualizarTablaTotales(fee, metodo, order_total) {
+                // Elimina filas previas de fee y método de pago
+                $('table.shop_table tfoot tr.fee-row').remove();
+                $('table.shop_table tfoot tr.payment-method-row').remove();
+
+                // Insertar fila de fee
+                if (fee) {
+                    var feeRow = '<tr class="fee-row">' +
+                        '<th scope="row" colspan="2">' + fee.name + ':</th>' +
+                        '<td class="product-total"><span class="woocommerce-Price-amount amount"><bdi>' +
+                        '<span class="woocommerce-Price-currencySymbol">$</span>' + fee.amount +
+                        '</bdi></span></td>' +
+                        '</tr>';
+                    $('table.shop_table tfoot tr:last').before(feeRow);
+                }
+
+                // Insertar fila de método de pago
+                var metodoRow = '<tr class="payment-method-row">' +
+                    '<th scope="row" colspan="2">Payment method:</th>' +
+                    '<td class="product-total">' + metodo + '</td>' +
+                    '</tr>';
+                $('table.shop_table tfoot tr:last').before(metodoRow);
+
+                // Actualizar el total
+                $('table.shop_table tfoot tr:last td.product-total .woocommerce-Price-amount bdi')
+                    .html('<span class="woocommerce-Price-currencySymbol">$</span>' + order_total);
+            }
+
+        </script>
+        
+    <?php
+});
+
+
+
+
+
+
+  
 
 
 
