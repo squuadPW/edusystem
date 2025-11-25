@@ -1633,7 +1633,7 @@ add_action('after_items_list_payments_edusystem', function ( $order_id ) {
                             ?>
                                 <tr>
                                     <td data-label="<?= __('ID', 'split-payment-method'); ?>"><?= $order->get_id() .' - '.$i ?></td>
-                                    <td data-label="<?= __('Date', 'split-payment-method'); ?>"><?= $payment_order->get_date_created() ?></td>
+                                    <td data-label="<?= __('Date', 'split-payment-method'); ?>"><?= wp_date('m/d/Y H:i:s', strtotime($payment_order->get_date_created())) ?></td>
                                     <td data-label="<?= __('Amount', 'split-payment-method'); ?>"><?= wc_price( $payment['amount'] ); ?></td>
                                     <td data-label="<?= __('Status', 'split-payment-method'); ?>"><?= esc_html( wc_get_order_status_name( $payment_order->get_status() ) ) ?></td>
                                     <td data-label="<?= __('Action', 'split-payment-method'); ?>">
