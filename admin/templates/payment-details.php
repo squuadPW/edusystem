@@ -46,7 +46,7 @@
                                     
                                     <p>
                                         <strong><?=__('Date','edusystem')?>:</strong>
-                                        <?= $order->get_date_created()->date_i18n('Y-m-d H:i:s') ?>
+                                        <?=  wp_date('m/d/Y H:i:s', strtotime($order->get_date_created())) ?>
                                     </p>
                                 </div>
 
