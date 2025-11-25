@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 3.8.35
+Version: 3.8.36
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
