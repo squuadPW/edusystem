@@ -1826,7 +1826,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
                     echo '</td>';
 
                     echo '<td class="date column-date" data-colname="Date">';
-                    echo esc_html( $payment_order->get_date_created()->date_i18n('F j, Y g:i a') );
+                    echo esc_html( $payment_order->get_date_created()->date_i18n('m/d/Y H:i:s') );
                     echo '</td>';
 
                     echo '<td class="partner_name column-partner_name" data-colname="Parent"></td>';
