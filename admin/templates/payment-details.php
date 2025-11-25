@@ -37,7 +37,7 @@
                                     
                                     <p>
                                         <strong><?=__('Status','edusystem')?>:</strong>
-                                        <?= $order->get_status() ?>
+                                        <?= wc_get_order_status_name($order->get_status()) ?>
                                     </p>
                                 </div>
 
@@ -46,7 +46,7 @@
                                     
                                     <p>
                                         <strong><?=__('Date','edusystem')?>:</strong>
-                                        <?= $order->get_date_created()->date_i18n('Y-m-d H:i:s') ?>
+                                        <?=  wp_date('m/d/Y H:i:s', strtotime($order->get_date_created())) ?>
                                     </p>
                                 </div>
 
@@ -69,12 +69,7 @@
                                         
                                         <p>
                                             <strong><?=__('Student','edusystem')?>:</strong>
-                                            <?= 
-                                                $student->last_name . ' ' . 
-                                                $student->middle_last_name . ' ' . 
-                                                $student->name . ' ' . 
-                                                $student->middle_name; 
-                                            ?>
+                                            <?= student_names_lastnames_helper($student->id); ?>
                                         </p>
                                     </div>
                                 <?php endif; ?>
@@ -92,7 +87,7 @@
                                         
                                         <p>
                                             <strong><?=__('Parent','edusystem')?>:</strong>
-                                            <?= $order->get_billing_last_name().' '.$order->get_billing_first_name() ?>
+                                            <?= $order->get_billing_last_name().', '.$order->get_billing_first_name() ?>
                                         </p>
                                     </div>
                                 <?php endif; ?>
@@ -322,7 +317,14 @@
                             <div class="seccion-card">
                                 <p>
                                     <strong><?=__('Payment Method selected','edusystem')?>:</strong>
-                                    <?= $order->get_payment_method_title(); ?>
+                                    <?php 
+                                        $split_payment_method = $order->get_meta('split_payment_method', true);
+                                        if ($split_payment_method) {
+                                            echo esc_html(__('Split payment', 'edusystem'));
+                                        } else {
+                                            echo  $order->get_payment_method_title(); 
+                                        }
+                                    ?>
                                 </p>
                             </div>
 

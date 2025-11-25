@@ -1826,7 +1826,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
                     echo '</td>';
 
                     echo '<td class="date column-date" data-colname="Date">';
-                    echo esc_html( $payment_order->get_date_created()->date_i18n('F j, Y g:i a') );
+                    echo esc_html( $payment_order->get_date_created()->date_i18n('m/d/Y H:i:s') );
                     echo '</td>';
 
                     echo '<td class="partner_name column-partner_name" data-colname="Parent"></td>';
@@ -1952,17 +1952,14 @@ class TT_payment_pending_List_Table extends WP_List_Table
 
                 $student_full_name = '';
                 if ($student) {
-                    // Ensure properties exist before concatenating
-                    $student_full_name = ($student->last_name ?? '') . ' ' .
-                        ($student->middle_last_name ?? '') . ' ' .
-                        ($student->name ?? '') . ' ' .
-                        ($student->middle_name ?? '');
+                    $student_full_name = student_names_lastnames_helper($student->id);
                 }
 
                 // Get billing first and last name from the order directly
                 $billing_first_name = $order->get_billing_first_name();
                 $billing_last_name = $order->get_billing_last_name();
-                $partner_name = trim($billing_last_name . ' ' . $billing_first_name);
+                $partner_name = trim($billing_last_name . ', ' . $billing_first_name);
+                $split_payment_method = $order->get_meta('split_payment_method', true);
 
                 $split_meta = $order->get_meta('split_payment_method');
                 $split_payments = [];
@@ -1972,12 +1969,12 @@ class TT_payment_pending_List_Table extends WP_List_Table
 
                 $orders_array[] = [
                     'payment_id' => $order->get_id(),
-                    'date' => $order->get_date_created() ? $order->get_date_created()->format('F j, Y g:i a') : '',
+                    'date' => $order->get_date_created() ? $order->get_date_created()->format('m/d/Y H:i:s') : '',
                     'partner_name' => $partner_name,
-                    'student_name' => '<span class="text-uppercase">' . $student_full_name . '</span>', // Apply uppercase here
+                    'student_name' => $student_full_name,
                     'total' => wc_price($order->get_total()),
                     'status' => ($order->get_status() === 'pending') ? __('Payment pending', 'your-text-domain') : wc_get_order_status_name($order->get_status()), // Use wc_get_order_status_name for localized status
-                    'payment_method' => $order->get_payment_method_title(),
+                    'payment_method' => $order->get_payment_method_title() ? $order->get_payment_method_title() : ($split_payment_method ? 'Split payment' : 'N/A'),
                     'split_payments' => $split_payments,
                 ];
             }
@@ -2214,29 +2211,25 @@ class TT_all_payments_List_Table extends WP_List_Table
         if ($orders) {
             foreach ($orders as $order) {
                 $student = get_student_detail($order->get_meta('student_id'));
-
                 $student_full_name = '';
                 if ($student) {
-                    // Ensure properties exist before concatenating
-                    $student_full_name = ($student->last_name ?? '') . ' ' .
-                        ($student->middle_last_name ?? '') . ' ' .
-                        ($student->name ?? '') . ' ' .
-                        ($student->middle_name ?? '');
+                    $student_full_name = student_names_lastnames_helper($student->id);
                 }
 
                 // Get billing first and last name from the order directly
                 $billing_first_name = $order->get_billing_first_name();
                 $billing_last_name = $order->get_billing_last_name();
-                $partner_name = trim($billing_last_name . ' ' . $billing_first_name);
+                $partner_name = trim($billing_last_name . ', ' . $billing_first_name);
+                $split_payment_method = $order->get_meta('split_payment_method', true);
 
                 $orders_array[] = [
                     'payment_id' => $order->get_id(),
-                    'date' => $order->get_date_created() ? $order->get_date_created()->format('F j, Y g:i a') : '',
+                    'date' => $order->get_date_created() ? $order->get_date_created()->format('m/d/Y H:i:s') : '',
                     'partner_name' => $partner_name,
-                    'student_name' => '<span class="text-uppercase">' . $student_full_name . '</span>', // Apply uppercase here
+                    'student_name' => $student_full_name, // Apply uppercase here
                     'total' => wc_price($order->get_total()),
                     'status' => wc_get_order_status_name($order->get_status()), // Use wc_get_order_status_name for localized status
-                    'payment_method' => $order->get_payment_method_title()
+                    'payment_method' => $order->get_payment_method_title() ? $order->get_payment_method_title() : ($split_payment_method ? 'Split payment' : 'N/A'),
                 ];
             }
         }

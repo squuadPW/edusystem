@@ -38,10 +38,7 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 								style="color: #0073aa; font-size: 24px; margin-right: 15px;"></span>
 							<p style="margin: 0; font-size: 16px; color: #555;">
 								<strong style="color: #333;"><?= __('Name:', 'edusystem'); ?></strong>
-								<?= $student->name ?>
-								<?= $student->middle_name ?>
-								<?= $student->last_name ?>
-								<?= $student->middle_last_name ?>
+								<?= student_names_lastnames_helper($student->id); ?>
 							</p>
 						</div>
 

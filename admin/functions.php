@@ -1571,19 +1571,41 @@ function student_names_lastnames_helper($student_id = null) {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
-    if ($student) {
-        $lastNameParts = array_filter([$student->last_name, $student->middle_last_name]);
-        $firstNameParts = array_filter([$student->name, $student->middle_name]);
 
-        $student_full_name = implode(' ', $lastNameParts);
-        if (!empty($firstNameParts)) {
-            if (!empty($student_full_name)) {
-                $student_full_name .= ', ';
-            }
-            $student_full_name .= implode(' ', $firstNameParts);
+    if ($student) {
+        // Recolectar y limpiar (trim) todas las partes del nombre.
+        // Se usa array_filter para eliminar cualquier cadena vacía resultante del trim.
+        $lastNameParts = array_filter([
+            trim($student->last_name),
+            trim($student->middle_last_name)
+        ]);
+
+        $firstNameParts = array_filter([
+            trim($student->name),
+            trim($student->middle_name)
+        ]);
+
+        $fullNameParts = [];
+
+        // 1. Añadir apellidos
+        if (!empty($lastNameParts)) {
+            $fullNameParts[] = implode(' ', $lastNameParts);
         }
 
-        return $student_full_name;
+        // 2. Añadir nombres, con el formato ', ' si ya hay apellidos.
+        if (!empty($firstNameParts)) {
+            $nameString = implode(' ', $firstNameParts);
+            if (!empty($fullNameParts)) {
+                // Si ya hay apellidos, se añade la coma y el espacio antes de los nombres.
+                $fullNameParts[] = ', ' . $nameString;
+            } else {
+                // Si no hay apellidos, solo se añaden los nombres.
+                $fullNameParts[] = $nameString;
+            }
+        }
+
+        // Unir las partes y aplicar un trim final para asegurar que no haya espacios al inicio/final.
+        return trim(implode('', $fullNameParts));
     } else {
         return '';
     }
@@ -1633,7 +1655,7 @@ add_action('after_items_list_payments_edusystem', function ( $order_id ) {
                             ?>
                                 <tr>
                                     <td data-label="<?= __('ID', 'split-payment-method'); ?>"><?= $order->get_id() .' - '.$i ?></td>
-                                    <td data-label="<?= __('Date', 'split-payment-method'); ?>"><?= $payment_order->get_date_created() ?></td>
+                                    <td data-label="<?= __('Date', 'split-payment-method'); ?>"><?= wp_date('m/d/Y H:i:s', strtotime($payment_order->get_date_created())) ?></td>
                                     <td data-label="<?= __('Amount', 'split-payment-method'); ?>"><?= wc_price( $payment['amount'] ); ?></td>
                                     <td data-label="<?= __('Status', 'split-payment-method'); ?>"><?= esc_html( wc_get_order_status_name( $payment_order->get_status() ) ) ?></td>
                                     <td data-label="<?= __('Action', 'split-payment-method'); ?>">
