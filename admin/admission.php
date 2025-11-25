@@ -884,13 +884,14 @@ class TT_all_student_List_Table extends WP_List_Table
             $parent = get_user_by('id', $value['partner_id']);
             $student = get_user_by('email', $value['email']);
 
+            $student_full_name = student_names_lastnames_helper($value['id']);
             $value['index'] = $key + 1;
             if (in_array('owner', $roles) || in_array('administrator', $roles)) {
-                $value['student'] = '<a class="text-uppercase" href="' . $url . $student->ID . '" target="_blank">' . $value['last_name'] . ' ' . $value['middle_last_name'] . ' ' . $value['name'] . ' ' . $value['middle_name'] . '</a>';
+                $value['student'] = '<a class="text-uppercase" href="' . $url . $student->ID . '" target="_blank">' . $student_full_name . '</a>';
                 $value['parent'] = '<a class="text-uppercase" href="' . $url . $parent->ID . '" target="_blank">' . $parent->last_name . ' ' . $parent->first_name . '</a>';
             } else {
-                $value['student'] = '<label class="text-uppercase">' . $value['last_name'] . ' ' . $value['middle_last_name'] . ' ' . $value['name'] . ' ' . $value['middle_name'] . '</label>';
-                $value['parent'] = '<label class="text-uppercase">' . $parent->last_name . ' ' . $parent->first_name . '</label>';
+                $value['student'] = '<label class="text-uppercase">' . $student_full_name . '</label>';
+                $value['parent'] = '<label class="text-uppercase">' . $parent->last_name . ', ' . $parent->first_name . '</label>';
             }
             $hasMoodleAccess = isset($value['moodle_student_id']);
 
