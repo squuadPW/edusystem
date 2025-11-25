@@ -1,29 +1,31 @@
 <?php
 
-function tt_add_active_students_per_page_option() {
+function tt_add_active_students_per_page_option()
+{
     $screen = get_current_screen();
 
-    if ( ! is_object( $screen ) || $screen->id !== 'report_page_report-students' ) {
+    if (!is_object($screen) || $screen->id !== 'report_page_report-students') {
         return;
     }
 
     $args = array(
-        'label'   => __( 'Students to list', 'edusystem' ),
+        'label' => __('Students to list', 'edusystem'),
         'default' => 20,
-        'option'  => 'tt_students_per_page' // This is the unique key
+        'option' => 'tt_students_per_page' // This is the unique key
     );
 
-    add_screen_option( 'per_page', $args );
+    add_screen_option('per_page', $args);
 }
-add_action( 'load-report_page_report-students', 'tt_add_active_students_per_page_option' );
+add_action('load-report_page_report-students', 'tt_add_active_students_per_page_option');
 
-function tt_save_students_per_page_option( $status, $option, $value ) {
-    if ( 'tt_students_per_page' === $option ) {
+function tt_save_students_per_page_option($status, $option, $value)
+{
+    if ('tt_students_per_page' === $option) {
         return $value;
     }
     return $status;
 }
-add_filter( 'set-screen-option', 'tt_save_students_per_page_option', 10, 3 );
+add_filter('set-screen-option', 'tt_save_students_per_page_option', 10, 3);
 
 function add_admin_form_report_content()
 {
@@ -2421,19 +2423,21 @@ class TT_Active_Student_List_Table extends WP_List_Table
 
     }
 
-    protected function get_per_page_option_name() {
-        return 'tt_students_per_page'; 
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
     }
 
-    protected function get_per_page() {
+    protected function get_per_page()
+    {
         // Must match the 'option' key defined in tt_add_active_students_per_page_option
-        $storage_key = 'tt_students_per_page'; 
+        $storage_key = 'tt_students_per_page';
         $default_value = 20;
 
         // get_user_option retrieves the value saved by the set-screen-option filter
-        $per_page = (int) get_user_option( $storage_key );
+        $per_page = (int) get_user_option($storage_key);
 
-        if ( empty( $per_page ) || $per_page < 1 ) {
+        if (empty($per_page) || $per_page < 1) {
             $per_page = $default_value;
         }
 
@@ -2454,7 +2458,7 @@ class TT_Active_Student_List_Table extends WP_List_Table
 
     function column_name($item)
     {
-        return ucwords($item['student']); 
+        return ucwords($item['student']);
     }
 
     function column_cb($item)
@@ -2502,13 +2506,13 @@ class TT_Active_Student_List_Table extends WP_List_Table
     function fetch_students_active_data($limit, $offset)
     {
         $students_array = [];
-        
+
         $academic_period = $_POST['academic_period'] ?? '';
         $academic_period_cut = $_POST['academic_period_cut'] ?? '';
         $search = $_POST['s'] ?? '';
         $country = $_POST['country'] ?? '';
         $institute = $_POST['institute'] ?? '';
-        
+
         // This function should be modified for efficiency to fetch only the required data
         $students = get_students_report_offset($academic_period, $academic_period_cut, $search, $country, $institute);
         $total_count = count($students);
@@ -2521,14 +2525,14 @@ class TT_Active_Student_List_Table extends WP_List_Table
             $student_full_name = "<span class='text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . student_names_lastnames_helper($student->id) . '</span>';
             $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . strtoupper(get_user_meta($parent->ID, 'last_name', true) . ' ' . get_user_meta($parent->ID, 'first_name', true)) . "</span>";
             $students_array[] = [
-                'student' => $student_full_name, 
-                'id' => $student->id, 
-                'id_document' => $student->id_document, 
-                'email' => $student->email, 
-                'parent' => $parent_full_name, 
-                'parent_email' => $parent->user_email, 
-                'country' => $student->country, 
-                'grade' => get_name_grade($student->grade_id), 
+                'student' => $student_full_name,
+                'id' => $student->id,
+                'id_document' => $student->id_document,
+                'email' => $student->email,
+                'parent' => $parent_full_name,
+                'parent_email' => $parent->user_email,
+                'country' => $student->country,
+                'grade' => get_name_grade($student->grade_id),
                 'institute' => $student->institute_id ? get_name_institute($student->institute_id) : $student->name_institute
             ];
         }
@@ -2546,8 +2550,8 @@ class TT_Active_Student_List_Table extends WP_List_Table
 
         $per_page = $this->get_per_page();
         $current_page = $this->get_pagenum();
-        $offset = ( $current_page - 1 ) * $per_page;
-        
+        $offset = ($current_page - 1) * $per_page;
+
         // Final calculated per_page must now be 50 if the user set it.
 
         $data_student = $this->fetch_students_active_data($per_page, $offset);
