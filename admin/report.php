@@ -1,32 +1,29 @@
 <?php
 
-/**
- * Registra la opción 'tt_students_per_page' en el menú de Screen Options.
- *
- * Se usa el ID de pantalla exacto: report_page_report-students
- */
 function tt_add_active_students_per_page_option() {
-    // 1. Obtener la pantalla actual.
     $screen = get_current_screen();
-    
-    // 2. Comprobar que el ID de pantalla coincida con el DEBUG ID:
+
     if ( ! is_object( $screen ) || $screen->id !== 'report_page_report-students' ) {
         return;
     }
 
-    // 3. Definir y registrar la opción 'per_page' (Elementos por página).
     $args = array(
-        'label'   => __( 'Active Students', 'edusystem' ), 
-        'default' => 20,                                   
-        'option'  => 'tt_students_per_page'                
+        'label'   => __( 'Active Students', 'edusystem' ),
+        'default' => 20,
+        'option'  => 'tt_students_per_page' // This is the unique key
     );
-    
-    // Función nativa para inyectar la opción de paginación en Screen Options
+
     add_screen_option( 'per_page', $args );
 }
-
-// 4. USAR EL HOOK DE CARGA ESPECÍFICO CON EL ID CORREGIDO
 add_action( 'load-report_page_report-students', 'tt_add_active_students_per_page_option' );
+
+function tt_save_students_per_page_option( $status, $option, $value ) {
+    if ( 'tt_students_per_page' === $option ) {
+        return $value;
+    }
+    return $status;
+}
+add_filter( 'set-screen-option', 'tt_save_students_per_page_option', 10, 3 );
 
 function add_admin_form_report_content()
 {
@@ -2428,27 +2425,18 @@ class TT_Active_Student_List_Table extends WP_List_Table
         return 'tt_students_per_page'; 
     }
 
-    /**
-     * Retrieves the number of items per page.
-     * WordPress saves the 'per_page' screen option using the key: per_page_[screen-id]
-     * The screen ID was verified as 'report_page_report-students', leading to the key:
-     * 'per_page_report_page_report-students'
-     * @return int Number of items per page.
-     */
     protected function get_per_page() {
-        // The definitive WordPress storage key for per_page option on this screen
-        $storage_key = 'per_page_report_page_report-students'; 
+        // Must match the 'option' key defined in tt_add_active_students_per_page_option
+        $storage_key = 'tt_students_per_page'; 
         $default_value = 20;
 
-        // Retrieve the stored value using the explicit storage key.
-        $per_page_raw = get_user_option( $storage_key, $default_value );
-        
-        $per_page = (int) $per_page_raw;
-        
-        if ( $per_page < 1 ) {
+        // get_user_option retrieves the value saved by the set-screen-option filter
+        $per_page = (int) get_user_option( $storage_key );
+
+        if ( empty( $per_page ) || $per_page < 1 ) {
             $per_page = $default_value;
         }
-        
+
         return $per_page;
     }
 
