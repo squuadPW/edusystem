@@ -831,18 +831,21 @@ function add_admin_form_payments_content()
             $motive = sanitize_text_field($_POST['motive']);
             $apply_to = sanitize_text_field($_POST['apply_to']);
             $amount = sanitize_text_field($_POST['amount']);
+            $currency = $_POST['currency'] ? sanitize_text_field($_POST['currency']) : get_woocommerce_currency();
 
             if (isset($expense_id) && !empty($expense_id)) {
                 $wpdb->update($table_expenses, [
                     'motive' => $motive,
                     'apply_to' => $apply_to,
                     'amount' => $amount,
+                    'currency' => $currency,
                 ], ['id' => $expense_id]);
             } else {
                 $wpdb->insert($table_expenses, [
                     'motive' => $motive,
                     'apply_to' => $apply_to,
                     'amount' => $amount,
+                    'currency' => $currency,
                 ]);
             }
 

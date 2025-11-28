@@ -288,6 +288,7 @@ function create_tables()
         motive TEXT NOT NULL,
         apply_to DATE NOT NULL,
         amount DOUBLE(10, 2) NOT NULL,
+        currency TEXT NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id)
         )$charset_collate;"
