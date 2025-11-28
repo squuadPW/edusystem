@@ -508,7 +508,7 @@ function add_custom_admin_page()
         // Subpáginas
         add_submenu_page('add_admin_form_payments_content', __('Payments', 'edusystem'), __('Payments', 'edusystem'), 'manager_payments_aes', 'add_admin_form_payments_content', 'add_admin_form_payments_content', 10);
         add_submenu_page('add_admin_form_payments_content', __('Payment Plans', 'edusystem'), __('Payment Plans', 'edusystem'), 'manager_payment_plans', 'add_admin_form_payments_plans_content', 'add_admin_form_payments_content', 10);
-        add_submenu_page('add_admin_form_payments_content', __('Fees', 'edusystem'), __('Fees', 'edusystem'), 'manager_payments_aes', 'fees_content', 'add_admin_form_payments_content', 10);
+        add_submenu_page('add_admin_form_payments_content', __('Fees', 'edusystem'), __('Fees', 'edusystem'), 'manager_payment_fees', 'fees_content', 'add_admin_form_payments_content', 10);
 
         add_menu_page(
             __('Staff', 'edusystem'),
@@ -623,6 +623,8 @@ function add_cap_to_administrator()
     $role->add_cap('manager_documents_aes');
     $role->add_cap('manager_payments_aes');
     $role->add_cap('manager_payment_plans');
+    $role->add_cap('manager_payment_fees');
+    $role->add_cap('manager_payment_comissions');
     $role->add_cap('manager_alliances_aes');
     $role->add_cap('manager_institutes_aes');
     $role->add_cap('manager_moodle_aes');
