@@ -90,7 +90,7 @@
 								</td>
 								<td colspan="2" style="text-align: center;">
 									<?=
-										wc_price($payment->amount) . '<input type="hidden" name="amount_payment[]" class="amount_payment" value="' . $payment->amount . '" />'
+										wc_price($payment->amount, ['currency' => $payment->currency]) . '<input type="hidden" name="amount_payment[]" class="amount_payment" value="' . $payment->amount . '" />'
 										?>
 								</td>
 								<td colspan="2" style="text-align: center;">

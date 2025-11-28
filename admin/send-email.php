@@ -82,7 +82,7 @@ function send_pending_prepayments_email()
                 // Preparar el mensaje con la fecha de vencimiento
                 $message = sprintf(
                     'We hope you are well. We remind you that your payment of %s is due on %s.',
-                    wc_price($payment->amount),
+                    wc_price($payment->amount, ['currency' => $payment->currency]),
                     date('F j, Y', strtotime($payment->date_next_payment))
                 );
 
