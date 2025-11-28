@@ -13,7 +13,7 @@ add_action('admin_menu', function() {
     add_menu_page(
         __('Payment Commissions','payment-method-fees'),
         __('Payment Commissions','payment-method-fees'),
-        'manage_options',
+        'manager_payment_comissions',
         'payment-method-fees',
         'PMF_payment_method_fees_page'
     );
