@@ -126,6 +126,7 @@ function add_admin_form_payments_content()
 
                         $table_student_payments = $wpdb->prefix . 'student_payments';
                         $student_id = $order->get_meta('student_id');
+                        $currency = $order->get_currency();
 
                         // obtiene la cuota a pagar
                         $cuote_payment_id = $order->get_meta('cuote_payment') ?? 0;
@@ -155,8 +156,9 @@ function add_admin_form_payments_content()
                         // Primero verificamos si ya existe un registro para el estudiante y obtenemos el balance actual
                         $table_student_balance = $wpdb->prefix . 'student_balance';
                         $student_balance = $wpdb->get_row($wpdb->prepare(
-                            "SELECT id, balance FROM $table_student_balance WHERE student_id = %d",
-                            $student_id
+                            "SELECT id, balance FROM $table_student_balance WHERE student_id = %d AND currency LIKE %s",
+                            $student_id,
+                            $currency
                         ));
 
                         $balance = $student_balance->balance ?? 0;
@@ -186,6 +188,7 @@ function add_admin_form_payments_content()
                                     [
                                         'student_id' => $student_id,
                                         'balance' => $balance ?? 0,
+                                        'currency' => $currency,
                                     ],
                                     ['%d', '%f']
                                 );
@@ -237,6 +240,7 @@ function add_admin_form_payments_content()
                                         'institute_fee' => 0,
                                         'alliances' => null,
                                         'amount' => $less_amount,
+                                        'currency' => $cuote_payment->currency,
                                         'original_amount_product' => $new_original_amount_product,
                                         'total_amount' => $cuote_payment->total_amount,
                                         'original_amount' => $cuote_payment->original_amount,
@@ -596,10 +600,13 @@ function add_admin_form_payments_content()
             if ($save_changes) {
                 $old_amount = 0;
                 $new_amount = 0;
+                $currency = get_woocommerce_currency();
+
                 foreach ($payments as $key => $payment) {
                     $wpdb->update($table_student_payments, ['date_next_payment' => $date_payment[$key], 'amount' => $amount_payment[$key]], ['id' => $payment->id]);
                     $old_amount += $payment->amount;
                     $new_amount += $amount_payment[$key];
+                    $currency = $payment->currency;
                 }
 
                 $wpdb->insert($table_student_payments_log, [
@@ -607,6 +614,7 @@ function add_admin_form_payments_content()
                     'old_amount' => $old_amount,
                     'new_amount' => $new_amount,
                     'difference' => $new_amount - $old_amount,
+                    'currency' => $currency,
                     'user_id' => $current_user->ID,
                     'description' => $_POST['description_payment_log']
                 ]);
@@ -864,6 +872,7 @@ function add_admin_form_payments_content()
             $total_price = floatval(sanitize_text_field($_POST['total_price']));
             $is_active = $_POST['is_active'] ? true : false;
             $subprograms_post = $_POST['subprogram'] ?? '';
+            $currency = $_POST['currency'] ?? get_woocommerce_currency();
 
             $subprograms = []; // array para guardas los subprogramas
 
@@ -896,6 +905,9 @@ function add_admin_form_payments_content()
                 // guarda el stock en caso de que este activo o no
                 update_post_meta($program_product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
 
+                // actualiza la moneda del producto
+                update_post_meta($program_product_id, '_product_currency', $currency);
+
                 // Asignar la categoría al producto
                 wp_set_object_terms($program_product_id, $category_id, 'product_cat');
             } else {
@@ -917,6 +929,9 @@ function add_admin_form_payments_content()
 
                     // guarda el stock en caso de que este activo o no
                     update_post_meta($program_product_id, '_stock_status', $is_active ? 'instock' : 'outofstock');
+
+                    // guarda la moneda del producto
+                    update_post_meta($program_product_id, '_product_currency', $currency);
 
                     // Asignar la categoría al producto
                     wp_set_object_terms($program_product_id, (int) $category_id, 'product_cat');
@@ -945,7 +960,7 @@ function add_admin_form_payments_content()
                             'is_taxonomy' => false
                         )
                     );
-
+                    
                     update_post_meta($program_product_id, '_product_attributes', $product_attributes);
                 }
 
@@ -971,6 +986,9 @@ function add_admin_form_payments_content()
                         // guarda el stock en caso de que este activo o no
                         update_post_meta($product_id, '_stock_status', ($is_active && $is_active_subprogram) ? 'instock' : 'outofstock');
 
+                        // guarda la moneda del producto
+                        update_post_meta($product_id, '_product_currency', $currency);
+
                         wp_set_object_terms($product_id, (int) $category_id, 'product_cat');
                     } else {
 
@@ -995,6 +1013,9 @@ function add_admin_form_payments_content()
 
                             // Añadir el término al atributo "subprograms"
                             wp_set_object_terms($program_product_id, $name_subprogram, $attribute_name, true);
+
+                            // guarda la moneda del producto
+                            update_post_meta($product_id, '_product_currency', $currency);
 
                             // Actualizar el valor del atributo "subprogramas"
                             $current_values = get_post_meta($program_product_id, '_product_attributes', true);
@@ -1031,6 +1052,7 @@ function add_admin_form_payments_content()
                     'name' => $name,
                     'description' => $description,
                     'total_price' => $total_price,
+                    'currency' => $currency,
                     'is_active' => $is_active,
                     'subprogram' => json_encode($subprograms) ?? null,
                 ], ['id' => $program_id]);
@@ -1051,6 +1073,7 @@ function add_admin_form_payments_content()
                     'name' => $name,
                     'description' => $description,
                     'total_price' => $total_price,
+                    'currency' => $currency,
                     'is_active' => $is_active,
                     'product_id' => $program_product_id,
                     'subprogram' => $subprogram,
@@ -1293,6 +1316,7 @@ function add_admin_form_payments_content()
             $description = sanitize_text_field($_POST['description']);
             $programs = $_POST['programs'] ?? [];
             $type_fee = $_POST['type_fee'];
+            $currency = $_POST['currency'] ?? get_woocommerce_currency();
 
             // verifica y crea en caso de necesitar una categoria llamada fees
             $category_id = 0;
@@ -1356,6 +1380,7 @@ function add_admin_form_payments_content()
                     'is_active' => $is_active,
                     'name' => $name,
                     'price' => $price,
+                    'currency' => $currency,
                     'description' => $description,
                     'programs' => json_encode($programs),
                     'type_fee' => $type_fee,
@@ -1366,6 +1391,7 @@ function add_admin_form_payments_content()
                     'is_active' => $is_active,
                     'name' => $name,
                     'price' => $price,
+                    'currency' => $currency,
                     'product_id' => $product_id,
                     'description' => $description,
                     'programs' => json_encode($programs),
@@ -1450,13 +1476,15 @@ function add_admin_form_payments_content()
                     $excess_amount = floatval($_POST['excess_amount']) ?? 0;
                     $balance = 0;
                     $balance_id = 0;
+                    $currency = $order->get_currency();
 
                     // Primero verificamos si ya existe un registro para el estudiante y obtenemos el balance actual
                     global $wpdb;
                     $table_student_balance = $wpdb->prefix . 'student_balance';
                     $student_balance = $wpdb->get_row($wpdb->prepare(
-                        "SELECT id, balance FROM $table_student_balance WHERE student_id = %d",
-                        $student_id
+                        "SELECT id, balance FROM $table_student_balance WHERE student_id = %d AND currency = %s",
+                        $student_id,
+                        $currency
                     ));
 
                     $balance = $balance + $excess_amount;
@@ -1467,6 +1495,7 @@ function add_admin_form_payments_content()
                             [
                                 'student_id' => $student_id,
                                 'balance' => $balance ?? 0,
+                                'currency' => $currency,
                             ],
                             ['%d', '%f']
                         );
@@ -3143,8 +3172,9 @@ function generate_quote_public_callback()
         // balance
         $table_student_balance = $wpdb->prefix . 'student_balance';
         $student_balance = $wpdb->get_row($wpdb->prepare(
-            "SELECT id, balance FROM $table_student_balance WHERE student_id = %d",
-            $payment_row->student_id
+            "SELECT id, balance FROM $table_student_balance WHERE student_id = %d AND currency = %s",
+            $payment_row->student_id,
+            $order->get_currency()
         ));
 
         if( $student_balance ){
