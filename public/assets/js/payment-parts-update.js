@@ -67,6 +67,17 @@ function payment_table(rule_data) {
     
     table_payment = document.getElementById("table-payment");
     table_payment.innerHTML = "";
+
+	const currency = table_payment.getAttribute("data-currency") ?? "USD";
+	const countryCode = "VE"; // aquí deberías obtenerlo de una fuente de datos
+	const locale = new Intl.Locale("es", { region: countryCode }).toString();
+	const currency_formatter = new Intl.NumberFormat(undefined, {
+        style: "currency",
+        currency: currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+		currencyDisplay: "symbol",
+    });
     
     const text_total = table_payment.getAttribute("data-text_total");
     const headers = JSON.parse(
@@ -175,14 +186,7 @@ function payment_table(rule_data) {
         const amount_cell = document.createElement("td");
         amount_cell.className = "payment-parts-table-data";
 
-        const usdFormatter = new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        });
-
-        amount_cell.textContent = usdFormatter.format( price );
+        amount_cell.textContent = currency_formatter.format( price );
         row.appendChild(amount_cell);
 
         // Añadir fila a la tabla
@@ -207,16 +211,8 @@ function payment_table(rule_data) {
     total_payment_cell.className = "payment-parts-table-data text-end";
     total_payment_cell.colSpan = 3;
 
-    // Reutiliza el formateador de moneda USD
-    const usdFormatter = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
-
     // Asegúrate de que 'total' sea un número antes de formatearlo
-    total_payment_cell.textContent = usdFormatter.format(parseFloat(total));
+    total_payment_cell.textContent = currency_formatter.format(parseFloat(total));
 
     total_payment_row.appendChild(total_payment_cell);
     table.appendChild(total_payment_row);
