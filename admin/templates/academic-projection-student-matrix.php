@@ -53,7 +53,8 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                 <input type="hidden" name="student_id" value="<?= esc_attr($student_id); ?>" />
                                 <input type="hidden" name="projection_id" value="<?= esc_attr($projection->id ?? ''); ?>" />
                                 <!-- You should add a nonce field here for security -->
-                                <?php // wp_nonce_field('update_matrix_action', 'update_matrix_nonce'); ?>
+                                <?php // wp_nonce_field('update_matrix_action', 'update_matrix_nonce'); 
+                                ?>
 
                                 <div style="overflow-x: auto;">
                                     <table class="wp-list-table widefat fixed striped">
@@ -70,7 +71,8 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                         </thead>
                                         <tbody>
                                             <?php foreach ($matrix as $index => $item): ?>
-                                                <?php $item = (array) $item; // Ensure it's an array for safe access ?>
+                                                <?php $item = (array) $item; // Ensure it's an array for safe access 
+                                                ?>
                                                 <tr id="matrix-row-<?= $index; ?>">
                                                     <th scope="row"><?= $index + 1; ?></th>
 
