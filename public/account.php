@@ -123,10 +123,15 @@ function trigger_elective_modal() {
 
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
-    $wpdb->update($table_students, [
+    $updated = $wpdb->update($table_students, [
         'elective' => 1
     ], ['id' => $elective_student_id]);
     
+    if ( $updated !== false ) {
+        if ( function_exists( 'wc_add_notice' ) ) {
+            wc_add_notice( __('Elective successfully registered.', 'edusystem'), 'success' );
+        }
+    }
 
     wp_redirect( home_url() );
     exit;
