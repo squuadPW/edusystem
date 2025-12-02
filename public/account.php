@@ -115,6 +115,7 @@ function trigger_elective_modal() {
     }
 
     $elective_student_id = absint( $_GET['elective_student_id'] );
+    $status_elective = absint( $_GET['status_elective'] );
 
     if ( $elective_student_id <= 0 ) {
         wp_redirect( home_url() );
@@ -124,7 +125,7 @@ function trigger_elective_modal() {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $updated = $wpdb->update($table_students, [
-        'elective' => 1
+        'elective' => $status_elective
     ], ['id' => $elective_student_id]);
     
     // if ( $updated !== false ) {

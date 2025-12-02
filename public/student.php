@@ -1189,27 +1189,19 @@ function trigger_open_elective_modal()
         return;
     }
 
-    // Si el campo 'elective' no existe o es 1, no es necesario cargar el modal.
-    if (!isset($student->elective) || (int) $student->elective !== 0) {
-        return;
-    }
+    // // Si el campo 'elective' no existe o es 1, no es necesario cargar el modal.
+    // if (!isset($student->elective) || (int) $student->elective !== 0) {
+    //     return;
+    // }
 
     // Cargar los conteos de inscripciones
     // Asumiendo que load_inscriptions_electives_valid es una función definida en otro lugar
     $elective_count         = load_inscriptions_electives_valid($student, 'status_id = 3');
     $elective_count_current = load_inscriptions_electives_valid($student, 'status_id = 1');
+    $status_elective = $elective_count < 2 && $elective_count_current === 0 && (int) $student->elective === 0 ? 0 : 1;
 
-    // La condición original para mostrar el modal:
-    // 1. Es un 'student'.
-    // 2. Tiene menos de 2 electivas con status 3 (válidas/completadas).
-    // 3. Tiene menos de 0 electivas con status 1 (actuales). ESTO PARECE UN ERROR LÓGICO Y DEBE SER > 0 O == 0.
-    //    Si la intención es que SOLO se muestre si NO tiene ninguna inscripción actual (status 1), la condición DEBE ser $elective_count_current === 0.
-    //    Ajustaré la condición a $elective_count_current === 0, ya que $elective_count_current < 0 es imposible para un conteo.
     if (
-        in_array('student', $roles, true) &&
-        $elective_count < 2 &&
-        $elective_count_current === 0 &&
-        (int) $student->elective === 0
+        in_array('student', $roles, true)
     ) {
         // Usar trailingslashit y plugin_dir_path para asegurar el path correcto.
         include(trailingslashit(plugin_dir_path(__FILE__)) . 'templates/trigger-open-elective-modal.php');
