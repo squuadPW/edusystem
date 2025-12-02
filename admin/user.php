@@ -1,6 +1,7 @@
 <?php
 
-function delete_data_student($user_id) {
+function delete_data_student($user_id)
+{
     global $wpdb;
 
     // Definir nombres de tablas
@@ -32,7 +33,7 @@ function delete_data_student($user_id) {
 
             if ($wp_user && $wp_user->ID !== $user_id) {
                 // Borrar primero las órdenes del estudiante ANTES de borrar su cuenta de WP
-                delete_woocommerce_orders($wp_user->ID); 
+                delete_woocommerce_orders($wp_user->ID);
                 wp_delete_user($wp_user->ID, false);
             }
         }
@@ -40,7 +41,7 @@ function delete_data_student($user_id) {
 
     // 2. Borrar las órdenes del usuario principal (partner) ANTES de limpiar sus otros datos
     delete_woocommerce_orders($user_id);
-    
+
     // 3. Obtener IDs de estudiantes para limpieza de tablas personalizadas
     $student_ids = $wpdb->get_col(
         $wpdb->prepare(
@@ -71,7 +72,8 @@ function delete_data_student($user_id) {
 }
 
 // Función para borrar órdenes de WooCommerce (sin cambios, ya que está optimizada)
-function delete_woocommerce_orders($user_id) {
+function delete_woocommerce_orders($user_id)
+{
     $customer_orders = wc_get_orders([
         'customer' => $user_id,
         'limit'    => -1,
