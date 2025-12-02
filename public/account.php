@@ -103,3 +103,33 @@ function fee_inscription_payment() {
 }
 
 add_action( 'wp_loaded', 'fee_inscription_payment' );
+
+function trigger_elective_modal() {
+    if ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'trigger_elective_modal' ) {
+        return;
+    }
+
+    if ( ! isset( $_GET['elective_student_id'] ) || empty( $_GET['elective_student_id'] ) ) {
+        wp_redirect( home_url() );
+        exit;
+    }
+
+    $elective_student_id = absint( $_GET['elective_student_id'] );
+
+    if ( $elective_student_id <= 0 ) {
+        wp_redirect( home_url() );
+        exit;
+    }
+
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $wpdb->update($table_students, [
+        'elective' => 1
+    ], ['id' => $elective_student_id]);
+    
+
+    wp_redirect( home_url() );
+    exit;
+}
+
+add_action( 'wp_loaded', 'trigger_elective_modal' );

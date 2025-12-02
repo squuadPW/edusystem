@@ -1155,6 +1155,67 @@ function load_feed()
     include(plugin_dir_path(__FILE__) . 'templates/feed-student.php');
 }
 
+add_filter('woocommerce_account_dashboard', 'trigger_open_elective_modal', 0);
+function trigger_open_elective_modal()
+{
+    if (!is_user_logged_in()) {
+        return;
+    }
+
+    global $wpdb;
+    $current_user = wp_get_current_user();
+    $user_id      = $current_user->ID;
+    $user_email   = $current_user->user_email;
+    $roles        = (array) $current_user->roles;
+    $student      = null;
+
+    // Obtener la información del estudiante asociado de forma eficiente
+    if (in_array('student', $roles, true)) {
+        // Buscar por email para roles de 'student'
+        $student = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}students WHERE email = %s",
+            $user_email
+        ));
+    } elseif (in_array('parent', $roles, true)) {
+        // Buscar por partner_id (ID del padre/madre) para roles de 'parent'
+        $student = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}students WHERE partner_id = %d",
+            $user_id
+        ));
+    }
+
+    // Si no hay estudiante asociado, no continuar la ejecución.
+    if (!$student) {
+        return;
+    }
+
+    // Si el campo 'elective' no existe o es 1, no es necesario cargar el modal.
+    if (!isset($student->elective) || (int) $student->elective !== 0) {
+        return;
+    }
+
+    // Cargar los conteos de inscripciones
+    // Asumiendo que load_inscriptions_electives_valid es una función definida en otro lugar
+    $elective_count         = load_inscriptions_electives_valid($student, 'status_id = 3');
+    $elective_count_current = load_inscriptions_electives_valid($student, 'status_id = 1');
+
+    // La condición original para mostrar el modal:
+    // 1. Es un 'student'.
+    // 2. Tiene menos de 2 electivas con status 3 (válidas/completadas).
+    // 3. Tiene menos de 0 electivas con status 1 (actuales). ESTO PARECE UN ERROR LÓGICO Y DEBE SER > 0 O == 0.
+    //    Si la intención es que SOLO se muestre si NO tiene ninguna inscripción actual (status 1), la condición DEBE ser $elective_count_current === 0.
+    //    Ajustaré la condición a $elective_count_current === 0, ya que $elective_count_current < 0 es imposible para un conteo.
+    if (
+        in_array('student', $roles, true) &&
+        $elective_count < 2 &&
+        $elective_count_current === 0 &&
+        (int) $student->elective === 0
+    ) {
+        // Usar trailingslashit y plugin_dir_path para asegurar el path correcto.
+        include(trailingslashit(plugin_dir_path(__FILE__)) . 'templates/trigger-open-elective-modal.php');
+    }
+}
+
 function set_max_date_student($student_id)
 {
     global $wpdb;
