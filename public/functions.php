@@ -2361,6 +2361,11 @@ function select_elective_callback()
     }
 
     update_max_upload_at($projection->student_id);
+
+    if ( function_exists( 'wc_add_notice' ) ) {
+        wc_add_notice( 'Elective successfully registered.', 'success' );
+    }
+
     wp_send_json(array('success' => true));
     exit;
 }

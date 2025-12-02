@@ -127,11 +127,11 @@ function trigger_elective_modal() {
         'elective' => 1
     ], ['id' => $elective_student_id]);
     
-    if ( $updated !== false ) {
-        if ( function_exists( 'wc_add_notice' ) ) {
-            wc_add_notice( __('Elective successfully registered.', 'edusystem'), 'success' );
-        }
-    }
+    // if ( $updated !== false ) {
+    //     if ( function_exists( 'wc_add_notice' ) ) {
+    //         wc_add_notice( __('Elective successfully registered.', 'edusystem'), 'success' );
+    //     }
+    // }
 
     wp_redirect( home_url() );
     exit;
