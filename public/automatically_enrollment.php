@@ -472,6 +472,8 @@ function generate_projection_student($student_id, $force = false) {
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_students = $wpdb->prefix . 'students';
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+    $table_expected_matrix_school = $wpdb->prefix . 'expected_matrix_school';
 
     // Verificar si existe proyección y si no es forzada
     if (!$force) {
@@ -484,10 +486,63 @@ function generate_projection_student($student_id, $force = false) {
         }
     }
 
+    // Obtener información del estudiante incluyendo expected_graduation_date y created_at
+    $student = $wpdb->get_row($wpdb->prepare(
+        "SELECT id, expected_graduation_date, created_at FROM {$table_students} WHERE id = %d",
+        $student_id
+    ));
+
+    if (!$student) {
+        return false;
+    }
+
     // Obtener matriz regular y proyección actual en una sola consulta
     $matrix_regular = get_current_pensum();
     if (empty($matrix_regular)) {
         return false;
+    }
+
+    // Calcular matriz basada en expected_graduation_date
+    $calculated_matrix = null;
+    $terms_available = null;
+    
+    if ($student && !empty($student->expected_graduation_date)) {
+        try {
+            // Convertir expected_graduation_date de MM/YYYY a fecha
+            list($month, $year) = explode('/', $student->expected_graduation_date);
+            $graduation_date = new DateTime("$year-$month-01");
+            $graduation_date->modify('last day of this month');
+            
+            // Crear rango desde created_at hasta expected_graduation_date
+            $registration_date = new DateTime($student->created_at);
+            
+            // Contar períodos académicos únicos en ese rango
+            $periods_count = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(DISTINCT code) 
+                 FROM {$table_academic_periods_cut} 
+                 WHERE start_date >= %s AND end_date <= %s",
+                $registration_date->format('Y-m-d'),
+                $graduation_date->format('Y-m-d')
+            ));
+            
+            // Aplicar límites: min 5, max 15
+            $terms_available = min(15, max(5, intval($periods_count)));
+            
+            // Obtener matriz correspondiente de expected_matrix_school
+            $matrix_config = $wpdb->get_row($wpdb->prepare(
+                "SELECT terms_config FROM {$table_expected_matrix_school} 
+                 WHERE terms_available = %d",
+                $terms_available
+            ));
+            
+            if ($matrix_config) {
+                $calculated_matrix = $matrix_config->terms_config;
+            }
+        } catch (Exception $e) {
+            // Si hay error en el cálculo, continuar sin matriz
+            $calculated_matrix = null;
+            $terms_available = null;
+        }
     }
 
     // Obtener inscripciones del estudiante
@@ -564,10 +619,12 @@ function generate_projection_student($student_id, $force = false) {
             $wpdb->update($table_students, ['elective' => 0], ['id' => $student_id]);
             $wpdb->delete($table_student_academic_projection, ['student_id' => $student_id]);
             
-            // Insertar nueva proyección
+            // Insertar nueva proyección con matriz calculada
             $result = $wpdb->insert($table_student_academic_projection, [
                 'student_id' => $student_id,
-                'projection' => json_encode($projection)
+                'projection' => json_encode($projection),
+                'matrix' => $calculated_matrix,
+                'terms_available' => $terms_available
             ]);
 
             if ($result === false) {
@@ -582,10 +639,12 @@ function generate_projection_student($student_id, $force = false) {
         }
     }
 
-    // Insertar nueva proyección sin forzar
+    // Insertar nueva proyección sin forzar con matriz calculada
     $result = $wpdb->insert($table_student_academic_projection, [
         'student_id' => $student_id,
-        'projection' => json_encode($projection)
+        'projection' => json_encode($projection),
+        'matrix' => $calculated_matrix,
+        'terms_available' => $terms_available
     ]);
 
     return $result !== false;
