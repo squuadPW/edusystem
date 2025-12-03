@@ -72,6 +72,7 @@ function create_tables()
     $table_requests = $wpdb->prefix . 'requests';
     $table_type_requests = $wpdb->prefix . 'type_requests';
     $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
+    $table_expected_matrix_school = $wpdb->prefix . 'expected_matrix_school';
     $table_pensum = $wpdb->prefix . 'pensum';
     $table_feed = $wpdb->prefix . 'feed';
     $table_dynamic_links = $wpdb->prefix . 'dynamic_links';
@@ -1247,6 +1248,50 @@ function create_tables()
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id))$charset_collate;"
         );
+    }
+
+    $sql = "CREATE TABLE $table_expected_matrix_school (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        terms_available smallint(5) NOT NULL,
+        terms_config JSON NOT NULL,
+        created_at datetime DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY  (id),
+        UNIQUE KEY ix_terms_available (terms_available)
+    ) $charset_collate;";
+
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+
+    $matrix_data = [
+        15 => [1 => 'R', 3 => 'R', 6 => 'R', 8 => 'R', 11 => 'R', 13 => 'R'],
+        14 => [1 => 'R', 3 => 'R', 6 => 'R', 8 => 'R', 10 => 'R', 12 => 'R', 14 => 'R'],
+        13 => [1 => 'R', 3 => 'R', 5 => 'R', 7 => 'R', 9 => 'R', 11 => 'R', 13 => 'R'],
+        12 => [1 => 'R', 3 => 'R', 5 => 'R', 7 => 'R', 9 => 'R', 11 => 'R', 13 => 'R'],
+        11 => [1 => 'R', 3 => 'R', 6 => 'R', 8 => 'R', 10 => 'R', 12 => 'R'],
+        10 => [1 => 'R', 3 => 'R', 6 => 'R', 8 => 'R', 10 => 'R'],
+        9  => [1 => 'R', 3 => 'R', 5 => 'R', 7 => 'R', 9 => 'R'],
+        8  => [1 => 'R', 3 => 'R', 5 => 'R', 7 => 'R', 9 => 'R'],
+        7  => [1 => 'R', 3 => 'R', 5 => 'R', 7 => 'R'],
+        6  => [1 => 'R', 3 => 'R', 4 => 'RR', 5 => 'R'],
+        5  => [1 => 'R', 2 => 'RR', 3 => 'R', 5 => 'R']
+    ];
+
+    foreach ($matrix_data as $terms_available_count => $terms_config_array) {
+        $exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_expected_matrix_school WHERE terms_available = %d",
+            $terms_available_count
+        ));
+
+        if (!$exists) {
+            $wpdb->insert(
+                $table_expected_matrix_school,
+                [
+                    'terms_available' => $terms_available_count,
+                    'terms_config'    => json_encode($terms_config_array)
+                ],
+                ['%d', '%s']
+            );
+        }
     }
 }
 
