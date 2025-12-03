@@ -2004,7 +2004,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
                     'date' => $order->get_date_created() ? $order->get_date_created()->format('m/d/Y H:i:s') : '',
                     'partner_name' => $partner_name,
                     'student_name' => $student_full_name,
-                    'total' => wc_price($order->get_total()),
+                    'total' => wc_price( $order->get_total(), [ 'currency' => $order->get_currency() ] ),
                     'status' => ($order->get_status() === 'pending') ? __('Payment pending', 'your-text-domain') : wc_get_order_status_name($order->get_status()), // Use wc_get_order_status_name for localized status
                     'payment_method' => $order->get_payment_method_title() ? $order->get_payment_method_title() : ($split_payment_method ? 'Split payment' : 'N/A'),
                     'split_payments' => $split_payments,
@@ -2259,7 +2259,7 @@ class TT_all_payments_List_Table extends WP_List_Table
                     'date' => $order->get_date_created() ? $order->get_date_created()->format('m/d/Y H:i:s') : '',
                     'partner_name' => $partner_name,
                     'student_name' => $student_full_name, // Apply uppercase here
-                    'total' => wc_price($order->get_total()),
+                    'total' => wc_price( $order->get_total(), [ 'currency' => $order->get_currency() ] ),
                     'status' => wc_get_order_status_name($order->get_status()), // Use wc_get_order_status_name for localized status
                     'payment_method' => $order->get_payment_method_title() ? $order->get_payment_method_title() : ($split_payment_method ? 'Split payment' : 'N/A'),
                 ];
@@ -2426,7 +2426,6 @@ class TT_Invoices_Alliances_List_Table extends WP_List_Table
         $sortable_columns = [];
         return $sortable_columns;
     }
-
 
     function get_bulk_actions()
     {

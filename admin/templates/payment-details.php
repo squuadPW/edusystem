@@ -163,11 +163,11 @@
                                                     <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                                                 </td>
                                                 <td data-colname="<?= __('Regular price','edusystem'); ?>">
-                                                    <?= wc_price($item->get_subtotal()); ?>
+                                                    <?= wc_price($item->get_subtotal(), [ 'currency' => $order->get_currency() ] ); ?>
                                                 </td>
                                                 <td data-colname="<?= __('Sale priceTotal','edusystem'); ?>">
                                                     <div class="total-price">
-                                                        <?= wc_price($item->get_total()); ?>
+                                                        <?= wc_price($item->get_total(), [ 'currency' => $order->get_currency() ] ); ?>
 
                                                         <?php if( $order->status == 'pending' || $order->status == 'on-hold' ): ?>
                                                             <a onclick="active_edit_price_item();" >
@@ -190,11 +190,11 @@
                                                     <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                                                 </td>
                                                 <td data-colname="<?= __('Regular price','edusystem'); ?>">
-                                                    <?= ''//wc_price($item->get_subtotal()) ?? '---'; ?>
+                                                    <?= ''//wc_price($item->get_subtotal(), [ 'currency' => $order->get_currency() ] ) ?? '---'; ?>
                                                 </td>
                                                 <td data-colname="<?= __('Sale price total','edusystem'); ?>">
                                                     <div class="total-price">
-                                                        <?= wc_price($item->get_total()); ?>
+                                                        <?= wc_price($item->get_total(), [ 'currency' => $order->get_currency() ] ); ?>
 
                                                         <?php if( $order->status == 'pending' || $order->status == 'on-hold' ): ?>
                                                             <a onclick="active_edit_price_item();" >
@@ -291,15 +291,15 @@
                                             </td>
 
                                             <td data-colname="<?= __('Gross amount','edusystem'); ?>:">
-                                                <?= wc_price($pay->gross_total); ?>
+                                                <?= wc_price($pay->gross_total, [ 'currency' => $order->get_currency() ] ); ?>
                                             </td>
 
                                             <td data-colname="<?= __('Net amount','edusystem'); ?>:">
-                                                <?= wc_price($pay->amount); ?>
+                                                <?= wc_price($pay->amount, [ 'currency' => $order->get_currency() ] ); ?>
                                             </td>
 
                                             <td data-colname="<?= __('Fee payment method','edusystem'); ?>:">
-                                                <?= wc_price($pay->fee); ?>
+                                                <?= wc_price($pay->fee, [ 'currency' => $order->get_currency() ] ); ?>
                                             </td>
 
                                             <td data-colname="<?= __('Status','edusystem'); ?>:">
@@ -383,7 +383,7 @@
                                 <div class="seccion-card">
                                     <p> 
                                         <strong><?=__('Items Subtotal','edusystem')?>:</strong>
-                                        <span><?= wc_price( $order->get_subtotal() + $total_fees_split ) ?></span>
+                                        <span><?= wc_price( $order->get_subtotal() + $total_fees_split, [ 'currency' => $order->get_currency() ]  ) ?></span>
                                     </p>
                                 </div>
 
@@ -391,7 +391,7 @@
                                     <div class="seccion-card">
                                         <p> 
                                             <strong><?=__('Discount','edusystem')?>:</strong>
-                                            <span><?= wc_price( $order->get_discount_total() * -1 ) ?></span>
+                                            <span><?= wc_price( $order->get_discount_total() * -1, [ 'currency' => $order->get_currency() ]  ) ?></span>
                                         </p>
                                     </div>
                                 <?php endif; ?>
@@ -400,7 +400,7 @@
                                     <div class="seccion-card">
                                         <p> 
                                             <strong><?=__('Fees','edusystem')?>:</strong>
-                                            <span><?= wc_price( $total_fees ) ?></span>
+                                            <span><?= wc_price( $total_fees, [ 'currency' => $order->get_currency() ]  ) ?></span>
                                         </p>
                                     </div>
                                 <?php endif; ?>
@@ -408,7 +408,7 @@
                                 <div class="seccion-card">
                                     <p> 
                                         <strong><?=__('Order Total','edusystem')?>:</strong>
-                                        <span><?= wc_price( $order->get_total() ) ?></span>
+                                        <span><?= wc_price( $order->get_total(), [ 'currency' => $order->get_currency() ] ) ?></span>
                                     </p>
                                 </div>
                                 
@@ -421,21 +421,21 @@
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Total paid gross','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('total_paid_gross')); ?></span>
+                                        <span><?= wc_price($order->get_meta('total_paid_gross'), [ 'currency' => $order->get_currency() ] ); ?></span>
                                     </p>
                                 </div>
 
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Pending payment','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('pending_payment')); ?></span>
+                                        <span><?= wc_price($order->get_meta('pending_payment'), [ 'currency' => $order->get_currency() ] ); ?></span>
                                     </p>
                                 </div>
 
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Total paid net','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('total_paid')); ?></span>
+                                        <span><?= wc_price($order->get_meta('total_paid'), [ 'currency' => $order->get_currency() ] ); ?></span>
                                     </p>
                                 </div>
                                 
@@ -457,7 +457,7 @@
                                                 <?=__('Institute Fee','edusystem')?>:
                                             <?php endif ?>
                                         </strong>
-                                        <span><?= wc_price( $institute_fee * -1 ); ?></span>
+                                        <span><?= wc_price( $institute_fee * -1, [ 'currency' => $order->get_currency() ]  ); ?></span>
                                     </p>
                                 </div>
 
@@ -478,7 +478,7 @@
                                     ?>
                                     <p>
                                         <strong><?=__('Alliance Fee','edusystem')?>:</strong>
-                                        <span><?= wc_price( $alliance_fee * -1 ); ?></span>
+                                        <span><?= wc_price( $alliance_fee * -1, [ 'currency' => $order->get_currency() ]  ); ?></span>
                                     </p>
                                 </div>
                             <?php endif; ?>
@@ -487,7 +487,7 @@
                                 <div class="seccion-card">
                                     <p>
                                         <strong><?=__('Fee payment method','edusystem')?>:</strong>
-                                        <span><?= wc_price($order->get_meta('fee_order_pay') * -1); ?></span>
+                                        <span><?= wc_price($order->get_meta('fee_order_pay') * -1, [ 'currency' => $order->get_currency() ] ); ?></span>
                                     </p>
                                 </div>
                             <?php endif; ?>
@@ -499,7 +499,7 @@
                                         <p> 
                                             <?php $net_total -= $total_fees; ?>
                                             <strong><?=__('Fees','edusystem')?>:</strong>
-                                            <span><?= wc_price( $total_fees * -1 ) ?></span>
+                                            <span><?= wc_price( $total_fees * -1, [ 'currency' => $order->get_currency() ]  ) ?></span>
                                         </p>
                                     </div>
                                 <?php endif; ?>
@@ -507,7 +507,7 @@
                                 <div class="seccion-card">
                                     <p> 
                                         <strong><?=__('Net total','edusystem')?>:</strong>
-                                        <span><?= wc_price( $net_total ) ?></span>
+                                        <span><?= wc_price( $net_total, [ 'currency' => $order->get_currency() ]  ) ?></span>
                                     </p>
                                 </div>
 
