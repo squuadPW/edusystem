@@ -3129,6 +3129,10 @@ function generate_quote_public_callback()
 
     try {
         $order = wc_create_order(['customer_id' => $customer_id]);
+
+        // currency
+        $order->set_currency( $payment_row->currency ?? get_woocommerce_currency() );
+
         // Force custom price via arguments
         $item_id = $order->add_product($product, 1, [
             'subtotal' => $payment_row->amount,

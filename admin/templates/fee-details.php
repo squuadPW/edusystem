@@ -92,10 +92,24 @@
 
                                             <?php
                                                 global $wpdb;
-                                                $payment_plans = $wpdb->get_results("SELECT identificator, `name`, `description`, subprogram FROM {$wpdb->prefix}programs");
+
+                                                $where = "";
+                                                if( is_plugin_active( 'dynamic-currency-edusystem/dynamic-currency-edusystem.php' ) ) {
+                                                    
+                                                    $currency = $fee['currency'] ?? get_woocommerce_currency();
+                                                    $where = " WHERE currency = '{$currency}'";
+                                                } 
+
+                                                $payment_plans = $wpdb->get_results(
+                                                    $wpdb->prepare(
+                                                        "SELECT identificator, `name`, `description`, subprogram 
+                                                        FROM {$wpdb->prefix}programs 
+                                                        {$where}"
+                                                    )
+                                                );
                                             ?>
                                             
-                                            <select name="programs[]" multiple required id="programas_select" >
+                                            <select name="programs[]" multiple id="programas_select" >
                                                 <?php if( $payment_plans ): ?>
                                                     <?php foreach ($payment_plans as $payment_plan): ?>
 
