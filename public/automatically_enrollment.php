@@ -536,7 +536,8 @@ function generate_projection_student($student_id, $force = false) {
             ));
             
             if ($matrix_config) {
-                $calculated_matrix = $matrix_config->terms_config;
+                $terms_config_decoded = json_decode($matrix_config->terms_config, true);
+                $calculated_matrix = json_encode(build_detailed_matrix($terms_config_decoded, $matrix_regular, $student_id));
             }
         } catch (Exception $e) {
             // Si hay error en el cálculo, continuar sin matriz
@@ -990,4 +991,121 @@ function fix_projections($student_id)
     $wpdb->update($table_student_academic_projection, [
         'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
     ], ['id' => $projection->id]);
+}
+
+/**
+ * Construye una matriz detallada de términos académicos
+ */
+function build_detailed_matrix($terms_config, $matrix_regular, $student_id) {
+    global $wpdb;
+    
+    if (empty($terms_config) || empty($matrix_regular)) {
+        return [];
+    }
+    
+    $detailed_matrix = [];
+    $subject_index = 0;
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+    
+    // Obtener períodos futuros
+    $future_periods = $wpdb->get_results(
+        "SELECT DISTINCT code, cut FROM {$table_academic_periods_cut} 
+         WHERE start_date >= CURDATE() ORDER BY start_date ASC LIMIT 20"
+    );
+    
+    // Obtener inscripciones del estudiante
+    $inscriptions = get_inscriptions_by_student($student_id);
+    $completed_subjects = [];
+    $enrolled_subjects = [];
+    
+    if (!empty($inscriptions)) {
+        foreach ($inscriptions as $inscription) {
+            if ($inscription->status_id == 3) {
+                $completed_subjects[] = $inscription->subject_id;
+            } elseif ($inscription->status_id == 1) {
+                $enrolled_subjects[] = $inscription->subject_id;
+            }
+        }
+    }
+    
+    $period_index = 0;
+    
+    // Iterar sobre cada término
+    foreach ($terms_config as $term_number => $term_type) {
+        $term_entry = [];
+        $period_data = ($period_index < count($future_periods)) ? $future_periods[$period_index++] : null;
+        
+        if ($term_type === 'RR') {
+            // 2 materias
+            $subjects_data = [];
+            for ($i = 0; $i < 2; $i++) {
+                if ($subject_index < count($matrix_regular)) {
+                    $subject = $matrix_regular[$subject_index];
+                    $is_completed = in_array($subject->id, $completed_subjects);
+                    
+                    $subjects_data[] = [
+                        'subject_id' => $subject->id,
+                        'cut' => $is_completed ? get_subject_cut($student_id, $subject->id) : '',
+                        'code_period' => $is_completed ? get_subject_period($student_id, $subject->id) : ($period_data ? $period_data->code : ''),
+                        'completed' => $is_completed
+                    ];
+                    $subject_index++;
+                } else {
+                    $subjects_data[] = ['subject_id' => '', 'cut' => '', 'code_period' => '', 'completed' => false];
+                }
+            }
+            
+            $term_entry['cut'] = array_column($subjects_data, 'cut');
+            $term_entry['type'] = 'R';
+            $term_entry['subject_id'] = array_column($subjects_data, 'subject_id');
+            $term_entry['code_period'] = array_column($subjects_data, 'code_period');
+            $term_entry['completed'] = array_column($subjects_data, 'completed');
+            
+        } elseif ($term_type === 'R') {
+            // 1 materia
+            if ($subject_index < count($matrix_regular)) {
+                $subject = $matrix_regular[$subject_index];
+                $is_completed = in_array($subject->id, $completed_subjects);
+                
+                $term_entry['cut'] = $is_completed ? get_subject_cut($student_id, $subject->id) : '';
+                $term_entry['type'] = 'R';
+                $term_entry['subject_id'] = $subject->id;
+                $term_entry['code_period'] = $is_completed ? get_subject_period($student_id, $subject->id) : ($period_data ? $period_data->code : '');
+                $term_entry['completed'] = $is_completed;
+                $subject_index++;
+            } else {
+                $term_entry = ['cut' => '', 'type' => 'R', 'subject_id' => '', 'code_period' => '', 'completed' => false];
+            }
+        } else {
+            $term_entry = ['cut' => '', 'type' => 'N/A', 'subject_id' => '', 'code_period' => '', 'completed' => false];
+        }
+        
+        $detailed_matrix[] = $term_entry;
+    }
+    
+    return $detailed_matrix;
+}
+
+function get_subject_cut($student_id, $subject_id) {
+    $inscriptions = get_inscriptions_by_student($student_id);
+    if (!empty($inscriptions)) {
+        foreach ($inscriptions as $inscription) {
+            if ($inscription->subject_id == $subject_id && ($inscription->status_id == 3 || $inscription->status_id == 1)) {
+                return $inscription->cut_period;
+            }
+        }
+    }
+    return '';
+}
+
+function get_subject_period($student_id, $subject_id) {
+    $inscriptions = get_inscriptions_by_student($student_id);
+    if (!empty($inscriptions)) {
+        foreach ($inscriptions as $inscription) {
+            if ($inscription->subject_id == $subject_id && ($inscription->status_id == 3 || $inscription->status_id == 1)) {
+                return $inscription->code_period;
+            }
+        }
+    }
+    return '';
 }
