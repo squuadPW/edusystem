@@ -98,3 +98,39 @@ function fee_inscription_payment() {
 }
 
 add_action( 'wp_loaded', 'fee_inscription_payment' );
+
+function trigger_elective_modal() {
+    if ( ! isset( $_GET['action'] ) || $_GET['action'] !== 'trigger_elective_modal' ) {
+        return;
+    }
+
+    if ( ! isset( $_GET['elective_student_id'] ) || empty( $_GET['elective_student_id'] ) ) {
+        wp_redirect( home_url() );
+        exit;
+    }
+
+    $elective_student_id = absint( $_GET['elective_student_id'] );
+    $status_elective = absint( $_GET['status_elective'] );
+
+    if ( $elective_student_id <= 0 ) {
+        wp_redirect( home_url() );
+        exit;
+    }
+
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $updated = $wpdb->update($table_students, [
+        'elective' => $status_elective
+    ], ['id' => $elective_student_id]);
+    
+    // if ( $updated !== false ) {
+    //     if ( function_exists( 'wc_add_notice' ) ) {
+    //         wc_add_notice( __('Elective successfully registered.', 'edusystem'), 'success' );
+    //     }
+    // }
+
+    wp_redirect( home_url() );
+    exit;
+}
+
+add_action( 'wp_loaded', 'trigger_elective_modal' );
