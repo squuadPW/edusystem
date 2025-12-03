@@ -160,9 +160,6 @@ function PMF_add_payment_method_fee_to_cart( $cart = null ) {
          */
         $shipping_total = 0; // Se asume 0 ya que el hook corre antes del cálculo de envío final.
 
-        // Debug logs (optional, you can remove them once tested)
-        // error_log( 'Base (With Discount Applied): ' . $calculation_base );
-
         $fee_amount = $type === 'percentage'
             ? ( $calculation_base + $shipping_total ) * ( $value / 100 )
             : $value;

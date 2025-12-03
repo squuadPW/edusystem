@@ -497,7 +497,9 @@ function generate_projection_student($student_id, $force = false) {
     }
 
     // Obtener matriz regular y proyección actual en una sola consulta
-    $matrix_regular = get_current_pensum();
+    $program_data = get_program_data_student($student_id);
+    $program = $program_data['program'][0];
+    $matrix_regular = only_pensum_regular($program->identificator);
     if (empty($matrix_regular)) {
         return false;
     }
@@ -518,26 +520,26 @@ function generate_projection_student($student_id, $force = false) {
             
             // Contar períodos académicos únicos en ese rango
             $periods_count = $wpdb->get_var($wpdb->prepare(
-                "SELECT COUNT(DISTINCT code) 
+                "SELECT COUNT(*) 
                  FROM {$table_academic_periods_cut} 
                  WHERE start_date >= %s AND end_date <= %s",
                 $registration_date->format('Y-m-d'),
                 $graduation_date->format('Y-m-d')
             ));
-            
+
             // Aplicar límites: min 5, max 15
             $terms_available = min(15, max(5, intval($periods_count)));
-            
+
             // Obtener matriz correspondiente de expected_matrix_school
             $matrix_config = $wpdb->get_row($wpdb->prepare(
-                "SELECT terms_config FROM {$table_expected_matrix_school} 
+                "SELECT * FROM {$table_expected_matrix_school} 
                  WHERE terms_available = %d",
                 $terms_available
             ));
             
             if ($matrix_config) {
                 $terms_config_decoded = json_decode($matrix_config->terms_config, true);
-                $calculated_matrix = json_encode(build_detailed_matrix($terms_config_decoded, $matrix_regular, $student_id));
+                $calculated_matrix = json_encode(build_detailed_matrix($terms_config_decoded, $matrix_config->terms_available, $matrix_regular, $student_id));
             }
         } catch (Exception $e) {
             // Si hay error en el cálculo, continuar sin matriz
@@ -947,7 +949,7 @@ function template_not_enrolled($student)
     $text .= '<div> We leave at your disposal links and contacts of interest: </div>';
 
     $text .= '<ul>';
-    $text .= '<li>Website: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
+ -   $text .= '<li>Website: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
     $text .= '<li>Virtual classroom: <a href="https://portal.americanelite.school/my-account" target="_blank">https://portal.americanelite.school/my-account</a></li>';
     $text .= '<li>Support: <a href="https://support.americanelite.school" target="_blank">https://support.americanelite.school</a></li>';
     $text .= '</ul>';
@@ -996,13 +998,14 @@ function fix_projections($student_id)
 /**
  * Construye una matriz detallada de términos académicos
  */
-function build_detailed_matrix($terms_config, $matrix_regular, $student_id) {
+function build_detailed_matrix($terms_config, $terms_available, $matrix_regular, $student_id) {
     global $wpdb;
     
     if (empty($terms_config) || empty($matrix_regular)) {
         return [];
     }
     
+    error_log('matrix regular: ' . print_r($matrix_regular, true));
     $detailed_matrix = [];
     $subject_index = 0;
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
@@ -1029,9 +1032,9 @@ function build_detailed_matrix($terms_config, $matrix_regular, $student_id) {
     }
     
     $period_index = 0;
-    
-    // Iterar sobre cada término
-    foreach ($terms_config as $term_number => $term_type) {
+
+    for ($i=0; $i < $terms_available; $i++) { 
+        $term_type = $terms_config[$i+1] ?? 'N/A';
         $term_entry = [];
         $period_data = ($period_index < count($future_periods)) ? $future_periods[$period_index++] : null;
         
@@ -1045,7 +1048,7 @@ function build_detailed_matrix($terms_config, $matrix_regular, $student_id) {
                     
                     $subjects_data[] = [
                         'subject_id' => $subject->id,
-                        'cut' => $is_completed ? get_subject_cut($student_id, $subject->id) : '',
+                        'cut' => $is_completed ? get_subject_cut($student_id, $subject->id) : ($period_data ? $period_data->cut : ''),
                         'code_period' => $is_completed ? get_subject_period($student_id, $subject->id) : ($period_data ? $period_data->code : ''),
                         'completed' => $is_completed
                     ];
@@ -1065,22 +1068,24 @@ function build_detailed_matrix($terms_config, $matrix_regular, $student_id) {
             // 1 materia
             if ($subject_index < count($matrix_regular)) {
                 $subject = $matrix_regular[$subject_index];
-                $is_completed = in_array($subject->id, $completed_subjects);
+                $is_completed = in_array($subject->subject_id, $completed_subjects);
                 
-                $term_entry['cut'] = $is_completed ? get_subject_cut($student_id, $subject->id) : '';
+                $term_entry['cut'] = $is_completed ? get_subject_cut($student_id, $subject->subject_id) : ($period_data ? $period_data->cut : '');
                 $term_entry['type'] = 'R';
-                $term_entry['subject_id'] = $subject->id;
-                $term_entry['code_period'] = $is_completed ? get_subject_period($student_id, $subject->id) : ($period_data ? $period_data->code : '');
+                $term_entry['subject_id'] = $subject->subject_id;
+                $term_entry['code_period'] = $is_completed ? get_subject_period($student_id, $subject->subject_id) : ($period_data ? $period_data->code : '');
                 $term_entry['completed'] = $is_completed;
                 $subject_index++;
             } else {
-                $term_entry = ['cut' => '', 'type' => 'R', 'subject_id' => '', 'code_period' => '', 'completed' => false];
+                $term_entry = ['cut' => ($period_data ? $period_data->cut : ''), 'type' => 'R', 'subject_id' => '', 'code_period' => ($period_data ? $period_data->code : ''), 'completed' => false];
             }
         } else {
-            $term_entry = ['cut' => '', 'type' => 'N/A', 'subject_id' => '', 'code_period' => '', 'completed' => false];
+            // $term_entry = ['cut' => ($period_data ? $period_data->cut : ''), 'type' => 'N/A', 'subject_id' => '', 'code_period' => ($period_data ? $period_data->code : ''), 'completed' => false];
         }
         
-        $detailed_matrix[] = $term_entry;
+        if ($term_entry) {
+            $detailed_matrix[] = $term_entry;
+        }
     }
     
     return $detailed_matrix;
