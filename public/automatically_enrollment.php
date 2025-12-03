@@ -25,8 +25,9 @@ function next_enrollment($student_id)
     return $next;
 }
 
-function load_expected_periods($expected_graduation_date) {
-    
+function load_expected_periods($expected_graduation_date)
+{
+
     return [];
 }
 
@@ -69,7 +70,7 @@ function load_next_enrollment($expected_projection, $student)
     if (!$projection) {
         return 'Inscription not found';
     }
-    
+
     // matrices
     $load = load_current_cut_enrollment();
     $matrix_elective = load_available_electives($student, $load['code'], cut: $load['cut']);
@@ -178,7 +179,7 @@ function load_automatically_enrollment($expected_projection, $student)
         return;
     }
     $projection_obj = json_decode($projection->projection);
-    
+
     // tablas
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
@@ -422,7 +423,7 @@ function load_inscriptions_electives_valid($student, $status = "(status_id = 1 O
     if (!empty($conditions)) {
         $query .= " WHERE " . implode(" AND ", $conditions);
     }
-    
+
     $inscriptions = $wpdb->get_results($wpdb->prepare($query, $params));
     return count($inscriptions);
 }
@@ -461,9 +462,10 @@ function load_inscriptions_regular_valid($student, $status = "(status_id = 1 OR 
     return count($inscriptions);
 }
 
-function generate_projection_student($student_id, $force = false) {
+function generate_projection_student($student_id, $force = false)
+{
     global $wpdb;
-    
+
     // Validar el ID del estudiante
     if (!is_numeric($student_id) || $student_id <= 0) {
         return false;
@@ -507,17 +509,17 @@ function generate_projection_student($student_id, $force = false) {
     // Calcular matriz basada en expected_graduation_date
     $calculated_matrix = null;
     $terms_available = null;
-    
+
     if ($student && !empty($student->expected_graduation_date)) {
         try {
             // Convertir expected_graduation_date de MM/YYYY a fecha
             list($month, $year) = explode('/', $student->expected_graduation_date);
             $graduation_date = new DateTime("$year-$month-01");
             $graduation_date->modify('last day of this month');
-            
+
             // Crear rango desde created_at hasta expected_graduation_date
             $registration_date = new DateTime($student->created_at);
-            
+
             // Contar períodos académicos únicos en ese rango
             $periods_count = $wpdb->get_var($wpdb->prepare(
                 "SELECT COUNT(*) 
@@ -536,7 +538,7 @@ function generate_projection_student($student_id, $force = false) {
                  WHERE terms_available = %d",
                 $terms_available
             ));
-            
+
             if ($matrix_config) {
                 $terms_config_decoded = json_decode($matrix_config->terms_config, true);
                 $calculated_matrix = json_encode(build_detailed_matrix($terms_config_decoded, $matrix_config->terms_available, $matrix_regular, $student_id));
@@ -552,7 +554,7 @@ function generate_projection_student($student_id, $force = false) {
     $inscriptions = get_inscriptions_by_student($student_id);
     $inscriptions_by_code = [];
     $elective_inscriptions = [];
-    
+
     // Crear índice de inscripciones por código para búsqueda más rápida
     if (!empty($inscriptions)) {
         foreach ($inscriptions as $inscription) {
@@ -567,7 +569,7 @@ function generate_projection_student($student_id, $force = false) {
     }
 
     // Generar proyección base con materias regulares
-    $projection = array_map(function($matrix) use ($inscriptions_by_code) {
+    $projection = array_map(function ($matrix) use ($inscriptions_by_code) {
         $inscription = $inscriptions_by_code[$matrix->code_subject] ?? null;
         $status_id = $inscription ? $inscription->status_id : null;
 
@@ -616,12 +618,12 @@ function generate_projection_student($student_id, $force = false) {
     // Si es forzado, actualizar registros
     if ($force) {
         $wpdb->query('START TRANSACTION');
-        
+
         try {
             // Actualizar estudiante y eliminar proyecciones existentes en una sola transacción
             $wpdb->update($table_students, ['elective' => 0], ['id' => $student_id]);
             $wpdb->delete($table_student_academic_projection, ['student_id' => $student_id]);
-            
+
             // Insertar nueva proyección con matriz calculada
             $result = $wpdb->insert($table_student_academic_projection, [
                 'student_id' => $student_id,
@@ -949,7 +951,7 @@ function template_not_enrolled($student)
     $text .= '<div> We leave at your disposal links and contacts of interest: </div>';
 
     $text .= '<ul>';
- -   $text .= '<li>Website: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
+    -$text .= '<li>Website: <a href="https://americanelite.school/" target="_blank">https://americanelite.school/</a></li>';
     $text .= '<li>Virtual classroom: <a href="https://portal.americanelite.school/my-account" target="_blank">https://portal.americanelite.school/my-account</a></li>';
     $text .= '<li>Support: <a href="https://support.americanelite.school" target="_blank">https://support.americanelite.school</a></li>';
     $text .= '</ul>';
@@ -998,29 +1000,30 @@ function fix_projections($student_id)
 /**
  * Construye una matriz detallada de términos académicos
  */
-function build_detailed_matrix($terms_config, $terms_available, $matrix_regular, $student_id) {
+function build_detailed_matrix($terms_config, $terms_available, $matrix_regular, $student_id)
+{
     global $wpdb;
-    
+
     if (empty($terms_config) || empty($matrix_regular)) {
         return [];
     }
-    
+
     error_log('matrix regular: ' . print_r($matrix_regular, true));
     $detailed_matrix = [];
     $subject_index = 0;
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
-    
+
     // Obtener períodos futuros
     $future_periods = $wpdb->get_results(
         "SELECT DISTINCT code, cut FROM {$table_academic_periods_cut} 
          WHERE start_date >= CURDATE() ORDER BY start_date ASC LIMIT 20"
     );
-    
+
     // Obtener inscripciones del estudiante
     $inscriptions = get_inscriptions_by_student($student_id);
     $completed_subjects = [];
     $enrolled_subjects = [];
-    
+
     if (!empty($inscriptions)) {
         foreach ($inscriptions as $inscription) {
             if ($inscription->status_id == 3) {
@@ -1030,26 +1033,28 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
             }
         }
     }
-    
-    $period_index = 0;
 
-    for ($i=0; $i < $terms_available; $i++) { 
-        $term_type = $terms_config[$i+1] ?? 'N/A';
+    $period_index = 0;
+    for ($i = 0; $i < $terms_available; $i++) {
+        $term_number = $i + 1;
+        $term_type = $terms_config[$term_number] ?? 'N/A';
         $term_entry = [];
         $period_data = ($period_index < count($future_periods)) ? $future_periods[$period_index++] : null;
-        
+
         if ($term_type === 'RR') {
-            // 2 materias
+            // 2 subjects
             $subjects_data = [];
-            for ($i = 0; $i < 2; $i++) {
+
+            // FIX: Using a new counter variable ($j) for the inner loop to avoid modifying the main loop counter ($i).
+            for ($j = 0; $j < 2; $j++) {
                 if ($subject_index < count($matrix_regular)) {
                     $subject = $matrix_regular[$subject_index];
-                    $is_completed = in_array($subject->id, $completed_subjects);
-                    
+                    $is_completed = in_array($subject->subject_id, $completed_subjects);
+
                     $subjects_data[] = [
-                        'subject_id' => $subject->id,
-                        'cut' => $is_completed ? get_subject_cut($student_id, $subject->id) : ($period_data ? $period_data->cut : ''),
-                        'code_period' => $is_completed ? get_subject_period($student_id, $subject->id) : ($period_data ? $period_data->code : ''),
+                        'subject_id' => $subject->subject_id,
+                        'cut' => $is_completed ? get_subject_cut($student_id, $subject->subject_id) : ($period_data ? $period_data->cut : ''),
+                        'code_period' => $is_completed ? get_subject_period($student_id, $subject->subject_id) : ($period_data ? $period_data->code : ''),
                         'completed' => $is_completed
                     ];
                     $subject_index++;
@@ -1057,19 +1062,19 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
                     $subjects_data[] = ['subject_id' => '', 'cut' => '', 'code_period' => '', 'completed' => false];
                 }
             }
-            
+
             $term_entry['cut'] = array_column($subjects_data, 'cut');
             $term_entry['type'] = 'R';
             $term_entry['subject_id'] = array_column($subjects_data, 'subject_id');
             $term_entry['code_period'] = array_column($subjects_data, 'code_period');
             $term_entry['completed'] = array_column($subjects_data, 'completed');
-            
         } elseif ($term_type === 'R') {
-            // 1 materia
+            // 1 subject
             if ($subject_index < count($matrix_regular)) {
                 $subject = $matrix_regular[$subject_index];
+                // Check based on 'id' for consistency if $matrix_regular elements for 'R' should also be objects with 'id', but keeping 'subject_id' as in the original code for 'R' block if the structure is different. Assuming the original use of 'subject_id' in this block is correct.
                 $is_completed = in_array($subject->subject_id, $completed_subjects);
-                
+
                 $term_entry['cut'] = $is_completed ? get_subject_cut($student_id, $subject->subject_id) : ($period_data ? $period_data->cut : '');
                 $term_entry['type'] = 'R';
                 $term_entry['subject_id'] = $subject->subject_id;
@@ -1080,18 +1085,20 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
                 $term_entry = ['cut' => ($period_data ? $period_data->cut : ''), 'type' => 'R', 'subject_id' => '', 'code_period' => ($period_data ? $period_data->code : ''), 'completed' => false];
             }
         } else {
+            // Optional: Assign term entry for 'N/A' type if needed.
             // $term_entry = ['cut' => ($period_data ? $period_data->cut : ''), 'type' => 'N/A', 'subject_id' => '', 'code_period' => ($period_data ? $period_data->code : ''), 'completed' => false];
         }
-        
+
         if ($term_entry) {
             $detailed_matrix[] = $term_entry;
         }
     }
-    
+
     return $detailed_matrix;
 }
 
-function get_subject_cut($student_id, $subject_id) {
+function get_subject_cut($student_id, $subject_id)
+{
     $inscriptions = get_inscriptions_by_student($student_id);
     if (!empty($inscriptions)) {
         foreach ($inscriptions as $inscription) {
@@ -1103,7 +1110,8 @@ function get_subject_cut($student_id, $subject_id) {
     return '';
 }
 
-function get_subject_period($student_id, $subject_id) {
+function get_subject_period($student_id, $subject_id)
+{
     $inscriptions = get_inscriptions_by_student($student_id);
     if (!empty($inscriptions)) {
         foreach ($inscriptions as $inscription) {
