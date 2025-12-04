@@ -374,12 +374,17 @@ function PMF_update_fee_order_pay() {
     ) );
 }
 
-add_filter( 'woocommerce_get_order_item_totals', function( $totals, $order, $tax_display ) {
-    foreach( $totals as $key => &$total ) {
-        $total['class'] = $key; // añade la clave como clase al <tr>
+// agregar clase a los totales de la orden
+add_filter( 'woocommerce_get_order_item_totals', function ( $total_rows, $order ) {
+
+    foreach ( $total_rows as $key => $total ) {
+        $total_rows[$key]['id'] = $key;
+        $total_rows[$key]['class'] = 'total_'.$key;
     }
-    return $totals;
-}, 10, 3 );
+
+    return $total_rows;
+}, 10, 2 );
+
 
 // añadir script en la pagina de pay order para actualizar el fee via ajax
 add_action( 'woocommerce_pay_order_before_submit',function () {
@@ -418,8 +423,12 @@ add_action( 'woocommerce_pay_order_before_submit',function () {
                         },
                         success: function(response){
                             if(response.success){
-                                console.log(response);
-                                // loadTableTotalsFee(fee);
+                                // Aquí llamas a tu función con los datos que devuelve el servidor
+                                actualizarTablaTotales(
+                                    response.data.fee, 
+                                    response.data.payment_method, 
+                                    response.data.order_total
+                                );
                             }
                         }
                     });
@@ -427,31 +436,39 @@ add_action( 'woocommerce_pay_order_before_submit',function () {
             });
 
             function actualizarTablaTotales(fee, metodo, order_total) {
-                // Elimina filas previas de fee y método de pago
-                $('table.shop_table tfoot tr.fee-row').remove();
-                $('table.shop_table tfoot tr.payment-method-row').remove();
+                const tabla = document.querySelector("table.shop_table tfoot");
+
+                // Eliminar filas previas de fee y método de pago
+                tabla.querySelectorAll("tr[class*='fee']").forEach(tr => tr.remove());
+                tabla.querySelectorAll("tr[class*='payment_method']").forEach(tr => tr.remove());
 
                 // Insertar fila de fee
                 if (fee) {
-                    var feeRow = '<tr class="fee-row">' +
-                        '<th scope="row" colspan="2">' + fee.name + ':</th>' +
-                        '<td class="product-total"><span class="woocommerce-Price-amount amount"><bdi>' +
-                        '<span class="woocommerce-Price-currencySymbol">$</span>' + fee.amount +
-                        '</bdi></span></td>' +
-                        '</tr>';
-                    $('table.shop_table tfoot tr:last').before(feeRow);
+                    const feeRow = document.createElement("tr");
+                    feeRow.className = "fee_row";
+                    feeRow.innerHTML = `
+                        <th scope="row" colspan="2">${fee.name}:</th>
+                        <td class="product-total">
+                            ${fee.amount}
+                        </td>
+                    `;
+                    tabla.insertBefore(feeRow, tabla.lastElementChild);
                 }
 
                 // Insertar fila de método de pago
-                var metodoRow = '<tr class="payment-method-row">' +
-                    '<th scope="row" colspan="2">Payment method:</th>' +
-                    '<td class="product-total">' + metodo + '</td>' +
-                    '</tr>';
-                $('table.shop_table tfoot tr:last').before(metodoRow);
+                const metodoRow = document.createElement("tr");
+                metodoRow.className = "payment_method";
+                metodoRow.innerHTML = `
+                    <th scope="row" colspan="2">Payment method:</th>
+                    <td class="product-total">${metodo}</td>
+                `;
+                tabla.insertBefore(metodoRow, tabla.lastElementChild);
 
                 // Actualizar el total
-                $('table.shop_table tfoot tr:last td.product-total .woocommerce-Price-amount bdi')
-                    .html('<span class="woocommerce-Price-currencySymbol">$</span>' + order_total);
+                const totalCell = tabla.querySelector("tr:last-child td.product-total .woocommerce-Price-amount bdi");
+                if (totalCell) {
+                    totalCell.innerHTML = order_total;
+                }
             }
 
         </script>

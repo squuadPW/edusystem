@@ -98,8 +98,8 @@
 				<?php if( $balance == 0 ): ?>
 					
 					<div class="amount_container" >
-						<p><?= __('Amount to pay', 'edusystem') ?>: <strong><?= wc_price($amount) ?></strong> </p>
-						<p><?= __('Amount received', 'edusystem') ?>: <strong><?= wc_price( $total_order_items ) ?></strong> </p>
+						<p><?= __('Amount to pay', 'edusystem') ?>: <strong><?= wc_price($amount, [ 'currency' => $order->get_currency() ] ) ?></strong> </p>
+						<p><?= __('Amount received', 'edusystem') ?>: <strong><?= wc_price( $total_order_items, [ 'currency' => $order->get_currency() ]  ) ?></strong> </p>
 					</div>
 
 					<p id="message-modal-status-payment"></p>
@@ -145,11 +145,11 @@
 
 								<?php if( $more_amount ): ?>
 
-									<?php $amount_credit = ($balance > 0 ) ? $balance : wc_price($total_order_items - $amount); ?>
+									<?php $amount_credit = ($balance > 0 ) ? $balance : wc_price($total_order_items - $amount, [ 'currency' => $order->get_currency() ] ); ?>
 									<?= sprintf(__('There is an amount of %s due to the student. The surplus will be credited to:', 'edusystem'), "<strong>" .  $amount_credit . "</strong>" ) ?>
 								
 								<?php elseif( $less_amount ): ?>
-									<?= sprintf(__('An amount below the required threshold has been detected; the outstanding amount of %s will be requested in:', 'edusystem'), "<strong>" . wc_price( $amount - $total_order_items) . "</strong>" ) ?>
+									<?= sprintf(__('An amount below the required threshold has been detected; the outstanding amount of %s will be requested in:', 'edusystem'), "<strong>" . wc_price( $amount - $total_order_items, [ 'currency' => $order->get_currency() ] ) . "</strong>" ) ?>
 								
 								<?php endif; ?>
 							</label>
@@ -158,7 +158,7 @@
 
 								<?php foreach ($payments as $key => $pay) { ?>
 									<option value="<?php echo $pay->id ?>">
-										<?= __('Quota N°', 'edusystem') ?> <?php echo $pay->cuote . ' - ' . wc_price($pay->amount) ?>
+										<?= __('Quota N°', 'edusystem') ?> <?php echo $pay->cuote . ' - ' . wc_price($pay->amount, [ 'currency' => $pay->currency ] ) ?>
 									</option>
 									<?php
 								}

@@ -72,7 +72,7 @@ add_shortcode('PROGRAM-QUOTAS', function () {
 
     global $wpdb;
     $quotas_rules = $wpdb->get_results($wpdb->prepare(
-        "SELECT `qr`.*
+        "SELECT `qr`.*, `p`.currency as currency
         FROM `{$wpdb->prefix}quota_rules` AS `qr`
         INNER JOIN `{$wpdb->prefix}programs` AS `p` 
         ON (`qr`.program_id = `p`.identificator AND `p`.product_id = %1\$d) 
@@ -84,6 +84,15 @@ add_shortcode('PROGRAM-QUOTAS', function () {
     ));
 
     if ($quotas_rules) {
+        
+        // obtiene la moneda
+        $config = get_option( 'dynamic_currency_edusystem_config', array( 'enabled' => true ) );
+        $enabled = !empty( $config['enabled'] ?? false );
+        $currency = ( $enabled ) ? $quotas_rules[0]->currency : get_woocommerce_currency();
+
+        // obtiene el lenguaje 
+        $language = explode( '_', get_locale() )[0]; 
+        
         ?>
             <div>
                 <div class="radio-group text-center elements-quote-hidden">
@@ -124,8 +133,9 @@ add_shortcode('PROGRAM-QUOTAS', function () {
 
                     </div>
                 </div>
-
-                <div id="table-payment" data-product_id="<?= $product_id ?>"
+                        
+                <div id="table-payment" data-product_id="<?= $product_id ?>" 
+                    data-currency="<?= $currency ?>" data-language="<?= $language ?>" data-symbol="<?= get_woocommerce_currency_symbol($currency) ?>"
                     data-text_table_headers="<?= htmlspecialchars(json_encode([__('Payment', 'edusystem'), __('Next date payment', 'edusystem'), __('Amount', 'edusystem')])) ?>"
                     data-text_total="<?= __('Total', 'edusystem') ?>">
                 </div>
@@ -134,5 +144,6 @@ add_shortcode('PROGRAM-QUOTAS', function () {
         <?php
     }
 });
+
 
     

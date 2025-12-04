@@ -63,6 +63,7 @@ function add_admin_form_requests_content()
             $product_id = sanitize_text_field($_POST['type_product_id']);
             $type = sanitize_text_field($_POST['type']);
             $price = sanitize_text_field($_POST['price']);
+            $currency = $_POST['currency'] ?? get_woocommerce_currency();
             $document_certificate_id = sanitize_text_field($_POST['document_certificate_id']);
 
             // verifica y crea en caso de necesitar una categoria llamada programs;"
@@ -94,9 +95,13 @@ function add_admin_form_requests_content()
                 // Asignar la categoría al producto
                 wp_set_object_terms($product_id, $category_id, 'product_cat');
 
+                // actualiza la moneda del producto
+                update_post_meta($product_id, '_product_currency', $currency);
+
                 $wpdb->update($table_type_requests, [
                     'type' => $type,
                     'price' => $price,
+                    'currency' => $currency,
                     'document_certificate_id' => $document_certificate_id,
                 ], ['id' => $type_id]);
 
@@ -121,9 +126,13 @@ function add_admin_form_requests_content()
                     // Asignar la categoría al producto
                     wp_set_object_terms($product_id, $category_id, 'product_cat');
 
+                    // actualiza la moneda del producto
+                    update_post_meta($product_id, '_product_currency', $currency);
+
                     $wpdb->insert($table_type_requests, [
                         'type' => $type,
                         'price' => $price,
+                        'currency' => $currency,
                         'document_certificate_id' => $document_certificate_id,
                         'product_id' => $product_id,
                     ]);

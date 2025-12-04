@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   options_quotas = document.querySelectorAll(".options-quotas .option-quota");
 
@@ -67,6 +68,11 @@ function payment_table(rule_data) {
     
     table_payment = document.getElementById("table-payment");
     table_payment.innerHTML = "";
+
+    // formato de moneda
+	const currency = table_payment.getAttribute("data-currency") ?? "USD";
+    const language = table_payment.getAttribute("data-language") ?? "en";
+    const symbol = table_payment.getAttribute("data-symbol") ?? "$";
     
     const text_total = table_payment.getAttribute("data-text_total");
     const headers = JSON.parse(
@@ -175,14 +181,7 @@ function payment_table(rule_data) {
         const amount_cell = document.createElement("td");
         amount_cell.className = "payment-parts-table-data";
 
-        const usdFormatter = new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        });
-
-        amount_cell.textContent = usdFormatter.format( price );
+        amount_cell.textContent = format_currency(price, currency, symbol, language );
         row.appendChild(amount_cell);
 
         // Añadir fila a la tabla
@@ -207,22 +206,31 @@ function payment_table(rule_data) {
     total_payment_cell.className = "payment-parts-table-data text-end";
     total_payment_cell.colSpan = 3;
 
-    // Reutiliza el formateador de moneda USD
-    const usdFormatter = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
-
     // Asegúrate de que 'total' sea un número antes de formatearlo
-    total_payment_cell.textContent = usdFormatter.format(parseFloat(total));
+    total_payment_cell.textContent = format_currency(parseFloat(total), currency, symbol, language );
 
     total_payment_row.appendChild(total_payment_cell);
     table.appendChild(total_payment_row);
 
     // Insertar tabla en el contenedor
     table_payment.appendChild(table);
+}
+
+function format_currency(value, currency, symbol = "$", language = "en") {
+
+    const countryCode = currency.substring(0, 2); 
+	const locale = new Intl.Locale(language, { region: countryCode }).toString();
+
+	const formatter = new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+		currencyDisplay: "symbol",
+        
+    });
+
+    return formatter.format(value).replace(currency, symbol);
 }
 
 /**

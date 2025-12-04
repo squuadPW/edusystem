@@ -1704,8 +1704,9 @@ add_action('woocommerce_order_status_changed', function ($order_id, $old_status,
             if ($balance_discount && $student_id) {
                 // Recuperar balance actual
                 $student_balance = $wpdb->get_row($wpdb->prepare(
-                    "SELECT id, balance FROM $table_student_balance WHERE student_id = %d",
-                    $student_id
+                    "SELECT id, balance FROM $table_student_balance WHERE student_id = %d AND currency = %s",
+                    $student_id,
+                    $order->get_currency()
                 ));
 
                 if ($student_balance) {

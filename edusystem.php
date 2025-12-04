@@ -106,6 +106,7 @@ function create_tables()
         `id` INT(11) NOT NULL AUTO_INCREMENT,
         `student_id` INT(11) NOT NULL,
         `balance` DECIMAL(15, 2) NOT NULL,
+        `currency` TEXT NOT NULL,
         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY  (id)
@@ -131,33 +132,34 @@ function create_tables()
         PRIMARY KEY (id))$charset_collate;"
     );
 
-        dbDelta(
-            "CREATE TABLE $table_admission_fees (
-                `id` INT(11) NOT NULL AUTO_INCREMENT,
-                `is_active` tinyint(1) DEFAULT 1,
-                `name` TEXT NOT NULL,
-                `price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-                `product_id` INT(11) NULL DEFAULT NULL,
-                `description` TEXT DEFAULT NULL,
-                `programs` TEXT NOT NULL,
-                `type_fee` TEXT NOT NULL,
-                `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY (id)
-            ) $charset_collate;"
-        );
+    dbDelta(
+        "CREATE TABLE $table_admission_fees (
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `is_active` tinyint(1) DEFAULT 1,
+            `name` TEXT NOT NULL,
+            `price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+            `currency` TEXT NOT NULL,
+            `product_id` INT(11) NULL DEFAULT NULL,
+            `description` TEXT DEFAULT NULL,
+            `programs` TEXT NOT NULL,
+            `type_fee` TEXT NOT NULL,
+            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        ) $charset_collate;"
+    );
 
-  dbDelta(
-    "CREATE TABLE " . $table_student_program . " (
-      `id` INT(11) NOT NULL AUTO_INCREMENT,
-      `is_active` tinyint(1) DEFAULT 1,
-      `identificator` TEXT NOT NULL,
-      `name` TEXT NOT NULL,
-      `description` TEXT NOT NULL,
-      `type` TEXT NOT NULL,
-      `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (id))$charset_collate;"
-  );
+    dbDelta(
+        "CREATE TABLE " . $table_student_program . " (
+        `id` INT(11) NOT NULL AUTO_INCREMENT,
+        `is_active` tinyint(1) DEFAULT 1,
+        `identificator` TEXT NOT NULL,
+        `name` TEXT NOT NULL,
+        `description` TEXT NOT NULL,
+        `type` TEXT NOT NULL,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id))$charset_collate;"
+    );
 
     dbDelta(
         "CREATE TABLE " . $table_careers_by_program . " (
@@ -186,30 +188,32 @@ function create_tables()
     // table_programs (PLANES DE PAGOS/PAYMENT PLANS)
     dbDelta(
         "CREATE TABLE $table_programs (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        `is_active` tinyint(1) DEFAULT 1,
-        program_identificator TEXT NOT NULL,
-        `name` TEXT NOT NULL,
-        `description` TEXT NOT NULL,
-        total_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-        product_id INT(11) NULL DEFAULT NULL,
-        subprogram JSON NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        PRIMARY KEY (id)
-    )$charset_collate;"
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `is_active` tinyint(1) DEFAULT 1,
+            `program_identificator` TEXT NOT NULL,
+            `name` TEXT NOT NULL,
+            `description` TEXT NOT NULL,
+            `total_price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+            `currency` TEXT NOT NULL,
+            `product_id` INT(11) NULL DEFAULT NULL,
+            `subprogram` JSON NULL,
+            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     dbDelta(
         "CREATE TABLE " . $table_programs_by_student . " (
-        `id` INT(11) NOT NULL AUTO_INCREMENT,
-        `student_id` INT(11) NOT NULL,
-        `program_identificator` TEXT NOT NULL,
-        `career_identificator` TEXT NOT NULL,
-        `mention_identificator` TEXT NULL,
-        `plan_identificator` TEXT NOT NULL,
-        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `student_id` INT(11) NOT NULL,
+            `program_identificator` TEXT NOT NULL,
+            `career_identificator` TEXT NOT NULL,
+            `mention_identificator` TEXT NULL,
+            `plan_identificator` TEXT NOT NULL,
+            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     dbDelta(
@@ -224,28 +228,30 @@ function create_tables()
     // Ejemplo para table_custom_inputs:
     dbDelta(
         "CREATE TABLE " . $table_custom_inputs . " (
-        `id` INT(11) NOT NULL AUTO_INCREMENT,
-        `label` TEXT NOT NULL,
-        `page` TEXT NOT NULL,
-        `input_mode` TEXT NOT NULL,
-        `input_name` TEXT NOT NULL,
-        `input_id` TEXT NOT NULL,
-        `input_type` TEXT NOT NULL,
-        `input_required` BOOLEAN NOT NULL DEFAULT TRUE,
-        `input_is_metadata` BOOLEAN NOT NULL DEFAULT FALSE,
-        `input_options` TEXT NOT NULL,
-        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `label` TEXT NOT NULL,
+            `page` TEXT NOT NULL,
+            `input_mode` TEXT NOT NULL,
+            `input_name` TEXT NOT NULL,
+            `input_id` TEXT NOT NULL,
+            `input_type` TEXT NOT NULL,
+            `input_required` BOOLEAN NOT NULL DEFAULT TRUE,
+            `input_is_metadata` BOOLEAN NOT NULL DEFAULT FALSE,
+            `input_options` TEXT NOT NULL,
+            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // Ejemplo para table_managers_by_alliance:
     dbDelta(
         "CREATE TABLE " . $table_managers_by_alliance . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        user_id INT(11) NOT NULL,
-        alliance_id INT(11) NOT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            user_id INT(11) NOT NULL,
+            alliance_id INT(11) NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // Repite este patrón para TODAS las definiciones de tablas.
@@ -255,23 +261,25 @@ function create_tables()
     // table_managers_by_institute
     dbDelta(
         "CREATE TABLE " . $table_managers_by_institute . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        user_id INT(11) NOT NULL,
-        institute_id INT(11) NOT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            user_id INT(11) NOT NULL,
+            institute_id INT(11) NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // table_alliances_by_institute
     dbDelta(
         "CREATE TABLE " . $table_alliances_by_institute . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        alliance_id INT(11) NOT NULL,
-        alliance_fee  DOUBLE(10, 2) NULL,
-        institute_id INT(11) NOT NULL,
-        institute_fee  DOUBLE(10, 2) NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            alliance_id INT(11) NOT NULL,
+            alliance_fee  DOUBLE(10, 2) NULL,
+            institute_id INT(11) NOT NULL,
+            institute_fee  DOUBLE(10, 2) NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // table_expenses
@@ -281,67 +289,72 @@ function create_tables()
         motive TEXT NOT NULL,
         apply_to DATE NOT NULL,
         amount DOUBLE(10, 2) NOT NULL,
+        currency TEXT NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
+        PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // table_scholarship_assigned_student
     dbDelta(
         "CREATE TABLE " . $table_scholarship_assigned_student . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        student_id INT(11) NOT NULL,
-        scholarship_id INT(11) NOT NULL,
-        status_id INT(11) NOT NULL,
-        termination_date TIMESTAMP NULL,
-        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            student_id INT(11) NOT NULL,
+            scholarship_id INT(11) NOT NULL,
+            status_id INT(11) NOT NULL,
+            termination_date TIMESTAMP NULL,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // table_quota_rules
     dbDelta(
         "CREATE TABLE $table_quota_rules (
-                `id` INT(11) NOT NULL AUTO_INCREMENT,
-                `is_active` tinyint(1) DEFAULT 1,
-                `name` TEXT NOT NULL,
-                `program_id` TEXT NOT NULL,
-                `initial_payment` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-                `initial_payment_sale` DECIMAL(15, 2) NULL DEFAULT null,
-                `final_payment` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-                `final_payment_sale` DECIMAL(15, 2) NULL DEFAULT null,
-                `quote_price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-                `quote_price_sale` DECIMAL(15, 2) NULL DEFAULT null,
-                `quotas_quantity` INT(11) NOT NULL DEFAULT 1,
-                `frequency_value` INT NOT NULL,
-                `type_frequency` TEXT NOT NULL,
-                `start_charging` TEXT DEFAULT '',
-                `position` INT NOT NULL DEFAULT 0,
-                `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY (id)
-            )$charset_collate;"
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `is_active` tinyint(1) DEFAULT 1,
+            `name` TEXT NOT NULL,
+            `program_id` TEXT NOT NULL,
+            `initial_payment` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+            `initial_payment_sale` DECIMAL(15, 2) NULL DEFAULT null,
+            `final_payment` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+            `final_payment_sale` DECIMAL(15, 2) NULL DEFAULT null,
+            `quote_price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+            `quote_price_sale` DECIMAL(15, 2) NULL DEFAULT null,
+            `quotas_quantity` INT(11) NOT NULL DEFAULT 1,
+            `frequency_value` INT NOT NULL,
+            `type_frequency` TEXT NOT NULL,
+            `start_charging` TEXT DEFAULT '',
+            `position` INT NOT NULL DEFAULT 0,
+            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // table_templates_email
     dbDelta(
         "CREATE TABLE " . $table_templates_email . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        title TEXT NOT NULL,
-        content TEXT NOT NULL,
-        PRIMARY KEY (id))$charset_collate;"
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // table_feed
     dbDelta(
         "CREATE TABLE " . $table_feed . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        title TEXT NOT NULL,
-        attach_id_desktop INT(11) NULL,
-        attach_id_mobile INT(11) NULL,
-        link TEXT NOT NULL,
-        `max_date` DATE NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            title TEXT NOT NULL,
+            attach_id_desktop INT(11) NULL,
+            attach_id_mobile INT(11) NULL,
+            link TEXT NOT NULL,
+            `max_date` DATE NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // table_dynamic_links
@@ -395,6 +408,7 @@ function create_tables()
         id INT(11) NOT NULL AUTO_INCREMENT,
         type TEXT NOT NULL,
         price FLOAT NOT NULL,
+        currency VARCHAR(10) NOT NULL,
         document_certificate_id INT(11) NOT NULL,
         product_id INT(11) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -452,37 +466,39 @@ function create_tables()
     // table_student_califications
     dbDelta(
         "CREATE TABLE " . $table_student_califications . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        student_id INT(11) NOT NULL,
-        code_subject TEXT NULL,
-        code_period INT(11) NOT NULL,
-        cut_period TEXT NOT NULL,
-        calification TEXT NOT NULL,
-        max_calification TEXT NOT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            student_id INT(11) NOT NULL,
+            code_subject TEXT NULL,
+            code_period INT(11) NOT NULL,
+            cut_period TEXT NOT NULL,
+            calification TEXT NOT NULL,
+            max_calification TEXT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // table_teachers
     dbDelta(
         "CREATE TABLE " . $table_teachers . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        type_document TEXT NULL,
-        id_document TEXT NULL,
-        name TEXT NOT NULL,
-        middle_name TEXT NULL,
-        last_name TEXT NOT NULL,
-        middle_last_name TEXT NULL,
-        birth_date DATE NULL,
-        gender TEXT NULL,
-        nacionality TEXT NULL,
-        profile_picture INT(11) NULL,
-        email TEXT NOT NULL,
-        phone TEXT NOT NULL,
-        address TEXT NULL,
-        status INT(1) NOT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id))$charset_collate;"
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            type_document TEXT NULL,
+            id_document TEXT NULL,
+            name TEXT NOT NULL,
+            middle_name TEXT NULL,
+            last_name TEXT NOT NULL,
+            middle_last_name TEXT NULL,
+            birth_date DATE NULL,
+            gender TEXT NULL,
+            nacionality TEXT NULL,
+            profile_picture INT(11) NULL,
+            email TEXT NOT NULL,
+            phone TEXT NOT NULL,
+            address TEXT NULL,
+            status INT(1) NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
     );
 
     // table_school_subjects
@@ -753,6 +769,7 @@ function create_tables()
         old_amount DOUBLE(10, 2) NOT NULL,
         new_amount DOUBLE(10, 2) NOT NULL,
         difference DOUBLE(10, 2) NOT NULL,
+        currency TEXT NOT NULL,
         description TEXT NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
