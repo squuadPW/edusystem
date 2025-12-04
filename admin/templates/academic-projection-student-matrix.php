@@ -50,7 +50,8 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                 <input type="hidden" name="action" value="update_academic_matrix" />
                                 <input type="hidden" name="student_id" value="<?= esc_attr($student_id); ?>" />
                                 <input type="hidden" name="projection_id" value="<?= esc_attr($projection->id ?? ''); ?>" />
-                                <?php // wp_nonce_field('update_matrix_action', 'update_matrix_nonce'); ?>
+                                <?php // wp_nonce_field('update_matrix_action', 'update_matrix_nonce'); 
+                                ?>
 
                                 <div style="overflow-x: auto;">
                                     <table class="wp-list-table widefat fixed striped">
@@ -66,31 +67,33 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php $real_index = 0; // Índice de la fila real en la tabla ?>
+                                            <?php $real_index = 0; // Índice de la fila real en la tabla 
+                                            ?>
                                             <?php foreach ($matrix as $matrix_index => $item): ?>
-                                                <?php $item = (array) $item; // Asegura que es un array para el acceso seguro ?>
+                                                <?php $item = (array) $item; // Asegura que es un array para el acceso seguro 
+                                                ?>
                                                 <?php
-                                                    // Determina si los datos son un array (múltiples registros) o un valor simple
-                                                    $is_multi_entry = is_array($item['subject_id'] ?? null);
-                                                    // Obtiene el número de filas a iterar
-                                                    $entry_count = $is_multi_entry ? count($item['subject_id']) : 1;
-                                                    // Obtiene el estado de completado del grupo para deshabilitar el Periodo/Corte
-                                                    $is_group_completed = $is_multi_entry ? in_array(true, (array)$item['completed']) : ($item['completed'] ?? false);
+                                                // Determina si los datos son un array (múltiples registros) o un valor simple
+                                                $is_multi_entry = is_array($item['subject_id'] ?? null);
+                                                // Obtiene el número de filas a iterar
+                                                $entry_count = $is_multi_entry ? count($item['subject_id']) : 1;
+                                                // Obtiene el estado de completado del grupo para deshabilitar el Periodo/Corte
+                                                $is_group_completed = $is_multi_entry ? in_array(true, (array)$item['completed']) : ($item['completed'] ?? false);
                                                 ?>
 
                                                 <?php for ($sub_index = 0; $sub_index < $entry_count; $sub_index++, $real_index++): ?>
                                                     <?php
-                                                        // --- Extracción de valores por fila ---
-                                                        $type = $is_multi_entry ? ($item['type'][$sub_index] ?? 'R') : ($item['type'] ?? 'R');
-                                                        $type_label = $type === 'R' ? __('Regular', 'edusystem') : ($type === 'E' ? __('Elective', 'edusystem') : 'N/A');
-                                                        
-                                                        // Para Periodo y Corte (valores únicos para el grupo) se extrae del índice 0 si es multi.
-                                                        $code_period = $is_multi_entry ? ($item['code_period'][0] ?? '') : ($item['code_period'] ?? '');
-                                                        $cut = $is_multi_entry ? ($item['cut'][0] ?? '') : ($item['cut'] ?? '');
-                                                        
-                                                        // Subject y completed (valores por sub-ítem)
-                                                        $subject_id = $is_multi_entry ? ($item['subject_id'][$sub_index] ?? '') : ($item['subject_id'] ?? '');
-                                                        $completed = $is_multi_entry ? ($item['completed'][$sub_index] ?? false) : ($item['completed'] ?? false);
+                                                    // --- Extracción de valores por fila ---
+                                                    $type = $is_multi_entry ? ($item['type'][$sub_index] ?? 'R') : ($item['type'] ?? 'R');
+                                                    $type_label = $type === 'R' ? __('Regular', 'edusystem') : ($type === 'E' ? __('Elective', 'edusystem') : 'N/A');
+
+                                                    // Para Periodo y Corte (valores únicos para el grupo) se extrae del índice 0 si es multi.
+                                                    $code_period = $is_multi_entry ? ($item['code_period'][0] ?? '') : ($item['code_period'] ?? '');
+                                                    $cut = $is_multi_entry ? ($item['cut'][0] ?? '') : ($item['cut'] ?? '');
+
+                                                    // Subject y completed (valores por sub-ítem)
+                                                    $subject_id = $is_multi_entry ? ($item['subject_id'][$sub_index] ?? '') : ($item['subject_id'] ?? '');
+                                                    $completed = $is_multi_entry ? ($item['completed'][$sub_index] ?? false) : ($item['completed'] ?? false);
                                                     ?>
 
                                                     <tr id="matrix-row-<?= $real_index; ?>">
@@ -106,7 +109,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                             <td rowspan="<?= $entry_count ?>">
                                                                 <?php if ($is_group_completed): ?>
                                                                     <input type="hidden" name="matrix[<?= $matrix_index ?>][code_period]"
-                                                                    value="<?= esc_attr($code_period) ?>" />
+                                                                        value="<?= esc_attr($code_period) ?>" />
                                                                 <?php endif; ?>
 
                                                                 <select name="matrix[<?= $matrix_index ?>][code_period]"
@@ -122,7 +125,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                                     <?php } ?>
                                                                 </select>
                                                             </td>
-                                                            
+
                                                             <td rowspan="<?= $entry_count ?>">
                                                                 <?php if ($is_group_completed): ?>
                                                                     <input type="hidden" name="matrix[<?= $matrix_index ?>][cut]"
@@ -168,7 +171,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                         class="button button-primary button-large"><?= __('Save Matrix Changes', 'edusystem'); ?></button>
                                 </div>
                             </form>
-                            <?php else: ?>
+                        <?php else: ?>
                             <p class="description"
                                 style="text-align: center; margin-top: 30px; padding: 20px; background-color: #f7f7f7; border: 1px solid #eee;">
                                 <?= __('The academic projection matrix is empty for this student.', 'edusystem'); ?>
