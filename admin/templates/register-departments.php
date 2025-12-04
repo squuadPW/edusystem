@@ -194,6 +194,11 @@
                     <label for="manager_dynamic_links" <?= !in_array('manager_dynamic_links', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Payment link', 'edusystem'); ?></label>
                 </div>
                 <div class="capability-item indented">
+                    <input <?= !in_array('manager_dynamic_links', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_dynamic_links" id="manager_dynamic_links" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_dynamic_links'])) ? 'checked' : ''; ?>>
+                    <label for="manager_dynamic_links" <?= !in_array('manager_dynamic_links', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Payment link', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
                     <input <?= !in_array('manager_student_matrix', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_student_matrix" id="manager_student_matrix" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_student_matrix'])) ? 'checked' : ''; ?>>
                     <label for="manager_student_matrix" <?= !in_array('manager_student_matrix', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Manager student matrix', 'edusystem'); ?></label>
@@ -206,6 +211,24 @@
                     <input <?= !in_array('manager_payments_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_payments_aes" id="manager_payments_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payments_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_payments_aes" <?= !in_array('manager_payments_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?>><?= __('Payments', 'edusystem'); ?></label>
+                </div>
+
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_payment_plans', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_payment_plans" id="manager_payment_plans" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payment_plans'])) ? 'checked' : ''; ?>>
+                    <label for="manager_payment_plans" <?= !in_array('manager_payment_plans', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Payment plans', 'edusystem'); ?></label>
+                </div>
+
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_payment_fees', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_payment_fees" id="manager_payment_fees" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payment_fees'])) ? 'checked' : ''; ?>>
+                    <label for="manager_payment_fees" <?= !in_array('manager_payment_fees', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Fees', 'edusystem'); ?></label>
+                </div>
+
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_payment_comissions', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_payment_comissions" id="manager_payment_comissions" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payment_comissions'])) ? 'checked' : ''; ?>>
+                    <label for="manager_payment_comissions" <?= !in_array('manager_payment_comissions', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Comissions', 'edusystem'); ?></label>
                 </div>
 
                 <div class="capability-item indented">
@@ -253,11 +276,6 @@
                     <input <?= !in_array('manager_teachers_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_teachers_aes" id="manager_teachers_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_teachers_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_teachers_aes" <?= !in_array('manager_teachers_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Teachers', 'edusystem'); ?></label>
-                </div>
-                <div class="capability-item indented">
-                    <input <?= !in_array('can_switch_student', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
-                        value="can_switch_student" id="can_switch_student" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['can_switch_student'])) ? 'checked' : ''; ?>>
-                    <label for="can_switch_student" <?= !in_array('can_switch_student', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Can switch between student', 'edusystem'); ?></label>
                 </div>
             </div>
 
@@ -366,6 +384,48 @@
                     <input <?= !in_array('manager_users_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?> type="checkbox" name="capabilities[]"
                         id="manager_users_aes" value="manager_users_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_users_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_users_aes" <?= !in_array('manager_users_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?>><?= __('Users', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('list_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox"
+                        name="capabilities[]" id="list_users" value="list_users"
+                        <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['list_users'])) ? 'checked' : ''; ?>>
+                    <label for="manager_documents_certificates" <?= !in_array('list_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('List users', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('create_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox"
+                        name="capabilities[]" id="create_users" value="create_users"
+                        <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['create_users'])) ? 'checked' : ''; ?>>
+                    <label for="create_users" <?= !in_array('create_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('create users', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('edit_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox"
+                        name="capabilities[]" id="edit_users" value="edit_users"
+                        <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['edit_users'])) ? 'checked' : ''; ?>>
+                    <label for="edit_users" <?= !in_array('edit_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Edit users', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('delete_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox"
+                        name="capabilities[]" id="delete_users" value="delete_users"
+                        <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['delete_users'])) ? 'checked' : ''; ?>>
+                    <label for="delete_users" <?= !in_array('delete_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Delete users', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('promote_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox"
+                        name="capabilities[]" id="promote_users" value="promote_users"
+                        <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['promote_users'])) ? 'checked' : ''; ?>>
+                    <label for="promote_users" <?= !in_array('promote_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Promote users', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('remove_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox"
+                        name="capabilities[]" id="remove_users" value="remove_users"
+                        <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['remove_users'])) ? 'checked' : ''; ?>>
+                    <label for="remove_users" <?= !in_array('remove_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Remove users', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('switch_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox"
+                        name="capabilities[]" id="switch_users" value="switch_users"
+                        <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['switch_users'])) ? 'checked' : ''; ?>>
+                    <label for="switch_users" <?= !in_array('switch_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Switch users', 'edusystem'); ?></label>
                 </div>
                 <div class="capability-item indented">
                     <input <?= !in_array('list_users', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox"
