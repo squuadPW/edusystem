@@ -254,11 +254,6 @@
                         value="manager_teachers_aes" id="manager_teachers_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_teachers_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_teachers_aes" <?= !in_array('manager_teachers_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Teachers', 'edusystem'); ?></label>
                 </div>
-                <div class="capability-item indented">
-                    <input <?= !in_array('can_switch_student', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
-                        value="can_switch_student" id="can_switch_student" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['can_switch_student'])) ? 'checked' : ''; ?>>
-                    <label for="can_switch_student" <?= !in_array('can_switch_student', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Can switch between student', 'edusystem'); ?></label>
-                </div>
             </div>
 
             <div class="capability-group">

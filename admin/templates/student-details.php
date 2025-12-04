@@ -248,7 +248,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                             </div>
                             <div>
                                 <?php
-                                if (current_user_can('can_switch_student')) {
+                                if (current_user_can('switch_users')) {
                                     $base_url = admin_url('users.php');
                                     $base_url = add_query_arg(array(
                                         'ure_switch_action' => 'switch_to',
@@ -429,7 +429,7 @@ $url = wp_get_attachment_url($student->profile_picture);
                                 </div>
                                 <div>
                                     <?php
-                                    if (current_user_can('can_switch_student')) {
+                                    if (current_user_can('switch_users')) {
                                         $base_url = admin_url('users.php');
                                         $base_url = add_query_arg(array(
                                             'ure_switch_action' => 'switch_to',
