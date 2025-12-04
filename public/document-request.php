@@ -53,6 +53,10 @@ function save_document_request_metadata_cart_item() {
         ],
     ];
 
+    // Obtener la moneda personalizada del producto o usar la moneda por defecto
+    $currency = get_post_meta($product_id, '_product_currency', true);
+    if ( !empty($currency) ) $document_request['currency'] = $currency;
+
     // Añadir el producto al carrito con metadatos
     $add_to_cart = WC()->cart->add_to_cart($product_id, 1, 0, [], $document_request);
 

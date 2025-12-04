@@ -993,6 +993,10 @@ function add_admin_form_payments_content()
                         update_post_meta($product_id, '_product_currency', $currency);
 
                         wp_set_object_terms($product_id, (int) $category_id, 'product_cat');
+
+                        // actualiza la moneda del producto
+                        update_post_meta($product_id, '_product_currency', $currency);
+                        
                     } else {
 
                         // Función para crear un producto
@@ -1026,6 +1030,9 @@ function add_admin_form_payments_content()
                                 $current_values[$attribute_name]['value'] .= (empty($current_values[$attribute_name]['value']) ? '' : '| ') . $name_subprogram;
                             }
                             update_post_meta($program_product_id, '_product_attributes', $current_values);
+
+                            // actualiza la moneda del producto
+                            update_post_meta($product_id, '_product_currency', $currency);
                         }
                     }
 
@@ -1352,6 +1359,9 @@ function add_admin_form_payments_content()
 
                 // Asignar la categoría al producto
                 wp_set_object_terms($product_id, $category_id, 'product_cat');
+
+                // actualiza la moneda del producto
+                update_post_meta($product_id, '_product_currency', $currency);
             } else {
 
                 // Función para crear un producto
@@ -1373,6 +1383,9 @@ function add_admin_form_payments_content()
 
                     // Asignar la categoría al producto
                     wp_set_object_terms($product_id, (int) $category_id, 'product_cat');
+                    
+                    // actualiza la moneda del producto
+                    update_post_meta($product_id, '_product_currency', $currency);
                 }
             }
 
@@ -1864,7 +1877,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
                     echo '<td class="partner_name column-partner_name" data-colname="Parent"></td>';
                     echo '<td class="student_name column-student_name" data-colname="Student"></td>';
 
-                    echo '<td class="total column-total" data-colname="Total"><b>' . wc_price( $payment['amount'] ) . '</b></td>';
+                    echo '<td class="total column-total" data-colname="Total"><b>' . wc_price( $payment['amount'], [ 'currency' => $payment_order->get_currency() ]  ) . '</b></td>';
 
                     echo '<td class="payment_method column-payment_method" data-colname="Payment Method"></td>';
 

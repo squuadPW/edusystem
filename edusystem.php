@@ -407,6 +407,7 @@ function create_tables()
         id INT(11) NOT NULL AUTO_INCREMENT,
         type TEXT NOT NULL,
         price FLOAT NOT NULL,
+        currency VARCHAR(10) NOT NULL,
         document_certificate_id INT(11) NOT NULL,
         product_id INT(11) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

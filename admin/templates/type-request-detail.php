@@ -57,6 +57,8 @@
 
                                     <br>
 
+                                    <?php do_action( 'edusystem_after_price_request', $type->id ); ?>
+
                                     <div style="font-weight:400;" class="space-type">
 
                                         <label for="type">
@@ -67,8 +69,8 @@
                                         <br>
 
                                         <?php
-                                        global $wpdb;
-                                        $documents_certificates = $wpdb->get_results("SELECT id, title FROM `{$wpdb->prefix}documents_certificates`");
+                                            global $wpdb;
+                                            $documents_certificates = $wpdb->get_results("SELECT id, title FROM `{$wpdb->prefix}documents_certificates`");
                                         ?>
 
                                         <select name="document_certificate_id" required>
