@@ -630,7 +630,8 @@ function generate_projection_student($student_id, $force = false)
             // Insertar nueva proyección (terms_available now stored on student)
             $result = $wpdb->insert($table_student_academic_projection, [
                 'student_id' => $student_id,
-                'projection' => json_encode($projection)
+                'projection' => json_encode($projection),
+                'matrix' => $calculated_matrix
             ]);
 
             if ($result === false) {
@@ -659,7 +660,8 @@ function generate_projection_student($student_id, $force = false)
     // Insertar nueva proyección sin forzar con matriz calculada
     $result = $wpdb->insert($table_student_academic_projection, [
         'student_id' => $student_id,
-        'projection' => json_encode($projection)
+        'projection' => json_encode($projection),
+        'matrix' => $calculated_matrix
     ]);
 
     if ($result !== false) {
@@ -1110,7 +1112,7 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
             }
         } else {
             // Optional: Assign term entry for 'N/A' type if needed.
-            // $term_entry = ['cut' => ($period_data ? $period_data->cut : ''), 'type' => 'N/A', 'subject_id' => '', 'code_period' => ($period_data ? $period_data->code : ''), 'completed' => false];
+            $term_entry = ['cut' => ($period_data ? $period_data->cut : ''), 'type' => 'N/A', 'subject_id' => '', 'code_period' => ($period_data ? $period_data->code : ''), 'completed' => false];
         }
 
         if ($term_entry) {
@@ -1159,15 +1161,14 @@ function persist_expected_matrix($student_id, $detailed_matrix)
     if (empty($detailed_matrix) || empty($student_id)) {
         return 0;
     }
-
-    $inserted = 0;
+    // Primero aplanamos la matriz detallada para obtener la posición real
+    $flat = [];
     foreach ($detailed_matrix as $idx => $term_entry) {
         $term_index = intval($idx) + 1;
 
-        // Cuando subject_id es un array (p.ej. RR -> dos materias)
-            if (isset($term_entry['subject_id']) && is_array($term_entry['subject_id'])) {
+        if (isset($term_entry['subject_id']) && is_array($term_entry['subject_id'])) {
             $subject_ids = $term_entry['subject_id'];
-            // Allow group-level `cut` / `code_period` (scalars) to be applied to all subject_ids
+
             if (is_array($term_entry['cut'])) {
                 $cuts = $term_entry['cut'];
             } else {
@@ -1181,37 +1182,37 @@ function persist_expected_matrix($student_id, $detailed_matrix)
             }
 
             foreach ($subject_ids as $k => $subject_val) {
-                $subject_id = is_numeric($subject_val) ? intval($subject_val) : null;
-                $academic_period = $codes[$k] ?? '';
-                $academic_cut = $cuts[$k] ?? '';
-
-                $wpdb->insert($table, [
-                    'student_id' => $student_id,
+                $flat[] = [
                     'term_index' => $term_index,
-                    'subject_id' => $subject_id,
-                    'academic_period' => $academic_period,
-                    'academic_period_cut' => $academic_cut,
-                    'created_at' => current_time('mysql')
-                ]);
-                $inserted++;
+                    'subject_id' => is_numeric($subject_val) ? intval($subject_val) : null,
+                    'academic_period' => $codes[$k] ?? '',
+                    'academic_period_cut' => $cuts[$k] ?? ''
+                ];
             }
         } else {
-            // Un solo sujeto en el término
             $subject_val = $term_entry['subject_id'] ?? null;
-            $subject_id = is_numeric($subject_val) ? intval($subject_val) : null;
-            $academic_period = $term_entry['code_period'] ?? '';
-            $academic_cut = $term_entry['cut'] ?? '';
-
-            $wpdb->insert($table, [
-                'student_id' => $student_id,
+            $flat[] = [
                 'term_index' => $term_index,
-                'subject_id' => $subject_id,
-                'academic_period' => $academic_period,
-                'academic_period_cut' => $academic_cut,
-                'created_at' => current_time('mysql')
-            ]);
-            $inserted++;
+                'subject_id' => is_numeric($subject_val) ? intval($subject_val) : null,
+                'academic_period' => $term_entry['code_period'] ?? '',
+                'academic_period_cut' => $term_entry['cut'] ?? ''
+            ];
         }
+    }
+
+    // Insertar filas basadas en la matriz aplanada. term_position = posición en la matriz aplanada (1-based).
+    $inserted = 0;
+    foreach ($flat as $pos => $entry) {
+        $wpdb->insert($table, [
+            'student_id' => $student_id,
+            'term_index' => $entry['term_index'],
+            'term_position' => intval($pos) + 1,
+            'subject_id' => $entry['subject_id'],
+            'academic_period' => $entry['academic_period'],
+            'academic_period_cut' => $entry['academic_period_cut'],
+            'created_at' => current_time('mysql')
+        ]);
+        $inserted++;
     }
 
     return $inserted;
