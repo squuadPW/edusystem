@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 3.8.52
+Version: 3.8.53
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
@@ -95,13 +95,27 @@ function create_tables()
     $table_student_program = $wpdb->prefix . 'student_program';
     $table_admission_fees = $wpdb->prefix . 'admission_fees';
     $table_student_balance = $wpdb->prefix . 'student_balance';
+    $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
 
 
     // Para todas las tablas: Mueve la llamada a dbDelta() FUERA del if de existencia de tabla.
     // Esto asegura que dbDelta() siempre compare la estructura actual con la deseada
     // y añada columnas si faltan, o cree la tabla si no existe.
 
-    // tabla de balance del estudiante
+    dbDelta( "CREATE TABLE $table_student_expected_matrix (
+        `id` INT(11) NOT NULL AUTO_INCREMENT,
+        `student_id` INT(11) NOT NULL,
+        `term_index` INT(11) NULL,
+        `subject_id` INT(11) NULL,
+        `academic_period` TEXT NULL,
+        `academic_period_cut` TEXT NULL,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY  (id),
+        KEY idx_sem_student (student_id),
+        UNIQUE KEY ux_sem_student_subject_term (student_id, subject_id, term_index)
+    ) $charset_collate;" );
+    
     dbDelta( "CREATE TABLE $table_student_balance (
         `id` INT(11) NOT NULL AUTO_INCREMENT,
         `student_id` INT(11) NOT NULL,
@@ -451,17 +465,15 @@ function create_tables()
         );
     }
 
-  // table_student_academic_projection
-  dbDelta(
-    "CREATE TABLE " . $table_student_academic_projection . " (
-      id INT(11) NOT NULL AUTO_INCREMENT,
-      student_id INT(11) NOT NULL,
-      projection JSON NULL,
-      matrix JSON NULL,
-      terms_available INT(11) NULL,
-      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (id))$charset_collate;"
-  );
+    // table_student_academic_projection
+    dbDelta(
+        "CREATE TABLE " . $table_student_academic_projection . " (
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            student_id INT(11) NOT NULL,
+            projection JSON NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id))$charset_collate;"
+    );
 
     // table_student_califications
     dbDelta(
@@ -784,6 +796,7 @@ function create_tables()
         ethnicity TEXT NULL,
         academic_period TEXT NULL,
         initial_cut TEXT NULL,
+        terms_available INT(11) NULL,
         profile_picture INT(11) NULL,
         name TEXT NOT NULL,
         middle_name TEXT NULL,

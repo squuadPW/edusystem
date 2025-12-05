@@ -541,7 +541,10 @@ function generate_projection_student($student_id, $force = false)
 
             if ($matrix_config) {
                 $terms_config_decoded = json_decode($matrix_config->terms_config, true);
-                $calculated_matrix = json_encode(build_detailed_matrix($terms_config_decoded, $matrix_config->terms_available, $matrix_regular, $student_id));
+                // Build detailed matrix (in-memory array). We will persist it to `student_expected_matrix` later.
+                $detailed_matrix = build_detailed_matrix($terms_config_decoded, $matrix_config->terms_available, $matrix_regular, $student_id);
+                // Keep an encoded copy for backward compatibility if other code reads it; but we will not store it as primary source.
+                $calculated_matrix = !empty($detailed_matrix) ? json_encode($detailed_matrix) : null;
             }
         } catch (Exception $e) {
             // Si hay error en el cálculo, continuar sin matriz
@@ -621,19 +624,23 @@ function generate_projection_student($student_id, $force = false)
 
         try {
             // Actualizar estudiante y eliminar proyecciones existentes en una sola transacción
-            $wpdb->update($table_students, ['elective' => 0], ['id' => $student_id]);
+            $wpdb->update($table_students, ['elective' => 0, 'terms_available' => $terms_available], ['id' => $student_id]);
             $wpdb->delete($table_student_academic_projection, ['student_id' => $student_id]);
 
-            // Insertar nueva proyección con matriz calculada
+            // Insertar nueva proyección (terms_available now stored on student)
             $result = $wpdb->insert($table_student_academic_projection, [
                 'student_id' => $student_id,
-                'projection' => json_encode($projection),
-                'matrix' => $calculated_matrix,
-                'terms_available' => $terms_available
+                'projection' => json_encode($projection)
             ]);
 
             if ($result === false) {
                 throw new Exception('Error al insertar la proyección');
+            }
+
+            // Persist expected matrix rows if available
+            if (!empty($detailed_matrix)) {
+                clear_expected_matrix_for_student($student_id);
+                persist_expected_matrix($student_id, $detailed_matrix);
             }
 
             $wpdb->query('COMMIT');
@@ -644,15 +651,32 @@ function generate_projection_student($student_id, $force = false)
         }
     }
 
+    // Store terms_available on student record (projection no longer holds it)
+    if (!is_null($terms_available)) {
+        $wpdb->update($table_students, ['terms_available' => $terms_available], ['id' => $student_id]);
+    }
+
     // Insertar nueva proyección sin forzar con matriz calculada
     $result = $wpdb->insert($table_student_academic_projection, [
         'student_id' => $student_id,
-        'projection' => json_encode($projection),
-        'matrix' => $calculated_matrix,
-        'terms_available' => $terms_available
+        'projection' => json_encode($projection)
     ]);
 
-    return $result !== false;
+    if ($result !== false) {
+
+        // If we have a detailed matrix, persist it into `student_expected_matrix`.
+        if (!empty($detailed_matrix)) {
+            // If this operation was forced, clear previous expected matrix rows for the student to avoid duplicates.
+            if (!empty($force)) {
+                clear_expected_matrix_for_student($student_id);
+            }
+            persist_expected_matrix($student_id, $detailed_matrix);
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 function send_welcome_subjects($student_id, $force = false)
@@ -1121,4 +1145,127 @@ function get_subject_period($student_id, $subject_id)
         }
     }
     return '';
+}
+
+/**
+ * Persiste la matriz detallada en la tabla `student_expected_matrix`.
+ * Inserta una fila por materia proyectada. Para términos con múltiples materias (RR)
+ * insertará varias filas con el mismo term_index.
+ */
+function persist_expected_matrix($student_id, $detailed_matrix)
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'student_expected_matrix';
+    if (empty($detailed_matrix) || empty($student_id)) {
+        return 0;
+    }
+
+    $inserted = 0;
+    foreach ($detailed_matrix as $idx => $term_entry) {
+        $term_index = intval($idx) + 1;
+
+        // Cuando subject_id es un array (p.ej. RR -> dos materias)
+        if (isset($term_entry['subject_id']) && is_array($term_entry['subject_id'])) {
+            $subject_ids = $term_entry['subject_id'];
+            $cuts = is_array($term_entry['cut']) ? $term_entry['cut'] : [];
+            $codes = is_array($term_entry['code_period']) ? $term_entry['code_period'] : [];
+
+            foreach ($subject_ids as $k => $subject_val) {
+                $subject_id = is_numeric($subject_val) ? intval($subject_val) : null;
+                $academic_period = $codes[$k] ?? '';
+                $academic_cut = $cuts[$k] ?? '';
+
+                $wpdb->insert($table, [
+                    'student_id' => $student_id,
+                    'term_index' => $term_index,
+                    'subject_id' => $subject_id,
+                    'academic_period' => $academic_period,
+                    'academic_period_cut' => $academic_cut,
+                    'created_at' => current_time('mysql')
+                ]);
+                $inserted++;
+            }
+        } else {
+            // Un solo sujeto en el término
+            $subject_val = $term_entry['subject_id'] ?? null;
+            $subject_id = is_numeric($subject_val) ? intval($subject_val) : null;
+            $academic_period = $term_entry['code_period'] ?? '';
+            $academic_cut = $term_entry['cut'] ?? '';
+
+            $wpdb->insert($table, [
+                'student_id' => $student_id,
+                'term_index' => $term_index,
+                'subject_id' => $subject_id,
+                'academic_period' => $academic_period,
+                'academic_period_cut' => $academic_cut,
+                'created_at' => current_time('mysql')
+            ]);
+            $inserted++;
+        }
+    }
+
+    return $inserted;
+}
+
+/**
+ * Borra los registros de expected matrix de un estudiante (útil antes de regenerar).
+ */
+function clear_expected_matrix_for_student($student_id)
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'student_expected_matrix';
+    return $wpdb->delete($table, ['student_id' => $student_id]);
+}
+
+/**
+ * Reconstruye una estructura de matriz a partir de `student_expected_matrix`.
+ * Retorna un array agrupado por término (índice 0..N-1) similar a `build_detailed_matrix`.
+ */
+function get_expected_matrix_by_student($student_id)
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'student_expected_matrix';
+
+    $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table} WHERE student_id=%d ORDER BY term_index ASC, id ASC", $student_id));
+
+    $matrix = [];
+    foreach ($rows as $row) {
+        $idx = max(0, intval($row->term_index) - 1);
+        if (!isset($matrix[$idx])) {
+            $matrix[$idx] = [
+                'type' => 'R',
+                'subject_id' => [],
+                'cut' => [],
+                'code_period' => [],
+                'completed' => []
+            ];
+        }
+
+        // Resolve subject_id: prefer numeric subject_id stored, otherwise try to find by subject code or name
+        $resolved_subject_id = null;
+        if (!empty($row->subject_id) && is_numeric($row->subject_id)) {
+            $resolved_subject_id = intval($row->subject_id);
+        } else {
+            $candidate = $row->subject ?? $row->subject_code ?? '';
+            if (!empty($candidate)) {
+                if (is_numeric($candidate)) {
+                    $resolved_subject_id = intval($candidate);
+                } else {
+                    // Try to lookup by code_subject or name in school_subjects
+                    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+                    $maybe_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_school_subjects} WHERE code_subject = %s OR name = %s LIMIT 1", $candidate, $candidate));
+                    if (!empty($maybe_id)) {
+                        $resolved_subject_id = intval($maybe_id);
+                    }
+                }
+            }
+        }
+
+        $matrix[$idx]['subject_id'][] = $resolved_subject_id !== null ? $resolved_subject_id : null;
+        $matrix[$idx]['cut'][] = $row->academic_period_cut;
+        $matrix[$idx]['code_period'][] = $row->academic_period;
+        $matrix[$idx]['completed'][] = false;
+    }
+
+    return $matrix;
 }

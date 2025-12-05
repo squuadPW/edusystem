@@ -133,17 +133,13 @@ function add_admin_form_academic_projection_content()
             $projection = get_projection_by_student($student_id);
             $cuts = ['A', 'B', 'C', 'D', 'E'];
             $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1");
-            $matrix = $projection ? $projection->matrix : [];
-            if (isset($matrix) && is_string($matrix)) {
-                $decoded_matrix = json_decode($matrix, true);
-                // Solo actualizar $matrix si la decodificación fue exitosa y resultó en un array.
-                if (is_array($decoded_matrix)) {
-                    $matrix = $decoded_matrix;
-                } else {
-                    // Si la decodificación falla, establecerla como un array vacío para evitar errores.
-                    $matrix = [];
-                }
+            // Use the relational table as canonical source for the student's expected matrix.
+            if ($projection) {
+                $matrix = get_expected_matrix_by_student($projection->student_id);
+            } else {
+                $matrix = [];
             }
+            // $matrix is already an array reconstructed from the relational table.
 
             $lastNameParts = array_filter([$student->last_name, $student->middle_last_name]);
             $firstNameParts = array_filter([$student->name, $student->middle_name]);
@@ -521,19 +517,11 @@ function add_admin_form_academic_projection_content()
                         }
                     }
                 }
-                $data_to_update = [
-                    'matrix' => json_encode($new_matrix_data_raw)
-                ];
-
-                $where = ['id' => $projection_id];
-                $updated = $wpdb->update($table_student_academic_projection, $data_to_update, $where);
-
-                if ($updated === false) {
-                    $errors[] = $wpdb->last_error;
-                    setcookie('message-error', __('Database update failed.', 'edusystem') . ' ' . $wpdb->last_error, time() + 10, '/');
-                } else {
-                    setcookie('message', __('Projection matrix updated successfully.', 'edusystem'), time() + 10, '/');
-                }
+                // Persist the submitted matrix into the normalized table.
+                // Clear previous rows to avoid duplicates, then insert new ones.
+                clear_expected_matrix_for_student($student_id);
+                persist_expected_matrix($student_id, $new_matrix_data_raw);
+                setcookie('message', __('Projection matrix updated successfully.', 'edusystem'), time() + 10, '/');
             } else {
                 // Handle validation errors
                 setcookie('message-error', implode('<br>', $errors), time() + 10, '/');
