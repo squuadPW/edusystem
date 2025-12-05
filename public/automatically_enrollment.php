@@ -1200,12 +1200,20 @@ function persist_expected_matrix($student_id, $detailed_matrix)
         }
     }
 
-    // Insertar filas basadas en la matriz aplanada. term_position = posición en la matriz aplanada (1-based).
+    // Insertar filas basadas en la matriz aplanada.
+    // term_position = posición en la matriz aplanada (1-based).
+    // term_index = secuencia incremental por registro insertado (1..N) para mantener el orden de inserción.
     $inserted = 0;
+    $seq = 1;
     foreach ($flat as $pos => $entry) {
+        // Omitir registros sin subject_id (subject_id === null)
+        if ($entry['subject_id'] === null) {
+            continue;
+        }
+
         $wpdb->insert($table, [
             'student_id' => $student_id,
-            'term_index' => $entry['term_index'],
+            'term_index' => $seq,
             'term_position' => intval($pos) + 1,
             'subject_id' => $entry['subject_id'],
             'academic_period' => $entry['academic_period'],
@@ -1213,6 +1221,7 @@ function persist_expected_matrix($student_id, $detailed_matrix)
             'created_at' => current_time('mysql')
         ]);
         $inserted++;
+        $seq++;
     }
 
     return $inserted;
