@@ -34,14 +34,36 @@
 		$cuotes_ids[] = $cuote_payment; 
 
 	} else {
+
+		if ( $order_main ) {
+			$main_order = wc_get_order( $order_main );
+			$items = $main_order->get_items();
+		} else {
+			$items = $order->get_items();
+		}
+
+		// Extraer los IDs de producto
+		$product_ids = array_map(function($item) {
+			return $item->get_product_id();
+		}, $items);
+
+		$products = "";
+		if( !empty( $product_ids ) ) {
+			$placeholders = implode(',', array_fill(0, count($product_ids), '%d'));
+			$products = " AND product_id IN ($placeholders) ";
+		}
+
 		$cuote_payments = $wpdb->get_results( $wpdb->prepare(
             "SELECT id, amount FROM {$table_student_payments}
-             WHERE student_id = %d AND status_id = 0 AND cuote = (
+             WHERE student_id = %d 
+			 	 AND status_id = 0
+				 {$products}
+			 	 AND cuote = (
                         SELECT MIN(cuote) 
                         FROM {$table_student_payments} 
                         WHERE student_id = %d AND status_id = 0
                     )
-                ORDER BY num_cuotes DESC", 
+             ORDER BY num_cuotes DESC", 
             $student_id,
             $student_id)
 		);
