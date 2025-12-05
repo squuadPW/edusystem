@@ -2420,3 +2420,49 @@ a.toplevel_page_logo_based_menu {
   width: 200px !important;
   min-width: 200px !important;
 }
+
+
+
+
+/* tabla de worpress con ordenes de split */
+tr.parent-order-row {
+    background: #fff; /* fondo blanco normal */
+    font-weight: normal;
+    border-bottom: none; /* sin línea divisoria fuerte */
+    
+    td {
+        font-size: 14px;
+        border-top: 2px solid #d8d8ff !important;
+    }
+    
+    .view_details  {
+        display: table-cell;
+    }
+}
+
+/* Hijas */
+tr.child-order-row {
+    display: revert-layer;
+    background: #f9f9f9; 
+    font-size: 13px;
+
+            
+    td {
+        border-top: 1px dashed #dee1e7 !important; /* borde punteado arriba */
+
+        &.payment_id {
+            padding-left: 35px !important; /* indentación para marcar jerarquía */
+            font-style: italic;
+        }
+    }
+
+    &.last-child td {
+        border-bottom: 2px solid #d8d8ff !important;
+    }
+
+    .view_details  {
+        display: table-cell;
+    }
+}            
+
+            

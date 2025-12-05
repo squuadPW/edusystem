@@ -2183,4 +2183,38 @@ a.toplevel_page_logo_based_menu {
 .wp-list-table .column-thesis_idea_to_develop_phd_only {
   width: 200px !important;
   min-width: 200px !important;
+}
+
+/* tabla de worpress con ordenes de split */
+tr.parent-order-row {
+  background: #fff; /* fondo blanco normal */
+  font-weight: normal;
+  border-bottom: none; /* sin línea divisoria fuerte */
+}
+tr.parent-order-row td {
+  font-size: 14px;
+  border-top: 2px solid #d8d8ff !important;
+}
+tr.parent-order-row .view_details {
+  display: table-cell;
+}
+
+/* Hijas */
+tr.child-order-row {
+  display: revert-layer;
+  background: #f9f9f9;
+  font-size: 13px;
+}
+tr.child-order-row td {
+  border-top: 1px dashed #dee1e7 !important; /* borde punteado arriba */
+}
+tr.child-order-row td.payment_id {
+  padding-left: 35px !important; /* indentación para marcar jerarquía */
+  font-style: italic;
+}
+tr.child-order-row.last-child td {
+  border-bottom: 2px solid #d8d8ff !important;
+}
+tr.child-order-row .view_details {
+  display: table-cell;
 }/*# sourceMappingURL=style.css.map */

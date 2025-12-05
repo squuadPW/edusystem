@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const new_subprogram = subprogram_template.cloneNode(true);
 
             // Quitar el atributo 'disabled' y modificar 'name' y 'for'
-            new_subprogram.querySelectorAll('input, label').forEach(elem => {
+            new_subprogram.querySelectorAll('input, label, textarea').forEach(elem => {
 
                 // Modificar los atributos 'name' y 'for' solo si son inputs o labels
-                if (elem.tagName.toLowerCase() === 'input') {
+                if ( elem.tagName.toLowerCase() === 'input' || elem.tagName.toLowerCase() === 'textarea' ) {
                     // Obtener el nombre actual y reemplazar los corchetes
                     const currentName = elem.getAttribute('name');
                     const newName = currentName.replace(/\[\]/, `[${subprogram_count}]`);
