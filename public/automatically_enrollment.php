@@ -1165,10 +1165,20 @@ function persist_expected_matrix($student_id, $detailed_matrix)
         $term_index = intval($idx) + 1;
 
         // Cuando subject_id es un array (p.ej. RR -> dos materias)
-        if (isset($term_entry['subject_id']) && is_array($term_entry['subject_id'])) {
+            if (isset($term_entry['subject_id']) && is_array($term_entry['subject_id'])) {
             $subject_ids = $term_entry['subject_id'];
-            $cuts = is_array($term_entry['cut']) ? $term_entry['cut'] : [];
-            $codes = is_array($term_entry['code_period']) ? $term_entry['code_period'] : [];
+            // Allow group-level `cut` / `code_period` (scalars) to be applied to all subject_ids
+            if (is_array($term_entry['cut'])) {
+                $cuts = $term_entry['cut'];
+            } else {
+                $cuts = array_fill(0, count($subject_ids), isset($term_entry['cut']) ? $term_entry['cut'] : '');
+            }
+
+            if (is_array($term_entry['code_period'])) {
+                $codes = $term_entry['code_period'];
+            } else {
+                $codes = array_fill(0, count($subject_ids), isset($term_entry['code_period']) ? $term_entry['code_period'] : '');
+            }
 
             foreach ($subject_ids as $k => $subject_val) {
                 $subject_id = is_numeric($subject_val) ? intval($subject_val) : null;
