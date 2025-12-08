@@ -50,9 +50,8 @@
 		$products = "";
 		if( !empty( $product_ids ) ) {
 			$placeholders = implode(',', array_fill(0, count($product_ids), '%d'));
-			$products = " AND product_id IN ($placeholders) ";
+			$products = $wpdb->prepare(" AND product_id IN ($placeholders) ", $product_ids );
 		}
-
 		$cuote_payments = $wpdb->get_results( $wpdb->prepare(
             "SELECT id, amount FROM {$table_student_payments}
              WHERE student_id = %d 
@@ -71,7 +70,7 @@
 		// Obtener un array con todos los IDs de la consulta
 		$cuotes_ids = array_map(function($item) {
 			return $item->id;
-		}, $cuote_payments);
+		}, $cuote_payments ?? []);
 		
 		// obtiene el total
 		foreach ($cuote_payments as $payment) {
