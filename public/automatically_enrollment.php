@@ -5,10 +5,10 @@ function automatically_enrollment($student_id)
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
-    $expected_periods = load_expected_periods($student->expected_graduation_date);
+    // $expected_periods = load_expected_periods($student->expected_graduation_date);
 
-    $expected_projection = load_expected_projection($student->initial_cut, $student->grade_id, $expected_periods);
-    load_automatically_enrollment($expected_projection, $student);
+    // $expected_projection = load_expected_projection($student->initial_cut, $student->grade_id, $expected_periods);
+    load_automatically_enrollment($student);
 }
 
 
@@ -167,91 +167,60 @@ function load_next_enrollment($expected_projection, $student)
     return $next_enrollment;
 }
 
-function load_automatically_enrollment($expected_projection, $student)
+function load_automatically_enrollment($student)
 {
     if ($student->status_id == 0 || $student->status_id > 3) {
         return;
     }
 
-    // proyeccion
-    $projection = get_projection_by_student($student->id);
-    if (!$projection) {
-        return;
-    }
-    $projection_obj = json_decode($projection->projection);
-
-    // tablas
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $table_students = $wpdb->prefix . 'students';
+    $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
+    $user = get_user_by('email', $student->email);
 
-    // matrices
     $load = load_current_cut_enrollment();
-    $matrix_elective = load_available_electives($student, $load['code'], cut: $load['cut']);
-    $matrix_regular = only_pensum_regular($student->program_id);
-
-    // contadores
-    $last_inscriptions_electives_count = load_inscriptions_electives($student);
-    $real_electives_inscriptions_count = load_inscriptions_electives_valid($student);
-    $student_enrolled = 0;
-    $count_expected_subject = 0;
-    $count_expected_subject_elective = 0;
-
-    // valores
     $code = $load['code'];
     $cut = $load['cut'];
-    $force_skip = false;
-    $regular_enrolled = false;
 
-    foreach ($expected_projection['expected_matrix'] as $key => $expected) {
-        if ($student_enrolled >= (int)$expected_projection['max_expected']) {
-            if ($regular_enrolled) {
-                update_count_moodle_pending();
+    $expected_rows = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM {$table_student_expected_matrix} WHERE student_id = %d AND academic_period = %s AND academic_period_cut = %s ORDER BY term_index ASC, term_position ASC",
+        $student->id,
+        $code,
+        $cut
+    ));
+
+    // Primero procesar las materias previstas en la matriz del estudiante para este periodo
+    if (!empty($expected_rows)) {
+        foreach ($expected_rows as $row) {
+            $subject_id = $row->subject_id;
+            if (empty($subject_id)) {
+                edusystem_get_log('Empty subject ID found for student ' . $user->email . ' in expected rows', 'Automatically enrollment', $user->ID);
+                continue;
             }
-            break;
-        }
 
-        if ($expected_projection['grade_id'] > 2 && (($key + 1) > 6 || ($key + 1) == 1)) {
-            $expected_projection['max_expected'] = 1;
-        } else {
-            if ($expected_projection['grade_id'] > 2) {
-                $expected_projection['max_expected'] = 2;
+            $subject = get_subject_details($subject_id);
+            if (!$subject) {
+                edusystem_get_log('Subject not found for ID ' . $subject_id . ' for student ' . $user->email, 'Automatically enrollment', $user->ID);
+                continue;
             }
-        }
 
-        if ($expected == 'R') {
-            $expected_subject = $matrix_regular[$count_expected_subject];
-            $subject = get_subject_details($expected_subject->subject_id);
-
+            // Verificar si el estudiante puede inscribirse en la materia
             $available_inscription_subject = available_inscription_subject($student->id, $subject->id);
             if (!$available_inscription_subject) {
-                $count_expected_subject++;
+                // Ya la esta viendo
+                edusystem_get_log('Subject not available for inscription for student ' . $user->email . ' with Subject ID ' . $subject_id, 'Automatically enrollment', $user->ID);
                 continue;
             }
 
+            // Verificar oferta disponible en este periodo
             $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
             if (!$offer_available_to_enroll) {
-                $count_expected_subject++;
-                $force_skip = true;
+                // Si no hay oferta, no inscribimos esta materia
+                edusystem_get_log('No offer available for Subject ID ' . $subject->id . ' for student ' . $user->email, 'Automatically enrollment', $user->ID);
                 continue;
             }
 
-            $subjectIds = array_column($projection_obj, 'subject_id');
-            $indexToEdit = array_search($subject->id, $subjectIds);
-            if ($indexToEdit !== false) {
-                $projection_obj[$indexToEdit]->cut = $cut;
-                $projection_obj[$indexToEdit]->this_cut = true;
-                $projection_obj[$indexToEdit]->code_period = $code;
-                $projection_obj[$indexToEdit]->calification = '';
-                $projection_obj[$indexToEdit]->is_completed = true;
-                $projection_obj[$indexToEdit]->welcome_email = false;
-            }
-
-            $wpdb->update($table_student_academic_projection, [
-                'projection' => json_encode($projection_obj)
-            ], ['id' => $projection->id]);
-
+            // Insertar inscripción
             $section = load_section_available($subject->id, $code, $cut);
             $wpdb->insert($table_student_period_inscriptions, [
                 'status_id' => 1,
@@ -264,54 +233,19 @@ function load_automatically_enrollment($expected_projection, $student)
                 'type' => $subject->type
             ]);
 
-            $force_skip = false;
-            $regular_enrolled = true;
-            $count_expected_subject++;
-            $student_enrolled++;
-
-            if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2 && ($key + 1) >= (count($expected_projection['expected_matrix']) - 1)) {
-                update_elective_student($student->id, 1);
+            edusystem_get_log('Enrolled in Subject ID: ' . $subject->id . ' for Student ID: ' . $student->id, 'Automatically enrollment', $user->ID);
+            // mandamos a moodle
+            $offer = get_offer_filtered($subject->id, $code, $cut, $section);
+            if ($offer && isset($offer->moodle_course_id)) {
+                $enrollments = courses_enroll_student($student->id, [(int) $offer->moodle_course_id]);
+                if (!empty($enrollments)) {
+                    enroll_student($enrollments);
+                    edusystem_get_log('Student ID: ' . $student->id . ' enrolled in Moodle Course ID: ' . $offer->moodle_course_id, 'Automatically enrollment', $user->ID);
+                }
             }
-        } else {
-            if ($force_skip) {
-                $count_expected_subject_elective++;
-                $last_inscriptions_electives_count++;
-                continue;
-            }
-
-            if (count($matrix_elective) == 0) {
-                continue;
-            }
-
-            if ($last_inscriptions_electives_count > $count_expected_subject_elective) {
-                $count_expected_subject_elective++;
-                continue;
-            }
-
-            if ($expected == 'EA' && !get_option('use_elective_aditional')) {
-                $wpdb->update($table_students, [
-                    'elective' => 0,
-                    'skip_cut' => 0
-                ], ['id' => $student->id]);
-
-                $wpdb->insert($table_student_period_inscriptions, [
-                    'status_id' => 2,
-                    'student_id' => $student->id,
-                    'code_period' => $code,
-                    'cut_period' => $cut,
-                    'type' => 'elective'
-                ]);
-                break;
-            }
-
-            update_elective_student($student->id, 1);
-            $count_expected_subject_elective++;
-            $student_enrolled++;
         }
-
-        if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0) && count($matrix_elective) > 0) {
-            update_elective_student($student->id, 1);
-        }
+    } else {
+        edusystem_get_log('No expected rows found by ' . $user->email . ' for the period ' . $code . '-' . $cut, 'Automatically enrollment', $user->ID);
     }
 
     update_max_upload_at($student->id);
