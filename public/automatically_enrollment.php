@@ -683,11 +683,8 @@ function update_projection_after_enrollment($student_id, $subject_id, $code_peri
             $projection_arr[$idx]['code_period'] = $code_period;
             $projection_arr[$idx]['cut'] = $cut_period;
             $projection_arr[$idx]['calification'] = ($status_id == 3) ? ($projection_arr[$idx]['calification'] ?? '') : '';
-            $projection_arr[$idx]['is_completed'] = ($status_id == 3);
-            // For a fresh enrollment (status 1) keep welcome_email = false so welcome email flow can trigger
-            $projection_arr[$idx]['welcome_email'] = ($status_id == 3) ? true : false;
-
-            // Ensure canonical subject metadata
+            $projection_arr[$idx]['is_completed'] = ($status_id == 3 || $status_id == 1);
+            $projection_arr[$idx]['welcome_email'] = ($status_id == 3 || $status_id == 1) ? true : false;
             $projection_arr[$idx]['subject_id'] = (string)$subject->id;
             $projection_arr[$idx]['code_subject'] = $subject->code_subject;
             $projection_arr[$idx]['subject'] = $subject->name;
@@ -712,8 +709,8 @@ function update_projection_after_enrollment($student_id, $subject_id, $code_peri
             'code_period' => ($status_id == 3 || $status_id == 1) ? $code_period : '',
             'calification' => ($status_id == 3) ? '' : '',
             'code_subject' => $subject->code_subject,
-            'is_completed' => ($status_id == 3),
-            'welcome_email' => ($status_id == 3) ? true : false
+            'is_completed' => ($status_id == 3 || $status_id == 1),
+            'welcome_email' => ($status_id == 3 || $status_id == 1) ? true : false
         ];
         $updated_item = $projection_arr[count($projection_arr) - 1];
     }
