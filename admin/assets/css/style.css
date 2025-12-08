@@ -2217,4 +2217,10 @@ tr.child-order-row.last-child td {
 }
 tr.child-order-row .view_details {
   display: table-cell;
+}
+
+#document_view #form_document {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }/*# sourceMappingURL=style.css.map */
