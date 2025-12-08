@@ -176,6 +176,7 @@ function load_automatically_enrollment($student)
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
     $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
+    $full_name_student = student_names_lastnames_helper($student->id);
     $user = get_user_by('email', $student->email);
 
     $load = load_current_cut_enrollment();
@@ -194,13 +195,13 @@ function load_automatically_enrollment($student)
         foreach ($expected_rows as $row) {
             $subject_id = $row->subject_id;
             if (empty($subject_id)) {
-                edusystem_get_log('Empty subject ID found for student ' . $user->email . ' in expected rows', 'Automatically enrollment', $user->ID);
+                edusystem_get_log('Empty subject ID found for student ' . $full_name_student . ' in expected rows', 'Automatically enrollment', $user->ID);
                 continue;
             }
 
             $subject = get_subject_details($subject_id);
             if (!$subject) {
-                edusystem_get_log('Subject not found for ID ' . $subject_id . ' for student ' . $user->email, 'Automatically enrollment', $user->ID);
+                edusystem_get_log('Subject not found for ID ' . $subject_id . ' for student ' . $full_name_student, 'Automatically enrollment', $user->ID);
                 continue;
             }
 
@@ -208,7 +209,7 @@ function load_automatically_enrollment($student)
             $available_inscription_subject = available_inscription_subject($student->id, $subject->id);
             if (!$available_inscription_subject) {
                 // Ya la esta viendo
-                edusystem_get_log('The student already has an active or approved enrollment for the subject ID ' . $subject->id, 'Automatically enrollment', $user->ID);
+                edusystem_get_log('The student ' . $full_name_student . ' already has an active or approved enrollment for the subject ' . $subject->name, 'Automatically enrollment', $user->ID);
                 continue;
             }
 
@@ -216,7 +217,7 @@ function load_automatically_enrollment($student)
             $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
             if (!$offer_available_to_enroll) {
                 // Si no hay oferta, no inscribimos esta materia
-                edusystem_get_log('No offer available for Subject ID ' . $subject->id . ' for student ' . $user->email, 'Automatically enrollment', $user->ID);
+                edusystem_get_log('No offer available for subject ' . $subject->name . ' for student ' . $full_name_student . ' in the period ' . $code . ' - ' . $cut, 'Automatically enrollment', $user->ID);
                 continue;
             }
 
@@ -236,22 +237,22 @@ function load_automatically_enrollment($student)
             // Update student's projection so the subject appears as this cut
             $proj_item = update_projection_after_enrollment($student->id, $subject->id, $code, $cut, 1);
             if ($proj_item) {
-                edusystem_get_log('Projection updated for Subject ID: ' . $subject->id . ' for Student ID: ' . $student->id, 'Automatically enrollment', $user->ID);
+                edusystem_get_log('Enrolled in subject ' . $subject->name . ' for student: ' . $full_name_student, 'Automatically enrollment', $user->ID);
+                edusystem_get_log('Projection updated for subject ' . $subject->name . ' for student: ' . $full_name_student, 'Automatically enrollment', $user->ID);
             }
 
-            edusystem_get_log('Enrolled in Subject ID: ' . $subject->id . ' for Student ID: ' . $student->id, 'Automatically enrollment', $user->ID);
             // mandamos a moodle
             $offer = get_offer_filtered($subject->id, $code, $cut, $section);
             if ($offer && isset($offer->moodle_course_id)) {
                 $enrollments = courses_enroll_student($student->id, [(int) $offer->moodle_course_id]);
                 if (!empty($enrollments)) {
                     enroll_student($enrollments);
-                    edusystem_get_log('Student ID: ' . $student->id . ' enrolled in Moodle Course ID: ' . $offer->moodle_course_id, 'Automatically enrollment', $user->ID);
+                    edusystem_get_log('Student ' . $full_name_student . ' enrolled in Moodle Course ID: ' . $offer->moodle_course_id, 'Automatically enrollment', $user->ID);
                 }
             }
         }
     } else {
-        edusystem_get_log('No expected rows found by ' . $user->email . ' for the period ' . $code . '-' . $cut, 'Automatically enrollment', $user->ID);
+        edusystem_get_log('No expected rows found by student ' . $full_name_student . ' for the period ' . $code . '-' . $cut, 'Automatically enrollment', $user->ID);
     }
 
     update_max_upload_at($student->id);
