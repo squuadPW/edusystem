@@ -1522,7 +1522,8 @@ function get_fee_paid($student_id, $type)
         )
     );
 
-    foreach ($student_programs as $program) {
+    foreach ( $student_programs as $program ) {
+        
         // Obtiene todos los IDs de los productos de registro para cada plan.
         $fees = get_fees_associated_plan($program->plan_identificator, $type);
 

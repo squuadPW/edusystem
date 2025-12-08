@@ -27,14 +27,14 @@ function show_admission_documents()
         } else if ($_GET['action'] == 'edit') {
             $document_id = $_GET['document_id'];
             $document = get_document_from_grade($document_id);
-            include(plugin_dir_path(__FILE__) . 'templates/edit-document.php');
+            include(plugin_dir_path(__FILE__) . 'templates/document_view.php');
         }
 
     } else {
 
         $grades = get_grades();
         $documents = get_list_grades_documents();
-        include(plugin_dir_path(__FILE__) . 'templates/list-grades.php');
+        include(plugin_dir_path(__FILE__) . 'templates/list-documents.php');
     }
 }
 

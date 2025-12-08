@@ -226,6 +226,7 @@ function create_tables()
             `career_identificator` TEXT NOT NULL,
             `mention_identificator` TEXT NULL,
             `plan_identificator` TEXT NOT NULL,
+            `status` VARCHAR(20) NOT NULL DEFAULT 'in_progress',
             `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
         )$charset_collate;"
@@ -925,7 +926,7 @@ function create_tables()
         status INT(11) NOT NULL,
         fee float NOT NULL,
         description TEXT NOT NULL,
-        updated_at DATETIME NULL,
+        updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
         created_at DATETIME NOT NULL,
         PRIMARY KEY (id))$charset_collate;"
     );
@@ -1081,6 +1082,7 @@ function create_tables()
         id INT(11) NOT NULL AUTO_INCREMENT,
         name TEXT NOT NULL,
         type_file TEXT NOT NULL,
+        academic_department JSON NULL,
         grade_id INT(11) NOT NULL,
         is_required INT(11) NOT NULL,
         is_visible BOOLEAN NOT NULL DEFAULT 1,
