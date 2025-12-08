@@ -208,7 +208,7 @@ function load_automatically_enrollment($student)
             $available_inscription_subject = available_inscription_subject($student->id, $subject->id);
             if (!$available_inscription_subject) {
                 // Ya la esta viendo
-                edusystem_get_log('Subject not available for inscription for student ' . $user->email . ' with Subject ID ' . $subject_id, 'Automatically enrollment', $user->ID);
+                edusystem_get_log('The student already has an active or approved enrollment for the subject ID ' . $subject->id, 'Automatically enrollment', $user->ID);
                 continue;
             }
 
