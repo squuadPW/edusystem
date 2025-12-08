@@ -70,20 +70,25 @@ function create_user_moodle($student_id)
                 'moodle_password' => $password
             ], ['id' => $student_id]);
 
-            generate_projection_student($student_id);
-
-            if (get_option('auto_enroll_regular')) {
-                automatically_enrollment($student_id);
-            }
-
-            if (get_option('public_course_id')) {
-                enroll_student_public_course(courses_enroll_student($student_id, [(int) get_option('public_course_id')]));
-            }
+            handle_student_registration_moodle($student_id);
 
             return $create_user;
         }
     } catch (\Throwable $th) {
         return;
+    }
+}
+
+function handle_student_registration_moodle($student_id)
+{
+    generate_projection_student($student_id);
+
+    if (get_option('auto_enroll_regular')) {
+        automatically_enrollment($student_id);
+    }
+
+    if (get_option('public_course_id')) {
+        enroll_student_public_course(courses_enroll_student($student_id, [(int) get_option('public_course_id')]));
     }
 }
 
@@ -480,6 +485,8 @@ function sync_student_with_moodle($student_id)
                 ['id' => $student_id]                       // Dónde actualizarlo
             );
             
+            handle_student_registration_moodle($student_id);
+
             return $moodle_user; // Devuelve los datos del usuario encontrado
 
         } else {
