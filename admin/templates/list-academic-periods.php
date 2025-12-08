@@ -1,15 +1,10 @@
 <div class="tabs-content">
-
-	<?php
-        include(plugin_dir_path(__FILE__) . 'cookie-message.php');
-    ?>
-
 	<div class="wrap">
 		<div style="text-align:start;">
 			<h1 class="wp-heading-line"><?= __('All Academic periods', 'edusystem'); ?></h1>
 		</div>
 		<?php
-		include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+			include(plugin_dir_path(__FILE__) . 'cookie-message.php');
 		?>
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 			<a href="<?= admin_url('admin.php?page=add_admin_form_academic_periods_content&section_tab=add_period'); ?>"
