@@ -2712,54 +2712,52 @@ function select_elective_callback()
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student_id}");
     $projection_obj = json_decode($projection->projection);
 
-    array_push($projection_obj, [
-        'code_subject' => $subject->code_subject,
-        'subject_id' => $subject->id,
-        'subject' => $subject->name,
-        'hc' => $subject->hc,
-        'cut' => $cut,
-        'code_period' => $code,
-        'calification' => "",
-        'is_completed' => true,
-        'this_cut' => true,
-        'is_elective' => true,
-        'welcome_email' => true,
-    ]);
+    // Use shared helper to update the projection consistently and get the projection item
+    $status_to_set = 1; // this_cut true -> status 1 (inscribed)
+    $proj_item = update_projection_after_enrollment($student_id, $subject->id, $code, $cut, $status_to_set);
 
-    $wpdb->update($table_student_academic_projection, [
-        'projection' => json_encode($projection_obj),
-    ], ['id' => $projection->id]);
-
+    // Ensure student record reflects elective selection cleared
     $wpdb->update($table_students, [
         'elective' => 0,
     ], ['id' => $student_id]);
 
+    // If helper returned a projection item use it; otherwise fallback to subject data
+    $insert_subject_id = $proj_item['subject_id'] ?? $subject->id;
+    $insert_code_subject = $proj_item['code_subject'] ?? $subject->code_subject;
+    $insert_code_period = $proj_item['code_period'] ?? $code;
+    $insert_cut = $proj_item['cut'] ?? $cut;
+    $insert_status = (isset($proj_item['this_cut']) && $proj_item['this_cut']) ? 1 : 3;
+
     $section = load_section_available($subject->id, $code, $cut);
 
     $wpdb->insert($table_student_period_inscriptions, [
-        'status_id' => $projection_obj[count($projection_obj) - 1]['this_cut'] ? 1 : 3,
+        'status_id' => $insert_status,
         'type' => 'elective',
         'section' => $section,
-        'student_id' => $projection->student_id,
-        'subject_id' => $projection_obj[count($projection_obj) - 1]['subject_id'],
-        'code_subject' => $projection_obj[count($projection_obj) - 1]['code_subject'],
-        'code_period' => $projection_obj[count($projection_obj) - 1]['code_period'],
-        'cut_period' => $projection_obj[count($projection_obj) - 1]['cut']
+        'student_id' => $student_id,
+        'subject_id' => $insert_subject_id,
+        'code_subject' => $insert_code_subject,
+        'code_period' => $insert_code_period,
+        'cut_period' => $insert_cut
     ]);
 
     if (get_option('auto_enroll_elective')) {
         $offer = get_offer_filtered($subject->id, $code, $cut);
         $enrollments = [];
-        $enrollments = array_merge($enrollments, courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id]));
-        enroll_student($enrollments);
+        if ($offer && isset($offer->moodle_course_id)) {
+            $enrollments = array_merge($enrollments, courses_enroll_student($student_id, [(int) $offer->moodle_course_id]));
+            enroll_student($enrollments);
+        } else {
+            update_count_moodle_pending();
+        }
     } else {
         update_count_moodle_pending();
     }
 
-    update_max_upload_at($projection->student_id);
+    update_max_upload_at($student_id);
 
-    if ( function_exists( 'wc_add_notice' ) ) {
-        wc_add_notice( 'Elective successfully registered.', 'success' );
+    if (function_exists('wc_add_notice')) {
+        wc_add_notice('Elective successfully registered.', 'success');
     }
 
     wp_send_json(array('success' => true));

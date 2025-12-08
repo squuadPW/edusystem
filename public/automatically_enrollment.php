@@ -233,6 +233,12 @@ function load_automatically_enrollment($student)
                 'type' => $subject->type
             ]);
 
+            // Update student's projection so the subject appears as this cut
+            $proj_item = update_projection_after_enrollment($student->id, $subject->id, $code, $cut, 1);
+            if ($proj_item) {
+                edusystem_get_log('Projection updated for Subject ID: ' . $subject->id . ' for Student ID: ' . $student->id, 'Automatically enrollment', $user->ID);
+            }
+
             edusystem_get_log('Enrolled in Subject ID: ' . $subject->id . ' for Student ID: ' . $student->id, 'Automatically enrollment', $user->ID);
             // mandamos a moodle
             $offer = get_offer_filtered($subject->id, $code, $cut, $section);
@@ -628,6 +634,102 @@ function generate_projection_student($student_id, $force = false)
         }
 
         return true;
+    }
+
+    return false;
+}
+
+/**
+ * Update student's academic projection after an enrollment is created.
+ * Ensures the projection entry for the subject is marked for this cut
+ * so downstream processes (welcome emails, UI) reflect the new enrollment.
+ *
+ * @param int $student_id
+ * @param int|string $subject_id
+ * @param string $code_period
+ * @param string|int $cut_period
+ * @param int $status_id Enrollment status (1 = current/inscribed, 3 = completed)
+ * @return bool
+ */
+function update_projection_after_enrollment($student_id, $subject_id, $code_period, $cut_period, $status_id = 1)
+{
+    global $wpdb;
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+
+    // Normalize subject details
+    $subject = get_subject_details($subject_id);
+    if (!$subject) {
+        return false;
+    }
+
+    $proj_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_student_academic_projection} WHERE student_id = %d", $student_id));
+    $projection_arr = [];
+    if ($proj_row && !empty($proj_row->projection)) {
+        $projection_arr = json_decode($proj_row->projection, true);
+        if (!is_array($projection_arr)) {
+            $projection_arr = [];
+        }
+    }
+
+    $found = false;
+    $updated_item = null;
+    foreach ($projection_arr as $idx => $item) {
+        $item_subject_id = isset($item['subject_id']) ? (string)$item['subject_id'] : null;
+        $item_code = isset($item['code_subject']) ? $item['code_subject'] : null;
+
+        if (($item_subject_id !== null && (string)$item_subject_id === (string)$subject->id) || ($item_code !== null && $item_code === $subject->code_subject)) {
+            // Update existing entry
+            $projection_arr[$idx]['this_cut'] = ($status_id == 1);
+            $projection_arr[$idx]['code_period'] = $code_period;
+            $projection_arr[$idx]['cut'] = $cut_period;
+            $projection_arr[$idx]['calification'] = ($status_id == 3) ? ($projection_arr[$idx]['calification'] ?? '') : '';
+            $projection_arr[$idx]['is_completed'] = ($status_id == 3);
+            // For a fresh enrollment (status 1) keep welcome_email = false so welcome email flow can trigger
+            $projection_arr[$idx]['welcome_email'] = ($status_id == 3) ? true : false;
+
+            // Ensure canonical subject metadata
+            $projection_arr[$idx]['subject_id'] = (string)$subject->id;
+            $projection_arr[$idx]['code_subject'] = $subject->code_subject;
+            $projection_arr[$idx]['subject'] = $subject->name;
+            $projection_arr[$idx]['type'] = isset($projection_arr[$idx]['type']) ? $projection_arr[$idx]['type'] : strtolower($subject->type);
+            $projection_arr[$idx]['hc'] = $projection_arr[$idx]['hc'] ?? ($subject->hc ?? '');
+
+            $found = true;
+            $updated_item = $projection_arr[$idx];
+            break;
+        }
+    }
+
+    if (!$found) {
+        // Append a minimal projection entry for this subject
+        $projection_arr[] = [
+            'hc' => $subject->hc ?? '',
+            'cut' => ($status_id == 3 || $status_id == 1) ? $cut_period : '',
+            'type' => strtolower($subject->type ?? ''),
+            'subject' => $subject->name,
+            'this_cut' => ($status_id == 1),
+            'subject_id' => (string)$subject->id,
+            'code_period' => ($status_id == 3 || $status_id == 1) ? $code_period : '',
+            'calification' => ($status_id == 3) ? '' : '',
+            'code_subject' => $subject->code_subject,
+            'is_completed' => ($status_id == 3),
+            'welcome_email' => ($status_id == 3) ? true : false
+        ];
+        $updated_item = $projection_arr[count($projection_arr) - 1];
+    }
+
+    if ($proj_row) {
+        $wpdb->update($table_student_academic_projection, ['projection' => json_encode($projection_arr)], ['id' => $proj_row->id]);
+        $proj_id = $proj_row->id;
+    } else {
+        $wpdb->insert($table_student_academic_projection, ['student_id' => $student_id, 'projection' => json_encode($projection_arr), 'matrix' => null]);
+        $proj_id = $wpdb->insert_id;
+    }
+
+    // Return the item that was created/updated plus the projection row id
+    if ($updated_item !== null) {
+        $updated_item['_projection_id'] = $proj_id;
+        return $updated_item;
     }
 
     return false;
