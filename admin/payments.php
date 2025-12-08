@@ -871,7 +871,7 @@ function add_admin_form_payments_content()
             $program_product_id = isset($_POST['product_id']) ? sanitize_text_field($_POST['product_id']) : '';
             $identificator = strtoupper(sanitize_text_field($_POST['identificator']));
             $name = strtoupper(sanitize_text_field(stripslashes($_POST['name'])));
-            $description = strtoupper(sanitize_text_field(stripslashes($_POST['description'])));
+            $description = strtoupper(wp_kses_post( stripslashes($_POST['description'])));
             $total_price = floatval(sanitize_text_field($_POST['total_price']));
             $is_active = $_POST['is_active'] ? true : false;
             $subprograms_post = $_POST['subprogram'] ?? '';
@@ -972,6 +972,7 @@ function add_admin_form_payments_content()
                     $name_subprogram = $subprogram['name'];
                     $price = $subprogram['price'];
                     $is_active_subprogram = $subprogram['is_active'] ? true : false;
+                    $description_subprogram = wp_kses_post( $subprogram['description']) ?? '';
 
                     // crea o actualiza el producto 
                     if ($subprogram['product_id']) {
@@ -1041,6 +1042,7 @@ function add_admin_form_payments_content()
                         'is_active' => $is_active_subprogram ? 1 : 0,
                         'name' => $name_subprogram,
                         'price' => $price,
+                        'description' => $description_subprogram,
                         'product_id' => (string) $product_id ?? null,
                     ];
 
@@ -1804,37 +1806,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
     }
 
     function single_row($item) {
-        // CSS embebido
-        echo '<style>
-            /* Padre normal, sin color oscuro */
-            tr.parent-order-row {
-                background: #fff; /* fondo blanco normal */
-                font-weight: normal;
-                border-bottom: none; /* sin línea divisoria fuerte */
-            }
-            tr.parent-order-row td {
-                font-size: 14px;
-            }
-
-            /* Hijas */
-            tr.child-order-row {
-                background: #f9f9f9; /* fondo gris claro */
-                font-size: 13px;
-            }
-            tr.child-order-row td.payment_id {
-                padding-left: 30px; /* indentación para marcar jerarquía */
-                font-style: italic;
-            }
-            tr.child-order-row td {
-                border-top: 1px dashed #ccc; /* borde punteado arriba */
-            }
-
-            /* Última hija con línea divisoria fuerte */
-            tr.child-order-row.last-child td {
-                border-bottom: 3px solid #0073aa;
-            }
-        </style>';
-
+        
         // Fila principal
         echo '<tr class="parent-order-row">';
             $this->single_row_columns($item);
@@ -1866,20 +1838,21 @@ class TT_payment_pending_List_Table extends WP_List_Table
 
                     echo '<tr class="child-order-row parent-' . esc_attr($item['payment_id']) . $last_class . '">';
 
-                    echo '<td class="payment_id column-payment_id column-primary" data-colname="Payment ID">';
-                    echo esc_html( $payment_order->get_id() );
+                    echo '<td class="payment_id column-payment_id column-primary" data-colname="Payment ID" style="padding-left: 35px !important;" >';
+                        echo "#{$item['payment_id']}-".esc_html( $payment_order->get_id() );
+                        echo '<button type="button" class="toggle-row"></button>';
                     echo '</td>';
 
                     echo '<td class="date column-date" data-colname="Date">';
                     echo esc_html( $payment_order->get_date_created()->date_i18n('m/d/Y H:i:s') );
                     echo '</td>';
 
-                    echo '<td class="partner_name column-partner_name" data-colname="Parent"></td>';
-                    echo '<td class="student_name column-student_name" data-colname="Student"></td>';
+                    echo '<td class="partner_name column-partner_name"></td>';
+                    echo '<td class="student_name column-student_name" ></td>';
 
                     echo '<td class="total column-total" data-colname="Total"><b>' . wc_price( $payment['amount'], [ 'currency' => $payment_order->get_currency() ]  ) . '</b></td>';
 
-                    echo '<td class="payment_method column-payment_method" data-colname="Payment Method"></td>';
+                    echo '<td class="payment_method column-payment_method" ></td>';
 
                     echo '<td class="status column-status" data-colname="Status">';
                     echo esc_html( wc_get_order_status_name( $payment_order->get_status() ) );

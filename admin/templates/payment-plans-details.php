@@ -143,6 +143,15 @@
                                                     </div>
                                                 </div>
 
+                                                <div class="space-offer">
+                                                    <label for="subprogram[<?= $i ?>][description]">
+                                                        <b><?= __('Description', 'edusystem'); ?></b>
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+
+                                                    <textarea style="width: 100%" name="subprogram[<?= $i ?>][description]" rows="2" required><?= $subprogram['description'] ?? ''; ?></textarea>
+                                                </div>
+
                                                 <div class="container-button" >
                                                     <button type="button" class="button button-secodary" data-subprogram_id="<?= "{$program->identificator}_{$subprogram_id}" ?>" onclick="modal_delete_subprogram_js(this)" ><?=__('Delete', 'edusystem')?></button>
 
@@ -187,6 +196,15 @@
 
                                                     <input type="number" name="subprogram[][price]" class="input-price" disabled required>
                                                 </div>
+                                            </div>
+
+                                            <div class="space-offer">
+                                                <label for="subprogram[][description]">
+                                                        <b><?= __('Description', 'edusystem'); ?></b>
+                                                        <span class="text-danger">*</span>
+                                                </label>
+
+                                                <textarea style="width: 100%" name="subprogram[][description]" rows="2" disabled  ></textarea>
                                             </div>
 
                                             <div class="container-button" >
