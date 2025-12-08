@@ -1034,7 +1034,6 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
         return [];
     }
 
-    error_log('matrix regular: ' . print_r($matrix_regular, true));
     $detailed_matrix = [];
     $subject_index = 0;
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';

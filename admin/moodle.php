@@ -445,9 +445,16 @@ function sync_student_with_moodle($student_id)
     // 3. revisamos si completo el formulario (FGU)
     if (has_action('portal_create_user_external')) {
         $user_student = get_user_by('email', $student_data->email);
-        $meta_value = get_user_meta($user_student->ID, 'complete_data_success', true);
-        if (!$meta_value) {
-            return false;
+        // Si no hay usuario, no hacemos nada (no bloqueamos).
+        if ($user_student && isset($user_student->ID)) {
+            // Sólo si el meta existe lo leemos y actuamos sobre su valor.
+            if (metadata_exists('user', $user_student->ID, 'complete_data_success')) {
+                $meta_value = get_user_meta($user_student->ID, 'complete_data_success', true);
+                // Devolver false únicamente si el meta devuelve estrictamente false
+                if (!$meta_value) {
+                    return false;
+                }
+            }
         }
     }
 
