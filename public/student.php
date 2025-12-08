@@ -1492,7 +1492,7 @@ function trigger_open_elective_modal()
     $status_elective = $elective_count < 2 && $elective_count_current === 0 && (int) $student->elective === 0 ? 0 : 1;
 
     if (
-        in_array('student', $roles, true)
+        in_array('student', $roles, true) && $elective_count_current === 0
     ) {
         // Usar trailingslashit y plugin_dir_path para asegurar el path correcto.
         include(trailingslashit(plugin_dir_path(__FILE__)) . 'templates/trigger-open-elective-modal.php');
