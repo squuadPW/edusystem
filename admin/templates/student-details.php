@@ -635,6 +635,9 @@ function truncate_text($text, $max_length = 100) {
                         <tr id="<?= 'tr_document_' . $document->id; ?>">
                             <td class="column-primary" data-colname="<?= __('Document', 'edusystem'); ?>">
                                 <?= get_name_document($document->document_id); ?>
+                                <?php if ($document->is_required): ?>
+                                    <span class="text-danger">*</span>
+                                <?php endif; ?>
                                 <?php if ($document->max_date_upload): ?>
                                     <span class="deadline">- DEADLINE:
                                         <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
