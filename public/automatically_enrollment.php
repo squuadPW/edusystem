@@ -432,13 +432,23 @@ function generate_projection_student($student_id, $force = false)
         return false;
     }
 
-    // Obtener matriz regular y proyección actual en una sola consulta
+    // Obtener pensum del programa y proyección actual
     $program_data = get_program_data_student($student_id);
     $program = $program_data['program'][0];
-    $matrix_regular = only_pensum_regular($program->identificator);
-    if (empty($matrix_regular)) {
+    $table_pensum = $wpdb->prefix . 'pensum';
+
+    // Obtener el pensum activo para el programa (matriz completa)
+    $pensum = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_pensum} WHERE `type`='program' AND `status` = 1 AND program_id = %s", $program->identificator));
+    if (!$pensum) {
         return false;
     }
+
+    $pensum_matrix = json_decode($pensum->matrix);
+    if (empty($pensum_matrix)) {
+        return false;
+    }
+    // También obtener la lista de regulares (necesaria para build_detailed_matrix)
+    $matrix_regular = only_pensum_regular($program->identificator);
 
     // Calcular matriz basada en expected_graduation_date
     $calculated_matrix = null;
@@ -505,25 +515,33 @@ function generate_projection_student($student_id, $force = false)
         }
     }
 
-    // Generar proyección base con materias regulares
-    $projection = array_map(function ($matrix) use ($inscriptions_by_code) {
-        $inscription = $inscriptions_by_code[$matrix->code_subject] ?? null;
+    // Generar proyección base usando la matriz COMPLETA del pensum (incluye regulares y otros tipos)
+    $projection = [];
+    foreach ($pensum_matrix as $m) {
+        // $m contiene elementos con 'id', 'name', 'code_subject', 'type', etc. (según cómo se guardó la matriz)
+        $subject_details = get_subject_details($m->id);
+        if (!$subject_details) {
+            // Si no existe la materia en school_subjects, saltar
+            continue;
+        }
+
+        $inscription = $inscriptions_by_code[$subject_details->code_subject] ?? null;
         $status_id = $inscription ? $inscription->status_id : null;
 
-        return [
-            'code_subject' => $matrix->code_subject,
-            'subject_id' => $matrix->id,
-            'subject' => $matrix->name,
-            'hc' => $matrix->hc,
-            'cut' => $status_id == 3 || $status_id == 1 ? $inscription->cut_period : "",
-            'code_period' => $status_id == 3 || $status_id == 1 ? $inscription->code_period : "",
-            'calification' => $status_id == 3 ? $inscription->calification : "",
+        $projection[] = [
+            'hc' => isset($m->hc) ? $m->hc : (isset($subject_details->hc) ? $subject_details->hc : ''),
+            'cut' => ($status_id == 3 || $status_id == 1) ? $inscription->cut_period : "",
+            'type' => isset($m->type) ? strtolower($m->type) : strtolower($subject_details->type),
+            'subject' => $subject_details->name,
+            'this_cut' => ($status_id == 1),
+            'subject_id' => (string) $subject_details->id,
+            'code_period' => ($status_id == 3 || $status_id == 1) ? $inscription->code_period : "",
+            'calification' => ($status_id == 3) ? $inscription->calification : "",
+            'code_subject' => $subject_details->code_subject,
             'is_completed' => ($status_id == 3 || $status_id == 1),
-            'this_cut' => $status_id == 1,
-            'welcome_email' => ($status_id == 3 || $status_id == 1),
-            'type' => $matrix->type
+            'welcome_email' => ($status_id == 3 || $status_id == 1)
         ];
-    }, $matrix_regular);
+    }
 
     // Agregar materias electivas a la proyección
     foreach ($elective_inscriptions as $inscription) {
