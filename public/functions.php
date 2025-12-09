@@ -3666,7 +3666,21 @@ function clear_all_cookies($force = false)
         if ($force) {
             setcookie($cookie_name, '', time() - 3600, '/');
         } else {
-            if (!str_contains($cookie_name, 'wordpress') && !str_contains($cookie_name, 'woocommerce') && !str_contains($cookie_name, 'sbjs') && !str_contains($cookie_name, 'stripe')) {
+            // Normalizar a minúsculas para comparar de forma segura
+            $name = strtolower($cookie_name);
+
+            $contains_wordpress = str_contains($name, 'wordpress');
+            $contains_woocommerce = str_contains($name, 'woocommerce');
+            $contains_sbjs = str_contains($name, 'sbjs');
+            $contains_stripe = str_contains($name, 'stripe');
+            $contains_squuad = str_contains($name, 'squuad');
+
+            // Regla: mantener (no borrar) cookies de wordpress, woocommerce y sbjs.
+            // Para 'stripe' queremos mantener las cookies "puras" de stripe (p. ej. 'stripe_*'),
+            // pero BORRAR cookies que contengan BOTH 'squuad' y 'stripe' (ej: 'squuad_stripe_Xxx').
+            $keep = $contains_wordpress || $contains_woocommerce || $contains_sbjs || ($contains_stripe && ! $contains_squuad);
+
+            if (! $keep) {
                 setcookie($cookie_name, '', time() - 3600, '/');
             }
         }
