@@ -26,54 +26,7 @@ function add_admin_form_enrollments_content()
     } else {
 
         if ($_GET['action'] == 'save_enrollment_details') {
-            global $wpdb;
-            $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-
-            $enrollment_id = $_POST['enrollment_id'];
-            $status_id = $_POST['status_id'];
-            $student_id = $_POST['student_id'];
-            $code_subject = $_POST['code_subject'];
-            $code_period = $_POST['code_period'];
-            $cut_period = $_POST['cut_period'];
-            $calification = $_POST['calification'];
-
-            $subject = get_subject_details_code($code_subject);
-            update_max_upload_at($student_id);
-
-            //update
-            if (isset($enrollment_id) && !empty($enrollment_id)) {
-
-                $wpdb->update($table_student_period_inscriptions, [
-                    'status_id' => $status_id,
-                    'student_id' => $student_id,
-                    'subject_id' => $subject->id,
-                    'code_subject' => $code_subject,
-                    'code_period' => $code_period,
-                    'cut_period' => $cut_period,
-                    'calification' => $calification,
-                    'type' => $subject->type
-                ], ['id' => $enrollment_id]);
-
-                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
-                wp_redirect(admin_url('admin.php?page=add_admin_form_enrollments_content&section_tab=enrollment_details&enrollment_id=' . $enrollment_id));
-                exit;
-            } else {
-
-                $wpdb->insert($table_student_period_inscriptions, [
-                    'status_id' => $status_id,
-                    'student_id' => $student_id,
-                    'subject_id' => $subject->id,
-                    'code_subject' => $code_subject,
-                    'code_period' => $code_period,
-                    'cut_period' => $cut_period,
-                    'calification' => $calification,
-                    'type' => $subject->type
-                ]);
-
-                wp_redirect(admin_url('admin.php?page=add_admin_form_enrollments_content'));
-                exit;
-
-            }
+            // 
         } else {
 
             global $wpdb;

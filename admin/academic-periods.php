@@ -149,9 +149,9 @@ function add_admin_form_academic_periods_content()
                             '%s'
                         ]);
                     }
-                    setcookie('message', __('Period generated correctly.', 'edusystem'), time() + 10, '/');
                 }
 
+                setcookie('message', __('Period generated correctly.', 'edusystem'), time() + 10, '/');
                 wp_redirect(admin_url('admin.php?page=add_admin_form_academic_periods_content'));
                 exit;
             } catch (\Throwable $th) {

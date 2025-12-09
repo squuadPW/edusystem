@@ -70,20 +70,25 @@ function create_user_moodle($student_id)
                 'moodle_password' => $password
             ], ['id' => $student_id]);
 
-            generate_projection_student($student_id);
-
-            if (get_option('auto_enroll_regular')) {
-                automatically_enrollment($student_id);
-            }
-
-            if (get_option('public_course_id')) {
-                enroll_student_public_course(courses_enroll_student($student_id, [(int) get_option('public_course_id')]));
-            }
+            handle_student_registration_moodle($student_id);
 
             return $create_user;
         }
     } catch (\Throwable $th) {
         return;
+    }
+}
+
+function handle_student_registration_moodle($student_id)
+{
+    generate_projection_student($student_id);
+
+    if (get_option('auto_enroll_regular')) {
+        automatically_enrollment($student_id);
+    }
+
+    if (get_option('public_course_id')) {
+        enroll_student_public_course(courses_enroll_student($student_id, [(int) get_option('public_course_id')]));
     }
 }
 
@@ -445,9 +450,16 @@ function sync_student_with_moodle($student_id)
     // 3. revisamos si completo el formulario (FGU)
     if (has_action('portal_create_user_external')) {
         $user_student = get_user_by('email', $student_data->email);
-        $meta_value = get_user_meta($user_student->ID, 'complete_data_success', true);
-        if (!$meta_value) {
-            return false;
+        // Si no hay usuario, no hacemos nada (no bloqueamos).
+        if ($user_student && isset($user_student->ID)) {
+            // Sólo si el meta existe lo leemos y actuamos sobre su valor.
+            if (metadata_exists('user', $user_student->ID, 'complete_data_success')) {
+                $meta_value = get_user_meta($user_student->ID, 'complete_data_success', true);
+                // Devolver false únicamente si el meta devuelve estrictamente false
+                if (!$meta_value) {
+                    return false;
+                }
+            }
         }
     }
 
@@ -473,6 +485,8 @@ function sync_student_with_moodle($student_id)
                 ['id' => $student_id]                       // Dónde actualizarlo
             );
             
+            handle_student_registration_moodle($student_id);
+
             return $moodle_user; // Devuelve los datos del usuario encontrado
 
         } else {

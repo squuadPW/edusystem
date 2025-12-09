@@ -5,10 +5,10 @@ function automatically_enrollment($student_id)
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
-    $expected_periods = load_expected_periods($student->expected_graduation_date);
+    // $expected_periods = load_expected_periods($student->expected_graduation_date);
 
-    $expected_projection = load_expected_projection($student->initial_cut, $student->grade_id, $expected_periods);
-    load_automatically_enrollment($expected_projection, $student);
+    // $expected_projection = load_expected_projection($student->initial_cut, $student->grade_id, $expected_periods);
+    load_automatically_enrollment($student);
 }
 
 
@@ -167,91 +167,61 @@ function load_next_enrollment($expected_projection, $student)
     return $next_enrollment;
 }
 
-function load_automatically_enrollment($expected_projection, $student)
+function load_automatically_enrollment($student)
 {
     if ($student->status_id == 0 || $student->status_id > 3) {
         return;
     }
 
-    // proyeccion
-    $projection = get_projection_by_student($student->id);
-    if (!$projection) {
-        return;
-    }
-    $projection_obj = json_decode($projection->projection);
-
-    // tablas
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $table_students = $wpdb->prefix . 'students';
+    $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
+    $full_name_student = student_names_lastnames_helper($student->id);
+    $user = get_user_by('email', $student->email);
 
-    // matrices
     $load = load_current_cut_enrollment();
-    $matrix_elective = load_available_electives($student, $load['code'], cut: $load['cut']);
-    $matrix_regular = only_pensum_regular($student->program_id);
-
-    // contadores
-    $last_inscriptions_electives_count = load_inscriptions_electives($student);
-    $real_electives_inscriptions_count = load_inscriptions_electives_valid($student);
-    $student_enrolled = 0;
-    $count_expected_subject = 0;
-    $count_expected_subject_elective = 0;
-
-    // valores
     $code = $load['code'];
     $cut = $load['cut'];
-    $force_skip = false;
-    $regular_enrolled = false;
 
-    foreach ($expected_projection['expected_matrix'] as $key => $expected) {
-        if ($student_enrolled >= (int)$expected_projection['max_expected']) {
-            if ($regular_enrolled) {
-                update_count_moodle_pending();
+    $expected_rows = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM {$table_student_expected_matrix} WHERE student_id = %d AND academic_period = %s AND academic_period_cut = %s ORDER BY term_index ASC, term_position ASC",
+        $student->id,
+        $code,
+        $cut
+    ));
+
+    // Primero procesar las materias previstas en la matriz del estudiante para este periodo
+    if (!empty($expected_rows)) {
+        foreach ($expected_rows as $row) {
+            $subject_id = $row->subject_id;
+            if (empty($subject_id)) {
+                edusystem_get_log('Empty subject ID found for student ' . $full_name_student . ' in expected rows', 'Automatically enrollment', $user->ID);
+                continue;
             }
-            break;
-        }
 
-        if ($expected_projection['grade_id'] > 2 && (($key + 1) > 6 || ($key + 1) == 1)) {
-            $expected_projection['max_expected'] = 1;
-        } else {
-            if ($expected_projection['grade_id'] > 2) {
-                $expected_projection['max_expected'] = 2;
+            $subject = get_subject_details($subject_id);
+            if (!$subject) {
+                edusystem_get_log('Subject not found for ID ' . $subject_id . ' for student ' . $full_name_student, 'Automatically enrollment', $user->ID);
+                continue;
             }
-        }
 
-        if ($expected == 'R') {
-            $expected_subject = $matrix_regular[$count_expected_subject];
-            $subject = get_subject_details($expected_subject->subject_id);
-
+            // Verificar si el estudiante puede inscribirse en la materia
             $available_inscription_subject = available_inscription_subject($student->id, $subject->id);
             if (!$available_inscription_subject) {
-                $count_expected_subject++;
+                // Ya la esta viendo
+                edusystem_get_log('The student ' . $full_name_student . ' already has an active or approved enrollment for the subject ' . $subject->name, 'Automatically enrollment', $user->ID);
                 continue;
             }
 
+            // Verificar oferta disponible en este periodo
             $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
             if (!$offer_available_to_enroll) {
-                $count_expected_subject++;
-                $force_skip = true;
+                // Si no hay oferta, no inscribimos esta materia
+                edusystem_get_log('No offer available for subject ' . $subject->name . ' for student ' . $full_name_student . ' in the period ' . $code . ' - ' . $cut, 'Automatically enrollment', $user->ID);
                 continue;
             }
 
-            $subjectIds = array_column($projection_obj, 'subject_id');
-            $indexToEdit = array_search($subject->id, $subjectIds);
-            if ($indexToEdit !== false) {
-                $projection_obj[$indexToEdit]->cut = $cut;
-                $projection_obj[$indexToEdit]->this_cut = true;
-                $projection_obj[$indexToEdit]->code_period = $code;
-                $projection_obj[$indexToEdit]->calification = '';
-                $projection_obj[$indexToEdit]->is_completed = true;
-                $projection_obj[$indexToEdit]->welcome_email = false;
-            }
-
-            $wpdb->update($table_student_academic_projection, [
-                'projection' => json_encode($projection_obj)
-            ], ['id' => $projection->id]);
-
+            // Insertar inscripción
             $section = load_section_available($subject->id, $code, $cut);
             $wpdb->insert($table_student_period_inscriptions, [
                 'status_id' => 1,
@@ -264,54 +234,25 @@ function load_automatically_enrollment($expected_projection, $student)
                 'type' => $subject->type
             ]);
 
-            $force_skip = false;
-            $regular_enrolled = true;
-            $count_expected_subject++;
-            $student_enrolled++;
-
-            if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2 && ($key + 1) >= (count($expected_projection['expected_matrix']) - 1)) {
-                update_elective_student($student->id, 1);
-            }
-        } else {
-            if ($force_skip) {
-                $count_expected_subject_elective++;
-                $last_inscriptions_electives_count++;
-                continue;
+            // Update student's projection so the subject appears as this cut
+            $proj_item = update_projection_after_enrollment($student->id, $subject->id, $code, $cut, 1);
+            if ($proj_item) {
+                edusystem_get_log('Enrolled in subject ' . $subject->name . ' for student: ' . $full_name_student, 'Automatically enrollment', $user->ID);
+                edusystem_get_log('Projection updated for subject ' . $subject->name . ' for student: ' . $full_name_student, 'Automatically enrollment', $user->ID);
             }
 
-            if (count($matrix_elective) == 0) {
-                continue;
+            // mandamos a moodle
+            $offer = get_offer_filtered($subject->id, $code, $cut, $section);
+            if ($offer && isset($offer->moodle_course_id)) {
+                $enrollments = courses_enroll_student($student->id, [(int) $offer->moodle_course_id]);
+                if (!empty($enrollments)) {
+                    enroll_student($enrollments);
+                    edusystem_get_log('Student ' . $full_name_student . ' enrolled in Moodle Course ID: ' . $offer->moodle_course_id, 'Automatically enrollment', $user->ID);
+                }
             }
-
-            if ($last_inscriptions_electives_count > $count_expected_subject_elective) {
-                $count_expected_subject_elective++;
-                continue;
-            }
-
-            if ($expected == 'EA' && !get_option('use_elective_aditional')) {
-                $wpdb->update($table_students, [
-                    'elective' => 0,
-                    'skip_cut' => 0
-                ], ['id' => $student->id]);
-
-                $wpdb->insert($table_student_period_inscriptions, [
-                    'status_id' => 2,
-                    'student_id' => $student->id,
-                    'code_period' => $code,
-                    'cut_period' => $cut,
-                    'type' => 'elective'
-                ]);
-                break;
-            }
-
-            update_elective_student($student->id, 1);
-            $count_expected_subject_elective++;
-            $student_enrolled++;
         }
-
-        if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0) && count($matrix_elective) > 0) {
-            update_elective_student($student->id, 1);
-        }
+    } else {
+        edusystem_get_log('No expected rows found by student ' . $full_name_student . ' for the period ' . $code . '-' . $cut, 'Automatically enrollment', $user->ID);
     }
 
     update_max_upload_at($student->id);
@@ -498,13 +439,23 @@ function generate_projection_student($student_id, $force = false)
         return false;
     }
 
-    // Obtener matriz regular y proyección actual en una sola consulta
+    // Obtener pensum del programa y proyección actual
     $program_data = get_program_data_student($student_id);
     $program = $program_data['program'][0];
-    $matrix_regular = only_pensum_regular($program->identificator);
-    if (empty($matrix_regular)) {
+    $table_pensum = $wpdb->prefix . 'pensum';
+
+    // Obtener el pensum activo para el programa (matriz completa)
+    $pensum = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_pensum} WHERE `type`='program' AND `status` = 1 AND program_id = %s", $program->identificator));
+    if (!$pensum) {
         return false;
     }
+
+    $pensum_matrix = json_decode($pensum->matrix);
+    if (empty($pensum_matrix)) {
+        return false;
+    }
+    // También obtener la lista de regulares (necesaria para build_detailed_matrix)
+    $matrix_regular = only_pensum_regular($program->identificator);
 
     // Calcular matriz basada en expected_graduation_date
     $calculated_matrix = null;
@@ -571,25 +522,33 @@ function generate_projection_student($student_id, $force = false)
         }
     }
 
-    // Generar proyección base con materias regulares
-    $projection = array_map(function ($matrix) use ($inscriptions_by_code) {
-        $inscription = $inscriptions_by_code[$matrix->code_subject] ?? null;
+    // Generar proyección base usando la matriz COMPLETA del pensum (incluye regulares y otros tipos)
+    $projection = [];
+    foreach ($pensum_matrix as $m) {
+        // $m contiene elementos con 'id', 'name', 'code_subject', 'type', etc. (según cómo se guardó la matriz)
+        $subject_details = get_subject_details($m->id);
+        if (!$subject_details) {
+            // Si no existe la materia en school_subjects, saltar
+            continue;
+        }
+
+        $inscription = $inscriptions_by_code[$subject_details->code_subject] ?? null;
         $status_id = $inscription ? $inscription->status_id : null;
 
-        return [
-            'code_subject' => $matrix->code_subject,
-            'subject_id' => $matrix->id,
-            'subject' => $matrix->name,
-            'hc' => $matrix->hc,
-            'cut' => $status_id == 3 || $status_id == 1 ? $inscription->cut_period : "",
-            'code_period' => $status_id == 3 || $status_id == 1 ? $inscription->code_period : "",
-            'calification' => $status_id == 3 ? $inscription->calification : "",
+        $projection[] = [
+            'hc' => isset($m->hc) ? $m->hc : (isset($subject_details->hc) ? $subject_details->hc : ''),
+            'cut' => ($status_id == 3 || $status_id == 1) ? $inscription->cut_period : "",
+            'type' => isset($m->type) ? strtolower($m->type) : strtolower($subject_details->type),
+            'subject' => $subject_details->name,
+            'this_cut' => ($status_id == 1),
+            'subject_id' => (string) $subject_details->id,
+            'code_period' => ($status_id == 3 || $status_id == 1) ? $inscription->code_period : "",
+            'calification' => ($status_id == 3) ? $inscription->calification : "",
+            'code_subject' => $subject_details->code_subject,
             'is_completed' => ($status_id == 3 || $status_id == 1),
-            'this_cut' => $status_id == 1,
-            'welcome_email' => ($status_id == 3 || $status_id == 1),
-            'type' => $matrix->type
+            'welcome_email' => ($status_id == 3 || $status_id == 1)
         ];
-    }, $matrix_regular);
+    }
 
     // Agregar materias electivas a la proyección
     foreach ($elective_inscriptions as $inscription) {
@@ -676,6 +635,99 @@ function generate_projection_student($student_id, $force = false)
         }
 
         return true;
+    }
+
+    return false;
+}
+
+/**
+ * Update student's academic projection after an enrollment is created.
+ * Ensures the projection entry for the subject is marked for this cut
+ * so downstream processes (welcome emails, UI) reflect the new enrollment.
+ *
+ * @param int $student_id
+ * @param int|string $subject_id
+ * @param string $code_period
+ * @param string|int $cut_period
+ * @param int $status_id Enrollment status (1 = current/inscribed, 3 = completed)
+ * @return bool
+ */
+function update_projection_after_enrollment($student_id, $subject_id, $code_period, $cut_period, $status_id = 1)
+{
+    global $wpdb;
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+
+    // Normalize subject details
+    $subject = get_subject_details($subject_id);
+    if (!$subject) {
+        return false;
+    }
+
+    $proj_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_student_academic_projection} WHERE student_id = %d", $student_id));
+    $projection_arr = [];
+    if ($proj_row && !empty($proj_row->projection)) {
+        $projection_arr = json_decode($proj_row->projection, true);
+        if (!is_array($projection_arr)) {
+            $projection_arr = [];
+        }
+    }
+
+    $found = false;
+    $updated_item = null;
+    foreach ($projection_arr as $idx => $item) {
+        $item_subject_id = isset($item['subject_id']) ? (string)$item['subject_id'] : null;
+        $item_code = isset($item['code_subject']) ? $item['code_subject'] : null;
+
+        if (($item_subject_id !== null && (string)$item_subject_id === (string)$subject->id) || ($item_code !== null && $item_code === $subject->code_subject)) {
+            // Update existing entry
+            $projection_arr[$idx]['this_cut'] = ($status_id == 1);
+            $projection_arr[$idx]['code_period'] = $code_period;
+            $projection_arr[$idx]['cut'] = $cut_period;
+            $projection_arr[$idx]['calification'] = ($status_id == 3) ? ($projection_arr[$idx]['calification'] ?? '') : '';
+            $projection_arr[$idx]['is_completed'] = ($status_id == 3 || $status_id == 1);
+            $projection_arr[$idx]['welcome_email'] = ($status_id == 3 || $status_id == 1) ? true : false;
+            $projection_arr[$idx]['subject_id'] = (string)$subject->id;
+            $projection_arr[$idx]['code_subject'] = $subject->code_subject;
+            $projection_arr[$idx]['subject'] = $subject->name;
+            $projection_arr[$idx]['type'] = isset($projection_arr[$idx]['type']) ? $projection_arr[$idx]['type'] : strtolower($subject->type);
+            $projection_arr[$idx]['hc'] = $projection_arr[$idx]['hc'] ?? ($subject->hc ?? '');
+
+            $found = true;
+            $updated_item = $projection_arr[$idx];
+            break;
+        }
+    }
+
+    if (!$found) {
+        // Append a minimal projection entry for this subject
+        $projection_arr[] = [
+            'hc' => $subject->hc ?? '',
+            'cut' => ($status_id == 3 || $status_id == 1) ? $cut_period : '',
+            'type' => strtolower($subject->type ?? ''),
+            'subject' => $subject->name,
+            'this_cut' => ($status_id == 1),
+            'subject_id' => (string)$subject->id,
+            'code_period' => ($status_id == 3 || $status_id == 1) ? $code_period : '',
+            'calification' => ($status_id == 3) ? '' : '',
+            'code_subject' => $subject->code_subject,
+            'is_completed' => ($status_id == 3 || $status_id == 1),
+            'welcome_email' => ($status_id == 3 || $status_id == 1) ? true : false
+        ];
+        $updated_item = $projection_arr[count($projection_arr) - 1];
+    }
+
+    if ($proj_row) {
+        $wpdb->update($table_student_academic_projection, ['projection' => json_encode($projection_arr)], ['id' => $proj_row->id]);
+        $proj_id = $proj_row->id;
+    } else {
+        $wpdb->insert($table_student_academic_projection, ['student_id' => $student_id, 'projection' => json_encode($projection_arr), 'matrix' => null]);
+        $proj_id = $wpdb->insert_id;
+    }
+
+    // Return the item that was created/updated plus the projection row id
+    if ($updated_item !== null) {
+        $updated_item['_projection_id'] = $proj_id;
+        return $updated_item;
     }
 
     return false;
@@ -1034,7 +1086,6 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
         return [];
     }
 
-    error_log('matrix regular: ' . print_r($matrix_regular, true));
     $detailed_matrix = [];
     $subject_index = 0;
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';

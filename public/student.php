@@ -1449,54 +1449,54 @@ function load_feed()
 add_filter('woocommerce_account_dashboard', 'trigger_open_elective_modal', 0);
 function trigger_open_elective_modal()
 {
-    // if (!is_user_logged_in()) {
+    if (!is_user_logged_in()) {
+        return;
+    }
+
+    global $wpdb;
+    $current_user = wp_get_current_user();
+    $user_id      = $current_user->ID;
+    $user_email   = $current_user->user_email;
+    $roles        = (array) $current_user->roles;
+    $student      = null;
+
+    // Obtener la información del estudiante asociado de forma eficiente
+    if (in_array('student', $roles, true)) {
+        // Buscar por email para roles de 'student'
+        $student = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}students WHERE email = %s",
+            $user_email
+        ));
+    } elseif (in_array('parent', $roles, true)) {
+        // Buscar por partner_id (ID del padre/madre) para roles de 'parent'
+        $student = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}students WHERE partner_id = %d",
+            $user_id
+        ));
+    }
+
+    // Si no hay estudiante asociado, no continuar la ejecución.
+    if (!$student) {
+        return;
+    }
+
+    // // Si el campo 'elective' no existe o es 1, no es necesario cargar el modal.
+    // if (!isset($student->elective) || (int) $student->elective !== 0) {
     //     return;
     // }
 
-    // global $wpdb;
-    // $current_user = wp_get_current_user();
-    // $user_id      = $current_user->ID;
-    // $user_email   = $current_user->user_email;
-    // $roles        = (array) $current_user->roles;
-    // $student      = null;
+    // Cargar los conteos de inscripciones
+    // Asumiendo que load_inscriptions_electives_valid es una función definida en otro lugar
+    $elective_count         = load_inscriptions_electives_valid($student, 'status_id = 3');
+    $elective_count_current = load_inscriptions_electives_valid($student, 'status_id = 1');
+    $status_elective = $elective_count < 2 && $elective_count_current === 0 && (int) $student->elective === 0 ? 0 : 1;
 
-    // // Obtener la información del estudiante asociado de forma eficiente
-    // if (in_array('student', $roles, true)) {
-    //     // Buscar por email para roles de 'student'
-    //     $student = $wpdb->get_row($wpdb->prepare(
-    //         "SELECT * FROM {$wpdb->prefix}students WHERE email = %s",
-    //         $user_email
-    //     ));
-    // } elseif (in_array('parent', $roles, true)) {
-    //     // Buscar por partner_id (ID del padre/madre) para roles de 'parent'
-    //     $student = $wpdb->get_row($wpdb->prepare(
-    //         "SELECT * FROM {$wpdb->prefix}students WHERE partner_id = %d",
-    //         $user_id
-    //     ));
-    // }
-
-    // // Si no hay estudiante asociado, no continuar la ejecución.
-    // if (!$student) {
-    //     return;
-    // }
-
-    // // // Si el campo 'elective' no existe o es 1, no es necesario cargar el modal.
-    // // if (!isset($student->elective) || (int) $student->elective !== 0) {
-    // //     return;
-    // // }
-
-    // // Cargar los conteos de inscripciones
-    // // Asumiendo que load_inscriptions_electives_valid es una función definida en otro lugar
-    // $elective_count         = load_inscriptions_electives_valid($student, 'status_id = 3');
-    // $elective_count_current = load_inscriptions_electives_valid($student, 'status_id = 1');
-    // $status_elective = $elective_count < 2 && $elective_count_current === 0 && (int) $student->elective === 0 ? 0 : 1;
-
-    // if (
-    //     in_array('student', $roles, true)
-    // ) {
-    //     // Usar trailingslashit y plugin_dir_path para asegurar el path correcto.
-    //     include(trailingslashit(plugin_dir_path(__FILE__)) . 'templates/trigger-open-elective-modal.php');
-    // }
+    if (
+        in_array('student', $roles, true) && $elective_count_current === 0
+    ) {
+        // Usar trailingslashit y plugin_dir_path para asegurar el path correcto.
+        include(trailingslashit(plugin_dir_path(__FILE__)) . 'templates/trigger-open-elective-modal.php');
+    }
 }
 
 function set_max_date_student($student_id)

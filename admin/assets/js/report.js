@@ -428,7 +428,6 @@ document.addEventListener("DOMContentLoaded", function () {
       //   "Grade",
       //   "Institute",
       // ];
-      console.log(document.getElementById("headers-document").value);
       const headers = JSON.parse(document.getElementById("headers-document").value);
 
       data.push(headers); // Agrega los encabezados al array de datos

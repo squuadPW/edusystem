@@ -11,12 +11,15 @@ function delete_data_student($user_id)
         'payments' => $wpdb->prefix . 'student_payments',
         'payments_log' => $wpdb->prefix . 'student_payments_log',
         'academic_projection' => $wpdb->prefix . 'student_academic_projection',
+        'expected_matrix' => $wpdb->prefix . 'student_expected_matrix',
         'period_inscriptions' => $wpdb->prefix . 'student_period_inscriptions',
         'califications' => $wpdb->prefix . 'student_califications',
         'scholarship_application' => $wpdb->prefix . 'student_scholarship_application',
         'requests' => $wpdb->prefix . 'requests',
         'scholarship_assigned' => $wpdb->prefix . 'scholarship_assigned_student',
-        'programs_by_student' => $wpdb->prefix . 'programs_by_student'
+        'programs_by_student' => $wpdb->prefix . 'programs_by_student',
+        'balance' => $wpdb->prefix . 'student_balance',
+        'scholarship' => $wpdb->prefix . 'scholarship_assigned_student'
     ];
 
     // 1. Obtener correos y borrar usuarios asociados (estudiantes)
@@ -62,12 +65,15 @@ function delete_data_student($user_id)
     $wpdb->query("DELETE FROM {$tables['payments']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['payments_log']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['academic_projection']} WHERE student_id IN ($ids)");
+    $wpdb->query("DELETE FROM {$tables['expected_matrix']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['period_inscriptions']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['califications']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['scholarship_application']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['requests']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['scholarship_assigned']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['programs_by_student']} WHERE student_id IN ($ids)");
+    $wpdb->query("DELETE FROM {$tables['scholarship']} WHERE student_id IN ($ids)");
+    $wpdb->query("DELETE FROM {$tables['balance']} WHERE student_id IN ($ids)");
     $wpdb->query("DELETE FROM {$tables['students']} WHERE id IN ($ids)");
 }
 

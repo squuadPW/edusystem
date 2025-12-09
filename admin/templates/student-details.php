@@ -43,11 +43,11 @@ function truncate_text($text, $max_length = 100) {
         <a style="margin-left: 5px;"
             href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_virtual_classroom&student_id=') . $student->id ?>"
             class="button button-outline-primary"
-            onclick="return confirm('<?= __('Are you sure you want to create a virtual classroom for this student?', 'edusystem') ?>');"><?= __('Virtual classroom', 'edusystem'); ?></a>
+            onclick="return confirm('<?= __('Are you sure you want to create a virtual classroom for this student?', 'edusystem') ?>');"><?= __('Send to virtual classroom', 'edusystem'); ?></a>
         <a style="margin-left: 5px;"
             href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_admin&student_id=') . $student->id ?>"
             class="button button-outline-primary"
-            onclick="return confirm('<?= __('Are you sure you want to send this student to the admin manually?', 'edusystem') ?>');"><?= __('Admin', 'edusystem'); ?></a>
+            onclick="return confirm('<?= __('Are you sure you want to send this student to the admin manually?', 'edusystem') ?>');"><?= __('Send to admin', 'edusystem'); ?></a>
         <button style="margin-left: 5px;" data-id="<?= $student->id; ?>" id="button-export-xlsx"
             class="button button-primary"><?= __('Export Excel', 'edusystem'); ?></button>
         <!-- <?php
@@ -635,6 +635,9 @@ function truncate_text($text, $max_length = 100) {
                         <tr id="<?= 'tr_document_' . $document->id; ?>">
                             <td class="column-primary" data-colname="<?= __('Document', 'edusystem'); ?>">
                                 <?= get_name_document($document->document_id); ?>
+                                <?php if ($document->is_required): ?>
+                                    <span class="text-danger">*</span>
+                                <?php endif; ?>
                                 <?php if ($document->max_date_upload): ?>
                                     <span class="deadline">- DEADLINE:
                                         <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>

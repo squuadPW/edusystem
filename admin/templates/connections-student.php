@@ -12,6 +12,12 @@
                 <?= __('Academic projection', 'edusystem'); ?>
             </a>
         <?php } ?>
+        <?php if ($projection && current_user_can('manager_student_matrix') && ($_GET['section_tab'] != 'student_matrix')) { ?>
+            <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=student_matrix&student_id=') . $student_id ?>"
+                class="button button-outline-primary">
+                <?= __('Expected matrix', 'edusystem'); ?>
+            </a>
+        <?php } ?>
         <?php if($_GET['page'] != 'add_admin_form_admission_content') { ?>
         <a href="<?= admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id; ?>"
             class="button button-outline-primary">
@@ -22,12 +28,6 @@
             <a href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=') . $email ?>"
                 class="button button-outline-primary">
                 <?= __('Payments', 'edusystem'); ?>
-            </a>
-        <?php } ?>
-        <?php if (current_user_can('manager_student_matrix') && ($_GET['section_tab'] != 'student_matrix')) { ?>
-            <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=student_matrix&student_id=') . $student_id ?>"
-                class="button button-outline-primary">
-                <?= __('Matrix', 'edusystem'); ?>
             </a>
         <?php } ?>
     </div>

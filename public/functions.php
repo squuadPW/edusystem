@@ -2712,54 +2712,52 @@ function select_elective_callback()
     $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id = {$student_id}");
     $projection_obj = json_decode($projection->projection);
 
-    array_push($projection_obj, [
-        'code_subject' => $subject->code_subject,
-        'subject_id' => $subject->id,
-        'subject' => $subject->name,
-        'hc' => $subject->hc,
-        'cut' => $cut,
-        'code_period' => $code,
-        'calification' => "",
-        'is_completed' => true,
-        'this_cut' => true,
-        'is_elective' => true,
-        'welcome_email' => true,
-    ]);
+    // Use shared helper to update the projection consistently and get the projection item
+    $status_to_set = 1; // this_cut true -> status 1 (inscribed)
+    $proj_item = update_projection_after_enrollment($student_id, $subject->id, $code, $cut, $status_to_set);
 
-    $wpdb->update($table_student_academic_projection, [
-        'projection' => json_encode($projection_obj),
-    ], ['id' => $projection->id]);
-
+    // Ensure student record reflects elective selection cleared
     $wpdb->update($table_students, [
         'elective' => 0,
     ], ['id' => $student_id]);
 
+    // If helper returned a projection item use it; otherwise fallback to subject data
+    $insert_subject_id = $proj_item['subject_id'] ?? $subject->id;
+    $insert_code_subject = $proj_item['code_subject'] ?? $subject->code_subject;
+    $insert_code_period = $proj_item['code_period'] ?? $code;
+    $insert_cut = $proj_item['cut'] ?? $cut;
+    $insert_status = (isset($proj_item['this_cut']) && $proj_item['this_cut']) ? 1 : 3;
+
     $section = load_section_available($subject->id, $code, $cut);
 
     $wpdb->insert($table_student_period_inscriptions, [
-        'status_id' => $projection_obj[count($projection_obj) - 1]['this_cut'] ? 1 : 3,
+        'status_id' => $insert_status,
         'type' => 'elective',
         'section' => $section,
-        'student_id' => $projection->student_id,
-        'subject_id' => $projection_obj[count($projection_obj) - 1]['subject_id'],
-        'code_subject' => $projection_obj[count($projection_obj) - 1]['code_subject'],
-        'code_period' => $projection_obj[count($projection_obj) - 1]['code_period'],
-        'cut_period' => $projection_obj[count($projection_obj) - 1]['cut']
+        'student_id' => $student_id,
+        'subject_id' => $insert_subject_id,
+        'code_subject' => $insert_code_subject,
+        'code_period' => $insert_code_period,
+        'cut_period' => $insert_cut
     ]);
 
     if (get_option('auto_enroll_elective')) {
         $offer = get_offer_filtered($subject->id, $code, $cut);
         $enrollments = [];
-        $enrollments = array_merge($enrollments, courses_enroll_student($projection->student_id, [(int) $offer->moodle_course_id]));
-        enroll_student($enrollments);
+        if ($offer && isset($offer->moodle_course_id)) {
+            $enrollments = array_merge($enrollments, courses_enroll_student($student_id, [(int) $offer->moodle_course_id]));
+            enroll_student($enrollments);
+        } else {
+            update_count_moodle_pending();
+        }
     } else {
         update_count_moodle_pending();
     }
 
-    update_max_upload_at($projection->student_id);
+    update_max_upload_at($student_id);
 
-    if ( function_exists( 'wc_add_notice' ) ) {
-        wc_add_notice( 'Elective successfully registered.', 'success' );
+    if (function_exists('wc_add_notice')) {
+        wc_add_notice('Elective successfully registered.', 'success');
     }
 
     wp_send_json(array('success' => true));
@@ -3668,7 +3666,21 @@ function clear_all_cookies($force = false)
         if ($force) {
             setcookie($cookie_name, '', time() - 3600, '/');
         } else {
-            if (!str_contains($cookie_name, 'wordpress') && !str_contains($cookie_name, 'woocommerce') && !str_contains($cookie_name, 'sbjs') && !str_contains($cookie_name, 'stripe')) {
+            // Normalizar a minúsculas para comparar de forma segura
+            $name = strtolower($cookie_name);
+
+            $contains_wordpress = str_contains($name, 'wordpress');
+            $contains_woocommerce = str_contains($name, 'woocommerce');
+            $contains_sbjs = str_contains($name, 'sbjs');
+            $contains_stripe = str_contains($name, 'stripe');
+            $contains_squuad = str_contains($name, 'squuad');
+
+            // Regla: mantener (no borrar) cookies de wordpress, woocommerce y sbjs.
+            // Para 'stripe' queremos mantener las cookies "puras" de stripe (p. ej. 'stripe_*'),
+            // pero BORRAR cookies que contengan BOTH 'squuad' y 'stripe' (ej: 'squuad_stripe_Xxx').
+            $keep = $contains_wordpress || $contains_woocommerce || $contains_sbjs || ($contains_stripe && ! $contains_squuad);
+
+            if (! $keep) {
                 setcookie($cookie_name, '', time() - 3600, '/');
             }
         }
@@ -4139,3 +4151,88 @@ function my_custom_locale_switcher($locale)
     return $locale;
 }
 add_filter('locale', 'my_custom_locale_switcher', 10, 1);
+
+
+function sc_set_order_pay_cookie_php() {
+	if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
+		return;
+	}
+
+	$uri = wp_unslash( $_SERVER['REQUEST_URI'] );
+	if ( false === strpos( $uri, 'order-pay' ) && empty( $_GET['pay_for_order'] ) ) {
+		return;
+	}
+
+    // Ensure we have a logged-in user and a valid WP user object
+    if ( ! is_user_logged_in() ) {
+        return;
+    }
+
+    global $wpdb;
+    $current_user = wp_get_current_user();
+    $user_id = (int) ( $current_user->ID ?? 0 );
+    if ( $user_id === 0 ) {
+        return;
+    }
+
+    $table_students = $wpdb->prefix . 'students';
+    $roles = (array) $current_user->roles;
+
+    // Fetch a single student record relevant to this user (first match).
+    // There's no point setting the same-named cookies multiple times; last wins — keep it efficient.
+    if ( in_array( 'student', $roles, true ) ) {
+        $students = $wpdb->get_results( $wpdb->prepare( "SELECT id FROM {$table_students} WHERE email = %s LIMIT 1", $current_user->user_email ) );
+    } elseif ( in_array( 'parent', $roles, true ) ) {
+        $students = $wpdb->get_results( $wpdb->prepare( "SELECT id FROM {$table_students} WHERE partner_id = %d LIMIT 1", $user_id ) );
+    } else {
+        return;
+    }
+
+    if ( empty( $students ) ) {
+        return;
+    }
+
+    $student = $students[0];
+    $student_id = $student->id;
+
+    // Get program/plan data and normalize values to strings
+    $program_data = get_program_data_student( $student_id );
+    $plan = $program_data['plan'][0] ?? null;
+    if ( ! $plan ) {
+        return;
+    }
+
+    $hidden_payment_methods_data = get_hidden_payment_methods_by_plan( $plan->identificator, true );
+    $hidden_payment_methods = (string) ( $hidden_payment_methods_data['hidden_methods_csv'] ?? '' );
+    $connected_account = (string) ( $hidden_payment_methods_data['connected_account'] ?? '' );
+    $flywire_portal_code = (string) ( $hidden_payment_methods_data['flywire_portal_code'] ?? '' );
+    $zelle_account = (string) ( $hidden_payment_methods_data['zelle_account'] ?? '' );
+    $bank_transfer_account = (string) ( $hidden_payment_methods_data['bank_transfer_account'] ?? '' );
+
+    $cookies = array(
+        'hidden_payment_methods' => $hidden_payment_methods,
+        'squuad_stripe_selected_client_id' => $connected_account,
+        'flywire_portal_code' => $flywire_portal_code,
+        'zelle_account' => $zelle_account,
+        'bank_transfer_account' => $bank_transfer_account,
+    );
+
+    $expire = time() + 3600; // 1 hora
+    $secure = is_ssl();
+    $path = defined( 'COOKIEPATH' ) && COOKIEPATH ? COOKIEPATH : '/';
+    $domain = defined( 'COOKIE_DOMAIN' ) && COOKIE_DOMAIN ? COOKIE_DOMAIN : $_SERVER['SERVER_NAME'];
+
+    foreach ( $cookies as $key => $cookie ) {
+        // Explicitly delete existing cookie before creating the new one to avoid stale values
+        if ( isset( $_COOKIE[ $key ] ) ) {
+            setcookie( $key, '', time() - 3600, $path, $domain, $secure, true );
+            unset( $_COOKIE[ $key ] );
+        }
+
+        // Set the cookie even if empty (keeps behaviour consistent); if you prefer to skip empty values,
+        // replace the next line with `if ( $cookie !== '' ) { ... }`.
+        setcookie( $key, $cookie, $expire, $path, $domain, $secure, true );
+        $_COOKIE[ $key ] = $cookie;
+    }
+}
+add_action( 'init', 'sc_set_order_pay_cookie_php', 1 );

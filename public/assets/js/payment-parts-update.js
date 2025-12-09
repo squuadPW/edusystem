@@ -69,15 +69,25 @@ function payment_table(rule_data) {
     table_payment = document.getElementById("table-payment");
     table_payment.innerHTML = "";
 
-    // formato de moneda
-	const currency = table_payment.getAttribute("data-currency") ?? "USD";
-    const language = table_payment.getAttribute("data-language") ?? "en";
-    const symbol = table_payment.getAttribute("data-symbol") ?? "$";
-    
-    const text_total = table_payment.getAttribute("data-text_total");
-    const headers = JSON.parse(
-        table_payment.getAttribute("data-text_table_headers") ?? "{}"
-    );
+    const currencyAttr = table_payment.getAttribute("data-currency");
+    const currency = (currencyAttr && currencyAttr.trim()) || "USD";
+    const languageAttr = table_payment.getAttribute("data-language");
+    const language = (languageAttr && languageAttr.trim()) || "en";
+
+    const symbolAttr = table_payment.getAttribute("data-symbol");
+    const symbol = (symbolAttr && symbolAttr.trim()) || "$";
+
+    const textTotalAttr = table_payment.getAttribute("data-text_total");
+    const text_total = (textTotalAttr && textTotalAttr.trim()) || "Total";
+
+    const headersAttr = table_payment.getAttribute("data-text_table_headers");
+    let headers = [];
+    try {
+      headers = headersAttr && headersAttr.trim() ? JSON.parse(headersAttr) : [];
+      if (!Array.isArray(headers)) headers = [];
+    } catch (e) {
+      headers = [];
+    }
 
     // Crear tabla
     const table = document.createElement("table");
@@ -218,7 +228,7 @@ function payment_table(rule_data) {
 
 function format_currency(value, currency, symbol = "$", language = "en") {
 
-    const countryCode = currency.substring(0, 2); 
+  const countryCode = currency.substring(0, 2);
 	const locale = new Intl.Locale(language, { region: countryCode }).toString();
 
 	const formatter = new Intl.NumberFormat(locale, {
