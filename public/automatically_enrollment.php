@@ -411,7 +411,6 @@ function generate_projection_student($student_id, $force = false)
 
     $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
     $table_students = $wpdb->prefix . 'students';
-    $table_school_subjects = $wpdb->prefix . 'school_subjects';
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
     $table_expected_matrix_school = $wpdb->prefix . 'expected_matrix_school';
 
