@@ -110,6 +110,7 @@ function create_tables()
         `subject_id` INT(11) NULL,
         `academic_period` TEXT NULL,
         `academic_period_cut` TEXT NULL,
+        `status` TEXT NULL,
         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY  (id),

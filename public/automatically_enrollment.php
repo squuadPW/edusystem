@@ -1262,6 +1262,38 @@ function persist_expected_matrix($student_id, $detailed_matrix)
             continue;
         }
 
+        // Determinar el status por defecto y consultar inscripciones para ajustar si aplica
+        $status_text = 'pendiente';
+
+        // First check if there is a current inscription (in course)
+        $current_ins = get_inscriptions_by_subject_period($entry['subject_id'], '', $entry['academic_period'], $entry['academic_period_cut'], 'current');
+        if ($current_ins && is_array($current_ins) && count($current_ins) > 0) {
+            $status_text = 'en curso';
+        } else {
+            // Check historical inscriptions (approved/reproved)
+            $history_ins = get_inscriptions_by_subject_period($entry['subject_id'], '', $entry['academic_period'], $entry['academic_period_cut'], 'history');
+            if ($history_ins && is_array($history_ins) && count($history_ins) > 0) {
+                // If any history record is status_id == 3 -> aprobada, elseif any == 4 -> reprobada
+                $found_approved = false;
+                $found_failed = false;
+                foreach ($history_ins as $h) {
+                    if (isset($h->status_id)) {
+                        if (intval($h->status_id) === 3) {
+                            $found_approved = true;
+                        } elseif (intval($h->status_id) === 4) {
+                            $found_failed = true;
+                        }
+                    }
+                }
+
+                if ($found_approved) {
+                    $status_text = 'aprobada';
+                } elseif ($found_failed) {
+                    $status_text = 'reprobada';
+                }
+            }
+        }
+
         $wpdb->insert($table, [
             'student_id' => $student_id,
             'term_index' => $seq,
@@ -1269,6 +1301,7 @@ function persist_expected_matrix($student_id, $detailed_matrix)
             'subject_id' => $entry['subject_id'],
             'academic_period' => $entry['academic_period'],
             'academic_period_cut' => $entry['academic_period_cut'],
+            'status' => $status_text,
             'created_at' => current_time('mysql')
         ]);
         $inserted++;
@@ -1308,7 +1341,8 @@ function get_expected_matrix_by_student($student_id)
                 'subject_id' => [],
                 'cut' => [],
                 'code_period' => [],
-                'completed' => []
+                'completed' => [],
+                'status' => []
             ];
         }
 
@@ -1336,6 +1370,7 @@ function get_expected_matrix_by_student($student_id)
         $matrix[$idx]['cut'][] = $row->academic_period_cut;
         $matrix[$idx]['code_period'][] = $row->academic_period;
         $matrix[$idx]['completed'][] = false;
+        $matrix[$idx]['status'][] = !empty($row->status) ? $row->status : 'pendiente';
     }
 
     return $matrix;

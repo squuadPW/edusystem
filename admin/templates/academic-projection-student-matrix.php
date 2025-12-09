@@ -58,12 +58,13 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                         <thead>
                                             <tr>
                                                 <th scope="col" style="width: 5%;">#</th>
-                                                <th scope="col" style="width: 15%;"><?= __('Type', 'edusystem'); ?></th>
-                                                <th scope="col" style="width: 25%;">
+                                                <!-- <th scope="col" style="width: 15%;"><?= __('Type', 'edusystem'); ?></th> -->
+                                                <th scope="col" style="width: 30%;">
                                                     <?= __('Academic Period', 'edusystem'); ?></th>
-                                                <th scope="col" style="width: 25%;"><?= __('Academic Cut', 'edusystem'); ?>
+                                                <th scope="col" style="width: 30%;"><?= __('Academic Cut', 'edusystem'); ?>
                                                 </th>
                                                 <th scope="col" style="width: 30%;"><?= __('Subject', 'edusystem'); ?></th>
+                                                <th scope="col" style="width: 15%;"><?= __('Status', 'edusystem'); ?></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -79,9 +80,20 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                 $entry_count = $is_multi_entry ? count($item['subject_id']) : 1;
                                                 // Obtiene el estado de completado del grupo para deshabilitar el Periodo/Corte
                                                 $is_group_completed = $is_multi_entry ? in_array(true, (array)$item['completed']) : ($item['completed'] ?? false);
+                                                // Obtiene el estado de aprobada para el grupo (si alguna subentrada tiene 'aprobada')
+                                                $is_group_approved = false;
+                                                if ($is_multi_entry) {
+                                                    $statuses = (array)($item['status'] ?? []);
+                                                    $is_group_approved = in_array('aprobada', $statuses, true);
+                                                } else {
+                                                    $is_group_approved = (isset($item['status']) && $item['status'] === 'aprobada');
+                                                }
+
+                                                // Si el grupo está completado o aprobado, se deshabilitan los selects
+                                                $is_group_disabled = $is_group_completed || $is_group_approved;
                                                 ?>
 
-                                                <?php for ($sub_index = 0; $sub_index < $entry_count; $sub_index++, $real_index++): ?>
+                                                    <?php for ($sub_index = 0; $sub_index < $entry_count; $sub_index++, $real_index++): ?>
                                                     <?php
                                                     // --- Extracción de valores por fila ---
                                                     $type = $is_multi_entry ? ($item['type'][$sub_index] ?? 'R') : ($item['type'] ?? 'R');
@@ -91,23 +103,24 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                     $code_period = $is_multi_entry ? ($item['code_period'][0] ?? '') : ($item['code_period'] ?? '');
                                                     $cut = $is_multi_entry ? ($item['cut'][0] ?? '') : ($item['cut'] ?? '');
 
-                                                    // Subject y completed (valores por sub-ítem)
+                                                    // Subject, completed y status (valores por sub-ítem)
                                                     $subject_id = $is_multi_entry ? ($item['subject_id'][$sub_index] ?? '') : ($item['subject_id'] ?? '');
                                                     $completed = $is_multi_entry ? ($item['completed'][$sub_index] ?? false) : ($item['completed'] ?? false);
+                                                    $status = $is_multi_entry ? ($item['status'][$sub_index] ?? 'pendiente') : ($item['status'] ?? 'pendiente');
                                                     ?>
 
                                                     <tr id="matrix-row-<?= $real_index; ?>">
                                                         <th scope="row"><?= $real_index + 1; ?></th>
 
                                                         <?php if ($sub_index === 0): ?>
-                                                            <td rowspan="<?= $entry_count ?>">
-                                                                <?= esc_html($type_label); ?>
+                                                            <!-- <td rowspan="<?= $entry_count ?>"> -->
+                                                                
                                                                 <input type="hidden" name="matrix[<?= $matrix_index ?>][type]"
                                                                     value="<?= esc_attr($type) ?>" />
-                                                            </td>
+                                                            <!-- </td> -->
 
                                                             <td rowspan="<?= $entry_count ?>">
-                                                                <?php if ($is_group_completed): ?>
+                                                                <?php if ($is_group_disabled): ?>
                                                                     <input type="hidden" name="matrix[<?= $matrix_index ?>][code_period]"
                                                                         value="<?= esc_attr($code_period) ?>" />
                                                                 <?php endif; ?>
@@ -115,7 +128,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                                 <select name="matrix[<?= $matrix_index ?>][code_period]"
                                                                     class="academic-period-select"
                                                                     style="width: 100%; min-width: 150px;"
-                                                                    <?= $is_group_completed ? 'disabled' : '' ?>>
+                                                                    <?= $is_group_disabled ? 'disabled' : '' ?>>
                                                                     <option value="" <?= empty($code_period) ? 'selected' : '' ?>><?= __('Select Period', 'edusystem') ?></option>
                                                                     <?php foreach ($periods as $period) { ?>
                                                                         <option value="<?= esc_attr($period->code) ?>"
@@ -127,13 +140,13 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                             </td>
 
                                                             <td rowspan="<?= $entry_count ?>">
-                                                                <?php if ($is_group_completed): ?>
+                                                                <?php if ($is_group_disabled): ?>
                                                                     <input type="hidden" name="matrix[<?= $matrix_index ?>][cut]"
                                                                         value="<?= esc_attr($cut) ?>" />
                                                                 <?php endif; ?>
 
                                                                 <select name="matrix[<?= $matrix_index ?>][cut]" class="academic-cut-select"
-                                                                    style="width: 100%; min-width: 150px;" <?= $is_group_completed ? 'disabled' : '' ?>>
+                                                                    style="width: 100%; min-width: 150px;" <?= $is_group_disabled ? 'disabled' : '' ?>>
                                                                     <option value="" <?= empty($cut) ? 'selected' : '' ?>><?= __('Select cut', 'edusystem') ?></option>
                                                                     <?php foreach ($cuts as $c) { ?>
                                                                         <option value="<?= esc_attr($c) ?>" <?= ($cut == $c) ? 'selected' : '' ?>>
@@ -148,10 +161,12 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                                 value="<?= esc_attr($subject_id) ?>" />
                                                             <input type="hidden" name="matrix[<?= $matrix_index ?>][completed][<?= $sub_index ?>]"
                                                                 value="<?= esc_attr($completed ? '1' : '0') ?>" />
+                                                            <input type="hidden" name="matrix[<?= $matrix_index ?>][status][<?= $sub_index ?>]"
+                                                                value="<?= esc_attr($status) ?>" />
 
                                                             <select name="matrix[<?= $matrix_index ?>][subject_id][<?= $sub_index ?>]" class="subject-select"
                                                                 style="width: 100%; min-width: 200px;"
-                                                                <?= $completed ? 'disabled' : '' ?>>
+                                                                <?= $completed || $is_group_disabled ? 'disabled' : '' ?>>
                                                                 <option value="" <?= empty($subject_id) ? 'selected' : '' ?>><?= __('Select Subject', 'edusystem') ?></option>
                                                                 <?php foreach ($subjects as $subject) { ?>
                                                                     <option value="<?= $subject->id ?>" <?= ($subject_id == $subject->id) ? 'selected' : '' ?>>
@@ -159,6 +174,9 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                                     </option>
                                                                 <?php } ?>
                                                             </select>
+                                                        </td>
+                                                        <td>
+                                                            <?= esc_html(ucfirst($status)); ?>
                                                         </td>
                                                     </tr>
                                                 <?php endfor; ?>
