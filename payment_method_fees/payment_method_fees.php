@@ -401,13 +401,6 @@ add_action( 'woocommerce_pay_order_before_submit',function () {
         <script>
             
             jQuery(function () {
-
-                // Seleccionar automáticamente el método de pago de la orden
-                var payment_method = "<?php echo esc_js( $payment_method ); ?>";
-                if (payment_method) {
-                    jQuery('input[name="payment_method"][value="' + payment_method + '"]').prop('checked', true).trigger('change');
-                }
-
                 jQuery('input[name="payment_method"]').on('change', function(){
 
                     var metodo = jQuery(this).val();
@@ -433,6 +426,14 @@ add_action( 'woocommerce_pay_order_before_submit',function () {
                         }
                     });
                 });
+
+                // Seleccionar automáticamente el método de pago de la orden
+                var payment_method = "<?= esc_js( $payment_method ); ?>";
+                if (payment_method) {
+                    jQuery('input[name="payment_method"][value="' + payment_method + '"]').prop('checked', true).trigger('change');
+                } else {
+                    jQuery('input[name="payment_method"]:checked').trigger('change');
+                }
             });
 
             function actualizarTablaTotales(fee, metodo, order_total) {
