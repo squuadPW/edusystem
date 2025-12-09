@@ -360,7 +360,7 @@ function PMF_update_fee_order_pay() {
         if ( $fee_item->get_meta( '_payment_method_fee' ) != '') {
             $fee = [
                 'name'   => $fee_item->get_name(),
-                'amount' => wc_price($fee_item->get_amount()),
+                'amount' => wc_price($fee_item->get_amount(), [ 'currency' => $order->get_currency() ]),
             ];
             break;
         }

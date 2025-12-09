@@ -282,6 +282,14 @@ function aes_scripts_admin()
         ]);
     }
 
+    if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'admission-documents') {
+        wp_enqueue_script('admission-documents', plugins_url('edusystem') . '/admin/assets/js/admission-documents.js', ['jquery'], $version, true);
+
+        wp_localize_script('admission-documents', 'vars', [
+            'url' => admin_url('admin-ajax.php')
+        ]);
+    }
+
     if (isset($_GET['page']) && !empty($_GET['page']) && ($_GET['page'] == 'add_admin_institutes_content' || $_GET['page'] == 'list_admin_institutes_partner_registered_content' || $_GET['page'] == 'list_admin_institutes_payments_content' || $_GET['page'] == 'list_admin_institutes_invoice_content')) {
         wp_enqueue_script('institute', plugins_url('edusystem') . '/admin/assets/js/institute.js', array('jquery'), $version, true);
 

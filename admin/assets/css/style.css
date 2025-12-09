@@ -2219,8 +2219,166 @@ tr.child-order-row .view_details {
   display: table-cell;
 }
 
+#document_view #dashboard-widgets {
+  width: 70%;
+  margin: auto;
+}
 #document_view #form_document {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
+  width: 100%;
+}
+#document_view #form_document .title {
+  margin-top: 20px;
+  margin-bottom: 0px;
+  text-align: center;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+}
+#document_view #form_document > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#document_view #form_document > div label {
+  font-weight: 600;
+  color: #333;
+}
+#document_view #form_document input[type=text],
+#document_view #form_document select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+#document_view #form_document input[type=text]:focus,
+#document_view #form_document select:focus {
+  border-color: #0073aa;
+  outline: none;
+}
+#document_view #form_document input[type=checkbox] {
+  margin-right: 8px;
+  transform: scale(1.2);
+  cursor: pointer;
+}
+#document_view #form_document button.button-primary {
+  align-self: flex-end;
+}
+#document_view #form_document #select_scope {
+  width: 100%;
+  min-height: 200px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fdfdfd;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+#document_view #form_document #select_scope:focus {
+  border-color: #0073aa;
+  box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.2);
+}
+#document_view #form_document #select_scope option {
+  padding: 8px;
+  border-radius: 6px;
+  margin: 2px 0;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+#document_view #form_document #select_scope option:hover {
+  background: #f1faff;
+  color: #0073aa;
+}
+#document_view #form_document #select_scope option:checked {
+  background: #0073aa;
+  color: #fff;
+  font-weight: 600;
+}
+#document_view #form_document #select_scope optgroup {
+  font-weight: bold;
+  color: #444;
+  padding: 4px 0;
+  margin-top: 6px;
+  border-top: 1px solid #eee;
+}
+#document_view #form_document #selected_list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+#document_view #form_document #selected_list .selected-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+#document_view #form_document #selected_list .selected-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+#document_view #form_document #selected_list .selected-item:hover .remove-btn {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+#document_view #form_document #selected_list .selected-item .item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#document_view #form_document #selected_list .selected-item .item-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #2c3e50;
+}
+#document_view #form_document #selected_list .selected-item .remove-btn {
+  position: absolute;
+  top: 50%;
+  right: -12px;
+  transform: translateY(-50%) scale(0.8);
+  background: #ff4d4d;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  padding: 6px 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+#document_view #form_document #selected_list .selected-item .remove-btn:hover {
+  background: #e60000;
+  transform: translateY(-50%) scale(1.1);
+}
+
+#select2-select_scope-results li:has(+ [role=group]) {
+  margin-bottom: 0px;
+}
+#select2-select_scope-results [role=group] {
+  position: relative;
+  /* li{
+          margin-bottom: 0px;
+      } */
+  /* .select2-results__group {
+          display: none;
+      } */
+}
+#select2-select_scope-results [role=group] li:first-of-type {
+  position: absolute;
+  top: 0px;
+  color: transparent;
+  background: rgba(202, 202, 202, 0.2392156863);
+  width: 80%;
+  border-radius: 0px 15px 15px 0px;
 }/*# sourceMappingURL=style.css.map */
