@@ -5,9 +5,6 @@ function automatically_enrollment($student_id)
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
-    // $expected_periods = load_expected_periods($student->expected_graduation_date);
-
-    // $expected_projection = load_expected_projection($student->initial_cut, $student->grade_id, $expected_periods);
     load_automatically_enrollment($student);
 }
 
@@ -502,6 +499,9 @@ function generate_projection_student($student_id, $force = false)
             $calculated_matrix = null;
             $terms_available = null;
         }
+    } else {
+        $full_name_student = student_names_lastnames_helper($student_id);
+        edusystem_get_log('Expected graduation date is empty for student: ' . $full_name_student, 'Automatically enrollment');
     }
 
     // Obtener inscripciones del estudiante
