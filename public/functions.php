@@ -4145,13 +4145,10 @@ function sc_set_order_pay_cookie_php() {
 	}
 
 	$uri = wp_unslash( $_SERVER['REQUEST_URI'] );
-
-    error_log('Current URI: ' . $uri);
 	if ( false === strpos( $uri, 'order-pay' ) && empty( $_GET['pay_for_order'] ) ) {
 		return;
 	}
 
-    error_log('Setting order pay cookie...');
     global $current_user, $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $roles = $current_user->roles;
@@ -4161,7 +4158,6 @@ function sc_set_order_pay_cookie_php() {
         $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
     }
 
-    error_log('Students found: ' . print_r($students, true));
     foreach ($students as $key => $student) {
         $program_data = get_program_data_student($student->id);
         $plan = $program_data['plan'][0];
