@@ -4176,19 +4176,29 @@ function sc_set_order_pay_cookie_php() {
         $program_data = get_program_data_student($student->id);
         $plan = $program_data['plan'][0];
         $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($plan->identificator, true);
+        $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
         $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
+        $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
+        $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
+        $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
 
-        $cookie_name  = 'squuad_stripe_selected_client_id';
-        $cookie_value = $connected_account;
+        $cookies = array(
+            'hidden_payment_methods' => $hidden_payment_methods,
+            'squuad_stripe_selected_client_id' => $connected_account,
+            'flywire_portal_code' => $flywire_portal_code,
+            'zelle_account' => $zelle_account,
+            'bank_transfer_account' => $bank_transfer_account,
+        );
 
         $expire = time() + 3600; // 1 hora
         $secure = is_ssl();
         $path = defined( 'COOKIEPATH' ) && COOKIEPATH ? COOKIEPATH : '/';
         $domain = defined( 'COOKIE_DOMAIN' ) && COOKIE_DOMAIN ? COOKIE_DOMAIN : $_SERVER['SERVER_NAME'];
 
-        // httponly = true para no exponer en JS
-        setcookie( $cookie_name, $cookie_value, $expire, $path, $domain, $secure, true );
-        $_COOKIE[ $cookie_name ] = $cookie_value;
+        foreach ($cookies as $key => $cookie) {
+            setcookie( $key, $cookie, $expire, $path, $domain, $secure, true );
+            $_COOKIE[ $key ] = $cookie;
+        }
     }
 }
 add_action( 'init', 'sc_set_order_pay_cookie_php', 1 );
