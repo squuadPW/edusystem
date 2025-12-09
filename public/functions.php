@@ -4137,3 +4137,48 @@ function my_custom_locale_switcher($locale)
     return $locale;
 }
 add_filter('locale', 'my_custom_locale_switcher', 10, 1);
+
+
+function sc_set_order_pay_cookie_php() {
+	if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
+		return;
+	}
+
+	$uri = wp_unslash( $_SERVER['REQUEST_URI'] );
+
+    error_log('Current URI: ' . $uri);
+	if ( false === strpos( $uri, 'order-pay' ) && empty( $_GET['pay_for_order'] ) ) {
+		return;
+	}
+
+    error_log('Setting order pay cookie...');
+    global $current_user, $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $roles = $current_user->roles;
+    if (in_array('student', $roles)) {
+        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
+    } else if (in_array('parent', $roles)) {
+        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+    }
+
+    error_log('Students found: ' . print_r($students, true));
+    foreach ($students as $key => $student) {
+        $program_data = get_program_data_student($student->id);
+        $plan = $program_data['plan'][0];
+        $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($plan->identificator, true);
+        $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
+
+        $cookie_name  = 'squuad_stripe_selected_client_id';
+        $cookie_value = $connected_account;
+
+        $expire = time() + 3600; // 1 hora
+        $secure = is_ssl();
+        $path = defined( 'COOKIEPATH' ) && COOKIEPATH ? COOKIEPATH : '/';
+        $domain = defined( 'COOKIE_DOMAIN' ) && COOKIE_DOMAIN ? COOKIE_DOMAIN : $_SERVER['SERVER_NAME'];
+
+        // httponly = true para no exponer en JS
+        setcookie( $cookie_name, $cookie_value, $expire, $path, $domain, $secure, true );
+        $_COOKIE[ $cookie_name ] = $cookie_value;
+    }
+}
+add_action( 'init', 'sc_set_order_pay_cookie_php', 1 );
