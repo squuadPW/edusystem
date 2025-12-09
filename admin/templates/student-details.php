@@ -384,7 +384,13 @@ function truncate_text($text, $max_length = 100) {
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="4">
+                                        <td colspan="3">
+                                            <label for="expected_graduation_date"><b><?php _e('Expected graduation from high school', 'edusystem'); ?></b></label><br>
+                                            <input type="text" id="expected_graduation_date" name="expected_graduation_date"
+                                                value="<?php echo $student->expected_graduation_date; ?>" style="width:100%;" required
+                                                <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                        </td>
+                                        <td colspan="3">
                                             <label for="email"><b><?php _e('Email', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="email" name="email"
                                                 value="<?php echo $student->email; ?>" style="width:100%;" required
@@ -392,26 +398,13 @@ function truncate_text($text, $max_length = 100) {
                                             <input type="hidden" id="old_email" name="old_email"
                                                 value="<?php echo $student->email; ?>" style="width:100%;">
                                         </td>
-                                        <td colspan="4">
+                                        <td colspan="3">
                                             <label for="phone"><b><?php _e('Phone', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="phone" name="phone"
                                                 value="<?php echo $student->phone; ?>" style="width:100%;" required
                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
-
-                                        <!-- <td  colspan="3">
-                                            <label
-                                                for="academic_period"><b><?php _e('Academic period', 'edusystem'); ?></b></label><br>
-                                            <select name="academic_period" required style="width:100%;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
-                                                <?php foreach ($periods as $key => $period) { ?>
-                                                    <option value="<?php echo $period->code; ?>"
-                                                        <?= ($student->academic_period == $period->code) ? 'selected' : ''; ?>>
-                                                        <?php echo $period->name; ?>
-                                                    </option>
-                                                <?php } ?>
-                                            </select>
-                                        </td> -->
-                                        <td colspan="4">
+                                        <td colspan="3">
                                             <label
                                                 for="new_password"><b><?php _e('New password for student', 'edusystem'); ?></label><br>
                                             <input type="password" id="new_password" name="new_password"
@@ -996,5 +989,38 @@ function truncate_text($text, $max_length = 100) {
             dateContainer.style.display = 'block';
             dateInput.setAttribute('required', 'required');
         }
+    }
+
+
+    const mesAnio = document.getElementById('expected_graduation_date');
+    if (mesAnio) {
+        mesAnio.addEventListener('input', function(e) {
+        let valor = e.target.value;
+
+        // Eliminar cualquier caracter que no sea un número
+        valor = valor.replace(/\D/g, '');
+
+        // Limitar la longitud a 6 dígitos (2 para mes, 4 para año)
+        if (valor.length > 6) {
+            valor = valor.slice(0, 6);
+        }
+
+        // Formatear: agregar la barra después de los 2 primeros dígitos
+        if (valor.length > 2) {
+            let mes = valor.slice(0, 2);
+            let anio = valor.slice(2, 6);
+
+            // Validar que el mes no sea mayor a 12
+            if (parseInt(mes) > 12) {
+                // Si es mayor a 12, lo establecemos como 12
+                mes = '12';
+            }
+
+            valor = mes + '/' + anio;
+        }
+
+        // Actualizar el valor del input
+        e.target.value = valor;
+        });
     }
 </script>

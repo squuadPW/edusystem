@@ -34,6 +34,8 @@ function add_admin_form_admission_content()
                 $email = $_POST['email'];
                 $phone = $_POST['phone'];
                 $old_email = $_POST['old_email'];
+                $expected_graduation_date = $_POST['expected_graduation_date'];
+
                 $institute = null;
                 if ($institute_id != 'other') {
                     $institute = get_institute_details($institute_id);
@@ -68,7 +70,7 @@ function add_admin_form_admission_content()
                             'postal_code' => $postal_code,
                             'institute_id' => $institute_id,
                             'name_institute' => $name_institute,
-
+                            'expected_graduation_date' => $expected_graduation_date
                         ),
                         array('ID' => $id),
                         array('%s', '%s', '%s'),
@@ -288,7 +290,6 @@ function add_admin_form_admission_content()
 
                 include(plugin_dir_path(__FILE__) . 'templates/student-details.php');
             }
-
         } else {
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
@@ -313,7 +314,6 @@ class TT_document_review_List_Table extends WP_List_Table
             'plural' => 'students',
             'ajax' => true
         ));
-
     }
 
     function single_row($item)
@@ -386,7 +386,6 @@ class TT_document_review_List_Table extends WP_List_Table
                                     <span>' . $diff->days . ' ' . __('Day', 'edusystem') . '</span>
                                 </a>
                             ';
-
                         } else {
 
                             $html .= '
@@ -395,7 +394,6 @@ class TT_document_review_List_Table extends WP_List_Table
                                 </a>
                             ';
                         }
-
                     } else if ($diff->days < (int) get_option('documents_warning')) {
                         $html .= '
                             <a href="javascript:void(0)" class="button button-warning" style="border-radius:9px;">
@@ -643,7 +641,6 @@ class TT_document_review_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_all_student_List_Table extends WP_List_Table
@@ -658,7 +655,6 @@ class TT_all_student_List_Table extends WP_List_Table
             'plural' => 'students',
             'ajax' => true
         ));
-
     }
 
     function column_default($item, $column_name)
@@ -919,7 +915,6 @@ class TT_all_student_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 function get_student_detail($student_id)
@@ -1419,7 +1414,6 @@ function update_payment()
         echo json_encode(['status' => 'success', 'message' => __('Status changed', 'edusystem')]);
         die();
     }
-
 }
 
 add_action('wp_ajax_nopriv_update_payment', 'update_payment');
@@ -1522,8 +1516,8 @@ function get_fee_paid($student_id, $type)
         )
     );
 
-    foreach ( $student_programs as $program ) {
-        
+    foreach ($student_programs as $program) {
+
         // Obtiene todos los IDs de los productos de registro para cada plan.
         $fees = get_fees_associated_plan($program->plan_identificator, $type);
 
