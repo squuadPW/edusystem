@@ -4163,42 +4163,76 @@ function sc_set_order_pay_cookie_php() {
 		return;
 	}
 
-    global $current_user, $wpdb;
-    $table_students = $wpdb->prefix . 'students';
-    $roles = $current_user->roles;
-    if (in_array('student', $roles)) {
-        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}'");
-    } else if (in_array('parent', $roles)) {
-        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id='{$current_user->ID}'");
+    // Ensure we have a logged-in user and a valid WP user object
+    if ( ! is_user_logged_in() ) {
+        return;
     }
 
-    foreach ($students as $key => $student) {
-        $program_data = get_program_data_student($student->id);
-        $plan = $program_data['plan'][0];
-        $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($plan->identificator, true);
-        $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
-        $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
-        $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
-        $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
-        $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
+    global $wpdb;
+    $current_user = wp_get_current_user();
+    $user_id = (int) ( $current_user->ID ?? 0 );
+    if ( $user_id === 0 ) {
+        return;
+    }
 
-        $cookies = array(
-            'hidden_payment_methods' => $hidden_payment_methods,
-            'squuad_stripe_selected_client_id' => $connected_account,
-            'flywire_portal_code' => $flywire_portal_code,
-            'zelle_account' => $zelle_account,
-            'bank_transfer_account' => $bank_transfer_account,
-        );
+    $table_students = $wpdb->prefix . 'students';
+    $roles = (array) $current_user->roles;
 
-        $expire = time() + 3600; // 1 hora
-        $secure = is_ssl();
-        $path = defined( 'COOKIEPATH' ) && COOKIEPATH ? COOKIEPATH : '/';
-        $domain = defined( 'COOKIE_DOMAIN' ) && COOKIE_DOMAIN ? COOKIE_DOMAIN : $_SERVER['SERVER_NAME'];
+    // Fetch a single student record relevant to this user (first match).
+    // There's no point setting the same-named cookies multiple times; last wins — keep it efficient.
+    if ( in_array( 'student', $roles, true ) ) {
+        $students = $wpdb->get_results( $wpdb->prepare( "SELECT id FROM {$table_students} WHERE email = %s LIMIT 1", $current_user->user_email ) );
+    } elseif ( in_array( 'parent', $roles, true ) ) {
+        $students = $wpdb->get_results( $wpdb->prepare( "SELECT id FROM {$table_students} WHERE partner_id = %d LIMIT 1", $user_id ) );
+    } else {
+        return;
+    }
 
-        foreach ($cookies as $key => $cookie) {
-            setcookie( $key, $cookie, $expire, $path, $domain, $secure, true );
-            $_COOKIE[ $key ] = $cookie;
+    if ( empty( $students ) ) {
+        return;
+    }
+
+    $student = $students[0];
+    $student_id = $student->id;
+
+    // Get program/plan data and normalize values to strings
+    $program_data = get_program_data_student( $student_id );
+    $plan = $program_data['plan'][0] ?? null;
+    if ( ! $plan ) {
+        return;
+    }
+
+    $hidden_payment_methods_data = get_hidden_payment_methods_by_plan( $plan->identificator, true );
+    $hidden_payment_methods = (string) ( $hidden_payment_methods_data['hidden_methods_csv'] ?? '' );
+    $connected_account = (string) ( $hidden_payment_methods_data['connected_account'] ?? '' );
+    $flywire_portal_code = (string) ( $hidden_payment_methods_data['flywire_portal_code'] ?? '' );
+    $zelle_account = (string) ( $hidden_payment_methods_data['zelle_account'] ?? '' );
+    $bank_transfer_account = (string) ( $hidden_payment_methods_data['bank_transfer_account'] ?? '' );
+
+    $cookies = array(
+        'hidden_payment_methods' => $hidden_payment_methods,
+        'squuad_stripe_selected_client_id' => $connected_account,
+        'flywire_portal_code' => $flywire_portal_code,
+        'zelle_account' => $zelle_account,
+        'bank_transfer_account' => $bank_transfer_account,
+    );
+
+    $expire = time() + 3600; // 1 hora
+    $secure = is_ssl();
+    $path = defined( 'COOKIEPATH' ) && COOKIEPATH ? COOKIEPATH : '/';
+    $domain = defined( 'COOKIE_DOMAIN' ) && COOKIE_DOMAIN ? COOKIE_DOMAIN : $_SERVER['SERVER_NAME'];
+
+    foreach ( $cookies as $key => $cookie ) {
+        // Explicitly delete existing cookie before creating the new one to avoid stale values
+        if ( isset( $_COOKIE[ $key ] ) ) {
+            setcookie( $key, '', time() - 3600, $path, $domain, $secure, true );
+            unset( $_COOKIE[ $key ] );
         }
+
+        // Set the cookie even if empty (keeps behaviour consistent); if you prefer to skip empty values,
+        // replace the next line with `if ( $cookie !== '' ) { ... }`.
+        setcookie( $key, $cookie, $expire, $path, $domain, $secure, true );
+        $_COOKIE[ $key ] = $cookie;
     }
 }
 add_action( 'init', 'sc_set_order_pay_cookie_php', 1 );
