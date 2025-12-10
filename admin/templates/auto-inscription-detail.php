@@ -173,7 +173,8 @@
                             </div>
                         </div>
                         <div class="right">
-                            <span class="es-sub"><?= esc_html($expected->status); ?></span>
+                            <!-- <span class="es-sub"><?= esc_html($expected->status); ?></span> -->
+                            <span class="es-sub"><a target="_blank" class="button button-primary" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=student_matrix&student_id=') . $expected->student_id ?>"><?=  __('Matrix', 'edusystem') ?></a></span>
                         </div>
                     </div>
                 <?php endforeach; ?>
