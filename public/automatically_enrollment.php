@@ -14,7 +14,7 @@ function automatically_enrollment($student_id)
         return;
     }
 
-    // 2. Ejecutar la lógica de inscripción (antes en load_automatically_enrollment)
+    // 2. Ejecutar la lógica de inscripción
     if ($student->status_id == 0 || $student->status_id > 3) {
         return;
     }
