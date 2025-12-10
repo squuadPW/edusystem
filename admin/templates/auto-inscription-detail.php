@@ -18,6 +18,11 @@
         .es-subject{color:#6b7280;font-size:13px}
         .es-empty{padding:20px;text-align:center;color:#6b7280}
         @media (max-width:600px){.es-header{flex-direction:column;align-items:flex-start;gap:10px}.es-actions{width:100%;justify-content:space-between}}
+        #enroll-all-button[disabled], #enroll-all-button.is-loading {
+            pointer-events: none; /* Asegura que no se pueda hacer clic */
+            opacity: 0.6;        /* Vuelve el botón semitransparente */
+            cursor: default;     /* Cambia el cursor a normal */
+        }
     </style>
 
     <?php include(plugin_dir_path(__FILE__) . 'cookie-message.php'); ?>
@@ -61,32 +66,4 @@
             <?php endif; ?>
         </div>
     </div>
-
-    <script>
-        (function(){
-            var search = document.getElementById('es-search');
-            var list = document.getElementById('es-list');
-            var items = list ? Array.prototype.slice.call(list.querySelectorAll('.es-item')) : [];
-            if(search){
-                search.addEventListener('input', function(e){
-                    var q = e.target.value.toLowerCase().trim();
-                    items.forEach(function(it){
-                        var text = (it.getAttribute('data-search') || '').toLowerCase();
-                        it.style.display = q === '' || text.indexOf(q) !== -1 ? '' : 'none';
-                    });
-                });
-            }
-
-            var enrollBtn = document.getElementById('enroll-all-button');
-            if(enrollBtn){
-                enrollBtn.addEventListener('click', function(){
-                    if(!confirm('<?= esc_js(esc_html__('Are you sure you want to enroll all listed students?', 'edusystem')); ?>')) return;
-                    enrollBtn.disabled = true;
-                    var original = enrollBtn.innerHTML;
-                    enrollBtn.innerHTML = '<?= esc_js(esc_html__('Enrolling...', 'edusystem')); ?>';
-                    setTimeout(function(){ enrollBtn.innerHTML = original; enrollBtn.disabled = false; alert('<?= esc_js(esc_html__('Action completed (demo). Implement AJAX to perform the real operation.', 'edusystem')); ?>'); }, 900);
-                });
-            }
-        })();
-    </script>
 </div>
