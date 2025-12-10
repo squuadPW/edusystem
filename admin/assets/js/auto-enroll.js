@@ -17,12 +17,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     XHR.onload = () => {
       if (XHR.status === 200 && XHR.response && XHR.response) {
-        console.log("Enrollment successful:", XHR.response);
-        alert("All students have been enrolled successfully.");
+        setCookie('message', 'All students have been enrolled successfully.');
         location.reload();
       }
     };
 
     XHR.send(params.toString());
   });
+
+  function setCookie(name, value) {
+    var date = new Date();
+    date.setTime(date.getTime() + 1 * 24 * 60 * 60 * 1000);
+    expires = "; expires=" + date.toGMTString();
+    document.cookie = name + "=" + value + expires + "; path=/";
+  }
 });
