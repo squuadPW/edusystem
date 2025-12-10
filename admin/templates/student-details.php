@@ -383,7 +383,7 @@ function truncate_text($text, $max_length = 100) {
                                                 for="postal_code"><b><?php _e('Postal Code', 'edusystem'); ?></b></label><br>
                                             <input type="text" id="postal_code" name="postal_code"
                                                 value="<?php echo $student->postal_code; ?>" style="width:100%;"
-                                                required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                     </tr>
                                     <tr>
@@ -553,7 +553,7 @@ function truncate_text($text, $max_length = 100) {
                                                     for="parent_postal_code"><b><?php _e('Postal Code', 'edusystem'); ?></b></label><br>
                                                 <input type="text" id="parent_postal_code" name="parent_postal_code"
                                                     value="<?php echo get_user_meta($partner->ID, 'billing_postcode', true) ?>"
-                                                    style="width:100%;" required <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
+                                                    style="width:100%;" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                             </td>
                                             <td colspan="4">
                                                 <label
